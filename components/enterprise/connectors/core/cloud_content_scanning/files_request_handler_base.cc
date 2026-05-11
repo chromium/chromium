@@ -166,6 +166,15 @@ void FilesRequestHandlerBase::OnGotFileInfo(
   delegate_->UpdateFileInfo(index, data, request.get());
 
   const auto& analysis_settings = content_analysis_info_->settings();
+
+  // If block large files is enabled, then the file is too large if it exceeds
+  // the max upload size limit which is currently 50MB.
+  if (result == ScanRequestUploadResult::kSuccess &&
+      analysis_settings.block_large_files &&
+      data.size > BinaryUploadService::kMaxUploadSizeBytes) {
+    result = ScanRequestUploadResult::kFileTooLarge;
+  }
+
   bool is_cloud = analysis_settings.cloud_or_local_settings.is_cloud_analysis();
   bool is_resumable = IsResumableUpload(*request);
   bool failed = is_resumable
