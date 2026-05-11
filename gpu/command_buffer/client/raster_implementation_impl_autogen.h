@@ -8,11 +8,6 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file is included by raster_implementation.cc to define the
 // GL api functions.
 #ifndef GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_IMPL_AUTOGEN_H_
@@ -28,13 +23,13 @@ void RasterImplementation::GenQueriesEXT(GLsizei n, GLuint* queries) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   IdAllocator* id_allocator = GetIdAllocator(IdNamespaces::kQueries);
   for (GLsizei ii = 0; ii < n; ++ii) {
-    queries[ii] = id_allocator->AllocateID();
+    UNSAFE_TODO(queries[ii] = id_allocator->AllocateID());
   }
   GenQueriesEXTHelper(n, queries);
   helper_->GenQueriesEXTImmediate(n, queries);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
-      GPU_CLIENT_LOG("  " << i << ": " << queries[i]);
+      GPU_CLIENT_LOG("  " << i << ": " << UNSAFE_TODO(queries[i]));
     }
   });
   CheckGLError();
@@ -46,12 +41,12 @@ void RasterImplementation::DeleteQueriesEXT(GLsizei n, const GLuint* queries) {
                      << static_cast<const void*>(queries) << ")");
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
-      GPU_CLIENT_LOG("  " << i << ": " << queries[i]);
+      GPU_CLIENT_LOG("  " << i << ": " << UNSAFE_TODO(queries[i]));
     }
   });
   GPU_CLIENT_DCHECK_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
-      DCHECK(queries[i] != 0);
+      UNSAFE_TODO(DCHECK(queries[i] != 0));
     }
   });
   if (n < 0) {

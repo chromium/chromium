@@ -28,8 +28,8 @@ TEST_P(GLES2DecoderTest2, GetProgramInfoLogValidArgs) {
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
   EXPECT_EQ(strlen(kInfo) + 1, bucket->size());
-  EXPECT_EQ(0,
-            memcmp(bucket->GetData(0, bucket->size()), kInfo, bucket->size()));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(bucket->GetData(0, bucket->size()), kInfo,
+                                  bucket->size())));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 

@@ -63,7 +63,8 @@ TEST_F(RasterFormatTest, GenQueriesEXTImmediate) {
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd,
       sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) * 4u));
-  EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids)));
+  EXPECT_EQ(0,
+            UNSAFE_TODO(memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids))));
 }
 
 TEST_F(RasterFormatTest, DeleteQueriesEXTImmediate) {
@@ -83,7 +84,8 @@ TEST_F(RasterFormatTest, DeleteQueriesEXTImmediate) {
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd,
       sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) * 4u));
-  EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids)));
+  EXPECT_EQ(0,
+            UNSAFE_TODO(memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids))));
 }
 
 TEST_F(RasterFormatTest, BeginQueryEXT) {
@@ -276,7 +278,8 @@ TEST_F(RasterFormatTest, DeletePaintCachePathsINTERNALImmediate) {
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd,
       sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) * 4u));
-  EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids)));
+  EXPECT_EQ(0,
+            UNSAFE_TODO(memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids))));
 }
 
 TEST_F(RasterFormatTest, DeletePaintCachePathsINTERNAL) {
@@ -312,7 +315,8 @@ TEST_F(RasterFormatTest, DeletePaintCacheEffectsINTERNALImmediate) {
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd,
       sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) * 4u));
-  EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids)));
+  EXPECT_EQ(0,
+            UNSAFE_TODO(memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids))));
 }
 
 TEST_F(RasterFormatTest, DeletePaintCacheEffectsINTERNAL) {

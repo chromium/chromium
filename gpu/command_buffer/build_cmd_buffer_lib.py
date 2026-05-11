@@ -40,10 +40,6 @@ _ALLOW_UNSAFE_BUFFERS = """
 
 """
 _allow_unsafe_buffers_filenames = [
-    "gpu/command_buffer/client/gles2_implementation_impl_autogen.h",
-    "gpu/command_buffer/client/gles2_implementation_unittest_autogen.h",
-    "gpu/command_buffer/client/raster_implementation_impl_autogen.h",
-    "gpu/command_buffer/client/raster_implementation_unittest_autogen.h",
     "gpu/command_buffer/common/gles2_cmd_format_autogen.h",
     "gpu/command_buffer/service/context_state_impl_autogen.h",
     "gpu/command_buffer/service/gles2_cmd_decoder_autogen.h",
@@ -1429,7 +1425,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.cmd.Init(%(cmd_args)s);
 
   gl_->%(name)s(%(args)s);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
 }
 """
       cmd_arg_strings = [
@@ -2043,7 +2039,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.cmd.Init(%(cmd_args)s);
 
   gl_->%(name)s(%(args)s);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));"""
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));"""
     if not func.IsES3():
       code += """
   ClearCommands();
@@ -2109,7 +2105,7 @@ class GENnHandler(TypeHandler):
     """Overrriden from TypeHandler."""
     log_code = ("""  GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
-      GPU_CLIENT_LOG("  " << i << ": " << %s[i]);
+      GPU_CLIENT_LOG("  " << i << ": " << UNSAFE_TODO(%s[i]));
     }
   });""" % func.GetOriginalArgs()[1].name)
     args = {
@@ -2135,7 +2131,7 @@ class GENnHandler(TypeHandler):
       alloc_code = ("""\
       IdAllocator* id_allocator = GetIdAllocator(IdNamespaces::k%s);
       for (GLsizei ii = 0; ii < n; ++ii)
-      %s[ii] = id_allocator->AllocateID();""" %
+        UNSAFE_TODO(%s[ii] = id_allocator->AllocateID());""" %
       (func.GetInfo('resource_types'), func.GetOriginalArgs()[1].name))
     else:
       alloc_code = ("""\
@@ -2171,7 +2167,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.data[0] = k%(types)sStartId;
   expected.data[1] = k%(types)sStartId + 1;
   gl_->%(name)s(std::size(ids), &ids[0]);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(k%(types)sStartId, ids[0]);
   EXPECT_EQ(k%(types)sStartId + 1, ids[1]);
 }
@@ -2327,8 +2323,8 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs) {
     f.write("  CheckBytesWrittenMatchesExpectedSize(\n")
     f.write("      next_cmd, sizeof(cmd) +\n")
     f.write("      RoundSizeToMultipleOfEntries(std::size(ids) * 4u));\n")
-    f.write("  EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd),\n")
-    f.write("                      sizeof(ids)));\n")
+    f.write("  EXPECT_EQ(0, UNSAFE_TODO(memcmp(ids, ImmediateDataAddress(&cmd),\n")
+    f.write("                      sizeof(ids))));\n")
     f.write("}\n")
     f.write("\n")
 
@@ -2543,7 +2539,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.data[0] = k%(types)sStartId;
   expected.data[1] = k%(types)sStartId + 1;
   gl_->%(name)s(std::size(ids), &ids[0]);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
 }
 """
     f.write(code % {
@@ -2651,13 +2647,13 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs) {
       self.WriteClientGLCallLog(func, f)
       f.write("""  GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
-      GPU_CLIENT_LOG("  " << i << ": " << %s[i]);
+      GPU_CLIENT_LOG("  " << i << ": " << UNSAFE_TODO(%s[i]));
     }
   });
 """ % func.GetOriginalArgs()[1].name)
       f.write("""  GPU_CLIENT_DCHECK_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
-      DCHECK(%s[i] != 0);
+      UNSAFE_TODO(DCHECK(%s[i] != 0));
     }
   });
 """ % func.GetOriginalArgs()[1].name)
@@ -2757,8 +2753,8 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs) {
     f.write("  CheckBytesWrittenMatchesExpectedSize(\n")
     f.write("      next_cmd, sizeof(cmd) +\n")
     f.write("      RoundSizeToMultipleOfEntries(std::size(ids) * 4u));\n")
-    f.write("  EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd),\n")
-    f.write("                      sizeof(ids)));\n")
+    f.write("  EXPECT_EQ(0, UNSAFE_TODO(memcmp(ids, ImmediateDataAddress(&cmd),\n")
+    f.write("                      sizeof(ids))));\n")
     f.write("}\n")
     f.write("\n")
 
@@ -2927,7 +2923,7 @@ class GETnHandler(TypeHandler):
   result->CopyResult(%(last_arg_name)s);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
-      GPU_CLIENT_LOG("  " << i << ": " << result->GetData()[i]);
+      GPU_CLIENT_LOG("  " << i << ": " << UNSAFE_TODO(result->GetData()[i]));
     }
   });"""
       if has_length_arg:
@@ -2963,7 +2959,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
   gl_->%(name)s(%(args)s, &result);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
 """
@@ -3246,7 +3242,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
     else:
       f.write("  uint32_t count = %d;" % self.GetArrayCount(func))
     f.write("  for (uint32_t ii = 0; ii < count; ++ii) {\n")
-    f.write('    GPU_CLIENT_LOG("value[" << ii << "]: " << %s[ii]);\n' %
+    f.write('    GPU_CLIENT_LOG("value[" << ii << "]: " << UNSAFE_TODO(%s[ii]));\n' %
                func.GetLastOriginalArg().name)
     f.write("  }\n")
     for arg in func.GetOriginalArgs():
@@ -3271,12 +3267,12 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   };
 
   for (int jj = 0; jj < %(count)d; ++jj) {
-    data[jj] = static_cast<%(type)s>(jj);
+    UNSAFE_TODO(data[jj] = static_cast<%(type)s>(jj));
   }
   Cmds expected;
   expected.cmd.Init(%(cmd_args)s, &data[0]);
   gl_->%(name)s(%(args)s, &data[0]);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
 }
 """
     cmd_arg_strings = [
@@ -3543,7 +3539,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
     for (GLsizei i = 0; i < count; ++i) {
 """)
     values_str = ' << ", " << '.join(
-        ["%s[%d + i * %d]" % (
+        ["UNSAFE_TODO(%s[%d + i * %d])" % (
             last_pointer_name, ndx, self.GetArrayCount(func)) for ndx in range(
                 0, self.GetArrayCount(func))])
     f.write('       GPU_CLIENT_LOG("  " << i << ": " << %s);\n' % values_str)
@@ -3573,12 +3569,12 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   Cmds expected;
   for (int ii = 0; ii < %(count_param)d; ++ii) {
     for (int jj = 0; jj < %(count)d; ++jj) {
-      data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj);
+      UNSAFE_TODO(data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj));
     }
   }
   expected.cmd.Init(%(cmd_args)s);
   gl_->%(name)s(%(args)s);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
 }
 """
     cmd_arg_strings = []
@@ -3623,7 +3619,7 @@ TEST_F(%(prefix)sImplementationTest,
   %(type)s data[%(count_param)d][%(count)d] = {};
   for (int ii = 0; ii < %(count_param)d; ++ii) {
     for (int jj = 0; jj < %(count)d; ++jj) {
-      data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj);
+      UNSAFE_TODO(data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj));
     }
   }
   gl_->%(name)s(%(args)s);
@@ -3800,17 +3796,17 @@ class PUTSTRHandler(ArrayArgTypeHandler):
     length_arg = self.__GetLengthArg(func)
     log_code_block = """  GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei ii = 0; ii < count; ++ii) {
-      if (%(data)s[ii]) {"""
+      if (UNSAFE_TODO(%(data)s[ii])) {"""
     if length_arg == None:
       log_code_block += """
-        GPU_CLIENT_LOG("  " << ii << ": ---\\n" << %(data)s[ii] << "\\n---");"""
+        GPU_CLIENT_LOG("  " << ii << ": ---\\n" << UNSAFE_TODO(%(data)s[ii]) << "\\n---");"""
     else:
       log_code_block += """
-        if (%(length)s && %(length)s[ii] >= 0) {
-          const std::string my_str(%(data)s[ii], %(length)s[ii]);
+        if (%(length)s && UNSAFE_TODO(%(length)s[ii]) >= 0) {
+          const std::string my_str(UNSAFE_TODO(%(data)s[ii]), UNSAFE_TODO(%(length)s[ii]));
           GPU_CLIENT_LOG("  " << ii << ": ---\\n" << my_str << "\\n---");
         } else {
-          GPU_CLIENT_LOG("  " << ii << ": ---\\n" << %(data)s[ii] << "\\n---");
+          GPU_CLIENT_LOG("  " << ii << ": ---\\n" << UNSAFE_TODO(%(data)s[ii]) << "\\n---");
         }"""
     log_code_block += """
       } else {
@@ -3900,7 +3896,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
   expected.clear_bucket_size.Init(kBucketId, 0);
   const char* kStrings[] = { kString1, kString2 };
   gl_->%(name)s(%(gl_args)s);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
 }
 """
     gl_args = []
@@ -3962,7 +3958,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)sWithLength) {
   const char* kStrings[] = { kString };
   const GLint kLength[] = { kStringSize };
   gl_->%(name)s(%(gl_args)s);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
 }
 """
     gl_args = []
@@ -4243,7 +4239,7 @@ TEST_F(%(prefix)sFormatTest, %(func_name)s) {
                 RoundSizeToMultipleOfEntries(strlen(test_str)));
 %(check_code)s
   EXPECT_EQ(static_cast<uint32_t>(strlen(test_str)), cmd.data_size);
-  EXPECT_EQ(0, memcmp(test_str, ImmediateDataAddress(&cmd), strlen(test_str)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(test_str, ImmediateDataAddress(&cmd), strlen(test_str))));
   CheckBytesWritten(
       next_cmd,
       sizeof(cmd) + RoundSizeToMultipleOfEntries(strlen(test_str)),
@@ -4453,7 +4449,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
       .RetiresOnSaturation();
 
   GLboolean result = gl_->%(name)s(%(gl_id_value)s);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_TRUE(result);
 }
 """
@@ -4505,8 +4501,8 @@ class STRnHandler(TypeHandler):
     if (bufsize > 0) {
       max_size =
           std::min(static_cast<size_t>(%(bufsize_name)s) - 1, str.size());
-      memcpy(%(dest_name)s, str.c_str(), max_size);
-      %(dest_name)s[max_size] = '\\0';
+      UNSAFE_TODO(memcpy(%(dest_name)s, str.c_str(), max_size));
+      UNSAFE_TODO(%(dest_name)s[max_size] = '\\0');
       GPU_CLIENT_LOG("------\\n" << %(dest_name)s << "\\n------");
     }
   }
@@ -4552,8 +4548,8 @@ TEST_P(%(test_name)s, %(name)sValidArgs) {
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
   EXPECT_EQ(strlen(kInfo) + 1, bucket->size());
-  EXPECT_EQ(0, memcmp(bucket->GetData(0, bucket->size()), kInfo,
-                      bucket->size()));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(bucket->GetData(0, bucket->size()), kInfo,
+                        bucket->size())));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 """
@@ -6612,8 +6608,8 @@ void ContextState::InitState(const ContextState *prev_state) const {
               operation = []
               if test_prev:
                 if isinstance(item['default'], list):
-                  operation.append("  if (memcmp(prev_state->%s, %s, "
-                                      "sizeof(%s) * %d)) {\n" %
+                  operation.append("  if (UNSAFE_TODO(memcmp(prev_state->%s, %s, "
+                                      "sizeof(%s) * %d))) {\n" %
                                       (item_name, item_name, item['type'],
                                       len(item['default'])))
                 else:
