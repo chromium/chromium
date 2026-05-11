@@ -271,6 +271,7 @@ dependencies = [
  "rustc-demangle-capi",
  "rustfft",
  "safe_arch",
+ "scc",
  "serde",
  "serde_json",
  "serde_json_lenient",
@@ -1496,6 +1497,14 @@ version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "scc"
+version = "2.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "sdd",
+]
+
+[[package]]
 name = "scopeguard"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1503,6 +1512,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "scratch"
 version = "1.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "sdd"
+version = "3.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

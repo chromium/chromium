@@ -1,0 +1,54 @@
+[package]
+name = "scc"
+description = "High-performance containers and utilities for concurrent and asynchronous programming"
+documentation = "https://docs.rs/scc"
+version = "2.4.0"
+authors = ["wvwwvwwv <wvwwvwwv@me.com>"]
+edition = "2021"
+rust-version = "1.65.0"
+readme = "README.md"
+repository = "https://github.com/wvwwvwwv/scalable-concurrent-containers/"
+license = "Apache-2.0"
+categories = ["asynchronous", "caching", "concurrency", "data-structures"]
+keywords = ["async", "cache", "concurrent", "hashmap", "tree"]
+
+[workspace]
+members = [".", "examples"]
+
+[dependencies]
+equivalent = { version = "1.0", optional = true }
+loom = { version = "0.7", optional = true }
+sdd = "3.0"
+serde = { version = "1.0", optional = true }
+
+[features]
+loom = ["dep:loom", "sdd/loom"]
+
+[dev-dependencies]
+criterion = "0.7"
+futures = "0.3"
+proptest = "1.7"
+rand = "0.9"
+serde_test = "1.0"
+static_assertions = "1.1"
+tokio = { version = "1.47", features = ["full"] }
+
+[[bench]]
+name = "bag"
+harness = false
+
+[[bench]]
+name = "hash_map"
+harness = false
+
+[[bench]]
+name = "hash_index"
+harness = false
+
+[[bench]]
+name = "hash_cache"
+harness = false
+
+[[bench]]
+name = "tree_index"
+harness = false

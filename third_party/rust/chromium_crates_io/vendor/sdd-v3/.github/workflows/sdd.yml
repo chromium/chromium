@@ -1,0 +1,97 @@
+name: SDD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check-basic-x86_64:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Debug
+        run: RUST_BACKTRACE=1 cargo test;
+          RUST_BACKTRACE=1 cargo test -p examples
+      - name: Release
+        run: RUST_BACKTRACE=1 cargo test --release;
+          RUST_BACKTRACE=1 cargo test --release -p examples
+  check-basic-x86:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare
+        run: sudo apt-get update;
+          sudo apt-get install gcc-multilib;
+          rustup target add i686-unknown-linux-gnu
+      - name: Debug
+        run: RUST_BACKTRACE=1 cargo test --target i686-unknown-linux-gnu;
+          RUST_BACKTRACE=1 cargo test --target i686-unknown-linux-gnu -p examples
+      - name: Release
+        run:
+          RUST_BACKTRACE=1 cargo test --target i686-unknown-linux-gnu --release;
+          RUST_BACKTRACE=1 cargo test --target i686-unknown-linux-gnu --release -p examples
+  check-basic-aarch64:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Debug
+        run: RUST_BACKTRACE=1 cargo test;
+          RUST_BACKTRACE=1 cargo test -p examples
+      - name: Release
+        run: RUST_BACKTRACE=1 cargo test --release;
+          RUST_BACKTRACE=1 cargo test --release -p examples
+  check-extended:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare
+        run: rustup toolchain add nightly;
+          rustup component add rust-src --toolchain nightly;
+          rustup component add miri --toolchain nightly
+      - name: Loom
+        run: cargo test --features loom --release --lib
+      - name: Miri
+        run: cargo +nightly miri test
+  check-misc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare
+        run: rustup toolchain add nightly;
+          rustup component add rust-src --toolchain nightly;
+          rustup component add clippy --toolchain nightly;
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-msrv, cargo-spellcheck
+      - name: MSRV
+        run: cargo msrv verify
+      - name: Spell-check
+        run: cargo spellcheck check
+      - name: Format
+        run: cargo fmt --check;
+          cargo fmt -p examples --check
+      - name: Clippy
+        run: cargo clippy --all;
+          cargo clippy -p examples --all
+      - name: Doc
+        run: cargo doc --document-private-items;
+      - name: Nightly
+        run: RUST_BACKTRACE=1 cargo +nightly test --release;
+          RUST_BACKTRACE=1 cargo +nightly test --release -p examples
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Benchmark
+        run: cargo bench
