@@ -395,9 +395,9 @@ def main(args, extra_args):
             f'--sysroot={args.sysroot}',
             # Ensure we're using the right libc++
             '-nostdinc++',
-            '-I../../third_party/libc++/src/include',
-            '-I../../third_party/libc++abi/src/include',
-            '-I../../buildtools/third_party/libc++',
+            f'-I{_SRC_PREFIX}/third_party/libc++/src/include',
+            f'-I{_SRC_PREFIX}/third_party/libc++abi/src/include',
+            f'-I{_SRC_PREFIX}/buildtools/third_party/libc++',
             # Libc++ feature/hardening macros required by libc++ headers.
             '-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE',
             '-D_LIBCPP_BUILDING_LIBRARY',
