@@ -63,10 +63,10 @@ source_set("ssl") {
     public += [
       "chrome_security_state_client.h",
       "chrome_security_state_model_delegate.h",
-      "known_interception_disclosure_infobar.h",
+      "known_interception_disclosure_message_delegate.h",
     ]
     public_deps += [
-      "//components/infobars/android",
+      "//components/messages/android",
       "//components/security_state/content/android",
     ]
   }
@@ -153,7 +153,7 @@ source_set("impl") {
       "android/https_upgrades_interceptor_android.cc",
       "chrome_security_state_client.cc",
       "chrome_security_state_model_delegate.cc",
-      "known_interception_disclosure_infobar.cc",
+      "known_interception_disclosure_message_delegate.cc",
     ]
     deps += [
       "//chrome/android:chrome_jni_headers",

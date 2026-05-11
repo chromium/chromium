@@ -90,6 +90,9 @@ LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX, R.drawable.cvc_icon_amex)
 // A generic info outline icon.
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFO_OUTLINE_LOGO_24DP, R.drawable.ic_info_24dp)
 
+// A generic help icon.
+DECLARE_RESOURCE_ID(IDR_ANDROID_IC_HELP_24DP, R.drawable.ic_help_24dp)
+
 // About this site resources
 // Page insights logo is used for Google branded builds only.
 #if BUILDFLAG(PAGE_INFO_USE_INTERNAL_ANDROID_RESOURCES)

@@ -1409,6 +1409,7 @@ source_set("platform_browser_tests") {
     "../browser/safe_browsing/client_side_detection_service_browsertest.cc",
     "../browser/search_engines/prepopulated_engines_migration_browsertest.cc",
     "../browser/ssl/crlset_browsertest.cc",
+    "../browser/ssl/known_interception_disclosure_infobar_browsertest.cc",
     "../browser/task_manager/mock_web_contents_task_manager.cc",
     "../browser/task_manager/mock_web_contents_task_manager.h",
   ]
@@ -1590,6 +1591,7 @@ source_set("platform_browser_tests") {
     deps += [
       "//chrome/browser/ui/android/tab_model:test_support",
       "//chrome/test:test_support_ui_android",
+      "//components/messages/android:test_support",
     ]
   } else {
     deps += [ "//chrome/test:test_support_ui" ]
@@ -3805,7 +3807,6 @@ if (!is_android) {
       "../browser/ssl/certificate_transparency_browsertest.cc",
       "../browser/ssl/connection_help_tab_helper_browsertest.cc",
       "../browser/ssl/https_upgrades_browsertest.cc",
-      "../browser/ssl/known_interception_disclosure_infobar_browsertest.cc",
       "../browser/ssl/known_interception_disclosure_ui_browsertest.cc",
       "../browser/ssl/ocsp_browsertest.cc",
       "../browser/ssl/security_state_tab_helper_browsertest.cc",
@@ -8071,6 +8072,7 @@ test("unit_tests") {
       "../browser/readaloud/android/prefs_unittest.cc",
       "../browser/search/contextual_search_policy_handler_android_unittest.cc",
       "../browser/signin/android/signin_manager_android_unittest.cc",
+      "../browser/ssl/known_interception_disclosure_message_delegate_unittest.cc",
       "../browser/sync/glue/synced_tab_delegate_android_unittest.cc",
       "../browser/webauthn/android/cable_module_android_unittest.cc",
       "../browser/webauthn/android/cable_registration_state_unittest.cc",

@@ -135,6 +135,29 @@ void MessageWrapper::SetSecondaryButtonMenuText(
                                                  jsecondary_button_menu_text);
 }
 
+std::u16string MessageWrapper::GetSecondaryIconContentDescription() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring>
+      jsecondary_icon_content_description =
+          Java_MessageWrapper_getSecondaryIconContentDescription(
+              env, java_message_wrapper_);
+  return jsecondary_icon_content_description.is_null()
+             ? std::u16string()
+             : base::android::ConvertJavaStringToUTF16(
+                   jsecondary_icon_content_description);
+}
+
+void MessageWrapper::SetSecondaryIconContentDescription(
+    const std::u16string& secondary_icon_content_description) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring>
+      jsecondary_icon_content_description =
+          base::android::ConvertUTF16ToJavaString(
+              env, secondary_icon_content_description);
+  Java_MessageWrapper_setSecondaryIconContentDescription(
+      env, java_message_wrapper_, jsecondary_icon_content_description);
+}
+
 void MessageWrapper::SetSecondaryMenuMaxSize(SecondaryMenuMaxSize max_size) {
   secondary_menu_max_size_ = max_size;
 }

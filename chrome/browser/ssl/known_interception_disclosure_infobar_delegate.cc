@@ -20,12 +20,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/urls.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/ssl/known_interception_disclosure_infobar.h"
+#include "chrome/browser/ssl/known_interception_disclosure_message_delegate.h"
 #endif
 
 KnownInterceptionDisclosureCooldown*
@@ -70,6 +69,13 @@ KnownInterceptionDisclosureCooldown::~KnownInterceptionDisclosureCooldown() =
 void MaybeShowKnownInterceptionDisclosureDialog(
     content::WebContents* web_contents,
     net::CertStatus cert_status) {
+  // Don't show the disclosure on chrome:// URLs. This prevents the somewhat
+  // confusing case of the infobar/message showing on top of the learn more
+  // page.
+  if (web_contents->GetVisibleURL().SchemeIs(content::kChromeUIScheme)) {
+    return;
+  }
+
   auto* disclosure_tracker = KnownInterceptionDisclosureCooldown::GetInstance();
   if (!(cert_status & net::CERT_STATUS_KNOWN_INTERCEPTION_DETECTED) &&
       !disclosure_tracker->get_has_seen_known_interception()) {
@@ -78,18 +84,20 @@ void MaybeShowKnownInterceptionDisclosureDialog(
 
   disclosure_tracker->set_has_seen_known_interception(true);
 
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto delegate =
-      std::make_unique<KnownInterceptionDisclosureInfoBarDelegate>(profile);
 
   if (!KnownInterceptionDisclosureCooldown::GetInstance()->IsActive(profile)) {
 #if BUILDFLAG(IS_ANDROID)
-    infobar_manager->AddInfoBar(
-        KnownInterceptionDisclosureInfoBar::CreateInfoBar(std::move(delegate)));
+    KnownInterceptionDisclosureMessageDelegate::CreateForWebContents(
+        web_contents);
+    KnownInterceptionDisclosureMessageDelegate::FromWebContents(web_contents)
+        ->MaybeShow();
 #else
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents);
+    auto delegate =
+        std::make_unique<KnownInterceptionDisclosureInfoBarDelegate>(profile);
     infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
 #endif
   }
@@ -147,20 +155,6 @@ bool KnownInterceptionDisclosureInfoBarDelegate::Accept() {
 
 // Platform specific implementations.
 #if BUILDFLAG(IS_ANDROID)
-int KnownInterceptionDisclosureInfoBarDelegate::GetIconId() const {
-  return IDR_ANDROID_INFOBAR_WARNING;
-}
-
-std::u16string KnownInterceptionDisclosureInfoBarDelegate::GetButtonLabel(
-    InfoBarButton button) const {
-  return l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_INFOBAR_BUTTON_TEXT);
-}
-
-std::u16string KnownInterceptionDisclosureInfoBarDelegate::GetDescriptionText()
-    const {
-  return l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_BODY1);
-}
-
 // static
 void KnownInterceptionDisclosureInfoBarDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

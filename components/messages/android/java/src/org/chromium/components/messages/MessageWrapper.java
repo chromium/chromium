@@ -131,6 +131,18 @@ public final class MessageWrapper implements ListMenu.Delegate {
     }
 
     @CalledByNative
+    String getSecondaryIconContentDescription() {
+        return mMessageProperties.get(MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION);
+    }
+
+    @CalledByNative
+    void setSecondaryIconContentDescription(String secondaryIconContentDescription) {
+        mMessageProperties.set(
+                MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION,
+                secondaryIconContentDescription);
+    }
+
+    @CalledByNative
     void initializeSecondaryMenu(WindowAndroid windowAndroid, @SecondaryMenuMaxSize int maxSize) {
         Context context = windowAndroid.getActivity().get();
         assert context != null;

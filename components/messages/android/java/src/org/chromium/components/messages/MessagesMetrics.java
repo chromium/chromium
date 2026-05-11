@@ -357,6 +357,8 @@ public class MessagesMetrics {
                 return "SigninSurvey";
             case MessageIdentifier.EXTENSIONS_REQUEST_ACCESS:
                 return "ExtensionsRequestAccess";
+            case MessageIdentifier.KNOWN_INTERCEPTION_DISCLOSURE:
+                return "KnownInterceptionDisclosure";
             default:
                 return "Unknown";
         }

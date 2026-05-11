@@ -90,6 +90,12 @@ public class MessageWrapperTest {
                 2,
                 messageProperties.get(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID));
 
+        message.setSecondaryIconContentDescription("Secondary icon desc");
+        Assert.assertEquals(
+                "Secondary icon content description doesn't match provided value",
+                "Secondary icon desc",
+                messageProperties.get(MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION));
+
         Assert.assertNull(
                 "Initially icon should not be set",
                 messageProperties.get(MessageBannerProperties.ICON));

@@ -758,7 +758,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/incognito/IncognitoWindowNightModeStateProvider.java",
   "java/src/org/chromium/chrome/browser/infobar/InfoBarContainer.java",
   "java/src/org/chromium/chrome/browser/infobar/InfoBarContainerView.java",
-  "java/src/org/chromium/chrome/browser/infobar/KnownInterceptionDisclosureInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/PasswordInfoBarUtils.java",
   "java/src/org/chromium/chrome/browser/infobar/SubPanelListener.java",
   "java/src/org/chromium/chrome/browser/init/ActivityLifecycleDispatcherImpl.java",

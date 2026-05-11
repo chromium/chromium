@@ -1413,6 +1413,7 @@ chromium-metrics-reviews@google.com.
   <int value="67" label="SaveUpdateEntity"/>
   <int value="68" label="SigninSurvey"/>
   <int value="69" label="ExtensionsRequestAccess"/>
+  <int value="70" label="KnownInterceptionDisclosure"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->

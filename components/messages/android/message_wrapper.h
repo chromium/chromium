@@ -58,6 +58,9 @@ class MessageWrapper {
   std::u16string GetSecondaryButtonMenuText();
   void SetSecondaryButtonMenuText(
       const std::u16string& secondary_button_menu_text);
+  std::u16string GetSecondaryIconContentDescription();
+  void SetSecondaryIconContentDescription(
+      const std::u16string& secondary_icon_content_description);
 
   // Methods to manage secondary menu items.
   void SetSecondaryMenuMaxSize(SecondaryMenuMaxSize max_size);
