@@ -858,6 +858,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
             kSpotlightViewVerticalInset, kSpotlightViewHorizontalInset));
     [self.layoutGuideCenter referenceView:_spotlightView
                                 underName:kTabSwitcherGuide];
+  } else {
+    [self.layoutGuideCenter referenceView:button underName:kTabSwitcherGuide];
   }
 
   [button
