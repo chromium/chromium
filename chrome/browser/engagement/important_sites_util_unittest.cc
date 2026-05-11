@@ -265,11 +265,9 @@ TEST_F(ImportantSitesUtilTest, Suppressing) {
   ASSERT_EQ(2u, important_sites.size());
   // Record ignore twice.
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"gmail.com"}, {important_sites[1].reason_bitfield},
-      {"google.com"}, {important_sites[0].reason_bitfield});
+      profile(), {"gmail.com"}, {"google.com"});
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"gmail.com"}, {important_sites[1].reason_bitfield},
-      {"google.com"}, {important_sites[0].reason_bitfield});
+      profile(), {"gmail.com"}, {"google.com"});
 
   // Important fetch 2.
   important_sites = ImportantSitesUtil::GetImportantRegisterableDomains(
@@ -281,8 +279,7 @@ TEST_F(ImportantSitesUtilTest, Suppressing) {
 
   // Record ignore 3rd time.
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"gmail.com"}, {important_sites[1].reason_bitfield},
-      {"google.com"}, {important_sites[0].reason_bitfield});
+      profile(), {"gmail.com"}, {"google.com"});
 
   // Important fetch 3. Google.com should be suppressed now.
   important_sites = ImportantSitesUtil::GetImportantRegisterableDomains(
@@ -315,11 +312,9 @@ TEST_F(ImportantSitesUtilTest, SuppressingReset) {
   ASSERT_EQ(2u, important_sites.size());
   // Record ignore twice.
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"gmail.com"}, {important_sites[1].reason_bitfield},
-      {"google.com"}, {important_sites[0].reason_bitfield});
+      profile(), {"gmail.com"}, {"google.com"});
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"gmail.com"}, {important_sites[1].reason_bitfield},
-      {"google.com"}, {important_sites[0].reason_bitfield});
+      profile(), {"gmail.com"}, {"google.com"});
 
   // Important fetch, we should still be there.
   important_sites = ImportantSitesUtil::GetImportantRegisterableDomains(
@@ -333,17 +328,13 @@ TEST_F(ImportantSitesUtilTest, SuppressingReset) {
 
   // Record NOT ignored.
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"google.com", "gmail.com"},
-      {important_sites[0].reason_bitfield, important_sites[1].reason_bitfield},
-      std::vector<std::string>(), std::vector<int32_t>());
+      profile(), {"google.com", "gmail.com"}, std::vector<std::string>());
 
   // Record ignored twice again
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"gmail.com"}, {important_sites[1].reason_bitfield},
-      {"google.com"}, {important_sites[0].reason_bitfield});
+      profile(), {"gmail.com"}, {"google.com"});
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"gmail.com"}, {important_sites[1].reason_bitfield},
-      {"google.com"}, {important_sites[0].reason_bitfield});
+      profile(), {"gmail.com"}, {"google.com"});
 
   // Important fetch, we should still be there.
   important_sites = ImportantSitesUtil::GetImportantRegisterableDomains(
@@ -353,8 +344,7 @@ TEST_F(ImportantSitesUtilTest, SuppressingReset) {
 
   // Record ignored 3rd time in a row.
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"gmail.com"}, {important_sites[1].reason_bitfield},
-      {"google.com"}, {important_sites[0].reason_bitfield});
+      profile(), {"gmail.com"}, {"google.com"});
 
   // Suppressed now.
   important_sites = ImportantSitesUtil::GetImportantRegisterableDomains(
@@ -364,42 +354,6 @@ TEST_F(ImportantSitesUtilTest, SuppressingReset) {
   expected_sorted_origins = {url2};
   ExpectImportantResultsEq(expected_sorted_domains, expected_sorted_origins,
                            important_sites);
-}
-
-TEST_F(ImportantSitesUtilTest, Metrics) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
-  base::HistogramTester histogram_tester;
-
-  GURL url1("http://www.google.com/");
-  service->ResetBaseScoreForURL(url1, 5);
-  AddContentSetting(ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW,
-                    url1);
-
-  GURL url2("http://www.youtube.com/");
-  AddBookmark(url2);
-
-  GURL url3("http://www.bad.com/");
-  AddBookmark(url3);
-
-  std::vector<ImportantDomainInfo> important_sites =
-      ImportantSitesUtil::GetImportantRegisterableDomains(profile(),
-                                                          kNumImportantSites);
-
-  ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), {"google.com", "youtube.com"},
-      {important_sites[0].reason_bitfield, important_sites[1].reason_bitfield},
-      {"bad.com"}, {important_sites[2].reason_bitfield});
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Storage.ImportantSites.CBDChosenReason"),
-      testing::ElementsAre(base::Bucket(ENGAGEMENT, 1),
-                           base::Bucket(BOOKMARKS, 1),
-                           base::Bucket(NOTIFICATIONS, 1)));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Storage.ImportantSites.CBDIgnoredReason"),
-      testing::ElementsAre(base::Bucket(BOOKMARKS, 1)));
 }
 
 TEST_F(ImportantSitesUtilTest, DialogExcluding) {
@@ -430,22 +384,16 @@ TEST_F(ImportantSitesUtilTest, DialogExcluding) {
   ASSERT_EQ(2u, important_sites.size());
   // Ignore all sites 2 times.
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), std::vector<std::string>(), std::vector<int32_t>(),
-      {"google.com", "yahoo.com"},
-      {important_sites[0].reason_bitfield, important_sites[1].reason_bitfield});
+      profile(), std::vector<std::string>(), {"google.com", "yahoo.com"});
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), std::vector<std::string>(), std::vector<int32_t>(),
-      {"google.com", "yahoo.com"},
-      {important_sites[0].reason_bitfield, important_sites[1].reason_bitfield});
+      profile(), std::vector<std::string>(), {"google.com", "yahoo.com"});
 
   // Still not disabled...
   EXPECT_FALSE(ImportantSitesUtil::IsDialogDisabled(profile()));
 
   // Ignore 3rd time.
   ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-      profile(), std::vector<std::string>(), std::vector<int32_t>(),
-      {"google.com", "yahoo.com"},
-      {important_sites[0].reason_bitfield, important_sites[1].reason_bitfield});
+      profile(), std::vector<std::string>(), {"google.com", "yahoo.com"});
 
   // Items should still be present.
   important_sites = ImportantSitesUtil::GetImportantRegisterableDomains(

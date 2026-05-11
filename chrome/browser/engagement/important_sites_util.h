@@ -91,9 +91,7 @@ class ImportantSitesUtil {
   static void RecordExcludedAndIgnoredImportantSites(
       Profile* profile,
       const std::vector<std::string>& excluded_sites,
-      const std::vector<int32_t>& excluded_sites_reason_bitfield,
-      const std::vector<std::string>& ignored_sites,
-      const std::vector<int32_t>& ignored_sites_reason_bitfield);
+      const std::vector<std::string>& ignored_sites);
 
   // This marks the given origin as important for testing. Note: This changes
   // the score requirements for the Site Engagement Service, so ONLY call for

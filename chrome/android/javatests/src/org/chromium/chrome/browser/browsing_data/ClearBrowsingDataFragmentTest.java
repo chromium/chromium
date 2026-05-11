@@ -147,7 +147,7 @@ public class ClearBrowsingDataFragmentTest {
                                     return null;
                                 })
                 .when(mBrowsingDataBridgeMock)
-                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any());
 
         // Default to delete all history.
         when(mBrowsingDataBridgeMock.getBrowsingDataDeletionTimePeriod(any()))
@@ -308,8 +308,6 @@ public class ClearBrowsingDataFragmentTest {
                         eq(getAllDataTypes()),
                         eq(DEFAULT_TIME_PERIOD),
                         any(),
-                        any(),
-                        any(),
                         any());
     }
 
@@ -354,8 +352,6 @@ public class ClearBrowsingDataFragmentTest {
                         any(),
                         eq(new int[] {BrowsingDataType.CACHE}),
                         eq(TimePeriod.LAST_HOUR),
-                        any(),
-                        any(),
                         any(),
                         any());
 
@@ -590,14 +586,7 @@ public class ClearBrowsingDataFragmentTest {
         // Should be cleared again.
         verify(mBrowsingDataBridgeMock, times(2))
                 .clearBrowsingData(
-                        eq(expectedProfile),
-                        any(),
-                        eq(expectedTypes),
-                        anyInt(),
-                        any(),
-                        any(),
-                        any(),
-                        any());
+                        eq(expectedProfile), any(), eq(expectedTypes), anyInt(), any(), any());
     }
 
     /**
@@ -608,15 +597,7 @@ public class ClearBrowsingDataFragmentTest {
     private void assertDataTypesCleared(int... types) {
         // TODO(yfriedman): Add testing for time period.
         verify(mBrowsingDataBridgeMock)
-                .clearBrowsingData(
-                        any(),
-                        any(),
-                        eq(types),
-                        eq(DEFAULT_TIME_PERIOD),
-                        any(),
-                        any(),
-                        any(),
-                        any());
+                .clearBrowsingData(any(), any(), eq(types), eq(DEFAULT_TIME_PERIOD), any(), any());
     }
 
     /** This presses the 'clear' button on the root preference page. */
@@ -745,8 +726,7 @@ public class ClearBrowsingDataFragmentTest {
 
         // Nothing was cleared.
         verify(mBrowsingDataBridgeMock, never())
-                .clearBrowsingData(
-                        eq(expectedProfile), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(eq(expectedProfile), any(), any(), anyInt(), any(), any());
     }
 
     /**
@@ -812,9 +792,7 @@ public class ClearBrowsingDataFragmentTest {
                         eq(expectedTypes),
                         eq(DEFAULT_TIME_PERIOD),
                         eq(keepDomains),
-                        any(),
-                        eq(ignoredDomains),
-                        any());
+                        eq(ignoredDomains));
     }
 
     @Test

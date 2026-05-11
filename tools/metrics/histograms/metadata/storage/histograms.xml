@@ -1439,54 +1439,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Storage.ImportantSites.CBDChosenReason"
-    enum="ImportantSitesReason" expires_after="2024-10-06">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    When a user chooses to blocklist one or more sites when they clear browsing
-    data, this is recorded for every reason each chosen site was marked as
-    important. It indicates which signals were used to show the given site to
-    the user that the user then chose to exclude from clearing. This histogram
-    has expired between M95-M106.
-  </summary>
-</histogram>
-
-<histogram name="Storage.ImportantSites.CBDChosenReasonCount" units="count"
-    expires_after="2024-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    This records the number of reasons each important site had that the user
-    chose to blocklist when clearing browsing data. This histogram has expired
-    between M95-M106.
-  </summary>
-</histogram>
-
-<histogram name="Storage.ImportantSites.CBDIgnoredReason"
-    enum="ImportantSitesReason" expires_after="2024-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    When a user chooses to blocklist one or more sites when they clear browsing
-    data, this is recorded for every reason each unchosen site was marked as
-    important. It indicates which signals were used to show the given site to
-    the user, which the user then ignored and did not select to blocklist from
-    clearing data. This histogram has expired between M95-M106.
-  </summary>
-</histogram>
-
-<histogram name="Storage.ImportantSites.CBDIgnoredReasonCount" units="count"
-    expires_after="2024-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    This records the number of reasons each important site had that the user
-    chose to NOT blocklist when clearing browsing data. This histogram has
-    expired between M95-M106.
-  </summary>
-</histogram>
-
 <histogram name="Storage.ImportantSites.GeneratedReason"
     enum="ImportantSitesReason" expires_after="2024-08-01">
   <owner>ayui@chromium.org</owner>

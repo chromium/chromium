@@ -83,9 +83,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
     const std::vector<int>& data_types_vector,
     int32_t time_period,
     const std::vector<std::string>& excluding_domains,
-    const std::vector<int32_t>& excluding_domain_reasons,
-    const std::vector<std::string>& ignoring_domains,
-    const std::vector<int32_t>& ignoring_domain_reasons) {
+    const std::vector<std::string>& ignoring_domains) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_ClearBrowsingData");
 
   BrowsingDataRemover* browsing_data_remover =
@@ -132,8 +130,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
 
   if (!excluding_domains.empty() || !ignoring_domains.empty()) {
     site_engagement::ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
-        profile, excluding_domains, excluding_domain_reasons, ignoring_domains,
-        ignoring_domain_reasons);
+        profile, excluding_domains, ignoring_domains);
   }
 
   base::OnceCallback<void(uint64_t)> callback = base::BindOnce(

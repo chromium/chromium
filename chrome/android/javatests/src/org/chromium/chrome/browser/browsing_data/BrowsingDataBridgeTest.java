@@ -210,9 +210,7 @@ public class BrowsingDataBridgeTest {
                                     },
                                     TimePeriod.FOUR_WEEKS,
                                     new String[] {"google.com"},
-                                    new int[] {1},
-                                    new String[0],
-                                    new int[0]);
+                                    new String[0]);
                 });
         mCallbackHelper.waitForCallback(0);
         assertThat(

@@ -100,7 +100,7 @@ public class QuickDeleteControllerTest {
                                     return null;
                                 })
                 .when(mBrowsingDataBridgeMock)
-                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any());
 
         // Set the time for the initial tab to be outside of the quick delete time span.
         Tab initialTab = firstPage.loadedTabElement.value();
@@ -330,7 +330,6 @@ public class QuickDeleteControllerTest {
                 "BrowsingDataBridgeJni.clearBrowsingData() not called as expected.");
 
         verify(mBrowsingDataBridgeMock)
-                .clearBrowsingData(
-                        any(), any(), eq(types), eq(timePeriod), any(), any(), any(), any());
+                .clearBrowsingData(any(), any(), eq(types), eq(timePeriod), any(), any());
     }
 }

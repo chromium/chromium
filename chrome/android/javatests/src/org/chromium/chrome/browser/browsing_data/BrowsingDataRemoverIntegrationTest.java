@@ -103,9 +103,7 @@ public class BrowsingDataRemoverIntegrationTest {
                                     new int[] {BrowsingDataType.SITE_DATA},
                                     TimePeriod.ALL_TIME,
                                     new String[] {"google.com"},
-                                    new int[] {1},
-                                    new String[0],
-                                    new int[0]);
+                                    new String[0]);
                 });
         dataClearedExcludingDomainHelper.waitForOnly();
 

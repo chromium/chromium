@@ -96,13 +96,7 @@ public final class BrowsingDataBridge {
             int[] dataTypes,
             @TimePeriod int timePeriod) {
         clearBrowsingDataExcludingDomains(
-                listener,
-                dataTypes,
-                timePeriod,
-                new String[0],
-                new int[0],
-                new String[0],
-                new int[0]);
+                listener, dataTypes, timePeriod, new String[0], new String[0]);
     }
 
     /**
@@ -115,29 +109,18 @@ public final class BrowsingDataBridge {
      *     shared enum {@link BrowsingDataType}.
      * @param timePeriod The time period for which to delete the data.
      * @param excludedDomains A list of registerable domains that we don't clear data for.
-     * @param excludedDomainReasons A list of the reason metadata for the excluded domains.
      * @param ignoredDomains A list of ignored domains that the user chose to not exclude. We use
      *     these to remove important site entries if the user ignores them enough.
-     * @param ignoredDomainReasons A list of reason metadata for the ignored domains.
      */
     public void clearBrowsingDataExcludingDomains(
             @Nullable OnClearBrowsingDataListener listener,
             int[] dataTypes,
             @TimePeriod int timePeriod,
             String[] excludedDomains,
-            int @Nullable [] excludedDomainReasons,
-            String @Nullable [] ignoredDomains,
-            int @Nullable [] ignoredDomainReasons) {
+            String @Nullable [] ignoredDomains) {
         BrowsingDataBridgeJni.get()
                 .clearBrowsingData(
-                        mProfile,
-                        listener,
-                        dataTypes,
-                        timePeriod,
-                        excludedDomains,
-                        excludedDomainReasons,
-                        ignoredDomains,
-                        ignoredDomainReasons);
+                        mProfile, listener, dataTypes, timePeriod, excludedDomains, ignoredDomains);
     }
 
     /**
@@ -156,9 +139,7 @@ public final class BrowsingDataBridge {
                         dataTypes,
                         timePeriod,
                         new String[0],
-                        new int[0],
-                        new String[0],
-                        new int[0]);
+                        new String[0]);
     }
 
     /**
@@ -262,9 +243,7 @@ public final class BrowsingDataBridge {
                 @JniType("std::vector<int32_t>") int[] dataTypes,
                 int timePeriod,
                 @JniType("std::vector<std::string>") String[] excludedDomains,
-                @JniType("std::vector<int32_t>") int @Nullable [] excludedDomainReasons,
-                @JniType("std::vector<std::string>") String @Nullable [] ignoredDomains,
-                @JniType("std::vector<int32_t>") int @Nullable [] ignoredDomainReasons);
+                @JniType("std::vector<std::string>") String @Nullable [] ignoredDomains);
 
         void requestInfoAboutOtherFormsOfBrowsingHistory(
                 @JniType("Profile*") Profile profile, OtherFormsOfBrowsingHistoryListener listener);

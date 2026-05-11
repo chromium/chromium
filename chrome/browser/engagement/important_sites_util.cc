@@ -403,21 +403,7 @@ ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
 void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
     Profile* profile,
     const std::vector<std::string>& excluded_sites,
-    const std::vector<int32_t>& excluded_sites_reason_bitfield,
-    const std::vector<std::string>& ignored_sites,
-    const std::vector<int32_t>& ignored_sites_reason_bitfield) {
-  // First, record the metrics for excluded and ignored sites.
-  for (int32_t reason_bitfield : excluded_sites_reason_bitfield) {
-    RECORD_UMA_FOR_IMPORTANT_REASON(
-        "Storage.ImportantSites.CBDChosenReason",
-        "Storage.ImportantSites.CBDChosenReasonCount", reason_bitfield);
-  }
-  for (int32_t reason_bitfield : ignored_sites_reason_bitfield) {
-    RECORD_UMA_FOR_IMPORTANT_REASON(
-        "Storage.ImportantSites.CBDIgnoredReason",
-        "Storage.ImportantSites.CBDIgnoredReasonCount", reason_bitfield);
-  }
-
+    const std::vector<std::string>& ignored_sites) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
 

@@ -368,9 +368,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     private void clearBrowsingData(
             Set<Integer> options,
             String @Nullable [] excludedDomains,
-            int @Nullable [] excludedDomainReasons,
-            String @Nullable [] ignoredDomains,
-            int @Nullable [] ignoredDomainReasons) {
+            String @Nullable [] ignoredDomains) {
         onClearBrowsingData();
         showProgressDialog();
         Set<Integer> dataTypes = new ArraySet<>();
@@ -412,9 +410,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
                             dataTypesArray,
                             mLastSelectedTimePeriod,
                             excludedDomains,
-                            excludedDomainReasons,
-                            ignoredDomains,
-                            ignoredDomainReasons);
+                            ignoredDomains);
         } else {
             BrowsingDataBridge.getForProfile(getProfile())
                     .clearBrowsingData(this, dataTypesArray, mLastSelectedTimePeriod);
@@ -558,7 +554,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         }
         // If sites haven't been fetched, just clear the browsing data regularly rather than
         // waiting to show the important sites dialog.
-        clearBrowsingData(getSelectedOptions(), null, null, null, null);
+        clearBrowsingData(getSelectedOptions(), null, null);
     }
 
     @Override
@@ -841,15 +837,9 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
             String[] deselectedDomains =
                     data.getStringArrayExtra(
                             ConfirmImportantSitesDialogFragment.DESELECTED_DOMAINS_TAG);
-            int[] deselectedDomainReasons =
-                    data.getIntArrayExtra(
-                            ConfirmImportantSitesDialogFragment.DESELECTED_DOMAIN_REASONS_TAG);
             String[] ignoredDomains =
                     data.getStringArrayExtra(
                             ConfirmImportantSitesDialogFragment.IGNORED_DOMAINS_TAG);
-            int[] ignoredDomainReasons =
-                    data.getIntArrayExtra(
-                            ConfirmImportantSitesDialogFragment.IGNORED_DOMAIN_REASONS_TAG);
             if (deselectedDomains != null && mFetcher.getSortedImportantDomains() != null) {
                 // mMaxImportantSites is a constant on the C++ side.
                 RecordHistogram.recordCustomCountHistogram(
@@ -880,12 +870,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
                                 / mFetcher.getSortedImportantDomains().length,
                         IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT + 1);
             }
-            clearBrowsingData(
-                    getSelectedOptions(),
-                    deselectedDomains,
-                    deselectedDomainReasons,
-                    ignoredDomains,
-                    ignoredDomainReasons);
+            clearBrowsingData(getSelectedOptions(), deselectedDomains, ignoredDomains);
         }
     }
 

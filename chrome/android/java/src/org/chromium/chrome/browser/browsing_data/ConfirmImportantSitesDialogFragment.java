@@ -30,7 +30,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -189,14 +188,8 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
     /** The tag for the string array of deselected domains. These are meant to NOT be cleared. */
     public static final String DESELECTED_DOMAINS_TAG = "DeselectedDomains";
 
-    /** The tag for the int array of reasons the deselected domains were important. */
-    public static final String DESELECTED_DOMAIN_REASONS_TAG = "DeselectedDomainReasons";
-
     /** The tag for the string array of ignored domains, which whill be cleared. */
     public static final String IGNORED_DOMAINS_TAG = "IgnoredDomains";
-
-    /** The tag for the int array of reasons the ignored domains were important. */
-    public static final String IGNORED_DOMAIN_REASONS_TAG = "IgnoredDomainReasons";
 
     /** The tag used for logging. */
     public static final String TAG = "ConfirmImportantSitesDialogFragment";
@@ -314,32 +307,19 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
                         if (which == AlertDialog.BUTTON_POSITIVE) {
                             Intent data = new Intent();
                             List<String> deselectedDomains = new ArrayList<>();
-                            List<Integer> deselectedDomainReasons = new ArrayList<>();
                             List<String> ignoredDomains = new ArrayList<>();
-                            List<Integer> ignoredDomainReasons = new ArrayList<>();
                             for (Entry<String, Boolean> entry : mCheckedState.entrySet()) {
-                                Integer reason = mImportantDomainsReasons.get(entry.getKey());
                                 if (entry.getValue()) {
                                     ignoredDomains.add(entry.getKey());
-                                    ignoredDomainReasons.add(reason);
                                 } else {
                                     deselectedDomains.add(entry.getKey());
-                                    deselectedDomainReasons.add(reason);
                                 }
                             }
                             data.putExtra(
                                     DESELECTED_DOMAINS_TAG,
                                     deselectedDomains.toArray(new String[0]));
                             data.putExtra(
-                                    DESELECTED_DOMAIN_REASONS_TAG,
-                                    CollectionUtil.integerCollectionToIntArray(
-                                            deselectedDomainReasons));
-                            data.putExtra(
                                     IGNORED_DOMAINS_TAG, ignoredDomains.toArray(new String[0]));
-                            data.putExtra(
-                                    IGNORED_DOMAIN_REASONS_TAG,
-                                    CollectionUtil.integerCollectionToIntArray(
-                                            ignoredDomainReasons));
                             assumeNonNull(getTargetFragment())
                                     .onActivityResult(
                                             getTargetRequestCode(), Activity.RESULT_OK, data);
