@@ -440,6 +440,7 @@ public class ToolbarManager
     private @Nullable SideUiStateProvider mSideUiStateProvider;
     private @Nullable SideUiObserver mSideUiObserver;
     private @Nullable SideUiObserver mControlContainerSideUiObserver;
+    private @Nullable SideUiObserver mProgressBarSideUiObserver;
 
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
@@ -1829,6 +1830,8 @@ public class ToolbarManager
 
         mControlContainerSideUiObserver = new ToolbarMarginAdjusterForSideUi(mControlContainer);
         mSideUiStateProvider.addObserver(mControlContainerSideUiObserver);
+        mProgressBarSideUiObserver = new ViewMarginAdjusterForSideUi(mProgressBarContainer);
+        mSideUiStateProvider.addObserver(mProgressBarSideUiObserver);
     }
 
     private static class ToolbarMarginAdjusterForSideUi extends ViewMarginAdjusterForSideUi {
@@ -2954,6 +2957,9 @@ public class ToolbarManager
             }
             if (mControlContainerSideUiObserver != null) {
                 mSideUiStateProvider.removeObserver(mControlContainerSideUiObserver);
+            }
+            if (mProgressBarSideUiObserver != null) {
+                mSideUiStateProvider.removeObserver(mProgressBarSideUiObserver);
             }
         }
     }
