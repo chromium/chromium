@@ -6,6 +6,7 @@ package org.chromium.components.autofill.autofill_ai;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -13,14 +14,22 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("autofill")
 @NullMarked
 public class EntityMetadata {
+    private final String mGuid;
     // The dates are stored as raw long values to avoid using java.time.*.
     private final long mModifiedTime;
     private final int mUseCount;
 
     @CalledByNative
-    public EntityMetadata(long modifiedTimeMillis, int useCount) {
+    public EntityMetadata(
+            @JniType("std::string") String guid, long modifiedTimeMillis, int useCount) {
+        mGuid = guid;
         mModifiedTime = modifiedTimeMillis;
         mUseCount = useCount;
+    }
+
+    @CalledByNative
+    public @JniType("std::string") String getGuid() {
+        return mGuid;
     }
 
     @CalledByNative

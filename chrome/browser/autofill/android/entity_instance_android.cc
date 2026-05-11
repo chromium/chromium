@@ -20,7 +20,7 @@ base::android::ScopedJavaLocalRef<jobject> EntityInstanceAndroid::Create(
     bool requires_reauth_to_see,
     bool is_masked_server_entity) {
   return Java_EntityInstance_Constructor(
-      env, entity_instance.guid, static_cast<int>(entity_instance.record_type),
+      env, static_cast<int>(entity_instance.record_type),
       entity_instance.entity_type, entity_instance.attribute_instances,
       entity_instance.metadata, requires_reauth_to_see,
       is_masked_server_entity);
@@ -29,7 +29,6 @@ base::android::ScopedJavaLocalRef<jobject> EntityInstanceAndroid::Create(
 EntityInstanceAndroid EntityInstanceAndroid::FromJavaEntityInstance(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_entity_instance) {
-  std::string guid = Java_EntityInstance_getGUID(env, j_entity_instance);
   EntityInstance::RecordType record_type =
       static_cast<EntityInstance::RecordType>(
           Java_EntityInstance_getRecordType(env, j_entity_instance));
@@ -49,10 +48,9 @@ EntityInstanceAndroid EntityInstanceAndroid::FromJavaEntityInstance(
   bool is_masked_server_entity =
       Java_EntityInstance_isMaskedServerEntity(env, j_entity_instance);
 
-  return EntityInstanceAndroid(std::move(entity_type), std::move(guid),
-                               record_type, std::move(attributes),
-                               std::move(metadata), requires_reauth_to_see,
-                               is_masked_server_entity);
+  return EntityInstanceAndroid(std::move(entity_type), record_type,
+                               std::move(attributes), std::move(metadata),
+                               requires_reauth_to_see, is_masked_server_entity);
 }
 
 EntityInstanceAndroid::EntityInstanceAndroid(
@@ -65,9 +63,9 @@ EntityInstanceAndroid::EntityInstanceAndroid(
                   is_eligible_for_wallet_storage,
                   IsMaskedStorageSupported(entity_instance.type(),
                                            entity_instance.record_type())),
-      guid(*entity_instance.guid()),
       record_type(entity_instance.record_type()),
-      metadata(entity_instance.date_modified(),
+      metadata(entity_instance.guid().value(),
+               entity_instance.date_modified(),
                static_cast<int>(entity_instance.use_count())),
       requires_reauth_to_see(requires_reauth_to_see),
       is_masked_server_entity(entity_instance.IsMaskedEntity() &&
@@ -79,14 +77,12 @@ EntityInstanceAndroid::EntityInstanceAndroid(
 
 EntityInstanceAndroid::EntityInstanceAndroid(
     EntityTypeAndroid entity_type,
-    std::string guid,
     EntityInstance::RecordType record_type,
     std::vector<AttributeInstanceAndroid> attribute_instances,
     EntityMetadataAndroid metadata,
     bool requires_reauth_to_see,
     bool is_masked_server_entity)
     : entity_type(std::move(entity_type)),
-      guid(std::move(guid)),
       record_type(record_type),
       attribute_instances(std::move(attribute_instances)),
       metadata(std::move(metadata)),
@@ -100,7 +96,7 @@ EntityInstanceAndroid::~EntityInstanceAndroid() = default;
 
 EntityInstance EntityInstanceAndroid::ToEntityInstance(
     base::optional_ref<const EntityInstance> existing_entity) const {
-  CHECK(!existing_entity || existing_entity->guid().value() == guid);
+  CHECK(!existing_entity || existing_entity->guid().value() == metadata.guid);
 
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes_set;
@@ -133,8 +129,9 @@ EntityInstance EntityInstanceAndroid::ToEntityInstance(
   return EntityInstance(
       entity_type.ToEntityType(), std::move(attributes_set),
       EntityInstance::EntityId(
-          guid.empty() ? base::Uuid::GenerateRandomV4().AsLowercaseString()
-                       : guid),
+          metadata.guid.empty()
+              ? base::Uuid::GenerateRandomV4().AsLowercaseString()
+              : metadata.guid),
       /*nickname=*/"", metadata.date_modified, metadata.use_count, base::Time(),
       record_type, EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");

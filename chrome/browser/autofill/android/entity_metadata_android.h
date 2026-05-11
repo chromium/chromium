@@ -23,13 +23,16 @@ struct EntityMetadataAndroid {
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& j_metadata);
 
-  EntityMetadataAndroid(base::Time date_modified, int use_count);
+  EntityMetadataAndroid(std::string guid,
+                        base::Time date_modified,
+                        int use_count);
   EntityMetadataAndroid(const EntityMetadataAndroid&);
   EntityMetadataAndroid& operator=(const EntityMetadataAndroid&);
   EntityMetadataAndroid(EntityMetadataAndroid&&);
   EntityMetadataAndroid& operator=(EntityMetadataAndroid&&);
   ~EntityMetadataAndroid();
 
+  std::string guid;
   base::Time date_modified;
   int use_count;
 };

@@ -25,7 +25,6 @@ import java.util.Objects;
 @JNINamespace("autofill")
 @NullMarked
 public class EntityInstance {
-    private final String mGUID;
     private final @RecordType int mRecordType;
     private final EntityType mEntityType;
     private final Map<AttributeType, AttributeInstance> mAttributes = new HashMap<>();
@@ -35,7 +34,7 @@ public class EntityInstance {
 
     /** Builder for the {@link EntityInstance}. */
     public static final class Builder {
-        private String mGUID = "";
+        private String mGuid = "";
         private @RecordType int mRecordType = RecordType.LOCAL;
         private final EntityType mEntityType;
         private final List<AttributeInstance> mAttributes = new ArrayList<>();
@@ -48,8 +47,8 @@ public class EntityInstance {
             mEntityType = Objects.requireNonNull(entityType, "Entity type cannot be null");
         }
 
-        public Builder setGUID(String guid) {
-            mGUID = guid;
+        public Builder setGuid(String guid) {
+            mGuid = guid;
             return this;
         }
 
@@ -92,13 +91,13 @@ public class EntityInstance {
             }
             EntityMetadata metadata =
                     new EntityMetadata(
+                            mGuid,
                             mModifiedDate
                                     .atStartOfDay(ZoneId.systemDefault())
                                     .toInstant()
                                     .toEpochMilli(),
                             mUseCount);
             return new EntityInstance(
-                    mGUID,
                     mRecordType,
                     mEntityType,
                     mAttributes,
@@ -110,7 +109,6 @@ public class EntityInstance {
 
     @CalledByNative
     private EntityInstance(
-            @JniType("std::string") String guid,
             @RecordType int recordType,
             @JniType("autofill::EntityTypeAndroid") EntityType entityType,
             @JniType("std::vector<autofill::AttributeInstanceAndroid>")
@@ -118,7 +116,6 @@ public class EntityInstance {
             @JniType("autofill::EntityMetadataAndroid") EntityMetadata metadata,
             boolean requiresReauthToSee,
             boolean isMaskedServerEntity) {
-        mGUID = guid;
         mRecordType = recordType;
         mEntityType = entityType;
         mMetadata = metadata;
@@ -132,8 +129,8 @@ public class EntityInstance {
     }
 
     @CalledByNative
-    public @JniType("std::string") String getGUID() {
-        return mGUID;
+    public @JniType("std::string") String getGuid() {
+        return mMetadata.getGuid();
     }
 
     @CalledByNative

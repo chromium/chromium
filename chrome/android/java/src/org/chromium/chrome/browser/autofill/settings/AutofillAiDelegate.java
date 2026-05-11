@@ -66,7 +66,7 @@ public class AutofillAiDelegate {
                     if (entityDataManager == null) {
                         return;
                     }
-                    entityDataManager.removeEntityInstance(entityInstance.getGUID());
+                    entityDataManager.removeEntityInstance(entityInstance.getGuid());
                 }
 
                 @Override

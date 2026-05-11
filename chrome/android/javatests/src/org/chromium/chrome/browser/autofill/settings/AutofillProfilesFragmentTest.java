@@ -1514,7 +1514,7 @@ public class AutofillProfilesFragmentTest {
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(vehicleType)
-                        .setGUID("guid1")
+                        .setGuid("guid1")
                         .setRecordType(
                                 org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
                         .setModifiedDate(LocalDate.of(2026, 2, 12))
@@ -1949,7 +1949,7 @@ public class AutofillProfilesFragmentTest {
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
-                        .setGUID("guid1")
+                        .setGuid("guid1")
                         .setRecordType(
                                 org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
                         .setModifiedDate(LocalDate.of(2026, 2, 12))
@@ -1999,7 +1999,7 @@ public class AutofillProfilesFragmentTest {
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
-                        .setGUID("guid1")
+                        .setGuid("guid1")
                         .setRecordType(
                                 org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
                         .setModifiedDate(LocalDate.of(2026, 2, 12))

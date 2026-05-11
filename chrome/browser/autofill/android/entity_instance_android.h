@@ -37,7 +37,6 @@ struct EntityInstanceAndroid {
                         bool is_eligible_for_wallet_storage,
                         bool requires_reauth_to_see);
   EntityInstanceAndroid(EntityTypeAndroid entity_type,
-                        std::string guid,
                         EntityInstance::RecordType record_type,
                         std::vector<AttributeInstanceAndroid> attribute_values,
                         EntityMetadataAndroid metadata,
@@ -58,7 +57,6 @@ struct EntityInstanceAndroid {
       base::optional_ref<const EntityInstance> existing_entity) const;
 
   EntityTypeAndroid entity_type;
-  std::string guid;
   EntityInstance::RecordType record_type;
   std::vector<AttributeInstanceAndroid> attribute_instances;
   EntityMetadataAndroid metadata;

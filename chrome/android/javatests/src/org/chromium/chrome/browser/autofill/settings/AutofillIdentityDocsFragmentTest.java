@@ -545,7 +545,7 @@ public class AutofillIdentityDocsFragmentTest {
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(passportType)
-                        .setGUID("guid1")
+                        .setGuid("guid1")
                         .setRecordType(RecordType.LOCAL)
                         .setModifiedDate(LocalDate.of(2026, 2, 12))
                         .setUseCount(0)
@@ -591,7 +591,7 @@ public class AutofillIdentityDocsFragmentTest {
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(passportType)
-                        .setGUID("guid1")
+                        .setGuid("guid1")
                         .setRecordType(
                                 org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
                         .setModifiedDate(LocalDate.of(2026, 2, 12))

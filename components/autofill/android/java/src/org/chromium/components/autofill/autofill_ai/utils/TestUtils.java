@@ -95,12 +95,12 @@ public final class TestUtils {
             EntityType entityType, String label, String subLabel) {
         EntityInstance entityInstance =
                 new EntityInstance.Builder(entityType)
-                        .setGUID(UUID.randomUUID().toString())
+                        .setGuid(UUID.randomUUID().toString())
                         .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
                         .setUseCount(0)
                         .build();
         return new EntityInstanceWithLabels(
-                entityInstance.getGUID(),
+                entityInstance.getGuid(),
                 entityType,
                 label,
                 subLabel,

@@ -45,8 +45,9 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
   AttributeInstanceAndroid attribute_instance_android(
       passport_name_attribute_type_android, passport_name);
   EntityInstanceAndroid entity_instance_android(
-      entity_type_android, kGuid, EntityInstance::RecordType::kLocal,
-      {attribute_instance_android}, EntityMetadataAndroid(base::Time::Now(), 0),
+      entity_type_android, EntityInstance::RecordType::kLocal,
+      {attribute_instance_android},
+      EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
   EntityInstance entity_instance =
@@ -94,8 +95,9 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_ReuseExistingAttribute) {
   AttributeInstanceAndroid attribute_instance_android(
       password_name_attribute_type_android, passport_name);
   EntityInstanceAndroid entity_instance_android(
-      entity_type_android, kGuid, EntityInstance::RecordType::kLocal,
-      {attribute_instance_android}, EntityMetadataAndroid(base::Time::Now(), 0),
+      entity_type_android, EntityInstance::RecordType::kLocal,
+      {attribute_instance_android},
+      EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
   EntityInstance converted_entity =
@@ -170,10 +172,10 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
   AttributeInstanceAndroid passport_number_attribute_instance_android(
       passport_number_attribute_type_android, number);
   EntityInstanceAndroid entity_instance_android(
-      entity_type_android, kGuid, EntityInstance::RecordType::kLocal,
+      entity_type_android, EntityInstance::RecordType::kLocal,
       {passport_name_attribute_instance_android,
        passport_number_attribute_instance_android},
-      EntityMetadataAndroid(base::Time::Now(), 0),
+      EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
   EntityInstance converted_entity =

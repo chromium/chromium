@@ -206,7 +206,7 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
           : EntityInstance::RecordType::kLocal;
   EntityInstance entity_instance =
       entity_android.ToEntityInstance(entity_data_manager_->GetEntityInstance(
-          EntityInstance::EntityId(entity_android.guid)));
+          EntityInstance::EntityId(entity_android.metadata.guid)));
 
   AddOrUpdateEntityInstance(std::move(entity_instance), targeted_record_type,
                             description_string_id, accept_button_string_id,

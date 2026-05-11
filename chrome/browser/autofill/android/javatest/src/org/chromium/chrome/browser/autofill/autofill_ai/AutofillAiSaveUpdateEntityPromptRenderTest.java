@@ -89,7 +89,7 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
 
     private final EntityInstance mEntity =
             new EntityInstance.Builder(TestUtils.getVehicleEntityType())
-                    .setGUID("")
+                    .setGuid("")
                     .setRecordType(RecordType.LOCAL)
                     .setModifiedDate(LocalDate.of(2026, 2, 15))
                     .setUseCount(0)

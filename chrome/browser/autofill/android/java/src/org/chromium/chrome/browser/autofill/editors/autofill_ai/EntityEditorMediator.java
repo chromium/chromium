@@ -116,7 +116,7 @@ class EntityEditorMediator {
     }
 
     private PropertyModel buildEditorModel() {
-        final boolean isNewEntity = TextUtils.isEmpty(mEntityInstance.getGUID());
+        final boolean isNewEntity = TextUtils.isEmpty(mEntityInstance.getGuid());
         final boolean isNewWalletEntity =
                 isNewEntity && mEntityInstance.getRecordType() == RecordType.SERVER_WALLET;
         String editorTitle =
