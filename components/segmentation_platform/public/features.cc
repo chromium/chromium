@@ -264,4 +264,13 @@ constexpr base::FeatureParam<bool> kEnableRecentTabsTip{
 
 BASE_FEATURE(kNewTabPageCustomizationV2, base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<int> kNewTabPageCustomizationV2IphMaxImpression{
+    &kNewTabPageCustomizationV2, "iph_max_impression",
+    /*default_value=*/5};
+
+constexpr base::FeatureParam<int>
+    kNewTabPageCustomizationV2IphDisplayIntervalDays{
+        &kNewTabPageCustomizationV2, "iph_display_interval_days",
+        /*default_value=*/14};
+
 }  // namespace segmentation_platform::features

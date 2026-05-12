@@ -186,6 +186,9 @@ extern const base::FeatureParam<bool> kEnableRecentTabsTip;
 
 // Feature flag for New Tab Page Customization V2.
 BASE_DECLARE_FEATURE(kNewTabPageCustomizationV2);
+extern const base::FeatureParam<int> kNewTabPageCustomizationV2IphMaxImpression;
+extern const base::FeatureParam<int>
+    kNewTabPageCustomizationV2IphDisplayIntervalDays;
 
 }  // namespace segmentation_platform::features
 
