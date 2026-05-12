@@ -206,8 +206,8 @@ std::optional<base::Time> GetFirstActiveWeek() {
   std::optional<std::string_view> first_active_week_val =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kActivateDateKey);
-  std::string first_active_week_str =
-      std::string(first_active_week_val.value_or(kActivateDateKeyNotFound));
+  std::string_view first_active_week_str =
+      first_active_week_val.value_or(kActivateDateKeyNotFound);
 
   if (first_active_week_str == kActivateDateKeyNotFound) {
     LOG(ERROR)
@@ -233,8 +233,9 @@ std::optional<base::Time> GetFirstActiveWeek() {
   const int expected_year_size = 4;
   const int expected_weeks_size = 2;
 
-  std::string parsed_year = first_active_week_str.substr(0, expected_year_size);
-  std::string parsed_weeks = first_active_week_str.substr(
+  std::string_view parsed_year =
+      first_active_week_str.substr(0, expected_year_size);
+  std::string_view parsed_weeks = first_active_week_str.substr(
       expected_delimiter_index + 1, expected_weeks_size);
 
   if (parsed_year.empty() || parsed_weeks.empty()) {
