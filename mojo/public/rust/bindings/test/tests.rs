@@ -23,7 +23,7 @@ use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
 use run_loop::RunLoop;
 use system::mojo_types::UntypedHandle;
 
-use test_mojom::{HandleService, MathService, TwoInts};
+use test_mojom::{HandleService, MathService, TwoInts, TypemapService};
 
 use crate::state_objects::*;
 
@@ -469,6 +469,42 @@ fn test_cpp_to_rust_handover() {
     // Simple test message
     remote.Add(5, 10, move |n| {
         expect_eq!(n, 22); // PlusSevenMathService adds 7 to all its operations.
+        quit();
+    });
+
+    run_loop.run();
+}
+
+pub struct TypemapServiceImpl {}
+
+impl TypemapService for TypemapServiceImpl {
+    fn Echo(
+        &mut self,
+        s: test_mojom::MyCustomStruct,
+        response_callback: impl FnOnce(test_mojom::MyCustomStruct),
+    ) {
+        response_callback(s);
+    }
+}
+
+bindings::register_mojom_state_object_impls!(impl TypemapService for TypemapServiceImpl);
+
+#[gtest(RustBindingsAPI, TypemappingTest)]
+fn test_typemapping() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+
+    let (pending_remote, pending_receiver) =
+        PendingRemote::<dyn TypemapService>::new_pipe().unwrap();
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    let mut remote = pending_remote.bind();
+
+    let _receiver = pending_receiver.bind(TypemapServiceImpl {});
+
+    remote.Echo(test_mojom::MyCustomStruct { value: 42 }, move |res| {
+        expect_eq!(res.value, 42);
         quit();
     });
 

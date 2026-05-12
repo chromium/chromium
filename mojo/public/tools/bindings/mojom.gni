@@ -1588,6 +1588,9 @@ template("mojom") {
 
     if (generate_rust) {
       mojom_rust("${output_target_name}_rust") {
+        if (defined(invoker.rust_typemaps)) {
+          rust_typemaps = invoker.rust_typemaps
+        }
       }
     }
 

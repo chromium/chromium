@@ -177,15 +177,29 @@ def LoadTypemaps(typemaps, langs):
 
   for filename in typemaps:
     with open(filename) as f:
-      typemaps = json.loads("".join(filter(no_comments, f.readlines())))
-      for language, typemap in typemaps.items():
-        # The _metadata field is additional information about the typemap
-        # configuration for a module and should not be treaded as a language.
-        if language == '_metadata':
-          continue
-        language_map = loaded_typemap.get(language, {})
-        language_map.update(typemap)
-        loaded_typemap[language] = language_map
+      typemaps_content = json.loads("".join(filter(no_comments, f.readlines())))
+      if isinstance(typemaps_content, list):
+        # Support list-based typemaps from GN (used by Rust).
+        language_map = loaded_typemap.get("rust", {})
+        for entry in typemaps_content:
+          traits_file = entry.get('traits_file')
+          for type_mapping in entry.get('types', []):
+            mojom_type = type_mapping.get('mojom')
+            rust_type = type_mapping.get('rust')
+            language_map[mojom_type] = {
+                'typename': rust_type,
+                'traits_file': traits_file
+            }
+        loaded_typemap["rust"] = language_map
+      else:
+        for language, typemap in typemaps_content.items():
+          # The _metadata field is additional information about the typemap
+          # configuration for a module and should not be treaded as a language.
+          if language == '_metadata':
+            continue
+          language_map = loaded_typemap.get(language, {})
+          language_map.update(typemap)
+          loaded_typemap[language] = language_map
 
       # Read the declared modules from the _metadata.
       if '_metadata' in typemaps:

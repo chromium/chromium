@@ -17,10 +17,25 @@
 //! conversion between the enum and `i32`, then use those to implement
 //! `MojomParse`.
 
+//! For typemapping, we follow a "two-step" approach during serialization and
+//! deserialization. This is because there is not a generic way to hook user
+//! code into the serialization and deserialization process. The approach goes
+//! as follows:
+//!
+//! 1. The message is parsed into the auto-generated Mojom struct (which
+//!    implements `MojomParse` via this derive macro).
+//! 2. The generated struct is then converted into the user's custom type using
+//!    standard `From` or `TryFrom` traits.
+//!
+//! The traits are provided by the user in a separate file, which is compiled as
+//! a submodule of the generated bindings crate. This makes the implementations
+//! local to the generated crate, avoiding violations of the Rust orphan rule
+//! when custom types are in external crates.
+
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
-#[proc_macro_derive(MojomParse)]
+#[proc_macro_derive(MojomParse, attributes(mojom))]
 pub fn derive_mojomparse(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = input.ident;
@@ -41,6 +56,27 @@ pub fn derive_mojomparse(input: proc_macro::TokenStream) -> proc_macro::TokenStr
     };
 
     return proc_macro::TokenStream::from(derived_tokens);
+}
+
+fn get_parse_as(attrs: &[syn::Attribute]) -> Option<String> {
+    for attr in attrs {
+        if attr.path().is_ident("mojom") {
+            let mut parse_as = None;
+            let _ = attr.parse_nested_meta(|meta| {
+                if meta.path.is_ident("parse_as") {
+                    let value = meta.value()?;
+                    let lit: syn::LitStr = value.parse()?;
+                    parse_as = Some(lit.value());
+                    return Ok(());
+                }
+                Ok(())
+            });
+            if parse_as.is_some() {
+                return parse_as;
+            }
+        }
+    }
+    None
 }
 
 fn derive_mojomparse_struct(
@@ -65,7 +101,12 @@ fn derive_mojomparse_struct(
         .map(|field| {
             let ty = &field.ty;
             let name = field.ident.as_ref().unwrap().to_string();
-            quote! { (#name.to_string(), <#ty>::mojom_type()) }
+            if let Some(parse_as) = get_parse_as(&field.attrs) {
+                let parse_as_ty = syn::Ident::new(&parse_as, proc_macro2::Span::call_site());
+                quote! { (#name.to_string(), <#parse_as_ty>::mojom_type()) }
+            } else {
+                quote! { (#name.to_string(), <#ty>::mojom_type()) }
+            }
         })
         .collect();
 
@@ -75,7 +116,17 @@ fn derive_mojomparse_struct(
         .map(|field| {
             let name = &field.ident;
             let name_str = field.ident.as_ref().unwrap().to_string();
-            quote! { (#name_str.to_string(), value.#name.into()) }
+            if let Some(parse_as) = get_parse_as(&field.attrs) {
+                let parse_as_ty = syn::Ident::new(&parse_as, proc_macro2::Span::call_site());
+                quote! {
+                    (#name_str.to_string(), {
+                        let original: #parse_as_ty = value.#name.into();
+                        original.into()
+                    })
+                }
+            } else {
+                quote! { (#name_str.to_string(), value.#name.into()) }
+            }
         })
         .collect();
 
@@ -85,7 +136,17 @@ fn derive_mojomparse_struct(
         .iter()
         .map(|field| {
             let name = &field.ident;
-            quote! { #name: #name.try_into()? }
+            if let Some(parse_as) = get_parse_as(&field.attrs) {
+                let parse_as_ty = syn::Ident::new(&parse_as, proc_macro2::Span::call_site());
+                quote! {
+                    #name: {
+                        let original: #parse_as_ty = #name.try_into()?;
+                        original.try_into()?
+                    }
+                }
+            } else {
+                quote! { #name: #name.try_into()? }
+            }
         })
         .collect();
 

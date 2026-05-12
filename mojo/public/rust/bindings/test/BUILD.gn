@@ -48,5 +48,16 @@ mojom("bindings_unittests_mojom") {
   testonly = true
   sources = [ "test_util/bindings_unittests.test-mojom" ]
   generate_rust = true
+  rust_typemaps = [
+    {
+      types = [
+        {
+          mojom = "bindings_unittests.mojom.TypemappedStruct"
+          rust = "MyCustomStruct"
+        },
+      ]
+      traits_file = "test_traits.rs"
+    },
+  ]
   visibility = [ ":*" ]
 }

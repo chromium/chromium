@@ -28,7 +28,7 @@
 
 {%- for method in interface.methods %}
 
-{{- declare_struct(args_struct(method), method.param_struct)}}
+{{- declare_struct(args_struct(method), method.param_struct, true)}}
 
 impl {{args_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.param_struct.fields)}}) -> bindings::message::MojomMessage {
@@ -48,7 +48,7 @@ impl {{args_struct(method)}} {
 }
 
 {%- if method.response_parameters %}
-{{declare_struct(response_struct(method), method.response_param_struct)}}
+{{declare_struct(response_struct(method), method.response_param_struct, true)}}
 
 impl {{response_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.response_param_struct.fields)}}) -> bindings::message::MojomMessage {

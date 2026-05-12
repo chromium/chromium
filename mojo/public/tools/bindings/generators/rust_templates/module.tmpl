@@ -55,3 +55,9 @@ use mojom_value_parser::*;
 {% for interface in module.interfaces %}
 {{ declare_interface(interface) }}
 {%- endfor -%}
+
+{% for traits in typemaps_to_include %}
+#[path = "{{traits.path}}"]
+mod {{traits.name}};
+pub use {{traits.name}}::*;
+{% endfor %}

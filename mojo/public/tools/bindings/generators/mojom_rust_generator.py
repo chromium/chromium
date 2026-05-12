@@ -5,6 +5,7 @@
 
 import sys
 import json
+import os
 
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
@@ -93,18 +94,22 @@ def _GetQualifiedName(ty: mojom.Kind, current_module: mojom.Module,
 
 
 def _MojomTypeToRustType(ty: mojom.Kind, current_module: mojom.Module,
-                         source_to_target_map: dict) -> str:
+                         source_to_target_map: dict, typemap: dict) -> str:
   '''Return the name of the input type in rust syntax'''
+  if hasattr(ty, 'qualified_name') and ty.qualified_name in typemap:
+    return typemap[ty.qualified_name]['typename']
+
   if mojom.IsNullableKind(ty):
     inner_ty = _MojomTypeToRustType(ty.MakeUnnullableKind(), current_module,
-                                    source_to_target_map)
+                                    source_to_target_map, typemap)
     return f"Option<{inner_ty}>"
 
   if mojom.IsStructKind(ty) or mojom.IsEnumKind(ty) or mojom.IsUnionKind(ty):
     return _GetQualifiedName(ty, current_module, source_to_target_map)
 
   if mojom.IsArrayKind(ty):
-    elt_ty = _MojomTypeToRustType(ty.kind, current_module, source_to_target_map)
+    elt_ty = _MojomTypeToRustType(ty.kind, current_module, source_to_target_map,
+                                  typemap)
     if ty.length is not None:
       return f"[{elt_ty}; {ty.length}]"
     else:
@@ -112,12 +117,12 @@ def _MojomTypeToRustType(ty: mojom.Kind, current_module: mojom.Module,
 
   if mojom.IsMapKind(ty):
     key_ty = _MojomTypeToRustType(ty.key_kind, current_module,
-                                  source_to_target_map)
+                                  source_to_target_map, typemap)
     # Rust requires comparison operators to use floats as keys in a map
     if ty.key_kind == mojom.FLOAT or ty.key_kind == mojom.DOUBLE:
       key_ty = f"OrderedFloat<{key_ty}>"
     value_ty = _MojomTypeToRustType(ty.value_kind, current_module,
-                                    source_to_target_map)
+                                    source_to_target_map, typemap)
     return f"HashMap<{key_ty}, {value_ty}>"
 
   if mojom.IsPendingRemoteKind(ty):
@@ -137,6 +142,14 @@ def _MojomTypeToRustType(ty: mojom.Kind, current_module: mojom.Module,
     sys.exit(1)
 
   return _mojom_primitive_type_to_rust_type[ty]
+
+
+def _GetParseAsType(ty: mojom.Kind, current_module: mojom.Module,
+                    source_to_target_map: dict, typemap: dict) -> str:
+  '''Return the regular generated type name if ty is typemapped, else None'''
+  if hasattr(ty, 'qualified_name') and ty.qualified_name in typemap:
+    return _MojomTypeToRustType(ty, current_module, source_to_target_map, {})
+  return None
 
 
 def _ShouldDeriveClone(ty: mojom.Kind) -> bool:
@@ -166,7 +179,10 @@ class Generator(generator.Generator):
     return {
         "to_rust_type":
         lambda ty: _MojomTypeToRustType(ty, self.module, self.
-                                        source_to_target_map),
+                                        source_to_target_map, self.typemap),
+        "get_parse_as_type":
+        lambda ty: _GetParseAsType(ty, self.module, self.source_to_target_map,
+                                   self.typemap),
         "should_derive_clone":
         _ShouldDeriveClone,
     }
@@ -188,9 +204,34 @@ class Generator(generator.Generator):
     # Remove our own target, since we don't import ourselves
     imported_targets -= {self.source_to_target_map[self.module.path]}
 
+    typemaps_to_include = []
+    seen_files = set()
+
+    source_root_abs = os.path.abspath(os.path.join(os.getcwd(), "../../"))
+    gen_file_dir = os.path.abspath(
+        os.path.join(os.getcwd(), "gen", os.path.dirname(self.module.path)))
+
+    for kind in self.module.structs + self.module.enums + self.module.unions:
+      if hasattr(kind,
+                 'qualified_name') and kind.qualified_name in self.typemap:
+        traits_file = self.typemap[kind.qualified_name].get('traits_file')
+        if traits_file and traits_file not in seen_files:
+          traits_file_abs = os.path.abspath(
+              os.path.join(source_root_abs, traits_file))
+          rel_path = os.path.relpath(traits_file_abs, gen_file_dir)
+          typemaps_to_include.append({
+              'path':
+              rel_path,
+              'name':
+              os.path.splitext(os.path.basename(traits_file))[0]
+          })
+          seen_files.add(traits_file)
+
     return {
         "module": self.module,
         "imports": imported_targets,
+        "typemaps_to_include": typemaps_to_include,
+        "typemap": self.typemap,
     }
 
   def GenerateFiles(self, unparsed_args):

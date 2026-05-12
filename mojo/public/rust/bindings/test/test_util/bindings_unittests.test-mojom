@@ -23,3 +23,11 @@ interface HandleService {
     // Sends three message pipe handles and one untyped handle.
     PassHandles(handle<message_pipe> h1, handle<message_pipe> h2, handle<message_pipe> h3, handle h4);
 };
+
+struct TypemappedStruct {
+    int32 a;
+};
+
+interface TypemapService {
+    Echo(TypemappedStruct s) => (TypemappedStruct s);
+};

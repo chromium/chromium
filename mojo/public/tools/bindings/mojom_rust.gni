@@ -18,6 +18,7 @@ template("mojom_rust") {
                            "output_file_base_paths",
                            "variant_suffix",
                            "output_visibility",
+                           "rust_typemaps",
                          ])
 
   base_name = target_name
@@ -63,10 +64,29 @@ template("mojom_rust") {
       visibility = [ ":$rust_generator_target_name" ]
     }
 
+    if (defined(rust_typemaps)) {
+      _rust_typemaps = []
+      foreach(typemap, rust_typemaps) {
+        _typemap = {
+        }
+        _typemap = typemap
+        if (defined(typemap.traits_file)) {
+          _typemap.traits_file = rebase_path(typemap.traits_file, "//")
+        }
+        _rust_typemaps += [ _typemap ]
+      }
+      write_file("$target_gen_dir/${base_name}_typemap.json",
+                 _rust_typemaps,
+                 "json")
+    }
+
     action(rust_generator_target_name) {
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources +
                get_target_outputs(":${base_name}_dep_info")
+      if (defined(rust_typemaps)) {
+        inputs += [ "$target_gen_dir/${base_name}_typemap.json" ]
+      }
       sources =
           sources_list +
           # Not totally sure if this really belongs here, but better to be safe
@@ -101,6 +121,11 @@ template("mojom_rust") {
         "rust",
         "--rust_dep_info=$dep_info_file",
       ]
+      if (defined(rust_typemaps)) {
+        args += [ "--typemap=" +
+                  rebase_path("$target_gen_dir/${base_name}_typemap.json",
+                              root_build_dir) ]
+      }
     }
 
     rust_crate_root_target_name = "${base_name}__crate_root"
@@ -132,6 +157,13 @@ template("mojom_rust") {
       crate_root = rust_crate_root_librs
       sources = [ rust_crate_root_librs ] +
                 get_target_outputs(":$rust_generator_target_name")
+      if (defined(rust_typemaps)) {
+        foreach(typemap, rust_typemaps) {
+          if (defined(typemap.traits_file)) {
+            sources += [ typemap.traits_file ]
+          }
+        }
+      }
       deps = [
         ":$rust_crate_root_target_name",
         ":$rust_generator_target_name",

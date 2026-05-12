@@ -284,3 +284,7 @@ struct WithPendingTypes {
   pending_receiver<DummyInterface> rec2;
   pending_remote<DummyInterface> rem2;
 };
+
+struct TypemappedStruct {
+  int32 a;
+};

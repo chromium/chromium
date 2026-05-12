@@ -9,6 +9,10 @@
 {%- endif %}
 {{pub}}struct {{name}} {
 {%- for field in struct.fields %}
+  {%- set parse_as = field.kind|get_parse_as_type %}
+  {%- if parse_as %}
+  #[mojom(parse_as = "{{parse_as}}")]
+  {%- endif %}
   {{pub}}{{field.name}}: {{field.kind|to_rust_type}},
 {%- endfor %}
 }
