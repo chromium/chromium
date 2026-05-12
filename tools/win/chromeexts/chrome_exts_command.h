@@ -61,6 +61,13 @@ class ChromeExtsCommand {
   HRESULT PrintErrorf(const char* format, ...);
   HRESULT PrintErrorV(const char* format, va_list ap);
 
+  // Outputs a pre-formatted DML (Debugger Markup Language) string.
+  // The caller is responsible for proper DML escaping of the content.
+  // Uses IDebugControl4::ControlledOutput with DEBUG_OUTCTL_DML.
+  HRESULT PrintDml(const char* dml_string);
+  // Formatted DML output. Format string should contain valid DML markup.
+  HRESULT PrintDmlf(const char* format, ...);
+
   const base::CommandLine& command_line() const { return command_line_; }
 
   // Returns the Debug Client as T, null ComPtr<T> otherwise.

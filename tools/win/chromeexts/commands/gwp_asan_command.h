@@ -10,10 +10,9 @@
 #include "components/gwp_asan/crash_handler/crash.pb.h"
 #include "third_party/crashpad/crashpad/util/file/file_reader.h"
 #include "tools/win/chromeexts/chrome_exts_command.h"
+#include "tools/win/chromeexts/commands/task_trace_utils.h"
 
-namespace tools {
-namespace win {
-namespace chromeexts {
+namespace tools::win::chromeexts {
 
 struct membuf : std::streambuf {
   membuf(char* begin, char* end) { this->setg(begin, begin, end); }
@@ -39,13 +38,16 @@ class GwpAsanCommand : public ChromeExtsCommand {
   HRESULT ReadSymbols(std::string hexstring, std::string* json_string);
   void PrintErrorType(const int& error_type);
 
+  // Prints task trace entries with DML-clickable links.
+  void PrintTaskTraces(const std::vector<TaskTraceEntry>& traces);
+  // Symbolizes a single address for task trace output.
+  void SymbolizeTaskAddress(uint64_t address, int frame_index);
+
  private:
   ComPtr<IDebugSymbols3> debug_symbols_;
   ULONG platform_id_{0};
 };
 
-}  // namespace chromeexts
-}  // namespace win
-}  // namespace tools
+}  // namespace tools::win::chromeexts
 
 #endif  // TOOLS_WIN_CHROMEEXTS_COMMANDS_GWP_ASAN_COMMAND_H_

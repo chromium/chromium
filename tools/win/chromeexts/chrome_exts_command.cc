@@ -4,6 +4,8 @@
 
 #include "tools/win/chromeexts/chrome_exts_command.h"
 
+#include <stdio.h>
+
 #include <string>
 
 #include "base/check.h"
@@ -72,6 +74,27 @@ HRESULT ChromeExtsCommand::PrintErrorf(const char* format, ...) {
 
 HRESULT ChromeExtsCommand::PrintErrorV(const char* format, va_list ap) {
   return debug_control_->OutputVaList(DEBUG_OUTPUT_ERROR, format, ap);
+}
+
+HRESULT ChromeExtsCommand::PrintDml(const char* dml_string) {
+  auto debug_control4 = GetDebugClientAs<IDebugControl4>();
+  if (!debug_control4) {
+    // Fall back to plain text if IDebugControl4 is not available.
+    return debug_control_->Output(DEBUG_OUTPUT_NORMAL, "%s", dml_string);
+  }
+  return debug_control4->ControlledOutput(
+      DEBUG_OUTCTL_ALL_CLIENTS | DEBUG_OUTCTL_DML, DEBUG_OUTPUT_NORMAL, "%s",
+      dml_string);
+}
+
+HRESULT ChromeExtsCommand::PrintDmlf(const char* format, ...) {
+  char buffer[4096];
+  va_list ap;
+  va_start(ap, format);
+  vsnprintf(buffer, sizeof(buffer), format, ap);
+  va_end(ap);
+  buffer[sizeof(buffer) - 1] = '\0';
+  return PrintDml(buffer);
 }
 
 }  // namespace chromeexts

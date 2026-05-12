@@ -9,6 +9,7 @@
 #include <dbgeng.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <wrl/client.h>
 
 #include <fstream>
 #include <istream>
@@ -23,10 +24,30 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "components/gwp_asan/crash_handler/crash_handler.h"
+#include "tools/win/chromeexts/commands/task_trace_utils.h"
 
-namespace tools {
-namespace win {
-namespace chromeexts {
+namespace tools::win::chromeexts {
+
+namespace {
+
+// Cleans a raw PDB file path to a relative source path suitable for display
+// and WinDbg .open commands. Strips build-machine prefixes (\src\ or ../../)
+// and normalises slashes.
+std::string CleanSourcePath(const std::string& raw_path) {
+  std::string result(raw_path);
+  size_t position = result.find("\\src\\");
+  if (position != std::string::npos) {
+    result = result.substr(position + 5, std::string::npos);
+  }
+  position = result.find("../../");
+  if (position != std::string::npos) {
+    result = result.substr(position + 6, std::string::npos);
+  }
+  base::ReplaceChars(result, "\\", "/", &result);
+  return result;
+}
+
+}  // namespace
 
 GwpAsanCommand::GwpAsanCommand() = default;
 
@@ -192,6 +213,33 @@ HRESULT GwpAsanCommand::Execute() {
     }
   }
 
+  // Scan the current thread's stack for async PostTask chain markers
+  // and display the task trace inline with the GWP-ASan output.
+  {
+    ComPtr<IDebugDataSpaces4> debug_data = GetDebugClientAs<IDebugDataSpaces4>();
+    if (!debug_data) {
+      hr = E_NOINTERFACE;
+    }
+    ComPtr<IDebugSystemObjects4> debug_system;
+    if (SUCCEEDED(hr)) {
+      debug_system = GetDebugClientAs<IDebugSystemObjects4>();
+      if (!debug_system) {
+        hr = E_NOINTERFACE;
+      }
+    }
+    if (SUCCEEDED(hr)) {
+      auto debug_registers = GetDebugClientAs<IDebugRegisters>();
+      std::vector<TaskTraceEntry> task_traces;
+      hr = ScanForTaskTraces(debug_data.Get(), debug_system.Get(),
+                             debug_registers.Get(), /*scan_all=*/false,
+                             &task_traces);
+      if (SUCCEEDED(hr) && !task_traces.empty()) {
+        Printf("\nTask Trace (async PostTask chain on current thread):\n\n");
+        PrintTaskTraces(task_traces);
+      }
+    }
+  }
+
   Printf("\nEnd\n");
 
   return S_OK;
@@ -239,34 +287,34 @@ HRESULT GwpAsanCommand::UseWinDbgSymbolize(uint64_t* stack_address,
                                            int stack_trace_size) {
   constexpr ULONG METHOD_SIZE = 1024;
   char method_name[METHOD_SIZE], file_name[METHOD_SIZE];
-  std::string file_name_str;
   ULONG line;
-  size_t position;
   HRESULT hr;
 
   for (int i = 0; i < stack_trace_size; i++) {
     hr = debug_symbols_->GetNameByOffset(stack_address[i], method_name,
                                          METHOD_SIZE, nullptr, nullptr);
+
+    // Emit address as a DML link to disassemble at that location.
+    PrintDmlf("<link cmd=\"u 0x%I64x\">%d\t0x%I64x</link>\t", stack_address[i],
+              i, stack_address[i]);
+
     if (SUCCEEDED(hr)) {
-      Printf("%d\t0x%I64x\t%s", i, stack_address[i], method_name);
-    } else {
-      Printf("%d\t0x%I64x\t", i, stack_address[i]);
+      Printf("%s", method_name);
     }
 
     hr = debug_symbols_->GetLineByOffset(stack_address[i], &line, file_name,
                                          METHOD_SIZE, nullptr, nullptr);
     if (SUCCEEDED(hr)) {
-      file_name_str = std::string(file_name);
-      position = file_name_str.find("\\src\\");
-      if (position != std::string::npos) {
-        file_name_str = file_name_str.substr(position + 5, std::string::npos);
-      }
-      position = file_name_str.find("../../");
-      if (position != std::string::npos) {
-        file_name_str = file_name_str.substr(position + 6, std::string::npos);
-      }
-      base::ReplaceChars(file_name_str, "\\", "/", &file_name_str);
-      Printf(" at %s:%d", file_name_str.c_str(), line);
+      const std::string file_name_str = CleanSourcePath(std::string(file_name));
+
+      // Emit source location as a DML link to open the file at that line.
+      // Use the cleaned relative path for the .open command so that WinDbg
+      // resolves it via .srcpath (the raw PDB path points to the build
+      // machine and won't exist in the debugger environment).
+      std::string open_path = file_name_str;
+      base::ReplaceChars(open_path, "/", "\\", &open_path);
+      PrintDmlf(" at <link cmd=\".open -a %s:%d\">%s:%d</link>",
+                open_path.c_str(), line, file_name_str.c_str(), line);
     }
     Printf("\n");
   }
@@ -444,6 +492,65 @@ HRESULT GwpAsanCommand::ReadFromDumpStream(uint32_t stream_type,
   return hr;
 }
 
-}  // namespace chromeexts
-}  // namespace win
-}  // namespace tools
+void GwpAsanCommand::PrintTaskTraces(
+    const std::vector<TaskTraceEntry>& traces) {
+  for (size_t i = 0; i < traces.size(); i++) {
+    const auto& entry = traces[i];
+    Printf("==================================================\n");
+    Printf("Task Trace #%u (stack location: 0x%I64x)\n",
+           static_cast<unsigned>(i), entry.stack_location);
+    Printf("==================================================\n");
+
+    if (entry.ipc_hash != 0) {
+      Printf("IPC Hash: 0x%I64x\n", entry.ipc_hash);
+    }
+
+    Printf("\nPostTask chain (most recent first):\n\n");
+
+    Printf("  [PostTask origin]\n");
+    SymbolizeTaskAddress(entry.posted_from_pc, 0);
+
+    for (size_t j = 0; j < entry.parent_pcs.size(); j++) {
+      Printf("  [Parent PostTask #%u]\n", static_cast<unsigned>(j + 1));
+      SymbolizeTaskAddress(entry.parent_pcs[j], static_cast<int>(j) + 1);
+    }
+
+    Printf("\n");
+  }
+}
+
+void GwpAsanCommand::SymbolizeTaskAddress(uint64_t address,
+                                             int frame_index) {
+  constexpr ULONG METHOD_SIZE = 1024;
+  char method_name[METHOD_SIZE];
+  char file_name[METHOD_SIZE];
+  ULONG line;
+  HRESULT hr;
+
+  // Emit address as DML link to disassemble.
+  PrintDmlf("    #%d  <link cmd=\"u 0x%I64x\">0x%I64x</link>  ", frame_index,
+            address, address);
+
+  hr = debug_symbols_->GetNameByOffset(address, method_name, METHOD_SIZE,
+                                       nullptr, nullptr);
+  if (SUCCEEDED(hr)) {
+    Printf("%s", method_name);
+  } else {
+    Printf("<unknown>");
+  }
+
+  hr = debug_symbols_->GetLineByOffset(address, &line, file_name, METHOD_SIZE,
+                                       nullptr, nullptr);
+  if (SUCCEEDED(hr)) {
+    const std::string file_name_str = CleanSourcePath(std::string(file_name));
+
+    std::string open_path = file_name_str;
+    base::ReplaceChars(open_path, "/", "\\", &open_path);
+    PrintDmlf("\n         at <link cmd=\".open -a %s:%d\">%s:%d</link>",
+              open_path.c_str(), line, file_name_str.c_str(), line);
+  }
+
+  Printf("\n");
+}
+
+}  // namespace tools::win::chromeexts
