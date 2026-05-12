@@ -1,0 +1,69 @@
+<style include="cr-icons sp-shared-style">
+  sp-heading {
+    margin: 8px 14px;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    margin: 0;
+  }
+
+  #sortMenu cr-icon {
+    height: 20px;
+    width: 20px;
+  }
+
+  cr-icon[invisible] {
+    visibility: hidden;
+  }
+
+  .dropdown-item {
+    gap: 4px;
+  }
+</style>
+<sp-heading id="heading"
+    back-button-title="$i18n{tooltipBack}"
+    back-button-aria-label="[[getBackButtonLabel_(activeFolder)]]"
+    on-back-button-click="onBackClicked_"
+    hide-back-button="[[shouldHideBackButton_(activeFolder)]]"
+    disable-back-button="[[disableBackButton_(
+        activeFolder, editing)]]">
+  <h1 slot="heading">
+    [[getActiveFolderLabel_(compact, activeFolder)]]
+  </h1>
+  <div aria-hidden="true" slot="metadata">
+    [[activeSortType_.label]]
+  </div>
+  <cr-icon-button slot="buttons" class="sort-menu-button"
+      iron-icon="sp:filter-list"
+      title="$i18n{tooltipOrganize}"
+      aria-label="$i18n{sortMenuA11yLabel}"
+      aria-description="[[activeSortType_.label]]"
+      on-click="onShowSortMenuClicked_">
+  </cr-icon-button>
+  <cr-icon-button id="viewButton" slot="buttons"
+      iron-icon="[[getViewButtonIcon_(compact)]]"
+      title="[[getViewButtonTooltip_(compact)]]"
+      aria-label="[[getViewButtonTooltip_(compact)]]"
+      on-click="onViewToggleClicked_">
+  </cr-icon-button>
+  <cr-icon-button id="editButton" slot="buttons" class="icon-edit"
+      disabled="[[disableEdit]]"
+      title="$i18n{tooltipEdit}"
+      aria-label="$i18n{editBookmarkListA11yLabel}"
+      aria-pressed="[[editing]]"
+      on-click="onBulkEditClicked_">
+  </cr-icon-button>
+</sp-heading>
+
+<cr-action-menu id="sortMenu">
+  <template is="dom-repeat" items="[[sortTypes_]]">
+    <button class="dropdown-item" on-click="onSortTypeClicked_">
+      <cr-icon icon="cr:check"
+          invisible$="[[!sortMenuItemIsSelected_(item, activeSortIndex_)]]">
+      </cr-icon>
+      [[getSortMenuItemLowerLabel_(item)]]
+    </button>
+  </template>
+</cr-action-menu>

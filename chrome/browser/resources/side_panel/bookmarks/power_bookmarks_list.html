@@ -1,22 +1,10 @@
-<style include="cr-icons cr-hidden-style sp-shared-style">
+<style include="cr-hidden-style sp-shared-style">
   :host {
     --back-button-size: 14px;
-    --edit-footer-background: var(--google-grey-50);
   }
 
   :host([drop-position='into']) power-bookmark-row {
     background: var(--cr-hover-background-color);
-  }
-
-  cr-icon-button {
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 24px;
-    margin: 0;
-  }
-
-  .new-folder-icon-container cr-icon {
-    height: 16px;
-    width: 16px;
   }
 
   sp-empty-state {
@@ -30,126 +18,25 @@
   sp-heading {
     margin: 8px 14px;
   }
-
-  .icon-button-row {
-    align-items: center;
-    color: var(--cr-secondary-text-color);
-    display: flex;
-    font-size: var(--mwb-secondary-text-font-size);
-    gap: 8px;
-  }
-
-  .new-folder-icon-container {
-    align-items: center;
-    background-color: var(--google-grey-50);
-    border-radius: 4px;
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    width: 56px;
-  }
-
-  .new-folder-row[compact] > .new-folder-icon-container {
-    background-color: transparent;
-    height: 24px;
-    width: 24px;
-  }
-
-  .new-folder-row > .new-folder-icon-container {
-    background-color: var(--color-list-item-url-favicon-background);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .new-folder-icon-container {
-      background-color: var(--google-grey-800);
-    }
-  }
-
-  .new-folder-row {
-    align-items: center;
-    background: none;
-    border: none;
-    color: var(--cr-primary-text-color);
-    display: flex;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 500;
-    gap: 16px;
-    height: 41px;
-    padding: 6px 16px;
-    width: 100%;
-  }
-
-  .new-folder-row[compact] {
-    gap: 8px;
-    height: 32px;
-    padding: 6px 14px;
-  }
-
-  .new-folder-row[disabled] {
-    color: var(--google-grey-400);
-  }
-
-  .new-folder-row:not([disabled]):hover {
-    background-color: var(--cr-hover-background-color);
-  }
-
-  .new-folder-row:not([disabled]):active,
-  .new-folder-row:not([disabled]):focus {
-    background-color: var(--cr-active-background-color);
-    outline: none;
-  }
 </style>
 <div id="scroller" class="sp-scroller">
   <div class="sp-card">
-    <div hidden$="[[!sectionVisibility_.heading]]">
-      <sp-heading id="heading"
-          back-button-title="$i18n{tooltipBack}"
-          back-button-aria-label="[[getBackButtonLabel_(activeFolderPath.*)]]"
-          on-back-button-click="onBackClicked_"
-          hide-back-button="[[shouldHideBackButton_(activeFolderPath.*)]]"
-          disable-back-button="[[disableBackButton_(
-              activeFolderPath.*, editing)]]">
-        <h1 slot="heading">
-          [[getActiveFolderLabel_(compact_, activeFolderPath.*)]]
-        </h1>
-        <div aria-hidden="true" slot="metadata">
-          [[activeSortType.label]]
-        </div>
-        <cr-icon-button slot="buttons" class="sort-menu-button"
-            iron-icon="sp:filter-list"
-            title="$i18n{tooltipOrganize}"
-            aria-label="$i18n{sortMenuA11yLabel}"
-            aria-description="[[activeSortType.label]]"
-            on-click="onShowSortMenuClicked_">
-        </cr-icon-button>
-        <cr-icon-button id="viewButton" slot="buttons"
-            iron-icon="[[getViewButtonIcon_(compact_)]]"
-            title="[[getViewButtonTooltip_(compact_)]]"
-            aria-label="[[getViewButtonTooltip_(compact_)]]"
-            on-click="onViewToggleClicked_"></cr-icon-button>
-        <cr-icon-button id="editButton" slot="buttons" class="icon-edit"
-            disabled="[[!hasShownBookmarks_]]"
-            title="$i18n{tooltipEdit}"
-            aria-label="$i18n{editBookmarkListA11yLabel}"
-            aria-pressed="[[editing]]"
-            on-click="onBulkEditClicked_"></cr-icon-button>
-        </cr-icon-button>
-      </sp-heading>
-    </div>
+    <power-bookmarks-list-header hidden$="[[!sectionVisibility_.heading]]"
+        active-folder="[[getActiveFolder(activeFolderPath.*)]]"
+        compact="[[compact_]]" disable-edit="[[!hasShownBookmarks]]"
+        editing="[[editing]]"
+        on-sort-changed="onSortChanged_"
+        on-back-clicked="onBackClicked_"
+        on-view-toggled="onViewToggled_">
+    </power-bookmarks-list-header>
 
     <template is="dom-if" if="[[!sectionVisibility_.bookmarksList]]">
       <div hidden="[[!sectionVisibility_.newFolderButton]]">
-        <button class="new-folder-row"
+        <power-bookmarks-add-folder-button
             disabled="[[editing]]"
             compact$="[[compact_]]"
-            aria-label="$i18n{createNewFolderA11yLabel}"
             on-click="onAddNewFolderClicked_">
-          <div class="new-folder-icon-container">
-            <cr-icon icon="cr:add"></cr-icon>
-          </div>
-          $i18n{tooltipNewFolder}
-        </button>
+        </power-bookmarks-add-folder-button>
       </div>
     </template>
 
@@ -165,17 +52,12 @@
         hidden="[[!sectionVisibility_.bookmarksList]]"
         role="[[getBookmarksListRole_(editing)]]"
         aria-multiselectable="[[editing]]" scrollable>
-      <button class="new-folder-row"
+      <power-bookmarks-add-folder-button
           hidden="[[!sectionVisibility_.newFolderButton]]"
           disabled="[[editing]]"
           compact$="[[compact_]]"
-          aria-label="$i18n{createNewFolderA11yLabel}"
           on-click="onAddNewFolderClicked_">
-        <div class="new-folder-icon-container">
-          <cr-icon icon="cr:add"></cr-icon>
-        </div>
-        $i18n{tooltipNewFolder}
-      </button>
+      </power-bookmarks-add-folder-button>
       <template is="dom-repeat" items="[[displayLists_]]" as="bookmarks">
         <template is="dom-if" restamp if="[[bookmarks.length]]">
           <sp-heading hidden="[[!sectionVisibility_.filterHeadings]]"
@@ -222,5 +104,3 @@
     </div>
   </div>
 </div>
-
-

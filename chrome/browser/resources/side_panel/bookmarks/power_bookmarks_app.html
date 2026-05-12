@@ -11,6 +11,11 @@
     }
   }
 
+  .dialog-body > cr-icon {
+    height: 20px;
+    width: 20px;
+  }
+
   cr-icon-button {
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 24px;
@@ -41,10 +46,6 @@
     border: var(--cr-hairline);
   }
 
-  cr-icon[invisible] {
-    visibility: hidden;
-  }
-
   .column {
     display: flex;
     flex-direction: column;
@@ -55,16 +56,6 @@
     display: flex;
     font-size: var(--mwb-primary-text-font-size);
     gap: 12px;
-  }
-
-  #sortMenu cr-icon,
-  .dialog-body > cr-icon {
-    height: 20px;
-    width: 20px;
-  }
-
-  .dropdown-item {
-    gap: 4px;
   }
 
   sp-empty-state {
@@ -134,8 +125,6 @@
 
   <power-bookmarks-list id="bookmarksList"
       hidden="[[sectionVisibility_.topLevelEmptyState]]"
-      active-sort-type="[[getActiveSortType(sortTypes_, activeSortIndex_)]]"
-      active-sort-index="[[activeSortIndex_]]"
       has-some-active-filter="[[hasSomeActiveFilter_]]"
       editing="[[editing_]]"
       labels="[[labels_]]"
@@ -147,10 +136,9 @@
       tracked-product-infos="[[trackedProductInfos_]]"
       on-has-scrollbars-changed="onHasScrollbarsChanged_"
       on-row-selected-change="onRowSelectedChange_"
-      on-bulk-edit-click="onBulkEditClicked_"
+      on-bulk-edit-click="onBulkEditClick_"
       on-clear-search="onClearSearch_"
       on-show-context-menu="onShowContextMenuClicked_"
-      on-show-sort-menu="onShowSortMenuClicked_"
       on-disabled-feature="showDisabledFeatureDialog_">
   </power-bookmarks-list>
 
@@ -180,7 +168,7 @@
     <cr-toolbar-selection-overlay show="[[editing_]]"
         cancel-label="$i18n{cancelA11yLabel}"
         selection-label="[[getSelectedDescription_(selectedBookmarks_.*)]]"
-        on-clear-selected-items="onBulkEditClicked_">
+        on-clear-selected-items="onBulkEditClick_">
       <div class="sp-icon-buttons-row">
         <cr-icon-button id="deleteButton" iron-icon="bookmarks:delete"
             disabled="[[!getSelectedBookmarksLength_(selectedBookmarks_.*)]]"
@@ -201,17 +189,6 @@
     </cr-toolbar-selection-overlay>
   </sp-footer>
 </div>
-
-<cr-action-menu id="sortMenu">
-  <template is="dom-repeat" items="[[sortTypes_]]">
-    <button class="dropdown-item" on-click="onSortTypeClicked_">
-      <cr-icon icon="cr:check"
-          invisible$="[[!sortMenuItemIsSelected_(item, activeSortIndex_)]]">
-      </cr-icon>
-      [[getSortMenuItemLowerLabel_(item)]]
-    </button>
-  </template>
-</cr-action-menu>
 
 <power-bookmarks-edit-dialog id="editDialog"
     on-save="onBookmarksEdited_">

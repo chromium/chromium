@@ -736,9 +736,11 @@ suite('General', () => {
     });
 
     test('SetsExpandedDescription', async () => {
-      const viewButton: HTMLElement =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!.querySelector(
-              '#viewButton')!;
+      const header =
+          powerBookmarksApp.$.bookmarksList.shadowRoot!
+              .querySelector<HTMLElement>('power-bookmarks-list-header')!;
+      const viewButton =
+          header.shadowRoot!.querySelector<HTMLElement>('#viewButton')!;
       viewButton.click();
       await microtasksFinished();
 
@@ -752,8 +754,11 @@ suite('General', () => {
     });
 
     test('SetsExpandedSearchResultDescription', async () => {
-      const viewButton = powerBookmarksApp.$.bookmarksList.shadowRoot!
-                             .querySelector<HTMLElement>('#viewButton')!;
+      const header =
+          powerBookmarksApp.$.bookmarksList.shadowRoot!
+              .querySelector<HTMLElement>('power-bookmarks-list-header')!;
+      const viewButton =
+          header.shadowRoot!.querySelector<HTMLElement>('#viewButton')!;
       viewButton.click();
 
       await performSearch('child bookmark');
@@ -834,9 +839,11 @@ suite('General', () => {
     });
 
     test('ShowsFolderImages', () => {
-      const viewButton: HTMLElement =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!.querySelector(
-              '#viewButton')!;
+      const header =
+          powerBookmarksApp.$.bookmarksList.shadowRoot!
+              .querySelector<HTMLElement>('power-bookmarks-list-header')!;
+      const viewButton =
+          header.shadowRoot!.querySelector<HTMLElement>('#viewButton')!;
       viewButton.click();
 
       flush();
@@ -852,9 +859,11 @@ suite('General', () => {
     });
 
     test('DeletesSelectedBookmarks', async () => {
-      const editButton: HTMLElement =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!.querySelector(
-              '#editButton')!;
+      const header =
+          powerBookmarksApp.$.bookmarksList.shadowRoot!
+              .querySelector<HTMLElement>('power-bookmarks-list-header')!;
+      const editButton =
+          header.shadowRoot!.querySelector<HTMLElement>('#editButton')!;
       editButton.click();
 
       flush();
@@ -926,9 +935,11 @@ suite('General', () => {
 
       await flushTasks();
 
-      const editButton: HTMLElement =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!.querySelector(
-              '#editButton')!;
+      const header =
+          powerBookmarksApp.$.bookmarksList.shadowRoot!
+              .querySelector<HTMLElement>('power-bookmarks-list-header')!;
+      const editButton =
+          header.shadowRoot!.querySelector<HTMLElement>('#editButton')!;
       editButton.click();
 
       flush();
@@ -1036,7 +1047,9 @@ suite('General', () => {
     test('TogglesSectionVisibilityAndEmptyStates', async () => {
       const search = powerBookmarksApp.$.searchField;
       const labels = powerBookmarksApp.$.labels;
-      const heading = powerBookmarksApp.$.bookmarksList.$.heading;
+      const heading =
+          powerBookmarksApp.$.bookmarksList.shadowRoot!.querySelector(
+              'power-bookmarks-list-header')!;
       const folderEmptyState =
           powerBookmarksApp.$.bookmarksList.$.folderEmptyState;
       const bookmarksList = powerBookmarksApp.$.bookmarksList.$.bookmarks;
