@@ -313,7 +313,8 @@ void SlowlyTypeText(NSString* text) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testFillPassportForm)]) {
+  if ([self isRunningTest:@selector(testFillPassportForm)] ||
+      [self isRunningTest:@selector(testReauthPriorToFillPassportForm)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAiWithDataSchema);
     config.features_enabled.push_back(
@@ -329,6 +330,10 @@ void SlowlyTypeText(NSString* text) {
   } else {
     config.features_disabled.push_back(
         autofill::features::debug::kAutofillServerCommunication);
+  }
+  if ([self isRunningTest:@selector(testReauthPriorToFillPassportForm)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAiReauthRequired);
   }
   if ([self isRunningTest:@selector(testFillXframeCreditCardForm)] ||
       [self isRunningTest:@selector(testFillXframeCreditCardFormThrottled)] ||
@@ -1165,7 +1170,46 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // Enhanced Autofill only works for signed in users.
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
-  NSString* expectedLabel = PassportSuggestionAccessibilityLabel();
+  // Tap the passport number field to trigger suggestions.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassportNumber)];
+
+  // Verify the suggestion chip is shown and tap it.
+  id<GREYMatcher> passport_chip = grey_allOf(
+      grey_accessibilityLabel(PassportSuggestionAccessibilityLabel()),
+      grey_ancestor(
+          grey_accessibilityID(kFormInputAccessoryViewAccessibilityID)),
+      nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:passport_chip];
+  [[EarlGrey selectElementWithMatcher:passport_chip] performAction:grey_tap()];
+
+  // Verify that the page is filled properly.
+  [self verifyFieldWithIdHasBeenFilled:kFormPassportNumber
+                                 value:kPassportNumber];
+  [self verifyFieldWithIdHasBeenFilled:kFormPassportOwnerName
+                                 value:kPassportOwnerName];
+  [self verifyFieldWithIdHasBeenFilled:kFormPassportCountryCode
+                                 value:kPassportCountry];
+  [self verifyFieldWithIdHasBeenFilled:kFormPassportIssueDate
+                                 value:kPassportIssueDate];
+  [self verifyFieldWithIdHasBeenFilled:kFormPassportExpirationDate
+                                 value:kPassportExpirationDate];
+}
+
+// Tests that reauthentication happens prior to Autofill AI passport suggestion
+// filling a passport form.
+- (void)testReauthPriorToFillPassportForm {
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+  // Disable skipping the reauthentication.
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+
+  [self savePassportEntity];
+  [self loadPassportPage];
+
+  // Enhanced Autofill only works for signed in users.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Tap the passport number field to trigger suggestions.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -1173,12 +1217,18 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   // Verify the suggestion chip is shown and tap it.
   id<GREYMatcher> passport_chip = grey_allOf(
-      grey_accessibilityLabel(expectedLabel),
+      grey_accessibilityLabel(PassportSuggestionAccessibilityLabel()),
       grey_ancestor(
           grey_accessibilityID(kFormInputAccessoryViewAccessibilityID)),
       nil);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:passport_chip];
   [[EarlGrey selectElementWithMatcher:passport_chip] performAction:grey_tap()];
+
+  // Verify that the field has not been filled before reauthentication.
+  [self verifyFieldWithIdHasBeenFilled:kFormPassportNumber value:@""];
+
+  // Manually trigger the successful re-authentication result.
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Verify that the page is filled properly.
   [self verifyFieldWithIdHasBeenFilled:kFormPassportNumber
