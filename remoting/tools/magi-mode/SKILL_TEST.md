@@ -82,14 +82,18 @@ with `agentapi`), an agent can manually execute the tests by interpreting the
 JSON files:
 
 1.  **Read the Test JSON**: Locate the test case you want to run.
-2.  **Extract Prompt and Inputs**: Construct a clear prompt for a subagent,
+2.  **Setup**: Create an isolated directory under
+    `remoting/tools/magi-mode/.temp/` and copy `testdata` into it.
+3.  **Extract Prompt and Inputs**: Construct a clear prompt for a subagent,
     explaining the role (e.g., Supervisor) and providing the `base_inputs`
-    and `override_inputs` from the test case.
-3.  **Invoke Subagent**: Use the `invoke_subagent` tool with the constructed
+    and `override_inputs` from the test case. Instruct the agent to work in the
+    isolated directory.
+4.  **Invoke Subagent**: Use the `invoke_subagent` tool with the constructed
     prompt.
-4.  **Verify Output**: When the subagent responds, verify that its output
+5.  **Verify Output**: When the subagent responds, verify that its output
     matches the `expected_outputs` in the test case (e.g., valid JSON,
     specific content patterns).
+6.  **Cleanup**: Delete the temporary directory after verification.
 
 This ensures that tests can still be run even if the automation script is not
 fully functional in the current environment.
