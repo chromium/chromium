@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
+#include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -245,13 +246,26 @@ void TabMenuModel::Build(int index) {
       SetEnabledAt(swap_with_split_index, num_tabs == 1);
       SetElementIdentifierAt(swap_with_split_index, kSwapSplitTabsMenuItem);
     } else {
-      AddItemWithStringIdAndIcon(
-          TabStripModel::CommandAddToSplit,
-          index == tab_strip_->active_index()
-              ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
-              : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
-          ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
-                                         kTabMenuIconSize));
+      if (tabs::kSplitViewHorizontalDirectAccess.Get()) {
+        split_orientation_submenu_ = std::make_unique<SplitViewLayoutMenuModel>(
+            tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle());
+        AddSubMenuWithStringIdAndIcon(
+            TabStripModel::CommandAddToSplit,
+            index == tab_strip_->active_index()
+                ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
+                : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
+            split_orientation_submenu_.get(),
+            ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
+                                           kTabMenuIconSize));
+      } else {
+        AddItemWithStringIdAndIcon(
+            TabStripModel::CommandAddToSplit,
+            index == tab_strip_->active_index()
+                ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
+                : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
+            ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
+                                           kTabMenuIconSize));
+      }
       const int add_to_split_index = GetItemCount() - 1;
       SetEnabledAt(add_to_split_index, num_tabs == 1 || num_tabs == 2);
       SetElementIdentifierAt(add_to_split_index, kSplitTabsMenuItem);

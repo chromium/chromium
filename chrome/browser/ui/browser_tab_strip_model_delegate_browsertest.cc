@@ -339,7 +339,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   browser()->tab_strip_model()->SetTabPinned(0, true);
-  delegate->NewSplitTab({}, split_tabs::SplitTabCreatedSource::kToolbarButton);
+  delegate->NewSplitTab({}, split_tabs::SplitTabLayout::kVertical,
+                        split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   ASSERT_TRUE(browser()->tab_strip_model()->IsTabPinned(0));
@@ -356,7 +357,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
 
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
-  delegate->NewSplitTab({}, split_tabs::SplitTabCreatedSource::kToolbarButton);
+  delegate->NewSplitTab({}, split_tabs::SplitTabLayout::kVertical,
+                        split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   ASSERT_EQ(browser()->tab_strip_model()->GetTabGroupForTab(0).value(),
@@ -375,7 +377,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
   GURL url1("chrome://about");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url1));
 
-  delegate->NewSplitTab({}, split_tabs::SplitTabCreatedSource::kToolbarButton);
+  delegate->NewSplitTab({}, split_tabs::SplitTabLayout::kVertical,
+                        split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   ASSERT_EQ(incognito_browser->tab_strip_model()->count(), 2);
   ASSERT_EQ(incognito_browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
@@ -391,7 +394,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest, DuplicateSplitTab) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
   ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK));
 
-  delegate->NewSplitTab({0}, split_tabs::SplitTabCreatedSource::kToolbarButton);
+  delegate->NewSplitTab({0}, split_tabs::SplitTabLayout::kVertical,
+                        split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   std::optional<split_tabs::SplitTabId> split_id1 =

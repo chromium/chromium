@@ -37,6 +37,7 @@ class TabGroupId;
 }
 
 namespace split_tabs {
+enum class SplitTabLayout;
 enum class SplitTabCreatedSource;
 }
 
@@ -199,6 +200,7 @@ class TabStripModelDelegate {
   // `indices` is empty, a new tab navigated to the split tab empty state page
   // will be used for the split view instead.
   virtual void NewSplitTab(std::vector<int> indices,
+                           split_tabs::SplitTabLayout layout,
                            split_tabs::SplitTabCreatedSource source) = 0;
 
   // When performing actions to groups, some features may need to show

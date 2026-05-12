@@ -130,6 +130,7 @@ bool TestTabStripModelDelegate::IsNormalWindow() {
 
 void TestTabStripModelDelegate::NewSplitTab(
     std::vector<int> indices,
+    split_tabs::SplitTabLayout layout,
     split_tabs::SplitTabCreatedSource source) {}
 
 BrowserWindowInterface* TestTabStripModelDelegate::GetBrowserWindowInterface() {

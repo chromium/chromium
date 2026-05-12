@@ -12312,6 +12312,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" desc="The label for a menu item that swaps the bottom view in the active split with the selected tab.">
           Swap with bottom view
         </message>
+        <message name="IDS_SPLIT_TAB_NEW_VERTICAL" desc="The label for a menu item for creating a new split view with a vertical divider.">
+          Side by side
+        </message>
+        <message name="IDS_SPLIT_TAB_NEW_HORIZONTAL" desc="The label for a menu item for creating a new split view with a horizontal divider.">
+          Stacked
+        </message>
         <message name="IDS_SPLIT_TAB_SEND_FEEDBACK" desc="The label for a menu item that opens a dialog to send feedback.">
           Send feedback
         </message>
@@ -12352,6 +12358,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" desc="In title case: The label for a menu item that swaps the bottom view in the active split with the selected tab.">
           Swap with Bottom View
+        </message>
+        <message name="IDS_SPLIT_TAB_NEW_VERTICAL" desc="In title case: The label for a menu item for creating a new split view with a vertical divider.">
+          Side by Side
+        </message>
+        <message name="IDS_SPLIT_TAB_NEW_HORIZONTAL" desc="In title case: The label for a menu item for creating a new split view with a horizontal divider.">
+          Stacked
         </message>
         <message name="IDS_SPLIT_TAB_SEND_FEEDBACK" desc="The label for a menu item that opens a dialog to send feedback.">
           Send Feedback

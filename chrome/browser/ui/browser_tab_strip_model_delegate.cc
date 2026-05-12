@@ -340,12 +340,16 @@ BrowserTabStripModelDelegate::GetBrowserWindowInterface() {
 
 void BrowserTabStripModelDelegate::NewSplitTab(
     std::vector<int> indices,
+    split_tabs::SplitTabLayout layout,
     split_tabs::SplitTabCreatedSource source) {
   if (indices.empty()) {
+    // TODO(crbug.com/512137830): Update chrome::NewSplitTab to use layout.
     chrome::NewSplitTab(browser_, source);
   } else {
-    browser_->tab_strip_model()->AddToNewSplit(
-        indices, split_tabs::SplitTabVisualData(), source);
+    split_tabs::SplitTabVisualData visual_data =
+        split_tabs::SplitTabVisualData();
+    visual_data.set_split_layout(layout);
+    browser_->tab_strip_model()->AddToNewSplit(indices, visual_data, source);
   }
 }
 

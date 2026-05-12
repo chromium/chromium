@@ -78,6 +78,7 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool IsNormalWindow() override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   void NewSplitTab(std::vector<int> indices,
+                   split_tabs::SplitTabLayout layout,
                    split_tabs::SplitTabCreatedSource source) override;
   void OnGroupsDestruction(const std::vector<tab_groups::TabGroupId>& group_ids,
                            base::OnceCallback<void()> callback,

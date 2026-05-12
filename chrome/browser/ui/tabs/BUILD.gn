@@ -195,6 +195,7 @@ if (!is_android) {
       "recent_tabs_sub_menu_model.h",
       "split_tab_menu_model.h",
       "split_tab_swap_menu_model.h",
+      "split_view_layout_menu_model.h",
       "tab_model.h",
     ]
 
@@ -231,6 +232,7 @@ if (!is_android) {
       "existing_window_sub_menu_model.cc",
       "split_tab_menu_model.cc",
       "split_tab_swap_menu_model.cc",
+      "split_view_layout_menu_model.cc",
       "tab_model.cc",
     ]
 

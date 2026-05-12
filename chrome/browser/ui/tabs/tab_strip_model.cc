@@ -2755,41 +2755,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     }
 
     case CommandAddToSplit: {
-      base::UmaHistogramCounts1000(
-          "Tab.ContextMenu.AddToSplit.SelectedTabsCount",
-          selection_model_.size());
-
-      std::vector<int> indices = GetIndicesForCommand(context_index);
-      // There are three cases for adding to a split.
-      // 1. Selecting an inactive tab and making it a split with the active.
-      // 2. Selecting active and inactive tab and creating a split
-      // 3. Splitting the active tab with itself.
-      // Remove the active tab from the indices first since splitting is done
-      // with the active tab. Case 3 is a special zero split case that creates a
-      // new split tab and is inferred by the delegate.
-      std::erase_if(indices, [this](int tab_index) {
-        return tab_index == active_index();
-      });
-
-      // This callback results in creating a split. It is either sent to the
-      // deletion dialog that owns it and is responsible for calling it or if no
-      // group is deleted it is simply called here.
-      base::OnceCallback<void()> callback = base::BindOnce(
-          &TabStripModelDelegate::NewSplitTab, base::Unretained(delegate_),
-          indices, split_tabs::SplitTabCreatedSource::kTabContextMenu);
-
-      // If we are splitting the active tab no group can be deleted.
-      if (!indices.empty()) {
-        std::vector<tab_groups::TabGroupId> groups_to_delete =
-            GetGroupsDestroyedFromRemovingIndices(indices);
-        if (!groups_to_delete.empty()) {
-          MarkTabGroupsForClosing(groups_to_delete);
-          return delegate_->OnRemovingAllTabsFromGroups(groups_to_delete,
-                                                        std::move(callback));
-        }
-      }
-
-      std::move(callback).Run();
+      ExecuteAddToNewSplitCommand(context_index,
+                                  split_tabs::SplitTabLayout::kVertical);
       break;
     }
 
@@ -3105,6 +3072,44 @@ void TabStripModel::ExecuteAddToExistingWindowCommand(int context_index,
   }
   delegate()->MoveToExistingWindow(GetIndicesForCommand(context_index),
                                    browser_index);
+}
+
+void TabStripModel::ExecuteAddToNewSplitCommand(
+    int context_index,
+    split_tabs::SplitTabLayout layout) {
+  base::UmaHistogramCounts1000("Tab.ContextMenu.AddToSplit.SelectedTabsCount",
+                               selection_model_.size());
+
+  std::vector<int> indices = GetIndicesForCommand(context_index);
+  // There are three cases for adding to a split.
+  // 1. Selecting an inactive tab and making it a split with the active.
+  // 2. Selecting active and inactive tab and creating a split
+  // 3. Splitting the active tab with itself.
+  // Remove the active tab from the indices first since splitting is done
+  // with the active tab. Case 3 is a special zero split case that creates a
+  // new split tab and is inferred by the delegate.
+  std::erase_if(indices,
+                [this](int tab_index) { return tab_index == active_index(); });
+
+  // This callback results in creating a split. It is either sent to the
+  // deletion dialog that owns it and is responsible for calling it or if no
+  // group is deleted it is simply called here.
+  base::OnceCallback<void()> callback = base::BindOnce(
+      &TabStripModelDelegate::NewSplitTab, base::Unretained(delegate_), indices,
+      layout, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  // If we are splitting the active tab no group can be deleted.
+  if (!indices.empty()) {
+    std::vector<tab_groups::TabGroupId> groups_to_delete =
+        GetGroupsDestroyedFromRemovingIndices(indices);
+    if (!groups_to_delete.empty()) {
+      MarkTabGroupsForClosing(groups_to_delete);
+      return delegate_->OnRemovingAllTabsFromGroups(groups_to_delete,
+                                                    std::move(callback));
+    }
+  }
+
+  std::move(callback).Run();
 }
 
 std::vector<tab_groups::TabGroupId>

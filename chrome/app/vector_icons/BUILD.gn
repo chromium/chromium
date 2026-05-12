@@ -188,6 +188,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "speaker_group.icon",
     "split_scene.icon",
     "split_scene_down.icon",
+    "split_scene_horizontal.icon",
     "split_scene_left.icon",
     "split_scene_right.icon",
     "split_scene_up.icon",
