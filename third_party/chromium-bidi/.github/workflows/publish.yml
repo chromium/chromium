@@ -28,8 +28,6 @@ jobs:
           cache: npm
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
-      - name: Update npm
-        run: npm install -g npm@latest
       - name: Install and build npm dependencies
         run: npm ci
       - name: Publish
