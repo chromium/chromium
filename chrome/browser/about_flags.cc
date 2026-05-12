@@ -3999,6 +3999,12 @@ const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1C", kAndroidBottomBarKeepBothInToolbarParam, nullptr},
     {"- 1C with NTP", kAndroidBottomBarKeepBothInToolbarWithNtpParam, nullptr}};
 
+const FeatureEntry::FeatureParam kHomeButtonRemovalKeepOnNtpParam[] = {
+    {"keep_home_button_on_ntp", "true"}};
+
+const FeatureEntry::FeatureVariation kHomeButtonRemovalVariations[] = {
+    {"Keep home button on NTP", kHomeButtonRemovalKeepOnNtpParam, nullptr}};
+
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsTrustAndSafety[] = {
     {"trust_and_safety", "true"}};
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsEssential[] = {
@@ -9385,7 +9391,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripDensityChangeAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripDensityChangeAndroid)},
 
-
     {"tab-switcher-group-suggestions-android",
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidName,
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidDescription,
@@ -12982,6 +12987,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kChildProcessSecurityPolicyRustVariations,
                                     "ChildProcessSecurityPolicyRust")},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"home-button-removal", flag_descriptions::kHomeButtonRemovalName,
+     flag_descriptions::kHomeButtonRemovalDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kHomeButtonRemoval,
+                                    kHomeButtonRemovalVariations,
+                                    "HomeButtonRemoval")},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -487,6 +487,7 @@ public abstract class ChromeFeatureList {
             "SafeBrowsingHashPrefixRealTimeLookups";
     public static final String HISTORY_JOURNEYS = "Journeys";
     public static final String HISTORY_PANE_ANDROID = "HistoryPaneAndroid";
+    public static final String HOME_BUTTON_REMOVAL = "HomeButtonRemoval";
     public static final String HOME_MODULE_PREF_REFACTOR = "HomeModulePrefRefactor";
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String HTTPS_FIRST_DIALOG_UI = "HttpsFirstDialogUi";
@@ -1019,6 +1020,7 @@ public abstract class ChromeFeatureList {
                     HISTORY_PANE_ANDROID,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sHomeButtonRemoval = newCachedFlag(HOME_BUTTON_REMOVAL, false);
     public static final CachedFlag sIncognitoThemeOverlayTesting =
             newCachedFlag(INCOGNITO_THEME_OVERLAY_TESTING, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
@@ -1337,6 +1339,7 @@ public abstract class ChromeFeatureList {
                     sGmscoreBindServiceOptimization,
                     sGridTabSwitcherSurfaceColorUpdate,
                     sHistoryPaneAndroid,
+                    sHomeButtonRemoval,
                     sIncognitoThemeOverlayTesting,
                     sKeyboardEscBackNavigation,
                     sLaunchCauseScreenOffFix,
@@ -1772,6 +1775,9 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(
                     GESTURE_USER_EDUCATION_BACK_SWIPE, "gesture-user-education-page-delay", 4000);
 
+    public static final BooleanCachedFeatureParam sHomeButtonRemovalKeepOnNtp =
+            newBooleanCachedFeatureParam(HOME_BUTTON_REMOVAL, "keep_home_button_on_ntp", false);
+
     public static final BooleanCachedFeatureParam sInitFeatureListEarly =
             newBooleanCachedFeatureParam(LOAD_NATIVE_EARLY, "init_feature_list_early", true);
 
@@ -1926,6 +1932,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeUseBackupNavbarInsetsUseGestures,
                     sEnableAndroidSidePanelDisableAnimations,
                     sGestureUserEducationPageDelay,
+                    sHomeButtonRemovalKeepOnNtp,
                     sInitFeatureListEarly,
                     sLockTopControlsForceAdjustHeightOnStartup,
                     sLowMemoryDeviceThresholdMb,

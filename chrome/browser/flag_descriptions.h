@@ -5326,6 +5326,10 @@ inline constexpr char kAndroidWindowPopupResizeAfterSpawnDescription[] =
     "enable-android-window-popup-predict-final-bounds flag that regulates "
     "pre-creation bounds adjustments.";
 
+inline constexpr char kHomeButtonRemovalName[] = "Home Button Removal";
+inline constexpr char kHomeButtonRemovalDescription[] =
+    "Enables the Home Button Removal feature.";
+
 inline constexpr char kUpdateTabGroupColorsName[] = "Update Tab Group Colors";
 inline constexpr char kUpdateTabGroupColorsDescription[] =
     "Enable updating tab group colors.";

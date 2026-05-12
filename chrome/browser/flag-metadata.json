@@ -5590,6 +5590,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "home-button-removal",
+    "owners": ["yyanting@google.com", "hanxi@chromium.org", "clank-start@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "home-module-pref-refactor",
     "owners": [ "jhimawan@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 160

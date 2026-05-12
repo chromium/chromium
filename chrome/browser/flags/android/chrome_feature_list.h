@@ -195,6 +195,7 @@ BASE_DECLARE_FEATURE(kGmsCoreBindServiceOptimization);
 BASE_DECLARE_FEATURE(kGridTabSwitcherSurfaceColorUpdate);
 BASE_DECLARE_FEATURE(kGroupNewTabWithParent);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
+BASE_DECLARE_FEATURE(kHomeButtonRemoval);
 BASE_DECLARE_FEATURE(kHomeModulePrefRefactor);
 BASE_DECLARE_FEATURE(kImprovedA2HS);
 BASE_DECLARE_FEATURE(kIncognitoModeForcedAndroid);

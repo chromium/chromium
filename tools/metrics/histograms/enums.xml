@@ -8912,6 +8912,7 @@ from previous Chrome versions.
   <int value="-1700764114" label="HelpAppBackgroundPage:enabled"/>
   <int value="-1700394124" label="NtpCustomizeChromeAutoOpen:enabled"/>
   <int value="-1700227008" label="EnterpriseProfileBadgingForMenu:disabled"/>
+  <int value="-1700165599" label="HomeButtonRemoval:disabled"/>
   <int value="-1700068858" label="HelpAppCrosComponents:disabled"/>
   <int value="-1699960514" label="ChromeOSSyncedSessionSharing:enabled"/>
   <int value="-1699952400"
@@ -13313,6 +13314,7 @@ from previous Chrome versions.
   <int value="-259952983"
       label="AutofillVirtualCardsOnTouchToFillAndroid:enabled"/>
   <int value="-259942608" label="Apb144Patch2:enabled"/>
+  <int value="-258280767" label="HomeButtonRemoval:enabled"/>
   <int value="-258081634" label="AutofillAssistantDirectActions:disabled"/>
   <int value="-257600773" label="MessagesPreinstall:disabled"/>
   <int value="-257478609" label="TextfieldFocusOnTapUp:enabled"/>
