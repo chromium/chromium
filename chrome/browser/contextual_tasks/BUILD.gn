@@ -14,7 +14,8 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
-# This target is only for public headers for classes used outside this directory (i.e. services and factories).
+# This target is only for public headers for classes used outside this directory
+# (i.e. services and factories).
 source_set("contextual_tasks") {
   sources = [
     "active_task_context_provider.h",
@@ -63,7 +64,8 @@ source_set("contextual_tasks") {
   ]
 }
 
-# This target is for all non-public files (all .c - including factories and services - and non-public .h).
+# This target is for all non-public files (all .c - including factories and
+# services - and non-public .h).
 source_set("impl") {
   visibility = [
     ":*",
@@ -563,6 +565,7 @@ source_set("interactive_ui_tests") {
 
   if (!is_android) {
     sources += [
+      "contextual_tasks_interactive_uitest.cc",
       "contextual_tasks_side_panel_coordinator_interactive_uitest.cc",
       "contextual_tasks_ui_service_interactive_uitest.cc",
     ]
@@ -594,6 +597,7 @@ source_set("interactive_ui_tests") {
     deps += [
       ":ui",
       "//chrome/browser/tab_list",
+      "//chrome/browser/ui/contextual_search",
     ]
   }
 }
