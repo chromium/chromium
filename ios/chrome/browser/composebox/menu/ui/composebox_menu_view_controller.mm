@@ -45,10 +45,7 @@ const CGFloat kAttachmentItemSpacing = 6.0f;
 const NSDirectionalEdgeInsets kListSectionInsets = {0, 16.0, 20.0, 16.0};
 
 // Insets for the attachments section.
-const NSDirectionalEdgeInsets kAttachmentSectionInsets = {16.0, 16.0, 8.0,
-                                                          16.0};
-
-
+const NSDirectionalEdgeInsets kAttachmentSectionInsets = {6.0, 16.0, 8.0, 16.0};
 
 // Vertical padding for the separator.
 const CGFloat kSeparatorVerticalPadding = 10.0f;
