@@ -43,9 +43,7 @@ constexpr SqliteResultCodeMappingEntry kResultCodeMapping[] = {
     {SQLITE_PERM, static_cast<int>(SqliteLoggedResultCode::kPermission)},
     {SQLITE_ABORT, static_cast<int>(SqliteLoggedResultCode::kAbort)},
     {SQLITE_BUSY, static_cast<int>(SqliteLoggedResultCode::kBusy)},
-
-    // Chrome features shouldn't execute conflicting statements concurrently.
-    {SQLITE_LOCKED, static_cast<int>(SqliteLoggedResultCode::kUnusedChrome)},
+    {SQLITE_LOCKED, static_cast<int>(SqliteLoggedResultCode::kLocked)},
 
     // Chrome should crash on OOM.
     {SQLITE_NOMEM, static_cast<int>(SqliteLoggedResultCode::kUnusedChrome)},

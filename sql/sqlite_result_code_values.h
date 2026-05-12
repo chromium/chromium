@@ -460,7 +460,10 @@ enum class SqliteLoggedResultCode : int {
   // SQLITE_IOERR_SHMMAP
   kIoShmMap = 63,
 
-  kMaxValue = kIoShmMap,
+  // SQLITE_LOCKED
+  kLocked = 64,
+
+  kMaxValue = kLocked,
 };
 
 }  // namespace sql
