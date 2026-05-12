@@ -13,11 +13,13 @@
 @protocol GeminiCameraDelegate;
 @protocol GeminiSessionDelegate;
 @protocol GeminiSuggestionDelegate;
+@protocol GeminiTabPickerDelegate;
 
 // Protocol for the BWG gateway, exposing what's needed upstream.
 @protocol BWGGatewayProtocol
 
 // Handlers for BWG protocols.
+@property(nonatomic, weak) id<GeminiActuationDelegate> actuationHandler;
 @property(nonatomic, weak) id<GeminiCameraDelegate> cameraHandler;
 @property(nonatomic, weak) id<BWGLinkOpeningDelegate> linkOpeningHandler;
 @property(nonatomic, weak) id<GeminiPageStateChangeDelegate>
@@ -25,9 +27,9 @@
 @property(nonatomic, weak) id<GeminiSessionDelegate> sessionHandler;
 @property(nonatomic, weak) id<GeminiSuggestionDelegate> suggestionHandler;
 
-// TODO(crbug.com/496163970): Remove optional when internal is implemented.
+// TODO(crbug.com/512101817): Remove optional when internal is implemented.
 @optional
-@property(nonatomic, weak) id<GeminiActuationDelegate> actuationHandler;
+@property(nonatomic, weak) id<GeminiTabPickerDelegate> tabPickerHandler;
 
 @end
 

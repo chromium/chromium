@@ -24,6 +24,7 @@ source_set("model") {
     "gemini_suggestion_delegate.h",
     "gemini_suggestion_handler.h",
     "gemini_suggestion_handler.mm",
+    "gemini_tab_picker_delegate.h",
     "gemini_view_state_delegate.h",
   ]
   deps = [
