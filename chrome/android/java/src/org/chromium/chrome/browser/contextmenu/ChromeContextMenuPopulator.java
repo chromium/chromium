@@ -455,9 +455,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         //   * some phones always identify as having a touchpad (crbug.com/429262357), and
         //   * known web compatibility issue on tablet devices (crbug.com/45188879).
         return (mParams.getSourceType() == MenuSourceType.MOUSE
-                        || (TabUtils.isUsingDesktopUserAgent(mItemDelegate.getWebContents())
-                                && mParams.getSourceType() == MenuSourceType.LONG_PRESS))
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE);
+                || (TabUtils.isUsingDesktopUserAgent(mItemDelegate.getWebContents())
+                        && mParams.getSourceType() == MenuSourceType.LONG_PRESS));
     }
 
     @VisibleForTesting

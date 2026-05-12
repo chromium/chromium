@@ -1463,12 +1463,6 @@ inline constexpr char kContextManagementInComposeboxDescription[] =
     "Enables an updated tab context management UI in the plus button and "
     "composebox context menu.";
 
-inline constexpr char kContextMenuEmptySpaceName[] =
-    "Context menu at empty space";
-inline constexpr char kContextMenuEmptySpaceDescription[] =
-    "When this is enabled, on right click (or equivalent gestures) at empty "
-    "space, a context menu containing page-related items will be shown.";
-
 inline constexpr char kContextualCueingName[] = "Contextual cueing";
 inline constexpr char kContextualCueingDescription[] =
     "Enables the contextual cueing system to support showing actions.";

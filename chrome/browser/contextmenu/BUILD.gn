@@ -2,15 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("contextmenu") {
-  sources = [
-    "context_menu_features.cc",
-    "context_menu_features.h",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
