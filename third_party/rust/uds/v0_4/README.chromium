@@ -1,0 +1,12 @@
+Name: uds
+URL: https://crates.io/crates/uds
+Version: 0.4.2
+Revision: f17ebbb7b7c5c16f7b46bc2d1c1adf21562287de
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/uds-v0_4/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: A unix domain socket crate that supports abstract addresses, fd-passing and seqpacket sockets.
+

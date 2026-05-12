@@ -286,6 +286,7 @@ dependencies = [
  "syn",
  "temporal_capi",
  "temporal_rs",
+ "uds",
  "xml",
  "zip",
 ]
@@ -1946,6 +1947,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "typewit"
 version = "1.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "uds"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc",
+]
 
 [[package]]
 name = "unicode-ident"
