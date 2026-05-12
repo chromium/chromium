@@ -29,6 +29,8 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer {
                               AutofillManager::Observer::FieldTypeSource source,
                               bool small_forms_were_parsed) override;
 
+  void OnGetIntersectionObserverInfo(bool is_visible);
+
  private:
   // Returns `true` if `manager`'s AutofillDriver is active, has no parent, and
   // is not embedded. Returns `false` otherwise. Most OmniboxAutofillDelegate

@@ -812,6 +812,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // nullptr on unsupported platforms. Handles the Autofill flow where the
   // Omnibox is the trigger point.
   virtual OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() = 0;
+
+  // Shows the "Autofill payments" omnibox chip that appears for relevant
+  // payment checkout forms.
+  virtual void ShowOmniboxAutofillChip() = 0;
 #endif
 };
 

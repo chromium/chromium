@@ -253,6 +253,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   BnplUiDelegate* GetBnplUiDelegate() override;
 #if !BUILDFLAG(IS_ANDROID)
   OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
+  void ShowOmniboxAutofillChip() override;
 #endif
 
   // Begin ChromePaymentsAutofillClient-specific section.

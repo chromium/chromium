@@ -120,6 +120,13 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
       OmniboxAutofillShowChipDecisionPart1::kSuccess);
 }
 
+void OmniboxAutofillDelegate::OnGetIntersectionObserverInfo(bool is_visible) {
+  if (!is_visible) {
+    return;
+  }
+  client_->GetPaymentsAutofillClient()->ShowOmniboxAutofillChip();
+}
+
 bool OmniboxAutofillDelegate::IsOutermostMainFrameActiveAutofillManager(
     AutofillManager& manager) {
   return manager.driver().GetParent() == nullptr &&

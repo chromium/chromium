@@ -488,6 +488,10 @@ OmniboxAutofillDelegate*
 TestPaymentsAutofillClient::GetOmniboxAutofillDelegate() {
   return omnibox_autofill_delegate_.get();
 }
+
+void TestPaymentsAutofillClient::ShowOmniboxAutofillChip() {
+  omnibox_autofill_chip_shown_ = true;
+}
 #endif
 
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
