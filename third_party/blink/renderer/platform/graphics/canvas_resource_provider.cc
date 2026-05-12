@@ -1425,15 +1425,8 @@ CanvasNon2DResourceProviderSharedImage::Create(
   auto provider = std::make_unique<CanvasNon2DResourceProviderSharedImage>(
       size, format, alpha_type, color_space, context_provider_wrapper,
       /*is_accelerated=*/true, shared_image_usage_flags, delegate);
-  if (provider->IsValid()) {
-    // Check whether an error occurred while flushing the recording.
-    if (!provider->IsValid()) {
-      return nullptr;
-    }
-    return provider;
-  }
 
-  return nullptr;
+  return provider->IsValid() ? std::move(provider) : nullptr;
 }
 
 std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
