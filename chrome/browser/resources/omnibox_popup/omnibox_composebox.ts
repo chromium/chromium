@@ -42,15 +42,10 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
 
   static override get properties() {
     return {
-      disableCaretColorAnimation: {
-        type: Boolean,
-        reflect: true,
-      },
       entrypointName: {type: String, reflect: true},
     };
   }
 
-  accessor disableCaretColorAnimation: boolean = false;
   accessor entrypointName: string = 'Omnibox';
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
