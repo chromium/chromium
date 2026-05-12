@@ -1919,7 +1919,13 @@ void ContextualTasksUiService::OnImageClickedFromSourcesMenu(
 }
 
 bool ContextualTasksUiService::IsAllowedHost(const GURL& url) {
-  if (net::SchemefulSite::IsSameSite(url, GURL(kAiPageHost))) {
+  // TODO(crbug.com/498566984): Remove this once the AimEligibilityService tells
+  //                            us which hosts to intercept.
+  bool is_lens_debug_host = url.host() == "lndb.corp.google.com" ||
+                            url.host() == "lndb-autopush.corp.google.com";
+  if (net::SchemefulSite::IsSameSite(url, GURL(kAiPageHost)) &&
+      !is_lens_debug_host) {
+    // Exclude lens debugging hosts.
     return true;
   }
   std::string forced_host = GetForcedEmbeddedPageHost();

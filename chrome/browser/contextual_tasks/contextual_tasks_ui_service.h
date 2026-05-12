@@ -68,6 +68,8 @@ class ContextualTasksUIInterface;
 class ContextualTasksUiService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(ContextualTasksUiServiceTest,
                            IsAllowedHost_WithOverride);
+  FRIEND_TEST_ALL_PREFIXES(ContextualTasksUiServiceTest,
+                           IsAllowedHost_LensDebugNotAllowed);
 
  public:
   class Observer : public base::CheckedObserver {
