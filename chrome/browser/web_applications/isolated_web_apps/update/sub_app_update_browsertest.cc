@@ -219,55 +219,6 @@ class SubAppUpdateBrowserTest : public IsolatedWebAppBrowserTestHarness {
                                         kUpdateFoundAndSavedInDatabase));
   }
 
-  WebAppMenuButton* GetAppMenuButton(Browser* browser) {
-    BrowserView* app_browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser);
-    EXPECT_NE(app_browser_view, nullptr);
-    if (!app_browser_view) {
-      return nullptr;
-    }
-
-    return views::AsViewClass<WebAppMenuButton>(
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kToolbarAppMenuButtonElementId,
-            views::ElementTrackerViews::GetContextForView(app_browser_view)));
-  }
-
-  void VerifyAppUpdateButtonExists(Browser* sub_app_browser) {
-    WebAppMenuButton* menu_button = GetAppMenuButton(sub_app_browser);
-    ASSERT_NE(menu_button, nullptr);
-    EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
-  }
-
-  void VerifyAppUpdateButtonIsGone(Browser* sub_app_browser) {
-    WebAppMenuButton* menu_button = GetAppMenuButton(sub_app_browser);
-    ASSERT_NE(menu_button, nullptr);
-    EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
-  }
-
-  void ClickAppUpdateButtonAndWait(Browser* sub_app_browser) {
-    WebAppMenuButton* menu_button = GetAppMenuButton(sub_app_browser);
-    ASSERT_NE(menu_button, nullptr);
-
-    views::NamedWidgetShownWaiter update_dialog_waiter(
-        views::test::AnyWidgetTestPasskey(), "WebAppUpdateReviewDialog");
-
-    WebAppMenuModel model(/*provider=*/nullptr, sub_app_browser);
-    model.Init();
-    model.ExecuteCommand(IDC_WEB_APP_UPGRADE_DIALOG, /*event_flags=*/0);
-
-    views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
-    ASSERT_NE(dialog_widget, nullptr);
-
-    base::test::TestFuture<void> menu_update_future;
-    base::CallbackListSubscription subscription =
-        menu_button->AwaitLabelTextUpdated(
-            menu_update_future.GetRepeatingCallback());
-    views::test::AcceptDialog(dialog_widget);
-    EXPECT_TRUE(menu_update_future.Wait());
-    provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  }
-
  protected:
   base::test::ScopedFeatureList feature_list_;
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
@@ -326,6 +277,11 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
           iwa_url_info.origin().GetURL().Resolve("/subapp/shortcut"))));
 }
 
+// In PWA, updating security fields: icon>10% byte by byte comparison/title,
+// causes title bar showing "App update available" button, when clicked,
+// user prompted with dialog to confirm that update has succeeded. However,
+// sub apps are IWA only API that updates silently even with security
+// fields being changed.
 IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
                        SubAppManifestUpdatesAfterIwaUpdateWithSecurityFields) {
   const web_package::SignedWebBundleId bundle_id =
@@ -351,6 +307,8 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
 
   iwa_browser->window()->Close();
 
+  // Use different name of sub app to check that the update
+  // for title/icon is still applied automatically without user action.
   UpdateIwaToV2AndWait(bundle_id, "Sub App Updated", R"([{
         "name": "Shortcut",
         "url": "subapp/shortcut"
@@ -365,10 +323,6 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
   manifest_observer.Wait();
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
-  VerifyAppUpdateButtonExists(sub_app_browser);
-
-  ClickAppUpdateButtonAndWait(sub_app_browser);
-
   EXPECT_EQ("Sub App Updated",
             provider().registrar_unsafe().GetAppShortName(sub_app_id));
   EXPECT_THAT(
@@ -376,8 +330,6 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
       testing::ElementsAre(Shortcut(
           u"Shortcut",
           iwa_url_info.origin().GetURL().Resolve("/subapp/shortcut"))));
-
-  VerifyAppUpdateButtonIsGone(sub_app_browser);
 }
 
 // Sub apps must never have overlapping scopes with each other,
@@ -575,6 +527,7 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest, SubAppScopeOverlap) {
   UpdateIwaAndWait(bundle_id, iwa_v2);
 
   // Now launch Sub App 2 to trigger its manifest update check.
+  // We expect the update to fail due to scope overlap validation.
   Browser* sub_app_2_browser = LaunchWebAppBrowserAndWait(sub_app_2_id);
   ASSERT_NE(sub_app_2_browser, nullptr);
 
@@ -584,11 +537,6 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest, SubAppScopeOverlap) {
           .ExpectManifest(
               provider().registrar_unsafe().GetAppManifestId(sub_app_2_id))
           .WaitAndFlushCommands());
-
-  // We expect the update to fail due to scope overlap validation.
-  provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  // Ensure that update button is not present.
-  VerifyAppUpdateButtonIsGone(sub_app_2_browser);
 
   // The name must not be updated.
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(sub_app_2_id),
@@ -730,6 +678,7 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest, SubAppParentInScope) {
   UpdateIwaAndWait(bundle_id, iwa_v2);
 
   // Now launch Sub App to trigger its manifest update check.
+  // We expect the update to fail due to scope overlap validation.
   Browser* sub_app_1_browser = LaunchWebAppBrowserAndWait(sub_app_1_id);
   ASSERT_NE(sub_app_1_browser, nullptr);
 
@@ -739,11 +688,6 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest, SubAppParentInScope) {
           .ExpectManifest(
               provider().registrar_unsafe().GetAppManifestId(sub_app_1_id))
           .WaitAndFlushCommands());
-
-  // We expect the update to fail due to scope overlap validation.
-  provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  // Ensure that update button is not present.
-  VerifyAppUpdateButtonIsGone(sub_app_1_browser);
 
   // The name must not be updated.
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(sub_app_1_id),

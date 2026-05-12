@@ -228,8 +228,9 @@ void ManifestSilentUpdateCommand::OnAppLockAcquired(
   ManifestUpdateJob::Options options;
   options.fail_if_any_icon_download_fails = true;
   options.record_icon_results_on_update = true;
-  options.use_manifest_icons_as_trusted =
-      app_lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
+  // Sub apps (IWA only API) are fine without user prompt for icon/title change.
+  options.use_manifest_icons_as_trusted = app_lock_->registrar().AppMatches(
+      app_id_, WebAppFilter::IsTrusted() | WebAppFilter::IsIsolatedSubApp());
   options.previous_time_for_silent_icon_update =
       previous_time_for_silent_icon_update_;
 
