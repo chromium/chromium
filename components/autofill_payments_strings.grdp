@@ -1780,4 +1780,9 @@
     </message>
   </if>
 
+  <!-- Omnibox Autofill strings -->
+  <message name="IDS_AUTOFILL_PAYMENT_TEXT" desc="Text for the 'Autofill payment' chip displayed on the omnibox.">
+    Autofill payment
+  </message>
+
 </grit-part>

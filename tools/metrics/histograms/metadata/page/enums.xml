@@ -287,6 +287,7 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="Glic"/>
   <int value="43" label="Anchored Contextual Cue"/>
   <int value="44" label="Web Authentication Ambient"/>
+  <int value="45" label="Autofill Payment"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/page_action/page_action_icon_type.h:PageActionIconType) -->

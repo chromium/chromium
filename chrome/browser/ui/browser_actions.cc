@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/omnibox_autofill_page_action_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -114,6 +115,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/content_settings/core/common/features.h"
@@ -1649,6 +1651,31 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
         actions::ActionItem::Builder()
             // Anchored message icon, strings and callback are set at cue time.
             .SetActionId(kActionAnchoredContextualCue)
+            .Build());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableOmniboxAutofill)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (!bwi) {
+                    return;
+                  }
+                  auto* tab = bwi->GetActiveTabInterface();
+                  if (!tab) {
+                    return;
+                  }
+                  // TODO(crbug.com/490215251): Set the callback to display the
+                  // Autofill bubble.
+                },
+                bwi))
+            .SetActionId(kActionAutofillPayment)
+            .SetImage(
+                ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
+            .SetText(l10n_util::GetStringUTF16(IDS_AUTOFILL_PAYMENT_TEXT))
             .Build());
   }
 }

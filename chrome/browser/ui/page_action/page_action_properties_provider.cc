@@ -300,6 +300,14 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .element_identifier = kWebAuthnAmbientSigninIconElementId,
         },
     },
+    {
+        kActionAutofillPayment,
+        {
+            .histogram_name = "AutofillPayment",
+            .type = PageActionIconType::kAutofillPayment,
+            .element_identifier = kAutofillPaymentIconElementId,
+        },
+    },
 });
 
 constexpr bool CheckIgnoreFlagUsage() {

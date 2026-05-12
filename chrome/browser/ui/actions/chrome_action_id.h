@@ -619,6 +619,7 @@
   E(kActionGlicContextualCueing) \
   E(kActionShowAiOverlayDialog) \
   E(kActionWebAuthnAmbientSignin) \
+  E(kActionAutofillPayment) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \
