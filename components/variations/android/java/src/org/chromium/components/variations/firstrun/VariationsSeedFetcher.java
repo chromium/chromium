@@ -6,7 +6,6 @@ package org.chromium.components.variations.firstrun;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.SharedPreferences;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
@@ -465,6 +464,17 @@ public class VariationsSeedFetcher {
         }
     }
 
+    // Return false if an attempt has already been made to fetch the seed, even if it failed.
+    // Only attempt to get the initial Java seed once, since a failure probably indicates a network
+    // problem that is unlikely to be resolved by a second attempt.
+    // Note that VariationsSeedBridge.hasNativePref() is a pure Java function, reading an Android
+    // preference that is set when the seed is fetched by the native code.
+    public static boolean shouldFetchSeed() {
+        return !(ContextUtils.getAppSharedPreferences()
+                        .getBoolean(VARIATIONS_INITIALIZED_PREF, false)
+                || VariationsSeedBridge.hasNativePref());
+    }
+
     /**
      * Fetch the first run variations seed.
      *
@@ -476,14 +486,7 @@ public class VariationsSeedFetcher {
         assert !ThreadUtils.runningOnUiThread();
         // Prevent multiple simultaneous fetches
         synchronized (sLock) {
-            SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-            // Early return if an attempt has already been made to fetch the seed, even if it
-            // failed. Only attempt to get the initial Java seed once, since a failure probably
-            // indicates a network problem that is unlikely to be resolved by a second attempt.
-            // Note that VariationsSeedBridge.hasNativePref() is a pure Java function, reading an
-            // Android preference that is set when the seed is fetched by the native code.
-            if (prefs.getBoolean(VARIATIONS_INITIALIZED_PREF, false)
-                    || VariationsSeedBridge.hasNativePref()) {
+            if (!shouldFetchSeed()) {
                 return;
             }
 
@@ -505,7 +508,10 @@ public class VariationsSeedFetcher {
                         info.isGzipCompressed);
             }
             // VARIATIONS_INITIALIZED_PREF should still be set to true when exceptions occur
-            prefs.edit().putBoolean(VARIATIONS_INITIALIZED_PREF, true).apply();
+            ContextUtils.getAppSharedPreferences()
+                    .edit()
+                    .putBoolean(VARIATIONS_INITIALIZED_PREF, true)
+                    .apply();
         }
     }
 
