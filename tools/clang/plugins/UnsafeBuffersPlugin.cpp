@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "DiagnosticConsumer.h"
 #include "Util.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Basic/DiagnosticSema.h"
@@ -205,56 +206,20 @@ class UnsafeBuffersConfig {
   llvm::SmallVector<char> path_to_source_root_;
 };
 
-class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
+class UnsafeBuffersDiagnosticConsumer
+    : public chrome_checker::ForwardingDiagnosticConsumer {
  public:
   UnsafeBuffersDiagnosticConsumer(clang::DiagnosticsEngine* engine,
                                   clang::DiagnosticConsumer* next,
                                   clang::CompilerInstance* instance,
                                   UnsafeBuffersConfig config)
-      : engine_(engine),
-        next_(next),
+      : chrome_checker::ForwardingDiagnosticConsumer(next),
+        engine_(engine),
         instance_(instance),
         unsafe_buffers_config_(std::move(config)),
         diag_note_link_(engine_->getCustomDiagID(
             clang::DiagnosticsEngine::Level::Note,
             "See //docs/unsafe_buffers.md for help.")) {}
-
-  ~UnsafeBuffersDiagnosticConsumer() override {
-    if (next_) {
-      NumErrors = next_->getNumErrors();
-      NumWarnings = next_->getNumWarnings();
-      next_->clang::DiagnosticConsumer::~DiagnosticConsumer();
-    }
-  }
-
-  void clear() override {
-    if (next_) {
-      next_->clear();
-      NumErrors = next_->getNumErrors();
-      NumWarnings = next_->getNumWarnings();
-    }
-  }
-
-  void BeginSourceFile(const clang::LangOptions& opts,
-                       const clang::Preprocessor* pp) override {
-    if (next_) {
-      next_->BeginSourceFile(opts, pp);
-      NumErrors = next_->getNumErrors();
-      NumWarnings = next_->getNumWarnings();
-    }
-  }
-
-  void EndSourceFile() override {
-    if (next_) {
-      next_->EndSourceFile();
-      NumErrors = next_->getNumErrors();
-      NumWarnings = next_->getNumWarnings();
-    }
-  }
-
-  bool IncludeInDiagnosticCounts() const override {
-    return next_ && next_->IncludeInDiagnosticCounts();
-  }
 
   void HandleDiagnostic(clang::DiagnosticsEngine::Level level,
                         const clang::Diagnostic& diag) override {
@@ -364,15 +329,6 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
   }
 
  private:
-  void PassthroughDiagnostic(clang::DiagnosticsEngine::Level level,
-                             const clang::Diagnostic& diag) {
-    if (next_) {
-      next_->HandleDiagnostic(level, diag);
-      NumErrors = next_->getNumErrors();
-      NumWarnings = next_->getNumWarnings();
-    }
-  }
-
   // Depending on where the diagnostic is coming from, we may ignore it or
   // cause it to generate a warning.
   Disposition FileHasSafeBuffersWarnings(const clang::SourceManager& sm,
@@ -460,7 +416,6 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
   // diagnostic from that function.
   bool inside_handle_diagnostic_ = false;
   clang::DiagnosticsEngine* engine_;
-  clang::DiagnosticConsumer* next_;
   clang::CompilerInstance* instance_;
   UnsafeBuffersConfig unsafe_buffers_config_;
   unsigned diag_note_link_;
