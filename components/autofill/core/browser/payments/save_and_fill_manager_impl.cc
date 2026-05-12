@@ -80,6 +80,17 @@ void SaveAndFillManagerImpl::MaybeAddStrikeForSaveAndFill() {
       !has_logged_strikes_for_form_submission_) {
     GetSaveAndFillStrikeDatabase()->AddStrike();
     has_logged_strikes_for_form_submission_ = true;
+
+    // Infer scenario based on whether upload is enabled.
+    autofill_metrics::SaveAndFillFlowScenario scenario =
+        IsCreditCardUploadEnabled()
+            ? autofill_metrics::SaveAndFillFlowScenario::kUploadSave
+            : autofill_metrics::SaveAndFillFlowScenario::
+                  kLocalSaveUploadSaveInfeasible;
+
+    autofill_metrics::LogSaveAndFillFunnelCanceled(
+        scenario,
+        autofill_metrics::SaveAndFillFunnelCanceledStage::kSuggestionIgnored);
   }
 }
 
@@ -194,6 +205,9 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
       if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
         strike_database->AddStrike();
       }
+      autofill_metrics::LogSaveAndFillFunnelCanceled(
+          logging_context_.flow_scenario,
+          autofill_metrics::SaveAndFillFunnelCanceledStage::kDialogCanceled);
       break;
   }
 
@@ -278,6 +292,8 @@ void SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard(
     }
     upload_details_.context_token = context_token;
     supported_card_bin_ranges_ = std::move(supported_card_bin_ranges);
+    logging_context_.flow_scenario =
+        autofill_metrics::SaveAndFillFlowScenario::kUploadSave;
     OfferUploadSaveAndFill(parsed_legal_message_lines);
   } else {
     logging_context_.last_attempt_succeeded = false;
@@ -401,6 +417,9 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
       if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
         strike_database->AddStrike();
       }
+      autofill_metrics::LogSaveAndFillFunnelCanceled(
+          logging_context_.flow_scenario,
+          autofill_metrics::SaveAndFillFunnelCanceledStage::kDialogCanceled);
       Reset();
       break;
   }
@@ -482,6 +501,9 @@ void SaveAndFillManagerImpl::OnPendingDialogCanceled(
     const UserProvidedCardSaveAndFillDetails&
         user_provided_card_save_and_fill_details) {
   CHECK(user_decision == CardSaveAndFillDialogUserDecision::kDeclined);
+  autofill_metrics::LogSaveAndFillFunnelCanceled(
+      logging_context_.flow_scenario,
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kDialogCanceled);
   Reset();
 }
 

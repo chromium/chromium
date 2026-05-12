@@ -7242,6 +7242,38 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.SaveAndFill.Funnel.Canceled"
+    enum="SaveAndFillFunnelCanceledStage" expires_after="2027-04-30">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records when users cancel or ignore the Save and Fill flow, aggregated
+    across all scenarios. Events are logged when the suggestion is ignored or
+    the dialog is canceled.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.SaveAndFill.Funnel.Canceled.{FlowScenario}"
+    enum="SaveAndFillFunnelCanceledStage" expires_after="2027-04-30">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records when users cancel or ignore the Save and Fill flow, for the scenario
+    where {FlowScenario}. Events are logged when the suggestion is ignored or
+    the dialog is canceled.
+  </summary>
+  <token key="FlowScenario">
+    <variant name="LocalSavePreflightCallFailed"
+        summary="when a local save occurs because the preflight call failed"/>
+    <variant name="LocalSaveUploadSaveInfeasible"
+        summary="when a local save occurs because upload save was infeasible
+                 (e.g., sync disabled)"/>
+    <variant name="UploadSave" summary="for server saves"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.SaveAndFill.Funnel.Succeeded"
     enum="SaveAndFillFunnelSucceededStage" expires_after="2027-04-30">
   <owner>averina@google.com</owner>
@@ -7286,9 +7318,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>averina@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Records form events to calculate the Save and Fill conversion rate. Logged
-    when the form is filled and when form is submitted. It has two breakdowns to
-    indicate that the save is a {SaveType} and {Result}.
+    Deprecated. Replaced by Autofill.SaveAndFill.Funnel.Succeeded and
+    Autofill.SaveAndFill.Funnel.Canceled. Records form events to calculate the
+    Save and Fill conversion rate. Logged when the form is filled and when form
+    is submitted. It has two breakdowns to indicate that the save is a
+    {SaveType} and {Result}.
   </summary>
   <token key="SaveType">
     <variant name="Local" summary="local save"/>

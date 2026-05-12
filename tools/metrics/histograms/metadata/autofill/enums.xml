@@ -5481,6 +5481,15 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillFormEvent) -->
 
+<!-- LINT.IfChange(SaveAndFillFunnelCanceledStage) -->
+
+<enum name="SaveAndFillFunnelCanceledStage">
+  <int value="0" label="Suggestion ignored"/>
+  <int value="1" label="Dialog canceled"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillFunnelCanceledStage) -->
+
 <!-- LINT.IfChange(SaveAndFillFunnelSucceededStage) -->
 
 <enum name="SaveAndFillFunnelSucceededStage">

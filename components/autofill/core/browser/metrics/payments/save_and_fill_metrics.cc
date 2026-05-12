@@ -119,6 +119,27 @@ void LogSaveAndFillFunnelSucceeded(SaveAndFillFlowScenario scenario,
       stage);
 }
 
+void LogSaveAndFillFunnelCanceled(SaveAndFillFlowScenario scenario,
+                                  SaveAndFillFunnelCanceledStage stage) {
+  if (scenario == SaveAndFillFlowScenario::kUnknown) {
+    return;
+  }
+  if (stage == SaveAndFillFunnelCanceledStage::kSuggestionIgnored) {
+    CHECK(scenario == SaveAndFillFlowScenario::kLocalSaveUploadSaveInfeasible ||
+          scenario == SaveAndFillFlowScenario::kUploadSave);
+  } else if (stage == SaveAndFillFunnelCanceledStage::kDialogCanceled) {
+    CHECK(scenario != SaveAndFillFlowScenario::kLocalSaveUploadSaveFailed &&
+          scenario != SaveAndFillFlowScenario::kLocalSaveBinRangeNotSupported);
+  }
+
+  // Aggregate parent histogram.
+  base::UmaHistogramEnumeration("Autofill.SaveAndFill.Funnel.Canceled", stage);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.SaveAndFill.Funnel.Canceled.",
+                    GetFlowScenarioString(scenario)}),
+      stage);
+}
+
 void LogSaveAndFillPaymentsRequestResult(
     SaveAndFillServerRequestType request_type,
     PaymentsRpcResult result) {

@@ -113,6 +113,19 @@ enum class SaveAndFillFunnelSucceededStage {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillFunnelSucceededStage)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SaveAndFillFunnelCanceledStage)
+enum class SaveAndFillFunnelCanceledStage {
+  // Suggestion was ignored by the user.
+  kSuggestionIgnored = 0,
+  // Dialog was canceled by the user.
+  kDialogCanceled = 1,
+  kMaxValue = kDialogCanceled,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillFunnelCanceledStage)
+
 enum class SaveAndFillFlowScenario {
   // Value for uninitialized state.
   kUnknown = 0,
@@ -166,6 +179,12 @@ void LogSaveAndFillFunnelMetrics(bool succeeded,
 // the scenario-specific sub-histogram.
 void LogSaveAndFillFunnelSucceeded(SaveAndFillFlowScenario scenario,
                                    SaveAndFillFunnelSucceededStage stage);
+
+// Logs the funnel metrics for canceled Save and Fill attempts. Logs to the
+// parent aggregate histogram "Autofill.SaveAndFill.Funnel.Canceled" as well as
+// the scenario-specific sub-histogram.
+void LogSaveAndFillFunnelCanceled(SaveAndFillFlowScenario scenario,
+                                  SaveAndFillFunnelCanceledStage stage);
 
 // Logs the result of GetDetailsForCreateCard and CreateCard requests when
 // initiated by the Save and Fill flow.

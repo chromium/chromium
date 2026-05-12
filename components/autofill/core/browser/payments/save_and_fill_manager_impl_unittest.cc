@@ -1441,4 +1441,108 @@ TEST_F(SaveAndFillManagerImplTest, LogPaymentsRequestResult_Failure) {
                                      /*sample=*/1, /*expected_count=*/1);
 }
 
+TEST_F(SaveAndFillManagerImplTest,
+       LogCanceledFunnelMetrics_SuggestionIgnored_LocalSave) {
+  base::HistogramTester histogram_tester;
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(false);
+  save_and_fill_manager().OnSuggestionOffered();
+
+  save_and_fill_manager().MaybeAddStrikeForSaveAndFill();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kSuggestionIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled.LocalSaveUploadSaveInfeasible",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kSuggestionIgnored, 1);
+}
+
+TEST_F(SaveAndFillManagerImplTest,
+       LogCanceledFunnelMetrics_LocalDialogCanceled) {
+  base::HistogramTester histogram_tester;
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(false);
+
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
+      CardSaveAndFillDialogUserDecision::kDeclined,
+      CreateUserProvidedCardDetails(u"4444333322221111", u"John Doe", u"06",
+                                    u"2035", u"123"));
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kDialogCanceled, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled.LocalSaveUploadSaveInfeasible",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kDialogCanceled, 1);
+}
+
+TEST_F(SaveAndFillManagerImplTest,
+       LogCanceledFunnelMetrics_SuggestionIgnored_UploadSave) {
+  base::HistogramTester histogram_tester;
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
+  save_and_fill_manager().OnSuggestionOffered();
+
+  save_and_fill_manager().MaybeAddStrikeForSaveAndFill();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kSuggestionIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled.UploadSave",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kSuggestionIgnored, 1);
+}
+
+TEST_F(SaveAndFillManagerImplTest,
+       LogCanceledFunnelMetrics_UploadDialogCanceled) {
+  base::HistogramTester histogram_tester;
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
+
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true);
+
+  EXPECT_CALL(payments_autofill_client(), ShowCreditCardUploadSaveAndFillDialog)
+      .WillOnce(RunOnceCallback<1>(
+          CardSaveAndFillDialogUserDecision::kDeclined,
+          CreateUserProvidedCardDetails(u"1111222233334444", u"Jane Smith",
+                                        u"06", u"2035", u"456")));
+
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kDialogCanceled, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled.UploadSave",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kDialogCanceled, 1);
+}
+
+TEST_F(SaveAndFillManagerImplTest,
+       LogCanceledFunnelMetrics_LocalDialogCanceled_PreflightFailed) {
+  base::HistogramTester histogram_tester;
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
+
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      /*create_valid_legal_message=*/true);
+
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
+      CardSaveAndFillDialogUserDecision::kDeclined,
+      CreateUserProvidedCardDetails(u"4444333322221111", u"John Doe", u"06",
+                                    u"2035", u"123"));
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kDialogCanceled, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Canceled.LocalSavePreflightCallFailed",
+      autofill_metrics::SaveAndFillFunnelCanceledStage::kDialogCanceled, 1);
+}
+
 }  // namespace autofill::payments

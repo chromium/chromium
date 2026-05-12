@@ -300,4 +300,37 @@ TEST_P(SaveAndFillFunnelSucceededMetricsTest, LogSaveAndFillFunnelSucceeded) {
   }
 }
 
+TEST_F(SaveAndFillMetricsTest, LogSaveAndFillFunnelCanceled) {
+  const std::tuple<SaveAndFillFunnelCanceledStage, SaveAndFillFlowScenario,
+                   std::string>
+      kTestCases[] = {
+          {SaveAndFillFunnelCanceledStage::kSuggestionIgnored,
+           SaveAndFillFlowScenario::kLocalSaveUploadSaveInfeasible,
+           "LocalSaveUploadSaveInfeasible"},
+          {SaveAndFillFunnelCanceledStage::kSuggestionIgnored,
+           SaveAndFillFlowScenario::kUploadSave, "UploadSave"},
+          {SaveAndFillFunnelCanceledStage::kDialogCanceled,
+           SaveAndFillFlowScenario::kLocalSaveUploadSaveInfeasible,
+           "LocalSaveUploadSaveInfeasible"},
+          {SaveAndFillFunnelCanceledStage::kDialogCanceled,
+           SaveAndFillFlowScenario::kLocalSavePreflightCallFailed,
+           "LocalSavePreflightCallFailed"},
+          {SaveAndFillFunnelCanceledStage::kDialogCanceled,
+           SaveAndFillFlowScenario::kUploadSave, "UploadSave"},
+      };
+
+  for (const auto& [stage, scenario, scenario_string] : kTestCases) {
+    base::HistogramTester histogram_tester;
+
+    LogSaveAndFillFunnelCanceled(scenario, stage);
+
+    histogram_tester.ExpectBucketCount("Autofill.SaveAndFill.Funnel.Canceled",
+                                       stage, 1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat(
+            {"Autofill.SaveAndFill.Funnel.Canceled.", scenario_string}),
+        stage, 1);
+  }
+}
+
 }  // namespace autofill::autofill_metrics
