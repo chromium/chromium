@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiContainerProperties;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.ViewUtils;
 
 /** Unit tests for {@link SideUiCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,6 +63,7 @@ public class SideUiCoordinatorImplTest {
     private final SettableNonNullObservableSupplier<Integer> mTopMarginSupplier =
             ObservableSuppliers.createNonNull(0);
 
+    private Activity mTestActivity;
     private FrameLayout mAnchorContainerParent;
     private ViewGroup mStartAnchorContainer;
     private ViewGroup mEndAnchorContainer;
@@ -71,22 +73,22 @@ public class SideUiCoordinatorImplTest {
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mTestActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
 
         // Set up the parent View of side UI anchor containers.
-        mAnchorContainerParent = new FrameLayout(activity);
-        activity.addContentView(
+        mAnchorContainerParent = new FrameLayout(mTestActivity);
+        mTestActivity.addContentView(
                 mAnchorContainerParent,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         // Set up anchor containers.
         mStartAnchorContainer =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mTestActivity)
                                 .inflate(R.layout.side_ui_anchor_container, /* root= */ null);
         mEndAnchorContainer =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mTestActivity)
                                 .inflate(R.layout.side_ui_anchor_container, /* root= */ null);
         mAnchorContainerParent.addView(
                 mStartAnchorContainer,
@@ -95,7 +97,7 @@ public class SideUiCoordinatorImplTest {
                 mEndAnchorContainer,
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
 
-        mSideUiContainerView = new View(activity);
+        mSideUiContainerView = new View(mTestActivity);
         mSideUiContainer = new TestSideUiContainer(mSideUiContainerView);
 
         doReturn(mStartAnchorContainer).when(mStartAnchorContainerStub).inflate();
@@ -104,7 +106,7 @@ public class SideUiCoordinatorImplTest {
         // Initialize the SideUiCoordinator under test.
         mCoordinator =
                 new SideUiCoordinatorImpl(
-                        activity,
+                        mTestActivity,
                         mActivityLifecycleDispatcher,
                         mAnchorContainerParent,
                         mStartAnchorContainerStub,
@@ -247,9 +249,12 @@ public class SideUiCoordinatorImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify SideUiContainer#determineContainerWidth() is invoked with correct parameters.
+        int minWebContentsWidthPx =
+                ViewUtils.dpToPx(mTestActivity, SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP);
         assertEquals(Integer.valueOf(width), mSideUiContainer.mLastRequestedWidth);
         assertEquals(
-                Integer.valueOf(WINDOW_SIZE_PX.getWidth()), mSideUiContainer.mLastAvailableWidth);
+                Integer.valueOf(WINDOW_SIZE_PX.getWidth() - minWebContentsWidthPx),
+                mSideUiContainer.mLastAvailableWidth);
         assertEquals(Integer.valueOf(WINDOW_SIZE_PX.getWidth()), mSideUiContainer.mLastWindowWidth);
     }
 

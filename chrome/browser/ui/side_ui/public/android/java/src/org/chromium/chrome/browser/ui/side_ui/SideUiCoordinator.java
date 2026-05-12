@@ -19,6 +19,9 @@ import java.util.Locale;
 @NullMarked
 public interface SideUiCoordinator extends SideUiStateProvider {
 
+    /** Minimum width for {@code WebContents}, regardless of side panel visibility. */
+    int MIN_WEB_CONTENTS_WIDTH_DP = 412;
+
     /**
      * The side of the window ({@link #START} or {@link #END}) that a {@link SideUiContainer} will
      * anchor to.

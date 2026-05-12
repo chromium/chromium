@@ -39,6 +39,7 @@ import org.chromium.ui.interpolators.Interpolators;
 /** Implementation of {@link SideUiCoordinator}. */
 @NullMarked
 final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationChangedObserver {
+
     private static final long TRANSITION_DURATION_MS = 350L;
 
     private final Activity mParentActivity;
@@ -213,14 +214,16 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         var currentSideUiSpecs = getCurrentSideUiSpecs();
 
         // 4. Determine the upcoming SideUiSpecs.
-        // Currently we only have one side UI container, so "availableWidth" is the same as
-        // "windowWidth".
+        // Currently we only have one side UI container, so "availableWidth" is "windowWidth -
+        // minWebContentsWidth".
         // TODO(crbug.com/478338737): Update to account for multiple side containers.
         @Px int windowWidth = getWindowWidth();
+        @Px int minWebContentsWidth = ViewUtils.dpToPx(mParentActivity, MIN_WEB_CONTENTS_WIDTH_DP);
+        @Px int availableWidth = windowWidth - minWebContentsWidth;
         @Px
         int finalSideUiWidth =
                 mSideUiContainer.determineContainerWidth(
-                        properties.mWidth, /* availableWidth= */ windowWidth, windowWidth);
+                        properties.mWidth, availableWidth, windowWidth);
         var newSideUiSpecs =
                 new SideUiSpecs(
                         properties.mAnchorSide == AnchorSide.START ? finalSideUiWidth : 0,

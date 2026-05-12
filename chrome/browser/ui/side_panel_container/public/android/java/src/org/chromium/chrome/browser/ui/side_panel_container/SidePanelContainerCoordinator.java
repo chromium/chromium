@@ -16,6 +16,23 @@ import org.chromium.chrome.browser.ui.side_panel.SidePanelType;
 @NullMarked
 public interface SidePanelContainerCoordinator {
 
+    /** Minimum window width for the side panel to have {@link #WIDE_SIDE_PANEL_WIDTH_DP}. */
+    int MIN_WINDOW_WIDTH_DP_FOR_WIDE_SIDE_PANEL = 1200;
+
+    /**
+     * Fixed, narrow side panel width for when the window can accommodate both the side panel and
+     * {@code WebContents} with minimum width.
+     *
+     * @see org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator#MIN_WEB_CONTENTS_WIDTH_DP
+     */
+    int NARROW_SIDE_PANEL_WIDTH_DP = 360;
+
+    /**
+     * Fixed, wide side panel width for windows wider than {@link
+     * #MIN_WINDOW_WIDTH_DP_FOR_WIDE_SIDE_PANEL}.
+     */
+    int WIDE_SIDE_PANEL_WIDTH_DP = 412;
+
     /**
      * Initializes this {@link SidePanelContainerCoordinator}.
      *
