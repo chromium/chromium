@@ -439,6 +439,14 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kDelayInitialDohProbeTimeoutParam);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kRestrictForbiddenSecurityHeaders);
 
+// Enables the Declarative Performance Observer feature.
+// When enabled, the network service will parse the `Performance-Observer`
+// HTTP response header to extract the telemetry policy for the document.
+// https://github.com/explainers-by-googlers/declarative-performance-observer
+// for more details.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kDeclarativePerformanceObserver);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_
