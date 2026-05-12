@@ -56,7 +56,8 @@ public final class DistillablePageUtils {
      * @param delegate The delegate to set. It will only be held by a weak reference so it is
      *     assumed that the delegate will be owned by another object in Java.
      */
-    public static void setDelegate(WebContents webContents, PageDistillableDelegate delegate) {
+    public static void setDelegate(
+            WebContents webContents, @Nullable PageDistillableDelegate delegate) {
         long nativeObserverPtr = DistillablePageUtilsJni.get().setDelegate(webContents, delegate);
         if (nativeObserverPtr == 0) {
             return;
@@ -94,6 +95,6 @@ public final class DistillablePageUtils {
     public interface Natives {
         long setDelegate(
                 @JniType("content::WebContents*") WebContents webContents,
-                PageDistillableDelegate delegate);
+                @Nullable PageDistillableDelegate delegate);
     }
 }

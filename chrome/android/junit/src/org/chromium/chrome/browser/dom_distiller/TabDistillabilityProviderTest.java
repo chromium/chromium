@@ -116,4 +116,37 @@ public class TabDistillabilityProviderTest {
         mProvider.onDidFinishNavigationInPrimaryMainFrame(mTab, null);
         verify(mDistillablePageUtilsJni).setDelegate(any(), eq(mProvider));
     }
+
+    @Test
+    public void testLazyInitialization() {
+        // Start with null WebContents (simulating frozen tab)
+        Mockito.reset(mDistillablePageUtilsJni);
+        when(mTab.getWebContents()).thenReturn(null);
+
+        mProvider = new TabDistillabilityProvider(mTab);
+
+        // Provider should exist, but delegate should not be set
+        verify(mDistillablePageUtilsJni, Mockito.never()).setDelegate(any(), any());
+
+        // Simulate WebContents being set (tab restored)
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        mProvider.onContentChanged(mTab);
+
+        // Delegate should now be set
+        verify(mDistillablePageUtilsJni).setDelegate(eq(mWebContents), eq(mProvider));
+    }
+
+    @Test
+    public void testCleanupOnFreeze() {
+        // Start with active WebContents
+        // (setUp already constructed mProvider and registered delegate)
+        Mockito.reset(mDistillablePageUtilsJni);
+
+        // Simulate WebContents being cleared (tab frozen)
+        when(mTab.getWebContents()).thenReturn(null);
+        mProvider.onContentChanged(mTab);
+
+        // Delegate should be cleared on the old WebContents
+        verify(mDistillablePageUtilsJni).setDelegate(eq(mWebContents), eq(null));
+    }
 }

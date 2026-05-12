@@ -49,6 +49,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.components.dom_distiller.content.DistillablePageUtils;
+import org.chromium.components.dom_distiller.content.DistillablePageUtilsJni;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.prefs.PrefService;
@@ -88,22 +90,24 @@ public class ReaderModeActionProviderTest {
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private OneshotSupplier<Boolean> mButtonVisibilitySupplier;
     @Mock private ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
+    @Mock private DistillablePageUtils.Natives mDistillablePageUtilsJniMock;
 
     @Before
     @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
+        DomDistillerTabUtilsJni.setInstanceForTesting(mDomDistillerTabUtilsJni);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        DistillablePageUtilsJni.setInstanceForTesting(mDistillablePageUtilsJniMock);
+
+        when(mMockTab.getWebContents()).thenReturn(mMockWebContents);
         initializeReaderModeBackend();
         ReaderModeActionRateLimiter.setInstanceForTesting(mReaderModeActionRateLimiter);
 
         mMockTab.getUserDataHost()
                 .setUserData(ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
-        when(mMockTab.getWebContents()).thenReturn(mMockWebContents);
         when(mMockTab.getUrl()).thenReturn(TEST_URL);
         when(mMockWebContents.getNavigationController()).thenReturn(mMockNavigationController);
-
-        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
-        DomDistillerTabUtilsJni.setInstanceForTesting(mDomDistillerTabUtilsJni);
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
     }
 
     private void initializeReaderModeBackend() {
@@ -114,7 +118,7 @@ public class ReaderModeActionProviderTest {
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.READER_FOR_ACCESSIBILITY)).thenReturn(false);
 
-        TabDistillabilityProvider.createForTab(mMockTab);
+        TabDistillabilityProvider.from(mMockTab);
         DomDistillerTabUtils.setExcludeMobileFriendlyForTesting(true);
     }
 

@@ -1087,6 +1087,7 @@ if (is_android) {
       "//chrome/browser/tab_group_suggestion:toolbar_java",
       "//chrome/browser/ui/android/toolbar:adaptive_features_java",
       "//chrome/browser/ui/android/toolbar:optional_button_java",
+      "//components/dom_distiller/content/browser/android:dom_distiller_content_java",
     ]
   }
 

@@ -35,7 +35,6 @@ public final class TabHelpers {
     static void initTabHelpers(Tab tab, @Nullable Tab parentTab) {
         TabUma.createForTab(tab);
         TabStateAttributes.createForTab(tab, ((TabImpl) tab).getCreationState());
-        TabDistillabilityProvider.createForTab(tab);
         InterceptNavigationDelegateTabHelper.createForTab(tab);
         ContextualSearchTabHelper.createForTab(tab);
         TaskTabHelper.createForTab(tab, parentTab);
@@ -67,6 +66,7 @@ public final class TabHelpers {
         SwipeRefreshHandler.from(tab);
         AccessibilityTabHelper.from(tab);
         MediaSessionTabHelper.from(tab);
+        TabDistillabilityProvider.from(tab);
         TabFavicon.from(tab);
         TrustedCdn.from(tab);
         TabAssociatedApp.from(tab);
