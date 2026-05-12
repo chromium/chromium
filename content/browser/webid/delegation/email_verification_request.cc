@@ -106,6 +106,11 @@ void EmailVerificationRequest::Send(
     const std::string& email,
     const std::string& nonce,
     EmailVerifier::OnEmailVerifiedCallback callback) {
+  if (render_frame_host_->GetLastCommittedOrigin().opaque()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   // Step 3: Token Request
 
   // Step 3.1: the browser extracts the domain from the email address and

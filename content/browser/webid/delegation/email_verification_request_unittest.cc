@@ -77,6 +77,8 @@ class EmailVerificationRequestTest : public RenderViewHostTestHarness {
 };
 
 TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
   auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
   NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
   auto mock_network_manager_ptr =
@@ -211,6 +213,8 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 }
 
 TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
   auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
   NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
   auto mock_network_manager_ptr =
@@ -245,6 +249,33 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
           }));
 
   // SendTokenRequest should NOT be called.
+  EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<std::string> token = future.Get();
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
+  NavigateAndCommit(GURL("data:text/html,<html></html>"));
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager_ =
+      mock_network_manager_ptr.get();
+
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kNonce = "test_nonce";
+
+  EXPECT_CALL(*mock_dns_request_, SendRequest).Times(0);
+  EXPECT_CALL(*mock_network_manager_, FetchWellKnown).Times(0);
   EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
 
   base::test::TestFuture<std::optional<std::string>> future;
