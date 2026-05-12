@@ -54,6 +54,8 @@ DataControlsCondition:
           type: boolean
         other_profile:
           type: boolean
+        gemini_in_chrome:
+          type: boolean
         urls:
           items:
             type: string
@@ -72,6 +74,8 @@ DataControlsCondition:
         os_clipboard:
           type: boolean
         other_profile:
+          type: boolean
+        gemini_in_chrome:
           type: boolean
         urls:
           items:

@@ -53,6 +53,9 @@ constexpr char kSchema[] = R"(
                     "other_profile": {
                       "type": "boolean"
                     },
+                    "gemini_in_chrome": {
+                      "type": "boolean"
+                    },
                     "urls": {
                       "items": {
                         "type": "string"
@@ -82,6 +85,9 @@ constexpr char kSchema[] = R"(
                     "other_profile": {
                       "type": "boolean"
                     },
+                    "gemini_in_chrome": {
+                      "type": "boolean"
+                    },
                     "urls": {
                       "items": {
                         "type": "string"
@@ -108,6 +114,9 @@ constexpr char kSchema[] = R"(
                 "type": "boolean"
               },
               "other_profile": {
+                "type": "boolean"
+              },
+              "gemini_in_chrome": {
                 "type": "boolean"
               },
               "urls": {
@@ -141,6 +150,9 @@ constexpr char kSchema[] = R"(
                   "other_profile": {
                     "type": "boolean"
                   },
+                  "gemini_in_chrome": {
+                    "type": "boolean"
+                  },
                   "urls": {
                     "items": {
                       "type": "string"
@@ -168,6 +180,9 @@ constexpr char kSchema[] = R"(
                     "type": "boolean"
                   },
                   "other_profile": {
+                    "type": "boolean"
+                  },
+                  "gemini_in_chrome": {
                     "type": "boolean"
                   },
                   "urls": {
@@ -202,6 +217,9 @@ constexpr char kSchema[] = R"(
                     "other_profile": {
                       "type": "boolean"
                     },
+                    "gemini_in_chrome": {
+                      "type": "boolean"
+                    },
                     "urls": {
                       "items": {
                         "type": "string"
@@ -229,6 +247,9 @@ constexpr char kSchema[] = R"(
                       "type": "boolean"
                     },
                     "other_profile": {
+                      "type": "boolean"
+                    },
+                    "gemini_in_chrome": {
                       "type": "boolean"
                     },
                     "urls": {
@@ -280,6 +301,9 @@ constexpr char kSchema[] = R"(
                 "type": "boolean"
               },
               "other_profile": {
+                "type": "boolean"
+              },
+              "gemini_in_chrome": {
                 "type": "boolean"
               },
               "urls": {
@@ -442,6 +466,24 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
         u"Error at PolicyForTesting[0]: \"SCREENSHOT\" is not a supported "
         u"restriction on this platform",
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    },
+    {
+        R"([
+            {
+              "sources": {
+                "gemini_in_chrome": true,
+                "urls": ["google.com"]
+              },
+              "restrictions": [
+                {
+                  "class": "CLIPBOARD",
+                  "level": "BLOCK"
+                }
+              ]
+            }
+          ])",
+        u"Error at PolicyForTesting[0].sources: Keys \"urls\" cannot be "
+        u"set in the same dictionary as the \"gemini_in_chrome\" keys",
     },
     {
         R"([

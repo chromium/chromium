@@ -11,7 +11,9 @@ bool ActionSource::empty() const {
   // - A browser tab with the `url` field, and possible `incognito` and/or
   //   `other_profile` set to true.
   // - The OS clipboard with `os_clipboard` set to true.
-  return url.is_empty() && !os_clipboard;
+  // - The integrated Gemini browser agent (Glic) with `gemini_in_chrome` set
+  //   to true.
+  return url.is_empty() && !os_clipboard && !gemini_in_chrome;
 }
 
 bool ActionDestination::empty() const {
@@ -19,12 +21,14 @@ bool ActionDestination::empty() const {
   // - A browser tab with the `url` field, and possible `incognito` and/or
   //   `other_profile` set to true.
   // - The OS clipboard with `os_clipboard` set to true.
+  // - The integrated Gemini browser agent (Glic) with `gemini_in_chrome` set
+  //   to true.
   // - A separate application represented by `component` (CrOS-only).
 #if BUILDFLAG(IS_CHROMEOS)
-  return url.is_empty() && !os_clipboard &&
+  return url.is_empty() && !os_clipboard && !gemini_in_chrome &&
          component == Component::kUnknownComponent;
 #else
-  return url.is_empty() && !os_clipboard;
+  return url.is_empty() && !os_clipboard && !gemini_in_chrome;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

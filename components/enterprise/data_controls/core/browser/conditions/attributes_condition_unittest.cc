@@ -55,6 +55,10 @@ TEST(AttributesConditionTest, InvalidSourceInputs) {
       CreateDict(R"({"other_profile": "str"})")));
   ASSERT_FALSE(SourceAttributesCondition::Create(
       CreateDict(R"({"other_profile": 1234})")));
+  ASSERT_FALSE(SourceAttributesCondition::Create(
+      CreateDict(R"({"gemini_in_chrome": "str"})")));
+  ASSERT_FALSE(SourceAttributesCondition::Create(
+      CreateDict(R"({"gemini_in_chrome": 1234})")));
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(SourceAttributesCondition::Create(
       CreateDict(R"({"urls": "https://foo.com", "components": "ARC"})")));
@@ -125,6 +129,10 @@ TEST(AttributesConditionTest, InvalidDestinationInputs) {
       CreateDict(R"({"other_profile": "str"})")));
   ASSERT_FALSE(DestinationAttributesCondition::Create(
       CreateDict(R"({"other_profile": 1234})")));
+  ASSERT_FALSE(DestinationAttributesCondition::Create(
+      CreateDict(R"({"gemini_in_chrome": "str"})")));
+  ASSERT_FALSE(DestinationAttributesCondition::Create(
+      CreateDict(R"({"gemini_in_chrome": 1234})")));
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(DestinationAttributesCondition::Create(
       CreateDict(R"({"urls": "https://foo.com", "components": "ARC"})")));
@@ -822,6 +830,84 @@ TEST(AttributesConditionTest, OsClipboardSource) {
       {.destination = {.os_clipboard = true}}));
   ASSERT_FALSE(non_os_clipboard_src->CanBeEvaluated(
       {.destination = {.os_clipboard = false}}));
+}
+
+TEST(AttributesConditionTest, GeminiInChromeDestination) {
+  auto gemini_in_chrome_dst =
+      DestinationAttributesCondition::Create(CreateDict(R"(
+      {
+        "gemini_in_chrome": true,
+      })"));
+  ASSERT_TRUE(gemini_in_chrome_dst);
+  ASSERT_TRUE(gemini_in_chrome_dst->IsTriggered(
+      {.destination = {.gemini_in_chrome = true}}));
+  ASSERT_FALSE(gemini_in_chrome_dst->CanBeEvaluated(
+      {.destination = {.gemini_in_chrome = false}}));
+  ASSERT_FALSE(gemini_in_chrome_dst->CanBeEvaluated(
+      {.source = {.gemini_in_chrome = true}}));
+  ASSERT_FALSE(gemini_in_chrome_dst->CanBeEvaluated(
+      {.source = {.gemini_in_chrome = false}}));
+
+  auto non_gemini_in_chrome_dst =
+      DestinationAttributesCondition::Create(CreateDict(R"(
+      {
+        "gemini_in_chrome": false,
+      })"));
+  ASSERT_TRUE(non_gemini_in_chrome_dst);
+  ASSERT_FALSE(non_gemini_in_chrome_dst->IsTriggered(
+      {.destination = {.gemini_in_chrome = true}}));
+  ASSERT_FALSE(non_gemini_in_chrome_dst->CanBeEvaluated(
+      {.destination = {.gemini_in_chrome = false}}));
+  ASSERT_FALSE(non_gemini_in_chrome_dst->CanBeEvaluated(
+      {.source = {.gemini_in_chrome = true}}));
+  ASSERT_FALSE(non_gemini_in_chrome_dst->CanBeEvaluated(
+      {.source = {.gemini_in_chrome = false}}));
+}
+
+TEST(AttributesConditionTest, GeminiInChromeSource) {
+  auto gemini_in_chrome_src = SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "gemini_in_chrome": true,
+      })"));
+  ASSERT_TRUE(gemini_in_chrome_src);
+  ASSERT_FALSE(gemini_in_chrome_src->CanBeEvaluated(
+      {.destination = {.gemini_in_chrome = true}}));
+  ASSERT_FALSE(gemini_in_chrome_src->CanBeEvaluated(
+      {.destination = {.gemini_in_chrome = false}}));
+  ASSERT_TRUE(gemini_in_chrome_src->IsTriggered(
+      {.source = {.gemini_in_chrome = true}}));
+  ASSERT_FALSE(gemini_in_chrome_src->CanBeEvaluated(
+      {.source = {.gemini_in_chrome = false}}));
+
+  auto non_gemini_in_chrome_src =
+      SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "gemini_in_chrome": false,
+      })"));
+  ASSERT_TRUE(non_gemini_in_chrome_src);
+  ASSERT_FALSE(non_gemini_in_chrome_src->IsTriggered(
+      {.source = {.gemini_in_chrome = true}}));
+  ASSERT_FALSE(non_gemini_in_chrome_src->CanBeEvaluated(
+      {.source = {.gemini_in_chrome = false}}));
+  ASSERT_FALSE(non_gemini_in_chrome_src->CanBeEvaluated(
+      {.destination = {.gemini_in_chrome = true}}));
+  ASSERT_FALSE(non_gemini_in_chrome_src->CanBeEvaluated(
+      {.destination = {.gemini_in_chrome = false}}));
+}
+
+TEST(AttributesConditionTest, GeminiInChromeIgnoresIncognitoContext) {
+  auto condition = SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "gemini_in_chrome": true,
+      })"));
+  ASSERT_TRUE(condition);
+
+  // Even if the action context occurs in an incognito window, the Gemini
+  // condition should trigger normally because it ignores other context fields.
+  EXPECT_TRUE(condition->IsTriggered(
+      {.source = {.incognito = true, .gemini_in_chrome = true}}));
+  EXPECT_TRUE(condition->IsTriggered(
+      {.source = {.incognito = false, .gemini_in_chrome = true}}));
 }
 
 }  // namespace data_controls

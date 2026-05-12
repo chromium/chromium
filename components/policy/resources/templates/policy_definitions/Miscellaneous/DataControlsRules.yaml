@@ -143,6 +143,8 @@ schema:
             type: boolean
           other_profile:
             type: boolean
+          gemini_in_chrome:
+            type: boolean
           urls:
             items:
               type: string
@@ -181,6 +183,8 @@ schema:
           os_clipboard:
             type: boolean
           other_profile:
+            type: boolean
+          gemini_in_chrome:
             type: boolean
           urls:
             items:

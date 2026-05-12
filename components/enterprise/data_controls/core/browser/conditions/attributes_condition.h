@@ -39,6 +39,7 @@ class AttributesCondition {
   static constexpr char kKeyIncognito[] = "incognito";
   static constexpr char kKeyOsClipboard[] = "os_clipboard";
   static constexpr char kKeyOtherProfile[] = "other_profile";
+  static constexpr char kKeyGeminiInChrome[] = "gemini_in_chrome";
 #if BUILDFLAG(IS_CHROMEOS)
   static constexpr char kKeyComponents[] = "components";
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -67,9 +68,11 @@ class AttributesCondition {
   bool IncognitoMatches(bool incognito) const;
   bool OsClipboardMatches(bool os_clipboard) const;
   bool OtherProfileMatches(bool other_profile) const;
+  bool GeminiInChromeMatches(bool gemini_in_chrome) const;
 
   // Helpers to help check which attributes are meaningful to the condition.
   bool is_os_clipboard_condition() const;
+  bool is_gemini_in_chrome_condition() const;
 
  private:
   // These attributes represent tab-specific conditions, and are only evaluated
@@ -88,6 +91,11 @@ class AttributesCondition {
   // This attribute indicates the destination/source condition must/mustn't be
   // a separate Chrome profile. It is always null for non-clipboard conditions.
   std::optional<bool> other_profile_;
+
+  // This attribute indicates the destination/source condition must/mustn't be
+  // the integrated Gemini browser agent (Glic). It is always null for
+  // conditions not involving the agent.
+  std::optional<bool> gemini_in_chrome_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // A destination/source must be in this set to pass the condition, unless the

@@ -60,7 +60,13 @@ std::vector<std::string_view> OneOfConditions(const base::DictValue& value) {
         // represents a unique source/destination. For example, a clipboard
         // interaction cannot both be the OS clipboard and match URL patterns
         // at the same time.
-        AttributesCondition::kKeyOsClipboard}) {
+        AttributesCondition::kKeyOsClipboard,
+
+        // "gemini_in_chrome" is mutually exclusive with everything else.
+        // TODO(crbug.com/510383413): Support combining `gemini_in_chrome` with
+        // profile-bound attributes like `incognito`. When implemented, move
+        // this key to `AnyOfConditions`.
+        AttributesCondition::kKeyGeminiInChrome}) {
     if (value.contains(oneof_value)) {
       oneof_conditions.push_back(oneof_value);
     }
@@ -517,6 +523,7 @@ bool Rule::AddUnsupportedAttributeErrors(
                   AttributesCondition::kKeyUrls,
                   AttributesCondition::kKeyIncognito,
                   AttributesCondition::kKeyOtherProfile,
+                  AttributesCondition::kKeyGeminiInChrome,
 #if BUILDFLAG(IS_CHROMEOS)
                   AttributesCondition::kKeyComponents,
 #endif  // BUILDFLAG(IS_CHROMEOS)

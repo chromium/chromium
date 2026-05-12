@@ -31,6 +31,14 @@ struct ActionSource {
   // one receiving that data. This field is only used for clipboard
   // interactions, and as such defaults to "false".
   bool other_profile = false;
+
+  // Indicates that the source of the data is the browser's integrated Gemini
+  // agent (Glic). If this is `true`, all other values in `ActionSource` tied to
+  // the browser (`url`, `incognito`, etc.) should be ignored since those
+  // properties only apply to Chrome tabs.
+  // TODO(crbug.com/510383413): Support combining `gemini_in_chrome` with
+  // profile-bound attributes like `incognito`.
+  bool gemini_in_chrome = false;
 };
 
 struct ActionDestination {
@@ -58,6 +66,14 @@ struct ActionDestination {
   // clipboard are not considered a separate profile. This field is only used
   // for clipboard interactions, and as such defaults to "false".
   bool other_profile = false;
+
+  // Indicates that the destination of the data is the browser's integrated
+  // Gemini agent (Glic). If this is `true`, all other values in
+  // `ActionDestination` tied to the browser (`url`, `incognito`, etc.) should
+  // be ignored since those properties only apply to Chrome tabs.
+  // TODO(crbug.com/510383413): Support combining `gemini_in_chrome` with
+  // profile-bound attributes like `incognito`.
+  bool gemini_in_chrome = false;
 
 #if BUILDFLAG(IS_CHROMEOS)
   Component component = Component::kUnknownComponent;

@@ -35,6 +35,7 @@ AttributesCondition::AttributesCondition(const base::DictValue& value) {
   incognito_ = value.FindBool(kKeyIncognito);
   os_clipboard_ = value.FindBool(kKeyOsClipboard);
   other_profile_ = value.FindBool(kKeyOtherProfile);
+  gemini_in_chrome_ = value.FindBool(kKeyGeminiInChrome);
 
 #if BUILDFLAG(IS_CHROMEOS)
   const base::ListValue* components_value = value.FindList(kKeyComponents);
@@ -60,7 +61,7 @@ AttributesCondition::AttributesCondition(AttributesCondition&& other) = default;
 bool AttributesCondition::IsValid() const {
   bool valid = (url_matcher_ && !url_matcher_->IsEmpty()) ||
                incognito_.has_value() || os_clipboard_.has_value() ||
-               other_profile_.has_value();
+               other_profile_.has_value() || gemini_in_chrome_.has_value();
 #if BUILDFLAG(IS_CHROMEOS)
   valid |= !components_.empty();
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -117,8 +118,20 @@ bool AttributesCondition::OtherProfileMatches(bool other_profile) const {
   return other_profile == other_profile_.value();
 }
 
+bool AttributesCondition::GeminiInChromeMatches(bool gemini_in_chrome) const {
+  if (!gemini_in_chrome_.has_value()) {
+    return true;
+  }
+
+  return gemini_in_chrome == gemini_in_chrome_.value();
+}
+
 bool AttributesCondition::is_os_clipboard_condition() const {
   return os_clipboard_.has_value();
+}
+
+bool AttributesCondition::is_gemini_in_chrome_condition() const {
+  return gemini_in_chrome_.has_value();
 }
 
 // static
@@ -157,6 +170,12 @@ bool SourceAttributesCondition::IsTriggered(
     // This returns early as incognito, URLs, etc. don't need to be checked for
     // an OS clipboard condition.
     return OsClipboardMatches(action_context.source.os_clipboard);
+  }
+
+  // TODO(crbug.com/510383413): Support combining `gemini_in_chrome` with
+  // profile-bound attributes like `incognito`.
+  if (is_gemini_in_chrome_condition()) {
+    return GeminiInChromeMatches(action_context.source.gemini_in_chrome);
   }
 
   return IncognitoMatches(action_context.source.incognito) &&
@@ -209,6 +228,12 @@ bool DestinationAttributesCondition::IsTriggered(
     // This returns early as incognito, URLs, etc. don't need to be checked for
     // an OS clipboard condition.
     return OsClipboardMatches(action_context.destination.os_clipboard);
+  }
+
+  // TODO(crbug.com/510383413): Support combining `gemini_in_chrome` with
+  // profile-bound attributes like `incognito`.
+  if (is_gemini_in_chrome_condition()) {
+    return GeminiInChromeMatches(action_context.destination.gemini_in_chrome);
   }
 
   return IncognitoMatches(action_context.destination.incognito) &&
