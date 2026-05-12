@@ -6097,14 +6097,14 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
           gfx::Point())
           .id;
   ASSERT_TRUE(scroll_tree.CanRealizeScrollsOnPendingTree(
-      *scroll_tree.Node(scroll_node_id1)));
+      scroll_tree.Node(scroll_node_id1)));
   int scroll_node_id2 =
       CreateScrollNodeForNonCompositedScroller(
           property_trees, scroll_node_id1, scroll_element_id2,
           gfx::Size(200, 200), gfx::Size(1000, 1000), gfx::Point(100, 300))
           .id;
   ASSERT_TRUE(scroll_tree.CanRealizeScrollsOnPendingTree(
-      *scroll_tree.Node(scroll_node_id2)));
+      scroll_tree.Node(scroll_node_id2)));
 
   FakeContentLayerClient client;
   client.set_display_item_list(display_list);
@@ -6131,7 +6131,7 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   EXPECT_TRUE(host_impl()->HasPendingRasterInvalidationScrollForTesting(
       scroll_element_id1));
   property_trees->transform_tree_mutable().UpdateTransforms(
-      scroll_tree.Node(scroll_node_id1)->transform_id);
+      scroll_tree.Node(scroll_node_id1).transform_id);
 
   // Invalidating scroll_element_id1 will invalidate scroll visual rect.
   pending_layer()->InvalidateRasterInducingScrolls({scroll_element_id1});

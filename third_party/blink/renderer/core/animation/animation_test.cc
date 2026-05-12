@@ -292,10 +292,10 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
     auto* pac = GetDocument().GetFrame()->View()->GetPaintArtifactCompositor();
     auto* property_trees =
         pac->RootLayer()->layer_tree_host()->property_trees();
-    const auto* cc_scroll = property_trees->scroll_tree().Node(
-        box.FirstFragment().PaintProperties()->Scroll()->CcNodeId(
-            property_trees->sequence_number()));
-    return cc_scroll && cc_scroll->is_composited;
+    int node_id = box.FirstFragment().PaintProperties()->Scroll()->CcNodeId(
+        property_trees->sequence_number());
+    return node_id != cc::kInvalidPropertyNodeId &&
+           property_trees->scroll_tree().Node(node_id).is_composited;
   }
 
 #define EXPECT_TIME(expected, observed) \

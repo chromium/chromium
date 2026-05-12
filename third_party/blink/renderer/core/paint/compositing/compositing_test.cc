@@ -127,7 +127,7 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
   }
 
   cc::TransformNode* GetTransformNode(const cc::Layer* layer) {
-    return GetPropertyTrees()->transform_tree_mutable().Node(
+    return &GetPropertyTrees()->transform_tree_mutable().MutableNode(
         layer->transform_tree_index());
   }
 
@@ -439,22 +439,23 @@ TEST_P(CompositingTest, PaintPropertiesWhenCompositingSVG) {
   )HTML");
   UpdateAllLifecyclePhases();
   auto* ancestor = CcLayerByDOMElementId("ancestor");
-  auto* ancestor_effect_node = GetPropertyTrees()->effect_tree_mutable().Node(
-      ancestor->effect_tree_index());
+  auto* ancestor_effect_node =
+      &GetPropertyTrees()->effect_tree_mutable().MutableNode(
+          ancestor->effect_tree_index());
   EXPECT_EQ(ancestor_effect_node->opacity, 0.9f);
 
   auto* svg_root = CcLayerByDOMElementId("svg");
-  const auto* svg_root_effect_node =
+  const auto& svg_root_effect_node =
       GetPropertyTrees()->effect_tree().Node(svg_root->effect_tree_index());
-  EXPECT_EQ(svg_root_effect_node->opacity, 0.8f);
-  EXPECT_EQ(svg_root_effect_node->parent_id, ancestor_effect_node->id);
+  EXPECT_EQ(svg_root_effect_node.opacity, 0.8f);
+  EXPECT_EQ(svg_root_effect_node.parent_id, ancestor_effect_node->id);
 
   auto* rect = CcLayerByDOMElementId("rect");
-  const auto* rect_effect_node =
+  const auto& rect_effect_node =
       GetPropertyTrees()->effect_tree().Node(rect->effect_tree_index());
 
-  EXPECT_EQ(rect_effect_node->opacity, 0.7f);
-  EXPECT_EQ(rect_effect_node->parent_id, svg_root_effect_node->id);
+  EXPECT_EQ(rect_effect_node.opacity, 0.7f);
+  EXPECT_EQ(rect_effect_node.parent_id, svg_root_effect_node.id);
 }
 
 TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
@@ -1391,12 +1392,12 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
   }
 
   cc::TransformNode* GetTransformNode(const cc::Layer* layer) {
-    return GetPropertyTrees()->transform_tree_mutable().Node(
+    return &GetPropertyTrees()->transform_tree_mutable().MutableNode(
         layer->transform_tree_index());
   }
 
   cc::EffectNode* GetEffectNode(const cc::Layer* layer) {
-    return GetPropertyTrees()->effect_tree_mutable().Node(
+    return &GetPropertyTrees()->effect_tree_mutable().MutableNode(
         layer->effect_tree_index());
   }
 
@@ -1672,11 +1673,11 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
   auto* outer_element = GetElementById("outer");
   auto* outer_element_layer = CcLayerByDOMElementId("outer");
   auto transform_tree_index = outer_element_layer->transform_tree_index();
-  const auto* transform_node =
+  const auto& transform_node =
       GetPropertyTrees()->transform_tree().Node(transform_tree_index);
 
   // Initially, transform should be unchanged.
-  EXPECT_FALSE(transform_node->transform_changed());
+  EXPECT_FALSE(transform_node.transform_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
 
@@ -1685,13 +1686,13 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
       html_names::kStyleAttr,
       AtomicString("animation-name: animateTransformB"));
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(transform_node->transform_changed());
+  EXPECT_TRUE(transform_node.transform_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
 
   // After a frame the |transform_changed| value should be reset.
   Compositor().BeginFrame();
-  EXPECT_FALSE(transform_node->transform_changed());
+  EXPECT_FALSE(transform_node.transform_changed());
 }
 
 // Test that, for simple transform updates with an existing cc transform node,
@@ -1740,12 +1741,12 @@ TEST_P(CompositingSimTest, FastPathTransformUpdateFromStyle) {
   // Check the initial state of the cc transform node.
   auto* div_cc_layer = CcLayerByDOMElementId("div");
   auto transform_tree_index = div_cc_layer->transform_tree_index();
-  const auto* transform_node =
+  const auto& transform_node =
       GetPropertyTrees()->transform_tree().Node(transform_tree_index);
-  EXPECT_FALSE(transform_node->transform_changed());
+  EXPECT_FALSE(transform_node.transform_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
-  EXPECT_EQ(100.0f, transform_node->local.To2dTranslation().x());
+  EXPECT_EQ(100.0f, transform_node.local.To2dTranslation().x());
 
   // Change the transform style and ensure the blink and cc transform nodes are
   // not marked for a full update.
@@ -1762,16 +1763,16 @@ TEST_P(CompositingSimTest, FastPathTransformUpdateFromStyle) {
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(gfx::Transform::MakeTranslation(400, 0),
             div_properties->Transform()->Matrix());
-  EXPECT_EQ(400.0f, transform_node->local.To2dTranslation().x());
-  EXPECT_TRUE(transform_node->transform_changed());
+  EXPECT_EQ(400.0f, transform_node.local.To2dTranslation().x());
+  EXPECT_TRUE(transform_node.transform_changed());
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
-  EXPECT_TRUE(transform_node->transform_changed());
+  EXPECT_TRUE(transform_node.transform_changed());
 
   // After a frame the |transform_changed| value should be reset.
   Compositor().BeginFrame();
-  EXPECT_FALSE(transform_node->transform_changed());
+  EXPECT_FALSE(transform_node.transform_changed());
 }
 
 // Same as the test above but for opacity changes
@@ -1814,12 +1815,12 @@ TEST_P(CompositingSimTest, FastPathOpacityUpdateFromStyle) {
   // Check the initial state of the cc effect node.
   auto* div_cc_layer = CcLayerByDOMElementId("div");
   auto effect_tree_index = div_cc_layer->effect_tree_index();
-  const auto* effect_node =
+  const auto& effect_node =
       GetPropertyTrees()->effect_tree().Node(effect_tree_index);
-  EXPECT_FALSE(effect_node->effect_changed);
+  EXPECT_FALSE(effect_node.effect_changed);
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
-  EXPECT_NEAR(0.1, effect_node->opacity, 0.001);
+  EXPECT_NEAR(0.1, effect_node.opacity, 0.001);
 
   // Change the effect style and ensure the blink and cc effect nodes are
   // not marked for a full update.
@@ -1834,16 +1835,16 @@ TEST_P(CompositingSimTest, FastPathOpacityUpdateFromStyle) {
   // performed.
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_NEAR(0.15, div_properties->Effect()->Opacity(), 0.001);
-  EXPECT_NEAR(0.15, effect_node->opacity, 0.001);
-  EXPECT_TRUE(effect_node->effect_changed);
+  EXPECT_NEAR(0.15, effect_node.opacity, 0.001);
+  EXPECT_TRUE(effect_node.effect_changed);
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
-  EXPECT_TRUE(effect_node->effect_changed);
+  EXPECT_TRUE(effect_node.effect_changed);
 
   // After a frame the |opacity_changed| value should be reset.
   Compositor().BeginFrame();
-  EXPECT_FALSE(effect_node->effect_changed);
+  EXPECT_FALSE(effect_node.effect_changed);
 }
 
 TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
@@ -1874,11 +1875,11 @@ TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
 
   auto* will_change_layer = CcLayerByDOMElementId("willChangeWithAnimation");
   auto transform_tree_index = will_change_layer->transform_tree_index();
-  const auto* transform_node =
+  const auto& transform_node =
       GetPropertyTrees()->transform_tree().Node(transform_tree_index);
 
   // Initially, transform should be unchanged.
-  EXPECT_FALSE(transform_node->transform_changed());
+  EXPECT_FALSE(transform_node.transform_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
 
@@ -1888,13 +1889,13 @@ TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
       html_names::kStyleAttr,
       AtomicString("animation-name: animateTransformB"));
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(transform_node->transform_changed());
+  EXPECT_TRUE(transform_node.transform_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
 
   // After a frame the |transform_changed| value should be reset.
   Compositor().BeginFrame();
-  EXPECT_FALSE(transform_node->transform_changed());
+  EXPECT_FALSE(transform_node.transform_changed());
 }
 
 // This test is similar to |DirectTransformPropertyUpdate| but tests that
@@ -1938,18 +1939,18 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
   auto* outer_element = GetElementById("outer");
   auto* outer_element_layer = CcLayerByDOMElementId("outer");
   auto outer_transform_tree_index = outer_element_layer->transform_tree_index();
-  const auto* outer_transform_node =
+  const auto& outer_transform_node =
       GetPropertyTrees()->transform_tree().Node(outer_transform_tree_index);
 
   auto* inner_element = GetElementById("inner");
   auto* inner_element_layer = CcLayerByDOMElementId("inner");
   auto inner_transform_tree_index = inner_element_layer->transform_tree_index();
-  const auto* inner_transform_node =
+  const auto& inner_transform_node =
       GetPropertyTrees()->transform_tree().Node(inner_transform_tree_index);
 
   // Initially, the transforms should be unchanged.
-  EXPECT_FALSE(outer_transform_node->transform_changed());
-  EXPECT_FALSE(inner_transform_node->transform_changed());
+  EXPECT_FALSE(outer_transform_node.transform_changed());
+  EXPECT_FALSE(inner_transform_node.transform_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
 
@@ -1962,8 +1963,8 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
   inner_element->setAttribute(html_names::kStyleAttr,
                               AtomicString("transform: rotate(30deg)"));
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(outer_transform_node->transform_changed());
-  EXPECT_FALSE(inner_transform_node->transform_changed());
+  EXPECT_TRUE(outer_transform_node.transform_changed());
+  EXPECT_FALSE(inner_transform_node.transform_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kFull);
 
@@ -1971,13 +1972,13 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
   // element's transform change, both the inner and outer transform nodes
   // should be marked as changed to ensure they result in damage.
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(outer_transform_node->transform_changed());
-  EXPECT_TRUE(inner_transform_node->transform_changed());
+  EXPECT_TRUE(outer_transform_node.transform_changed());
+  EXPECT_TRUE(inner_transform_node.transform_changed());
 
   // After a frame the |transform_changed| values should be reset.
   Compositor().BeginFrame();
-  EXPECT_FALSE(outer_transform_node->transform_changed());
-  EXPECT_FALSE(inner_transform_node->transform_changed());
+  EXPECT_FALSE(outer_transform_node.transform_changed());
+  EXPECT_FALSE(inner_transform_node.transform_changed());
 }
 
 // This test ensures that the correct transform nodes are created and bits set
@@ -2011,11 +2012,9 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
     Compositor().BeginFrame();
 
     auto transform_tree_index = fixed_element_layer->transform_tree_index();
-    const auto* transform_node =
+    const auto& transform_node =
         GetPropertyTrees()->transform_tree().Node(transform_tree_index);
-
-    DCHECK(transform_node);
-    EXPECT_TRUE(transform_node->moved_by_outer_viewport_bounds_delta_y);
+    EXPECT_TRUE(transform_node.moved_by_outer_viewport_bounds_delta_y);
   }
 
   // Fix it to the top now. Since the top edge doesn't change (relative to the
@@ -2026,11 +2025,9 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
     Compositor().BeginFrame();
 
     auto transform_tree_index = fixed_element_layer->transform_tree_index();
-    const auto* transform_node =
+    const auto& transform_node =
         GetPropertyTrees()->transform_tree().Node(transform_tree_index);
-
-    DCHECK(transform_node);
-    EXPECT_FALSE(transform_node->moved_by_outer_viewport_bounds_delta_y);
+    EXPECT_FALSE(transform_node.moved_by_outer_viewport_bounds_delta_y);
   }
 }
 
@@ -2070,12 +2067,10 @@ TEST_P(CompositingSimTest, IsBottomRelativeToSafeAreaInsetUpdates) {
     Compositor().BeginFrame();
 
     auto transform_tree_index = fixed_element_layer->transform_tree_index();
-    const auto* transform_node =
+    const auto& transform_node =
         GetPropertyTrees()->transform_tree().Node(transform_tree_index);
-
-    DCHECK(transform_node);
-    EXPECT_TRUE(transform_node->moved_by_outer_viewport_bounds_delta_y);
-    EXPECT_FALSE(transform_node->moved_by_safe_area_bottom);
+    EXPECT_TRUE(transform_node.moved_by_outer_viewport_bounds_delta_y);
+    EXPECT_FALSE(transform_node.moved_by_safe_area_bottom);
   }
 
   // A bottom fixed position DIV using calc(env(safe-area-inset-bottom) +
@@ -2087,12 +2082,10 @@ TEST_P(CompositingSimTest, IsBottomRelativeToSafeAreaInsetUpdates) {
     Compositor().BeginFrame();
 
     auto transform_tree_index = fixed_element_layer->transform_tree_index();
-    const auto* transform_node =
+    const auto& transform_node =
         GetPropertyTrees()->transform_tree().Node(transform_tree_index);
-
-    DCHECK(transform_node);
-    EXPECT_TRUE(transform_node->moved_by_outer_viewport_bounds_delta_y);
-    EXPECT_TRUE(transform_node->moved_by_safe_area_bottom);
+    EXPECT_TRUE(transform_node.moved_by_outer_viewport_bounds_delta_y);
+    EXPECT_TRUE(transform_node.moved_by_safe_area_bottom);
   }
 
   // A bottom fixed position DIV using calc(env(safe-area-inset-bottom) *
@@ -2106,12 +2099,10 @@ TEST_P(CompositingSimTest, IsBottomRelativeToSafeAreaInsetUpdates) {
     Compositor().BeginFrame();
 
     auto transform_tree_index = fixed_element_layer->transform_tree_index();
-    const auto* transform_node =
+    const auto& transform_node =
         GetPropertyTrees()->transform_tree().Node(transform_tree_index);
-
-    DCHECK(transform_node);
-    EXPECT_TRUE(transform_node->moved_by_outer_viewport_bounds_delta_y);
-    EXPECT_FALSE(transform_node->moved_by_safe_area_bottom);
+    EXPECT_TRUE(transform_node.moved_by_outer_viewport_bounds_delta_y);
+    EXPECT_FALSE(transform_node.moved_by_safe_area_bottom);
   }
 }
 
@@ -2149,11 +2140,11 @@ TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
   auto* box_element = GetElementById("box");
   auto* box_element_layer = CcLayerByDOMElementId("box");
   auto transform_tree_index = box_element_layer->transform_tree_index();
-  const auto* transform_node =
+  const auto& transform_node =
       GetPropertyTrees()->transform_tree().Node(transform_tree_index);
 
   // Initially, transform should be unchanged.
-  EXPECT_FALSE(transform_node->transform_changed());
+  EXPECT_FALSE(transform_node.transform_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
 
@@ -2161,13 +2152,13 @@ TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
   box_element->setAttribute(html_names::kStyleAttr,
                             AtomicString("animation-name: animateTransformB"));
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(transform_node->transform_changed());
+  EXPECT_TRUE(transform_node.transform_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
 
   // After a frame the |transform_changed| value should be reset.
   Compositor().BeginFrame();
-  EXPECT_FALSE(transform_node->transform_changed());
+  EXPECT_FALSE(transform_node.transform_changed());
 }
 
 // This test is similar to |LayerSubtreeTransformPropertyChanged| but for
@@ -2552,10 +2543,10 @@ TEST_P(CompositingSimTest, NonDrawableLayersIgnoredForRenderSurfaces) {
   // The inner element layer is only needed for hit testing and does not draw
   // content, so it should not cause a render surface.
   auto effect_tree_index = outer_element_layer->effect_tree_index();
-  const auto* effect_node =
+  const auto& effect_node =
       GetPropertyTrees()->effect_tree().Node(effect_tree_index);
-  EXPECT_EQ(effect_node->opacity, 0.5f);
-  EXPECT_FALSE(effect_node->HasRenderSurface());
+  EXPECT_EQ(effect_node.opacity, 0.5f);
+  EXPECT_FALSE(effect_node.HasRenderSurface());
 }
 
 TEST_P(CompositingSimTest, NoRenderSurfaceWithAxisAlignedTransformAnimation) {

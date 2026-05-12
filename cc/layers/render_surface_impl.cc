@@ -52,21 +52,23 @@ RenderSurfaceImpl::~RenderSurfaceImpl() = default;
 RenderSurfaceImpl* RenderSurfaceImpl::render_target() {
   EffectTree& effect_tree =
       layer_tree_impl_->property_trees()->effect_tree_mutable();
-  EffectNode* node = effect_tree.Node(EffectTreeIndex());
-  if (node->target_id != kRootPropertyNodeId)
-    return effect_tree.GetRenderSurface(node->target_id);
-  else
+  const EffectNode& node = effect_tree.Node(EffectTreeIndex());
+  if (node.target_id != kRootPropertyNodeId) {
+    return effect_tree.GetRenderSurface(node.target_id);
+  } else {
     return this;
+  }
 }
 
 const RenderSurfaceImpl* RenderSurfaceImpl::render_target() const {
   const EffectTree& effect_tree =
       layer_tree_impl_->property_trees()->effect_tree();
-  const EffectNode* node = effect_tree.Node(EffectTreeIndex());
-  if (node->target_id != kRootPropertyNodeId)
-    return effect_tree.GetRenderSurface(node->target_id);
-  else
+  const EffectNode& node = effect_tree.Node(EffectTreeIndex());
+  if (node.target_id != kRootPropertyNodeId) {
+    return effect_tree.GetRenderSurface(node.target_id);
+  } else {
     return this;
+  }
 }
 
 RenderSurfaceImpl::DrawProperties::DrawProperties() = default;
@@ -191,12 +193,15 @@ int RenderSurfaceImpl::EffectTreeIndex() const {
 }
 
 const EffectNode* RenderSurfaceImpl::OwningEffectNode() const {
-  return layer_tree_impl_->property_trees()->effect_tree().Node(
+  if (EffectTreeIndex() == kInvalidPropertyNodeId) {
+    return nullptr;
+  }
+  return &layer_tree_impl_->property_trees()->effect_tree().Node(
       EffectTreeIndex());
 }
 
 EffectNode* RenderSurfaceImpl::OwningEffectNodeMutableForTest() const {
-  return layer_tree_impl_->property_trees()->effect_tree_mutable().Node(
+  return &layer_tree_impl_->property_trees()->effect_tree_mutable().MutableNode(
       EffectTreeIndex());
 }
 
@@ -429,8 +434,8 @@ bool RenderSurfaceImpl::AncestorPropertyChanged() const {
   return ancestor_property_changed_ || property_trees->full_tree_damaged() ||
          property_trees->transform_tree()
              .Node(TransformTreeIndex())
-             ->transform_changed() ||
-         property_trees->effect_tree().Node(EffectTreeIndex())->effect_changed;
+             .transform_changed() ||
+         property_trees->effect_tree().Node(EffectTreeIndex()).effect_changed;
 }
 
 void RenderSurfaceImpl::NoteAncestorPropertyChanged() {
@@ -567,7 +572,7 @@ void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
   const PropertyTrees* property_trees = layer_tree_impl_->property_trees();
   int sorting_context_id = property_trees->transform_tree()
                                .Node(TransformTreeIndex())
-                               ->sorting_context_id;
+                               .sorting_context_id;
   bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();

@@ -139,10 +139,11 @@ void ClearDamageForAllSurfaces(LayerImpl* root) {
 }
 
 void SetCopyRequest(LayerImpl* root) {
-  auto* root_node =
-      root->layer_tree_impl()->property_trees()->effect_tree_mutable().Node(
-          root->effect_tree_index());
-  root_node->has_copy_request = true;
+  auto& root_node = root->layer_tree_impl()
+                        ->property_trees()
+                        ->effect_tree_mutable()
+                        .MutableNode(root->effect_tree_index());
+  root_node.has_copy_request = true;
   root->layer_tree_impl()
       ->property_trees()
       ->effect_tree_mutable()
@@ -324,8 +325,8 @@ class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
     root->layer_tree_impl()
         ->property_trees()
         ->effect_tree_mutable()
-        .Node(child1_->effect_tree_index())
-        ->backdrop_filters.Append(
+        .MutableNode(child1_->effect_tree_index())
+        .backdrop_filters.Append(
             FilterOperation::CreateZoomFilter(2.f /* zoom */, 0 /* inset */));
 
     // Setup includes going past the first frame which always damages

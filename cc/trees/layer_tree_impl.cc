@@ -248,15 +248,16 @@ void LayerTreeImpl::DidUpdateScrollOffset(
   if (can_realize_now) {
     CHECK_NE(scroll_node->transform_id, kInvalidPropertyNodeId);
     TransformTree& transform_tree = property_trees()->transform_tree_mutable();
-    auto* transform_node = transform_tree.Node(scroll_node->transform_id);
-    if (transform_node->scroll_offset() !=
+    auto& transform_node =
+        transform_tree.MutableNode(scroll_node->transform_id);
+    if (transform_node.scroll_offset() !=
         scroll_tree.current_scroll_offset(id)) {
-      transform_node->SetScrollOffset(scroll_tree.current_scroll_offset(id),
-                                      DamageReason::kCompositorScroll);
-      transform_node->needs_local_transform_update = true;
+      transform_node.SetScrollOffset(scroll_tree.current_scroll_offset(id),
+                                     DamageReason::kCompositorScroll);
+      transform_node.needs_local_transform_update = true;
       transform_tree.set_needs_update(true);
     }
-    transform_node->SetTransformChanged(DamageReason::kCompositorScroll);
+    transform_node.SetTransformChanged(DamageReason::kCompositorScroll);
     property_trees()->set_changed(true);
     set_needs_update_draw_properties();
   }
@@ -553,11 +554,11 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
 
     // Expand all clips between the outer viewport and the inner viewport.
     auto* outer_ancestor =
-        property_trees->clip_tree_mutable().parent(outer_clip_node);
+        property_trees->clip_tree_mutable().MutableParent(outer_clip_node);
     while (outer_ancestor && outer_ancestor->id != kRootPropertyNodeId) {
       outer_ancestor->clip.Union(outer_clip_node->clip);
       outer_ancestor =
-          property_trees->clip_tree_mutable().parent(outer_ancestor);
+          property_trees->clip_tree_mutable().MutableParent(outer_ancestor);
     }
   }
 
@@ -1389,14 +1390,15 @@ void LayerTreeImpl::UpdateTransformAnimation(ElementId element_id,
 #endif
       TransformTree& transform_tree =
           property_trees()->transform_tree_mutable();
-      if (TransformNode* node = transform_tree.Node(transform_node_index)) {
+      if (transform_node_index != kInvalidPropertyNodeId) {
+        TransformNode& node = transform_tree.MutableNode(transform_node_index);
         ElementListType list_type = GetElementTypeForAnimation();
         bool has_potential_animation =
             mutator_host()->HasPotentiallyRunningAnimationForProperty(
                 element_id, list_type, property);
-        if (node->has_potential_animation != has_potential_animation) {
-          node->has_potential_animation = has_potential_animation;
-          node->maximum_animation_scale =
+        if (node.has_potential_animation != has_potential_animation) {
+          node.has_potential_animation = has_potential_animation;
+          node.maximum_animation_scale =
               mutator_host()->MaximumScale(element_id, list_type);
           transform_tree.set_needs_update(true);
           set_needs_update_draw_properties();
@@ -1766,27 +1768,48 @@ void LayerTreeImpl::SetViewportPropertyIds(const ViewportPropertyIds& ids) {
 }
 
 const TransformNode* LayerTreeImpl::OverscrollElasticityTransformNode() const {
-  return property_trees()->transform_tree().Node(
-      viewport_property_ids_.overscroll_elasticity_transform);
+  // TODO(500458345): Convert these to const refs.
+  int id = viewport_property_ids_.overscroll_elasticity_transform;
+  if (id == kInvalidPropertyNodeId) {
+    return nullptr;
+  }
+  return &property_trees()->transform_tree().Node(id);
 }
 
 const TransformNode* LayerTreeImpl::PageScaleTransformNode() const {
-  return property_trees()->transform_tree().Node(
-      viewport_property_ids_.page_scale_transform);
+  // TODO(500458345): Convert these to const refs.
+  int id = viewport_property_ids_.page_scale_transform;
+  if (id == kInvalidPropertyNodeId) {
+    return nullptr;
+  }
+  return &property_trees()->transform_tree().Node(id);
 }
 
 const ScrollNode* LayerTreeImpl::InnerViewportScrollNode() const {
-  return property_trees()->scroll_tree().Node(
-      viewport_property_ids_.inner_scroll);
+  // TODO(500458345): Convert these to const refs.
+  int id = viewport_property_ids_.inner_scroll;
+  if (id == kInvalidPropertyNodeId) {
+    return nullptr;
+  }
+  return &property_trees()->scroll_tree().Node(id);
 }
 
 const ClipNode* LayerTreeImpl::OuterViewportClipNode() const {
-  return property_trees()->clip_tree().Node(viewport_property_ids_.outer_clip);
+  // TODO(500458345): Convert these to const refs.
+  int id = viewport_property_ids_.outer_clip;
+  if (id == kInvalidPropertyNodeId) {
+    return nullptr;
+  }
+  return &property_trees()->clip_tree().Node(id);
 }
 
 const ScrollNode* LayerTreeImpl::OuterViewportScrollNode() const {
-  return property_trees()->scroll_tree().Node(
-      viewport_property_ids_.outer_scroll);
+  // TODO(500458345): Convert these to const refs.
+  int id = viewport_property_ids_.outer_scroll;
+  if (id == kInvalidPropertyNodeId) {
+    return nullptr;
+  }
+  return &property_trees()->scroll_tree().Node(id);
 }
 
 // For unit tests, we use the layer's id as its element id.
@@ -1868,10 +1891,9 @@ bool LayerTreeImpl::UpdateDrawProperties(
         property_trees()->GetToTarget(render_surface->TransformTreeIndex(),
                                       occlusion_surface->EffectTreeIndex(),
                                       &draw_transform);
-        const EffectNode* effect_node = property_trees()->effect_tree().Node(
+        const EffectNode& effect_node = property_trees()->effect_tree().Node(
             render_surface->EffectTreeIndex());
-        CHECK(effect_node);
-        draw_property_utils::ConcatInverseSurfaceContentsScale(*effect_node,
+        draw_property_utils::ConcatInverseSurfaceContentsScale(effect_node,
                                                                &draw_transform);
         draw_transform.PostTranslate(
             occlusion_surface->pixel_alignment_offset());
@@ -2540,18 +2562,18 @@ static bool PointIsClippedByAncestorClipNode(
       layer->layer_tree_impl()->property_trees();
   const ClipTree& clip_tree = property_trees->clip_tree();
   const TransformTree& transform_tree = property_trees->transform_tree();
-  gfx::Rect clip = gfx::ToEnclosingRect(clip_tree.Node(1)->clip);
+  gfx::Rect clip = gfx::ToEnclosingRect(clip_tree.Node(1).clip);
   if (!PointHitsRect(screen_space_point, gfx::Transform(), clip, nullptr))
     return true;
 
-  for (const ClipNode* clip_node = clip_tree.Node(layer->clip_tree_index());
-       clip_node->id > kViewportPropertyNodeId;
-       clip_node = clip_tree.parent(clip_node)) {
-    if (clip_node->AppliesLocalClip()) {
-      clip = gfx::ToEnclosingRect(clip_node->clip);
+  for (int id = layer->clip_tree_index(); id > kViewportPropertyNodeId;
+       id = clip_tree.Node(id).parent_id) {
+    const ClipNode& clip_node = clip_tree.Node(id);
+    if (clip_node.AppliesLocalClip()) {
+      clip = gfx::ToEnclosingRect(clip_node.clip);
 
       gfx::Transform screen_space_transform =
-          transform_tree.ToScreen(clip_node->transform_id);
+          transform_tree.ToScreen(clip_node.transform_id);
       if (!PointHitsRect(screen_space_point, screen_space_transform, clip,
                          nullptr)) {
         return true;
@@ -2911,11 +2933,15 @@ ElementId LayerTreeImpl::PointHitsNonCompositedScroll(
 static ElementId GetFrameElementIdForLayer(const LayerImpl* layer) {
   const auto& transform_tree =
       layer->layer_tree_impl()->property_trees()->transform_tree();
-  const auto* node = transform_tree.Node(layer->transform_tree_index());
-  while (node && !node->visible_frame_element_id) {
-    node = transform_tree.Node(node->parent_frame_id);
+  int node_id = layer->transform_tree_index();
+  while (node_id != kInvalidPropertyNodeId) {
+    const TransformNode& node = transform_tree.Node(node_id);
+    if (node.visible_frame_element_id) {
+      return node.visible_frame_element_id;
+    }
+    node_id = node.parent_frame_id;
   }
-  return node ? node->visible_frame_element_id : ElementId();
+  return ElementId();
 }
 
 static void FindClosestMatchingLayerForAttribution(
@@ -2967,11 +2993,14 @@ static void FindClosestMatchingLayerForAttribution(
   if (auto* layer = state->closest_match) {
     const auto& transform_tree =
         layer->layer_tree_impl()->property_trees()->transform_tree();
-    for (const auto* node = transform_tree.Node(layer->transform_tree_index());
-         node; node = transform_tree.Node(node->parent_frame_id)) {
-      hit_visible_frame_element_ids.erase(node->visible_frame_element_id);
-      if (hit_visible_frame_element_ids.size() == 0)
+    int node_id = layer->transform_tree_index();
+    while (node_id != kInvalidPropertyNodeId) {
+      const TransformNode& node = transform_tree.Node(node_id);
+      hit_visible_frame_element_ids.erase(node.visible_frame_element_id);
+      if (hit_visible_frame_element_ids.size() == 0) {
         break;
+      }
+      node_id = node.parent_frame_id;
     }
 
     if (hit_visible_frame_element_ids.size() > 0) {

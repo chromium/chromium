@@ -634,10 +634,11 @@ TEST_F(TreeSynchronizerTest, SynchronizeCurrentlyScrollingNode) {
                           host_impl->active_tree()->root_layer(),
                           host_impl->active_tree());
 
-  ScrollNode* scroll_node =
-      host_impl->active_tree()->property_trees()->scroll_tree_mutable().Node(
-          scroll_layer->scroll_tree_index());
-  host_impl->active_tree()->SetCurrentlyScrollingNode(scroll_node);
+  ScrollNode& scroll_node = host_impl->active_tree()
+                                ->property_trees()
+                                ->scroll_tree_mutable()
+                                .MutableNode(scroll_layer->scroll_tree_index());
+  host_impl->active_tree()->SetCurrentlyScrollingNode(&scroll_node);
   transient_scroll_layer->SetScrollable(gfx::Size(0, 0));
   host_->BuildPropertyTreesForTesting();
 
@@ -732,8 +733,9 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
   // More update to ScrollOffset active delta: gfx::Vector2dF(20, 20)
   scroll_tree.SetScrollOffset(scroll_layer_impl->element_id(),
                               gfx::PointF(40, 50));
+  // TODO(500458345): Convert this to const ref.
   host_impl->active_tree()->SetCurrentlyScrollingNode(
-      scroll_tree.Node(scroll_layer_impl->scroll_tree_index()));
+      &scroll_tree.Node(scroll_layer_impl->scroll_tree_index()));
 
   // Change the scroll tree topology by removing transient_scroll_layer.
   transient_scroll_layer->RemoveFromParent();

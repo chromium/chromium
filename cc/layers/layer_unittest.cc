@@ -527,7 +527,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   top->SetPosition(arbitrary_point_f);
   TransformNode* node =
-      layer_tree_host_->property_trees()->transform_tree_mutable().Node(
+      &layer_tree_host_->property_trees()->transform_tree_mutable().MutableNode(
           top->transform_tree_index());
   EXPECT_TRUE(node->transform_changed());
 
@@ -542,8 +542,9 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
 
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   child->SetPosition(arbitrary_point_f);
-  node = layer_tree_host_->property_trees()->transform_tree_mutable().Node(
-      child->transform_tree_index());
+  node =
+      &layer_tree_host_->property_trees()->transform_tree_mutable().MutableNode(
+          child->transform_tree_index());
   EXPECT_TRUE(node->transform_changed());
   layer_tree_host_->VerifyAndClearExpectations();
 
@@ -551,15 +552,17 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child->PushPropertiesTo(child_impl.get(), *commit_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state);
       layer_tree_host_->property_trees()->ResetAllChangeTracking());
-  node = layer_tree_host_->property_trees()->transform_tree_mutable().Node(
-      child->transform_tree_index());
+  node =
+      &layer_tree_host_->property_trees()->transform_tree_mutable().MutableNode(
+          child->transform_tree_index());
   EXPECT_FALSE(node->transform_changed());
 
   gfx::Point3F arbitrary_point_3f = gfx::Point3F(0.125f, 0.25f, 0.f);
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   top->SetTransformOrigin(arbitrary_point_3f);
-  node = layer_tree_host_->property_trees()->transform_tree_mutable().Node(
-      top->transform_tree_index());
+  node =
+      &layer_tree_host_->property_trees()->transform_tree_mutable().MutableNode(
+          top->transform_tree_index());
   EXPECT_TRUE(node->transform_changed());
   layer_tree_host_->VerifyAndClearExpectations();
 
@@ -574,8 +577,9 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   arbitrary_transform.Scale3d(0.1f, 0.2f, 0.3f);
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   top->SetTransform(arbitrary_transform);
-  node = layer_tree_host_->property_trees()->transform_tree_mutable().Node(
-      top->transform_tree_index());
+  node =
+      &layer_tree_host_->property_trees()->transform_tree_mutable().MutableNode(
+          top->transform_tree_index());
   EXPECT_TRUE(node->transform_changed());
   layer_tree_host_->VerifyAndClearExpectations();
 }
@@ -1901,14 +1905,18 @@ TEST_F(LayerTest, UpdatingClipRect) {
   EXPECT_EQ(clipped_4->clip_rect(), kClipRect);
 
   root->layer_tree_host()->BuildPropertyTreesForTesting();
-  const ClipNode* node_1 = layer_tree_host_->property_trees()->clip_tree().Node(
-      clipped_1->clip_tree_index());
-  const ClipNode* node_2 = layer_tree_host_->property_trees()->clip_tree().Node(
-      clipped_2->clip_tree_index());
-  const ClipNode* node_3 = layer_tree_host_->property_trees()->clip_tree().Node(
-      clipped_3->clip_tree_index());
-  const ClipNode* node_4 = layer_tree_host_->property_trees()->clip_tree().Node(
-      clipped_4->clip_tree_index());
+  const ClipNode* node_1 =
+      &layer_tree_host_->property_trees()->clip_tree().Node(
+          clipped_1->clip_tree_index());
+  const ClipNode* node_2 =
+      &layer_tree_host_->property_trees()->clip_tree().Node(
+          clipped_2->clip_tree_index());
+  const ClipNode* node_3 =
+      &layer_tree_host_->property_trees()->clip_tree().Node(
+          clipped_3->clip_tree_index());
+  const ClipNode* node_4 =
+      &layer_tree_host_->property_trees()->clip_tree().Node(
+          clipped_4->clip_tree_index());
 
   EXPECT_EQ(gfx::RectF(kClipRect) + kParentOffset, node_1->clip);
   EXPECT_EQ(gfx::RectF(kClipRect) + kParentOffset, node_2->clip);
@@ -1939,13 +1947,13 @@ TEST_F(LayerTest, UpdatingClipRect) {
   clipped_3->SetClipRect(kUpdatedClipRect_3);
   clipped_4->SetClipRect(kUpdatedClipRect_4);
 
-  node_1 = layer_tree_host_->property_trees()->clip_tree().Node(
+  node_1 = &layer_tree_host_->property_trees()->clip_tree().Node(
       clipped_1->clip_tree_index());
-  node_2 = layer_tree_host_->property_trees()->clip_tree().Node(
+  node_2 = &layer_tree_host_->property_trees()->clip_tree().Node(
       clipped_2->clip_tree_index());
-  node_3 = layer_tree_host_->property_trees()->clip_tree().Node(
+  node_3 = &layer_tree_host_->property_trees()->clip_tree().Node(
       clipped_3->clip_tree_index());
-  node_4 = layer_tree_host_->property_trees()->clip_tree().Node(
+  node_4 = &layer_tree_host_->property_trees()->clip_tree().Node(
       clipped_4->clip_tree_index());
 
   EXPECT_EQ(node_1->clip,
@@ -2014,19 +2022,19 @@ TEST_F(LayerTest, UpdatingRoundedCorners) {
 
   root->layer_tree_host()->BuildPropertyTreesForTesting();
   const EffectNode* node_1 =
-      layer_tree_host_->property_trees()->effect_tree().Node(
+      &layer_tree_host_->property_trees()->effect_tree().Node(
           layer_1->effect_tree_index());
   const EffectNode* node_2 =
-      layer_tree_host_->property_trees()->effect_tree().Node(
+      &layer_tree_host_->property_trees()->effect_tree().Node(
           layer_2->effect_tree_index());
   const EffectNode* node_3 =
-      layer_tree_host_->property_trees()->effect_tree().Node(
+      &layer_tree_host_->property_trees()->effect_tree().Node(
           layer_3->effect_tree_index());
   const EffectNode* node_4 =
-      layer_tree_host_->property_trees()->effect_tree().Node(
+      &layer_tree_host_->property_trees()->effect_tree().Node(
           layer_4->effect_tree_index());
   const EffectNode* node_5 =
-      layer_tree_host_->property_trees()->effect_tree().Node(
+      &layer_tree_host_->property_trees()->effect_tree().Node(
           layer_5->effect_tree_index());
 
   EXPECT_EQ(gfx::RRectF(gfx::RectF(kClipRect), kRoundedCorners),
@@ -2055,15 +2063,15 @@ TEST_F(LayerTest, UpdatingRoundedCorners) {
   layer_4->SetClipRect(kUpdatedClipRect);
   layer_5->SetRoundedCorner(kUpdatedRoundedCorners);
 
-  node_1 = layer_tree_host_->property_trees()->effect_tree().Node(
+  node_1 = &layer_tree_host_->property_trees()->effect_tree().Node(
       layer_1->effect_tree_index());
-  node_2 = layer_tree_host_->property_trees()->effect_tree().Node(
+  node_2 = &layer_tree_host_->property_trees()->effect_tree().Node(
       layer_2->effect_tree_index());
-  node_3 = layer_tree_host_->property_trees()->effect_tree().Node(
+  node_3 = &layer_tree_host_->property_trees()->effect_tree().Node(
       layer_3->effect_tree_index());
-  node_4 = layer_tree_host_->property_trees()->effect_tree().Node(
+  node_4 = &layer_tree_host_->property_trees()->effect_tree().Node(
       layer_4->effect_tree_index());
-  node_5 = layer_tree_host_->property_trees()->effect_tree().Node(
+  node_5 = &layer_tree_host_->property_trees()->effect_tree().Node(
       layer_5->effect_tree_index());
 
   EXPECT_EQ(gfx::RRectF(gfx::RectF(gfx::IntersectRects(gfx::Rect(kLayerSize),
@@ -2085,3 +2093,4 @@ TEST_F(LayerTest, UpdatingRoundedCorners) {
 
 }  // namespace
 }  // namespace cc
+   // namespace cc

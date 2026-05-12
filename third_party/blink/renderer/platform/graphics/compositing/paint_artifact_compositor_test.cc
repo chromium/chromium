@@ -111,12 +111,12 @@ class PaintArtifactCompositorTest : public testing::Test,
   }
 
   const cc::TransformNode& GetTransformNode(const cc::Layer* layer) {
-    return *GetPropertyTrees().transform_tree().Node(
+    return GetPropertyTrees().transform_tree().Node(
         layer->transform_tree_index());
   }
 
   const cc::EffectNode& GetEffectNode(const cc::Layer* layer) {
-    return *GetPropertyTrees().effect_tree().Node(layer->effect_tree_index());
+    return GetPropertyTrees().effect_tree().Node(layer->effect_tree_index());
   }
 
   cc::LayerTreeHost& GetLayerTreeHost() {
@@ -532,7 +532,8 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
     // if and only if the intermediate rotation transform in the Blink tree
     // flattens.
     const cc::TransformNode* transform_node3 =
-        GetPropertyTrees().transform_tree().Node(layer->transform_tree_index());
+        &GetPropertyTrees().transform_tree().Node(
+            layer->transform_tree_index());
     EXPECT_EQ(transform_is_flattened,
               transform_node3->flattens_inherited_transform);
 
@@ -589,7 +590,8 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
     // if and only if the intermediate rotation transform in the Blink tree
     // flattens.
     const cc::TransformNode* transform_node3 =
-        GetPropertyTrees().transform_tree().Node(layer->transform_tree_index());
+        &GetPropertyTrees().transform_tree().Node(
+            layer->transform_tree_index());
     EXPECT_EQ(transform_is_flattened,
               transform_node3->flattens_inherited_transform);
 
@@ -706,7 +708,7 @@ TEST_P(PaintArtifactCompositorTest, OneClip) {
   EXPECT_EQ(Translation(220, 100), layer->ScreenSpaceTransform());
 
   const cc::ClipNode* clip_node =
-      GetPropertyTrees().clip_tree().Node(layer->clip_tree_index());
+      &GetPropertyTrees().clip_tree().Node(layer->clip_tree_index());
   EXPECT_TRUE(clip_node->AppliesLocalClip());
   EXPECT_EQ(gfx::RectF(100, 100, 300, 200), clip_node->clip);
 }
@@ -732,7 +734,7 @@ TEST_P(PaintArtifactCompositorTest, OneClipWithAlias) {
   EXPECT_EQ(Translation(220, 100), layer->ScreenSpaceTransform());
 
   const cc::ClipNode* clip_node =
-      GetPropertyTrees().clip_tree().Node(layer->clip_tree_index());
+      &GetPropertyTrees().clip_tree().Node(layer->clip_tree_index());
   EXPECT_TRUE(clip_node->AppliesLocalClip());
   EXPECT_EQ(gfx::RectF(100, 100, 300, 200), clip_node->clip);
 }
@@ -788,14 +790,14 @@ TEST_P(PaintArtifactCompositorTest, NestedClips) {
 
   EXPECT_EQ(white_layer->clip_tree_index(), dark_gray_layer->clip_tree_index());
   const cc::ClipNode* outer_clip =
-      GetPropertyTrees().clip_tree().Node(white_layer->clip_tree_index());
+      &GetPropertyTrees().clip_tree().Node(white_layer->clip_tree_index());
   EXPECT_TRUE(outer_clip->AppliesLocalClip());
   EXPECT_EQ(gfx::RectF(100, 100, 700, 700), outer_clip->clip);
 
   EXPECT_EQ(light_gray_layer->clip_tree_index(),
             black_layer->clip_tree_index());
   const cc::ClipNode* inner_clip =
-      GetPropertyTrees().clip_tree().Node(black_layer->clip_tree_index());
+      &GetPropertyTrees().clip_tree().Node(black_layer->clip_tree_index());
   EXPECT_TRUE(inner_clip->AppliesLocalClip());
   EXPECT_EQ(gfx::RectF(200, 200, 700, 700), inner_clip->clip);
   EXPECT_EQ(outer_clip->id, inner_clip->parent_id);
@@ -853,14 +855,14 @@ TEST_P(PaintArtifactCompositorTest, NestedClipsWithAlias) {
 
   EXPECT_EQ(white_layer->clip_tree_index(), dark_gray_layer->clip_tree_index());
   const cc::ClipNode* outer_clip =
-      GetPropertyTrees().clip_tree().Node(white_layer->clip_tree_index());
+      &GetPropertyTrees().clip_tree().Node(white_layer->clip_tree_index());
   EXPECT_TRUE(outer_clip->AppliesLocalClip());
   EXPECT_EQ(gfx::RectF(100, 100, 700, 700), outer_clip->clip);
 
   EXPECT_EQ(light_gray_layer->clip_tree_index(),
             black_layer->clip_tree_index());
   const cc::ClipNode* inner_clip =
-      GetPropertyTrees().clip_tree().Node(black_layer->clip_tree_index());
+      &GetPropertyTrees().clip_tree().Node(black_layer->clip_tree_index());
   EXPECT_TRUE(inner_clip->AppliesLocalClip());
   EXPECT_EQ(gfx::RectF(200, 200, 700, 700), inner_clip->clip);
   EXPECT_EQ(outer_clip->id, inner_clip->parent_id);
@@ -890,11 +892,11 @@ TEST_P(PaintArtifactCompositorTest, DeeplyNestedClips) {
 
   // Check the clip nodes.
   const cc::ClipNode* clip_node =
-      GetPropertyTrees().clip_tree().Node(drawing_layer->clip_tree_index());
+      &GetPropertyTrees().clip_tree().Node(drawing_layer->clip_tree_index());
   for (const auto& paint_clip_node : base::Reversed(clips)) {
     EXPECT_TRUE(clip_node->AppliesLocalClip());
     EXPECT_EQ(paint_clip_node->PaintClipRect().Rect(), clip_node->clip);
-    clip_node = GetPropertyTrees().clip_tree().Node(clip_node->parent_id);
+    clip_node = &GetPropertyTrees().clip_tree().Node(clip_node->parent_id);
   }
 }
 
@@ -927,7 +929,7 @@ TEST_P(PaintArtifactCompositorTest, SiblingClipsWithAlias) {
                   RectWithColor(gfx::RectF(40, 44, 40, 16), Color::kBlack)})));
   EXPECT_EQ(gfx::Transform(), layer->ScreenSpaceTransform());
   const cc::ClipNode* clip_node =
-      GetPropertyTrees().clip_tree().Node(layer->clip_tree_index());
+      &GetPropertyTrees().clip_tree().Node(layer->clip_tree_index());
   EXPECT_TRUE(clip_node->AppliesLocalClip());
   ASSERT_EQ(gfx::RectF(0, 0, 80, 60), clip_node->clip);
 }
@@ -1025,7 +1027,7 @@ TEST_P(PaintArtifactCompositorTest, EffectTreeConversionWithAlias) {
              .Chunk()
              .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite)
              .Build());
-  auto root_element_id = GetPropertyTrees().effect_tree().Node(1)->element_id;
+  auto root_element_id = GetPropertyTrees().effect_tree().Node(1).element_id;
 
   auto* real_effect1 =
       CreateOpacityEffect(e0(), t0(), &c0(), 0.5, CompositingReason::kAll);
@@ -1052,21 +1054,21 @@ TEST_P(PaintArtifactCompositorTest, EffectTreeConversionWithAlias) {
   // plus 3 nodes for those created by this test.
   ASSERT_EQ(5u, effect_tree.size());
 
-  const cc::EffectNode& converted_root_effect = *effect_tree.Node(1);
+  const cc::EffectNode& converted_root_effect = effect_tree.Node(1);
   EXPECT_EQ(-1, converted_root_effect.parent_id);
   EXPECT_EQ(root_element_id, converted_root_effect.element_id);
 
-  const cc::EffectNode& converted_effect1 = *effect_tree.Node(2);
+  const cc::EffectNode& converted_effect1 = effect_tree.Node(2);
   EXPECT_EQ(converted_root_effect.id, converted_effect1.parent_id);
   EXPECT_FLOAT_EQ(0.5, converted_effect1.opacity);
   EXPECT_EQ(real_effect1->GetCompositorElementId(),
             converted_effect1.element_id);
 
-  const cc::EffectNode& converted_effect2 = *effect_tree.Node(3);
+  const cc::EffectNode& converted_effect2 = effect_tree.Node(3);
   EXPECT_EQ(converted_effect1.id, converted_effect2.parent_id);
   EXPECT_FLOAT_EQ(0.3, converted_effect2.opacity);
 
-  const cc::EffectNode& converted_effect3 = *effect_tree.Node(4);
+  const cc::EffectNode& converted_effect3 = effect_tree.Node(4);
   EXPECT_EQ(converted_root_effect.id, converted_effect3.parent_id);
   EXPECT_FLOAT_EQ(0.2, converted_effect3.opacity);
 
@@ -1126,7 +1128,7 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
   const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree();
   // Node #0 reserved for null; #1 for root render surface.
   ASSERT_EQ(3u, scroll_tree.size());
-  const cc::ScrollNode& scroll_node = *scroll_tree.Node(2);
+  const cc::ScrollNode& scroll_node = scroll_tree.Node(2);
   CheckCcScrollNode(scroll, scroll_node);
   EXPECT_EQ(1, scroll_node.parent_id);
   EXPECT_EQ(scroll_node.element_id, ScrollHitTestLayerAt(0)->element_id());
@@ -1134,7 +1136,7 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
 
   const cc::TransformTree& transform_tree = GetPropertyTrees().transform_tree();
   const cc::TransformNode& transform_node =
-      *transform_tree.Node(scroll_node.transform_id);
+      transform_tree.Node(scroll_node.transform_id);
   EXPECT_TRUE(transform_node.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-7, -9), transform_node.scroll_offset());
   EXPECT_EQ(kNotScrollingOnMain, scroll_node.main_thread_repaint_reasons);
@@ -1199,7 +1201,7 @@ TEST_P(PaintArtifactCompositorTest, TransformUnderScrollNode) {
   const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree();
   // Node #0 reserved for null; #1 for root render surface.
   ASSERT_EQ(3u, scroll_tree.size());
-  const cc::ScrollNode& scroll_node = *scroll_tree.Node(2);
+  const cc::ScrollNode& scroll_node = scroll_tree.Node(2);
 
   // Both layers should refer to the same scroll tree node.
   const auto* layer0 = LayerAt(0);
@@ -1221,7 +1223,7 @@ TEST_P(PaintArtifactCompositorTest, TransformUnderScrollNode) {
 
   const cc::TransformTree& transform_tree = GetPropertyTrees().transform_tree();
   const cc::TransformNode& scroll_transform_node =
-      *transform_tree.Node(scroll_node.transform_id);
+      transform_tree.Node(scroll_node.transform_id);
   // The layers have different transform nodes.
   EXPECT_EQ(scroll_transform_node.id, layer0->transform_tree_index());
   EXPECT_NE(scroll_transform_node.id, layer1->transform_tree_index());
@@ -1245,7 +1247,7 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollNodes) {
   const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree();
   // Node #0 reserved for null; #1 for root render surface.
   ASSERT_EQ(4u, scroll_tree.size());
-  const cc::ScrollNode& scroll_node_a = *scroll_tree.Node(2);
+  const cc::ScrollNode& scroll_node_a = scroll_tree.Node(2);
   CheckCcScrollNode(scroll_a, scroll_node_a);
   EXPECT_EQ(1, scroll_node_a.parent_id);
   EXPECT_EQ(scroll_node_a.element_id, ScrollHitTestLayerAt(0)->element_id());
@@ -1254,11 +1256,11 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollNodes) {
 
   const cc::TransformTree& transform_tree = GetPropertyTrees().transform_tree();
   const cc::TransformNode& transform_node_a =
-      *transform_tree.Node(scroll_node_a.transform_id);
+      transform_tree.Node(scroll_node_a.transform_id);
   EXPECT_TRUE(transform_node_a.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-7, -9), transform_node_a.scroll_offset());
 
-  const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
+  const cc::ScrollNode& scroll_node_b = scroll_tree.Node(3);
   CheckCcScrollNode(scroll_b, scroll_node_b);
   EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
   EXPECT_EQ(scroll_node_b.element_id, ScrollHitTestLayerAt(1)->element_id());
@@ -1266,7 +1268,7 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollNodes) {
             ElementIdToScrollNodeIndex(scroll_node_b.element_id));
 
   const cc::TransformNode& transform_node_b =
-      *transform_tree.Node(scroll_node_b.transform_id);
+      transform_tree.Node(scroll_node_b.transform_id);
   EXPECT_TRUE(transform_node_b.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset());
 }
@@ -1295,9 +1297,9 @@ TEST_P(PaintArtifactCompositorTest, ScrollHitTestLayerOrder) {
   EXPECT_LT(LayerIndex(NonScrollHitTestLayerAt(0)),
             LayerIndex(ScrollHitTestLayerAt(0)));
   const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree();
-  auto* scroll_node =
+  const auto& scroll_node =
       scroll_tree.Node(ScrollHitTestLayerAt(0)->scroll_tree_index());
-  ASSERT_EQ(scroll.GetCompositorElementId(), scroll_node->element_id);
+  ASSERT_EQ(scroll.GetCompositorElementId(), scroll_node.element_id);
   EXPECT_EQ(scroll.GetCompositorElementId(),
             ScrollHitTestLayerAt(0)->element_id());
   EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
@@ -1325,21 +1327,21 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollableLayerOrder) {
   // Two scroll layers should be created for each scroll translation node.
   const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree();
   const cc::ClipTree& clip_tree = GetPropertyTrees().clip_tree();
-  auto* scroll_1_node =
+  const auto& scroll_1_node =
       scroll_tree.Node(ScrollHitTestLayerAt(0)->scroll_tree_index());
-  ASSERT_EQ(scroll_1.GetCompositorElementId(), scroll_1_node->element_id);
-  auto* scroll_1_clip_node =
+  ASSERT_EQ(scroll_1.GetCompositorElementId(), scroll_1_node.element_id);
+  const auto& scroll_1_clip_node =
       clip_tree.Node(ScrollHitTestLayerAt(0)->clip_tree_index());
   // The scroll is not under clip_1.
-  EXPECT_EQ(gfx::RectF(0, 0, 0, 0), scroll_1_clip_node->clip);
+  EXPECT_EQ(gfx::RectF(0, 0, 0, 0), scroll_1_clip_node.clip);
 
-  auto* scroll_2_node =
+  const auto& scroll_2_node =
       scroll_tree.Node(ScrollHitTestLayerAt(1)->scroll_tree_index());
-  ASSERT_EQ(scroll_2.GetCompositorElementId(), scroll_2_node->element_id);
-  auto* scroll_2_clip_node =
+  ASSERT_EQ(scroll_2.GetCompositorElementId(), scroll_2_node.element_id);
+  const auto& scroll_2_clip_node =
       clip_tree.Node(ScrollHitTestLayerAt(1)->clip_tree_index());
   // The scroll is not under clip_2 but is under the parent clip, clip_1.
-  EXPECT_EQ(gfx::RectF(3, 5, 11, 13), scroll_2_clip_node->clip);
+  EXPECT_EQ(gfx::RectF(3, 5, 11, 13), scroll_2_clip_node.clip);
 
   // The first layer should be before the second scroll layer.
   EXPECT_LT(LayerIndex(ScrollHitTestLayerAt(0)),
@@ -1376,7 +1378,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   ASSERT_EQ(4u, scroll_tree.size());
   ASSERT_EQ(4u, transform_tree.size());
 
-  const cc::ScrollNode& scroll_node_a = *scroll_tree.Node(2);
+  const cc::ScrollNode& scroll_node_a = scroll_tree.Node(2);
   EXPECT_EQ(1, scroll_node_a.parent_id);
   EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a.element_id);
   EXPECT_EQ(scroll_node_a.id,
@@ -1386,13 +1388,13 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   EXPECT_TRUE(scroll_node_a.is_composited);
 
   const cc::TransformNode& transform_node_a =
-      *transform_tree.Node(scroll_node_a.transform_id);
+      transform_tree.Node(scroll_node_a.transform_id);
   EXPECT_TRUE(transform_node_a.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-7, -9), transform_node_a.scroll_offset());
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_node_a.element_id));
 
-  const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
+  const cc::ScrollNode& scroll_node_b = scroll_tree.Node(3);
   EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
   EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
   EXPECT_EQ(scroll_node_b.id,
@@ -1400,7 +1402,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   EXPECT_FALSE(scroll_node_b.is_composited);
 
   const cc::TransformNode& transform_node_b =
-      *transform_tree.Node(scroll_node_b.transform_id);
+      transform_tree.Node(scroll_node_b.transform_id);
   EXPECT_TRUE(transform_node_b.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset());
   EXPECT_EQ(gfx::PointF(-39, -31),
@@ -1427,7 +1429,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorNonCompositedScrollNode) {
   ASSERT_EQ(4u, scroll_tree.size());
   ASSERT_EQ(4u, transform_tree.size());
 
-  const cc::ScrollNode& scroll_node_a = *scroll_tree.Node(2);
+  const cc::ScrollNode& scroll_node_a = scroll_tree.Node(2);
   EXPECT_EQ(1, scroll_node_a.parent_id);
   EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a.element_id);
   EXPECT_EQ(scroll_node_a.id,
@@ -1435,13 +1437,13 @@ TEST_P(PaintArtifactCompositorTest, AncestorNonCompositedScrollNode) {
   EXPECT_FALSE(scroll_node_a.is_composited);
 
   const cc::TransformNode& transform_node_a =
-      *transform_tree.Node(scroll_node_a.transform_id);
+      transform_tree.Node(scroll_node_a.transform_id);
   EXPECT_TRUE(transform_node_a.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-7, -9), transform_node_a.scroll_offset());
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_node_a.element_id));
 
-  const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
+  const cc::ScrollNode& scroll_node_b = scroll_tree.Node(3);
   EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
   EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
   EXPECT_EQ(scroll_node_b.id,
@@ -1451,7 +1453,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorNonCompositedScrollNode) {
   EXPECT_TRUE(scroll_node_b.is_composited);
 
   const cc::TransformNode& transform_node_b =
-      *transform_tree.Node(scroll_node_b.transform_id);
+      transform_tree.Node(scroll_node_b.transform_id);
   EXPECT_TRUE(transform_node_b.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset());
   EXPECT_EQ(gfx::PointF(-39, -31),
@@ -1478,7 +1480,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodesInversedOrder) {
   ASSERT_EQ(4u, scroll_tree.size());
   ASSERT_EQ(4u, transform_tree.size());
 
-  const cc::ScrollNode& scroll_node_a = *scroll_tree.Node(2);
+  const cc::ScrollNode& scroll_node_a = scroll_tree.Node(2);
   EXPECT_EQ(1, scroll_node_a.parent_id);
   EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a.element_id);
   EXPECT_EQ(scroll_node_a.id,
@@ -1488,13 +1490,13 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodesInversedOrder) {
   EXPECT_TRUE(scroll_node_a.is_composited);
 
   const cc::TransformNode& transform_node_a =
-      *transform_tree.Node(scroll_node_a.transform_id);
+      transform_tree.Node(scroll_node_a.transform_id);
   EXPECT_TRUE(transform_node_a.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-7, -9), transform_node_a.scroll_offset());
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_node_a.element_id));
 
-  const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
+  const cc::ScrollNode& scroll_node_b = scroll_tree.Node(3);
   EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
   EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
   EXPECT_EQ(scroll_node_b.id,
@@ -1504,7 +1506,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodesInversedOrder) {
   EXPECT_TRUE(scroll_node_b.is_composited);
 
   const cc::TransformNode& transform_node_b =
-      *transform_tree.Node(scroll_node_b.transform_id);
+      transform_tree.Node(scroll_node_b.transform_id);
   EXPECT_TRUE(transform_node_b.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset());
   EXPECT_EQ(gfx::PointF(-39, -31),
@@ -1537,7 +1539,7 @@ TEST_P(PaintArtifactCompositorTest,
   ASSERT_EQ(5u, scroll_tree.size());
   ASSERT_EQ(5u, transform_tree.size());
 
-  const cc::ScrollNode& scroll_node_a = *scroll_tree.Node(2);
+  const cc::ScrollNode& scroll_node_a = scroll_tree.Node(2);
   EXPECT_EQ(1, scroll_node_a.parent_id);
   EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a.element_id);
   EXPECT_EQ(scroll_node_a.id,
@@ -1545,13 +1547,13 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(scroll_node_a.element_id, ScrollHitTestLayerAt(0)->element_id());
 
   const cc::TransformNode& transform_node_a =
-      *transform_tree.Node(scroll_node_a.transform_id);
+      transform_tree.Node(scroll_node_a.transform_id);
   EXPECT_TRUE(transform_node_a.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-7, -9), transform_node_a.scroll_offset());
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_node_a.element_id));
 
-  const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
+  const cc::ScrollNode& scroll_node_b = scroll_tree.Node(3);
   EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
   EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
   EXPECT_EQ(scroll_node_b.id,
@@ -1559,13 +1561,13 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(scroll_node_b.element_id, ScrollHitTestLayerAt(1)->element_id());
 
   const cc::TransformNode& transform_node_b =
-      *transform_tree.Node(scroll_node_b.transform_id);
+      transform_tree.Node(scroll_node_b.transform_id);
   EXPECT_TRUE(transform_node_b.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset());
   EXPECT_EQ(gfx::PointF(-39, -31),
             scroll_tree.current_scroll_offset(scroll_node_b.element_id));
 
-  const cc::ScrollNode& scroll_node_c = *scroll_tree.Node(4);
+  const cc::ScrollNode& scroll_node_c = scroll_tree.Node(4);
   EXPECT_EQ(scroll_node_b.id, scroll_node_c.parent_id);
   EXPECT_EQ(scroll_c.GetCompositorElementId(), scroll_node_c.element_id);
   EXPECT_EQ(scroll_node_c.id,
@@ -1573,7 +1575,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(scroll_node_c.element_id, ScrollHitTestLayerAt(2)->element_id());
 
   const cc::TransformNode& transform_node_c =
-      *transform_tree.Node(scroll_node_c.transform_id);
+      transform_tree.Node(scroll_node_c.transform_id);
   EXPECT_EQ(1, transform_node_c.parent_id);
   EXPECT_TRUE(transform_node_c.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-11, -22), transform_node_c.scroll_offset());
@@ -1607,7 +1609,7 @@ TEST_P(PaintArtifactCompositorTest,
   ASSERT_EQ(5u, scroll_tree.size());
   ASSERT_EQ(5u, transform_tree.size());
 
-  const cc::ScrollNode& scroll_node_a = *scroll_tree.Node(2);
+  const cc::ScrollNode& scroll_node_a = scroll_tree.Node(2);
   EXPECT_EQ(1, scroll_node_a.parent_id);
   EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a.element_id);
   EXPECT_EQ(scroll_node_a.id,
@@ -1615,13 +1617,13 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(scroll_node_a.element_id, ScrollHitTestLayerAt(2)->element_id());
 
   const cc::TransformNode& transform_node_a =
-      *transform_tree.Node(scroll_node_a.transform_id);
+      transform_tree.Node(scroll_node_a.transform_id);
   EXPECT_TRUE(transform_node_a.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-7, -9), transform_node_a.scroll_offset());
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_node_a.element_id));
 
-  const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
+  const cc::ScrollNode& scroll_node_b = scroll_tree.Node(3);
   EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
   EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
   EXPECT_EQ(scroll_node_b.id,
@@ -1629,13 +1631,13 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(scroll_node_b.element_id, ScrollHitTestLayerAt(1)->element_id());
 
   const cc::TransformNode& transform_node_b =
-      *transform_tree.Node(scroll_node_b.transform_id);
+      transform_tree.Node(scroll_node_b.transform_id);
   EXPECT_TRUE(transform_node_b.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset());
   EXPECT_EQ(gfx::PointF(-39, -31),
             scroll_tree.current_scroll_offset(scroll_node_b.element_id));
 
-  const cc::ScrollNode& scroll_node_c = *scroll_tree.Node(4);
+  const cc::ScrollNode& scroll_node_c = scroll_tree.Node(4);
   EXPECT_EQ(scroll_node_b.id, scroll_node_c.parent_id);
   EXPECT_EQ(scroll_c.GetCompositorElementId(), scroll_node_c.element_id);
   EXPECT_EQ(scroll_node_c.id,
@@ -1643,7 +1645,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(scroll_node_c.element_id, ScrollHitTestLayerAt(0)->element_id());
 
   const cc::TransformNode& transform_node_c =
-      *transform_tree.Node(scroll_node_c.transform_id);
+      transform_tree.Node(scroll_node_c.transform_id);
   EXPECT_EQ(1, transform_node_c.parent_id);
   EXPECT_TRUE(transform_node_c.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-11, -22), transform_node_c.scroll_offset());
@@ -1680,25 +1682,25 @@ TEST_P(PaintArtifactCompositorTest, FixedPositionScrollState) {
   ASSERT_EQ(5u, transform_tree.size());
   ASSERT_EQ(3u, LayerCount());
 
-  auto* scroll_node_a = scroll_tree.Node(2);
+  auto& scroll_node_a = scroll_tree.Node(2);
   auto* layer_a = LayerAt(0);
-  EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a->element_id);
-  EXPECT_EQ(1, scroll_node_a->parent_id);
-  EXPECT_EQ(CcNodeId(scroll_state_a.Transform()), scroll_node_a->transform_id);
+  EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a.element_id);
+  EXPECT_EQ(1, scroll_node_a.parent_id);
+  EXPECT_EQ(CcNodeId(scroll_state_a.Transform()), scroll_node_a.transform_id);
   EXPECT_EQ(2, layer_a->scroll_tree_index());
   EXPECT_EQ(1, layer_a->transform_tree_index());
 
   auto* fixed_layer = LayerAt(1);
   EXPECT_EQ(2, fixed_layer->scroll_tree_index());
   EXPECT_EQ(CcNodeId(*fixed_transform), fixed_layer->transform_tree_index());
-  auto* fixed_transform_node = transform_tree.Node(3);
-  EXPECT_EQ(1, fixed_transform_node->parent_id);
+  auto& fixed_transform_node = transform_tree.Node(3);
+  EXPECT_EQ(1, fixed_transform_node.parent_id);
 
-  auto* scroll_node_b = scroll_tree.Node(3);
+  auto& scroll_node_b = scroll_tree.Node(3);
   auto* layer_b = LayerAt(2);
-  EXPECT_EQ(2, scroll_node_b->parent_id);
-  EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b->element_id);
-  EXPECT_EQ(CcNodeId(scroll_state_b.Transform()), scroll_node_b->transform_id);
+  EXPECT_EQ(2, scroll_node_b.parent_id);
+  EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
+  EXPECT_EQ(CcNodeId(scroll_state_b.Transform()), scroll_node_b.transform_id);
   EXPECT_EQ(3, layer_b->scroll_tree_index());
   EXPECT_EQ(CcNodeId(*fixed_transform), layer_b->transform_tree_index());
 }
@@ -1742,33 +1744,33 @@ TEST_P(PaintArtifactCompositorTest, NonScrollingChildUnderFixedPosition) {
   ASSERT_EQ(4u, scroll_tree.size());
   ASSERT_EQ(6u, transform_tree.size());
 
-  auto* scroll_node_a = scroll_tree.Node(2);
+  auto& scroll_node_a = scroll_tree.Node(2);
   auto* layer_a = LayerAt(0);
-  EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a->element_id);
-  EXPECT_EQ(1, scroll_node_a->parent_id);
-  EXPECT_EQ(CcNodeId(scroll_state_a.Transform()), scroll_node_a->transform_id);
+  EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a.element_id);
+  EXPECT_EQ(1, scroll_node_a.parent_id);
+  EXPECT_EQ(CcNodeId(scroll_state_a.Transform()), scroll_node_a.transform_id);
   EXPECT_EQ(2, layer_a->scroll_tree_index());
   EXPECT_EQ(1, layer_a->transform_tree_index());
 
-  auto* scroll_node_b = scroll_tree.Node(3);
+  auto& scroll_node_b = scroll_tree.Node(3);
   auto* layer_b = LayerAt(1);
-  EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b->element_id);
-  EXPECT_EQ(2, scroll_node_b->parent_id);
-  EXPECT_EQ(CcNodeId(scroll_state_b.Transform()), scroll_node_b->transform_id);
+  EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
+  EXPECT_EQ(2, scroll_node_b.parent_id);
+  EXPECT_EQ(CcNodeId(scroll_state_b.Transform()), scroll_node_b.transform_id);
   EXPECT_EQ(3, layer_b->scroll_tree_index());
   EXPECT_EQ(2, layer_b->transform_tree_index());
 
   auto* fixed_layer = LayerAt(2);
   EXPECT_EQ(2, fixed_layer->scroll_tree_index());
   EXPECT_EQ(CcNodeId(*fixed_transform), fixed_layer->transform_tree_index());
-  auto* fixed_transform_node = transform_tree.Node(4);
-  EXPECT_EQ(3, fixed_transform_node->parent_id);
+  auto& fixed_transform_node = transform_tree.Node(4);
+  EXPECT_EQ(3, fixed_transform_node.parent_id);
 
   auto* child_layer = LayerAt(3);
   EXPECT_EQ(child_layer->scroll_tree_index(), fixed_layer->scroll_tree_index());
   EXPECT_EQ(CcNodeId(*child_transform), child_layer->transform_tree_index());
-  auto* child_transform_node = transform_tree.Node(5);
-  EXPECT_EQ(4, child_transform_node->parent_id);
+  auto& child_transform_node = transform_tree.Node(5);
+  EXPECT_EQ(4, child_transform_node.parent_id);
 }
 
 TEST_P(PaintArtifactCompositorTest, MergeSimpleChunks) {
@@ -2310,13 +2312,13 @@ TEST_P(PaintArtifactCompositorTest, NonContiguousEffectWithElementId) {
   EXPECT_EQ(element_id, GetPropertyTrees()
                             .effect_tree()
                             .Node(LayerAt(0)->effect_tree_index())
-                            ->element_id);
+                            .element_id);
   EXPECT_EQ(1, LayerAt(1)->effect_tree_index());
   EXPECT_EQ(3, LayerAt(2)->effect_tree_index());
   EXPECT_NE(element_id, GetPropertyTrees()
                             .effect_tree()
                             .Node(LayerAt(2)->effect_tree_index())
-                            ->element_id);
+                            .element_id);
 }
 
 TEST_P(PaintArtifactCompositorTest, EffectWithElementIdWithAlias) {
@@ -2357,7 +2359,7 @@ TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleMask) {
   EXPECT_EQ(Translation(100, 100), layer->ScreenSpaceTransform());
   EXPECT_EQ(gfx::Size(200, 200), layer->bounds());
   const cc::EffectNode* masked_group =
-      GetPropertyTrees().effect_tree().Node(layer->effect_tree_index());
+      &GetPropertyTrees().effect_tree().Node(layer->effect_tree_index());
   EXPECT_FALSE(masked_group->HasRenderSurface());
   EXPECT_EQ(SkBlendMode::kSrcOver, masked_group->blend_mode);
   EXPECT_TRUE(masked_group->filters.IsEmpty());
@@ -2394,18 +2396,18 @@ TEST_P(PaintArtifactCompositorTest, CompositedMaskOneChild) {
   EXPECT_TRUE(masked_layer->contents_opaque_for_text());
 
   const cc::Layer* masking_layer = LayerAt(1);
-  const cc::EffectNode* masking_group =
+  const cc::EffectNode& masking_group =
       GetPropertyTrees().effect_tree().Node(masking_layer->effect_tree_index());
 
   // Render surface is not needed for one child.
-  EXPECT_FALSE(masking_group->HasRenderSurface());
-  EXPECT_EQ(SkBlendMode::kDstIn, masking_group->blend_mode);
+  EXPECT_FALSE(masking_group.HasRenderSurface());
+  EXPECT_EQ(SkBlendMode::kDstIn, masking_group.blend_mode);
 
   // The parent also has a render surface to define the scope of the backdrop
   // of the kDstIn blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(masking_group)
+                  .parent(&masking_group)
                   ->HasRenderSurface());
 }
 
@@ -2461,18 +2463,18 @@ TEST_P(PaintArtifactCompositorTest, CompositedMaskTwoChildren) {
   ASSERT_EQ(3u, LayerCount());
 
   const cc::Layer* masking_layer = LayerAt(2);
-  const cc::EffectNode* masking_group =
+  const cc::EffectNode& masking_group =
       GetPropertyTrees().effect_tree().Node(masking_layer->effect_tree_index());
 
   // There is a render surface because there are two children.
-  EXPECT_TRUE(masking_group->HasRenderSurface());
-  EXPECT_EQ(SkBlendMode::kDstIn, masking_group->blend_mode);
+  EXPECT_TRUE(masking_group.HasRenderSurface());
+  EXPECT_EQ(SkBlendMode::kDstIn, masking_group.blend_mode);
 
   // The parent also has a render surface to define the scope of the backdrop
   // of the kDstIn blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(masking_group)
+                  .parent(&masking_group)
                   ->HasRenderSurface());
 }
 
@@ -2495,12 +2497,12 @@ TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleExoticBlendMode) {
   ASSERT_EQ(1u, LayerCount());
 
   const cc::Layer* layer = LayerAt(0);
-  const cc::EffectNode* group =
+  const cc::EffectNode& group =
       GetPropertyTrees().effect_tree().Node(layer->effect_tree_index());
-  EXPECT_FALSE(group->HasRenderSurface());
-  EXPECT_EQ(SkBlendMode::kSrcOver, group->blend_mode);
+  EXPECT_FALSE(group.HasRenderSurface());
+  EXPECT_EQ(SkBlendMode::kSrcOver, group.blend_mode);
   // It's the last effect node. |masking| has been decomposited.
-  EXPECT_EQ(group, GetPropertyTrees().effect_tree().back());
+  EXPECT_EQ(&group, GetPropertyTrees().effect_tree().back());
 }
 
 TEST_P(PaintArtifactCompositorTest, ForcedCompositedExoticBlendMode) {
@@ -2523,17 +2525,17 @@ TEST_P(PaintArtifactCompositorTest, ForcedCompositedExoticBlendMode) {
   ASSERT_EQ(2u, LayerCount());
 
   const cc::Layer* masking_layer = LayerAt(1);
-  const cc::EffectNode* masking_group =
+  const cc::EffectNode& masking_group =
       GetPropertyTrees().effect_tree().Node(masking_layer->effect_tree_index());
-  EXPECT_EQ(SkBlendMode::kXor, masking_group->blend_mode);
+  EXPECT_EQ(SkBlendMode::kXor, masking_group.blend_mode);
 
   // This requires a render surface.
-  EXPECT_TRUE(masking_group->HasRenderSurface());
+  EXPECT_TRUE(masking_group.HasRenderSurface());
   // The parent also requires a render surface to define the backdrop scope of
   // the blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(masking_group)
+                  .parent(&masking_group)
                   ->HasRenderSurface());
 }
 
@@ -2563,17 +2565,17 @@ TEST_P(PaintArtifactCompositorTest,
   ASSERT_EQ(3u, LayerCount());
 
   const cc::Layer* masking_layer = LayerAt(2);
-  const cc::EffectNode* masking_group =
+  const cc::EffectNode& masking_group =
       GetPropertyTrees().effect_tree().Node(masking_layer->effect_tree_index());
-  EXPECT_EQ(SkBlendMode::kXor, masking_group->blend_mode);
+  EXPECT_EQ(SkBlendMode::kXor, masking_group.blend_mode);
 
   // This requires a render surface.
-  EXPECT_TRUE(masking_group->HasRenderSurface());
+  EXPECT_TRUE(masking_group.HasRenderSurface());
   // The parent also requires a render surface to define the backdrop scope of
   // the blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(masking_group)
+                  .parent(&masking_group)
                   ->HasRenderSurface());
 }
 
@@ -2603,17 +2605,17 @@ TEST_P(PaintArtifactCompositorTest,
   ASSERT_EQ(3u, LayerCount());
 
   const cc::Layer* masking_layer = LayerAt(2);
-  const cc::EffectNode* masking_group =
+  const cc::EffectNode& masking_group =
       GetPropertyTrees().effect_tree().Node(masking_layer->effect_tree_index());
-  EXPECT_EQ(SkBlendMode::kXor, masking_group->blend_mode);
+  EXPECT_EQ(SkBlendMode::kXor, masking_group.blend_mode);
 
   // This requires a render surface.
-  EXPECT_TRUE(masking_group->HasRenderSurface());
+  EXPECT_TRUE(masking_group.HasRenderSurface());
   // The parent also requires a render surface to define the backdrop scope of
   // the blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(masking_group)
+                  .parent(&masking_group)
                   ->HasRenderSurface());
 }
 
@@ -2639,12 +2641,12 @@ TEST_P(PaintArtifactCompositorTest, DecompositeExoticBlendModeWithoutBackdrop) {
              .Build());
 
   ASSERT_EQ(1u, LayerCount());
-  const auto* effect =
+  const auto& effect =
       GetPropertyTrees().effect_tree().Node(LayerAt(0)->effect_tree_index());
-  EXPECT_EQ(1.0f, effect->opacity);
-  EXPECT_EQ(SkBlendMode::kSrcOver, effect->blend_mode);
+  EXPECT_EQ(1.0f, effect.opacity);
+  EXPECT_EQ(SkBlendMode::kSrcOver, effect.blend_mode);
   // Don't need a render surface because all blend effects are decomposited.
-  EXPECT_FALSE(effect->HasRenderSurface());
+  EXPECT_FALSE(effect.HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest,
@@ -2679,12 +2681,12 @@ TEST_P(PaintArtifactCompositorTest,
   // This is the layer containing the paint chunks with |blend_effect1| and
   // |blend_effect2| decomposited.
   EXPECT_EQ(gfx::Size(300, 300), LayerAt(1)->bounds());
-  const auto* effect =
+  const auto& effect =
       GetPropertyTrees().effect_tree().Node(LayerAt(1)->effect_tree_index());
-  EXPECT_EQ(1.0f, effect->opacity);
-  EXPECT_EQ(SkBlendMode::kSrcOver, effect->blend_mode);
+  EXPECT_EQ(1.0f, effect.opacity);
+  EXPECT_EQ(SkBlendMode::kSrcOver, effect.blend_mode);
   // Don't need a render surface because all blend effects are decomposited.
-  EXPECT_FALSE(effect->HasRenderSurface());
+  EXPECT_FALSE(effect.HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest, UpdateProducesNewSequenceNumber) {
@@ -2790,7 +2792,7 @@ TEST_P(PaintArtifactCompositorTest, DirectlyCompositedEffect) {
   EXPECT_EQ(gfx::Vector2dF(25.f, 75.f), layer2->offset_to_transform_parent());
   EXPECT_EQ(gfx::Size(100, 100), layer2->bounds());
   const cc::EffectNode* effect_node =
-      GetPropertyTrees().effect_tree().Node(layer2->effect_tree_index());
+      &GetPropertyTrees().effect_tree().Node(layer2->effect_tree_index());
   EXPECT_EQ(1, effect_node->parent_id);
   EXPECT_EQ(0.5f, effect_node->opacity);
 
@@ -2825,10 +2827,10 @@ TEST_P(PaintArtifactCompositorTest, DecompositeDeepEffect) {
   EXPECT_EQ(gfx::Vector2dF(25.f, 75.f), layer2->offset_to_transform_parent());
   EXPECT_EQ(gfx::Size(100, 100), layer2->bounds());
   const cc::EffectNode* effect_node2 =
-      GetPropertyTrees().effect_tree().Node(layer2->effect_tree_index());
+      &GetPropertyTrees().effect_tree().Node(layer2->effect_tree_index());
   EXPECT_EQ(0.2f, effect_node2->opacity);
   const cc::EffectNode* effect_node1 =
-      GetPropertyTrees().effect_tree().Node(effect_node2->parent_id);
+      &GetPropertyTrees().effect_tree().Node(effect_node2->parent_id);
   EXPECT_EQ(1, effect_node1->parent_id);
   EXPECT_EQ(0.1f, effect_node1->opacity);
 
@@ -2863,7 +2865,7 @@ TEST_P(PaintArtifactCompositorTest, IndirectlyCompositedEffect) {
   EXPECT_EQ(gfx::Vector2dF(25.f, 75.f), layer2->offset_to_transform_parent());
   EXPECT_EQ(gfx::Size(100, 100), layer2->bounds());
   const cc::EffectNode* effect_node =
-      GetPropertyTrees().effect_tree().Node(layer2->effect_tree_index());
+      &GetPropertyTrees().effect_tree().Node(layer2->effect_tree_index());
   EXPECT_EQ(1, effect_node->parent_id);
   EXPECT_EQ(0.5f, effect_node->opacity);
 
@@ -2908,7 +2910,7 @@ TEST_P(PaintArtifactCompositorTest, DecompositedEffectNotMergingDueToOverlap) {
   EXPECT_EQ(gfx::Vector2dF(50.f, 0.f), layer2->offset_to_transform_parent());
   EXPECT_EQ(gfx::Size(40, 40), layer2->bounds());
   const cc::EffectNode* effect_node =
-      GetPropertyTrees().effect_tree().Node(layer2->effect_tree_index());
+      &GetPropertyTrees().effect_tree().Node(layer2->effect_tree_index());
   EXPECT_EQ(1, effect_node->parent_id);
   EXPECT_EQ(0.1f, effect_node->opacity);
 
@@ -3029,12 +3031,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipSimple) {
   const cc::Layer* content0 = LayerAt(0);
 
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
@@ -3071,12 +3073,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
   const cc::Layer* clip_mask0 = LayerAt(1);
 
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.HasRenderSurface());
@@ -3090,7 +3092,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
   EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
   const cc::EffectNode& mask_effect_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_effect_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_effect_0_id);
   ASSERT_EQ(mask_isolation_0_id, mask_effect_0.parent_id);
   EXPECT_EQ(SkBlendMode::kDstIn, mask_effect_0.blend_mode);
   // Render surface is not needed for DstIn controlling only one layer.
@@ -3125,12 +3127,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClip90DegRotationSupported) {
   const cc::Layer* content0 = LayerAt(0);
 
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
@@ -3165,12 +3167,12 @@ TEST_P(PaintArtifactCompositorTest,
   const cc::Layer* clip_mask0 = LayerAt(1);
 
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.HasRenderSurface());
@@ -3183,7 +3185,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
   const cc::EffectNode& mask_effect_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_effect_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_effect_0_id);
   ASSERT_EQ(mask_isolation_0_id, mask_effect_0.parent_id);
   EXPECT_EQ(SkBlendMode::kDstIn, mask_effect_0.blend_mode);
 
@@ -3262,26 +3264,26 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipNested) {
   constexpr int e1_id = 2;
 
   int c3_id = content1->clip_tree_index();
-  const cc::ClipNode& cc_c3 = *GetPropertyTrees().clip_tree().Node(c3_id);
+  const cc::ClipNode& cc_c3 = GetPropertyTrees().clip_tree().Node(c3_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c3.clip);
   const cc::ClipNode& cc_c2 =
-      *GetPropertyTrees().clip_tree().Node(cc_c3.parent_id);
+      GetPropertyTrees().clip_tree().Node(cc_c3.parent_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c2.clip);
   ASSERT_EQ(c1_id, cc_c2.parent_id);
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(c1_id, content0->clip_tree_index());
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
 
   int mask_isolation_2_id = content1->effect_tree_index();
   const cc::EffectNode& mask_isolation_2 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_2_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_2_id);
   const cc::EffectNode& mask_isolation_1 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_2.parent_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_2.parent_id);
   const cc::EffectNode& cc_filter =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_1.parent_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_1.parent_id);
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(cc_filter.parent_id);
+      GetPropertyTrees().effect_tree().Node(cc_filter.parent_id);
 
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
@@ -3333,12 +3335,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipIsNotDrawable) {
   const cc::Layer* content0 = LayerAt(0);
 
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
 }
@@ -3360,7 +3362,7 @@ TEST_P(PaintArtifactCompositorTest, ReuseSyntheticClip) {
   cc::ElementId old_element_id = GetPropertyTrees()
                                      .effect_tree()
                                      .Node(content0->effect_tree_index())
-                                     ->element_id;
+                                     .element_id;
 
   TestPaintArtifact repeated_artifact;
   repeated_artifact.Chunk(t0(), *c1, e0())
@@ -3372,7 +3374,7 @@ TEST_P(PaintArtifactCompositorTest, ReuseSyntheticClip) {
   EXPECT_EQ(GetPropertyTrees()
                 .effect_tree()
                 .Node(content1->effect_tree_index())
-                ->element_id,
+                .element_id,
             old_element_id);
 
   TestPaintArtifact changed_artifact;
@@ -3386,7 +3388,7 @@ TEST_P(PaintArtifactCompositorTest, ReuseSyntheticClip) {
   EXPECT_NE(GetPropertyTrees()
                 .effect_tree()
                 .Node(content2->effect_tree_index())
-                ->element_id,
+                .element_id,
             old_element_id);
 }
 
@@ -3416,15 +3418,15 @@ TEST_P(PaintArtifactCompositorTest,
   const cc::Layer* clip_mask0 = LayerAt(1);
 
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int e1_id = content0->effect_tree_index();
-  const cc::EffectNode& cc_e1 = *GetPropertyTrees().effect_tree().Node(e1_id);
+  const cc::EffectNode& cc_e1 = GetPropertyTrees().effect_tree().Node(e1_id);
   EXPECT_EQ(c1_id, cc_e1.clip_id);
   int mask_isolation_0_id = cc_e1.parent_id;
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(c0_id, mask_isolation_0.clip_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
@@ -3435,7 +3437,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
   const cc::EffectNode& mask_effect_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_effect_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_effect_0_id);
   ASSERT_EQ(mask_isolation_0_id, mask_effect_0.parent_id);
   EXPECT_EQ(c0_id, mask_effect_0.clip_id);
   EXPECT_EQ(SkBlendMode::kDstIn, mask_effect_0.blend_mode);
@@ -3472,18 +3474,18 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipContiguous) {
 
   EXPECT_EQ(t0_id, content0->transform_tree_index());
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
 
   int t1_id = content1->transform_tree_index();
   const cc::TransformNode& cc_t1 =
-      *GetPropertyTrees().transform_tree().Node(t1_id);
+      GetPropertyTrees().transform_tree().Node(t1_id);
   ASSERT_EQ(t0_id, cc_t1.parent_id);
   EXPECT_EQ(c1_id, content1->clip_tree_index());
   EXPECT_EQ(mask_isolation_0_id, content1->effect_tree_index());
@@ -3531,12 +3533,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDiscontiguous) {
 
   EXPECT_EQ(t0_id, content0->transform_tree_index());
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
@@ -3546,7 +3548,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDiscontiguous) {
 
   int t1_id = content1->transform_tree_index();
   const cc::TransformNode& cc_t1 =
-      *GetPropertyTrees().transform_tree().Node(t1_id);
+      GetPropertyTrees().transform_tree().Node(t1_id);
   ASSERT_EQ(t0_id, cc_t1.parent_id);
   EXPECT_EQ(c0_id, content1->clip_tree_index());
   EXPECT_EQ(e0_id, content1->effect_tree_index());
@@ -3555,7 +3557,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDiscontiguous) {
   EXPECT_EQ(c1_id, content2->clip_tree_index());
   int mask_isolation_1_id = content2->effect_tree_index();
   const cc::EffectNode& mask_isolation_1 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_1_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_1_id);
   EXPECT_NE(mask_isolation_0_id, mask_isolation_1_id);
   ASSERT_EQ(e0_id, mask_isolation_1.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_1.blend_mode);
@@ -3598,26 +3600,26 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipAcrossChildEffect) {
   const cc::Layer* content2 = LayerAt(2);
 
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_FALSE(mask_isolation_0.HasRenderSurface());
 
   EXPECT_EQ(c1_id, content1->clip_tree_index());
   int e1_id = content1->effect_tree_index();
-  const cc::EffectNode& cc_e1 = *GetPropertyTrees().effect_tree().Node(e1_id);
+  const cc::EffectNode& cc_e1 = GetPropertyTrees().effect_tree().Node(e1_id);
   ASSERT_EQ(mask_isolation_0_id, cc_e1.parent_id);
 
   EXPECT_EQ(c1_id, content2->clip_tree_index());
   EXPECT_EQ(mask_isolation_0_id, content2->effect_tree_index());
 
   int e2_id = content2->effect_tree_index();
-  const cc::EffectNode& cc_e2 = *GetPropertyTrees().effect_tree().Node(e2_id);
+  const cc::EffectNode& cc_e2 = GetPropertyTrees().effect_tree().Node(e2_id);
   EXPECT_TRUE(cc_e2.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
             mask_isolation_0.mask_filter_info.rounded_corner_bounds());
@@ -3663,12 +3665,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRespectOutputClip) {
   const cc::Layer* content2 = LayerAt(2);
 
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
@@ -3679,11 +3681,11 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRespectOutputClip) {
   EXPECT_EQ(c1_id, content1->clip_tree_index());
   int mask_isolation_1_id = content1->effect_tree_index();
   const cc::EffectNode& mask_isolation_1 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_1_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_1_id);
   EXPECT_NE(mask_isolation_0_id, mask_isolation_1_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_1.blend_mode);
   int e1_id = mask_isolation_1.parent_id;
-  const cc::EffectNode& cc_e1 = *GetPropertyTrees().effect_tree().Node(e1_id);
+  const cc::EffectNode& cc_e1 = GetPropertyTrees().effect_tree().Node(e1_id);
   ASSERT_EQ(e0_id, cc_e1.parent_id);
   EXPECT_TRUE(mask_isolation_1.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
@@ -3693,7 +3695,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRespectOutputClip) {
   EXPECT_EQ(c1_id, content2->clip_tree_index());
   int mask_isolation_2_id = content2->effect_tree_index();
   const cc::EffectNode& mask_isolation_2 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_2_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_2_id);
   EXPECT_NE(mask_isolation_0_id, mask_isolation_2_id);
   EXPECT_NE(mask_isolation_1_id, mask_isolation_2_id);
   ASSERT_EQ(e0_id, mask_isolation_2.parent_id);
@@ -3746,12 +3748,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBlending) {
   const cc::Layer* content2 = LayerAt(2);
 
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
@@ -3760,11 +3762,11 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBlending) {
 
   EXPECT_EQ(c1_id, content1->clip_tree_index());
   int e1_id = content1->effect_tree_index();
-  const cc::EffectNode& cc_e1 = *GetPropertyTrees().effect_tree().Node(e1_id);
+  const cc::EffectNode& cc_e1 = GetPropertyTrees().effect_tree().Node(e1_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, cc_e1.blend_mode);
   int mask_isolation_1_id = cc_e1.parent_id;
   const cc::EffectNode& mask_isolation_1 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_1_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_1_id);
   EXPECT_NE(mask_isolation_0_id, mask_isolation_1_id);
   ASSERT_EQ(e0_id, mask_isolation_1.parent_id);
   EXPECT_EQ(SkBlendMode::kMultiply, mask_isolation_1.blend_mode);
@@ -3775,7 +3777,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBlending) {
   EXPECT_EQ(c1_id, content2->clip_tree_index());
   int mask_isolation_2_id = content2->effect_tree_index();
   const cc::EffectNode& mask_isolation_2 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_2_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_2_id);
   EXPECT_NE(mask_isolation_0_id, mask_isolation_2_id);
   EXPECT_NE(mask_isolation_1_id, mask_isolation_2_id);
   ASSERT_EQ(e0_id, mask_isolation_2.parent_id);
@@ -3826,15 +3828,15 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_FALSE(SynthesizedClipLayerAt(2));
 
   int t1_id = content0->transform_tree_index();
-  EXPECT_EQ(t0_id, GetPropertyTrees().transform_tree().Node(t1_id)->parent_id);
+  EXPECT_EQ(t0_id, GetPropertyTrees().transform_tree().Node(t1_id).parent_id);
   int c1_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   EXPECT_EQ(gfx::RectF(50, 50, 300, 200), cc_c1.clip);
   ASSERT_EQ(c0_id, cc_c1.parent_id);
   EXPECT_EQ(t0_id, cc_c1.transform_id);
   int mask_isolation_0_id = content0->effect_tree_index();
   const cc::EffectNode& mask_isolation_0 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(t0_id, mask_isolation_0.transform_id);
   EXPECT_EQ(c0_id, mask_isolation_0.clip_id);
@@ -3846,12 +3848,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
 
   EXPECT_EQ(t1_id, content1->transform_tree_index());
   int c2_id = content1->clip_tree_index();
-  const cc::ClipNode& cc_c2 = *GetPropertyTrees().clip_tree().Node(c2_id);
+  const cc::ClipNode& cc_c2 = GetPropertyTrees().clip_tree().Node(c2_id);
   EXPECT_EQ(gfx::RectF(60, 60, 200, 100), cc_c2.clip);
   EXPECT_EQ(c1_id, cc_c2.parent_id);
   EXPECT_EQ(t0_id, cc_c2.transform_id);
   int e1_id = content1->effect_tree_index();
-  const cc::EffectNode& cc_e1 = *GetPropertyTrees().effect_tree().Node(e1_id);
+  const cc::EffectNode& cc_e1 = GetPropertyTrees().effect_tree().Node(e1_id);
   EXPECT_TRUE(cc_e1.backdrop_filters.IsEmpty());
   EXPECT_EQ(1.0f, cc_e1.opacity);
   EXPECT_EQ(t1_id, cc_e1.transform_id);
@@ -3860,7 +3862,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
 
   int mask_isolation_1_id = cc_e1.parent_id;
   const cc::EffectNode& mask_isolation_1 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_1_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_1_id);
   EXPECT_NE(mask_isolation_0_id, mask_isolation_1_id);
   ASSERT_EQ(e0_id, mask_isolation_1.parent_id);
   EXPECT_EQ(t1_id, mask_isolation_1.transform_id);
@@ -3881,7 +3883,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_EQ(c1_id, content2->clip_tree_index());
   int mask_isolation_2_id = content2->effect_tree_index();
   const cc::EffectNode& mask_isolation_2 =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_2_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_2_id);
   EXPECT_NE(mask_isolation_0_id, mask_isolation_2_id);
   EXPECT_NE(mask_isolation_1_id, mask_isolation_2_id);
   ASSERT_EQ(e0_id, mask_isolation_2.parent_id);
@@ -3934,16 +3936,16 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipMultipleNonBackdropEffects) {
   EXPECT_FALSE(SynthesizedClipLayerAt(0));
 
   int c2_id = content0->clip_tree_index();
-  const cc::ClipNode& cc_c2 = *GetPropertyTrees().clip_tree().Node(c2_id);
+  const cc::ClipNode& cc_c2 = GetPropertyTrees().clip_tree().Node(c2_id);
   int e1_id = content0->effect_tree_index();
-  const cc::EffectNode& cc_e1 = *GetPropertyTrees().effect_tree().Node(e1_id);
+  const cc::EffectNode& cc_e1 = GetPropertyTrees().effect_tree().Node(e1_id);
   int c1_id = content1->clip_tree_index();
-  const cc::ClipNode& cc_c1 = *GetPropertyTrees().clip_tree().Node(c1_id);
+  const cc::ClipNode& cc_c1 = GetPropertyTrees().clip_tree().Node(c1_id);
   int e2_id = content1->effect_tree_index();
-  const cc::EffectNode& cc_e2 = *GetPropertyTrees().effect_tree().Node(e2_id);
+  const cc::EffectNode& cc_e2 = GetPropertyTrees().effect_tree().Node(e2_id);
   int mask_isolation_id = cc_e1.parent_id;
   const cc::EffectNode& mask_isolation =
-      *GetPropertyTrees().effect_tree().Node(mask_isolation_id);
+      GetPropertyTrees().effect_tree().Node(mask_isolation_id);
 
   EXPECT_EQ(c2_id, cc_e1.clip_id);
   EXPECT_EQ(0.5f, cc_e1.opacity);
@@ -4305,9 +4307,9 @@ TEST_P(PaintArtifactCompositorTest, InSubtreeOfPageScale) {
   // Ancestors of the page scale node are not in a page scale subtree.
   auto cc_ancestor_id = cc_page_scale_transform->parent_id;
   while (cc_ancestor_id != cc::kInvalidPropertyNodeId) {
-    const auto* ancestor = transform_tree.Node(cc_ancestor_id);
-    EXPECT_FALSE(ancestor->in_subtree_of_page_scale_layer);
-    cc_ancestor_id = ancestor->parent_id;
+    const auto& ancestor = transform_tree.Node(cc_ancestor_id);
+    EXPECT_FALSE(ancestor.in_subtree_of_page_scale_layer);
+    cc_ancestor_id = ancestor.parent_id;
   }
 
   // Descendants of the page scale node should be in the page scale subtree.
@@ -4351,7 +4353,7 @@ TEST_P(PaintArtifactCompositorTest, ViewportPageScale) {
 
   cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree_mutable();
   cc::ScrollNode* cc_scroll_node =
-      scroll_tree.FindNodeFromElementId(scroll_element_id);
+      scroll_tree.MutableFindNodeFromElementId(scroll_element_id);
   auto max_scroll_offset = scroll_tree.MaxScrollOffset(cc_scroll_node->id);
   // The max scroll offset should be scaled by the page scale factor (see:
   // |ScrollTree::MaxScrollOffset|). This adjustment scales the contents from
@@ -4366,10 +4368,10 @@ enum {
 
 #define EXPECT_OPACITY(effect_id, expected_opacity, expected_flags)        \
   do {                                                                     \
-    const auto* effect = GetPropertyTrees().effect_tree().Node(effect_id); \
-    EXPECT_EQ(expected_opacity, effect->opacity);                          \
-    EXPECT_EQ(!!((expected_flags)&kHasRenderSurface),                      \
-              effect->HasRenderSurface());                                 \
+    const auto& effect = GetPropertyTrees().effect_tree().Node(effect_id); \
+    EXPECT_EQ(expected_opacity, effect.opacity);                           \
+    EXPECT_EQ(!!((expected_flags) & kHasRenderSurface),                    \
+              effect.HasRenderSurface());                                  \
   } while (false)
 
 TEST_P(PaintArtifactCompositorTest, OpacityRenderSurfaces) {
@@ -4423,8 +4425,8 @@ TEST_P(PaintArtifactCompositorTest, OpacityRenderSurfaces) {
 
   // Effect |a| has two indirect compositing layers, so has render surface.
   const auto& effect_tree = GetPropertyTrees().effect_tree();
-  int id_a = effect_tree.Node(effect_ids[0])->parent_id;
-  EXPECT_EQ(id_a, effect_tree.Node(effect_ids[1])->parent_id);
+  int id_a = effect_tree.Node(effect_ids[0]).parent_id;
+  EXPECT_EQ(id_a, effect_tree.Node(effect_ids[1]).parent_id);
   EXPECT_OPACITY(id_a, 0.2f, kHasRenderSurface);
 
   // Effect |c| has one direct and one indirect compositing layers, so has
@@ -4432,7 +4434,7 @@ TEST_P(PaintArtifactCompositorTest, OpacityRenderSurfaces) {
   EXPECT_OPACITY(effect_ids[4], 0.4f, kHasRenderSurface);
 
   // |e| has render surface because it has 3 child render surfaces.
-  EXPECT_OPACITY(effect_tree.Node(effect_ids[4])->parent_id, 0.1f,
+  EXPECT_OPACITY(effect_tree.Node(effect_ids[4]).parent_id, 0.1f,
                  kHasRenderSurface);
 }
 
@@ -4457,7 +4459,7 @@ TEST_P(PaintArtifactCompositorTest, OpacityRenderSurfacesWithFilterChildren) {
   auto filter_id2 = LayerAt(1)->effect_tree_index();
   EXPECT_OPACITY(filter_id1, 1.f, kHasRenderSurface);
   EXPECT_OPACITY(filter_id2, 1.f, kHasRenderSurface);
-  EXPECT_OPACITY(GetPropertyTrees().effect_tree().Node(filter_id1)->parent_id,
+  EXPECT_OPACITY(GetPropertyTrees().effect_tree().Node(filter_id1).parent_id,
                  0.1f, kHasRenderSurface);
 }
 
@@ -4509,14 +4511,14 @@ TEST_P(PaintArtifactCompositorTest, OpacityAnimationRenderSurfaces) {
   EXPECT_OPACITY(effect_ids[2], 1.f, kHasRenderSurface);
 
   const auto& effect_tree = GetPropertyTrees().effect_tree();
-  int id_a = effect_tree.Node(effect_ids[0])->parent_id;
-  EXPECT_EQ(id_a, effect_tree.Node(effect_ids[1])->parent_id);
+  int id_a = effect_tree.Node(effect_ids[0]).parent_id;
+  EXPECT_EQ(id_a, effect_tree.Node(effect_ids[1]).parent_id);
   EXPECT_OPACITY(id_a, 1.f, kHasRenderSurface);
 
   // Effect |c| has one direct and one indirect compositing layers, so has
   // render surface.
   EXPECT_OPACITY(effect_ids[4], 1.f, kHasRenderSurface);
-  EXPECT_OPACITY(effect_tree.Node(effect_ids[4])->parent_id, 1.f,
+  EXPECT_OPACITY(effect_tree.Node(effect_ids[4]).parent_id, 1.f,
                  kHasRenderSurface);
 }
 
@@ -4556,9 +4558,9 @@ TEST_P(PaintArtifactCompositorTest,
   Update(artifact.Build());
   ASSERT_EQ(2u, LayerCount());
 
-  const auto* effect =
+  const auto& effect =
       GetPropertyTrees().effect_tree().Node(LayerAt(1)->effect_tree_index());
-  EXPECT_TRUE(effect->HasRenderSurface());
+  EXPECT_TRUE(effect.HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest,
@@ -4576,9 +4578,9 @@ TEST_P(PaintArtifactCompositorTest,
   Update(artifact.Build());
   ASSERT_EQ(2u, LayerCount());
 
-  const auto* effect =
+  const auto& effect =
       GetPropertyTrees().effect_tree().Node(LayerAt(1)->effect_tree_index());
-  EXPECT_TRUE(effect->HasRenderSurface());
+  EXPECT_TRUE(effect.HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest, OpacityIndirectlyAffectingTwoLayers) {
@@ -4606,7 +4608,7 @@ TEST_P(PaintArtifactCompositorTest, OpacityIndirectlyAffectingTwoLayers) {
   EXPECT_OPACITY(layer1_effect_id, 1.f, kNoRenderSurface);
   // |opacity| affects both layer0 and layer1 which don't have render surfaces,
   // so it should have a render surface.
-  int opacity_id = effect_tree.Node(layer0_effect_id)->parent_id;
+  int opacity_id = effect_tree.Node(layer0_effect_id).parent_id;
   EXPECT_OPACITY(opacity_id, 0.5f, kHasRenderSurface);
 }
 
@@ -4658,7 +4660,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_OPACITY(layer0_effect_id, 1.f, kNoRenderSurface);
   int layer1_effect_id = LayerAt(1)->effect_tree_index();
   EXPECT_OPACITY(layer1_effect_id, 1.f, kNoRenderSurface);
-  int opacity_id = effect_tree.Node(layer0_effect_id)->parent_id;
+  int opacity_id = effect_tree.Node(layer0_effect_id).parent_id;
   // TODO(crbug.com/1285498): Optimize for will-change: opacity.
   // |opacity| affects both layer0 and layer1 which don't have render surfaces,
   // so it should have a render surface if we have the optimization for
@@ -4693,7 +4695,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_OPACITY(layer1_effect_id, 1.f, kNoRenderSurface);
   // Though |opacity| affects both layer0 and layer1, layer0's effect has
   // render surface, so |opacity| doesn't need a render surface.
-  int opacity_id = effect_tree.Node(layer0_effect_id)->parent_id;
+  int opacity_id = effect_tree.Node(layer0_effect_id).parent_id;
   EXPECT_OPACITY(opacity_id, 1.f, kNoRenderSurface);
 }
 
@@ -4781,12 +4783,12 @@ TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedClip) {
 
   // We should create a synthetic effect node for the non-2d-axis-aligned clip.
   int clip_id = LayerAt(0)->clip_tree_index();
-  const auto* cc_clip = GetPropertyTrees().clip_tree().Node(clip_id);
+  const auto& cc_clip = GetPropertyTrees().clip_tree().Node(clip_id);
   int effect_id = LayerAt(0)->effect_tree_index();
-  const auto* cc_effect = GetPropertyTrees().effect_tree().Node(effect_id);
+  const auto& cc_effect = GetPropertyTrees().effect_tree().Node(effect_id);
   EXPECT_OPACITY(effect_id, 1.f, kHasRenderSurface);
-  EXPECT_OPACITY(cc_effect->parent_id, 0.5f, kNoRenderSurface);
-  EXPECT_EQ(cc_effect->clip_id, cc_clip->parent_id);
+  EXPECT_OPACITY(cc_effect.parent_id, 0.5f, kNoRenderSurface);
+  EXPECT_EQ(cc_effect.clip_id, cc_clip.parent_id);
 }
 
 TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedRoundedRectClip) {
@@ -4806,19 +4808,19 @@ TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedRoundedRectClip) {
   auto* masked_layer = LayerAt(0);
   EXPECT_TRUE(masked_layer->draws_content());
   int clip_id = masked_layer->clip_tree_index();
-  const auto* cc_clip = GetPropertyTrees().clip_tree().Node(clip_id);
+  const auto& cc_clip = GetPropertyTrees().clip_tree().Node(clip_id);
   int effect_id = masked_layer->effect_tree_index();
-  const auto* cc_effect = GetPropertyTrees().effect_tree().Node(effect_id);
+  const auto& cc_effect = GetPropertyTrees().effect_tree().Node(effect_id);
   EXPECT_OPACITY(effect_id, 1.f, kHasRenderSurface);
-  EXPECT_OPACITY(cc_effect->parent_id, 0.5f, kNoRenderSurface);
+  EXPECT_OPACITY(cc_effect.parent_id, 0.5f, kNoRenderSurface);
   // cc_clip should be applied in the clip mask layer.
-  EXPECT_EQ(cc_effect->clip_id, cc_clip->parent_id);
+  EXPECT_EQ(cc_effect.clip_id, cc_clip.parent_id);
 
   // The mask layer is needed because the masked layer draws content.
   auto* mask_layer = LayerAt(1);
-  const auto* cc_mask =
+  const auto& cc_mask =
       GetPropertyTrees().effect_tree().Node(mask_layer->effect_tree_index());
-  EXPECT_EQ(SkBlendMode::kDstIn, cc_mask->blend_mode);
+  EXPECT_EQ(SkBlendMode::kDstIn, cc_mask.blend_mode);
 }
 
 TEST_P(PaintArtifactCompositorTest,
@@ -4852,12 +4854,12 @@ TEST_P(PaintArtifactCompositorTest,
   // though the accumulated transform to the known render surface was identity
   // when the cc clip node was created.
   int clip_id = LayerAt(2)->clip_tree_index();
-  const auto* cc_clip = GetPropertyTrees().clip_tree().Node(clip_id);
+  const auto& cc_clip = GetPropertyTrees().clip_tree().Node(clip_id);
   int effect_id = LayerAt(2)->effect_tree_index();
-  const auto* cc_effect = GetPropertyTrees().effect_tree().Node(effect_id);
+  const auto& cc_effect = GetPropertyTrees().effect_tree().Node(effect_id);
   EXPECT_OPACITY(effect_id, 1.f, kHasRenderSurface);
-  EXPECT_OPACITY(cc_effect->parent_id, 0.5f, kHasRenderSurface);
-  EXPECT_EQ(cc_effect->clip_id, cc_clip->parent_id);
+  EXPECT_OPACITY(cc_effect.parent_id, 0.5f, kHasRenderSurface);
+  EXPECT_EQ(cc_effect.clip_id, cc_clip.parent_id);
 }
 
 static TransformPaintPropertyNode::State Transform3dState(
@@ -4907,7 +4909,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   EXPECT_TRUE(GetPropertyTrees()
                   .transform_tree()
                   .Node(GetTransformNode(layer).parent_id)
-                  ->transform_changed());
+                  .transform_changed());
 
   // Change t2 but not t1.
   layer->ClearSubtreePropertyChangedForTesting();
@@ -4930,7 +4932,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   EXPECT_FALSE(GetPropertyTrees()
                    .transform_tree()
                    .Node(GetTransformNode(layer).parent_id)
-                   ->transform_changed());
+                   .transform_changed());
 
   // Change t2 to be 2d translation which will be decomposited.
   layer->ClearSubtreePropertyChangedForTesting();
@@ -5006,7 +5008,7 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
                   .Node(GetEffectNode(layer).parent_id)
-                  ->effect_changed);
+                  .effect_changed);
 
   // Change e2 but not e1.
   layer->ClearSubtreePropertyChangedForTesting();
@@ -5032,7 +5034,7 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
   EXPECT_FALSE(GetPropertyTrees()
                    .effect_tree()
                    .Node(GetEffectNode(layer).parent_id)
-                   ->effect_changed);
+                   .effect_changed);
 }
 
 TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
@@ -5047,13 +5049,13 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
   const auto* scroll_node =
       scroll_tree.FindNodeFromElementId(scroll_element_id);
   const auto& transform_tree = GetPropertyTrees().transform_tree();
-  const auto* transform_node = transform_tree.Node(scroll_node->transform_id);
+  const auto& transform_node = transform_tree.Node(scroll_node->transform_id);
   EXPECT_EQ(scroll_element_id, scroll_node->element_id);
   EXPECT_EQ(scroll_element_id, scroll_layer->element_id());
   EXPECT_EQ(scroll_node->id, scroll_layer->scroll_tree_index());
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_element_id));
-  EXPECT_EQ(gfx::PointF(-7, -9), transform_node->scroll_offset());
+  EXPECT_EQ(gfx::PointF(-7, -9), transform_node.scroll_offset());
 
   auto& host = GetLayerTreeHost();
   host.CompositeForTest(base::TimeTicks::Now(), true, base::OnceClosure());
@@ -5074,7 +5076,7 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
   EXPECT_EQ(gfx::PointF(-10, -20),
             scroll_tree.current_scroll_offset(scroll_element_id));
   // DirectlySetScrollOffset doesn't update transform node.
-  EXPECT_EQ(gfx::PointF(-7, -9), transform_node->scroll_offset());
+  EXPECT_EQ(gfx::PointF(-7, -9), transform_node.scroll_offset());
   EXPECT_FALSE(transform_tree.needs_update());
 }
 
@@ -5290,10 +5292,10 @@ TEST_P(PaintArtifactCompositorTest,
              .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite)
              .Build());
   ASSERT_EQ(1u, LayerCount());
-  const auto* cc_clip_expander =
+  const auto& cc_clip_expander =
       GetPropertyTrees().clip_tree().Node(LayerAt(0)->clip_tree_index());
-  EXPECT_FALSE(cc_clip_expander->AppliesLocalClip());
-  EXPECT_EQ(cc_clip_expander->pixel_moving_filter_id,
+  EXPECT_FALSE(cc_clip_expander.AppliesLocalClip());
+  EXPECT_EQ(cc_clip_expander.pixel_moving_filter_id,
             LayerAt(0)->effect_tree_index());
 }
 
@@ -5319,9 +5321,9 @@ TEST_P(PaintArtifactCompositorTest,
              .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kBlack)
              .Build());
   ASSERT_EQ(2u, LayerCount());
-  const auto* cc_clip_expander =
+  const auto& cc_clip_expander =
       GetPropertyTrees().clip_tree().Node(LayerAt(0)->clip_tree_index());
-  EXPECT_TRUE(cc_clip_expander->AppliesLocalClip());
+  EXPECT_TRUE(cc_clip_expander.AppliesLocalClip());
 }
 
 TEST_P(PaintArtifactCompositorTest,
@@ -5393,7 +5395,7 @@ TEST_P(PaintArtifactCompositorTest,
         GetPropertyTrees()
             .effect_tree()
             .Node(layer->effect_tree_index())
-            ->render_surface_reason,
+            .render_surface_reason,
         cc::RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants);
   }
 
@@ -5406,7 +5408,7 @@ TEST_P(PaintArtifactCompositorTest,
     EXPECT_EQ(GetPropertyTrees()
                   .effect_tree()
                   .Node(layer->effect_tree_index())
-                  ->render_surface_reason,
+                  .render_surface_reason,
               cc::RenderSurfaceReason::kNone);
   }
 }

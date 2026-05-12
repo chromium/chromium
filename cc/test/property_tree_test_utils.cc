@@ -70,22 +70,23 @@ TransformNode& CreateTransformNodeInternal(LayerType* layer,
   auto& transform_tree = property_trees->transform_tree_mutable();
   int id = transform_tree.Insert(
       TransformNode(), ID_OR_DEFAULT(parent_id, layer->transform_tree_index()));
-  auto* node = transform_tree.Node(id);
+  auto& node = transform_tree.MutableNode(id);
   if (layer) {
     layer->SetTransformTreeIndex(id);
     layer->SetHasTransformNode(true);
-    node->element_id = layer->element_id();
-    if (node->element_id) {
+    node.element_id = layer->element_id();
+    if (node.element_id) {
       property_trees->transform_tree_mutable().SetElementIdForNodeId(
-          node->id, node->element_id);
+          node.id, node.element_id);
     }
   }
-  if (const auto* parent_node = transform_tree.Node(node->parent_id)) {
-    node->in_subtree_of_page_scale_layer =
-        parent_node->in_subtree_of_page_scale_layer;
+  if (node.parent_id != kInvalidPropertyNodeId) {
+    const auto& parent_node = transform_tree.Node(node.parent_id);
+    node.in_subtree_of_page_scale_layer =
+        parent_node.in_subtree_of_page_scale_layer;
   }
   transform_tree.set_needs_update(true);
-  return *node;
+  return node;
 }
 
 template <typename LayerType>
@@ -96,17 +97,17 @@ ClipNode& CreateClipNodeInternal(LayerType* layer,
   auto& clip_tree = property_trees->clip_tree_mutable();
   int id = clip_tree.Insert(ClipNode(),
                             ID_OR_DEFAULT(parent_id, layer->clip_tree_index()));
-  auto* node = clip_tree.Node(id);
-  node->transform_id =
+  auto& node = clip_tree.MutableNode(id);
+  node.transform_id =
       ID_OR_DEFAULT(transform_id, layer->transform_tree_index());
   if (layer) {
     layer->SetClipTreeIndex(id);
-    node->clip = gfx::RectF(
+    node.clip = gfx::RectF(
         gfx::PointAtOffsetFromOrigin(layer->offset_to_transform_parent()),
         gfx::SizeF(layer->bounds()));
   }
   clip_tree.set_needs_update(true);
-  return *node;
+  return node;
 }
 
 template <typename LayerType>
@@ -118,22 +119,22 @@ EffectNode& CreateEffectNodeInternal(LayerType* layer,
   auto& effect_tree = property_trees->effect_tree_mutable();
   int id = effect_tree.Insert(
       EffectNode(), ID_OR_DEFAULT(parent_id, layer->effect_tree_index()));
-  auto* node = effect_tree.Node(id);
+  auto& node = effect_tree.MutableNode(id);
   if (layer) {
     layer->SetEffectTreeIndex(id);
-    node->element_id = layer->element_id()
-                           ? layer->element_id()
-                           : LayerIdToElementIdForTesting(layer->id());
+    node.element_id = layer->element_id()
+                          ? layer->element_id()
+                          : LayerIdToElementIdForTesting(layer->id());
     if (layer->element_id()) {
       property_trees->effect_tree_mutable().SetElementIdForNodeId(
-          node->id, node->element_id);
+          node.id, node.element_id);
     }
   }
-  node->transform_id =
+  node.transform_id =
       ID_OR_DEFAULT(transform_id, layer->transform_tree_index());
-  node->clip_id = ID_OR_DEFAULT(clip_id, layer->clip_tree_index());
+  node.clip_id = ID_OR_DEFAULT(clip_id, layer->clip_tree_index());
   effect_tree.set_needs_update(true);
-  return *node;
+  return node;
 }
 
 template <typename LayerType>
@@ -145,20 +146,20 @@ ScrollNode& CreateScrollNodeInternal(LayerType* layer,
   int id = scroll_tree.Insert(
       ScrollNode(), ID_OR_DEFAULT(parent_id, layer->scroll_tree_index()));
   layer->SetScrollTreeIndex(id);
-  auto* node = scroll_tree.Node(id);
-  node->element_id = layer->element_id();
-  if (node->element_id) {
+  auto& node = scroll_tree.MutableNode(id);
+  node.element_id = layer->element_id();
+  if (node.element_id) {
     property_trees->scroll_tree_mutable().SetElementIdForNodeId(
-        node->id, node->element_id);
+        node.id, node.element_id);
   }
-  node->bounds = layer->bounds();
-  node->container_bounds = scroll_container_bounds;
-  node->user_scrollable_horizontal = node->user_scrollable_vertical =
+  node.bounds = layer->bounds();
+  node.container_bounds = scroll_container_bounds;
+  node.user_scrollable_horizontal = node.user_scrollable_vertical =
       !scroll_container_bounds.IsEmpty();
-  node->is_composited = true;
+  node.is_composited = true;
 
   DCHECK(layer->has_transform_node());
-  node->transform_id = layer->transform_tree_index();
+  node.transform_id = layer->transform_tree_index();
   auto* transform_node = GetTransformNode(layer);
   transform_node->should_be_snapped = true;
   transform_node->scrolls = true;
@@ -166,7 +167,7 @@ ScrollNode& CreateScrollNodeInternal(LayerType* layer,
   if (!property_trees->is_main_thread())
     scroll_tree.GetOrCreateSyncedScrollOffsetForTesting(layer->element_id());
   scroll_tree.SetScrollOffset(layer->element_id(), gfx::PointF());
-  return *node;
+  return node;
 }
 
 template <typename LayerType, typename MaskLayerType>
@@ -335,48 +336,49 @@ ScrollNode& CreateScrollNodeForNonCompositedScroller(
   auto& scroll_tree = property_trees->scroll_tree_mutable();
   int id = scroll_tree.Insert(ScrollNode(), parent_id);
 
-  auto* node = scroll_tree.Node(id);
+  auto& node = scroll_tree.MutableNode(id);
 
   DCHECK(element_id);
-  node->element_id = element_id;
-  property_trees->scroll_tree_mutable().SetElementIdForNodeId(node->id,
+  node.element_id = element_id;
+  property_trees->scroll_tree_mutable().SetElementIdForNodeId(node.id,
                                                               element_id);
 
-  node->bounds = bounds;
-  node->container_bounds = scroll_container_bounds;
-  node->container_origin = scroll_container_origin;
-  node->user_scrollable_horizontal = node->user_scrollable_vertical =
+  node.bounds = bounds;
+  node.container_bounds = scroll_container_bounds;
+  node.container_origin = scroll_container_origin;
+  node.user_scrollable_horizontal = node.user_scrollable_vertical =
       !scroll_container_bounds.IsEmpty();
-  node->is_composited = false;
+  node.is_composited = false;
 
   // Create a matching transform node.
   {
     auto& transform_tree = property_trees->transform_tree_mutable();
-    ScrollNode& scroll_parent = *scroll_tree.Node(parent_id);
+    const ScrollNode& scroll_parent = scroll_tree.Node(parent_id);
     int transform_id =
         transform_tree.Insert(TransformNode(), scroll_parent.transform_id);
-    auto* transform_node = transform_tree.Node(transform_id);
-    transform_node->element_id = element_id;
+    auto& transform_node = transform_tree.MutableNode(transform_id);
+    transform_node.element_id = element_id;
     property_trees->transform_tree_mutable().SetElementIdForNodeId(
-        transform_node->id, transform_node->element_id);
+        transform_node.id, transform_node.element_id);
 
-    if (const auto* parent_transform_node =
-            transform_tree.Node(transform_node->parent_id)) {
-      transform_node->in_subtree_of_page_scale_layer =
-          parent_transform_node->in_subtree_of_page_scale_layer;
+    if (transform_node.parent_id != kInvalidPropertyNodeId) {
+      const auto& parent_transform_node =
+          transform_tree.Node(transform_node.parent_id);
+      transform_node.in_subtree_of_page_scale_layer =
+          parent_transform_node.in_subtree_of_page_scale_layer;
     }
 
     transform_tree.set_needs_update(true);
-    transform_node->should_be_snapped = true;
-    transform_node->scrolls = true;
+    transform_node.should_be_snapped = true;
+    transform_node.scrolls = true;
 
-    node->transform_id = transform_node->id;
+    node.transform_id = transform_node.id;
   }
 
   if (!property_trees->is_main_thread())
     scroll_tree.GetOrCreateSyncedScrollOffsetForTesting(element_id);
   scroll_tree.SetScrollOffset(element_id, gfx::PointF());
-  return *node;
+  return node;
 }
 
 void SetupMaskProperties(Layer* masked_layer, PictureLayer* mask_layer) {

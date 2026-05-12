@@ -353,8 +353,9 @@ void ComputePropertyTreeUpdate(const PropertyTrees& trees,
   using NodeType = typename TreeType::NodeType;
   new_num_nodes = base::checked_cast<uint32_t>(new_tree.size());
   for (size_t i = 0; i < new_tree.size(); ++i) {
-    const NodeType* old_node = old_tree.size() > i ? old_tree.Node(i) : nullptr;
-    ComputePropertyTreeNodeUpdate(trees, old_node, *new_tree.Node(i), updates);
+    const NodeType* old_node =
+        old_tree.size() > i ? &old_tree.Node(i) : nullptr;
+    ComputePropertyTreeNodeUpdate(trees, old_node, new_tree.Node(i), updates);
   }
 }
 
@@ -405,7 +406,7 @@ void ComputeEffectTreeUpdate(const PropertyTrees& trees,
 
   new_num_nodes = base::checked_cast<uint32_t>(new_tree.size());
   for (size_t i = 0; i < new_tree.size(); ++i) {
-    const auto* old_node = old_tree.size() > i ? old_tree.Node(i) : nullptr;
+    const auto* old_node = old_tree.size() > i ? &old_tree.Node(i) : nullptr;
 
     // Push any copy output requests for this node.
     auto range = copy_requests.equal_range(i);
@@ -414,7 +415,7 @@ void ComputeEffectTreeUpdate(const PropertyTrees& trees,
       copy_requests_for_node.push_back(std::move(it->second));
     }
 
-    ComputePropertyTreeNodeUpdate(trees, old_node, *new_tree.Node(i), updates,
+    ComputePropertyTreeNodeUpdate(trees, old_node, new_tree.Node(i), updates,
                                   std::move(copy_requests_for_node));
   }
 }

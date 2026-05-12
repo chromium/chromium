@@ -36,7 +36,7 @@ void SetScrollOffset(PropertyTrees* property_trees,
   // Update both scroll and transform trees
   property_trees->scroll_tree_mutable().SetScrollOffset(scroller_id, offset);
   TransformNode* transform_node =
-      property_trees->transform_tree_mutable().FindNodeFromElementId(
+      property_trees->transform_tree_mutable().MutableFindNodeFromElementId(
           scroller_id);
   transform_node->SetScrollOffset(offset, DamageReason::kUntracked);
   transform_node->needs_local_transform_update = true;
@@ -218,7 +218,7 @@ TEST_F(ScrollTimelineTest, CurrentTimeIsAdjustedForPixelSnapping) {
   // For simplicity emulate snapping by directly setting snap_amount of
   // transform node.
   TransformNode* transform_node =
-      property_trees().transform_tree_mutable().FindNodeFromElementId(
+      property_trees().transform_tree_mutable().MutableFindNodeFromElementId(
           scroller_id());
   transform_node->snap_amount = gfx::Vector2dF(0, 0.5);
 

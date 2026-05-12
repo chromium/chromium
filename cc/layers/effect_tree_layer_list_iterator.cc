@@ -96,7 +96,7 @@ void EffectTreeLayerListIterator::operator++() {
              lowest_common_effect_tree_ancestor_index_);
       // Step towards the lowest common ancestor.
       current_effect_tree_index_ =
-          effect_tree_->Node(current_effect_tree_index_)->target_id;
+          effect_tree_->Node(current_effect_tree_index_).target_id;
       if (current_effect_tree_index_ == next_effect_tree_index_) {
         state_ = State::kLayer;
       } else if (current_effect_tree_index_ ==

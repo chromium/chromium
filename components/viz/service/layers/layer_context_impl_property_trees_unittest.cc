@@ -174,11 +174,11 @@ class LayerContextImplUpdateDisplayTreeTransformNodeTest
                                        ->property_trees()
                                        ->transform_tree()
                                        .size())) {
-      return layer_context_impl_->host_impl()
-          ->active_tree()
-          ->property_trees()
-          ->transform_tree_mutable()
-          .Node(node_id);
+      return &layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->transform_tree_mutable()
+                  .MutableNode(node_id);
     }
     return nullptr;
   }
@@ -1023,11 +1023,11 @@ class LayerContextImplUpdateDisplayTreeClipNodeTest
                                        ->property_trees()
                                        ->clip_tree()
                                        .size())) {
-      return layer_context_impl_->host_impl()
-          ->active_tree()
-          ->property_trees()
-          ->clip_tree_mutable()
-          .Node(node_id);
+      return &layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->clip_tree_mutable()
+                  .MutableNode(node_id);
     }
     return nullptr;
   }
@@ -1176,11 +1176,11 @@ class LayerContextImplUpdateDisplayTreeEffectNodeTest
                                        ->property_trees()
                                        ->effect_tree()
                                        .size())) {
-      return layer_context_impl_->host_impl()
-          ->active_tree()
-          ->property_trees()
-          ->effect_tree_mutable()
-          .Node(node_id);
+      return &layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->effect_tree_mutable()
+                  .MutableNode(node_id);
     }
     return nullptr;
   }
@@ -2047,11 +2047,11 @@ class LayerContextImplUpdateDisplayTreeScrollNodeTest
                                        ->property_trees()
                                        ->scroll_tree()
                                        .size())) {
-      return layer_context_impl_->host_impl()
-          ->active_tree()
-          ->property_trees()
-          ->scroll_tree_mutable()
-          .Node(node_id);
+      return &layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->scroll_tree_mutable()
+                  .MutableNode(node_id);
     }
     return nullptr;
   }

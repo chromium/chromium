@@ -3160,8 +3160,8 @@ TEST_F(DrawPropertiesTest,
   root->layer_tree_impl()
       ->property_trees()
       ->effect_tree_mutable()
-      .Node(child1->effect_tree_index())
-      ->backdrop_filters.Append(
+      .MutableNode(child1->effect_tree_index())
+      .backdrop_filters.Append(
           FilterOperation::CreateZoomFilter(1.f /* zoom */, 0 /* inset */));
 
   auto& child1_transform_node = CreateTransformNode(child1);

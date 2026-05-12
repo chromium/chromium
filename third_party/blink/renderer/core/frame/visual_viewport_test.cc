@@ -77,7 +77,7 @@ namespace blink {
 
 namespace {
 
-const cc::EffectNode* GetEffectNode(const cc::Layer* layer) {
+const cc::EffectNode& GetEffectNode(const cc::Layer* layer) {
   return layer->layer_tree_host()->property_trees()->effect_tree().Node(
       layer->effect_tree_index());
 }
@@ -2287,8 +2287,8 @@ TEST_P(VisualViewportTest, EnsureEffectNodeForScrollbars) {
   EXPECT_EQ(horizontal_scrollbar->offset_to_transform_parent(),
             gfx::Vector2dF(0, 400 - scrollbar_thickness));
 
-  EXPECT_EQ(GetEffectNode(vertical_scrollbar)->parent_id,
-            GetEffectNode(horizontal_scrollbar)->parent_id);
+  EXPECT_EQ(GetEffectNode(vertical_scrollbar).parent_id,
+            GetEffectNode(horizontal_scrollbar).parent_id);
 }
 
 // Make sure we don't crash when the visual viewport's height is 0. This can
@@ -2565,7 +2565,7 @@ TEST_P(VisualViewportTest, PaintScrollbar) {
                              ->property_trees()
                              ->transform_tree()
                              .Node(scrollbar->transform_tree_index())
-                             ->local);
+                             .local);
   };
 
   // The last layer should be the vertical scrollbar.

@@ -706,10 +706,10 @@ void PictureLayerImpl::UpdateCanUseLCDText(
 }
 
 bool PictureLayerImpl::AffectedByWillChangeTransformHint() const {
-  TransformNode* transform_node =
-      GetTransformTree().Node(transform_tree_index());
-  return transform_node &&
-         transform_node->node_or_ancestors_will_change_transform;
+  return transform_tree_index() != kInvalidPropertyNodeId &&
+         GetTransformTree()
+             .Node(transform_tree_index())
+             .node_or_ancestors_will_change_transform;
 }
 
 LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
@@ -727,9 +727,9 @@ LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
     return LCDTextDisallowedReason::kSetting;
   }
 
-  TransformNode* transform_node =
+  const TransformNode& transform_node =
       GetTransformTree().Node(transform_tree_index());
-  if (transform_node->node_or_ancestors_will_change_transform) {
+  if (transform_node.node_or_ancestors_will_change_transform) {
     return LCDTextDisallowedReason::kWillChangeTransform;
   }
 
@@ -737,9 +737,9 @@ LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
     return LCDTextDisallowedReason::kTransformAnimation;
   }
 
-  EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
-  if (effect_node->lcd_text_disallowed_by_filter ||
-      effect_node->lcd_text_disallowed_by_backdrop_filter) {
+  const EffectNode& effect_node = GetEffectTree().Node(effect_tree_index());
+  if (effect_node.lcd_text_disallowed_by_filter ||
+      effect_node.lcd_text_disallowed_by_backdrop_filter) {
     return LCDTextDisallowedReason::kPixelOrColorEffect;
   }
 
@@ -938,12 +938,10 @@ ScrollOffsetMap PictureLayerImpl::GetRasterInducingScrollOffsets() const {
       // The transform node has the realized scroll offset and snap amount,
       // and should be used for rendering.
       const auto* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
-      const auto* transform =
-          scroll_node ? transform_tree.Node(scroll_node->transform_id)
-                      : nullptr;
-      if (transform) {
+      if (scroll_node && scroll_node->transform_id != kInvalidPropertyNodeId) {
         map[element_id] = gfx::PointAtOffsetFromOrigin(
-            -transform->to_parent.To2dTranslation());
+            -transform_tree.Node(scroll_node->transform_id)
+                 .to_parent.To2dTranslation());
       } else {
         // Use the current scroll offset if the scroll node doesn't exist or
         // doesn't have a transform node. It doesn't matter because such a

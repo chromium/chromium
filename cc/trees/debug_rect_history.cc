@@ -227,14 +227,17 @@ void DebugRectHistory::SaveMainThreadScrollRepaintOrRasterInducingScrollRects(
     if (type == DebugRectType::kMainThreadScrollRepaint
             ? scroll_tree.ShouldRealizeScrollsOnMain(node)
             : scroll_tree.CanRealizeScrollsOnPendingTree(node)) {
-      if (const auto* transform_node = transform_tree.Node(node.transform_id);
-          transform_node && transform_tree.Node(transform_node->parent_id)) {
-        debug_rects_.emplace_back(
-            type, MathUtil::MapEnclosingClippedRect(
-                      // Skip the scroll translation node.
-                      transform_tree.ToScreen(transform_node->parent_id),
-                      gfx::Rect(node.container_origin,
-                                scroll_tree.container_bounds(node.id))));
+      if (node.transform_id != kInvalidPropertyNodeId) {
+        const TransformNode& transform_node =
+            transform_tree.Node(node.transform_id);
+        if (transform_node.parent_id != kInvalidPropertyNodeId) {
+          debug_rects_.emplace_back(
+              type, MathUtil::MapEnclosingClippedRect(
+                        // Skip the scroll translation node.
+                        transform_tree.ToScreen(transform_node.parent_id),
+                        gfx::Rect(node.container_origin,
+                                  scroll_tree.container_bounds(node.id))));
+        }
       }
     }
   }

@@ -62,16 +62,11 @@ bool IsRootLayer(const LayerImpl* layer) {
   return layer->layer_tree_impl()->IsRootLayer(layer);
 }
 
-void PostConcatSurfaceContentsScale(const EffectNode* effect_node,
+void PostConcatSurfaceContentsScale(const EffectNode& effect_node,
                                     gfx::Transform* transform) {
-  if (!effect_node) {
-    // This can happen when PaintArtifactCompositor builds property trees as it
-    // doesn't set effect ids on clip nodes.
-    return;
-  }
-  DCHECK(effect_node->HasRenderSurface());
-  transform->PostScale(effect_node->surface_contents_scale.x(),
-                       effect_node->surface_contents_scale.y());
+  DCHECK(effect_node.HasRenderSurface());
+  transform->PostScale(effect_node.surface_contents_scale.x(),
+                       effect_node.surface_contents_scale.y());
 }
 
 bool ConvertRectBetweenSurfaceSpaces(const PropertyTrees* property_trees,
@@ -79,17 +74,17 @@ bool ConvertRectBetweenSurfaceSpaces(const PropertyTrees* property_trees,
                                      int dest_effect_id,
                                      gfx::RectF clip_in_source_space,
                                      gfx::RectF* clip_in_dest_space) {
-  const EffectNode* source_effect_node =
+  const EffectNode& source_effect_node =
       property_trees->effect_tree().Node(source_effect_id);
-  int source_transform_id = source_effect_node->transform_id;
-  const EffectNode* dest_effect_node =
+  int source_transform_id = source_effect_node.transform_id;
+  const EffectNode& dest_effect_node =
       property_trees->effect_tree().Node(dest_effect_id);
-  int dest_transform_id = dest_effect_node->transform_id;
+  int dest_transform_id = dest_effect_node.transform_id;
   gfx::Transform source_to_dest;
   if (source_transform_id > dest_transform_id) {
     if (property_trees->GetToTarget(source_transform_id, dest_effect_id,
                                     &source_to_dest)) {
-      ConcatInverseSurfaceContentsScale(*source_effect_node, &source_to_dest);
+      ConcatInverseSurfaceContentsScale(source_effect_node, &source_to_dest);
       *clip_in_dest_space =
           MathUtil::MapClippedRect(source_to_dest, clip_in_source_space);
     } else {
@@ -163,7 +158,7 @@ ConditionalClip ComputeCurrentClip(const ClipNode& clip_node,
   const EffectTree& effect_tree = property_trees->effect_tree();
   gfx::RectF current_clip = clip_node.clip;
   gfx::Vector2dF surface_contents_scale =
-      effect_tree.Node(target_effect_id)->surface_contents_scale;
+      effect_tree.Node(target_effect_id).surface_contents_scale;
   // The viewport clip should not be scaled.
   if (surface_contents_scale.x() > 0 && surface_contents_scale.y() > 0 &&
       clip_node.transform_id != kRootPropertyNodeId) {
@@ -218,11 +213,10 @@ bool ApplyClipNodeToAccumulatedClip(const PropertyTrees* property_trees,
   if (!clip_node->AppliesLocalClip()) {
     if (!include_expanding_clips)
       return true;
-    const EffectNode* filter_node =
+    const EffectNode& filter_node =
         property_trees->effect_tree().Node(clip_node->pixel_moving_filter_id);
-    DCHECK(filter_node);
     return ExpandClipForPixelMovingFilter(property_trees, target_id,
-                                          *filter_node, accumulated_clip);
+                                          filter_node, accumulated_clip);
   }
 
   ConditionalClip current_clip = ComputeCurrentClip(
@@ -249,9 +243,9 @@ ConditionalClip ComputeAccumulatedClip(PropertyTrees* property_trees,
   cached_data->target_id = target_id;
 
   const ClipTree& clip_tree = property_trees->clip_tree();
-  const ClipNode* clip_node = clip_tree.Node(local_clip_id);
+  const ClipNode* clip_node = &clip_tree.Node(local_clip_id);
   const EffectTree& effect_tree = property_trees->effect_tree();
-  const EffectNode* target_node = effect_tree.Node(target_id);
+  const EffectNode* target_node = &effect_tree.Node(target_id);
   int target_transform_id = target_node->transform_id;
 
   bool cache_hit = false;
@@ -269,7 +263,7 @@ ConditionalClip ComputeAccumulatedClip(PropertyTrees* property_trees,
          property_trees->effect_tree()
              .GetRenderSurface(target_node->id)
              ->has_contributing_layer_that_escapes_clip()) {
-    target_node = effect_tree.Node(target_node->target_id);
+    target_node = &effect_tree.Node(target_node->target_id);
   }
 
   // Collect clip nodes up to the least common ancestor or till we get a cache
@@ -355,15 +349,15 @@ ConditionalClip ComputeAccumulatedClip(PropertyTrees* property_trees,
 }
 
 bool HasSingularTransform(int transform_tree_index, const TransformTree& tree) {
-  const TransformNode* node = tree.Node(transform_tree_index);
-  return !node->is_invertible || !node->ancestors_are_invertible;
+  const TransformNode& node = tree.Node(transform_tree_index);
+  return !node.is_invertible || !node.ancestors_are_invertible;
 }
 
 int LowestCommonAncestor(int clip_id_1,
                          int clip_id_2,
                          const ClipTree& clip_tree) {
-  const ClipNode* clip_node_1 = clip_tree.Node(clip_id_1);
-  const ClipNode* clip_node_2 = clip_tree.Node(clip_id_2);
+  const ClipNode* clip_node_1 = &clip_tree.Node(clip_id_1);
+  const ClipNode* clip_node_2 = &clip_tree.Node(clip_id_2);
   while (clip_node_1->id != clip_node_2->id) {
     if (clip_node_1->id < clip_node_2->id) {
       clip_node_2 = clip_tree.parent(clip_node_2);
@@ -411,14 +405,13 @@ template <typename LayerType>
 const TransformNode& TransformNodeForBackfaceVisibility(
     LayerType* layer,
     const TransformTree& tree) {
-  const TransformNode* node = tree.Node(layer->transform_tree_index());
+  const TransformNode* node = &tree.Node(layer->transform_tree_index());
   while (node->delegates_to_parent_for_backface) {
-    const TransformNode* parent = tree.Node(node->parent_id);
-    CHECK(node);
+    const TransformNode& parent = tree.Node(node->parent_id);
     // Backface visibility inheritance should not cross 3d sorting contexts.
     DCHECK(!node->sorting_context_id ||
-           parent->sorting_context_id == node->sorting_context_id);
-    node = parent;
+           parent.sorting_context_id == node->sorting_context_id);
+    node = &parent;
   }
   return *node;
 }
@@ -449,11 +442,12 @@ bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
 
   while (root_id > kRootPropertyNodeId) {
     int parent_id = root_node->parent_id;
-    const TransformNode* parent_node = transform_tree.Node(parent_id);
-    if (parent_node->sorting_context_id != sorting_context_id)
+    const TransformNode& parent_node = transform_tree.Node(parent_id);
+    if (parent_node.sorting_context_id != sorting_context_id) {
       break;
+    }
     root_id = parent_id;
-    root_node = parent_node;
+    root_node = &parent_node;
   }
 
   // TODO(chrishtr): cache this on the transform trees if needed, similar to
@@ -522,7 +516,7 @@ bool LayerNeedsUpdate(LayerType* layer,
     // no other content.
     if (!property_trees->effect_tree()
              .Node(layer->effect_tree_index())
-             ->filters.HasReferenceFilter()) {
+             .filters.HasReferenceFilter()) {
       return false;
     }
   }
@@ -541,16 +535,17 @@ inline bool LayerShouldBeSkippedForDrawPropertiesComputation(
     Layer* layer,
     const TransformTree& transform_tree,
     const EffectTree& effect_tree) {
-  const EffectNode* effect_node = effect_tree.Node(layer->effect_tree_index());
-  if (effect_node->HasRenderSurface() && effect_node->subtree_has_copy_request)
+  const EffectNode& effect_node = effect_tree.Node(layer->effect_tree_index());
+  if (effect_node.HasRenderSurface() && effect_node.subtree_has_copy_request) {
     return false;
+  }
 
   // If the layer transform is not invertible, it should be skipped. In case the
   // transform is animating and singular, we should not skip it.
-  const TransformNode* transform_node =
+  const TransformNode& transform_node =
       transform_tree.Node(layer->transform_tree_index());
-  return !transform_node->node_and_ancestors_are_animated_or_invertible ||
-         !effect_node->is_drawn;
+  return !transform_node.node_and_ancestors_are_animated_or_invertible ||
+         !effect_node.is_drawn;
 }
 
 gfx::Rect LayerDrawableContentRect(
@@ -573,7 +568,7 @@ void SetSurfaceIsClipped(const ClipTree& clip_tree,
     int parent_target_clip_id =
         render_surface->render_target()->common_ancestor_clip_id();
     for (const ClipNode* clip_node =
-             clip_tree.Node(render_surface->common_ancestor_clip_id());
+             &clip_tree.Node(render_surface->common_ancestor_clip_id());
          clip_node && clip_node->id != parent_target_clip_id;
          clip_node = clip_tree.parent(clip_node)) {
       if (clip_node->AppliesLocalClip()) {
@@ -589,11 +584,12 @@ void SetSurfaceDrawOpacity(const EffectTree& tree,
                            RenderSurfaceImpl* render_surface) {
   // Draw opacity of a surface is the product of opacities between the surface
   // (included) and its target surface (excluded).
-  const EffectNode* node = tree.Node(render_surface->EffectTreeIndex());
-  float draw_opacity = tree.EffectiveOpacity(*node);
-  for (node = tree.parent(node); node && !node->HasRenderSurface();
-       node = tree.parent(node)) {
-    draw_opacity *= tree.EffectiveOpacity(*node);
+  const EffectNode& node = tree.Node(render_surface->EffectTreeIndex());
+  float draw_opacity = tree.EffectiveOpacity(node);
+  for (const EffectNode* parent_node = tree.parent(&node);
+       parent_node && !parent_node->HasRenderSurface();
+       parent_node = tree.parent(parent_node)) {
+    draw_opacity *= tree.EffectiveOpacity(*parent_node);
   }
   render_surface->SetDrawOpacity(draw_opacity);
 }
@@ -602,14 +598,15 @@ float LayerDrawOpacity(const LayerImpl* layer, const EffectTree& tree) {
   if (!layer->render_target())
     return 0.f;
 
-  const EffectNode* target_node =
+  const EffectNode& target_node =
       tree.Node(layer->render_target()->EffectTreeIndex());
-  const EffectNode* node = tree.Node(layer->effect_tree_index());
-  if (node == target_node)
+  const EffectNode* node = &tree.Node(layer->effect_tree_index());
+  if (node == &target_node) {
     return 1.f;
+  }
 
   float draw_opacity = 1.f;
-  while (node != target_node) {
+  while (node != &target_node) {
     draw_opacity *= tree.EffectiveOpacity(*node);
     node = tree.parent(node);
   }
@@ -636,17 +633,17 @@ void SetSurfaceClipRect(PropertyTrees* property_trees,
 
   const EffectTree& effect_tree = property_trees->effect_tree();
   const ClipTree& clip_tree = property_trees->clip_tree();
-  const EffectNode* effect_node =
+  const EffectNode& effect_node =
       effect_tree.Node(render_surface->EffectTreeIndex());
-  const EffectNode* target_node = effect_tree.Node(effect_node->target_id);
+  const EffectNode& target_node = effect_tree.Node(effect_node.target_id);
   bool include_expanding_clips = false;
   if (render_surface->EffectTreeIndex() == kContentsRootPropertyNodeId) {
     render_surface->SetClipRect(
-        ToEnclosingClipRect(clip_tree.Node(effect_node->clip_id)->clip));
+        ToEnclosingClipRect(clip_tree.Node(effect_node.clip_id).clip));
   } else {
     ConditionalClip accumulated_clip_rect = ComputeAccumulatedClip(
         property_trees, include_expanding_clips,
-        render_surface->common_ancestor_clip_id(), target_node->id);
+        render_surface->common_ancestor_clip_id(), target_node.id);
     accumulated_clip_rect.clip_rect.Offset(
         render_surface->render_target()->pixel_alignment_offset());
     render_surface->SetClipRect(
@@ -658,9 +655,9 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
                              RenderSurfaceImpl* render_surface) {
   const TransformTree& transform_tree = property_trees->transform_tree();
   const EffectTree& effect_tree = property_trees->effect_tree();
-  const TransformNode* transform_node =
+  const TransformNode& transform_node =
       transform_tree.Node(render_surface->TransformTreeIndex());
-  const EffectNode* effect_node =
+  const EffectNode& effect_node =
       effect_tree.Node(render_surface->EffectTreeIndex());
   // The draw transform of root render surface is identity transform.
   if (render_surface->EffectTreeIndex() == kContentsRootPropertyNodeId) {
@@ -669,12 +666,12 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
   }
 
   gfx::Transform render_surface_transform;
-  const EffectNode* target_effect_node =
-      effect_tree.Node(effect_node->target_id);
-  property_trees->GetToTarget(transform_node->id, target_effect_node->id,
+  const EffectNode& target_effect_node =
+      effect_tree.Node(effect_node.target_id);
+  property_trees->GetToTarget(transform_node.id, target_effect_node.id,
                               &render_surface_transform);
 
-  ConcatInverseSurfaceContentsScale(*effect_node, &render_surface_transform);
+  ConcatInverseSurfaceContentsScale(effect_node, &render_surface_transform);
 
   gfx::Vector2dF pixel_alignment_offset;
   // Adjust render_surface_transform by applying the render target's pixel
@@ -682,7 +679,7 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
   // pixel alignment to align it to screen pixels.
   render_surface_transform.PostTranslate(
       render_surface->render_target()->pixel_alignment_offset());
-  if (effect_node->render_surface_reason !=
+  if (effect_node.render_surface_reason !=
       RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants) {
     if (auto offset = draw_property_utils::PixelAlignmentOffset(
             render_surface->screen_space_transform(),
@@ -696,19 +693,19 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
 }
 
 gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
-  const EffectNode* effect_node =
+  const EffectNode& effect_node =
       property_trees->effect_tree().Node(layer->effect_tree_index());
   int lower_effect_closest_ancestor =
-      effect_node->closest_ancestor_with_cached_render_surface_id;
+      effect_node.closest_ancestor_with_cached_render_surface_id;
   lower_effect_closest_ancestor =
       std::max(lower_effect_closest_ancestor,
-               effect_node->closest_ancestor_with_copy_request_id);
+               effect_node.closest_ancestor_with_copy_request_id);
   lower_effect_closest_ancestor =
       std::max(lower_effect_closest_ancestor,
-               effect_node->closest_ancestor_being_captured_id);
+               effect_node.closest_ancestor_being_captured_id);
   lower_effect_closest_ancestor =
       std::max(lower_effect_closest_ancestor,
-               effect_node->closest_ancestor_with_shared_element_id);
+               effect_node.closest_ancestor_with_shared_element_id);
   const bool non_root_with_render_surface =
       lower_effect_closest_ancestor > kContentsRootPropertyNodeId;
   gfx::Rect layer_content_rect = gfx::Rect(layer->bounds());
@@ -723,21 +720,21 @@ gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
       return layer_content_rect;
     accumulated_clip_in_root_space = accumulated_clip.clip_rect;
   } else {
-    const ClipNode* clip_node =
+    const ClipNode& clip_node =
         property_trees->clip_tree().Node(layer->clip_tree_index());
     accumulated_clip_in_root_space =
-        clip_node->cached_accumulated_rect_in_screen_space;
+        clip_node.cached_accumulated_rect_in_screen_space;
   }
 
-  const EffectNode* root_effect_node =
+  const EffectNode& root_effect_node =
       non_root_with_render_surface
           ? property_trees->effect_tree().Node(lower_effect_closest_ancestor)
           : property_trees->effect_tree().Node(kContentsRootPropertyNodeId);
   ConditionalClip accumulated_clip_in_layer_space =
       ComputeTargetRectInLocalSpace(
           accumulated_clip_in_root_space, property_trees,
-          root_effect_node->transform_id, layer->transform_tree_index(),
-          root_effect_node->id);
+          root_effect_node.transform_id, layer->transform_tree_index(),
+          root_effect_node.id);
   if (!accumulated_clip_in_layer_space.is_clipped) {
     return layer_content_rect;
   }
@@ -751,14 +748,13 @@ gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
 
 ConditionalClip LayerClipRect(PropertyTrees* property_trees, LayerImpl* layer) {
   const EffectTree* effect_tree = &property_trees->effect_tree();
-  const EffectNode* effect_node = effect_tree->Node(layer->effect_tree_index());
-  const EffectNode* target_node =
-      effect_node->HasRenderSurface()
-          ? effect_node
-          : effect_tree->Node(effect_node->target_id);
+  const EffectNode& effect_node = effect_tree->Node(layer->effect_tree_index());
+  const EffectNode& target_node =
+      effect_node.HasRenderSurface() ? effect_node
+                                     : effect_tree->Node(effect_node.target_id);
   bool include_expanding_clips = false;
   return ComputeAccumulatedClip(property_trees, include_expanding_clips,
-                                layer->clip_tree_index(), target_node->id);
+                                layer->clip_tree_index(), target_node.id);
 }
 
 std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
@@ -769,17 +765,18 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
       std::make_pair(gfx::MaskFilterInfo(), false);
 
   const EffectTree* effect_tree = &property_trees->effect_tree();
-  const EffectNode* effect_node = effect_tree->Node(effect_tree_index);
-  const int target_id = effect_node->target_id;
+  const EffectNode& effect_node = effect_tree->Node(effect_tree_index);
+  const int target_id = effect_node.target_id;
 
   // Return empty mask info if this node has a render surface but the function
   // call was made for a non render surface.
-  if (effect_node->HasRenderSurface() && !for_render_surface)
+  if (effect_node.HasRenderSurface() && !for_render_surface) {
     return kEmptyMaskFilterInfoPair;
+  }
 
   // Traverse the parent chain up to the render target to find a node which has
   // mask filter info set.
-  const EffectNode* node = effect_node;
+  const EffectNode* node = &effect_node;
   bool found_mask_filter_info = false;
 
   while (node) {
@@ -791,7 +788,7 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
     // surface, then break. If this iteration is for a render surface to begin
     // with, then ensure |node| is a parent of |effect_node|.
     if (node->HasRenderSurface() &&
-        (!for_render_surface || effect_node != node)) {
+        (!for_render_surface || &effect_node != node)) {
       break;
     }
 
@@ -811,8 +808,8 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
   std::optional<int> clip_id = node->mask_filter_info.clip_id();
   if (clip_id) {
     const ClipTree* clip_tree = &property_trees->clip_tree();
-    const ClipNode* clip_node = clip_tree->Node(clip_id.value());
-    transform_id = clip_node->transform_id;
+    const ClipNode& clip_node = clip_tree->Node(clip_id.value());
+    transform_id = clip_node.transform_id;
   }
 
   gfx::Transform to_target;
@@ -837,28 +834,28 @@ void UpdateRenderTarget(LayerTreeImpl* layer_tree_impl,
 
   for (int i = kContentsRootPropertyNodeId;
        i < static_cast<int>(effect_tree->size()); ++i) {
-    EffectNode* node = effect_tree->Node(i);
+    EffectNode& node = effect_tree->MutableNode(i);
 
-    if (node->view_transition_element_resource_id.IsValid()) {
-      CHECK(!resource_to_node.contains(
-          node->view_transition_element_resource_id));
-      resource_to_node[node->view_transition_element_resource_id] = i;
+    if (node.view_transition_element_resource_id.IsValid()) {
+      CHECK(
+          !resource_to_node.contains(node.view_transition_element_resource_id));
+      resource_to_node[node.view_transition_element_resource_id] = i;
     }
-    node->view_transition_target_id = kInvalidPropertyNodeId;
+    node.view_transition_target_id = kInvalidPropertyNodeId;
 
     if (i == kContentsRootPropertyNodeId) {
       // Render target of the node corresponding to root is itself.
-      node->target_id = kContentsRootPropertyNodeId;
-    } else if (effect_tree->parent(node)->HasRenderSurface()) {
-      node->target_id = node->parent_id;
+      node.target_id = kContentsRootPropertyNodeId;
+    } else if (effect_tree->parent(&node)->HasRenderSurface()) {
+      node.target_id = node.parent_id;
     } else {
-      node->target_id = effect_tree->parent(node)->target_id;
+      node.target_id = effect_tree->parent(&node)->target_id;
     }
-    if (node->has_potential_backdrop_filter_animation ||
-        !node->backdrop_filters.AllowsLCDText()) {
-      last_backdrop_filter_disallowing_lcd_text = node->id;
+    if (node.has_potential_backdrop_filter_animation ||
+        !node.backdrop_filters.AllowsLCDText()) {
+      last_backdrop_filter_disallowing_lcd_text = node.id;
     }
-    node->lcd_text_disallowed_by_backdrop_filter = false;
+    node.lcd_text_disallowed_by_backdrop_filter = false;
   }
 
   if (!resource_to_node.empty()) {
@@ -873,12 +870,12 @@ void UpdateRenderTarget(LayerTreeImpl* layer_tree_impl,
         continue;
       }
 
-      auto* resource_node = effect_tree->Node(it->second);
-      auto* layer_node = effect_tree->Node(layer->effect_tree_index());
-      if (layer_node->HasRenderSurface()) {
-        resource_node->view_transition_target_id = layer_node->id;
+      auto& resource_node = effect_tree->MutableNode(it->second);
+      auto& layer_node = effect_tree->Node(layer->effect_tree_index());
+      if (layer_node.HasRenderSurface()) {
+        resource_node.view_transition_target_id = layer_node.id;
       } else {
-        resource_node->view_transition_target_id = layer_node->target_id;
+        resource_node.view_transition_target_id = layer_node.target_id;
       }
     }
   }
@@ -889,19 +886,20 @@ void UpdateRenderTarget(LayerTreeImpl* layer_tree_impl,
 
   // Update effect nodes for the backdrop filter disallowing LCD text.
   int current_target_id =
-      effect_tree->Node(last_backdrop_filter_disallowing_lcd_text)->target_id;
+      effect_tree->Node(last_backdrop_filter_disallowing_lcd_text).target_id;
   for (int i = last_backdrop_filter_disallowing_lcd_text - 1;
        i >= kContentsRootPropertyNodeId; --i) {
-    EffectNode* node = effect_tree->Node(i);
-    node->lcd_text_disallowed_by_backdrop_filter = current_target_id <= i;
-    if (node->id == current_target_id)
+    EffectNode& node = effect_tree->MutableNode(i);
+    node.lcd_text_disallowed_by_backdrop_filter = current_target_id <= i;
+    if (node.id == current_target_id) {
       current_target_id = kInvalidNodeId;
+    }
     // While down to kContentsRootNodeId, move |current_target_id| forward if
     // |node| has backdrop filter.
     if (current_target_id == kInvalidNodeId &&
-        (node->has_potential_backdrop_filter_animation ||
-         !node->backdrop_filters.AllowsLCDText())) {
-      current_target_id = node->target_id;
+        (node.has_potential_backdrop_filter_animation ||
+         !node.backdrop_filters.AllowsLCDText())) {
+      current_target_id = node.target_id;
     }
   }
 }
@@ -916,22 +914,22 @@ void ComputeClips(PropertyTrees* property_trees) {
   const bool include_expanding_clips = true;
   for (int i = kViewportPropertyNodeId; i < static_cast<int>(clip_tree->size());
        ++i) {
-    ClipNode* clip_node = clip_tree->Node(i);
+    ClipNode& clip_node = clip_tree->MutableNode(i);
     // Clear the clip rect cache
-    clip_node->cached_clip_rects.clear();
-    if (clip_node->id == kViewportPropertyNodeId) {
-      clip_node->cached_accumulated_rect_in_screen_space = clip_node->clip;
+    clip_node.cached_clip_rects.clear();
+    if (clip_node.id == kViewportPropertyNodeId) {
+      clip_node.cached_accumulated_rect_in_screen_space = clip_node.clip;
       continue;
     }
-    ClipNode* parent_clip_node = clip_tree->parent(clip_node);
+    ClipNode* parent_clip_node = clip_tree->MutableParent(&clip_node);
     DCHECK(parent_clip_node);
     gfx::RectF accumulated_clip =
         parent_clip_node->cached_accumulated_rect_in_screen_space;
     bool success = ApplyClipNodeToAccumulatedClip(
         property_trees, include_expanding_clips, target_effect_id,
-        target_transform_id, clip_node, &accumulated_clip);
+        target_transform_id, &clip_node, &accumulated_clip);
     if (success)
-      clip_node->cached_accumulated_rect_in_screen_space = accumulated_clip;
+      clip_node.cached_accumulated_rect_in_screen_space = accumulated_clip;
   }
   clip_tree->set_needs_update(false);
 }
@@ -1061,12 +1059,12 @@ void AddSurfaceToRenderSurfaceList(
 
 bool SkipForInvertibility(const LayerImpl* layer,
                           PropertyTrees* property_trees) {
-  const TransformNode* transform_node =
+  const TransformNode& transform_node =
       property_trees->transform_tree().Node(layer->transform_tree_index());
-  const EffectNode* effect_node =
+  const EffectNode& effect_node =
       property_trees->effect_tree().Node(layer->effect_tree_index());
   bool non_root_copy_request =
-      effect_node->closest_ancestor_with_copy_request_id >
+      effect_node.closest_ancestor_with_copy_request_id >
       kContentsRootPropertyNodeId;
   gfx::Transform from_target;
   // If there is a copy request, we check the invertibility of the transform
@@ -1076,21 +1074,21 @@ bool SkipForInvertibility(const LayerImpl* layer,
   return non_root_copy_request
              ? !property_trees->GetFromTarget(
                    layer->transform_tree_index(),
-                   effect_node->closest_ancestor_with_copy_request_id,
+                   effect_node.closest_ancestor_with_copy_request_id,
                    &from_target)
-             : !transform_node->ancestors_are_invertible;
+             : !transform_node.ancestors_are_invertible;
 }
 
 void ComputeLayerDrawTransforms(LayerImpl* layer,
                                 const PropertyTrees* property_trees) {
-  const TransformNode* transform_node =
+  const TransformNode& transform_node =
       property_trees->transform_tree().Node(layer->transform_tree_index());
   layer->draw_properties().screen_space_transform =
       ScreenSpaceTransformInternal(layer, property_trees->transform_tree());
   layer->draw_properties().target_space_transform = DrawTransform(
       layer, property_trees->transform_tree(), property_trees->effect_tree());
   layer->draw_properties().screen_space_transform_is_animating =
-      transform_node->to_screen_is_potentially_animated;
+      transform_node.to_screen_is_potentially_animated;
   auto mask_filter_info_pair =
       GetMaskFilterInfoPair(property_trees, layer->effect_tree_index(),
                             /*for_render_surface=*/false);
@@ -1120,7 +1118,7 @@ void ComputeLayerDrawableContentRect(LayerImpl* layer,
                                      const PropertyTrees* property_trees) {
   bool only_draws_visible_content = property_trees->effect_tree()
                                         .Node(layer->effect_tree_index())
-                                        ->only_draws_visible_content;
+                                        .only_draws_visible_content;
   gfx::Rect drawable_bounds = gfx::Rect(layer->visible_layer_rect());
   if (!only_draws_visible_content) {
     drawable_bounds = gfx::Rect(layer->bounds());
@@ -1226,11 +1224,12 @@ void ComputeInitialRenderSurfaceList(
     bool skip_layer = !is_root && (skip_draw_properties_computation ||
                                    skip_for_invertibility);
 
-    TransformNode* transform_node =
-        property_trees->transform_tree_mutable().Node(
-            layer->transform_tree_index());
+    int transform_tree_index = layer->transform_tree_index();
     const bool has_will_change_transform_hint =
-        transform_node && transform_node->will_change_transform;
+        transform_tree_index != kInvalidPropertyNodeId &&
+        property_trees->transform_tree_mutable()
+            .MutableNode(transform_tree_index)
+            .will_change_transform;
     // Raster layers that are animated but currently have a non-invertible
     // matrix, or layers that have a will-change transform hint and might
     // animate to not be backface visible soon.
@@ -1240,9 +1239,8 @@ void ComputeInitialRenderSurfaceList(
     if (skip_layer)
       continue;
 
-    bool layer_is_drawn = property_trees->effect_tree()
-                              .Node(layer->effect_tree_index())
-                              ->is_drawn;
+    bool layer_is_drawn =
+        property_trees->effect_tree().Node(layer->effect_tree_index()).is_drawn;
     bool layer_should_be_drawn =
         LayerNeedsUpdate(layer, layer_is_drawn, property_trees);
     if (!layer_should_be_drawn)
@@ -1470,9 +1468,9 @@ void RecordRenderSurfaceReasonsForTracing(
   constexpr auto kNumReasons = static_cast<size_t>(RenderSurfaceReason::kTest);
   std::array<int, kNumReasons> reason_counts = {0};
   for (const RenderSurfaceImpl* render_surface : *render_surface_list) {
-    const auto* effect_node =
+    const auto& effect_node =
         property_trees->effect_tree().Node(render_surface->EffectTreeIndex());
-    reason_counts[static_cast<size_t>(effect_node->render_surface_reason)]++;
+    reason_counts[static_cast<size_t>(effect_node.render_surface_reason)]++;
   }
   for (size_t i = 0; i < kNumReasons; i++) {
     if (!reason_counts[i])
@@ -1526,36 +1524,32 @@ bool LayerShouldBeSkippedForDrawPropertiesComputation(
   const EffectTree& effect_tree = property_trees->effect_tree();
   int effect_tree_index = layer->effect_tree_index();
   CHECK(effect_tree_index != kInvalidPropertyNodeId);
-  const EffectNode* effect_node = effect_tree.Node(effect_tree_index);
-  // TODO(crbug.com/390906639): Remove after bug is fixed.
-  if (!effect_node) {
-    SCOPED_CRASH_KEY_STRING32("cc", "Effect tree index",
-                              base::NumberToString(effect_tree_index));
-    base::debug::DumpWithoutCrashing();
+  const EffectNode& effect_node = effect_tree.Node(effect_tree_index);
+
+  if (effect_node.HasRenderSurface() && effect_node.subtree_has_copy_request) {
+    return false;
   }
 
-  if (effect_node->HasRenderSurface() && effect_node->subtree_has_copy_request)
-    return false;
-
   // Skip if the node's subtree is hidden and no need to cache, or capture.
-  if (effect_node->subtree_hidden && !effect_node->cache_render_surface &&
-      !effect_node->subtree_capture_id.is_valid()) {
+  if (effect_node.subtree_hidden && !effect_node.cache_render_surface &&
+      !effect_node.subtree_capture_id.is_valid()) {
     return true;
   }
 
   // If the layer transform is not invertible, it should be skipped. In case the
   // transform is animating and singular, we should not skip it.
-  const TransformNode* transform_node =
+  const TransformNode& transform_node =
       transform_tree.Node(layer->transform_tree_index());
 
-  if (!transform_node->node_and_ancestors_are_animated_or_invertible ||
-      !effect_node->is_drawn)
+  if (!transform_node.node_and_ancestors_are_animated_or_invertible ||
+      !effect_node.is_drawn) {
     return true;
+  }
   if (layer->layer_tree_impl()->settings().enable_backface_visibility_interop) {
     return layer->should_check_backface_visibility() &&
            IsLayerBackFaceVisible(layer, property_trees);
   } else {
-    return effect_node->hidden_by_backface_visibility;
+    return effect_node.hidden_by_backface_visibility;
   }
 }
 
@@ -1584,8 +1578,7 @@ void FindLayersThatNeedUpdates(LayerTreeHost* layer_tree_host,
                                    layer, transform_tree, effect_tree))
       continue;
 
-    bool layer_is_drawn =
-        effect_tree.Node(layer->effect_tree_index())->is_drawn;
+    bool layer_is_drawn = effect_tree.Node(layer->effect_tree_index()).is_drawn;
 
     if (LayerNeedsUpdate(layer, layer_is_drawn, property_trees)) {
       update_layer_list->push_back(layer);
@@ -1609,7 +1602,7 @@ void FindLayersThatNeedUpdates(LayerTreeImpl* layer_tree_impl,
       continue;
 
     bool layer_is_drawn =
-        effect_tree.Node(layer_impl->effect_tree_index())->is_drawn;
+        effect_tree.Node(layer_impl->effect_tree_index()).is_drawn;
 
     if (LayerNeedsUpdate(layer_impl, layer_is_drawn, property_trees))
       visible_layer_list->push_back(layer_impl);
@@ -1825,7 +1818,7 @@ bool LogDoubleBackgroundBlur(const LayerTreeImpl& layer_tree_impl,
 
   for (const RenderSurfaceImpl* render_surface : render_surface_list) {
     const auto* effect_node =
-        property_trees.effect_tree().Node(render_surface->EffectTreeIndex());
+        &property_trees.effect_tree().Node(render_surface->EffectTreeIndex());
     if (NodeMayContainBackdropBlurFilter(*effect_node)) {
       const FilterOperations& filters = render_surface->BackdropFilters();
       if (filters.HasFilterOfType(FilterOperation::BLUR)) {

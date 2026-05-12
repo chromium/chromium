@@ -178,12 +178,12 @@ TEST_F(CompositorLayerListTest, ViewportClipNodes) {
   // Calling SetScaleAndSize() creates a ClipNode for the viewport.
   compositor()->SetScaleAndSize(1.0, gfx::Size(100, 100), surface_id);
   ASSERT_EQ(clip_tree.size(), 2UL);
-  ASSERT_EQ(clip_tree.Node(1)->clip, gfx::RectF(0, 0, 100, 100));
+  ASSERT_EQ(clip_tree.Node(1).clip, gfx::RectF(0, 0, 100, 100));
 
   // Make sure that changing the viewport size doesn't grow another node.
   compositor()->SetScaleAndSize(1.0, gfx::Size(50, 50), surface_id);
   ASSERT_EQ(clip_tree.size(), 2UL);
-  ASSERT_EQ(clip_tree.Node(1)->clip, gfx::RectF(0, 0, 50, 50));
+  ASSERT_EQ(clip_tree.Node(1).clip, gfx::RectF(0, 0, 50, 50));
 }
 
 TEST_F(CompositorTestWithMockedTime, AnimationObserverBasic) {

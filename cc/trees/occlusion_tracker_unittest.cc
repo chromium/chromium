@@ -217,8 +217,12 @@ class OcclusionTrackerTest : public testing::Test {
     // TODO(wangxianzhu): Let EffectTree::UpdateEffects() handle this.
     do {
       effect_node->subtree_has_copy_request = true;
-      effect_node = effect_tree.Node(effect_node->parent_id);
-    } while (effect_node && !effect_node->subtree_has_copy_request);
+      int parent_id = effect_node->parent_id;
+      if (parent_id == kInvalidPropertyNodeId) {
+        break;
+      }
+      effect_node = &effect_tree.MutableNode(parent_id);
+    } while (!effect_node->subtree_has_copy_request);
     return layer;
   }
 

@@ -520,7 +520,7 @@ void Compositor::SetScaleAndSize(float scale,
         viewport_clip_id_ =
             ui_clip_tree.Insert(clip_node, cc::kRootPropertyNodeId);
       } else {
-        ui_clip_tree.Node(viewport_clip_id_)->clip = gfx::RectF(size_);
+        ui_clip_tree.MutableNode(viewport_clip_id_).clip = gfx::RectF(size_);
       }
       ui_clip_tree.SetViewportClip(gfx::RectF(size_));
 
@@ -1146,12 +1146,12 @@ void Compositor::CheckPropertyTrees() const {
   // TODO: Get the whole clip tree to pass, not just the first two nodes.
   const cc::ClipTree& ui_clip_tree = property_trees_->clip_tree();
   const cc::ClipTree& cc_clip_tree = host_->property_trees()->clip_tree();
-  DCHECK_EQ(*ui_clip_tree.Node(cc::kRootPropertyNodeId),
-            *cc_clip_tree.Node(cc::kRootPropertyNodeId));
+  DCHECK_EQ(ui_clip_tree.Node(cc::kRootPropertyNodeId),
+            cc_clip_tree.Node(cc::kRootPropertyNodeId));
   DCHECK_EQ(ui_clip_tree.ViewportClip(), cc_clip_tree.ViewportClip());
   DCHECK_NE(viewport_clip_id_, cc::kInvalidPropertyNodeId);
-  DCHECK_EQ(*ui_clip_tree.Node(viewport_clip_id_),
-            *cc_clip_tree.Node(viewport_clip_id_));
+  DCHECK_EQ(ui_clip_tree.Node(viewport_clip_id_),
+            cc_clip_tree.Node(viewport_clip_id_));
 
   if (!root_layer()) {
     DCHECK_EQ(ui_clip_tree.size(), (unsigned long)2);

@@ -193,7 +193,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     TRACE_EVENT_INSTANT("cc", "Latched scroll node provided");
     // If the caller passed in an element_id we can skip all the hit-testing
     // bits and provide a node straight-away.
-    scrolling_node = scroll_tree.FindNodeFromElementId(target_element_id);
+    scrolling_node =
+        scroll_tree.MutableFindNodeFromElementId(target_element_id);
   } else {
     ScrollNode* starting_node = nullptr;
     if (target_element_id) {
@@ -204,7 +205,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
       // unification is enabled and the targeted scroller comes back from a
       // main thread hit test.
       DCHECK(scroll_state->main_thread_hit_tested_reasons());
-      starting_node = scroll_tree.FindNodeFromElementId(target_element_id);
+      starting_node =
+          scroll_tree.MutableFindNodeFromElementId(target_element_id);
 
       if (!starting_node) {
         // The main thread sent us an element_id that the compositor doesn't
@@ -1023,7 +1025,7 @@ InputHandler::EventListenerTypeForTouchStartOrMoveAt(
         continue;
       }
       if (ScrollNode* animating_node =
-              scroll_tree.FindNodeFromElementId(entry.first)) {
+              scroll_tree.MutableFindNodeFromElementId(entry.first)) {
         if (IsScrolledBy(layer_impl, animating_node)) {
           return InputHandler::TouchStartOrMoveEventListenerType::
               kHandlerOnScrollingLayer;
@@ -1067,7 +1069,8 @@ void InputHandler::DestroyScrollElasticityHelper() {
 bool InputHandler::GetScrollOffsetForLayer(ElementId element_id,
                                            gfx::PointF* offset) {
   ScrollTree& scroll_tree = GetScrollTree();
-  ScrollNode* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
+  ScrollNode* scroll_node =
+      scroll_tree.MutableFindNodeFromElementId(element_id);
   if (!scroll_node)
     return false;
   *offset = scroll_tree.current_scroll_offset(element_id);
@@ -1077,7 +1080,8 @@ bool InputHandler::GetScrollOffsetForLayer(ElementId element_id,
 bool InputHandler::ScrollLayerTo(ElementId element_id,
                                  const gfx::PointF& offset) {
   ScrollTree& scroll_tree = GetScrollTree();
-  ScrollNode* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
+  ScrollNode* scroll_node =
+      scroll_tree.MutableFindNodeFromElementId(element_id);
   if (!scroll_node)
     return false;
 
@@ -1394,7 +1398,8 @@ void InputHandler::DidUnregisterScrollbar(ElementId scroll_element_id,
 
 void InputHandler::ScrollOffsetAnimationFinished(ElementId element_id) {
   TRACE_EVENT0("cc", "InputHandler::ScrollOffsetAnimationFinished");
-  ScrollNode* finished_node = GetScrollTree().FindNodeFromElementId(element_id);
+  ScrollNode* finished_node =
+      GetScrollTree().MutableFindNodeFromElementId(element_id);
   bool inner_viewport_animating =
       InnerViewportScrollNode() && finished_node == InnerViewportScrollNode();
   if (inner_viewport_animating) {
@@ -1489,7 +1494,7 @@ void InputHandler::ElasticOverscrollAnimationFinished(ElementId finished_id) {
   // finish it if needed.
   if (deferred_scroll_ends_.contains(finished_id)) {
     ScrollNode* finished_node =
-        GetScrollTree().FindNodeFromElementId(finished_id);
+        GetScrollTree().MutableFindNodeFromElementId(finished_id);
     bool inner_viewport_animating =
         InnerViewportScrollNode() && finished_node == InnerViewportScrollNode();
     if (inner_viewport_animating) {
@@ -1781,7 +1786,8 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
 
     if (ElementId scroll_element_id = ActiveTree().PointHitsNonCompositedScroll(
             device_viewport_point, *layer_impl)) {
-      node_to_scroll = GetScrollTree().FindNodeFromElementId(scroll_element_id);
+      node_to_scroll =
+          GetScrollTree().MutableFindNodeFromElementId(scroll_element_id);
       CHECK(node_to_scroll);
       break;
     }
@@ -1848,13 +1854,14 @@ ScrollNode* InputHandler::GetNodeToScrollForLayer(
     // If we hit a scrollbar layer, get the ScrollNode from its associated
     // scrolling layer, rather than directly from the scrollbar layer. The
     // latter would return the parent scroller's ScrollNode.
-    if (auto* scroll_node = GetScrollTree().FindNodeFromElementId(
+    if (auto* scroll_node = GetScrollTree().MutableFindNodeFromElementId(
             ToScrollbarLayer(layer)->scroll_element_id())) {
       return GetNodeToScroll(scroll_node);
     }
     return nullptr;
   }
-  return GetNodeToScroll(GetScrollTree().Node(layer->scroll_tree_index()));
+  return GetNodeToScroll(
+      &GetScrollTree().MutableNode(layer->scroll_tree_index()));
 }
 
 bool InputHandler::IsInitialScrollHitTestReliable(
@@ -2244,7 +2251,7 @@ ScrollNode* InputHandler::FindNodeToLatch(ScrollState* scroll_state,
   ScrollNode* scroll_node = nullptr;
   ScrollNode* first_scrollable_node = nullptr;
   for (ScrollNode* cur_node = starting_node; cur_node;
-       cur_node = scroll_tree.parent(cur_node)) {
+       cur_node = scroll_tree.MutableParent(cur_node)) {
     if (GetViewport().ShouldScroll(*cur_node)) {
       // Don't chain scrolls past a viewport node. Once we reach that, we
       // should scroll using the appropriate viewport node which may not be
@@ -2545,8 +2552,9 @@ bool InputHandler::IsScrolledBy(LayerImpl* child, ScrollNode* ancestor) {
     return false;
   DCHECK_EQ(child->layer_tree_impl(), &ActiveTree());
   ScrollTree& scroll_tree = GetScrollTree();
-  for (ScrollNode* scroll_node = scroll_tree.Node(child->scroll_tree_index());
-       scroll_node; scroll_node = scroll_tree.parent(scroll_node)) {
+  for (ScrollNode* scroll_node =
+           &scroll_tree.MutableNode(child->scroll_tree_index());
+       scroll_node; scroll_node = scroll_tree.MutableParent(scroll_node)) {
     if (scroll_node->id == ancestor->id)
       return true;
   }

@@ -185,7 +185,7 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
     if (!scrollable_area)
       return nullptr;
     auto* property_trees = RootCcLayer()->layer_tree_host()->property_trees();
-    return property_trees->scroll_tree_mutable().FindNodeFromElementId(
+    return property_trees->scroll_tree_mutable().MutableFindNodeFromElementId(
         scrollable_area->GetScrollElementId());
   }
 

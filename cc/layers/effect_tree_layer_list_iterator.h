@@ -63,7 +63,7 @@ class CC_EXPORT EffectTreeLayerListIterator {
         return effect_tree_->GetRenderSurface(current_effect_tree_index_);
       case State::kContributingSurface: {
         int target_node_id =
-            effect_tree_->Node(current_effect_tree_index_)->target_id;
+            effect_tree_->Node(current_effect_tree_index_).target_id;
         return effect_tree_->GetRenderSurface(target_node_id);
       }
       case State::kEnd:

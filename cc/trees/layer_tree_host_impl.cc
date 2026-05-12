@@ -3792,7 +3792,7 @@ void LayerTreeHostImpl::PushScrollbarOpacitiesFromActiveToPending() {
                 pending_tree()
                     ->property_trees()
                     ->effect_tree_mutable()
-                    .FindNodeFromElementId(scrollbar->element_id())) {
+                    .MutableFindNodeFromElementId(scrollbar->element_id())) {
           DCHECK(target_effect_node);
           float source_opacity = source_effect_node->opacity;
           float target_opacity = target_effect_node->opacity;

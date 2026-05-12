@@ -285,14 +285,19 @@ void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
 
   PropertyTrees* property_trees = layer_tree_impl()->property_trees();
 
-  EffectNode* node =
-      property_trees->effect_tree_mutable().Node(effect_tree_index());
-  if (node->opacity == opacity) {
+  int effect_id = effect_tree_index();
+  if (effect_id == kInvalidPropertyNodeId) {
     return;
   }
 
-  node->opacity = opacity;
-  node->effect_changed = true;
+  EffectNode& node =
+      property_trees->effect_tree_mutable().MutableNode(effect_id);
+  if (node.opacity == opacity) {
+    return;
+  }
+
+  node.opacity = opacity;
+  node.effect_changed = true;
   property_trees->set_changed(true);
   property_trees->effect_tree_mutable().set_needs_update(true);
   layer_tree_impl()->set_needs_update_draw_properties();

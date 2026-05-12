@@ -85,10 +85,13 @@ cc::Layer* ScrollingContentsCcLayerByScrollElementId(
   const auto& scroll_tree =
       root->layer_tree_host()->property_trees()->scroll_tree();
   for (auto& layer : root->children()) {
-    const auto* scroll_node = scroll_tree.Node(layer->scroll_tree_index());
-    if (scroll_node && scroll_node->element_id == scroll_element_id &&
-        scroll_node->transform_id == layer->transform_tree_index())
-      return layer.get();
+    if (layer->scroll_tree_index() != cc::kInvalidPropertyNodeId) {
+      const auto& scroll_node = scroll_tree.Node(layer->scroll_tree_index());
+      if (scroll_node.element_id == scroll_element_id &&
+          scroll_node.transform_id == layer->transform_tree_index()) {
+        return layer.get();
+      }
+    }
   }
   return nullptr;
 }

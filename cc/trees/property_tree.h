@@ -84,37 +84,51 @@ class CC_EXPORT PropertyTree {
   // Removes the last `n` nodes from the tree.
   void RemoveNodes(size_t n);
 
-  T* Node(int i) {
+  const T& Node(int i) const {
     CHECK_LT(i, static_cast<int>(nodes_.size()));
-    return i > kInvalidPropertyNodeId ? &nodes_[i] : nullptr;
-  }
-  const T* Node(int i) const {
-    CHECK_LT(i, static_cast<int>(nodes_.size()));
-    return i > kInvalidPropertyNodeId ? &nodes_[i] : nullptr;
+    CHECK_GT(i, kInvalidPropertyNodeId);
+    return nodes_[i];
   }
 
-  T* parent(const T* t) { return Node(t->parent_id); }
-  const T* parent(const T* t) const { return Node(t->parent_id); }
+  T& MutableNode(int i) {
+    CHECK_LT(i, static_cast<int>(nodes_.size()));
+    CHECK_GT(i, kInvalidPropertyNodeId);
+    return nodes_[i];
+  }
 
-  T* back() { return size() ? &nodes_.back() : nullptr; }
+  const T* parent(const T* t) const {
+    if (t->parent_id == kInvalidPropertyNodeId) {
+      return nullptr;
+    }
+    return &Node(t->parent_id);
+  }
+
+  T* MutableParent(const T* t) {
+    if (t->parent_id == kInvalidPropertyNodeId) {
+      return nullptr;
+    }
+    return &MutableNode(t->parent_id);
+  }
+
+  T* MutableBack() { return size() ? &nodes_.back() : nullptr; }
   const T* back() const { return size() ? &nodes_.back() : nullptr; }
 
   void SetElementIdForNodeId(int node_id, ElementId element_id) {
     element_id_to_node_index_[element_id] = node_id;
   }
-  T* FindNodeFromElementId(ElementId id) {
+  T* MutableFindNodeFromElementId(ElementId id) {
     auto iterator = element_id_to_node_index_.find(id);
     if (iterator == element_id_to_node_index_.end()) {
       return nullptr;
     }
-    return Node(iterator->second);
+    return &MutableNode(iterator->second);
   }
   const T* FindNodeFromElementId(ElementId id) const {
     auto iterator = element_id_to_node_index_.find(id);
     if (iterator == element_id_to_node_index_.end()) {
       return nullptr;
     }
-    return Node(iterator->second);
+    return &Node(iterator->second);
   }
 
   void clear();

@@ -318,7 +318,7 @@ void SetScrollOffset(PropertyTrees* property_trees,
   // Update both scroll and transform trees
   property_trees->scroll_tree_mutable().SetScrollOffset(element_id, offset);
   TransformNode* transform_node =
-      property_trees->transform_tree_mutable().FindNodeFromElementId(
+      property_trees->transform_tree_mutable().MutableFindNodeFromElementId(
           element_id);
   transform_node->SetScrollOffset(offset, DamageReason::kUntracked);
   transform_node->needs_local_transform_update = true;

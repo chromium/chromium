@@ -77,11 +77,11 @@ void SolidColorLayerImpl::AppendQuads(const AppendQuadsContext& context,
 
   // TODO(hendrikw): We need to pass the visible content rect rather than
   // |bounds()| here.
-  EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
+  const EffectNode& effect_node = GetEffectTree().Node(effect_tree_index());
   AppendSolidQuads(render_pass, draw_properties().occlusion_in_content_space,
                    shared_quad_state, gfx::Rect(bounds()), background_color(),
                    !layer_tree_impl()->settings().enable_edge_anti_aliasing,
-                   effect_node->blend_mode, append_quads_data);
+                   effect_node.blend_mode, append_quads_data);
 }
 
 }  // namespace cc

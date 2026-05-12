@@ -585,11 +585,11 @@ void TileBasedLayerImpl<Tiling>::AppendSolidQuad(
       shared_quad_state->visible_quad_layer_rect;
   Occlusion occlusion = draw_properties().occlusion_in_content_space;
 
-  EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
+  const EffectNode& effect_node = GetEffectTree().Node(effect_tree_index());
   SolidColorLayerImpl::AppendSolidQuads(
       render_pass, occlusion, shared_quad_state, scaled_visible_layer_rect,
       color, !layer_tree_impl()->settings().enable_edge_anti_aliasing,
-      effect_node->blend_mode, append_quads_data);
+      effect_node.blend_mode, append_quads_data);
 }
 
 template <typename Tiling>
@@ -597,10 +597,11 @@ std::optional<gfx::Rect> TileBasedLayerImpl<Tiling>::CalculateScaledCullRect(
     float max_contents_scale) const {
   const ScrollTree& scroll_tree =
       layer_tree_impl()->property_trees()->scroll_tree();
-  if (const ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index())) {
-    if (transform_tree_index() == scroll_node->transform_id) {
+  if (scroll_tree_index() != kInvalidPropertyNodeId) {
+    const ScrollNode& scroll_node = scroll_tree.Node(scroll_tree_index());
+    if (transform_tree_index() == scroll_node.transform_id) {
       if (const gfx::Rect* cull_rect =
-              scroll_tree.ScrollingContentsCullRect(scroll_node->element_id)) {
+              scroll_tree.ScrollingContentsCullRect(scroll_node.element_id)) {
         return gfx::ToEnclosingRect(gfx::ScaleRect(
             // Convert into layer space.
             gfx::RectF(*cull_rect) - offset_to_transform_parent(),
@@ -616,10 +617,11 @@ std::optional<gfx::Rect>
 TileBasedLayerImpl<Tiling>::CalculateCullRectInLayerSpace() const {
   const ScrollTree& scroll_tree =
       layer_tree_impl()->property_trees()->scroll_tree();
-  if (const ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index())) {
-    if (transform_tree_index() == scroll_node->transform_id) {
+  if (scroll_tree_index() != kInvalidPropertyNodeId) {
+    const ScrollNode& scroll_node = scroll_tree.Node(scroll_tree_index());
+    if (transform_tree_index() == scroll_node.transform_id) {
       if (const gfx::Rect* cull_rect =
-              scroll_tree.ScrollingContentsCullRect(scroll_node->element_id)) {
+              scroll_tree.ScrollingContentsCullRect(scroll_node.element_id)) {
         return gfx::ToEnclosingRect(
             // Convert into layer space.
             gfx::RectF(*cull_rect) - offset_to_transform_parent());

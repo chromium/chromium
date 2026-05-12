@@ -13552,7 +13552,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
 
   ScrollNode* ScrollerNode() {
     ScrollNode* node =
-        GetPropertyTrees()->scroll_tree_mutable().FindNodeFromElementId(
+        GetPropertyTrees()->scroll_tree_mutable().MutableFindNodeFromElementId(
             ScrollerElementId());
     DCHECK(node);
     return node;
@@ -13912,17 +13912,17 @@ void UnifiedScrollingTest::TestNonCompositedScrollingState(
     bool mutates_transform_tree) {
   const ScrollTree& scroll_tree = GetPropertyTrees()->scroll_tree();
   TransformTree& transform_tree = GetPropertyTrees()->transform_tree_mutable();
-  TransformNode* transform_node =
-      transform_tree.Node(ScrollerNode()->transform_id);
+  TransformNode& transform_node =
+      transform_tree.MutableNode(ScrollerNode()->transform_id);
 
   // Ensure we're in a clean state to start.
   {
-    ASSERT_EQ(transform_node->element_id, ScrollerElementId());
-    ASSERT_TRUE(transform_node->scrolls);
+    ASSERT_EQ(transform_node.element_id, ScrollerElementId());
+    ASSERT_TRUE(transform_node.scrolls);
 
-    ASSERT_EQ(gfx::PointF(0, 0), transform_node->scroll_offset());
-    ASSERT_FALSE(transform_node->transform_changed());
-    ASSERT_FALSE(transform_node->needs_local_transform_update);
+    ASSERT_EQ(gfx::PointF(0, 0), transform_node.scroll_offset());
+    ASSERT_FALSE(transform_node.transform_changed());
+    ASSERT_FALSE(transform_node.needs_local_transform_update);
     ASSERT_FALSE(transform_tree.needs_update());
   }
 
@@ -13945,16 +13945,16 @@ void UnifiedScrollingTest::TestNonCompositedScrollingState(
               did_request_commit_);
 
     // Ensure the transform tree was updated only if expected.
-    EXPECT_EQ(mutates_transform_tree, transform_node->transform_changed());
+    EXPECT_EQ(mutates_transform_tree, transform_node.transform_changed());
     EXPECT_EQ(mutates_transform_tree,
-              transform_node->needs_local_transform_update);
+              transform_node.needs_local_transform_update);
     EXPECT_EQ(mutates_transform_tree, transform_tree.needs_update());
     if (mutates_transform_tree) {
-      EXPECT_EQ(gfx::PointF(0, 10), transform_node->scroll_offset());
+      EXPECT_EQ(gfx::PointF(0, 10), transform_node.scroll_offset());
       EXPECT_EQ(gfx::PointF(0, 10),
                 scroll_tree.GetScrollOffsetForScrollTimeline(*ScrollerNode()));
     } else {
-      EXPECT_EQ(gfx::PointF(0, 0), transform_node->scroll_offset());
+      EXPECT_EQ(gfx::PointF(0, 0), transform_node.scroll_offset());
       EXPECT_EQ(gfx::PointF(0, 0),
                 scroll_tree.GetScrollOffsetForScrollTimeline(*ScrollerNode()));
     }
@@ -13978,16 +13978,16 @@ void UnifiedScrollingTest::TestNonCompositedScrollingState(
     EXPECT_EQ(!host_impl_->settings().trees_in_viz_in_viz_process,
               did_request_commit_);
 
-    EXPECT_EQ(mutates_transform_tree, transform_node->transform_changed());
+    EXPECT_EQ(mutates_transform_tree, transform_node.transform_changed());
     EXPECT_EQ(mutates_transform_tree,
-              transform_node->needs_local_transform_update);
+              transform_node.needs_local_transform_update);
     EXPECT_EQ(mutates_transform_tree, transform_tree.needs_update());
     if (mutates_transform_tree) {
-      EXPECT_EQ(gfx::PointF(0, 20), transform_node->scroll_offset());
+      EXPECT_EQ(gfx::PointF(0, 20), transform_node.scroll_offset());
       EXPECT_EQ(gfx::PointF(0, 20),
                 scroll_tree.GetScrollOffsetForScrollTimeline(*ScrollerNode()));
     } else {
-      EXPECT_EQ(gfx::PointF(0, 0), transform_node->scroll_offset());
+      EXPECT_EQ(gfx::PointF(0, 0), transform_node.scroll_offset());
       EXPECT_EQ(gfx::PointF(0, 0),
                 scroll_tree.GetScrollOffsetForScrollTimeline(*ScrollerNode()));
     }
@@ -14008,7 +14008,8 @@ TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
   ASSERT_EQ(ScrollerNode()->main_thread_repaint_reasons,
             MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
   TransformTree& tree = GetPropertyTrees()->transform_tree_mutable();
-  TransformNode* transform_node = tree.Node(ScrollerNode()->transform_id);
+  TransformNode& transform_node =
+      tree.MutableNode(ScrollerNode()->transform_id);
 
   // Removing the main thread reason bit should start mutating the transform
   // tree.
@@ -14022,9 +14023,9 @@ TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
     ASSERT_EQ(gfx::PointF(0, 30), ScrollerOffset());
 
     // The transform node should now be updated by the scroll.
-    EXPECT_EQ(gfx::PointF(0, 30), transform_node->scroll_offset());
-    EXPECT_TRUE(transform_node->transform_changed());
-    EXPECT_TRUE(transform_node->needs_local_transform_update);
+    EXPECT_EQ(gfx::PointF(0, 30), transform_node.scroll_offset());
+    EXPECT_TRUE(transform_node.transform_changed());
+    EXPECT_TRUE(transform_node.needs_local_transform_update);
     EXPECT_TRUE(tree.needs_update());
   }
 
@@ -14041,7 +14042,8 @@ TEST_P(UnifiedScrollingTest, NonCompositedScrollerDoesntAffectTransform) {
 
   ASSERT_FALSE(ScrollerNode()->is_composited);
   TransformTree& tree = GetPropertyTrees()->transform_tree_mutable();
-  TransformNode* transform_node = tree.Node(ScrollerNode()->transform_id);
+  TransformNode& transform_node =
+      tree.MutableNode(ScrollerNode()->transform_id);
 
   // Marking the node as composited should start updating the transform tree.
   {
@@ -14053,9 +14055,9 @@ TEST_P(UnifiedScrollingTest, NonCompositedScrollerDoesntAffectTransform) {
     ASSERT_EQ(gfx::PointF(0, 30), ScrollerOffset());
 
     // The transform node should now be updated by the scroll.
-    EXPECT_EQ(gfx::PointF(0, 30), transform_node->scroll_offset());
-    EXPECT_TRUE(transform_node->transform_changed());
-    EXPECT_TRUE(transform_node->needs_local_transform_update);
+    EXPECT_EQ(gfx::PointF(0, 30), transform_node.scroll_offset());
+    EXPECT_TRUE(transform_node.transform_changed());
+    EXPECT_TRUE(transform_node.needs_local_transform_update);
     EXPECT_TRUE(tree.needs_update());
   }
 
@@ -15057,9 +15059,10 @@ class ElasticOverscrollInvalidationTest : public ElasticOverscrollTest {
     layer = AddScrollableLayer(OuterViewportScrollLayer(), gfx::Size(100, 100),
                                gfx::Size(200, 200));
 
-    scroll_node =
-        host_impl_->active_tree()->property_trees()->scroll_tree_mutable().Node(
-            layer->scroll_tree_index());
+    scroll_node = &host_impl_->active_tree()
+                       ->property_trees()
+                       ->scroll_tree_mutable()
+                       .MutableNode(layer->scroll_tree_index());
     scroll_node->is_composited = is_composited;
     scroll_node->main_thread_repaint_reasons = main_thread_repaint_reasons;
   }
@@ -15157,7 +15160,7 @@ TEST_P(ElasticOverscrollInvalidationTest, ElasticOverscrollSyncsToPendingTree) {
     return host_impl_->active_tree()->property_trees()->transform_tree().Node(
         transform_id);
   };
-  EXPECT_TRUE(transform_node_active()->local.IsIdentity());
+  EXPECT_TRUE(transform_node_active().local.IsIdentity());
 
   EnsureSyncTree();
   if (!host_impl_->CommitsToActiveTree()) {
@@ -15209,10 +15212,10 @@ TEST_P(ElasticOverscrollInvalidationTest, ElasticOverscrollSyncsToPendingTree) {
 
     // Ensure transform invalidation has not happened yet.
     EXPECT_FALSE(transform_node_pending()->needs_local_transform_update);
-    EXPECT_FALSE(transform_node_active()->needs_local_transform_update);
+    EXPECT_FALSE(transform_node_active().needs_local_transform_update);
 
     EXPECT_TRUE(transform_node_pending()->to_parent.IsIdentity());
-    EXPECT_TRUE(transform_node_active()->to_parent.IsIdentity());
+    EXPECT_TRUE(transform_node_active().to_parent.IsIdentity());
 
     // Pending transform tree should be updated for all scrollers.
     helper->ApplyStretchAmountsToPending();
@@ -15225,10 +15228,10 @@ TEST_P(ElasticOverscrollInvalidationTest, ElasticOverscrollSyncsToPendingTree) {
 
     // Ensure transforms have been invalidated, but not updated yet.
     EXPECT_TRUE(transform_node_pending()->needs_local_transform_update);
-    EXPECT_FALSE(transform_node_active()->needs_local_transform_update);
+    EXPECT_FALSE(transform_node_active().needs_local_transform_update);
 
     EXPECT_TRUE(transform_node_pending()->to_parent.IsIdentity());
-    EXPECT_TRUE(transform_node_active()->to_parent.IsIdentity());
+    EXPECT_TRUE(transform_node_active().to_parent.IsIdentity());
 
     // Activation should force the transform update on the active tree
     UpdateDrawProperties(host_impl_->pending_tree());
@@ -15241,10 +15244,10 @@ TEST_P(ElasticOverscrollInvalidationTest, ElasticOverscrollSyncsToPendingTree) {
 
     // Ensure deferred update happens on pending tree.
     EXPECT_FALSE(transform_node_pending()->needs_local_transform_update);
-    EXPECT_FALSE(transform_node_active()->needs_local_transform_update);
+    EXPECT_FALSE(transform_node_active().needs_local_transform_update);
 
     EXPECT_FALSE(transform_node_pending()->to_parent.IsIdentity());
-    EXPECT_TRUE(transform_node_active()->to_parent.IsIdentity());
+    EXPECT_TRUE(transform_node_active().to_parent.IsIdentity());
 
     layer = nullptr;
     scroll_node = nullptr;
@@ -15257,19 +15260,19 @@ TEST_P(ElasticOverscrollInvalidationTest, ElasticOverscrollSyncsToPendingTree) {
                            scroll_element_id));
 
     // Ensure update is copied over to the active tree.
-    EXPECT_FALSE(transform_node_active()->needs_local_transform_update);
+    EXPECT_FALSE(transform_node_active().needs_local_transform_update);
 
 #if BUILDFLAG(IS_ANDROID)
     // On Android, elastic overscroll is implemented as a "stretch" effect.
     // This modifies the scale of the transform rather than applying a
     // translation.
-    EXPECT_FALSE(transform_node_active()->to_parent.IsIdentity());
-    EXPECT_NE(transform_node_active()->to_parent.To2dScale(),
+    EXPECT_FALSE(transform_node_active().to_parent.IsIdentity());
+    EXPECT_NE(transform_node_active().to_parent.To2dScale(),
               gfx::Vector2dF(1.0f, 1.0f));
 #else
     // On non-Android, elastic overscroll translates the scroll container.
     // The transform is the inverse of the stretch vector (like scroll offset).
-    EXPECT_EQ(transform_node_active()->to_parent.To2dTranslation(), -stretch);
+    EXPECT_EQ(transform_node_active().to_parent.To2dTranslation(), -stretch);
 #endif
   } else {
     helper->SetStretchAmount(id, stretch);

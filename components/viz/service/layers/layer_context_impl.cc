@@ -521,17 +521,17 @@ base::expected<bool, std::string> UpdatePropertyTree(
           "Invalid parent_id for non-root property tree node");
     }
 
-    auto& node = *tree.Node(wire->id);
+    auto& node = tree.MutableNode(wire->id);
     node.id = wire->id;
     node.parent_id = wire->parent_id;
     RETURN_IF_ERROR(UpdatePropertyTreeNode(trees, node, *wire));
   }
 
-  auto* root_node = tree.Node(cc::kRootPropertyNodeId);
-  if (!root_node) {
+  if (cc::kRootPropertyNodeId >= static_cast<int>(tree.size())) {
     return base::unexpected("Missing root property node");
   }
-  if (root_node->parent_id != cc::kInvalidPropertyNodeId) {
+  auto& root_node = tree.MutableNode(cc::kRootPropertyNodeId);
+  if (root_node.parent_id != cc::kInvalidPropertyNodeId) {
     return base::unexpected(
         "Root property node must have an invalid parent ID");
   }

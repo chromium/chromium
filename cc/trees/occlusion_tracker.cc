@@ -73,11 +73,10 @@ void OcclusionTracker::LeaveLayer(
 
   if (iterator.state == EffectTreeLayerListIterator::State::kLayer) {
     MarkOccludedBehindLayer(iterator.current_layer);
-  }
-  // TODO(danakj): This should be done when entering the contributing surface,
-  // but in a way that the surface's own occlusion won't occlude itself.
-  else if (iterator.state ==
-           EffectTreeLayerListIterator::State::kContributingSurface) {
+  } else if (iterator.state ==
+             EffectTreeLayerListIterator::State::kContributingSurface) {
+    // TODO(danakj): This should be done when entering the contributing surface,
+    // but in a way that the surface's own occlusion won't occlude itself.
     LeaveToRenderTarget(render_target);
   }
 }
@@ -359,12 +358,13 @@ void OcclusionTracker::MarkOccludedBehindLayer(const LayerImpl* layer) {
   // surface, then the layer should not occlude. An example of this would
   // otherwise be wrong is that this layer is a non-render-surface mask layer
   // with kDstIn blend mode.
-  const auto* effect_node =
+  const auto& effect_node =
       layer->layer_tree_impl()->property_trees()->effect_tree().Node(
           layer->effect_tree_index());
-  if (!effect_node->HasRenderSurface() &&
-      !IsOccludingBlendMode(effect_node->blend_mode))
+  if (!effect_node.HasRenderSurface() &&
+      !IsOccludingBlendMode(effect_node.blend_mode)) {
     return;
+  }
 
   DCHECK(layer->visible_layer_rect().Contains(opaque_layer_region.bounds()));
 

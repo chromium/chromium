@@ -183,26 +183,30 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
 
 bool LayerTreeHost::IsMobileOptimized() const {
   gfx::SizeF scrollable_viewport_size;
-  const auto* inner_node = property_trees()->scroll_tree().Node(
-      pending_commit_state()->viewport_property_ids.inner_scroll);
-  if (!inner_node)
+  int inner_scroll_id =
+      pending_commit_state()->viewport_property_ids.inner_scroll;
+  if (inner_scroll_id == kInvalidPropertyNodeId) {
     scrollable_viewport_size = gfx::SizeF();
-  else
+  } else {
     scrollable_viewport_size = gfx::ScaleSize(
-        gfx::SizeF(inner_node->container_bounds),
+        gfx::SizeF(property_trees()
+                       ->scroll_tree()
+                       .Node(inner_scroll_id)
+                       .container_bounds),
         1.0f / (pending_commit_state()->external_page_scale_factor *
                 page_scale_factor()));
+  }
 
   gfx::SizeF scrollable_size;
-  const auto* scroll_node = property_trees()->scroll_tree().Node(
-      pending_commit_state()->viewport_property_ids.outer_scroll);
-  if (!scroll_node) {
-    DCHECK(!inner_node);
+  int outer_scroll_id =
+      pending_commit_state()->viewport_property_ids.outer_scroll;
+  if (outer_scroll_id == kInvalidPropertyNodeId) {
+    DCHECK(inner_scroll_id == kInvalidPropertyNodeId);
     scrollable_size = gfx::SizeF();
   } else {
     const auto& scroll_tree = property_trees()->scroll_tree();
-    auto size = scroll_tree.scroll_bounds(scroll_node->id);
-    size.SetToMax(gfx::SizeF(scroll_tree.container_bounds(scroll_node->id)));
+    auto size = scroll_tree.scroll_bounds(outer_scroll_id);
+    size.SetToMax(gfx::SizeF(scroll_tree.container_bounds(outer_scroll_id)));
     scrollable_size = size;
   }
 
@@ -1107,18 +1111,16 @@ bool LayerTreeHost::DoUpdateLayers() {
   // |PropertyTreeBuilder::BuildPropertyTrees| fails to create property tree
   // nodes.
   for (auto* layer : *this) {
-    DCHECK(property_trees()->effect_tree().Node(layer->effect_tree_index()));
-    DCHECK(
-        property_trees()->transform_tree().Node(layer->transform_tree_index()));
-    DCHECK(property_trees()->clip_tree().Node(layer->clip_tree_index()));
-    DCHECK(property_trees()->scroll_tree().Node(layer->scroll_tree_index()));
+    property_trees()->effect_tree().Node(layer->effect_tree_index());
+    property_trees()->transform_tree().Node(layer->transform_tree_index());
+    property_trees()->clip_tree().Node(layer->clip_tree_index());
+    property_trees()->scroll_tree().Node(layer->scroll_tree_index());
   }
 #else
   // This is a quick sanity check for readiness of paint properties.
   // TODO(crbug.com/40605801): This is to help analysis of crashes of the bug.
-  // Remove this CHECK when we close the bug.
-  CHECK(
-      property_trees()->effect_tree().Node(root_layer()->effect_tree_index()));
+  // Remove this check when we close the bug.
+  property_trees()->effect_tree().Node(root_layer()->effect_tree_index());
 #endif
 
   draw_property_utils::UpdatePropertyTrees(this);
@@ -1174,10 +1176,12 @@ void LayerTreeHost::ApplyViewportChanges(
   // const_cast to ensure the compiler chooses to the const version of
   // property_trees(), to avoid blocking on commit.
   const auto* pt = const_cast<const LayerTreeHost*>(this)->property_trees();
-  if (const auto* inner_scroll = pt->scroll_tree().Node(
-          pending_commit_state()->viewport_property_ids.inner_scroll)) {
+  int inner_scroll_id =
+      pending_commit_state()->viewport_property_ids.inner_scroll;
+  if (inner_scroll_id != kInvalidPropertyNodeId) {
+    const ScrollNode& inner_scroll = pt->scroll_tree().Node(inner_scroll_id);
     UpdateScrollOffsetFromImpl(
-        inner_scroll->element_id, inner_viewport_scroll_delta,
+        inner_scroll.element_id, inner_viewport_scroll_delta,
         ScrollSourceType::kNone,
         commit_data.inner_viewport_scroll.snap_target_element_ids);
   }
@@ -1427,9 +1431,13 @@ void LayerTreeHost::SetViewportPropertyIds(const ViewportPropertyIds& ids) {
 }
 
 Layer* LayerTreeHost::InnerViewportScrollLayerForTesting() {
-  auto* scroll_node = property_trees()->scroll_tree_mutable().Node(
-      pending_commit_state()->viewport_property_ids.inner_scroll);
-  return scroll_node ? LayerByElementId(scroll_node->element_id) : nullptr;
+  int scroll_id = pending_commit_state()->viewport_property_ids.inner_scroll;
+  if (scroll_id == kInvalidPropertyNodeId) {
+    return nullptr;
+  }
+  auto& scroll_node =
+      property_trees()->scroll_tree_mutable().MutableNode(scroll_id);
+  return LayerByElementId(scroll_node.element_id);
 }
 
 Layer* LayerTreeHost::OuterViewportScrollLayerForTesting() {
@@ -1437,9 +1445,11 @@ Layer* LayerTreeHost::OuterViewportScrollLayerForTesting() {
 }
 
 ElementId LayerTreeHost::OuterViewportScrollElementId() const {
-  const auto* scroll_node = property_trees()->scroll_tree().Node(
-      pending_commit_state()->viewport_property_ids.outer_scroll);
-  return scroll_node ? scroll_node->element_id : ElementId();
+  int outer_scroll_id =
+      pending_commit_state()->viewport_property_ids.outer_scroll;
+  return outer_scroll_id != kInvalidPropertyNodeId
+             ? property_trees()->scroll_tree().Node(outer_scroll_id).element_id
+             : ElementId();
 }
 
 void LayerTreeHost::RegisterSelection(const LayerSelection& selection) {

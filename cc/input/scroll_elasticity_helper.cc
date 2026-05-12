@@ -33,8 +33,9 @@ void ApplyDrawnStretchAmount(LayerTreeImpl& target_tree,
   TransformTree& transform_tree = property_trees.transform_tree_mutable();
   const bool is_root =
       scroll_node.scrolls_inner_viewport || scroll_node.scrolls_outer_viewport;
-  if (TransformNode* transform_node =
-          transform_tree.Node(scroll_node.transform_id)) {
+  if (scroll_node.transform_id != kInvalidPropertyNodeId) {
+    TransformNode& transform_node =
+        transform_tree.MutableNode(scroll_node.transform_id);
 #if BUILDFLAG(IS_ANDROID)
     // We set this flag to prevent re-rastering based on constantly updating the
     // transform. This is only applicable to Android, where we have a stretch
@@ -44,10 +45,10 @@ void ApplyDrawnStretchAmount(LayerTreeImpl& target_tree,
     // this on a transform with an animation could result in this value being
     // cleared to false un-intentionally. This would only be an issue for
     // non-root scrollers.
-    transform_node->has_potential_animation = has_stretch;
+    transform_node.has_potential_animation = has_stretch;
 #endif
-    transform_node->needs_local_transform_update = true;
-    transform_node->SetTransformChanged(DamageReason::kCompositorScroll);
+    transform_node.needs_local_transform_update = true;
+    transform_node.SetTransformChanged(DamageReason::kCompositorScroll);
     transform_tree.set_needs_update(true);
   }
   // Also invalidate tree and host impl.
@@ -107,7 +108,7 @@ bool ScrollElasticityHelperImpl::IsRoot(ElementId element_id) const {
 }
 
 ScrollNode* ScrollElasticityHelperImpl::GetNode(ElementId element_id) {
-  return host_impl_->GetScrollTree().FindNodeFromElementId(element_id);
+  return host_impl_->GetScrollTree().MutableFindNodeFromElementId(element_id);
 }
 
 const ScrollNode* ScrollElasticityHelperImpl::GetNode(
@@ -310,7 +311,8 @@ void ScrollElasticityHelperImpl::ScrollBy(ElementId element_id,
                       ? host_impl_->OuterViewportScrollNode()
                       : host_impl_->InnerViewportScrollNode();
   } else {
-    scroll_node = host_impl_->GetScrollTree().FindNodeFromElementId(element_id);
+    scroll_node =
+        host_impl_->GetScrollTree().MutableFindNodeFromElementId(element_id);
   }
   if (scroll_node) {
     LayerTreeImpl* tree_impl = host_impl_->active_tree();
