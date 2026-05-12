@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
@@ -30,17 +31,16 @@ class ActorContainerConfig {
   ActorContainerConfig(ActorContainerConfig&&);
   ActorContainerConfig& operator=(const ActorContainerConfig& other) = delete;
   ActorContainerConfig& operator=(ActorContainerConfig&& other) = delete;
-  explicit ActorContainerConfig(
-      const optimization_guide::proto::AgentContainerConfig& config);
   ~ActorContainerConfig();
 
-  // Assign the ActorContainerConfig's value to `other`'s by copying `other`'s
-  // data. Will only work when `IsActive` returns false, and may
-  // cause `IsActive` to return true after. If `other` does not have a
-  // config set this is a no-op. Only can modify this object the first
-  // time it is called.
-  void Assign(const ActorContainerConfig& other);
+  // Assigns the `config` to this instance, if provided. This method is a no-op
+  // except for the first time it is called.
+  void Assign(
+      base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
+          config);
 
+  // Returns true iff a config proto was provided for this instance via
+  // `Assign`.
   bool IsActive() const { return rules_.has_value(); }
 
   // Indicates whether or not navigation from `source` to `destination` is
@@ -51,6 +51,7 @@ class ActorContainerConfig {
 
   // Indicates whether or not the actor can actuate when the browser is
   // navigated to `location_origin`.
+  // Must not be called when `IsActive` is false.
   bool IsActuationAllowed(const url::Origin& location_origin) const;
 
  private:

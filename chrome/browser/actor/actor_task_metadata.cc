@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/actor_task_metadata.h"
 
+#include <optional>
+
 #include "url/gurl.h"
 
 namespace actor {
@@ -32,8 +34,8 @@ ActorTaskMetadata::ActorTaskMetadata(
     }
   }
   if (task_metadata.security().has_agent_container_config()) {
-    actor_container_config_.Assign(ActorContainerConfig(
-        task_metadata.security().agent_container_config()));
+    agent_container_config_.emplace(
+        task_metadata.security().agent_container_config());
   }
 }
 
@@ -52,7 +54,7 @@ ActorTaskMetadata::WithAddedWritableMainframeOriginsForTesting(
 ActorTaskMetadata ActorTaskMetadata::WithAgentContainerConfigForTesting(
     optimization_guide::proto::AgentContainerConfig config_proto) {
   ActorTaskMetadata metadata;
-  metadata.actor_container_config().Assign(ActorContainerConfig(config_proto));
+  metadata.agent_container_config().emplace(config_proto);
   return metadata;
 }
 

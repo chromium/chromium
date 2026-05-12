@@ -567,7 +567,7 @@ void ActorKeyedService::PerformActions(
   task->GetExecutionEngine().AddWritableMainframeOrigins(
       task_metadata.added_writable_mainframe_origins());
   task->GetExecutionEngine().actor_container_config().Assign(
-      task_metadata.actor_container_config());
+      task_metadata.agent_container_config());
 
   task->Act(
       std::move(actions),

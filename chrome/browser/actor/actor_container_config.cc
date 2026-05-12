@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_ref.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
@@ -86,11 +87,21 @@ ActorContainerConfig::ActorContainerConfig(ActorContainerConfig&&) = default;
 
 ActorContainerConfig::~ActorContainerConfig() = default;
 
-ActorContainerConfig::ActorContainerConfig(
-    const optimization_guide::proto::AgentContainerConfig& config) {
+void ActorContainerConfig::Assign(
+    base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
+        config) {
+  if (assign_attempted_) {
+    return;
+  }
+  assign_attempted_ = true;
   CHECK(!rules_.has_value());
+
+  if (!config.has_value()) {
+    return;
+  }
+
   rules_.emplace();
-  for (const auto& rule_proto : config.location_rules()) {
+  for (const auto& rule_proto : config->location_rules()) {
     base::expected<ActorContainerConfig::LocationType, std::string_view>
         destination_result = ConvertLocation(rule_proto.location());
     if (!destination_result.has_value()) {
@@ -110,14 +121,6 @@ ActorContainerConfig::ActorContainerConfig(
     }
     rules_->insert_or_assign(destination, rule.value());
   }
-}
-
-void ActorContainerConfig::Assign(const ActorContainerConfig& other) {
-  if (assign_attempted_ || IsActive()) {
-    return;
-  }
-  assign_attempted_ = true;
-  rules_ = std::move(other.rules_);
 }
 
 base::expected<ActorContainerConfig::LocationType, std::string_view>

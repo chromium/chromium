@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_TASK_METADATA_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_TASK_METADATA_H_
 
+#include <optional>
 #include <vector>
 
 #include "chrome/browser/actor/actor_container_config.h"
@@ -32,13 +33,15 @@ class ActorTaskMetadata {
     return added_writable_mainframe_origins_;
   }
 
-  ActorContainerConfig& actor_container_config() {
-    return actor_container_config_;
+  std::optional<optimization_guide::proto::AgentContainerConfig>&
+  agent_container_config() {
+    return agent_container_config_;
   }
 
  private:
   absl::flat_hash_set<url::Origin> added_writable_mainframe_origins_;
-  ActorContainerConfig actor_container_config_;
+  std::optional<optimization_guide::proto::AgentContainerConfig>
+      agent_container_config_;
 };
 
 }  // namespace actor

@@ -97,10 +97,7 @@ TEST_F(ActorTaskMetadataTest, AgentContainerConfig) {
           optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
 
   ActorTaskMetadata metadata(actions);
-  EXPECT_TRUE(metadata.actor_container_config().IsActive());
-  EXPECT_TRUE(metadata.actor_container_config().IsNavigationAllowed(
-      url::Origin::Create(GURL("https://foo.com")),
-      url::Origin::Create(GURL("https://example.com"))));
+  EXPECT_TRUE(metadata.agent_container_config().has_value());
 }
 
 }  // namespace actor
