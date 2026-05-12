@@ -575,14 +575,8 @@
           =1 {Chrome will block cookies again tomorrow}
           other {# days until cookies are blocked again}}
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_SEND_FEEDBACK_DESCRIPTION" desc="Text asking the user for feedback on why they allowed third-party cookies for this particular site.">
-        Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
       <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Page Info UI if cookies were allowed by the user and they won't be automatically blocked again the future.">
         You allowed third-party cookies on this site
-      </message>
-      <message name="IDS_PAGE_INFO_COOKIES_TRACKING_PROTECTION_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info third-party cookies subpage if the user is visiting a site on their third-party cookies allow list." formatter_data="android_java">
-        This means site features should work as expected, but you may have less browsing protection. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="Label shown on a dialog that allows users to turn off third-party cookie blocking for a specific site.">
         Site not working?

@@ -896,12 +896,8 @@ public class PageInfoViewTest {
         onView(withText(R.string.page_info_tracking_protection_toggle_blocked)).perform(click());
         // Verify the a11y live region.
         Context context = ApplicationProvider.getApplicationContext();
-        String description =
-                context.getString(
-                                R.string
-                                        .page_info_cookies_tracking_protection_permanent_allowed_description)
-                        .replaceAll("<link>|</link>", "");
-        onView(withText(description))
+        int resId = R.string.page_info_tracking_protection_cookies_permanent_allowed_description;
+        onView(withText(context.getString(resId)))
                 .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
     }
 

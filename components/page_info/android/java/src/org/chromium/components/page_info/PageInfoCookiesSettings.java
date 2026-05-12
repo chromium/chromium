@@ -55,7 +55,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private TextMessagePreference mCookieSummary;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
-    private Callback<Activity> mOnFeedbackClicked;
     private @Nullable Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
@@ -134,7 +133,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mDaysUntilExpirationForTesting = params.daysUntilExpirationForTesting;
         mDeleteDisabled = params.disableCookieDeletion;
         mOnClearCallback = params.onClearCallback;
-        mOnFeedbackClicked = params.onFeedbackLinkClicked;
         mHostName = params.hostName;
 
         // Initialize UI elements that are based on params.
@@ -250,23 +248,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             }
         }
         mThirdPartyCookiesTitle.setTitle(title);
-
-        int resId =
-                expiration == 0
-                        ? R.string
-                                .page_info_cookies_tracking_protection_permanent_allowed_description
-                        : R.string.page_info_cookies_send_feedback_description;
-        mThirdPartyCookiesSummary.setSummary(
-                SpanApplier.applySpans(
-                        getString(resId),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new ChromeClickableSpan(
-                                        getContext(),
-                                        (view) -> {
-                                            mOnFeedbackClicked.onResult(this.getActivity());
-                                        }))));
+        int resId = R.string.page_info_tracking_protection_cookies_permanent_allowed_description;
+        mThirdPartyCookiesSummary.setSummary(getString(resId));
     }
 
     /**

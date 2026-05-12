@@ -757,7 +757,7 @@
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Tracking Protection subpage bubble telling the user they allowed third-party cookies on the current site.">
     You allowed third-party cookies on this site
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info Tracking Protection subpage if the user is visiting a site on their third-party cookies allow list.">
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info Tracking Protection subpage if the user is visiting a site on their third-party cookies allow list." formatter_data="android_java">
     This means site features should work as expected, but you may have less browsing protection.
   </message>
   <message name="IDS_PAGE_INFO_COOKIE_SYNC_DESCRIPTION" desc="The disclaimer about cookies for this site being synced across ChromeOS devices.">
