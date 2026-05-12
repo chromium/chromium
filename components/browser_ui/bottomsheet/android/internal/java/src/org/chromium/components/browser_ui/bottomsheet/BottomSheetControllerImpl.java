@@ -513,9 +513,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
         if (mBottomSheet == null) return;
 
         if (mBottomSheet.getCurrentSheetContent() != null) {
+            boolean shouldRestoreState =
+                    mBottomSheet.getCurrentSheetContent().shouldRestoreStateOnUnsuppress();
             @SheetState
             int openState =
-                    mContentWhenSuppressed == getCurrentSheetContent()
+                    mContentWhenSuppressed == getCurrentSheetContent() && shouldRestoreState
                             ? mSheetStateBeforeSuppress
                             : mBottomSheet.getOpeningState();
             mBottomSheet.setSheetState(openState, true);

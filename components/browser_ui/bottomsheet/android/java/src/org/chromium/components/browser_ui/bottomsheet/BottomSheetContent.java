@@ -369,4 +369,12 @@ public interface BottomSheetContent {
     default boolean allowInSheetContentSnackbars() {
         return true;
     }
+
+    /**
+     * @return Whether the sheet should restore its previous state when returning from suppression.
+     *     If false, it will return to its opening state.
+     */
+    default boolean shouldRestoreStateOnUnsuppress() {
+        return true;
+    }
 }

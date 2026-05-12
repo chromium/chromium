@@ -393,4 +393,49 @@ public class BottomSheetControllerImplUnitTest {
         // 5. Verify COBROWSE content returns.
         verify(mBottomSheet, times(2)).showContent(cobrowseContent);
     }
+
+    @Test
+    public void testUnsuppressSheet_shouldRestoreStateOnUnsuppress_true() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        when(content.shouldRestoreStateOnUnsuppress()).thenReturn(true);
+        when(content.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(content);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HALF);
+        when(mBottomSheet.getTargetSheetState()).thenReturn(SheetState.HALF);
+
+        // Suppress the sheet
+        int token = mController.suppressSheet(StateChangeReason.NONE);
+
+        // Unsuppress the sheet
+        mController.unsuppressSheet(token);
+
+        // Verify that the sheet restored to HALF (its state before suppression)
+        verify(mBottomSheet).setSheetState(SheetState.HALF, true);
+    }
+
+    @Test
+    public void testUnsuppressSheet_shouldRestoreStateOnUnsuppress_false() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        when(content.shouldRestoreStateOnUnsuppress()).thenReturn(false);
+        when(content.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(content);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HALF);
+        when(mBottomSheet.getTargetSheetState()).thenReturn(SheetState.HALF);
+        when(mBottomSheet.getOpeningState()).thenReturn(SheetState.PEEK);
+
+        // Suppress the sheet
+        int token = mController.suppressSheet(StateChangeReason.NONE);
+
+        // Unsuppress the sheet
+        mController.unsuppressSheet(token);
+
+        // Verify that the sheet collapsed to PEEK (its opening state) instead of HALF
+        verify(mBottomSheet).setSheetState(SheetState.PEEK, true);
+    }
 }

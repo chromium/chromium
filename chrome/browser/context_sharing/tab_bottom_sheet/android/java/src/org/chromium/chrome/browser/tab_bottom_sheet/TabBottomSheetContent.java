@@ -191,4 +191,9 @@ public class TabBottomSheetContent implements BottomSheetContent {
     public boolean allowInSheetContentSnackbars() {
         return false;
     }
+
+    @Override
+    public boolean shouldRestoreStateOnUnsuppress() {
+        return false;
+    }
 }
