@@ -70,6 +70,7 @@ source_set("impl") {
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/toolbar",
+      "//components/omnibox/browser:vector_icons",
       "//components/pdf/common:constants",
       "//ui/strings:ui_strings__strings_grit",
     ]

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -113,7 +114,7 @@ class GlicSelectionContentsView : public views::View {
     ask_gemini_btn->SetEnabledTextColors(ui::kColorSysOnSurfaceVariant);
     ask_gemini_btn->SetTextColor(views::Button::STATE_DISABLED,
                                  ui::kColorLabelForegroundDisabled);
-    ask_gemini_btn->SetLabelStyle(views::style::STYLE_BODY_5);
+    ask_gemini_btn->SetLabelStyle(views::style::STYLE_BODY_5_MEDIUM);
     ask_gemini_btn->SetCustomPadding(gfx::Insets::TLBR(0, 2, 0, 6));
 
     gfx::ImageSkia* icon_skia =
@@ -182,7 +183,7 @@ class GlicSelectionContentsView : public views::View {
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT);
     copy_link_btn_ =
         ask_pill_->AddChildView(views::ImageButton::CreateIconButton(
-            std::move(on_copy_link), vector_icons::kLinkIcon,
+            std::move(on_copy_link), omnibox::kShareChromeRefreshIcon,
             copy_link_tooltip));
     copy_link_btn_->SetTooltipText(copy_link_tooltip);
     copy_link_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
@@ -190,7 +191,7 @@ class GlicSelectionContentsView : public views::View {
         views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
             views::INSETS_VECTOR_IMAGE_BUTTON)));
     views::SetImageFromVectorIconWithColor(
-        copy_link_btn_, vector_icons::kLinkIcon, kIconSize,
+        copy_link_btn_, omnibox::kShareChromeRefreshIcon, kIconSize,
         views::IconColors(ui::kColorSysOnSurfaceVariant,
                           ui::kColorLabelForegroundDisabled,
                           ui::kColorSysOnSurfaceVariant));
