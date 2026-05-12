@@ -162,6 +162,7 @@ class TabbedNavigationBarColorController
                 overviewColorSupplier,
                 edgeToEdgeSystemBarColorHelper,
                 new BottomAttachedUiObserver(
+                        context,
                         bottomControlsStacker,
                         browserControlsStateProvider,
                         contextualSearchManagerSupplier,
