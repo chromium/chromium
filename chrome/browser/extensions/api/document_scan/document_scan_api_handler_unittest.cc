@@ -122,8 +122,6 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     document_scan_api_handler_ =
         std::make_unique<DocumentScanAPIHandler>(testing_profile_);
 
-    GetLorgnetteScannerManager()->SetCancelScanResult(
-        lorgnette::OPERATION_RESULT_SUCCESS);
     GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
         lorgnette::OPERATION_RESULT_SUCCESS);
     GetLorgnetteScannerManager()->SetStartPreparedScanResult(
@@ -1557,9 +1555,6 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_ValidJob) {
   std::string job_handle = StartScanForExtension(extension_);
   EXPECT_FALSE(job_handle.empty());
 
-  GetLorgnetteScannerManager()->SetCancelScanResult(
-      lorgnette::OPERATION_RESULT_SUCCESS);
-
   CancelScanFuture cancel_future;
   document_scan_api_handler_->CancelScan(extension_, job_handle,
                                          cancel_future.GetCallback());
@@ -1575,7 +1570,7 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_DBusFailure) {
   std::string job_handle = StartScanForExtension(extension_);
   EXPECT_FALSE(job_handle.empty());
 
-  GetLorgnetteScannerManager()->SetCancelScanResult(std::nullopt);
+  GetLorgnetteScannerManager()->SimulateDBusFailure(true);
 
   CancelScanFuture cancel_future;
   document_scan_api_handler_->CancelScan(extension_, job_handle,

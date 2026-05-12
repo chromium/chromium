@@ -61,6 +61,7 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
             PageCallback page_callback,
             CompletionCallback completion_callback) override;
   void CancelScan(CancelCallback cancel_callback) override;
+  // TODO(crbug.com/479031241): Fix edge cases. 
   void CancelScan(const lorgnette::CancelScanRequest& request,
                   CancelScanCallback callback) override;
 
@@ -114,12 +115,6 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetScanResponse(
       const std::optional<std::vector<std::string>>& scan_data);
 
-  // Sets the result field of the response returned by the two-parameter version
-  // of CancelScan(). If this is std::nullopt, the callback is passed
-  // std::nullopt. The default is OPERATION_RESULT_ADF_JAMMED.
-  // Note: This does not apply to cancelled jobs, see the class documentation.
-  void SetCancelScanResult(std::optional<lorgnette::OperationResult> result);
-
   // Optionally sets `scan_data` if a matching set of scan settings is found.
   void MaybeSetScanDataBasedOnSettings(const lorgnette::ScanSettings& settings);
 
@@ -157,8 +152,6 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   std::optional<lorgnette::OperationResult> start_prepared_scan_result_;
   std::optional<lorgnette::OperationResult> read_scan_data_result_;
   std::vector<std::string> read_scan_data_chunks_;
-  std::optional<lorgnette::OperationResult> cancel_scan_result_ =
-      lorgnette::OPERATION_RESULT_ADF_JAMMED;
   size_t handle_count_ = 0;
   std::optional<std::vector<std::string>> scan_data_;
   std::vector<std::string> cancelled_jobs_;

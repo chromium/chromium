@@ -110,9 +110,6 @@ class DocumentScanApiTest : public ExtensionApiTest,
     auto* lorgnette_manager = static_cast<ash::FakeLorgnetteScannerManager*>(
         ash::LorgnetteScannerManagerFactory::GetForBrowserContext(profile()));
 
-    // Set up Lorgnette's CancelScan response.
-    lorgnette_manager->SetCancelScanResult(lorgnette::OPERATION_RESULT_SUCCESS);
-
     // Set up Lorgnette's GetCurrentConfig response.
     lorgnette::ScannerConfig config;
     lorgnette::OptionGroup* group = config.add_option_groups();
