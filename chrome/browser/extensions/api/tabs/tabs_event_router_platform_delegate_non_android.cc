@@ -4,45 +4,25 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_event_router_platform_delegate_non_android.h"
 
-#include <stddef.h>
-
-#include <memory>
-#include <optional>
 #include <utility>
-#include <vector>
 
-#include "base/functional/bind.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/tabs_event_router.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/api/tabs/windows_event_router.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/recently_audible_helper.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/common/extensions/extension_constants.h"
-#include "components/performance_manager/public/graph/page_node.h"
-#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/common/features/feature.h"
-#include "extensions/common/mojom/context_type.mojom.h"
-#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
-#include "ui/gfx/range/range.h"
 
 using base::Value;
 using content::WebContents;
