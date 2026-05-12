@@ -178,6 +178,8 @@ void HTMLInputElement::Trace(Visitor* visitor) const {
   visitor->Trace(input_type_view_);
   visitor->Trace(list_attribute_target_observer_);
   visitor->Trace(image_loader_);
+  visitor->Trace(nearest_ancestor_select_);
+  visitor->Trace(nearest_ancestor_select_child_);
   TextControlElement::Trace(visitor);
 }
 
@@ -1865,6 +1867,23 @@ Node::InsertionNotificationRequest HTMLInputElement::InsertedInto(
   ResetListAttributeTargetObserver();
   LogAddElementIfIsolatedWorldAndInDocument("input", html_names::kTypeAttr,
                                             html_names::kFormactionAttr);
+
+  if (RuntimeEnabledFeatures::FilterableSelectEnabled()) {
+    // TODO(crbug.com/402429384): This walk is expensive, but when an input
+    // element is inserted we are already walking through all ancestor elements
+    // to find a nearest ancestor form element via ListedElement::InsertedInto
+    // -> ListedElement::ResetFormOwner. If we combine this ancestor walk
+    // with the one for form elements, it could improve performance.
+    HTMLSelectElement::SelectOptgroupDatalist result =
+        HTMLSelectElement::WalkAncestorsForRelatedParts(*this);
+    if (result.select != nearest_ancestor_select_) {
+      CHECK(!nearest_ancestor_select_);
+      nearest_ancestor_select_child_ = result.select_child;
+      nearest_ancestor_select_ = result.select;
+      nearest_ancestor_select_->InputInserted(this, result.select_child);
+    }
+  }
+
   return kInsertionShouldCallDidNotifySubtreeInsertions;
 }
 
@@ -1882,6 +1901,18 @@ void HTMLInputElement::RemovedFrom(ContainerNode& insertion_point) {
   TextControlElement::RemovedFrom(insertion_point);
   DCHECK(!isConnected());
   ResetListAttributeTargetObserver();
+
+  if (RuntimeEnabledFeatures::FilterableSelectEnabled()) {
+    HTMLSelectElement::SelectOptgroupDatalist result =
+        HTMLSelectElement::WalkAncestorsForRelatedParts(*this);
+    if (result.select != nearest_ancestor_select_) {
+      CHECK(!result.select);
+      nearest_ancestor_select_->InputRemoved(this,
+                                             nearest_ancestor_select_child_);
+      nearest_ancestor_select_ = nullptr;
+      nearest_ancestor_select_child_ = nullptr;
+    }
+  }
 }
 
 void HTMLInputElement::DidMoveToNewDocument(Document& old_document) {

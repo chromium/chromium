@@ -182,12 +182,26 @@ class CORE_EXPORT HTMLSelectElement final
     STACK_ALLOCATED();
 
    public:
-    HTMLSelectElement* select;
-    HTMLOptGroupElement* optgroup;
-    HTMLDataListElement* datalist;
+    HTMLSelectElement* select = nullptr;
+    HTMLOptGroupElement* optgroup = nullptr;
+    HTMLDataListElement* datalist = nullptr;
+    ContainerNode* select_child = nullptr;
   };
-  static SelectOptgroupDatalist AssociatedSelectAndOptgroupAndDatalist(
-      const Element&);
+  static SelectOptgroupDatalist WalkAncestorsForRelatedParts(const Element&);
+
+  // InputInserted is called when an input element is inserted as a descendant
+  // of this element element, during HTMLInputElement::InsertedInto.
+  void InputInserted(HTMLInputElement*, Node* nearest_ancestor_select_child);
+  // InputRemoved is called when an input element which was a descendant of this
+  // input element was removed, during HTMLInputElement::RemovedFrom.
+  void InputRemoved(HTMLInputElement*, Node* nearest_ancestor_select_child);
+  // CountedElementInserted is called by OptionInserted and InputInserted to
+  // handle shared logic between those two elements.
+  void CountedElementInserted(HTMLElement*,
+                              Node* nearest_ancestor_select_child);
+  // CountedElementRemoved is called by OptionRemoved and InputRemoved to
+  // handle shared logic between those two elements.
+  void CountedElementRemoved(HTMLElement*, Node* nearest_ancestor_select_child);
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
   void SelectOptionByAccessKey(HTMLOptionElement*);
@@ -205,8 +219,10 @@ class CORE_EXPORT HTMLSelectElement final
   // For use in the implementation of HTMLOptionElement.
   void OptionSelectionStateChanged(HTMLOptionElement*, bool option_is_selected);
   void ElementInserted(Node& node);
-  void OptionInserted(HTMLOptionElement&, bool option_is_selected);
-  void OptionRemoved(HTMLOptionElement&);
+  void OptionInserted(HTMLOptionElement&,
+                      Node* nearest_ancestor_select_child,
+                      bool option_is_selected);
+  void OptionRemoved(HTMLOptionElement&, Node* nearest_ancestor_select_child);
   IndexedPropertySetterResult AnonymousIndexedSetter(unsigned,
                                                      HTMLOptionElement*,
                                                      ExceptionState&);
@@ -406,6 +422,16 @@ class CORE_EXPORT HTMLSelectElement final
   // filtering a select element to toggle the selectedness of the active option.
   void ToggleActiveOption(Event&);
 
+  struct DescendantCounts {
+    unsigned num_inputs = 0;
+    unsigned num_options = 0;
+  };
+  const HeapHashMap<Member<Node>, DescendantCounts>& ChildrenDescendantCounts()
+      const {
+    return children_descendant_counts_map_;
+  }
+  unsigned NumDescendantInputs() const;
+
  private:
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
@@ -527,6 +553,17 @@ class CORE_EXPORT HTMLSelectElement final
 
   Member<SelectType> select_type_;
   Member<SelectMutationObserver> descendants_observer_;
+  Member<HTMLOptionElement> active_option_;
+
+  // children_descendant_counts_map_ is a map from children of this select
+  // element to the number of input and option elements which descend from that
+  // child element. This is used in order to change the structure of the DOM in
+  // the shadow root and to determine which slot each child node is slotted
+  // into. The number of descendant inputs and options is used instead of just a
+  // flag so that we know if there are any descendants of each type or not when
+  // multiple are inserted or removed.
+  HeapHashMap<Member<Node>, DescendantCounts> children_descendant_counts_map_;
+
   TreeOrderedList<HTMLSelectedContentElement> descendant_selectedcontents_;
   TypeAhead type_ahead_;
   // list_items_ contains HTMLOptionElement, HTMLOptGroupElement, and
@@ -540,6 +577,10 @@ class CORE_EXPORT HTMLSelectElement final
   // a node is removed. It is only used when descendants_observer_ is
   // initialized.
   unsigned content_model_violations_count_ = 0U;
+  // num_descendant_inputs_ is redundant with the sum of num_inputs in each
+  // entry of children_descendant_counts_map_, and provides a way to quickly
+  // determine whether there are any descendant input elements or not.
+  unsigned num_descendant_inputs_ = 0;
   int index_to_select_on_cancel_ = -1;
   bool uses_menu_list_ = true;
   bool is_multiple_ = false;
@@ -548,8 +589,6 @@ class CORE_EXPORT HTMLSelectElement final
   // called, and never gets set back to false again. It is used for parsing
   // <input> in <select>.
   bool was_option_inserted_ = false;
-
-  Member<HTMLOptionElement> active_option_;
 
   friend class ListBoxSelectType;
   friend class MenuListSelectType;

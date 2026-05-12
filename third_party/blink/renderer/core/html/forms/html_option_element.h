@@ -184,7 +184,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   String CollectOptionInnerText() const;
 
   void UpdateLabel();
-  void UpdateAncestors();
+  void WalkAncestorsAndUpdate();
 
   void DefaultEventHandlerInternal(Event&);
 
@@ -219,6 +219,13 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // instead of a node traversal. That would probably also require changing
   // HTMLOptionsCollection to support flat tree traversals as well.
   Member<HTMLSelectElement> nearest_ancestor_select_;
+
+  // The child of nearest_ancestor_select_ which is in the ancestor chain in
+  // between this element and nearest_ancestor_select_. We need to store it in
+  // order to call OptionRemoved on nearest_ancestor_select_ in RemovedFrom,
+  // where we can't figure out which child of the select element this option was
+  // inside of anymore.
+  Member<ContainerNode> nearest_ancestor_select_child_;
 
   // The closest ancestor <optgroup> in the DOM tree. This is created and
   // maintained just like nearest_ancestor_select_, but doesn't account for any

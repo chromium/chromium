@@ -131,6 +131,7 @@ HTMLOptionElement* HTMLOptionElement::CreateForJSConstructor(
 void HTMLOptionElement::Trace(Visitor* visitor) const {
   visitor->Trace(text_observer_);
   visitor->Trace(nearest_ancestor_select_);
+  visitor->Trace(nearest_ancestor_select_child_);
   visitor->Trace(nearest_ancestor_optgroup_);
   visitor->Trace(nearest_ancestor_datalist_);
   visitor->Trace(label_container_);
@@ -587,10 +588,11 @@ void HTMLOptionElement::UpdateLabel() {
   }
 }
 
-void HTMLOptionElement::UpdateAncestors() {
+void HTMLOptionElement::WalkAncestorsAndUpdate() {
   HTMLSelectElement::SelectOptgroupDatalist ancestors =
-      HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this);
+      HTMLSelectElement::WalkAncestorsForRelatedParts(*this);
   nearest_ancestor_select_ = ancestors.select;
+  nearest_ancestor_select_child_ = ancestors.select_child;
   nearest_ancestor_optgroup_ = ancestors.optgroup;
   nearest_ancestor_datalist_ = ancestors.datalist;
   SetFiltered(false);
@@ -601,12 +603,13 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
   auto return_value = HTMLElement::InsertedInto(insertion_point);
 
   HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
-  UpdateAncestors();
+  WalkAncestorsAndUpdate();
 
   if (nearest_ancestor_select_ &&
       nearest_ancestor_select_ != old_ancestor_select) {
     CHECK(!old_ancestor_select);
-    nearest_ancestor_select_->OptionInserted(*this, Selected());
+    nearest_ancestor_select_->OptionInserted(
+        *this, nearest_ancestor_select_child_, Selected());
   }
 
   // TODO(crbug.com/453705243): Call OptionInserted on the ancestor datalist if
@@ -634,7 +637,8 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
 
   HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
-  UpdateAncestors();
+  Node* old_ancestor_select_child = nearest_ancestor_select_child_;
+  WalkAncestorsAndUpdate();
 
   if (nearest_ancestor_select_ != old_ancestor_select) {
     // We should only get here if we are being removed from a <select>
@@ -647,7 +651,7 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
       // then let HTMLSelectElement::ChildrenChanged make the call to
       // OptionRemoved in order to avoid
       // https://issues.chromium.org/issues/444330901
-      old_ancestor_select->OptionRemoved(*this);
+      old_ancestor_select->OptionRemoved(*this, old_ancestor_select_child);
     }
   }
 }

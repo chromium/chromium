@@ -37,8 +37,8 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
       // the call to OwnerSelectElement.
       // TODO(crbug.com/398887837): Remove the skip_check parameter.
       if (optgroup->OwnerSelectElement(/*skip_check=*/true) == select_ ||
-          HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*optgroup)
-                  .select == select_) {
+          HTMLSelectElement::WalkAncestorsForRelatedParts(*optgroup).select ==
+              select_) {
         current = ElementTraversal::Next(*current, &select_);
       } else {
         // Don't track elements inside nested <optgroup>s.
@@ -75,8 +75,8 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
       // optgroup->OwnerSelectElement() might be null because this method may
       // be called before InsertedInto is called on the optgroup.
       if (optgroup->OwnerSelectElement() == select_ ||
-          HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*optgroup)
-                  .select == select_) {
+          HTMLSelectElement::WalkAncestorsForRelatedParts(*optgroup).select ==
+              select_) {
         current = ElementTraversal::Previous(*current, &select_);
       } else {
         // Don't track elements inside nested <optgroup>s.

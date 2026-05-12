@@ -533,6 +533,16 @@ class CORE_EXPORT HTMLInputElement
   // element lives on.
   Member<HTMLImageLoader> image_loader_;
   Member<ListAttributeTargetObserver> list_attribute_target_observer_;
+  // nearest_ancestor_select_ is the select element ancestor of this element. If
+  // there are more than one select element ancestor, the nearest of them is
+  // chosen. This is updated in HTMLInputElement::InsertedInto for the
+  // FilterableSelect feature.
+  Member<HTMLSelectElement> nearest_ancestor_select_;
+  // nearest_ancestor_select_child_ is the child node of
+  // nearest_ancestor_select_ which is in this element's ancestor chain. It is
+  // also updated in HTMLInputElement::InsertedInto. See
+  // HTMLSelectElement::WalkAncestorsForRelatedParts.
+  Member<ContainerNode> nearest_ancestor_select_child_;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLInputElementTest, RadioKeyDownDCHECKFailure);
 };

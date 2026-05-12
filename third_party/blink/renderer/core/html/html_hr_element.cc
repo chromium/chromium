@@ -121,16 +121,14 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
 }
 
 HTMLSelectElement* HTMLHRElement::OwnerSelectElement() const {
-  DCHECK_EQ(
-      nearest_ancestor_select_,
-      HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this).select);
+  DCHECK_EQ(nearest_ancestor_select_,
+            HTMLSelectElement::WalkAncestorsForRelatedParts(*this).select);
   return nearest_ancestor_select_;
 }
 
 HTMLOptGroupElement* HTMLHRElement::NearestAncestorOptgroup() const {
   DCHECK_EQ(nearest_ancestor_optgroup_,
-            HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this)
-                .optgroup);
+            HTMLSelectElement::WalkAncestorsForRelatedParts(*this).optgroup);
   return nearest_ancestor_optgroup_;
 }
 
@@ -158,7 +156,7 @@ void HTMLHRElement::RemovedFrom(ContainerNode& insertion_point) {
 
 void HTMLHRElement::UpdateAncestors() {
   HTMLSelectElement::SelectOptgroupDatalist ancestors =
-      HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this);
+      HTMLSelectElement::WalkAncestorsForRelatedParts(*this);
   nearest_ancestor_select_ = ancestors.select;
   nearest_ancestor_optgroup_ = ancestors.optgroup;
 }
