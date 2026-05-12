@@ -88,8 +88,9 @@ class PDFiumPage {
   PDFiumPage(PDFiumPage&& that);
   ~PDFiumPage();
 
-  // Unloads the PDFium data for this page from memory.
-  void Unload();
+  // Unloads the PDFium data for this page from memory. Returns true if the
+  // unload happened, or false if an unload preventer blocked it.
+  bool Unload();
 
   // Gets the FPDF_PAGE for this page, loading and parsing it if necessary.
   FPDF_PAGE GetPage();

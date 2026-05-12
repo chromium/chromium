@@ -44,21 +44,6 @@ namespace {
 constexpr uint32_t kMaxImageDimensionForOcr = 2048;
 #endif
 
-TEST(PDFiumPageHelperTest, ScopedPageUnloadPreventer) {
-  // Should not DCHECK in its dtor due to ScopedPageUnloadPreventer usage.
-  PDFiumPage page1(/*engine=*/nullptr, 1u);
-  PDFiumPage page2(/*engine=*/nullptr, 2u);
-  PDFiumPage::ScopedPageUnloadPreventer prevent_unload1(&page1);
-  PDFiumPage::ScopedPageUnloadPreventer prevent_unload2(&page2);
-  PDFiumPage::ScopedPageUnloadPreventer prevent_unload3(prevent_unload2);
-  PDFiumPage::ScopedPageUnloadPreventer prevent_unload4(&page2);
-  prevent_unload2 = prevent_unload1;
-  prevent_unload1 = prevent_unload2;
-  prevent_unload1 = prevent_unload4;
-  prevent_unload4 = prevent_unload1;
-  prevent_unload3 = prevent_unload4;
-}
-
 void CompareTextRuns(const AccessibilityTextRunInfo& expected_text_run,
                      const AccessibilityTextRunInfo& actual_text_run) {
   EXPECT_EQ(expected_text_run.start_index, actual_text_run.start_index);
@@ -136,6 +121,39 @@ constexpr struct {
 };
 
 }  // namespace
+
+TEST(PDFiumPageHelperTest, ScopedPageUnloadPreventer) {
+  // Should not DCHECK in its dtor due to ScopedPageUnloadPreventer usage.
+  PDFiumPage page1(/*engine=*/nullptr, 1u);
+  PDFiumPage page2(/*engine=*/nullptr, 2u);
+  PDFiumPage::ScopedPageUnloadPreventer prevent_unload1(&page1);
+  PDFiumPage::ScopedPageUnloadPreventer prevent_unload2(&page2);
+  PDFiumPage::ScopedPageUnloadPreventer prevent_unload3(prevent_unload2);
+  PDFiumPage::ScopedPageUnloadPreventer prevent_unload4(&page2);
+  prevent_unload2 = prevent_unload1;
+  prevent_unload1 = prevent_unload2;
+  prevent_unload1 = prevent_unload4;
+  prevent_unload4 = prevent_unload1;
+  prevent_unload3 = prevent_unload4;
+}
+
+TEST(PDFiumPageHelperTest, ScopedPageUnloadPreventerBlocksUnload) {
+  PDFiumPage page(/*engine=*/nullptr, 1u);
+  {
+    PDFiumPage::ScopedPageUnloadPreventer prevent_unload(&page);
+    EXPECT_FALSE(page.Unload());
+  }
+  EXPECT_TRUE(page.Unload());
+}
+
+TEST(PDFiumPageHelperTest, ScopedTextPageUnloadPreventerBlocksUnload) {
+  PDFiumPage page(/*engine=*/nullptr, 1u);
+  {
+    PDFiumPage::ScopedTextPageUnloadPreventer prevent_unload(&page);
+    EXPECT_FALSE(page.Unload());
+  }
+  EXPECT_TRUE(page.Unload());
+}
 
 using PDFiumPageTest = PDFiumTestBase;
 

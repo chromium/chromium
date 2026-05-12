@@ -2845,11 +2845,11 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
                                          kInkAnnotationIdentifierKeyV2),
             1);
 
-  // Attempt to unload the page before erasing. This would have caught
-  // https://crbug.com/402364794.
+  // Attempt to unload the page before erasing, which is expected to fail. This
+  // would have caught https://crbug.com/402364794.
   EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
-  page.Unload();
+  ASSERT_FALSE(page.Unload());
 
   // Erase the shape and check the rendering. Also check the save version.
   const auto ink_shapes_it = ink_shapes.begin();
@@ -2861,11 +2861,11 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
                                          kInkAnnotationIdentifierKeyV2),
             0);
 
-  // Attempt to unload the page before undoing. This would have caught
-  // https://crbug.com/402454523.
+  // Attempt to unload the page before undoing, which is expected to fail. This
+  // would have caught https://crbug.com/402454523.
   EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
-  page.Unload();
+  ASSERT_FALSE(page.Unload());
 
   // Undo the erasure and check the rendering.
   engine->UpdateShapeActive(kPageIndex, shape_id, /*active=*/true);

@@ -327,7 +327,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, PageWithImagesNoRecognizableText) {
   EXPECT_TRUE(GetPageText(page).empty());
 
   // Unload the page where Searchify did not add any text.
-  page.Unload();
+  ASSERT_TRUE(page.Unload());
 
   // Get the text from the page, which reloads the page.
   EXPECT_EQ(GetPageText(page), "");
@@ -395,7 +395,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, AddedTextPreservedAfterUnload) {
   EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 3)), "OCR Text 3");
 
   for (int page = 0; page < kPageCount; page++) {
-    GetPDFiumPage(*engine, page).Unload();
+    ASSERT_TRUE(GetPDFiumPage(*engine, page).Unload());
   }
   EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 0)), "OCR Text 0");
   EXPECT_EQ(GetPageText(GetPDFiumPage(*engine, 1)), "OCR Text 1");
@@ -440,7 +440,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultipleImagesWithUnload) {
   ASSERT_EQ(GetPageText(page), "");
 
   // Unloading the page, doesn't result in canceling the task in `searchifier`.
-  page.Unload();
+  ASSERT_TRUE(page.Unload());
   ASSERT_TRUE(searchifier->IsPageScheduled(0));
 
   // Let `searchifier` finish.
@@ -464,7 +464,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   }
 
   PDFiumPage& page0 = GetPDFiumPage(*engine, 0);
-  page0.Unload();
+  ASSERT_TRUE(page0.Unload());
 
   PDFiumOnDemandSearchifier* searchifier = engine->GetSearchifierForTesting();
   ASSERT_TRUE(searchifier);
@@ -513,7 +513,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   EXPECT_TRUE(page3_info.value().is_searchified);
 
   // Unload a Searchified page.
-  page3.Unload();
+  ASSERT_TRUE(page3.Unload());
 
   // Get the text from the page, which reloads the page. It still has the
   // Searchified text because OCR finished and the text has been committed into
@@ -728,7 +728,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, UpdateWithUnloadedPage) {
   // Load page 0 to schedule it for searchify.
   EXPECT_TRUE(page0.GetPage());
 
-  page1.Unload();
+  ASSERT_TRUE(page1.Unload());
 
   StartSearchify(/*empty_results=*/false);
   PDFiumOnDemandSearchifier* searchifier = engine->GetSearchifierForTesting();
