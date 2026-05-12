@@ -78,10 +78,12 @@ class MockKeyedOneTimeTokenService
   MockKeyedOneTimeTokenService() : OneTimeTokenServiceImpl(nullptr, nullptr) {}
   ~MockKeyedOneTimeTokenService() override = default;
 
-  MOCK_METHOD(std::vector<one_time_tokens::OneTimeToken>,
-              GetCachedOneTimeTokens,
-              (),
-              (const, override));
+  MOCK_METHOD(one_time_tokens::ExpiringSubscription,
+              Subscribe,
+              (one_time_tokens::OneTimeTokenSource,
+               base::Time,
+               one_time_tokens::OneTimeTokenService::Callback),
+              (override));
 };
 
 class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
@@ -140,24 +142,34 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
   }
 
  protected:
-  void SetExpectedOtp(std::optional<std::string> otp) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  MockKeyedOneTimeTokenService& GetMockOtpService() {
     auto* mock_otp_service = static_cast<MockKeyedOneTimeTokenService*>(
-        autofill::OneTimeTokenServiceFactory::GetForProfile(profile));
-
+        autofill::OneTimeTokenServiceFactory::GetForProfile(GetProfile()));
     CHECK(mock_otp_service);
+    return *mock_otp_service;
+  }
 
-    if (otp) {
-      EXPECT_CALL(*mock_otp_service, GetCachedOneTimeTokens())
-          .WillOnce(testing::Return(std::vector<one_time_tokens::OneTimeToken>{
-              {one_time_tokens::OneTimeTokenType::kGmail, *otp,
-               base::TimeTicks::Now()}}));
-    } else {
-      EXPECT_CALL(*mock_otp_service, GetCachedOneTimeTokens())
-          .WillOnce(
-              testing::Return(std::vector<one_time_tokens::OneTimeToken>{}));
-    }
+  void SetExpectedOtp(std::optional<std::string> otp) {
+    EXPECT_CALL(GetMockOtpService(),
+                Subscribe(one_time_tokens::OneTimeTokenSource::kGmail,
+                          testing::_, testing::_))
+        .WillOnce(
+            [otp](one_time_tokens::OneTimeTokenSource source,
+                  base::Time expiration,
+                  one_time_tokens::OneTimeTokenService::Callback callback) {
+              if (otp) {
+                callback.Run(one_time_tokens::OneTimeTokenSource::kGmail,
+                             one_time_tokens::OneTimeToken(
+                                 one_time_tokens::OneTimeTokenType::kGmail,
+                                 *otp, base::TimeTicks::Now()));
+              } else {
+                callback.Run(
+                    one_time_tokens::OneTimeTokenSource::kGmail,
+                    base::unexpected(
+                        one_time_tokens::OneTimeTokenRetrievalError::kUnknown));
+              }
+              return one_time_tokens::ExpiringSubscription();
+            });
   }
 
  private:
@@ -208,9 +220,9 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
           "AttemptOtpFillingTool::OnOtpRetrieved;.*otp_received=true")));
 }
 
-// The tool fails with timeout if no OTP is retrieved.
+// The tool fails when OTP retrieval returns an error.
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       ToolFailsWhenOtpRetrievalTimesOut) {
+                       ToolFailsWhenOtpRetrievalReturnsError) {
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -231,6 +243,47 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       JournalEntries(),
       testing::Contains(testing::ContainsRegex(
           "AttemptOtpFillingTool::OnOtpRetrieved;.*otp_received=false")));
+}
+
+// The tool works when OTP retrieval is asynchronous.
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       ToolWorksWhenOtpRetrievalIsAsynchronous) {
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+
+  EXPECT_CALL(GetMockOtpService(),
+              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, testing::_,
+                        testing::_))
+      .WillOnce([](one_time_tokens::OneTimeTokenSource source,
+                   base::Time expiration,
+                   one_time_tokens::OneTimeTokenService::Callback callback) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(callback,
+                           one_time_tokens::OneTimeTokenSource::kGmail,
+                           one_time_tokens::OneTimeToken(
+                               one_time_tokens::OneTimeTokenType::kGmail,
+                               "1234", base::TimeTicks::Now())),
+            base::Milliseconds(100));
+        return one_time_tokens::ExpiringSubscription();
+      });
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectOkResult(result);
+  EXPECT_THAT(
+      JournalEntries(),
+      testing::Contains(testing::ContainsRegex(
+          "AttemptOtpFillingTool::OnOtpRetrieved;.*otp_received=true")));
 }
 
 // The tool can be created with multiple fields (one per digit) and the

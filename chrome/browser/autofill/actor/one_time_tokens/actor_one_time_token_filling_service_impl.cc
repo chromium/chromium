@@ -44,16 +44,29 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     return;
   }
 
-  // TODO(b/502907994): This is not the correct method to call! It's just a
-  // convenient placeholder for now to have some call to the service in place
-  // and set up the tests.
-  std::vector<one_time_tokens::OneTimeToken> tokens =
-      service->GetCachedOneTimeTokens();
-  if (tokens.empty()) {
-    std::move(callback).Run("");
-  } else {
-    std::move(callback).Run(tokens[0].value());
+  retrieve_otp_callback_ = std::move(callback);
+
+  // Subscribe to OneTimeTokenService with 1-minute timeout.
+  subscription_ = service->Subscribe(
+      one_time_tokens::OneTimeTokenSource::kGmail,
+      base::Time::Now() + base::Minutes(1),
+      base::BindRepeating(
+          &ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenReceived,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenReceived(
+    one_time_tokens::OneTimeTokenSource source,
+    base::expected<one_time_tokens::OneTimeToken,
+                   one_time_tokens::OneTimeTokenRetrievalError> result) {
+  if (!retrieve_otp_callback_) {
+    return;
   }
+
+  subscription_ = {};
+
+  std::move(retrieve_otp_callback_)
+      .Run(result.has_value() ? result->value() : "");
 }
 
 void ActorOneTimeTokenFillingServiceImpl::FillOtp(
