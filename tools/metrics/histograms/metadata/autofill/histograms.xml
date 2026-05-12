@@ -8571,7 +8571,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.SuggestionGeneration.GeneratedFillingProduct"
-    enum="AutofillFillingProduct" expires_after="2026-06-21">
+    enum="AutofillFillingProduct" expires_after="2026-12-12">
+  <owner>jihadghanna@google.com</owner>
   <owner>kuchyn@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
