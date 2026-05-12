@@ -1091,11 +1091,12 @@ function validatePort(input) {
 }
 
 function validateLocation(input) {
-  const match = input.value.match(/^([a-zA-Z0-9\.\-_]+):(\d+)$/);
+  const match =
+      input.value.match(/^(?:[a-zA-Z0-9\.\-_]+|\[[a-fA-F0-9:]+\]):(\d+)$/);
   if (!match) {
     return false;
   }
-  const port = parseInt(match[2]);
+  const port = parseInt(match[1]);
   return port <= 65535;
 }
 
