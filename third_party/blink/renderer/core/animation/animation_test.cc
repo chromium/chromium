@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -1497,6 +1498,29 @@ TEST_P(AnimationAnimationTestCompositing, PreCommitWithUnresolvedStartTimes) {
   EXPECT_FALSE(animation->CompositorPending());
   EXPECT_TRUE(animation->StartTimeInternal());
   EXPECT_FALSE(animation->pending());
+}
+
+TEST_P(AnimationAnimationTestCompositing, PreCommitDefersOutdatedAnimation) {
+  // Regression test for an on-demand timing update in post-paint PreCommit:
+  // outdated animations must be deferred because sampling can dirty style.
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPaintClean);
+  ASSERT_TRUE(animation->CurrentTimeInternal());
+  animation->SetOutdated();
+  animation->SetCompositorPending(
+      Animation::CompositorPendingReason::kPendingUpdate);
+  ASSERT_TRUE(animation->Outdated());
+
+  {
+    BlinkLifecycleScopeWillBeScriptForbidden forbid_script;
+    EXPECT_FALSE(animation->PreCommit(1, nullptr, true));
+  }
+  EXPECT_TRUE(animation->Outdated());
+
+  animation->Update(kTimingUpdateForAnimationFrame);
+  EXPECT_FALSE(animation->Outdated());
+  EXPECT_TRUE(animation->PreCommit(1, nullptr, true));
 }
 
 // Cancel is synchronous on the main thread, but asynchronously deferred on the

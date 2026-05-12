@@ -817,6 +817,16 @@ bool Animation::PreCommit(
     return false;
   }
 
+  Document* document = GetDocument();
+  if (should_start && start_on_compositor && Outdated() && document &&
+      document->Lifecycle().GetState() >= DocumentLifecycle::kPaintClean &&
+      ScriptForbiddenScope::WillBeScriptForbidden()) {
+    // Compositor eligibility can query effect timing, which can force an
+    // on-demand timing update and dirty animation style. Defer while in the
+    // post-paint lifecycle so timing can be serviced before this decision.
+    return false;
+  }
+
   std::optional<int> replaced_cc_animation_id;
   if (should_cancel_on_compositor) {
     if (should_start && GetCompositorAnimation() && !needs_timing_update) {
