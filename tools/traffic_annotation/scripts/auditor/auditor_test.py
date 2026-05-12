@@ -971,6 +971,20 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
         self.assertEqual(max(mtime1, mtime2),
                          self.auditor._get_gn_file_mtime_max())
 
+  def test_header_annotations_error(self):
+    """Check that header files are rejected during deserialization."""
+    annotation = extractor.Annotation(
+        language=extractor.CPP_LANGUAGE,
+        file_path=Path("chrome/browser/foobar.h"),
+        line_number=42,
+        type_name=extractor.AnnotationType.COMPLETE,
+        unique_id="test_header_id",
+        text='sender: "foobar"')
+    errors = Annotation().deserialize(annotation)
+    self.assertEqual(1, len(errors))
+    self.assertEqual(ErrorType.HEADER_ANNOTATION, errors[0].type)
+    self.assertTrue("not header files" in str(errors[0]))
+
 
 if __name__ == "__main__":
   unittest.main()

@@ -9,6 +9,7 @@ missing,components/cronet/cronet_url_request.cc
 missing,net/url_request/url_request_context.cc
 mutable_tag,components/download/internal/background_service/proto_conversions.cc
 mutable_tag,net/traffic_annotation/network_traffic_annotation.h
+all,net/traffic_annotation/network_traffic_annotation.h
 test_annotation,components/safe_search_api/stub_url_checker.cc
 test_annotation,net/quic/quic_chromium_client_session_peer.cc
 all,ash/ambient/backdrop/ambient_backend_controller_impl.cc
@@ -353,3 +354,16 @@ missing_new_fields,chrome/browser/fast_checkout/fast_checkout_capabilities_fetch
 missing_new_fields,chrome/browser/ash/file_suggest/item_suggest_cache.cc
 missing_new_fields,extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.cc
 missing_new_fields,chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.cc
+
+# Header files with traffic annotations that existed before the new check was introduced.
+all,chrome/browser/ash/app_list/search/omnibox/omnibox_util.h
+all,chrome/browser/ash/plugin_vm/plugin_vm_util.h
+all,chrome/browser/predictors/predictors_traffic_annotations.h
+all,chromeos/ash/components/boca/gemini/get_gemini_status_request.h
+all,chromeos/ash/components/boca/receiver/get_kiosk_receiver_request.h
+all,chromeos/ash/components/boca/receiver/get_receiver_connection_info_request.h
+all,chromeos/ash/components/boca/receiver/register_receiver_request.h
+all,chromeos/ash/components/boca/receiver/start_kiosk_receiver_request.h
+all,chromeos/ash/components/boca/receiver/update_kiosk_receiver_state_request.h
+all,chromeos/ash/components/boca/session_api/constants.h
+all,components/data_sharing/public/data_sharing_network_utils.h

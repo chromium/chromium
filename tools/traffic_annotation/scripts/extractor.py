@@ -104,6 +104,7 @@ JAVA_LANGUAGE = Language(name='Java',
 LANGUAGE_MAPPING: Dict[str, Language] = {
     '.cc': CPP_LANGUAGE,
     '.mm': CPP_LANGUAGE,
+    '.h': CPP_LANGUAGE,
     '.java': JAVA_LANGUAGE,
 }
 

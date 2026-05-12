@@ -53,7 +53,7 @@ def remove_tracebacks(body: str):
 
 class ExtractorTest(unittest.TestCase):
   def testExtractor(self):
-    files = list(Path(f) for f in glob('*.cc') + glob('*.java'))
+    files = list(Path(f) for f in glob('*.cc') + glob('*.java') + glob('*.h'))
     for source_file in files:
       if source_file.stem.startswith('test_'):
         continue

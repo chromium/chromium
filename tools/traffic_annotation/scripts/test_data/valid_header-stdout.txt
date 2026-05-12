@@ -1,0 +1,25 @@
+==== NEW ANNOTATION ====
+valid_header.h
+11
+Definition
+header_id
+
+
+        semantics {
+          sender: "sender_h"
+          description: "desc_h"
+          trigger: "trigger_h"
+          data: "data_h"
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "setting_h"
+          chrome_policy {
+            SpellCheckServiceEnabled {
+                SpellCheckServiceEnabled: false
+            }
+          }
+        }
+        comments: "comment_h"
+==== ANNOTATION ENDS ====

@@ -62,6 +62,8 @@ class ErrorType(Enum):
   INVALID_USER_DATA_TYPE = auto()
   # Date format should be YYYY-mm-dd
   INVALID_DATE_FORMAT = auto()
+  # Header file should not contain network traffic annotations definition.
+  HEADER_ANNOTATION = auto()
 
 
 class AuditorError:
@@ -81,7 +83,7 @@ class AuditorError:
         ErrorType.MISSING_TAG_USED, ErrorType.TEST_ANNOTATION,
         ErrorType.NO_ANNOTATION, ErrorType.MISSING_SECOND_ID,
         ErrorType.MUTABLE_TAG, ErrorType.INVALID_OS, ErrorType.INVALID_ADDED_IN,
-        ErrorType.INVALID_DATE_FORMAT
+        ErrorType.INVALID_DATE_FORMAT, ErrorType.HEADER_ANNOTATION
     ]
 
     if message:
@@ -225,6 +227,11 @@ class AuditorError:
       assert self._details
       return ("Date format should be {} in annotation at {}:{}".format(
           self._details[0], self.file_path, self.line))
+
+    if self.type == ErrorType.HEADER_ANNOTATION:
+      return ("Network traffic annotations should be defined in .cc files, "
+              "not header files. Found annotation in '{}:{}'.".format(
+                  self.file_path, self.line))
 
     raise NotImplementedError("Unimplemented ErrorType: {}".format(
         self.type.name))

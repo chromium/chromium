@@ -413,6 +413,14 @@ class Annotation:
     self.file = file_path
     self.line = line_number
 
+    # .h files are not in the compdb,
+    # so we can't tell which platforms they target.
+    # Do not allow annotations in .h files.
+    if file_path.suffix == ".h":
+      return [
+          AuditorError(ErrorType.HEADER_ANNOTATION, "", file_path, line_number)
+      ]
+
     if serialized_annotation.type_name == extractor.AnnotationType.MUTABLE:
       return [AuditorError(ErrorType.MUTABLE_TAG, "", file_path, line_number)]
 
@@ -1321,7 +1329,8 @@ class Exporter:
 
   def get_other_platforms_annotation_ids(self) -> List[UniqueId]:
     """Returns a list of annotations that are not defined on this platform."""
-    assert self.archive
+    if not self.archive:
+      self.load_annotations_xml()
     return [
         a.id for a in self.archive.values()
         if self._current_platform not in a.os_list
@@ -1388,7 +1397,7 @@ class Auditor:
 
     self.exporter = Exporter(current_platform)
 
-    self.accepted_suffixes = [".cc", ".mm"]
+    self.accepted_suffixes = [".cc", ".mm", ".h"]
     if current_platform == "android":
       self.accepted_suffixes.append(".java")
 
@@ -1448,9 +1457,9 @@ class Auditor:
                    path_filters: List[str]) -> List[Annotation]:
     absolute_path = SRC_DIR / relative_path
 
-    # Skip files based on compdb and path_filters. Java files aren't in
-    # compile_commands.json, so don't check those.
-    if (absolute_path.suffix != ".java" and compdb_files is not None
+    # Skip files based on compdb and path_filters. Java and header files aren't
+    # in compile_commands.json, so don't check those.
+    if (absolute_path.suffix not in [".java", ".h"] and compdb_files is not None
         and str(absolute_path) not in compdb_files):
       return None
     if (path_filters
