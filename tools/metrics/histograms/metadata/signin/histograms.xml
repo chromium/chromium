@@ -191,6 +191,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountCapabilities.CanSignInToChrome.FetchDuration"
+    units="ms" expires_after="2027-05-01">
+  <owner>ddac@chromium.org</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the duration of fetching the can_sign_in_to_chrome capability for
+    age mismatch checks. Recorded when the fetch completes (either succeeds or
+    times out).
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountCapabilities.CanSignInToChrome.FetchResult"
+    enum="CanSignInToChromeCapabilityResult" expires_after="2027-05-01">
+  <owner>ddac@chromium.org</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the result of the capability fetch in AgeMismatchCapabilitiesFetcher
+    (False, True, or Timeout). Recorded once on the completion of each fetch
+    attempt.
+  </summary>
+</histogram>
+
 <histogram
     name="Signin.AccountCapabilities.ExternalPrivacyContextBuildDuration"
     units="ms" expires_after="2026-09-01">
@@ -750,6 +774,43 @@ prefs when the profile is loaded.  -->
     <variant name="Interrupted" summary="is interrupted"/>
     <variant name="Success" summary="is successful"/>
   </token>
+</histogram>
+
+<histogram name="Signin.AgeMismatchSignout.Action"
+    enum="AgeMismatchSignoutAction" expires_after="2027-05-01">
+  <owner>ddac@chromium.org</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the user choice in the Age Mismatch Sign-Out dialog (Use another
+    account, Use without an account). Logged when the user taps one of the
+    buttons.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AgeMismatchSignout.PromptMode"
+    enum="AgeMismatchPromptMode" expires_after="2027-05-01">
+  <owner>ddac@chromium.org</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the mode of the Age Mismatch Sign-Out dialog. &quot;Standard&quot;
+    mode is used when the check is triggered outside of a sign-in flow (e.g. on
+    app foreground). &quot;Signin Flow&quot; mode is used when the check is part
+    of a sign-in operation. Logged when the dialog is presented.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AgeMismatchSignout.StaySignedOutButtonState"
+    enum="AgeMismatchStaySignedOutButtonState" expires_after="2027-05-01">
+  <owner>ddac@chromium.org</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the 'Stay signed out' button is shown or hidden in the Age
+    Mismatch prompt because the user is already signed in to a primary account.
+    Logged when the prompt is displayed.
+  </summary>
 </histogram>
 
 <histogram name="Signin.Android.FRESigninEvents" enum="FRESigninEvents"

@@ -32,6 +32,8 @@ source_set("scene_agent") {
 
 source_set("coordinator") {
   sources = [
+    "age_mismatch_signout_constants.h",
+    "age_mismatch_signout_constants.mm",
     "age_mismatch_signout_coordinator.h",
     "age_mismatch_signout_coordinator.mm",
     "age_mismatch_signout_mediator.h",
@@ -72,6 +74,7 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "age_mismatch_signout_coordinator_unittest.mm",
     "age_mismatch_signout_mediator_unittest.mm",
     "signin_account_capabilities_scene_agent_unittest.mm",
   ]
@@ -89,6 +92,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/profile:test_utils",
     "//ios/chrome/browser/authentication/age_mismatch_signout/ui",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_testing",
@@ -104,6 +108,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/signin/model/avatar",
+    "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

@@ -237,6 +237,33 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Account is uknown with an invalid token"/>
 </enum>
 
+<!-- LINT.IfChange(AgeMismatchPromptMode) -->
+
+<enum name="AgeMismatchPromptMode">
+  <int value="0" label="Standard"/>
+  <int value="1" label="Signin Flow"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_prompt_mode.h:AgeMismatchPromptMode) -->
+
+<!-- LINT.IfChange(AgeMismatchSignoutAction) -->
+
+<enum name="AgeMismatchSignoutAction">
+  <int value="0" label="Use another account"/>
+  <int value="1" label="Use without an account"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_constants.h:AgeMismatchSignoutAction) -->
+
+<!-- LINT.IfChange(AgeMismatchStaySignedOutButtonState) -->
+
+<enum name="AgeMismatchStaySignedOutButtonState">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Hidden"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_constants.h:AgeMismatchStaySignedOutButtonState) -->
+
 <enum name="BooleanBoundToTheSameKey">
   <int value="0" label="Bound to different keys"/>
   <int value="1" label="Bound to the same key"/>
@@ -334,6 +361,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_params_storage.cc:BoundSessionParamsWriteError) -->
+
+<!-- LINT.IfChange(CanSignInToChromeCapabilityResult) -->
+
+<enum name="CanSignInToChromeCapabilityResult">
+  <int value="0" label="False"/>
+  <int value="1" label="True"/>
+  <int value="2" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/authentication/ui_bundled/authentication_flow/age_mismatch_capabilities_fetcher.h:CanSignInToChromeCapabilityResult) -->
 
 <enum name="CctAccountMismatchType">
   <int value="0" label="Signed out of both Chrome and 1P app"/>

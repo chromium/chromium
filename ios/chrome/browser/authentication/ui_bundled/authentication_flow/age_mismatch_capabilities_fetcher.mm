@@ -7,7 +7,10 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -16,15 +19,6 @@
 
 using signin::CapabilityFetchCompletionCallback;
 using signin::Tribool;
-
-namespace {
-
-// Fetch timeout for the `can_sign_in_to_chrome` capability, based on the
-// existing timeout for fetching minor mode restrictions.
-constexpr base::TimeDelta kCanSignInToChromeCapabilityFetchTimeout =
-    kMinorModeRestrictionsFetchDeadline;
-
-}  // namespace
 
 @interface AgeMismatchCapabilitiesFetcher () <
     IdentityManagerObserverBridgeDelegate>
@@ -36,6 +30,7 @@ constexpr base::TimeDelta kCanSignInToChromeCapabilityFetchTimeout =
       _identityManagerObserver;
   absl::flat_hash_map<CoreAccountId, CapabilityFetchCompletionCallback>
       _completionCallbacks;
+  absl::flat_hash_map<CoreAccountId, base::TimeTicks> _fetchStartTimes;
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
@@ -53,6 +48,7 @@ constexpr base::TimeDelta kCanSignInToChromeCapabilityFetchTimeout =
 
 - (void)shutdown {
   _completionCallbacks.clear();
+  _fetchStartTimes.clear();
   _identityManagerObserver.reset();
   _identityManager = nullptr;
 }
@@ -63,6 +59,7 @@ constexpr base::TimeDelta kCanSignInToChromeCapabilityFetchTimeout =
                                                       (CoreAccountId)accountId {
   CHECK(_completionCallbacks.find(accountId) == _completionCallbacks.end());
   _completionCallbacks[accountId] = std::move(callback);
+  _fetchStartTimes[accountId] = base::TimeTicks::Now();
 
   Tribool capability = [self canSignInToChromeCapabilityForAccount:accountId];
 
@@ -96,6 +93,7 @@ constexpr base::TimeDelta kCanSignInToChromeCapabilityFetchTimeout =
 - (void)onIdentityManagerShutdown:(signin::IdentityManager*)identityManager {
   _identityManager = nullptr;
   _completionCallbacks.clear();
+  _fetchStartTimes.clear();
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)accountInfo {
@@ -114,13 +112,41 @@ constexpr base::TimeDelta kCanSignInToChromeCapabilityFetchTimeout =
 - (void)onCapabilityReceived:(Tribool)capability
                 forAccountId:(const CoreAccountId&)accountId {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
   auto it = _completionCallbacks.find(accountId);
-  if (it != _completionCallbacks.end()) {
-    CapabilityFetchCompletionCallback callback = std::move(it->second);
-    _completionCallbacks.erase(it);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), capability));
+  if (it == _completionCallbacks.end()) {
+    // The callback is already executed, either because
+    // onExtendedAccountInfoUpdated was called before timeout, or vice versa.
+    return;
   }
+
+  // Record fetch metrics.
+  auto start_time_it = _fetchStartTimes.find(accountId);
+  CHECK(start_time_it != _fetchStartTimes.end(), base::NotFatalUntil::M155);
+  base::TimeDelta duration = base::TimeTicks::Now() - start_time_it->second;
+  base::UmaHistogramTimes(
+      "Signin.AccountCapabilities.CanSignInToChrome.FetchDuration", duration);
+  _fetchStartTimes.erase(start_time_it);
+
+  CanSignInToChromeCapabilityResult result;
+  switch (capability) {
+    case Tribool::kFalse:
+      result = CanSignInToChromeCapabilityResult::kFalse;
+      break;
+    case Tribool::kTrue:
+      result = CanSignInToChromeCapabilityResult::kTrue;
+      break;
+    case Tribool::kUnknown:
+      result = CanSignInToChromeCapabilityResult::kTimeout;
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      "Signin.AccountCapabilities.CanSignInToChrome.FetchResult", result);
+
+  CapabilityFetchCompletionCallback callback = std::move(it->second);
+  _completionCallbacks.erase(it);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), capability));
 }
 
 @end

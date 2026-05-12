@@ -26038,6 +26038,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.Signin.AgeMismatchSignout.LearnMore">
+  <owner>ddac@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps the URL to Learn More in the Age Mismatch
+    Sign-Out dialog. (iOS only).
+  </description>
+</action>
+
 <action name="Mobile.Signin.SnackbarUndoTapped">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.org</owner>
