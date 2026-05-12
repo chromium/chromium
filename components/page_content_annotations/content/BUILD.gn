@@ -118,6 +118,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser:test_support",
+    "//components/page_content_annotations/core",
     "//components/page_content_annotations/core:features",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//content/test:test_support",

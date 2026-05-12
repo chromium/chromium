@@ -54,6 +54,10 @@ using RefCountedPDFTextPtr = scoped_refptr<const RefCountedPDFText>;
 using PageContent =
     std::variant<RefCountedAnnotatedPageContentPtr, RefCountedPDFTextPtr>;
 
+// Returns true if `content` holds a non-null RefCountedAnnotatedPageContentPtr
+// or RefCountedPDFTextPtr.
+bool IsPageContentValid(const PageContent& content);
+
 // Returns true if `content` holds a RefCountedAnnotatedPageContentPtr.
 bool IsAnnotatedPageContentPtr(const PageContent& content);
 

@@ -15,6 +15,9 @@ namespace passage_embeddings {
 // passage embedder, but does not switch it off.
 BASE_DECLARE_FEATURE(kPassageEmbedder);
 
+// When enabled, supports PDF text for embeddings generation.
+BASE_DECLARE_FEATURE(kPDFEmbeddingsGeneration);
+
 // The number of threads to use for embeddings generation with
 // mojom::PassagePriority::kUserInitiated.
 extern const base::FeatureParam<int> kUserInitiatedPriorityNumThreads;
@@ -48,16 +51,21 @@ extern const base::FeatureParam<base::TimeDelta> kPassageExtractionDelay;
 // Specifies the `max_words_per_aggregate_passage` parameter for the
 // DocumentChunker passage extraction algorithm. A passage from a single
 // node can exceed this maximum, but aggregation keeps within the limit.
-extern const base::FeatureParam<int> kMaxWordsPerAggregatePassage;
+extern const base::FeatureParam<size_t> kMaxWordsPerAggregatePassage;
 
 // Specifies the `max_passages` parameter for the DocumentChunker passage
-// extraction algorithm. Passages over this limit will be dropped by passage
-// extraction.
-extern const base::FeatureParam<int> kMaxPassagesPerPage;
+// extraction algorithm for `AnnotatedPageContent`. Passages over this limit
+// will be dropped by passage extraction.
+extern const base::FeatureParam<size_t> kMaxPassagesPerPage;
 
 // Specifies the `min_words_per_passage` parameter for the DocumentChunker
 // passage extraction algorithm.
-extern const base::FeatureParam<int> kMinWordsPerPassage;
+extern const base::FeatureParam<size_t> kMinWordsPerPassage;
+
+// Specifies the `max_passages` parameter for the DocumentChunker passage
+// extraction algorithm for text extracted from PDFs. Passages over this limit
+// will be dropped by passage extraction.
+extern const base::FeatureParam<size_t> kMaxPassagesFromPDF;
 
 // Specifies whether GPU execution is allowed for execution if there is a GPU
 // for the device.

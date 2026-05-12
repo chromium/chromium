@@ -23,6 +23,8 @@ constexpr auto enabled_by_default_desktop_only =
 
 BASE_FEATURE(kPassageEmbedder, enabled_by_default_desktop_only);
 
+BASE_FEATURE(kPDFEmbeddingsGeneration, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kUserInitiatedPriorityNumThreads(
     &kPassageEmbedder,
     "UserInitiatedPriorityNumThreads",
@@ -54,18 +56,22 @@ const base::FeatureParam<base::TimeDelta> kPassageExtractionDelay(
     "PassageExtractionDelay",
     base::Seconds(5));
 
-const base::FeatureParam<int> kMaxWordsPerAggregatePassage(
+const base::FeatureParam<size_t> kMaxWordsPerAggregatePassage(
     &kPassageEmbedder,
     "MaxWordsPerAggregatePassage",
     100);
 
-const base::FeatureParam<int> kMaxPassagesPerPage(&kPassageEmbedder,
-                                                  "MaxPassagesPerPage",
-                                                  10);
+const base::FeatureParam<size_t> kMaxPassagesPerPage(&kPassageEmbedder,
+                                                     "MaxPassagesPerPage",
+                                                     10);
 
-const base::FeatureParam<int> kMinWordsPerPassage(&kPassageEmbedder,
-                                                  "MinWordsPerPassage",
-                                                  5);
+const base::FeatureParam<size_t> kMinWordsPerPassage(&kPassageEmbedder,
+                                                     "MinWordsPerPassage",
+                                                     5);
+
+const base::FeatureParam<size_t> kMaxPassagesFromPDF(&kPDFEmbeddingsGeneration,
+                                                     "MaxPassagesFromPDF",
+                                                     10);
 
 const base::FeatureParam<bool> kAllowGpuExecution(&kPassageEmbedder,
                                                   "AllowGpuExecution",

@@ -7,9 +7,11 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
@@ -23,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 using testing::AnyNumber;
 using testing::ElementsAre;
@@ -31,14 +34,32 @@ using testing::Return;
 
 namespace page_content_annotations {
 
-std::vector<std::pair<std::string, EmbeddingPassageType>> GenerateCandidates(
-    const optimization_guide::proto::AnnotatedPageContent& page_content,
-    int page_content_passages_to_generate) {
-  if (page_content.main_frame_data().title() == "EMPTY") {
-    return {};
+using Candidates = std::vector<std::pair<std::string, EmbeddingPassageType>>;
+
+Candidates GenerateCandidates(const PageContent& page_content,
+                              size_t page_content_passages_to_generate) {
+  if (!IsPageContentValid(page_content)) {
+    return Candidates{};
   }
-  return {std::make_pair(page_content.main_frame_data().title(),
-                         EmbeddingPassageType::kTitle)};
+
+  return std::visit(
+      absl::Overload{
+          [](RefCountedAnnotatedPageContentPtr annotated_page_content_ptr) {
+            if (annotated_page_content_ptr->data.main_frame_data().title() ==
+                "EMPTY") {
+              return Candidates{};
+            }
+
+            return Candidates{std::make_pair(
+                annotated_page_content_ptr->data.main_frame_data().title(),
+                EmbeddingPassageType::kTitle)};
+          },
+          [](RefCountedPDFTextPtr pdf_text_ptr) {
+            return Candidates{std::make_pair(
+                pdf_text_ptr->data, EmbeddingPassageType::kPageContent)};
+          },
+      },
+      page_content);
 }
 
 class EmbedderMock : public passage_embeddings::Embedder {
@@ -1124,22 +1145,26 @@ TEST_F(PageEmbeddingsServiceTest, NewPageWithNoPassagesClearsOldEmbeddings) {
                   .empty());
 }
 
-// Verify that the PDF text received by page embeddings service is ignored.
-// TODO(b/487632737): Support embeddings generation from PDF text.
-TEST_F(PageEmbeddingsServiceTest, ReceivedPDFTextIgnored) {
+// Validates that candidate passages are generated from PDF text.
+TEST_F(PageEmbeddingsServiceTest, GeneratesCandidatePassagesFromPDFText) {
   std::unique_ptr<content::WebContents> web_contents =
       CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
 
-  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(0);
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault(
+          [](passage_embeddings::PassagePriority priority,
+             std::vector<std::string> passages,
+             passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+                 callback) {
+            EXPECT_THAT(passages, ElementsAre("pdf text content"));
+            return 1;
+          });
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      /*page_content=*/base::MakeRefCounted<RefCountedPDFText>(
-          "pdf text content"));
-
-  EXPECT_THAT(
-      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage()),
-      IsEmpty());
+      base::MakeRefCounted<RefCountedPDFText>("pdf text content"));
 }
 
 }  // namespace page_content_annotations

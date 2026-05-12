@@ -23,6 +23,7 @@
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
@@ -62,8 +63,8 @@ class HistoryEmbeddingsInteractiveTest
         }));
 
     const auto generate_embeddings_candidates =
-        [](const optimization_guide::proto::AnnotatedPageContent&,
-           int page_content_passages_to_generate) {
+        [](const page_content_annotations::PageContent&,
+           size_t page_content_passages_to_generate) {
           return std::vector<std::pair<
               std::string, page_content_annotations::EmbeddingPassageType>>{
               std::make_pair("A a B C b a 2 D",

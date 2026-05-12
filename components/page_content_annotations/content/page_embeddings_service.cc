@@ -17,6 +17,7 @@
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace page_content_annotations {
 
@@ -265,15 +266,7 @@ PageEmbeddingsService::GetEmbedderMetadataProvider() {
 
 void PageEmbeddingsService::OnPageContentExtracted(content::Page& page,
                                                    PageContent page_content) {
-  if (IsPDFTextPtr(page_content)) {
-    // TODO(b/487632737): Support embeddings generation from PDF text.
-    NOTIMPLEMENTED();
-    return;
-  }
-
-  RefCountedAnnotatedPageContentPtr annotated_page_content_ptr =
-      GetAnnotatedPageContentPtrFromPageContent(page_content);
-  if (!annotated_page_content_ptr) {
+  if (!IsPageContentValid(page_content)) {
     return;
   }
 
@@ -295,8 +288,16 @@ void PageEmbeddingsService::OnPageContentExtracted(content::Page& page,
   state.page = page.GetWeakPtr();
 
   std::vector<std::pair<std::string, EmbeddingPassageType>> pending_passages =
-      candidates_generator_.Run(annotated_page_content_ptr->data,
-                                passage_embeddings::kMaxPassagesPerPage.Get());
+      candidates_generator_.Run(
+          page_content,
+          std::visit(absl::Overload{
+                         [](RefCountedAnnotatedPageContentPtr) {
+                           return passage_embeddings::kMaxPassagesPerPage.Get();
+                         },
+                         [](RefCountedPDFTextPtr) {
+                           return passage_embeddings::kMaxPassagesFromPDF.Get();
+                         }},
+                     page_content));
 
   if (!pending_passages.empty()) {
     state.embeddings_state = Pending{.passages = std::move(pending_passages)};

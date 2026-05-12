@@ -105,6 +105,12 @@ std::unique_ptr<PageContentCacheHandler> CreatePageContentCacheHandler(
 
 }  // namespace
 
+bool IsPageContentValid(const PageContent& content) {
+  return std::visit(
+      [](const auto& ref_counted_ptr) { return ref_counted_ptr != nullptr; },
+      content);
+}
+
 bool IsAnnotatedPageContentPtr(const PageContent& content) {
   return std::holds_alternative<RefCountedAnnotatedPageContentPtr>(content);
 }

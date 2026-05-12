@@ -37,6 +37,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
@@ -79,8 +80,8 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
         }));
 
     const auto generate_embeddings_candidates =
-        [this](const optimization_guide::proto::AnnotatedPageContent&,
-               int page_content_passages_to_generate) {
+        [this](const page_content_annotations::PageContent&,
+               size_t page_content_passages_to_generate) {
           std::vector<std::pair<std::string,
                                 page_content_annotations::EmbeddingPassageType>>
               result;
