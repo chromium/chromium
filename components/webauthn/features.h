@@ -21,10 +21,6 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForDev);
 COMPONENT_EXPORT(WEBAUTHN)
 extern const base::FeatureParam<std::string> kWebAuthnAndroidCredManForDevMode;
 
-// Whether to send a custom bundle values for the CredMan requests. The extras
-// are used by Google Password Manager.
-COMPONENT_EXPORT(WEBAUTHN)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManRequestExtraBundle);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

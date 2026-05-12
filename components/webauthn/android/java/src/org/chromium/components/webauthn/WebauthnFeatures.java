@@ -15,6 +15,4 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public abstract class WebauthnFeatures {
     public static final String WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV = "WebAuthnAndroidCredManForDev";
-    public static final String WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE =
-            "WebAuthenticationAndroidCredManRequestExtraBundle";
 }

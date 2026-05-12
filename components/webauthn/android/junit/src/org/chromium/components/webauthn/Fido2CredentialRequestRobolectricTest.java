@@ -91,10 +91,7 @@ import java.util.concurrent.atomic.AtomicReference;
         shadows = {
             ShadowCredentialManager.class,
         })
-@DisableFeatures({
-    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV,
-    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE
-})
+@DisableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV})
 public class Fido2CredentialRequestRobolectricTest {
     private static final String TEST_CHANNEL_EXTRA = "stable";
     private static final Boolean TEST_INCOGNITO_EXTRA = true;

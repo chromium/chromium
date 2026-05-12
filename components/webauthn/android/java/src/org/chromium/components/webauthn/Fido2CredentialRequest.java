@@ -1446,15 +1446,12 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         }
 
         Integer browserAssistedLoginType = null;
-        if (WebauthnFeatureMap.getInstance()
-                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)) {
-            if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
-                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM;
-            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
-                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY;
-            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
-                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_UNKNOWN;
-            }
+        if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
+            browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM;
+        } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
+            browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY;
+        } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
+            browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_UNKNOWN;
         }
 
         handleFido2Response(
@@ -1554,15 +1551,12 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         }
 
         Integer browserAssistedLoginType = null;
-        if (WebauthnFeatureMap.getInstance()
-                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)) {
-            if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
-                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM;
-            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
-                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY;
-            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
-                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_UNKNOWN;
-            }
+        if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
+            browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM;
+        } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
+            browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY;
+        } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
+            browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_UNKNOWN;
         }
 
         handleFido2Response(

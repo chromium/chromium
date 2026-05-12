@@ -48,7 +48,6 @@ import org.robolectric.shadow.api.Shadow;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.Authenticator.GetCredential_Response;
 import org.chromium.blink.mojom.Authenticator.MakeCredential_Response;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -91,10 +90,7 @@ import org.chromium.ui.test.util.MockitoHelper;
             ShadowGetCredentialResponse.class,
             ShadowPrepareGetCredentialResponse.class
         })
-@DisableFeatures({
-    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV,
-    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE
-})
+@DisableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV})
 public class CredManHelperRobolectricTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private CredManHelper mCredManHelper;
@@ -170,7 +166,6 @@ public class CredManHelperRobolectricTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)
     public void testGetBrowserAssistedLoginType_GPM() {
         Bundle bundle = new Bundle();
         bundle.putString(CredManHelper.CREDENTIAL_SOURCE_KEY, CredManHelper.GPM_SOURCE);
@@ -182,7 +177,6 @@ public class CredManHelperRobolectricTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)
     public void testGetBrowserAssistedLoginType_Remote() {
         Bundle bundle = new Bundle();
         bundle.putString(CredManHelper.CREDENTIAL_SOURCE_KEY, CredManHelper.REMOTE_SOURCE);
@@ -195,7 +189,6 @@ public class CredManHelperRobolectricTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)
     public void testGetBrowserAssistedLoginType_Null() {
         Integer loginType = CredManHelper.getBrowserAssistedLoginType(new Bundle());
 

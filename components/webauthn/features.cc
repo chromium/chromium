@@ -19,10 +19,6 @@ BASE_FEATURE(kWebAuthnAndroidCredManForDev, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kWebAuthnAndroidCredManForDevMode{
     &kWebAuthnAndroidCredManForDev, "mode", ""};
 
-// Enabled by default in M145. Remove in or after M148.
-BASE_FEATURE(kWebAuthnAndroidCredManRequestExtraBundle,
-             "WebAuthenticationAndroidCredManRequestExtraBundle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
