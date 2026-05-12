@@ -60,16 +60,22 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   void OnCharTyped(base::TimeTicks timestamp) override {}
 
  protected:
+  OmniboxPopupViewWebUI(OmniboxView* omnibox_view,
+                        OmniboxController* controller,
+                        LocationBar* location_bar,
+                        OmniboxPopupPresenterDelegate& presenter_delegate,
+                        std::unique_ptr<OmniboxPopupPresenterBase> presenter);
+
   // OmniboxPopupView:
   bool IsOpen() const override;
 
- private:
   // Time when this instance was constructed, or null after use for histogram.
   base::TimeTicks construction_time_;
 
   // The edit view owned by `location_bar_`. May be nullptr in tests.
   raw_ptr<OmniboxView> omnibox_view_;
 
+ private:
   // The location bar that owns `this`. May be nullptr in tests.
   raw_ptr<LocationBar> location_bar_;
 

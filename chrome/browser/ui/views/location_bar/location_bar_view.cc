@@ -84,6 +84,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
@@ -382,9 +383,14 @@ void LocationBarView::Init() {
       ((web_ui_popup_dropdown_only &&
         !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug)) ||
        omnibox::IsWebUIOmniboxFullPopupEnabled())) {
-    omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
-        /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
-        /*location_bar=*/this, /*presenter_delegate=*/*this);
+    omnibox_popup_view_ =
+        base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)
+            ? std::make_unique<OmniboxPopupViewFullWebUI>(
+                  /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
+                  /*location_bar=*/this, /*presenter_delegate=*/*this)
+            : std::make_unique<OmniboxPopupViewWebUI>(
+                  /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
+                  /*location_bar=*/this, /*presenter_delegate=*/*this);
   } else {
     omnibox_popup_view_ = std::make_unique<OmniboxPopupViewViews>(
         /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
@@ -1934,7 +1940,7 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
       // Normally, the classic/full popup hides itself in
       // `UpdatePopupAppearance()` before updating the popup state. However,
       // explicitly hide the classic/full popup for scenario of transitioning
-      // from the classic to the aim popup.
+      // from the classic/full to the aim popup.
       if (omnibox_popup_view_->IsOpen()) {
         omnibox_popup_view_->UpdatePopupAppearance();
       }
@@ -2015,8 +2021,9 @@ void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
     case OmniboxPopupState::kClassic:
     case OmniboxPopupState::kFull:
       DCHECK(classic_is_open && !aim_is_shown)
-          << "Widget state mismatch in kClassic: classic=" << classic_is_open
-          << " aim=" << aim_is_shown;
+          << "Widget state mismatch in "
+          << (state == OmniboxPopupState::kClassic ? "kClassic" : "kFull")
+          << ": classic=" << classic_is_open << " aim=" << aim_is_shown;
       break;
     case OmniboxPopupState::kAim:
       DCHECK(!classic_is_open && aim_is_shown)
