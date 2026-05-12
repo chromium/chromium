@@ -37,7 +37,10 @@ AudioFader::AudioFader(AudioProvider* provider,
       sample_rate_(provider_->sample_rate()),
       playback_rate_(playback_rate) {
   DCHECK(provider_);
-  DCHECK_GT(fade_frames_, 0);
+  CHECK_GT(fade_frames_, 0);
+  // Cap the maximum fade length to 10 seconds at 192kHz to prevent
+  // excessive memory allocation and potential integer overflows later.
+  CHECK_LT(fade_frames_, 192000 * 10);
   DCHECK_GT(num_channels_, 0u);
   DCHECK_LE(num_channels_, kMaxChannels);
   DCHECK_GT(sample_rate_, 0);
