@@ -1607,11 +1607,7 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
   auto provider = std::make_unique<CanvasNon2DResourceProviderSharedImage>(
       size, format, alpha_type, color_space, shared_image_interface_provider,
       delegate);
-  if (provider->IsValid()) {
-    return provider;
-  }
-
-  return nullptr;
+  return provider->IsValid() ? std::move(provider) : nullptr;
 }
 
 std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
