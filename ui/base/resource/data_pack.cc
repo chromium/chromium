@@ -15,6 +15,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -561,10 +562,10 @@ bool DataPack::WritePack(const base::FilePath& path,
   DCHECK_EQ(static_cast<size_t>(entry_count) + static_cast<size_t>(alias_count),
             resources_count);
 
-  file.Write(&kFileFormatV5, sizeof(kFileFormatV5));
-  file.Write(&encoding, sizeof(uint32_t));
-  file.Write(&entry_count, sizeof(entry_count));
-  file.Write(&alias_count, sizeof(alias_count));
+  file.Write(base::byte_span_from_ref(kFileFormatV5));
+  file.Write(base::byte_span_from_ref(encoding));
+  file.Write(base::byte_span_from_ref(entry_count));
+  file.Write(base::byte_span_from_ref(alias_count));
 
   // Each entry is a uint16_t + a uint32_t. We have an extra entry after the
   // last item so we can compute the size of the list item.
@@ -572,26 +573,26 @@ bool DataPack::WritePack(const base::FilePath& path,
   const uint32_t alias_table_length = alias_count * sizeof(Alias);
   uint32_t data_offset = kHeaderLengthV5 + index_length + alias_table_length;
   for (const uint16_t resource_id : resource_ids) {
-    file.Write(&resource_id, sizeof(resource_id));
-    file.Write(&data_offset, sizeof(data_offset));
+    file.Write(base::byte_span_from_ref(resource_id));
+    file.Write(base::byte_span_from_ref(data_offset));
     data_offset += resources.find(resource_id)->second.length();
   }
 
   // We place an extra entry after the last item that allows us to read the
   // size of the last item.
   const uint16_t extra_resource_id = 0;
-  file.Write(&extra_resource_id, sizeof(extra_resource_id));
-  file.Write(&data_offset, sizeof(data_offset));
+  file.Write(base::byte_span_from_ref(extra_resource_id));
+  file.Write(base::byte_span_from_ref(data_offset));
 
   // Write the aliases table, if any. Note: |aliases| is an std::map,
   // ensuring values are written in increasing order.
   for (const std::pair<const uint16_t, uint16_t>& alias : aliases) {
-    file.Write(&alias, sizeof(alias));
+    file.Write(base::byte_span_from_ref(alias));
   }
 
   for (const auto& resource_id : resource_ids) {
     const std::string_view data = resources.find(resource_id)->second;
-    file.Write(data.data(), data.length());
+    file.Write(base::as_byte_span(data));
   }
 
   return file.Close();

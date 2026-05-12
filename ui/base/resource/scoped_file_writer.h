@@ -5,10 +5,8 @@
 #ifndef UI_BASE_RESOURCE_SCOPED_FILE_WRITER_H_
 #define UI_BASE_RESOURCE_SCOPED_FILE_WRITER_H_
 
-#include <stdio.h>
-
+#include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 
 namespace ui {
 
@@ -51,18 +49,17 @@ class ScopedFileWriter {
   // Return true if the last i/o operation was successful.
   bool valid() const { return valid_; }
 
-  // Try to write |data_size| bytes from |data| into the file, if a previous
-  // operation didn't already failed.
-  void Write(const void* data, size_t data_size);
+  // Try to write `data` into the file, if a previous operation didn't already
+  // fail.
+  void Write(base::span<const uint8_t> data);
 
   // Close the file explicitly. Return true if all previous operations
-  // succeeded, including the close, or false otherwise.
+  // succeeded, or false otherwise.
   bool Close();
 
  private:
   bool valid_ = false;
-  raw_ptr<FILE, DanglingUntriaged> file_ =
-      nullptr;  // base::ScopedFILE doesn't check errors on close.
+  base::File file_;  // base::File::Close() doesn't check errors on close.
 };
 
 }  // namespace ui
