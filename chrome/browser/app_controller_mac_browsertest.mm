@@ -858,25 +858,19 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
 // Tests that when a GURL is opened while incognito forced and there is no
 // browser opened, it is opened in a new incognito browser.
 // Test for https://crbug.com/40912038#comment9
-// TODO(crbug.com/505499902): Re-enable this test once it's no longer flaky.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OpenUrlWhenForcedIncognito DISABLED_OpenUrlWhenForcedIncognito
-#else
-#define MAYBE_OpenUrlWhenForcedIncognito OpenUrlWhenForcedIncognito
-#endif
-IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
-                       MAYBE_OpenUrlWhenForcedIncognito) {
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  // Close the current non-incognito browser.
   Profile* profile = browser()->profile();
+  base::FilePath original_profile_base_name = profile->GetBaseName();
+  // Force incognito mode.
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+  // Close the current non-incognito browser.
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsers();
   observer.Wait();
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
-  // Force incognito mode.
-  IncognitoModePrefs::SetAvailability(
-      profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
   // Open a url.
   GURL simple(embedded_test_server()->GetURL("/simple.html"));
   content::TestNavigationObserver event_navigation_observer(simple);
@@ -890,7 +884,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_TRUE(new_browser->GetProfile()->IsIncognitoProfile());
   EXPECT_TRUE(new_browser->GetProfile()->IsPrimaryOTRProfile());
-  EXPECT_EQ(profile, new_browser->GetProfile()->GetOriginalProfile());
+  EXPECT_EQ(original_profile_base_name,
+            new_browser->GetProfile()->GetBaseName());
   EXPECT_EQ(simple, new_browser->GetTabStripModel()
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL());
