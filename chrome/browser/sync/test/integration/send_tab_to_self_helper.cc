@@ -70,12 +70,10 @@ SendTabToSelfUrlChecker::SendTabToSelfUrlChecker(
     const GURL& url)
     : url_(url), service_(service) {
   DCHECK(service);
-  service->GetSendTabToSelfModel()->AddObserver(this);
+  observation_.Observe(service->GetSendTabToSelfModel());
 }
 
-SendTabToSelfUrlChecker::~SendTabToSelfUrlChecker() {
-  service_->GetSendTabToSelfModel()->RemoveObserver(this);
-}
+SendTabToSelfUrlChecker::~SendTabToSelfUrlChecker() = default;
 
 bool SendTabToSelfUrlChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for data for url '" + url_.spec() + "' to be populated.";
@@ -110,12 +108,10 @@ SendTabToSelfUrlOpenedChecker::SendTabToSelfUrlOpenedChecker(
     const GURL& url)
     : url_(url), service_(service) {
   DCHECK(service);
-  service->GetSendTabToSelfModel()->AddObserver(this);
+  observation_.Observe(service->GetSendTabToSelfModel());
 }
 
-SendTabToSelfUrlOpenedChecker::~SendTabToSelfUrlOpenedChecker() {
-  service_->GetSendTabToSelfModel()->RemoveObserver(this);
-}
+SendTabToSelfUrlOpenedChecker::~SendTabToSelfUrlOpenedChecker() = default;
 
 bool SendTabToSelfUrlOpenedChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for data for url '" + url_.spec() + "' to be marked opened.";
@@ -159,14 +155,12 @@ SendTabToSelfModelEqualityChecker::SendTabToSelfModelEqualityChecker(
     : service0_(service0), service1_(service1) {
   DCHECK(service0);
   DCHECK(service1);
-  service0->GetSendTabToSelfModel()->AddObserver(this);
-  service1->GetSendTabToSelfModel()->AddObserver(this);
+  observation0_.Observe(service0->GetSendTabToSelfModel());
+  observation1_.Observe(service1->GetSendTabToSelfModel());
 }
 
-SendTabToSelfModelEqualityChecker::~SendTabToSelfModelEqualityChecker() {
-  service0_->GetSendTabToSelfModel()->RemoveObserver(this);
-  service1_->GetSendTabToSelfModel()->RemoveObserver(this);
-}
+SendTabToSelfModelEqualityChecker::~SendTabToSelfModelEqualityChecker() =
+    default;
 
 bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied(
     std::ostream* os) {
@@ -219,12 +213,10 @@ SendTabToSelfActiveChecker::SendTabToSelfActiveChecker(
     send_tab_to_self::SendTabToSelfSyncService* service)
     : service_(service) {
   DCHECK(service);
-  service->GetSendTabToSelfModel()->AddObserver(this);
+  observation_.Observe(service->GetSendTabToSelfModel());
 }
 
-SendTabToSelfActiveChecker::~SendTabToSelfActiveChecker() {
-  service_->GetSendTabToSelfModel()->RemoveObserver(this);
-}
+SendTabToSelfActiveChecker::~SendTabToSelfActiveChecker() = default;
 
 bool SendTabToSelfActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for model to be active.";
@@ -299,12 +291,10 @@ SendTabToSelfUrlDeletedChecker::SendTabToSelfUrlDeletedChecker(
     const GURL& url)
     : url_(url), service_(service) {
   DCHECK(service);
-  service->GetSendTabToSelfModel()->AddObserver(this);
+  observation_.Observe(service->GetSendTabToSelfModel());
 }
 
-SendTabToSelfUrlDeletedChecker::~SendTabToSelfUrlDeletedChecker() {
-  service_->GetSendTabToSelfModel()->RemoveObserver(this);
-}
+SendTabToSelfUrlDeletedChecker::~SendTabToSelfUrlDeletedChecker() = default;
 
 bool SendTabToSelfUrlDeletedChecker::IsExitConditionSatisfied(
     std::ostream* os) {

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/scoped_observation.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 
@@ -55,6 +56,8 @@ class SendTabToSelfModelBridge : public SendTabToSelfModelObserver {
   __weak id<SendTabToSelfModelBridgeObserver> observer_;
 
   SendTabToSelfModel* model_;  // weak
+  base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
+      model_observation_{this};
 };
 
 }  // namespace send_tab_to_self

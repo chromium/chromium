@@ -14,12 +14,10 @@ SendTabToSelfModelBridge::SendTabToSelfModelBridge(
     SendTabToSelfModel* model)
     : observer_(observer), model_(model) {
   DCHECK(model_);
-  model_->AddObserver(this);
+  model_observation_.Observe(model_);
 }
 
-SendTabToSelfModelBridge::~SendTabToSelfModelBridge() {
-  model_->RemoveObserver(this);
-}
+SendTabToSelfModelBridge::~SendTabToSelfModelBridge() = default;
 
 void SendTabToSelfModelBridge::SendTabToSelfModelLoaded() {
   [observer_ sendTabToSelfModelLoaded:model_];

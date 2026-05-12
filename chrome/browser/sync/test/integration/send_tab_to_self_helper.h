@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -26,6 +27,7 @@ class WebContents;
 
 namespace send_tab_to_self {
 class SendTabToSelfEntry;
+class SendTabToSelfModel;
 class SendTabToSelfSyncService;
 }  // namespace send_tab_to_self
 
@@ -61,6 +63,9 @@ class SendTabToSelfUrlChecker
  private:
   const GURL url_;
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
+  base::ScopedObservation<send_tab_to_self::SendTabToSelfModel,
+                          send_tab_to_self::SendTabToSelfModelObserver>
+      observation_{this};
 };
 
 // Class that allows waiting until a particular `url` is marked opened by the
@@ -98,6 +103,9 @@ class SendTabToSelfUrlOpenedChecker
  private:
   const GURL url_;
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
+  base::ScopedObservation<send_tab_to_self::SendTabToSelfModel,
+                          send_tab_to_self::SendTabToSelfModelObserver>
+      observation_{this};
 };
 
 // Class that allows waiting the number of entries in until `service0`
@@ -133,6 +141,12 @@ class SendTabToSelfModelEqualityChecker
  private:
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service0_;
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service1_;
+  base::ScopedObservation<send_tab_to_self::SendTabToSelfModel,
+                          send_tab_to_self::SendTabToSelfModelObserver>
+      observation0_{this};
+  base::ScopedObservation<send_tab_to_self::SendTabToSelfModel,
+                          send_tab_to_self::SendTabToSelfModelObserver>
+      observation1_{this};
 };
 
 // Class that allows waiting until the bridge is ready.
@@ -164,6 +178,9 @@ class SendTabToSelfActiveChecker
 
  private:
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
+  base::ScopedObservation<send_tab_to_self::SendTabToSelfModel,
+                          send_tab_to_self::SendTabToSelfModelObserver>
+      observation_{this};
 };
 
 // Class that allows waiting until two devices are ready.
@@ -242,6 +259,9 @@ class SendTabToSelfUrlDeletedChecker
  private:
   const GURL url_;
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
+  base::ScopedObservation<send_tab_to_self::SendTabToSelfModel,
+                          send_tab_to_self::SendTabToSelfModelObserver>
+      observation_{this};
 };
 
 // Class that allows waiting until an element with `element_id` is within the
