@@ -1,4 +1,3 @@
-CONSOLE WARNING: Blocked focus call from a frame because its 'focus-without-user-activation' permissions policy is denied.
 Focus can be moved around frames.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

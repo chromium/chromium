@@ -356,7 +356,7 @@
     {
       name: "FocusWithoutUserActivation",
       permissions_policy_name: "focus-without-user-activation",
-      feature_default: "EnableForSelf",
+      feature_default: "EnableForAll",
       depends_on: ["BlockingFocusWithoutUserActivation"],
     },
     {
