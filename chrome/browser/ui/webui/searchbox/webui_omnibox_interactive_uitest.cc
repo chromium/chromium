@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -341,6 +342,8 @@ class OmniboxAimWebUiInteractiveTestBase
       response.SerializeToString(&serialized);
       service->SetEligibilityResponseForDebugging(
           base::Base64Encode(serialized));
+      ASSERT_TRUE(
+          base::test::RunUntil([&]() { return service->IsAimEligible(); }));
     });
   }
 
@@ -402,6 +405,17 @@ class OmniboxAimWebUiInteractiveTestBase
                  WaitForStateChange(contents_id, submit_enabled));
   }
 
+  auto WaitForAimStateReady(const ui::ElementIdentifier& contents_id) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimStateReady);
+    StateChange state_ready;
+    state_ready.event = kAimStateReady;
+    state_ready.where = {"omnibox-popup-app"};
+    state_ready.test_function =
+        "(el) => el && el.isAimPopupEligible_ && el.inputState_ && "
+        "el.inputState_.allowedTools.length > 0";
+    return WaitForStateChange(contents_id, state_ready);
+  }
+
   auto InputAimPopupText(const std::string& text) {
     // Simulate character-by-character input to ensure all 'input' events are
     // fired and processed by the WebUI. This prevents flakiness that occurs
@@ -433,10 +447,13 @@ class OmniboxAimWebUiInteractiveTest
     : public OmniboxAimWebUiInteractiveTestBase {
  public:
   OmniboxAimWebUiInteractiveTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetEnabledFeatures(/*force_enable_aim=*/true);
+    enabled_features.emplace_back(omnibox::kAimUsePecApi,
+                                  base::FieldTrialParams());
     feature_list_.InitWithFeaturesAndParameters(
-        GetEnabledFeatures(/*force_enable_aim=*/true),
-        {omnibox::kAimServerEligibilityEnabled,
-         omnibox::kAimFuseboxEligibilityCheckEnabled});
+        enabled_features, {omnibox::kAimServerEligibilityEnabled,
+                           omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
 
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
@@ -490,8 +507,16 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false));
 }
 
+// TODO(crbug.com/505548434): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClassicContextMenuOpensDeepSearch \
+  DISABLED_ClassicContextMenuOpensDeepSearch
+#else
+#define MAYBE_ClassicContextMenuOpensDeepSearch \
+  ClassicContextMenuOpensDeepSearch
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
-                       ClassicContextMenuOpensDeepSearch) {
+                       MAYBE_ClassicContextMenuOpensDeepSearch) {
   const DeepQuery kDeepSearchChip = {"omnibox-aim-app", "cr-composebox",
                                      "cr-composebox-tool-chip"};
   RunTestSequence(
@@ -900,6 +925,8 @@ class WebUIOmniboxSimplificationInteractiveTest
             {"Omnibox_ContextButtonHasBackground", "true"},
             {"Omnibox_ContextButtonShapeIsOblong", "true"},
             {"Omnibox_ContextButtonShowSuggestionLabel", "true"}});
+    enabled_features.emplace_back(omnibox::kAimUsePecApi,
+                                  base::FieldTrialParams());
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
@@ -907,16 +934,22 @@ class WebUIOmniboxSimplificationInteractiveTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/512352908): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HasBackgroundApplied DISABLED_HasBackgroundApplied
+#else
+#define MAYBE_HasBackgroundApplied HasBackgroundApplied
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
-                       HasBackgroundApplied) {
+                       MAYBE_HasBackgroundApplied) {
   const DeepQuery kContextButton = {"omnibox-popup-app", "#context",
                                     "#entrypoint"};
   RunTestSequence(
-      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
       SetAimEligibleResponse(),
-      SeedSearchboxResult("a"),
-      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
-      WaitForClassicPopupReady(),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
+      SeedSearchboxResult("a"), FocusElement(kOmniboxElementId),
+      EnterText(kOmniboxElementId, u"a"), WaitForClassicPopupReady(),
+      InAnyContext(WaitForAimStateReady(kClassicPopupWebView)),
       InAnyContext(
           WaitForElementToRender(kClassicPopupWebView, kContextButton)),
       InSameContext(CheckJsResultAt(
@@ -925,34 +958,53 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
           true)));
 }
 
+// TODO(crbug.com/512348269): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OblongShapeApplied DISABLED_OblongShapeApplied
+#else
+#define MAYBE_OblongShapeApplied OblongShapeApplied
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
-                       OblongShapeApplied) {
+                       MAYBE_OblongShapeApplied) {
   const DeepQuery kContextButton = {"omnibox-popup-app", "#context",
                                     "#entrypoint"};
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kOblongStyleApplied);
+  StateChange style_applied;
+  style_applied.event = kOblongStyleApplied;
+  style_applied.where = kContextButton;
+  style_applied.test_function =
+      "(el) => el && window.getComputedStyle(el).borderRadius === \"100px\"";
+
   RunTestSequence(
-      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
       SetAimEligibleResponse(),
-      SeedSearchboxResult("a"),
-      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
-      WaitForClassicPopupReady(),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
+      SeedSearchboxResult("a"), FocusElement(kOmniboxElementId),
+      EnterText(kOmniboxElementId, u"a"), WaitForClassicPopupReady(),
+      InAnyContext(WaitForAimStateReady(kClassicPopupWebView)),
       InAnyContext(
           WaitForElementToRender(kClassicPopupWebView, kContextButton)),
-      InSameContext(CheckJsResultAt(
-          kClassicPopupWebView, kContextButton,
-          "el => window.getComputedStyle(el).borderRadius", "100px")));
+      InAnyContext(WaitForStateChange(kClassicPopupWebView, style_applied)));
 }
 
+// TODO(crbug.com/512335990): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HasSuggestionLabel DISABLED_HasSuggestionLabel
+#else
+#define MAYBE_HasSuggestionLabel HasSuggestionLabel
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
-                       HasSuggestionLabel) {
+                       MAYBE_HasSuggestionLabel) {
   const DeepQuery kSuggestionLabel = {"omnibox-popup-app", "#context",
                                       "#description"};
+  browser()->window()->SetBounds(gfx::Rect(0, 0, 1280, 1024));
   std::u16string expected_text =
       l10n_util::GetStringUTF16(IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
   RunTestSequence(
+      SetAimEligibleResponse(),
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
-      SetAimEligibleResponse(), SeedSearchboxResult("a"),
-      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
-      WaitForClassicPopupReady(),
+      SeedSearchboxResult("a"), FocusElement(kOmniboxElementId),
+      EnterText(kOmniboxElementId, u"a"), WaitForClassicPopupReady(),
+      InAnyContext(WaitForAimStateReady(kClassicPopupWebView)),
       InAnyContext(
           WaitForElementToRender(kClassicPopupWebView, kSuggestionLabel)),
       InSameContext(CheckJsResultAt(kClassicPopupWebView, kSuggestionLabel,

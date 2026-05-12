@@ -46,6 +46,8 @@ suite('ComposeboxInputPlaceholder', () => {
 
     document.body.appendChild(composebox);
 
+    searchboxPageRemote.onInputStateChanged(inputState);
+
     await microtasksFinished();
   }
 
