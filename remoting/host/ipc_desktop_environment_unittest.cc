@@ -329,6 +329,8 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   MockClientSessionEvents client_session_events_;
   base::WeakPtrFactory<MockClientSessionEvents> client_session_events_factory_{
       &client_session_events_};
+  base::OnceCallback<void(MockDesktopEnvironment*)>
+      on_desktop_environment_created_;
 
  private:
   // Runs until there are no references to |task_runner_|.
@@ -473,6 +475,10 @@ void IpcDesktopEnvironmentTest::OnCreateDesktopEnvironment(
       .Times(AtMost(1))
       .WillOnce(
           Return(ByMove(std::move(owned_remote_url_forwarder_configurator_))));
+
+  if (on_desktop_environment_created_) {
+    std::move(on_desktop_environment_created_).Run(desktop_environment.get());
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -824,33 +830,60 @@ TEST_F(IpcDesktopEnvironmentTest, BufferedDesktopPipeReconnection) {
 }
 
 TEST_F(IpcDesktopEnvironmentTest, StartAudioInjectorCreatesSpscBuffer) {
+  // Delete the default one created in SetUp() so we can set the callback.
+  DeleteDesktopEnvironment();
+
+  // Recreate the factory.
+  mojo::AssociatedRemote<mojom::DesktopSessionManager> remote;
+  mock_desktop_session_manager_.BindNewReceiver(
+      remote.BindNewEndpointAndPassReceiver());
+  desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
+      task_runner_, task_runner_, io_task_runner_, std::move(remote));
   SetPersistentDesktopSessions(false);
 
-  // 1. Run setup loop to attach desktop process.
+  base::test::TestFuture<MockDesktopEnvironment*> mock_env_future;
+  on_desktop_environment_created_ = mock_env_future.GetCallback();
+
+  // Recreate the environment.
+  CreateDesktopEnvironment();
+
+  // Run setup loop to attach desktop process.
+  setup_run_loop_ = std::make_unique<base::RunLoop>();
   setup_run_loop_->Run();
 
-  // 2. Retrieve connection terminal ID and proxy pointer.
+  // Retrieve connection terminal ID and proxy pointer.
   int id = terminal_id_;
   auto* connection = GetConnection(id);
   ASSERT_NE(connection, nullptr);
   DesktopSessionProxy* proxy = connection->desktop_session_proxy;
   ASSERT_NE(proxy, nullptr);
 
-  // 3. Verify initial SPSC writer state is null.
-  ASSERT_EQ(proxy->TakeAudioWriter(), nullptr);
+  MockDesktopEnvironment* mock_env = mock_env_future.Get();
+  ASSERT_NE(mock_env, nullptr);
 
-  // 4. Call StartAudioInjector to trigger Mojo SPSC pipe creation.
-  proxy->StartAudioInjector();
+  // Set expectation on MockDesktopEnvironment.
+  base::test::TestFuture<std::unique_ptr<IpcFifoBufferReader>>
+      received_reader_future;
+  EXPECT_CALL(
+      *mock_env,
+      CreateAudioInjector(testing::An<std::unique_ptr<IpcFifoBufferReader>>()))
+      .WillOnce([&](std::unique_ptr<IpcFifoBufferReader> reader) {
+        received_reader_future.SetValue(std::move(reader));
+        return nullptr;
+      });
 
-  // Verify SPSC writer is populated and successfully cached.
-  std::unique_ptr<FifoBufferWriter> writer = proxy->TakeAudioWriter();
-  ASSERT_NE(writer, nullptr);
+  // Create the buffer and pass to StartAudioInjector.
+  std::unique_ptr<IpcFifoBufferWriter> writer;
+  std::unique_ptr<IpcFifoBufferReader> reader;
+  ASSERT_TRUE(CreateIpcFifoBuffer(kDefaultFifoBufferCapacity, writer, reader));
 
-  // 5. Verify subsequent calls cleanly clear and recreate the pipe.
-  proxy->StartAudioInjector();
-  std::unique_ptr<FifoBufferWriter> writer2 = proxy->TakeAudioWriter();
-  ASSERT_NE(writer2, nullptr);
-  ASSERT_NE(writer.get(), writer2.get());
+  proxy->StartAudioInjector(std::move(reader));
+
+  // Wait for CreateAudioInjector to be called on MockDesktopEnvironment and
+  // verify reader.
+  std::unique_ptr<IpcFifoBufferReader> received_reader =
+      received_reader_future.Take();
+  ASSERT_NE(received_reader, nullptr);
 
   // Cleanup.
   DeleteDesktopEnvironment();

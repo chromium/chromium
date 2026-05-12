@@ -36,7 +36,7 @@ class PortalInteractionStrategy : public DesktopInteractionStrategy {
       override;
   std::unique_ptr<ActiveDisplayMonitor> CreateActiveDisplayMonitor(
       base::RepeatingCallback<void(webrtc::ScreenId)> callback) override;
-  std::unique_ptr<AudioInjector> CreateAudioInjector() override;
+
   std::unique_ptr<DesktopDisplayInfoMonitor> CreateDisplayInfoMonitor()
       override;
   std::unique_ptr<LocalInputMonitor> CreateLocalInputMonitor() override;

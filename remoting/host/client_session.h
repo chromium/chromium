@@ -254,6 +254,8 @@ class ClientSession : public protocol::HostStub,
   void OnDesktopEnvironmentCreated(
       std::unique_ptr<DesktopEnvironment> desktop_environment);
 
+  void CreateAudioInjectorAndBuffer();
+
   void OnLocalSessionPoliciesChanged(const SessionPolicies& new_policies);
 
   // Creates a proxy for sending clipboard events to the client.
@@ -389,6 +391,8 @@ class ClientSession : public protocol::HostStub,
   std::map<webrtc::ScreenId, std::unique_ptr<protocol::VideoStream>>
       video_streams_;
   std::unique_ptr<protocol::AudioStream> audio_stream_;
+  std::unique_ptr<FifoBufferWriter> pending_audio_writer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The set of all capabilities supported by the client.
   std::unique_ptr<std::string> client_capabilities_;

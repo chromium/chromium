@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/fifo_buffer.h"
+#include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
@@ -152,14 +153,11 @@ BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return std::make_unique<RemoteWebAuthnExtensionNotifier>();
 }
 
-std::unique_ptr<AudioInjector> BasicDesktopEnvironment::CreateAudioInjector() {
+std::unique_ptr<AudioInjector> BasicDesktopEnvironment::CreateAudioInjector(
+    std::unique_ptr<IpcFifoBufferReader> reader) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  return interaction_strategy_->CreateAudioInjector();
-}
-
-std::unique_ptr<FifoBufferWriter> BasicDesktopEnvironment::TakeAudioWriter() {
-  return nullptr;
+  return AudioInjector::Create(std::move(reader));
 }
 
 std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(

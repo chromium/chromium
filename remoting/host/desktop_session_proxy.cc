@@ -337,6 +337,9 @@ void DesktopSessionProxy::DetachFromDesktop() {
   // We don't reset |is_url_forwarder_set_up_callback_| here since the request
   // can come in before the DetachFromDesktop-AttachToDesktop sequence.
 
+  should_start_audio_injector_ = false;
+  pending_audio_reader_.reset();
+
   // Notify interested folks that the IPC has been disconnected.
   disconnect_handlers_.Notify();
 
@@ -564,9 +567,11 @@ void DesktopSessionProxy::ExecuteAction(
   }
 }
 
-void DesktopSessionProxy::StartAudioInjector() {
+void DesktopSessionProxy::StartAudioInjector(
+    std::unique_ptr<IpcFifoBufferReader> audio_reader) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  pending_audio_reader_ = std::move(audio_reader);
   should_start_audio_injector_ = true;
   if (desktop_session_control_) {
     DoStartAudioInjector();
@@ -576,23 +581,10 @@ void DesktopSessionProxy::StartAudioInjector() {
 void DesktopSessionProxy::DoStartAudioInjector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(desktop_session_control_);
+  DCHECK(pending_audio_reader_);
 
-  audio_writer_.reset();
-
-  std::unique_ptr<IpcFifoBufferWriter> writer;
-  std::unique_ptr<IpcFifoBufferReader> reader;
-  if (!CreateIpcFifoBuffer(kDefaultFifoBufferCapacity, writer, reader)) {
-    LOG(ERROR) << "Failed to create IPC FIFO buffer for playout audio.";
-    return;
-  }
-
-  audio_writer_ = std::move(writer);
-  desktop_session_control_->StartAudioInjector(std::move(reader));
-}
-
-std::unique_ptr<FifoBufferWriter> DesktopSessionProxy::TakeAudioWriter() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::move(audio_writer_);
+  desktop_session_control_->StartAudioInjector(
+      std::move(pending_audio_reader_));
 }
 
 void DesktopSessionProxy::InjectAudioPacket(

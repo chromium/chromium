@@ -14,13 +14,14 @@
 namespace remoting {
 
 class DesktopSessionProxy;
+class IpcFifoBufferReader;
 
 // Routes AudioInjector calls through the IPC channel to the
 // DesktopSessionAgent running in the desktop integration process.
 class IpcAudioInjector : public AudioInjector {
  public:
-  explicit IpcAudioInjector(
-      scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+  IpcAudioInjector(scoped_refptr<DesktopSessionProxy> desktop_session_proxy,
+                   std::unique_ptr<IpcFifoBufferReader> audio_reader);
 
   IpcAudioInjector(const IpcAudioInjector&) = delete;
   IpcAudioInjector& operator=(const IpcAudioInjector&) = delete;
@@ -34,6 +35,7 @@ class IpcAudioInjector : public AudioInjector {
 
  private:
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
+  std::unique_ptr<IpcFifoBufferReader> audio_reader_;
 
   base::WeakPtrFactory<IpcAudioInjector> weak_factory_{this};
 };

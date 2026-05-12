@@ -13,6 +13,7 @@
 #include "remoting/host/audio_injector.h"
 
 namespace remoting {
+class FifoBufferReader;
 
 class AudioPacket;
 
@@ -21,7 +22,8 @@ class AudioPacket;
 class PipewireAudioInjector : public AudioInjector {
  public:
   static bool IsSupported();
-  static std::unique_ptr<PipewireAudioInjector> Create();
+  static std::unique_ptr<PipewireAudioInjector> Create(
+      std::unique_ptr<FifoBufferReader> audio_reader);
 
   PipewireAudioInjector();
   ~PipewireAudioInjector() override;

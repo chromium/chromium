@@ -34,6 +34,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/fifo_buffer.h"
+#include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/session_options.h"
@@ -329,12 +330,9 @@ void ClientSession::SetCapabilities(
   extension_manager_->OnNegotiatedCapabilities(connection_->client_stub(),
                                                capabilities_);
 
-  if (HasCapability(capabilities_, protocol::kMicrophoneRemotingCapability)) {
-    audio_injector_ = desktop_environment_->CreateAudioInjector();
-    if (audio_injector_) {
-      audio_injector_->Start(weak_factory_.GetWeakPtr());
-      connection_->set_audio_stub(audio_injector_->GetWeakPtr());
-    }
+  if (HasCapability(capabilities_, protocol::kMicrophoneRemotingCapability) &&
+      !audio_injector_) {
+    CreateAudioInjectorAndBuffer();
   }
 
   if (HasCapability(capabilities_, protocol::kFileTransferCapability)) {
@@ -713,10 +711,8 @@ void ClientSession::OnConnectionChannelsConnected() {
   DCHECK(!channels_connected_);
   channels_connected_ = true;
 
-  std::unique_ptr<FifoBufferWriter> audio_writer =
-      desktop_environment_->TakeAudioWriter();
-  if (audio_writer) {
-    connection_->SetAudioWriter(std::move(audio_writer));
+  if (pending_audio_writer_) {
+    connection_->SetAudioWriter(std::move(pending_audio_writer_));
   }
 
   // Negotiate capabilities with the client.
@@ -1100,6 +1096,28 @@ void ClientSession::OnDesktopEnvironmentCreated(
   desktop_environment_ready_callbacks_.clear();
 }
 
+void ClientSession::CreateAudioInjectorAndBuffer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::unique_ptr<IpcFifoBufferWriter> writer;
+  std::unique_ptr<IpcFifoBufferReader> reader;
+
+  // Please see the documentation for DesktopEnvironment::CreateAudioInjector,
+  // which explains why we always use IpcFifoBuffer.
+  if (CreateIpcFifoBuffer(kDefaultFifoBufferCapacity, writer, reader)) {
+    audio_injector_ =
+        desktop_environment_->CreateAudioInjector(std::move(reader));
+    if (audio_injector_) {
+      audio_injector_->Start(weak_factory_.GetWeakPtr());
+      connection_->set_audio_stub(audio_injector_->GetWeakPtr());
+      if (channels_connected_) {
+        connection_->SetAudioWriter(std::move(writer));
+      } else {
+        pending_audio_writer_ = std::move(writer);
+      }
+    }
+  }
+}
+
 void ClientSession::OnLocalSessionPoliciesChanged(
     const SessionPolicies& new_policies) {
   DCHECK(local_session_policy_update_subscription_);
@@ -1347,6 +1365,11 @@ void ClientSession::OnDesktopAttached() {
     // able to connect now.
     remote_webauthn_message_handler_->NotifyWebAuthnStateChange();
   }
+
+  if (HasCapability(capabilities_, protocol::kMicrophoneRemotingCapability) &&
+      !audio_injector_) {
+    CreateAudioInjectorAndBuffer();
+  }
 }
 
 void ClientSession::OnDesktopDetached() {
@@ -1364,6 +1387,8 @@ void ClientSession::OnDesktopDetached() {
   if (remote_open_url_message_handler_) {
     remote_open_url_message_handler_->ClearReceivers();
   }
+
+  audio_injector_.reset();
 }
 
 void ClientSession::OnSecurityKeyConnection(

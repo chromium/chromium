@@ -13,6 +13,7 @@
 namespace remoting {
 
 class AudioPacket;
+class FifoBufferReader;
 
 // A class for injecting audio packets into a virtual audio input device.
 class AudioInjector : public protocol::AudioStub {
@@ -22,6 +23,8 @@ class AudioInjector : public protocol::AudioStub {
   // supports audio injection. The AudioInjector class itself may only
   // work in the desktop process due to user isolation.
   static bool IsSupported();
+  static std::unique_ptr<AudioInjector> Create(
+      std::unique_ptr<FifoBufferReader> audio_reader);
 
   class Delegate {
    public:

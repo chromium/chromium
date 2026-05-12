@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "remoting/base/fifo_buffer.h"
 #include "remoting/proto/audio.pb.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -35,6 +36,16 @@ bool AudioInjector::IsSupported() {
   return PipewireAudioInjector::IsSupported();
 #else
   return false;
+#endif
+}
+
+// static
+std::unique_ptr<AudioInjector> AudioInjector::Create(
+    std::unique_ptr<FifoBufferReader> audio_reader) {
+#if BUILDFLAG(IS_LINUX)
+  return PipewireAudioInjector::Create(std::move(audio_reader));
+#else
+  return nullptr;
 #endif
 }
 

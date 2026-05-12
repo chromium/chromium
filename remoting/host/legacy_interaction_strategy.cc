@@ -194,11 +194,6 @@ LegacyInteractionStrategy::CreateActiveDisplayMonitor(
   return ActiveDisplayMonitor::Create(ui_task_runner_, std::move(callback));
 }
 
-std::unique_ptr<AudioInjector>
-LegacyInteractionStrategy::CreateAudioInjector() {
-  return nullptr;
-}
-
 std::unique_ptr<LocalInputMonitor>
 LegacyInteractionStrategy::CreateLocalInputMonitor() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());

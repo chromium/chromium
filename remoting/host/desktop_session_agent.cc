@@ -603,13 +603,12 @@ void DesktopSessionAgent::StartAudioInjector(
     return;
   }
 
-  audio_injector_ = desktop_environment_->CreateAudioInjector();
+  audio_injector_ =
+      desktop_environment_->CreateAudioInjector(std::move(audio_reader));
   if (!audio_injector_) {
     LOG(ERROR) << "Cannot start audio injector because it is not supported.";
     return;
   }
-  // TODO: crbug.com/509659010 - Pass the valid `audio_reader` SPSC pipe to
-  // `audio_injector_->Start()` once host SPSC direct reading is implemented.
   audio_injector_->Start(weak_factory_.GetWeakPtr());
 }
 

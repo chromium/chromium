@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "remoting/base/fifo_buffer.h"
 #include "remoting/base/in_memory_fifo_buffer.h"
 #include "remoting/base/jitter_buffer.h"
 #include "remoting/host/linux/pipewire_utils.h"
@@ -430,7 +431,8 @@ bool PipewireAudioInjector::IsSupported() {
 }
 
 // static
-std::unique_ptr<PipewireAudioInjector> PipewireAudioInjector::Create() {
+std::unique_ptr<PipewireAudioInjector> PipewireAudioInjector::Create(
+    std::unique_ptr<FifoBufferReader> audio_reader) {
   if (!IsSupported()) {
     return nullptr;
   }

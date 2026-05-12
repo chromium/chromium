@@ -53,7 +53,7 @@ class TimeDelta;
 }  // namespace base
 
 namespace remoting {
-class FifoBufferWriter;
+class IpcFifoBufferReader;
 
 class MockDesktopEnvironment : public DesktopEnvironment {
  public:
@@ -110,11 +110,7 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::unique_ptr<AudioInjector>,
               CreateAudioInjector,
-              (),
-              (override));
-  MOCK_METHOD(std::unique_ptr<FifoBufferWriter>,
-              TakeAudioWriter,
-              (),
+              (std::unique_ptr<IpcFifoBufferReader>),
               (override));
   MOCK_METHOD(std::string, GetCapabilities, (), (const, override));
   MOCK_METHOD(void, SetCapabilities, (const std::string&), (override));
