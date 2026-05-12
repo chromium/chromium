@@ -6,9 +6,17 @@ source_set("model") {
   sources = [
     "level_up_scene_agent.h",
     "level_up_scene_agent.mm",
+    "level_up_service.h",
+    "level_up_service.mm",
+    "level_up_service_factory.h",
+    "level_up_service_factory.mm",
   ]
   deps = [
     "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }

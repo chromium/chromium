@@ -62,6 +62,7 @@ specific_include_rules = {
     "+ios/chrome/browser/intelligence/persist_tab_context/model",
     "+ios/chrome/browser/invalidation/model",
     "+ios/chrome/browser/language/model",
+    "+ios/chrome/browser/level_up/model",
     "+ios/chrome/browser/mailto_handler/model",
     "+ios/chrome/browser/metrics/model",
     "+ios/chrome/browser/mini_map/model",

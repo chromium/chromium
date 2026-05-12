@@ -102,6 +102,7 @@
 #import "ios/chrome/browser/language/model/url_language_histogram_factory.h"
 #import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
 #import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
+#import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/metrics/model/bookmark_model_metrics_service_factory.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
@@ -325,6 +326,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   HomeBackgroundCustomizationServiceFactory::GetInstance();
   HomeBackgroundImageServiceFactory::GetInstance();
   NtpBackgroundServiceFactory::GetInstance();
+  LevelUpServiceFactory::GetInstance();
   HttpsUpgradeServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
   ImageFetcherServiceFactory::GetInstance();
