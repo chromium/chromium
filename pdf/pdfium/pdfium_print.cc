@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "pdf/flatten_pdf_result.h"
@@ -42,9 +43,10 @@ namespace chrome_pdf {
 
 namespace {
 
-// UI should have done parameter sanity check, when execution
-// reaches here, `pages_per_sheet` should be a positive integer.
+// Assumes the Print Preview UI passed in a positive integer. So this function
+// does not need to handle invalid values like negative values or zero.
 bool ShouldDoNup(int pages_per_sheet) {
+  CHECK_GE(pages_per_sheet, 1);
   return pages_per_sheet > 1;
 }
 

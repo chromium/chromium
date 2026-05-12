@@ -20,26 +20,22 @@ constexpr uint32_t GeneratePermissions3(uint32_t permissions) {
   return kBasePermissions | permissions;
 }
 
-// Sanity check the permission constants are correct.
-static_assert(kPDFPermissionBit03PrintMask == 0x4, "Wrong permission");
-static_assert(kPDFPermissionBit05CopyMask == 0x10, "Wrong permission");
-static_assert(kPDFPermissionBit10CopyAccessibleMask == 0x200,
-              "Wrong permission");
-static_assert(kPDFPermissionBit12PrintHighQualityMask == 0x800,
-              "Wrong permission");
+// Make sure the permission constants match values from the PDF spec.
+static_assert(kPDFPermissionBit03PrintMask == 0x4);
+static_assert(kPDFPermissionBit05CopyMask == 0x10);
+static_assert(kPDFPermissionBit10CopyAccessibleMask == 0x200);
+static_assert(kPDFPermissionBit12PrintHighQualityMask == 0x800);
 
-// Sanity check the permission generation functions above do the right thing.
-static_assert(GeneratePermissions2(0) == 0xffffffc0, "Wrong permission");
+// Verify the permission generation functions above are correct.
+static_assert(GeneratePermissions2(0) == 0xffffffc0);
 static_assert(GeneratePermissions2(kPDFPermissionBit03PrintMask |
-                                   kPDFPermissionBit05CopyMask) == 0xffffffd4,
-              "Wrong permission");
-static_assert(GeneratePermissions3(0) == 0xfffff0c0, "Wrong permission");
+                                   kPDFPermissionBit05CopyMask) == 0xffffffd4);
+static_assert(GeneratePermissions3(0) == 0xfffff0c0);
 static_assert(GeneratePermissions3(kPDFPermissionBit03PrintMask |
                                    kPDFPermissionBit05CopyMask |
                                    kPDFPermissionBit10CopyAccessibleMask |
                                    kPDFPermissionBit12PrintHighQualityMask) ==
-                  0xfffffad4,
-              "Wrong permission");
+              0xfffffad4);
 
 TEST(PDFiumPermissionTest, InvalidSecurityHandler) {
   constexpr int kPDFiumUnknownRevision = -1;

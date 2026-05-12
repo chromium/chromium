@@ -1778,8 +1778,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     CHECK(inserted);
   }
 
-  // Sanity check strokes/shapes exist, if this method is being asked to erase
-  // them.
+  // Verify strokes/shapes exist, if this method is being asked to erase them.
   if (!stroke_ids.empty()) {
     CHECK(!strokes_.empty());
   }
