@@ -836,6 +836,13 @@
     "module_scheme": "single",
     "script": "//testing/scripts/content_shell_crash_test.py",
   },
+  "content_shell_freeze_test": {
+    "label": "//content/shell:content_shell_freeze_test",
+    "type": "script",
+    "module_scheme": "single",
+    "script": "//content/shell/tools/aaudio_freezer_integration_test.py",
+    "skip_usage_check": True,
+  },
   "content_shell_test_apk": {
     "label": "//content/shell/android:content_shell_test_apk",
     "type": "console_test_launcher",

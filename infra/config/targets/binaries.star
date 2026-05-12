@@ -855,6 +855,18 @@ targets.binaries.script(
     module_scheme = "single",
 )
 
+targets.binaries.script(
+    name = "content_shell_freeze_test",
+    label = "//content/shell:content_shell_freeze_test",
+    script = "//content/shell/tools/aaudio_freezer_integration_test.py",
+    skip_usage_check = True,
+    resultdb = targets.resultdb(
+        enable = True,
+        result_format = "single",
+    ),
+    module_scheme = "single",
+)
+
 targets.binaries.console_test_launcher(
     name = "content_shell_test_apk",
     label = "//content/shell/android:content_shell_test_apk",

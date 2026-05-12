@@ -4133,6 +4133,7 @@ ci.builder(
         targets = [
             "android_16_emulator_gtests",
             "android_rel_isolated_scripts",
+            "content_shell_freeze_test",
             "gtests_once",
         ],
         mixins = [
@@ -4165,6 +4166,10 @@ ci.builder(
                 swarming = targets.swarming(
                     shards = 3,
                 ),
+            ),
+            "content_shell_freeze_test": targets.mixin(
+                # TODO (b/511219429): Remove once stability is established and also add to android_rel_isolated_scripts
+                ci_only = True,
             ),
             "chrome_public_test_apk": targets.mixin(
                 args = [

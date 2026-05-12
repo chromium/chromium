@@ -1089,9 +1089,12 @@ mojom("content_browsertests_mojom") {
 }
 
 if (is_android) {
-  script_test("content_shell_freeze_test") {
+  group("content_shell_freeze_test") {
     testonly = true
-    script = "//content/shell/tools/aaudio_freezer_integration_test.py"
+    data = [
+      "//content/shell/tools/aaudio_freezer_integration_test.py",
+      "//content/test/data/media/",
+    ]
     data_deps = [
       ":content_shell",
       "//build/android:devil_chromium_py",

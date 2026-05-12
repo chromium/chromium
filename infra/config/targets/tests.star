@@ -862,6 +862,10 @@ targets.tests.isolated_script_test(
     name = "content_shell_crash_test",
 )
 
+targets.tests.isolated_script_test(
+    name = "content_shell_freeze_test",
+)
+
 targets.tests.gtest_test(
     name = "content_shell_test_apk",
 )
