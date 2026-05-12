@@ -47,6 +47,8 @@ source_set("wayland") {
     "gpu/wayland_surface_factory.cc",
     "gpu/wayland_surface_factory.h",
     "gpu/wayland_surface_gpu.h",
+    "host/begin_frame_source_wayland.cc",
+    "host/begin_frame_source_wayland.h",
     "host/drm_syncobj_ioctl_wrapper.cc",
     "host/drm_syncobj_ioctl_wrapper.h",
     "host/dump_util.h",

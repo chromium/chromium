@@ -48,6 +48,7 @@ struct WaylandOverlayConfig;
 
 namespace ui {
 
+class BeginFrameSourceWayland;
 class BitmapCursor;
 class OSExchangeData;
 class WaylandAsyncCursor;
@@ -601,6 +602,7 @@ class WaylandWindow : public PlatformWindow,
   std::unique_ptr<WaylandSurface> root_surface_;
 
   std::unique_ptr<WaylandFrameManager> frame_manager_;
+  std::unique_ptr<BeginFrameSourceWayland> begin_frame_source_;
   bool received_configure_event_ = false;
   // |primary_subsurface| is the primary that shows the widget content.
   std::unique_ptr<WaylandSubsurface> primary_subsurface_;

@@ -6,6 +6,8 @@ import("//build/config/ui.gni")
 
 component("platform_window") {
   sources = [
+    "extensions/begin_frame_source_extension.cc",
+    "extensions/begin_frame_source_extension.h",
     "extensions/workspace_extension.cc",
     "extensions/workspace_extension.h",
     "extensions/workspace_extension_delegate.h",

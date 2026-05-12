@@ -27,6 +27,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/external_begin_frame_adapter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
@@ -34,6 +35,7 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/platform_window/extensions/begin_frame_source_extension.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -297,10 +299,22 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
 
   CreateAndSetPlatformWindow(std::move(properties));
 
+  auto* begin_frame_source =
+      platform_window() ? GetBeginFrameSourceExtension(*platform_window())
+                        : nullptr;
+
   // Disable compositing on tooltips as a workaround for
   // https://crbug.com/442111.
   CreateCompositor(params.force_software_compositing ||
-                   params.type == Widget::InitParams::TYPE_TOOLTIP);
+                       params.type == Widget::InitParams::TYPE_TOOLTIP,
+                   begin_frame_source != nullptr);
+
+  if (begin_frame_source) {
+    begin_frame_adapter_ = std::make_unique<ui::ExternalBeginFrameAdapter>(
+        compositor(), begin_frame_source);
+    compositor()->SetExternalBeginFrameControllerClientFactory(
+        begin_frame_adapter_.get());
+  }
 
   WindowTreeHost::OnAcceleratedWidgetAvailable();
   InitHost();
@@ -399,6 +413,9 @@ void DesktopWindowTreeHostPlatform::CloseNow() {
   if (!platform_window()) {
     return;
   }
+
+  compositor()->SetExternalBeginFrameControllerClientFactory(nullptr);
+  begin_frame_adapter_.reset();
 
 #if BUILDFLAG(IS_OZONE)
   SetWmDropHandler(platform_window(), nullptr);

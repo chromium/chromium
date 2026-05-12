@@ -26,6 +26,7 @@
 #include "ui/views/widget/desktop_aura/window_move_client_platform.h"
 
 namespace ui {
+class ExternalBeginFrameAdapter;
 class PaintContext;
 }  // namespace ui
 
@@ -269,6 +270,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   raw_ptr<DesktopWindowTreeHostPlatform> window_parent_ = nullptr;
   std::set<raw_ptr<DesktopWindowTreeHostPlatform, SetExperimental>>
       window_children_;
+
+  std::unique_ptr<ui::ExternalBeginFrameAdapter> begin_frame_adapter_;
 
   // Used for tab dragging in move loop requests.
   WindowMoveClientPlatform window_move_client_;

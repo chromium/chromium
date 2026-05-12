@@ -91,6 +91,13 @@ component("compositor") {
     ]
   }
 
+  if (is_linux || is_fuchsia) {
+    sources += [
+      "external_begin_frame_adapter.cc",
+      "external_begin_frame_adapter.h",
+    ]
+  }
+
   defines = [ "COMPOSITOR_IMPLEMENTATION" ]
 
   public_deps = [
@@ -124,6 +131,10 @@ component("compositor") {
     # TODO(sky): before we make this real need to remove
     # IDR_BITMAP_BRUSH_IMAGE.
     deps += [ "//ui/resources" ]
+  }
+
+  if (is_linux || is_fuchsia) {
+    deps += [ "//ui/platform_window" ]
   }
 }
 

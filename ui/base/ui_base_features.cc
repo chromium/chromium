@@ -128,6 +128,10 @@ BASE_FEATURE(kWaylandTextInputV3, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Wayland session management protocol is enabled.
 BASE_FEATURE(kWaylandSessionManagement, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether external begin frames are driven by Wayland frame callbacks.
+BASE_FEATURE(kWaylandExternalBeginFrameSource,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_LINUX)
