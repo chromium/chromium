@@ -7690,21 +7690,6 @@
             ]
         }
     ],
-    "CredentialProviderRefactoredAddCredentials": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CredentialProviderRefactoredAddCredentials"
-                    ]
-                }
-            ]
-        }
-    ],
     "CreditCardInfobarDisplayLength": [
         {
             "platforms": [
@@ -14749,6 +14734,21 @@
                     },
                     "enable_features": [
                         "InstallerDownloader"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IosOptimizedCPEPerformance": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260512",
+                    "enable_features": [
+                        "CredentialProviderRefactoredAddCredentials"
                     ]
                 }
             ]
