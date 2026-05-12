@@ -50,7 +50,7 @@ class NET_EXPORT ConnectionChangeNotifier {
     ~Observer() override;
 
     // Notify that the underlying network session has been closed.
-    virtual void OnSessionClosed() = 0;
+    virtual void OnSessionClosed(bool was_ever_used_to_create_streams) = 0;
 
     // Notify that the network connection could not be established.
     virtual void OnConnectionFailed() = 0;
@@ -77,7 +77,7 @@ class NET_EXPORT ConnectionChangeNotifier {
   ~ConnectionChangeNotifier();
 
   // Notify that the underlying network session has been closed.
-  void OnSessionClosed();
+  void OnSessionClosed(bool was_ever_used_to_create_streams);
 
   // Notify that the network connection could not be established.
   void OnConnectionFailed();

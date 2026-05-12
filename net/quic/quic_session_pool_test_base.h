@@ -52,7 +52,7 @@ namespace net::test {
 
 class TestConnectionChangeObserver : public ConnectionChangeNotifier::Observer {
  public:
-  void OnSessionClosed() override;
+  void OnSessionClosed(bool was_ever_used_to_create_streams) override;
   void OnConnectionFailed() override;
   void OnNetworkEvent(NetworkChangeEvent event) override;
 

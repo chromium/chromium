@@ -590,6 +590,10 @@ class NET_EXPORT SpdySession
     return !active_streams_.empty() || !created_streams_.empty();
   }
 
+  bool WasEverUsedToCreateStreams() const {
+    return streams_initiated_count_ > 0;
+  }
+
   // True if the server supports WebSocket protocol.
   bool support_websocket() const { return support_websocket_; }
 

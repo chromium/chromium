@@ -155,7 +155,9 @@ content::PreconnectManager& AwPreconnector::GetPreconnectManager() {
   return *preconnect_manager_.get();
 }
 
-void AwPreconnector::OnSessionClosed() {
+void AwPreconnector::OnSessionClosed(bool was_ever_used_to_create_streams) {
+  // TODO(crbug.com/510847693): Use the `was_ever_used_to_create_streams`
+  // parameter to record the session used status.
   const PreconnectContext& context = receivers_.current_context();
   base::TimeDelta duration = base::TimeTicks::Now() - context.start_time;
 

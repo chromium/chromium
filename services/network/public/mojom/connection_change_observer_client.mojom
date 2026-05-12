@@ -27,7 +27,9 @@ interface ConnectionChangeObserverClient {
     // Notify that the underlying network session has been closed. This means
     // that a connection was established, but was later closed (e.g. because
     // of idle timeout, GoAway from server, etc.).
-    OnSessionClosed();
+    // `was_ever_used_to_create_streams` is true if the connection was used to
+    // create at least one stream.
+    OnSessionClosed(bool was_ever_used_to_create_streams);
 
     // Notify on a network change event. This means that the status of
     // underlying network (such as 4G or Wifi) has changed.

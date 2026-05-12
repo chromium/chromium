@@ -398,7 +398,8 @@ void SpdySessionPool::RemoveUnavailableSession(
   std::unique_ptr<SpdySession> owned_session(*it);
   sessions_.erase(it);
 
-  NotifyOnSessionClosed(owned_session->spdy_session_key());
+  NotifyOnSessionClosed(owned_session->spdy_session_key(),
+                        owned_session->WasEverUsedToCreateStreams());
 }
 
 // Make a copy of |sessions_| in the Close* functions below to avoid
@@ -622,7 +623,8 @@ void SpdySessionPool::CloseCurrentSessionsHelper(Error error,
 
     session->CloseSessionOnError(error, description);
 
-    NotifyOnSessionClosed(session->spdy_session_key());
+    NotifyOnSessionClosed(session->spdy_session_key(),
+                          session->WasEverUsedToCreateStreams());
     DCHECK(!IsSessionAvailable(session));
     DCHECK(!session || session->IsDraining());
   }
@@ -877,10 +879,12 @@ void SpdySessionPool::NotifyOnNetworkEvent(net::NetworkChangeEvent event) {
   NOTIMPLEMENTED() << "SpdySessionPool does not support NotifyOnNetworkEvent";
 }
 
-void SpdySessionPool::NotifyOnSessionClosed(const SpdySessionKey& session_key) {
+void SpdySessionPool::NotifyOnSessionClosed(
+    const SpdySessionKey& session_key,
+    bool was_ever_used_to_create_streams) {
   auto notifier = connection_change_notifier_map_.find(session_key);
   if (notifier != connection_change_notifier_map_.end()) {
-    notifier->second->OnSessionClosed();
+    notifier->second->OnSessionClosed(was_ever_used_to_create_streams);
   }
 }
 

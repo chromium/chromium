@@ -49,7 +49,7 @@ class TestConnectionChangeObserverClient
 
   ~TestConnectionChangeObserverClient() override = default;
 
-  void OnSessionClosed() override {
+  void OnSessionClosed(bool was_ever_used_to_create_streams) override {
     session_closed_++;
     if (waiting_notification_type_ == kSessionClosed) {
       waiting_notification_type_ = kNone;
@@ -159,7 +159,7 @@ class ConnectionChangeObserverTest : public testing::Test {
 };
 
 TEST_F(ConnectionChangeObserverTest, OberverNotifiedOnSessionClosed) {
-  connection_change_observer()->OnSessionClosed();
+  connection_change_observer()->OnSessionClosed(true);
   connection_change_observer_client()->WaitForNotification(
       NotificationType::kSessionClosed);
   EXPECT_EQ(1, connection_change_observer_client()->session_closed());
@@ -228,7 +228,7 @@ class ConnectionChangeObserverWithNotifierTest
 
 TEST_F(ConnectionChangeObserverWithNotifierTest,
        OberverNotifiedOnSessionClosed) {
-  notifier()->OnSessionClosed();
+  notifier()->OnSessionClosed(true);
   connection_change_observer_client()->WaitForNotification(
       NotificationType::kSessionClosed);
   EXPECT_EQ(1, connection_change_observer_client()->session_closed());

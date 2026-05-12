@@ -484,7 +484,8 @@ class NET_EXPORT SpdySessionPool
   // change events, since it affects all of the connections. Otherwise, the
   // events are specific to each connection.
   void NotifyOnNetworkEvent(net::NetworkChangeEvent event);
-  void NotifyOnSessionClosed(const SpdySessionKey& session_key);
+  void NotifyOnSessionClosed(const SpdySessionKey& session_key,
+                             bool was_ever_used_to_create_streams);
   void NotifyOnConnectionFailure(const SpdySessionKey& session_key);
 
   // Shared logic for the two OnHostResolutionComplete() overloads. Checks if

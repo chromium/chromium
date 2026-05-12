@@ -50,7 +50,7 @@ class AwPreconnector : public content::PreconnectManager::Delegate,
   bool IsPreconnectEnabled() override;
 
   // network::mojom::ConnectionChangeObserverClient:
-  void OnSessionClosed() override;
+  void OnSessionClosed(bool was_ever_used_to_create_streams) override;
   void OnNetworkEvent(net::NetworkChangeEvent event) override;
   void OnConnectionFailed() override;
 

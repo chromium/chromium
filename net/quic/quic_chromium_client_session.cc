@@ -1429,6 +1429,10 @@ bool QuicChromiumClientSession::WasConnectionEverUsed() {
   return stats.bytes_sent > 0 || stats.bytes_received > 0;
 }
 
+bool QuicChromiumClientSession::was_ever_used_to_create_streams() const {
+  return num_total_streams_ > 0;
+}
+
 QuicChromiumClientStream*
 QuicChromiumClientSession::CreateOutgoingBidirectionalStream() {
   NOTREACHED() << "CreateOutgoingReliableStreamImpl should be called directly";

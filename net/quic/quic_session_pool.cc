@@ -1026,7 +1026,8 @@ void QuicSessionPool::OnSessionClosed(QuicChromiumClientSession* session) {
   auto it = all_sessions_.find(session);
   CHECK(it != all_sessions_.end());
 
-  NotifyOnSessionClosed(session->quic_session_key());
+  NotifyOnSessionClosed(session->quic_session_key(),
+                        session->was_ever_used_to_create_streams());
 
   all_sessions_.erase(it);
 }
@@ -1775,11 +1776,11 @@ void QuicSessionPool::NotifyOnNetworkEvent(net::NetworkChangeEvent event) {
   }
 }
 
-void QuicSessionPool::NotifyOnSessionClosed(
-    const QuicSessionKey& session_key) const {
+void QuicSessionPool::NotifyOnSessionClosed(const QuicSessionKey& session_key,
+                                            bool used) const {
   auto notifier = connection_change_notifier_.find(session_key);
   if (notifier != connection_change_notifier_.end()) {
-    notifier->second->OnSessionClosed();
+    notifier->second->OnSessionClosed(used);
   }
 }
 

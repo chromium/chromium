@@ -122,6 +122,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kAdjustPreconnectRetryInterval,
                    "kPreconnectInitialRetryInterval",
                    base::Milliseconds(kPreconnectRetryDelayMs));
+
+BASE_FEATURE(kResetConnectionFailureOnSessionUsed,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 WebContentVisibilityManager::WebContentVisibilityManager()
@@ -419,18 +422,23 @@ bool SearchEnginePreconnector::IsPreconnectEnabled() {
       Profile::FromBrowserContext(browser_context_));
 }
 
-void SearchEnginePreconnector::OnSessionClosed() {
-  if (IsShortSession()) {
-    // If we have a short session, we consider that the session was closed due
-    // to an error, and will consider as a failed connection as well.
-    consecutive_connection_failure_++;
-  } else {
-    // If the last session was not short, then it must mean that the connection
-    // was successful. Reset the failure count.
+void SearchEnginePreconnector::OnSessionClosed(
+    bool was_ever_used_to_create_streams) {
+  bool reset_on_used = base::FeatureList::IsEnabled(
+      features::kResetConnectionFailureOnSessionUsed);
+  if ((reset_on_used && was_ever_used_to_create_streams) || !IsShortSession()) {
+    // If the session was used or it was not a short session (likely closed due
+    // to idle timeout), then it must mean that the connection was successful.
+    // Reset the failure count.
     base::UmaHistogramCounts1000(
         "NavigationPredictor.SearchEnginePreconnector.ConsecutiveFailures",
         consecutive_connection_failure_);
     consecutive_connection_failure_ = 0;
+  } else {
+    // If we have a short session and it was not used, we consider that the
+    // session was closed due to an error, and will consider as a failed
+    // connection as well.
+    consecutive_connection_failure_++;
   }
   if (RebindPreconnectReceiversEnabled() &&
       OnlyBindOnConnectionClosedOrFailed()) {

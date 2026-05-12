@@ -22,8 +22,9 @@ ConnectionChangeObserver::ConnectionChangeObserver(
 
 ConnectionChangeObserver::~ConnectionChangeObserver() = default;
 
-void ConnectionChangeObserver::OnSessionClosed() {
-  observer_->OnSessionClosed();
+void ConnectionChangeObserver::OnSessionClosed(
+    bool was_ever_used_to_create_streams) {
+  observer_->OnSessionClosed(was_ever_used_to_create_streams);
 }
 
 void ConnectionChangeObserver::OnConnectionFailed() {

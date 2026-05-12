@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ConnectionChangeObserver
   ~ConnectionChangeObserver() override;
 
   // net::ConnectionChangeNotifier::Observer methods.
-  void OnSessionClosed() override;
+  void OnSessionClosed(bool was_ever_used_to_create_streams) override;
   void OnConnectionFailed() override;
   void OnNetworkEvent(net::NetworkChangeEvent event) override;
 

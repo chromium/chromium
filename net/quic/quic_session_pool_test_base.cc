@@ -106,7 +106,8 @@ using std::string;
 
 namespace net::test {
 
-void TestConnectionChangeObserver::OnSessionClosed() {
+void TestConnectionChangeObserver::OnSessionClosed(
+    bool was_ever_used_to_create_streams) {
   session_closed_++;
 }
 

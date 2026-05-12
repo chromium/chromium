@@ -1013,7 +1013,8 @@ SHA256HashValue GetTestHashValue(uint8_t label) {
 TestConnectionChangeObserver::TestConnectionChangeObserver() = default;
 TestConnectionChangeObserver::~TestConnectionChangeObserver() = default;
 
-void TestConnectionChangeObserver::OnSessionClosed() {
+void TestConnectionChangeObserver::OnSessionClosed(
+    bool was_ever_used_to_create_streams) {
   session_closed_++;
 }
 

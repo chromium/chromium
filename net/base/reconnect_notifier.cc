@@ -27,8 +27,10 @@ ConnectionChangeNotifier::Observer::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void ConnectionChangeNotifier::OnSessionClosed() {
-  observer_list_.Notify(&ConnectionChangeNotifier::Observer::OnSessionClosed);
+void ConnectionChangeNotifier::OnSessionClosed(
+    bool was_ever_used_to_create_streams) {
+  observer_list_.Notify(&ConnectionChangeNotifier::Observer::OnSessionClosed,
+                        was_ever_used_to_create_streams);
 }
 
 void ConnectionChangeNotifier::OnConnectionFailed() {

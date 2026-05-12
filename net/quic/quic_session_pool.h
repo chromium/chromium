@@ -608,7 +608,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // change events, since it affects all the connections. Otherwise, the events
   // are specific to each connection.
   void NotifyOnNetworkEvent(net::NetworkChangeEvent event);
-  void NotifyOnSessionClosed(const QuicSessionKey& session_key) const;
+  void NotifyOnSessionClosed(const QuicSessionKey& session_key,
+                             bool used) const;
   void NotifyOnConnectionFailure(const QuicSessionKey& session_key) const;
 
   // Returns whether we have an existing session to the same server id as
