@@ -634,6 +634,16 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyEnabled) {
       static_cast<int>(
           contextual_search::SearchContentSharingSettingsValue::kEnabled));
 
+  scoped_config().config.mutable_composebox()->set_max_num_files(5);
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_max_size_bytes(100);
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_mime_types_allowed("application/pdf");
+
   std::string file_name = "test.pdf";
   std::string mime_type = "application/pdf";
   std::vector<uint8_t> test_data = {1, 2, 3, 4};
@@ -657,6 +667,287 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyEnabled) {
 
   EXPECT_EQ(callback_token, controller_file_info_token);
   EXPECT_TRUE(callback_token.has_value());
+}
+
+TEST_F(ContextualSearchboxHandlerTest,
+       AddFileFromBrowser_DeepSearchNotAllowed) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  // Set the active tool to Deep Search.
+  handler().input_state_model()->setActiveTool(omnibox::TOOL_MODE_DEEP_SEARCH);
+
+  std::string file_name = "test.pdf";
+  std::string mime_type = "application/pdf";
+  std::vector<uint8_t> test_data = {1, 2, 3};
+  mojo_base::BigBuffer file_data(test_data);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), std::nullopt,
+                                      future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingFileUploadNotAllowedError);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_DisabledInputType) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  // Set the active tool to something other than Unspecified or Deep Search.
+  omnibox::InputState state = handler().input_state_model()->GetInputState();
+  state.active_tool = omnibox::TOOL_MODE_IMAGE_GEN;
+  state.disabled_input_types.push_back(omnibox::INPUT_TYPE_LENS_FILE);
+  handler().input_state_model()->set_state_for_testing(state);
+
+  std::string file_name = "test.pdf";
+  std::string mime_type = "application/pdf";
+  std::vector<uint8_t> test_data = {1, 2, 3};
+  mojo_base::BigBuffer file_data(test_data);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), std::nullopt,
+                                      future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingUnsupportedFileTypeError);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_FileEmpty) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  std::string file_name = "empty.pdf";
+  std::string mime_type = "application/pdf";
+  std::vector<uint8_t> test_data = {};
+  mojo_base::BigBuffer file_data(test_data);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), std::nullopt,
+                                      future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingFileEmptyError);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_FileTooLarge) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  // Set the maximum file size to 2 bytes.
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_max_size_bytes(2);
+
+  std::string file_name = "large.pdf";
+  std::string mime_type = "application/pdf";
+  std::vector<uint8_t> test_data = {1, 2, 3};  // 3 bytes > 2 bytes limit
+  mojo_base::BigBuffer file_data(test_data);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), std::nullopt,
+                                      future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingFileTooLargeError);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_UnsupportedType) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  // Only allow PDF.
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_mime_types_allowed("application/pdf");
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_image_upload()
+      ->set_mime_types_allowed("");
+
+  std::string file_name = "test.txt";
+  std::string mime_type = "text/plain";
+  std::vector<uint8_t> test_data = {1, 2, 3};
+  mojo_base::BigBuffer file_data(test_data);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), std::nullopt,
+                                      future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingUnsupportedFileTypeError);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_MaxImagesExceeded) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  omnibox::InputState state = handler().input_state_model()->GetInputState();
+  state.max_inputs_by_type[omnibox::INPUT_TYPE_LENS_IMAGE] = 0;
+  handler().input_state_model()->set_state_for_testing(state);
+
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_image_upload()
+      ->set_mime_types_allowed("image/jpeg");
+
+  std::string file_name = "test.jpg";
+  std::string mime_type = "image/jpeg";
+  std::vector<uint8_t> test_data = {1, 2, 3};
+  mojo_base::BigBuffer file_data(test_data);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), std::nullopt,
+                                      future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingMaxImagesExceededError);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_MaxPdfsExceeded) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  omnibox::InputState state = handler().input_state_model()->GetInputState();
+  state.max_inputs_by_type[omnibox::INPUT_TYPE_LENS_FILE] = 0;
+  handler().input_state_model()->set_state_for_testing(state);
+
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_mime_types_allowed("application/pdf");
+
+  std::string file_name = "test.pdf";
+  std::string mime_type = "application/pdf";
+  std::vector<uint8_t> test_data = {1, 2, 3};
+  mojo_base::BigBuffer file_data(test_data);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), std::nullopt,
+                                      future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingMaxPdfsExceededError);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_MaxFilesExceeded) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  omnibox::InputState state = handler().input_state_model()->GetInputState();
+  state.max_inputs_by_type[omnibox::INPUT_TYPE_BROWSER_TAB] = 0;
+  handler().input_state_model()->set_state_for_testing(state);
+
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_mime_types_allowed("tab");
+
+  std::string file_name = "test.tab";
+  std::string mime_type = "tab";
+  std::vector<uint8_t> test_data = {1, 2, 3};
+  mojo_base::BigBuffer file_data(test_data);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), std::nullopt,
+                                      future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingMaxFilesExceededError);
+}
+
+TEST_F(ContextualSearchboxHandlerTest,
+       AddFileFromBrowser_MaxTotalFilesExceeded) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  omnibox::InputState state = handler().input_state_model()->GetInputState();
+  state.max_total_inputs = 0;
+  state.max_inputs_by_type[omnibox::INPUT_TYPE_LENS_FILE] =
+      1;  // bypass specific type check
+  handler().input_state_model()->set_state_for_testing(state);
+
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_mime_types_allowed("application/pdf");
+
+  std::string file_name = "test.pdf";
+  std::string mime_type = "application/pdf";
+  std::vector<uint8_t> test_data = {1, 2, 3};
+  mojo_base::BigBuffer file_data(test_data);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), std::nullopt,
+                                      future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingMaxFilesExceededError);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {

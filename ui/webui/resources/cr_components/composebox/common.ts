@@ -80,6 +80,34 @@ export const FILE_VALIDATION_ERRORS_MAP =
         ContextUploadErrorType.kUnknown,
         'composeboxFileUploadValidationFailed',
       ],
+      [
+        ContextUploadErrorType.kBrowserProcessingFileTooLargeError,
+        'composeboxFileUploadInvalidTooLarge',
+      ],
+      [
+        ContextUploadErrorType.kBrowserProcessingFileEmptyError,
+        'composeboxFileUploadInvalidEmptySize',
+      ],
+      [
+        ContextUploadErrorType.kBrowserProcessingMaxFilesExceededError,
+        'maxFilesReachedError',
+      ],
+      [
+        ContextUploadErrorType.kBrowserProcessingUnsupportedFileTypeError,
+        'composeFileTypesAllowedError',
+      ],
+      [
+        ContextUploadErrorType.kBrowserProcessingFileUploadNotAllowedError,
+        'composeboxFileUploadNotAllowed',
+      ],
+      [
+        ContextUploadErrorType.kBrowserProcessingMaxImagesExceededError,
+        'maxImagesReachedError',
+      ],
+      [
+        ContextUploadErrorType.kBrowserProcessingMaxPdfsExceededError,
+        'maxPdfsReachedError',
+      ],
     ]);
 
 export class ComposeboxFile {

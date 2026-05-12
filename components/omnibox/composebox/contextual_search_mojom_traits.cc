@@ -279,6 +279,31 @@ EnumTraits<UsedContextUploadErrorType,
       return UsedContextUploadErrorType::kAborted;
     case contextual_search::ContextUploadErrorType::kImageProcessingError:
       return UsedContextUploadErrorType::kImageProcessingError;
+    case contextual_search::ContextUploadErrorType::
+        kBrowserProcessingFileTooLargeError:
+      return UsedContextUploadErrorType::kBrowserProcessingFileTooLargeError;
+    case contextual_search::ContextUploadErrorType::
+        kBrowserProcessingFileEmptyError:
+      return UsedContextUploadErrorType::kBrowserProcessingFileEmptyError;
+    case contextual_search::ContextUploadErrorType::
+        kBrowserProcessingMaxFilesExceededError:
+      return UsedContextUploadErrorType::
+          kBrowserProcessingMaxFilesExceededError;
+    case contextual_search::ContextUploadErrorType::
+        kBrowserProcessingUnsupportedFileTypeError:
+      return UsedContextUploadErrorType::
+          kBrowserProcessingUnsupportedFileTypeError;
+    case contextual_search::ContextUploadErrorType::
+        kBrowserProcessingFileUploadNotAllowedError:
+      return UsedContextUploadErrorType::
+          kBrowserProcessingFileUploadNotAllowedError;
+    case contextual_search::ContextUploadErrorType::
+        kBrowserProcessingMaxImagesExceededError:
+      return UsedContextUploadErrorType::
+          kBrowserProcessingMaxImagesExceededError;
+    case contextual_search::ContextUploadErrorType::
+        kBrowserProcessingMaxPdfsExceededError:
+      return UsedContextUploadErrorType::kBrowserProcessingMaxPdfsExceededError;
   }
   return UsedContextUploadErrorType::kUnknown;
 }
@@ -304,6 +329,28 @@ EnumTraits<UsedContextUploadErrorType,
       return contextual_search::ContextUploadErrorType::kAborted;
     case UsedContextUploadErrorType::kImageProcessingError:
       return contextual_search::ContextUploadErrorType::kImageProcessingError;
+    case UsedContextUploadErrorType::kBrowserProcessingFileTooLargeError:
+      return contextual_search::ContextUploadErrorType::
+          kBrowserProcessingFileTooLargeError;
+    case UsedContextUploadErrorType::kBrowserProcessingFileEmptyError:
+      return contextual_search::ContextUploadErrorType::
+          kBrowserProcessingFileEmptyError;
+    case UsedContextUploadErrorType::kBrowserProcessingMaxFilesExceededError:
+      return contextual_search::ContextUploadErrorType::
+          kBrowserProcessingMaxFilesExceededError;
+    case UsedContextUploadErrorType::kBrowserProcessingUnsupportedFileTypeError:
+      return contextual_search::ContextUploadErrorType::
+          kBrowserProcessingUnsupportedFileTypeError;
+    case UsedContextUploadErrorType::
+        kBrowserProcessingFileUploadNotAllowedError:
+      return contextual_search::ContextUploadErrorType::
+          kBrowserProcessingFileUploadNotAllowedError;
+    case UsedContextUploadErrorType::kBrowserProcessingMaxImagesExceededError:
+      return contextual_search::ContextUploadErrorType::
+          kBrowserProcessingMaxImagesExceededError;
+    case UsedContextUploadErrorType::kBrowserProcessingMaxPdfsExceededError:
+      return contextual_search::ContextUploadErrorType::
+          kBrowserProcessingMaxPdfsExceededError;
   }
   NOTREACHED();
 }

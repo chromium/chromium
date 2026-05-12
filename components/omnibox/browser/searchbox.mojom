@@ -128,6 +128,8 @@ struct FileAttachment {
   // A data URL for an image preview of the file (may only be supplied for
   // images but is independent of MIME type).
   string? image_data_url;
+  // The error type if the upload failed.
+  composebox_query.mojom.ContextUploadErrorType? error_type;
 };
 
 // Represents a tab attachment chosen browser-side and communicated to WebUI.

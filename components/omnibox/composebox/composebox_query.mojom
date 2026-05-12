@@ -11,6 +11,7 @@ struct AimUrlParam {
   string param_value;
 };
 
+// LINT.IfChange(ContextUploadStatus)
 // Upload status of a context.
 enum ContextUploadStatus {
   // Not uploaded.
@@ -32,7 +33,9 @@ enum ContextUploadStatus {
   // File is being replaced.
   kUploadReplaced = 8,
 };
+// LINT.ThenChange(//components/contextual_search/contextual_search_types.h:ContextUploadStatus)
 
+// LINT.IfChange(ContextUploadErrorType)
 // For upload error notifications and metrics.
 enum ContextUploadErrorType {
   // Unknown.
@@ -49,7 +52,22 @@ enum ContextUploadErrorType {
   kAborted = 5,
   // Image processing error.
   kImageProcessingError = 6,
+  // Browser processing error: File is too large.
+  kBrowserProcessingFileTooLargeError = 7,
+  // Browser processing error: File is empty.
+  kBrowserProcessingFileEmptyError = 8,
+  // Browser processing error: Maximum number of files exceeded.
+  kBrowserProcessingMaxFilesExceededError = 9,
+  // Browser processing error: Unsupported file type.
+  kBrowserProcessingUnsupportedFileTypeError = 10,
+  // Browser processing error: File upload not allowed.
+  kBrowserProcessingFileUploadNotAllowedError = 11,
+  // Browser processing error: Maximum number of images exceeded.
+  kBrowserProcessingMaxImagesExceededError = 12,
+  // Browser processing error: Maximum number of PDFs exceeded.
+  kBrowserProcessingMaxPdfsExceededError = 13,
 };
+// LINT.ThenChange(//components/contextual_search/contextual_search_types.h:ContextUploadErrorType)
 
 // The AIM model mode.
 // LINT.IfChange(ModelMode)

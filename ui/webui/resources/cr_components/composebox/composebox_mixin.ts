@@ -1085,9 +1085,10 @@ export const ComposeboxEmbedderMixin =
               break;
             case ProcessFilesError.FILE_TOO_LARGE:
               metric = ComposeboxFileValidationError.FILE_SIZE_TOO_LARGE;
-              this.errorMessage =
-                  this.i18n('composeboxFileUploadInvalidTooLarge',
-                            Math.floor(this.maxFileSize / (1000 * 1000)));
+              const unitMiB = 1024 * 1024;
+              this.errorMessage = this.i18n(
+                  'composeboxFileUploadInvalidTooLarge',
+                  Math.floor(this.maxFileSize / unitMiB));
               break;
             case ProcessFilesError.INVALID_TYPE:
               this.errorMessage = this.i18n('composeFileTypesAllowedError');
@@ -1424,6 +1425,60 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        // LINT.IfChange(getValidationError)
+        getValidationError(
+            inputType: InputType, fileType: string, fileSize: number,
+            totalCount: number, currentTypeCount: number): ProcessFilesError {
+          if (this.inputState?.activeTool === ToolMode.kDeepSearch) {
+            return ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED;
+          }
+
+          if (this.inputState?.activeTool !== ToolMode.kUnspecified) {
+            const disabledTypes = this.inputState?.disabledInputTypes || [];
+            if (disabledTypes.includes(inputType)) {
+              return ProcessFilesError.INVALID_TYPE;
+            }
+          }
+
+          if (fileSize === 0 || fileSize > this.maxFileSize) {
+            return fileSize === 0 ? ProcessFilesError.FILE_EMPTY :
+                                    ProcessFilesError.FILE_TOO_LARGE;
+          }
+
+          if (!this.isFileAllowed(fileType)) {
+            return ProcessFilesError.INVALID_TYPE;
+          }
+
+          let maxTotal = this.maxFileCount;
+          if (this.inputState && this.inputState.maxTotalInputs > 0) {
+            maxTotal = this.inputState.maxTotalInputs;
+          }
+
+          let maxType = maxTotal;
+          if (this.inputState &&
+              this.inputState.maxInputsByType[inputType] !== undefined) {
+            maxType = this.inputState.maxInputsByType[inputType];
+          }
+
+          if (currentTypeCount >= maxType) {
+            switch (inputType) {
+              case InputType.kLensImage:
+                return ProcessFilesError.MAX_IMAGES_EXCEEDED;
+              case InputType.kLensFile:
+                return ProcessFilesError.MAX_PDFS_EXCEEDED;
+              default:
+                return ProcessFilesError.MAX_FILES_EXCEEDED;
+            }
+          }
+
+          if (totalCount >= maxTotal) {
+            return ProcessFilesError.MAX_FILES_EXCEEDED;
+          }
+
+          return ProcessFilesError.NONE;
+        }
+        // LINT.ThenChange(//chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.cc:ContextualSearchboxHandler_AddFileContextFromBrowser)
+
         processFiles(files: FileList|null) {
           if (!files || files.length === 0) {
             return;
@@ -1461,61 +1516,18 @@ export const ComposeboxEmbedderMixin =
 
           for (const file of files) {
             const inputType = this.getInputType(file.type);
-            if (this.inputState?.activeTool !== ToolMode.kUnspecified) {
-              const disabledTypes = this.inputState?.disabledInputTypes || [];
-              if (disabledTypes.includes(inputType)) {
-                errorToDisplay =
-                    Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
-                continue;
-              }
-            }
-
-            if (file.size === 0 || file.size > this.maxFileSize) {
-              const sizeError = file.size === 0 ?
-                  ProcessFilesError.FILE_EMPTY :
-                  ProcessFilesError.FILE_TOO_LARGE;
-              errorToDisplay = Math.max(errorToDisplay, sizeError);
-              continue;
-            }
-
-            if (!this.isFileAllowed(file.type)) {
-              errorToDisplay =
-                  Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
-              continue;
-            }
-
-            let maxType = maxTotal;
-            if (this.inputState &&
-                this.inputState.maxInputsByType[inputType] !== undefined) {
-              maxType = this.inputState.maxInputsByType[inputType];
-            }
-
             const currentTypeCount = counts.get(inputType) || 0;
+            const error = this.getValidationError(
+                inputType, file.type, file.size, totalCount, currentTypeCount);
 
-            if (totalCount < maxTotal && currentTypeCount < maxType) {
-              filesToUpload.push(file);
-              totalCount++;
-              counts.set(inputType, currentTypeCount + 1);
-            } else {
-              if (currentTypeCount >= maxType) {
-                switch (inputType) {
-                  case InputType.kLensImage:
-                    errorToDisplay = Math.max(
-                        errorToDisplay, ProcessFilesError.MAX_IMAGES_EXCEEDED);
-                    break;
-                  case InputType.kLensFile:
-                    errorToDisplay = Math.max(
-                        errorToDisplay, ProcessFilesError.MAX_PDFS_EXCEEDED);
-                    break;
-                  default:
-                    errorToDisplay = Math.max(
-                        errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
-                }
-              } else {
-                errorToDisplay = Math.max(
-                    errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
-              }
+            if (error !== ProcessFilesError.NONE) {
+              errorToDisplay = Math.max(errorToDisplay, error);
+              continue;
             }
+
+            filesToUpload.push(file);
+            totalCount++;
+            counts.set(inputType, currentTypeCount + 1);
           }
 
           if (filesToUpload.length > 0) {
@@ -1916,6 +1928,9 @@ export interface ComposeboxEmbedderMixinInterface extends
   clearAllInputs(
       querySubmitted: boolean, shouldBlockAutoSuggestedTabs: boolean): void;
   handleProcessFilesError(error: ProcessFilesError): void;
+  getValidationError(
+      inputType: InputType, fileType: string, fileSize: number,
+      totalCount: number, currentTypeCount: number): ProcessFilesError;
   isFileAllowed(fileType: string): boolean;
   isMimeTypeAllowed(mimeType: string, allowedTypes: string[]): boolean;
   getInputType(type: string): InputType;

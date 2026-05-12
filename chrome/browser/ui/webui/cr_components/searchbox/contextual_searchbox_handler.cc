@@ -14,6 +14,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
@@ -50,6 +52,7 @@
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -85,6 +88,45 @@ constexpr int kThumbnailHeight = 200;
 #if !BUILDFLAG(IS_ANDROID)
 constexpr size_t kMaxSize = 100 * 1000 * 1000;
 #endif
+
+bool IsMimeTypeAllowed(const std::string& mime_type,
+                       const std::string& allowed_types_str) {
+  std::string lower_mime_type = base::ToLowerASCII(mime_type);
+  std::vector<std::string> allowed_types = base::SplitString(
+      allowed_types_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const std::string& type : allowed_types) {
+    if (base::EndsWith(type, "/*", base::CompareCase::SENSITIVE)) {
+      std::string prefix = type.substr(0, type.length() - 1);
+      if (base::StartsWith(lower_mime_type, prefix,
+                           base::CompareCase::SENSITIVE)) {
+        return true;
+      }
+    } else if (lower_mime_type == type) {
+      return true;
+    }
+  }
+  return false;
+}
+
+omnibox::InputType GetInputType(const std::string& type,
+                                const std::string& image_file_types) {
+  if (type == "tab") {
+    return omnibox::INPUT_TYPE_BROWSER_TAB;
+  }
+  if (type == "image") {
+    return omnibox::INPUT_TYPE_LENS_IMAGE;
+  }
+  if (type == "pdf") {
+    return omnibox::INPUT_TYPE_LENS_FILE;
+  }
+
+  if (IsMimeTypeAllowed(type, image_file_types)) {
+    return omnibox::INPUT_TYPE_LENS_IMAGE;
+  }
+
+  // Arbitrary file types are treated as Lens files.
+  return omnibox::INPUT_TYPE_LENS_FILE;
+}
 
 }  // namespace
 
@@ -486,6 +528,7 @@ void ContextualSearchboxHandler::AddFileContext(
       std::move(file_bytes), CreateImageEncodingOptions());
 }
 
+// LINT.IfChange(ContextualSearchboxHandler_AddFileContextFromBrowser)
 void ContextualSearchboxHandler::AddFileContextFromBrowser(
     std::string file_name,
     std::string mime_type,
@@ -506,6 +549,106 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
     return;
   }
 
+  auto composebox_config =
+      ntp_composebox::FeatureConfig::Get().config.composebox();
+  const std::string image_mime_types =
+      composebox_config.image_upload().mime_types_allowed();
+  const std::string attachment_mime_types =
+      composebox_config.attachment_upload().mime_types_allowed();
+
+  omnibox::InputType input_type = GetInputType(mime_type, image_mime_types);
+
+  omnibox::InputState input_state = GetInputState();
+
+  if (input_state.active_tool == omnibox::TOOL_MODE_DEEP_SEARCH) {
+    std::move(callback).Run(
+        base::unexpected(contextual_search::ContextUploadErrorType::
+                             kBrowserProcessingFileUploadNotAllowedError));
+    return;
+  } else if (input_state.active_tool != omnibox::TOOL_MODE_UNSPECIFIED) {
+    auto& disabled = input_state.disabled_input_types;
+    if (std::find(disabled.begin(), disabled.end(), input_type) !=
+        disabled.end()) {
+      std::move(callback).Run(
+          base::unexpected(contextual_search::ContextUploadErrorType::
+                               kBrowserProcessingUnsupportedFileTypeError));
+      return;
+    }
+  }
+
+  uint64_t file_size = file_bytes.size();
+  uint64_t max_file_size =
+      composebox_config.attachment_upload().max_size_bytes();
+  if (file_size == 0 || file_size > max_file_size) {
+    auto error_type = file_size == 0
+                          ? contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingFileEmptyError
+                          : contextual_search::ContextUploadErrorType::
+                                kBrowserProcessingFileTooLargeError;
+    std::move(callback).Run(base::unexpected(error_type));
+    return;
+  }
+
+  bool is_file_allowed = lens::features::IsLensSendRawFileMediaTypesEnabled() ||
+                         IsMimeTypeAllowed(mime_type, image_mime_types) ||
+                         IsMimeTypeAllowed(mime_type, attachment_mime_types);
+  if (!is_file_allowed) {
+    std::move(callback).Run(
+        base::unexpected(contextual_search::ContextUploadErrorType::
+                             kBrowserProcessingUnsupportedFileTypeError));
+    return;
+  }
+
+  int total_count = 0;
+  int current_type_count = 0;
+  auto uploaded_files =
+      contextual_session_handle->GetUploadedContextFileInfos();
+  total_count = uploaded_files.size();
+  for (const auto& file : uploaded_files) {
+    if (GetInputType(file.mime_type_string.value_or(""), image_mime_types) ==
+        input_type) {
+      current_type_count++;
+    }
+  }
+
+  int max_total = composebox_config.max_num_files();
+  if (input_state.max_total_inputs > 0) {
+    max_total = input_state.max_total_inputs;
+  }
+
+  int max_type = max_total;
+  if (input_state.max_inputs_by_type.find(input_type) !=
+      input_state.max_inputs_by_type.end()) {
+    max_type = input_state.max_inputs_by_type.at(input_type);
+  }
+
+  if (current_type_count >= max_type) {
+    contextual_search::ContextUploadErrorType error_type;
+    switch (input_type) {
+      case omnibox::INPUT_TYPE_LENS_IMAGE:
+        error_type = contextual_search::ContextUploadErrorType::
+            kBrowserProcessingMaxImagesExceededError;
+        break;
+      case omnibox::INPUT_TYPE_LENS_FILE:
+        error_type = contextual_search::ContextUploadErrorType::
+            kBrowserProcessingMaxPdfsExceededError;
+        break;
+      default:
+        error_type = contextual_search::ContextUploadErrorType::
+            kBrowserProcessingMaxFilesExceededError;
+        break;
+    }
+    std::move(callback).Run(base::unexpected(error_type));
+    return;
+  }
+
+  if (total_count >= max_total) {
+    std::move(callback).Run(
+        base::unexpected(contextual_search::ContextUploadErrorType::
+                             kBrowserProcessingMaxFilesExceededError));
+    return;
+  }
+
   auto context_token = contextual_session_handle->CreateContextToken();
   // Return the token early, so that listeners can immediately begin
   // listening for file upload updates.
@@ -516,6 +659,7 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
       context_token, file_name, mime_type, std::move(file_bytes),
       std::move(image_encoding_options));
 }
+// LINT.ThenChange(//ui/webui/resources/cr_components/composebox/composebox_mixin.ts:getValidationError)
 
 void ContextualSearchboxHandler::ContinueAddTabContext(
     int32_t tab_id,

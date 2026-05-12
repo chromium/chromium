@@ -538,6 +538,20 @@ std::string ContextualSearchMetricsRecorder::FileErrorToString(
       return "AbortedError";
     case ContextUploadErrorType::kImageProcessingError:
       return "ImageProcessingError";
+    case ContextUploadErrorType::kBrowserProcessingFileTooLargeError:
+      return "BrowserProcessingFileTooLargeError";
+    case ContextUploadErrorType::kBrowserProcessingFileEmptyError:
+      return "BrowserProcessingFileEmptyError";
+    case ContextUploadErrorType::kBrowserProcessingMaxFilesExceededError:
+      return "BrowserProcessingMaxFilesExceededError";
+    case ContextUploadErrorType::kBrowserProcessingUnsupportedFileTypeError:
+      return "BrowserProcessingUnsupportedFileTypeError";
+    case ContextUploadErrorType::kBrowserProcessingFileUploadNotAllowedError:
+      return "BrowserProcessingFileUploadNotAllowedError";
+    case ContextUploadErrorType::kBrowserProcessingMaxImagesExceededError:
+      return "BrowserProcessingMaxImagesExceededError";
+    case ContextUploadErrorType::kBrowserProcessingMaxPdfsExceededError:
+      return "BrowserProcessingMaxPdfsExceededError";
   }
 }
 

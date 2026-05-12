@@ -629,8 +629,9 @@ TEST(ContextualSearchTypesTest, ContextUploadStatus_EnumSize) {
 
 TEST(ContextualSearchTypesTest, ContextUploadErrorType_EnumSize) {
   // The expected value should be the integer value of `kMaxValue`.
-  // The current kMaxValue is `kImageProcessingError`, which has a value of 6.
-  EXPECT_EQ(static_cast<int>(ContextUploadErrorType::kMaxValue), 6);
+  // The current kMaxValue is `kBrowserProcessingMaxPdfsExceededError`, which
+  // has a value of 13.
+  EXPECT_EQ(static_cast<int>(ContextUploadErrorType::kMaxValue), 13);
 }
 
 }  // namespace contextual_search

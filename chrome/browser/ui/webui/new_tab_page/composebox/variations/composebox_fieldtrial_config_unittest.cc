@@ -75,7 +75,8 @@ TEST_F(NtpComposeboxFieldTrialConfigTest,
               "heif,image/heic");
 
   auto attachment_upload = config.composebox().attachment_upload();
-  EXPECT_EQ(attachment_upload.max_size_bytes(), 200000000);
+  // File upload size limit: 100 MiB.
+  EXPECT_EQ(attachment_upload.max_size_bytes(), 100 * 1024 * 1024);
   EXPECT_THAT(attachment_upload.mime_types_allowed(), ".pdf,application/pdf");
 
   EXPECT_EQ(composebox.input_placeholder_text(),

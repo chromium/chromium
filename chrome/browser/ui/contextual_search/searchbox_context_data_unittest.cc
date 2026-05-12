@@ -64,7 +64,7 @@ TEST_F(SearchboxContextDataTest, SetAndTakePendingContextWithFileAttachment) {
       searchbox::mojom::SearchContextAttachment::NewFileAttachment(
           searchbox::mojom::FileAttachment::New(
               base::UnguessableToken::Create(), kTestPdf, kApplicationPdf,
-              kImageUrl)));
+              kImageUrl, std::nullopt)));
   data.SetPendingContext(std::move(context));
 
   std::unique_ptr<SearchboxContextData::Context> taken_context =
