@@ -27,6 +27,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.h"
@@ -158,6 +159,18 @@ std::string GetDeviceNameSuffixFromSyncUserAgent(
     return " (developer build)";
   }
   return "";
+}
+
+void FilterStableChannelSessions(
+    const syncer::DeviceInfoTracker& device_info_tracker,
+    std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                        VectorExperimental>>& sessions) {
+  std::erase_if(sessions, [&](const sync_sessions::SyncedSession* session) {
+    const syncer::DeviceInfo* device_info =
+        device_info_tracker.GetDeviceInfo(session->GetSessionTag());
+    return device_info && device_info->sync_user_agent().find(
+                              "channel(stable)") != std::string::npos;
+  });
 }
 
 }  // namespace
@@ -356,13 +369,20 @@ ForeignSessionHandler::GetForeignSessionsInternal() {
     std::map<std::string, int> name_counts;
     const syncer::DeviceInfoTracker* device_info_tracker = nullptr;
     if (side_panel_ui_) {
-      for (const sync_sessions::SyncedSession* session : sessions) {
-        ++name_counts[session->GetSessionName()];
-      }
       syncer::DeviceInfoSyncService* device_info_sync_service =
           DeviceInfoSyncServiceFactory::GetForProfile(profile_);
       if (device_info_sync_service) {
         device_info_tracker = device_info_sync_service->GetDeviceInfoTracker();
+      }
+
+      if (base::FeatureList::IsEnabled(
+              features::kTabsFromOtherDevicesSidePanelExcludeStableChannel) &&
+          device_info_tracker) {
+        FilterStableChannelSessions(*device_info_tracker, sessions);
+      }
+
+      for (const sync_sessions::SyncedSession* session : sessions) {
+        ++name_counts[session->GetSessionName()];
       }
     }
 

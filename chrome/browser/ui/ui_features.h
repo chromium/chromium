@@ -299,6 +299,10 @@ BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
 // If enabled, the "Tabs from other devices" side panel will be available.
 BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanel);
 
+// If enabled, Stable-channel instances of Chrome will be hidden from the "Tabs
+// from other devices" side panel.
+BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanelExcludeStableChannel);
+
 // If enabled, the "Tabs from other devices" toolbar button will be pinned by
 // default.
 BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanelPinnedByDefault);

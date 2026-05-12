@@ -1707,7 +1707,6 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
      kOmniboxToolbeltAllActionsZeroTypedInputs, nullptr},
 };
 
-
 const FeatureEntry::FeatureParam kOmniboxMlUrlScoringEnabledWithFixes[] = {
     {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
     {"MlUrlScoringShortcutDocumentSignals", "true"},
@@ -2774,13 +2773,16 @@ const FeatureEntry::Choice kTabsFromOtherDevicesSidePanelChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {"List View", switches::kEnableFeatures,
      "TabsFromOtherDevicesSidePanel,"
+     "TabsFromOtherDevicesSidePanelExcludeStableChannel,"
      "TabsFromOtherDevicesSidePanelPinnedByDefault"},
     {"Screenshot View", switches::kEnableFeatures,
      "TabsFromOtherDevicesSidePanel,"
+     "TabsFromOtherDevicesSidePanelExcludeStableChannel,"
      "TabsFromOtherDevicesSidePanelPinnedByDefault,"
      "SyncTabScreenshots"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
      "TabsFromOtherDevicesSidePanel,"
+     "TabsFromOtherDevicesSidePanelExcludeStableChannel,"
      "TabsFromOtherDevicesSidePanelPinnedByDefault,"
      "SyncTabScreenshots"},
 };
@@ -11242,7 +11244,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kScheduleWindowCleaning)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-use-display-topology",
      flag_descriptions::kAndroidUseDisplayTopologyName,
@@ -11571,7 +11572,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBookmarkTabGroupConversionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kBookmarkTabGroupConversion)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-
 
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-android-desktop-suppress-accessory-on-empty",

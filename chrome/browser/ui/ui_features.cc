@@ -347,6 +347,9 @@ BASE_FEATURE(kByDateHistoryInSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabsFromOtherDevicesSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabsFromOtherDevicesSidePanelExcludeStableChannel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabsFromOtherDevicesSidePanelPinnedByDefault,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
