@@ -35,7 +35,8 @@ bool InProgressInfo::operator==(const InProgressInfo& other) const {
          auto_resume_count == other.auto_resume_count &&
          credentials_mode == other.credentials_mode &&
          range_request_from == other.range_request_from &&
-         range_request_to == other.range_request_to;
+         range_request_to == other.range_request_to &&
+         fetched_via_service_worker == other.fetched_via_service_worker;
 }
 
 }  // namespace download

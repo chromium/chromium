@@ -466,6 +466,19 @@ void InProgressDownloadManager::ResumeInterruptedDownload(
   if (!url_loader_factory_)
     return;
 
+  // If the original response came from a Service Worker, the bytes on disk
+  // came from event.respondWith(); resuming against `url_loader_factory_`
+  // would fetch unrelated network bytes and corrupt the file. The IPDM has
+  // no SW context, so defer: DownloadManagerImpl::ImportInProgressDownloads
+  // will reattach as the delegate, and the next resume runs through
+  // DownloadManagerImpl which restarts the download against the SW.
+  // `skip_service_worker_interception` is set by
+  // DownloadItemImpl::ResumeInterruptedDownload to true exactly when the
+  // original was network-fetched, so the negation identifies SW-fetched.
+  if (!params->skip_service_worker_interception()) {
+    return;
+  }
+
   BeginDownload(std::move(params), url_loader_factory_->Clone(), false,
                 serialized_embedder_download_data, GURL(), GURL());
 }

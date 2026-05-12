@@ -27,6 +27,7 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/in_progress_download_manager.h"
 #include "components/download/public/common/url_download_handler.h"
+#include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -299,6 +300,18 @@ class CONTENT_EXPORT DownloadManagerImpl
       bool is_new_download,
       const StoragePartitionConfig& storage_partition_config,
       bool is_download_allowed);
+
+  // Continues the download after the service worker interceptor has had a
+  // chance to handle the request. If `sw_factory` is non-null, the service
+  // worker handled the request and that factory is used. Otherwise, the
+  // normal network factory is used.
+  void ContinueResourceDownloadAfterServiceWorkerIntercept(
+      std::unique_ptr<download::DownloadUrlParameters> params,
+      bool is_new_download,
+      const StoragePartitionConfig& storage_partition_config,
+      const GURL& tab_url,
+      const GURL& tab_referrer_url,
+      scoped_refptr<network::SharedURLLoaderFactory> sw_factory);
 
   // Whether |next_download_id_| is initialized.
   bool IsNextIdInitialized() const;

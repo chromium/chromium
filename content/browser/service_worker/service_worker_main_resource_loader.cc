@@ -226,8 +226,12 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   TRACE_EVENT("ServiceWorker", "ServiceWorkerMainResourceLoader::StartRequest",
               perfetto::Flow::FromPointer(this), "url", request.url.spec());
+  // Downloads ("Save link as", <a download>) arrive here with destination
+  // kEmpty per the Fetch spec — they are main resources even though they
+  // aren't frames/workers. See crbug.com/40410035.
   DCHECK(blink::ServiceWorkerLoaderHelpers::IsMainRequestDestination(
-      request.destination));
+             request.destination) ||
+         request.destination == network::mojom::RequestDestination::kEmpty);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   request_id_ = request_id;

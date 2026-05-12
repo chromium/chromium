@@ -52,7 +52,8 @@ DownloadUrlParameters::DownloadUrlParameters(
       download_source_(DownloadSource::UNKNOWN),
       require_safety_checks_(true),
       has_user_gesture_(false),
-      update_first_party_url_on_redirect_(true) {}
+      update_first_party_url_on_redirect_(true),
+      skip_service_worker_interception_(false) {}
 
 DownloadUrlParameters::~DownloadUrlParameters() = default;
 

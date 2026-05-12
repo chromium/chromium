@@ -140,6 +140,11 @@ TEST_F(DownloadDBConversionsTest, InProgressInfo) {
   info.range_request_from = 5;
   info.range_request_from = 10;
   EXPECT_EQ(info, InProgressInfoFromProto(InProgressInfoToProto(info)));
+
+  // fetched_via_service_worker must round-trip; the resume-on-restart
+  // policy depends on it surviving browser restart.
+  info.fetched_via_service_worker = true;
+  EXPECT_EQ(info, InProgressInfoFromProto(InProgressInfoToProto(info)));
 }
 
 TEST_F(DownloadDBConversionsTest, UkmInfo) {

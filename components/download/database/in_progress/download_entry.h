@@ -49,6 +49,9 @@ struct DownloadEntry {
   // downloaded.
   bool fetch_error_body = false;
 
+  // True if a Service Worker fetch handler produced the original response.
+  bool fetched_via_service_worker = false;
+
   // Request header key/value pairs that will be added to the download HTTP
   // request.
   DownloadUrlParameters::RequestHeadersType request_headers;

@@ -581,6 +581,8 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   auto range_request_offset = item.GetRangeRequestOffset();
   in_progress_info.range_request_from = range_request_offset.first;
   in_progress_info.range_request_to = range_request_offset.second;
+  in_progress_info.fetched_via_service_worker =
+      item.fetched_via_service_worker();
 
   download_info.in_progress_info = std::move(in_progress_info);
 
@@ -601,10 +603,13 @@ std::unique_ptr<DownloadEntry> CreateDownloadEntryFromDownloadDBEntry(
   if (!ukm_info || !in_progress_info)
     return nullptr;
 
-  return std::make_unique<DownloadEntry>(
+  auto download_entry = std::make_unique<DownloadEntry>(
       entry->download_info->guid, std::string(), ukm_info->download_source,
       in_progress_info->fetch_error_body, in_progress_info->request_headers,
       ukm_info->ukm_download_id);
+  download_entry->fetched_via_service_worker =
+      in_progress_info->fetched_via_service_worker;
+  return download_entry;
 }
 
 uint64_t GetUniqueDownloadId() {

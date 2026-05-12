@@ -423,6 +423,8 @@ DownloadItemImpl::DownloadItemImpl(
     request_headers_ = download_entry->request_headers;
     ukm_download_id_ = download_entry->ukm_download_id;
     bytes_wasted_ = download_entry->bytes_wasted;
+    request_info_.fetched_via_service_worker =
+        download_entry->fetched_via_service_worker;
   } else {
     ukm_download_id_ = ukm::NoURLSourceId();
   }
@@ -480,6 +482,7 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
       allow_auto_open_after_completion_(info.allow_auto_open_after_completion)
 #endif  // BUILDFLAG(IS_ANDROID)
 {
+  request_info_.fetched_via_service_worker = info.fetched_via_service_worker;
   delegate_->Attach();
   Init(true /* actively downloading */, TYPE_ACTIVE_DOWNLOAD);
   allow_metered_ |= delegate_->IsActiveNetworkMetered();
@@ -2542,6 +2545,13 @@ void DownloadItemImpl::ResumeInterruptedDownload(
 
   // Reset the appropriate state if restarting.
   ResumeMode mode = GetResumeMode();
+  if (request_info_.fetched_via_service_worker) {
+    // SW responses can't be range-served, so resumption must restart from
+    // offset 0 and re-dispatch the fetch event.
+    mode = (source == ResumptionRequestSource::USER)
+               ? ResumeMode::USER_RESTART
+               : ResumeMode::IMMEDIATE_RESTART;
+  }
   if (mode == ResumeMode::IMMEDIATE_RESTART ||
       mode == ResumeMode::USER_RESTART) {
     LOG_IF(ERROR, !GetFullPath().empty())
@@ -2584,6 +2594,13 @@ void DownloadItemImpl::ResumeInterruptedDownload(
   // associated renderer) goes away before a response is received.
   std::unique_ptr<DownloadUrlParameters> download_params(
       new DownloadUrlParameters(GetURL(), traffic_annotation));
+  // A resume of a network-fetched download must not be routed through the
+  // SW interceptor: the SW response is a single full body that would be
+  // appended at the resume offset (or restart from network mismatched).
+  // A restart of a SW-fetched download keeps SW interception so the fetch
+  // event runs again from offset 0.
+  download_params->set_skip_service_worker_interception(
+      !request_info_.fetched_via_service_worker);
   download_params->set_file_path(GetFullPath());
   int64_t offset = 0;
   if (received_slices_.size() > 0) {

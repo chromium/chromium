@@ -3599,6 +3599,7 @@ if (!is_android) {
       "../browser/download/download_frame_policy_browsertest.cc",
       "../browser/download/notification/multi_profile_download_notifier_browsertest.cc",
       "../browser/download/save_page_browsertest.cc",
+      "../browser/download/service_worker_download_browsertest.cc",
       "../browser/enterprise/browser_management/management_service_browsertest.cc",
       "../browser/enterprise/incognito/incognito_navigation_throttle_browsertest.cc",
       "../browser/enterprise/reporting/extension_request/extension_request_notification_browsertest.cc",

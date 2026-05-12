@@ -172,6 +172,7 @@ source_set("unit_tests") {
     "download_db_cache_unittest.cc",
     "download_file_unittest.cc",
     "download_item_impl_unittest.cc",
+    "download_job_factory_unittest.cc",
     "download_path_reservation_tracker_unittest.cc",
     "download_stats_unittest.cc",
     "download_ukm_helper_unittest.cc",

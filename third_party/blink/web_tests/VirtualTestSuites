@@ -104,6 +104,25 @@
     ],
     "expires": "Jan 1, 2027"
   },
+  "Service Worker interception of downloads (crbug.com/40410035). The feature",
+  "is disabled by default; this suite enables it so the new fetch-event-",
+  "download tests can verify the FetchEvent dispatch path.",
+  {
+    "prefix": "service-worker-intercept-downloads",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/service-workers/service-worker/fetch-event-download.https.html",
+      "external/wpt/service-workers/service-worker/fetch-event-download-respond-with.https.html",
+      "external/wpt/service-workers/service-worker/fetch-event-download-fallback.https.html",
+      "external/wpt/service-workers/service-worker/fetch-event-download-out-of-scope.https.html"
+    ],
+    "args": ["--enable-features=ServiceWorkerInterceptDownloads"],
+    "exclusive_tests": "ALL",
+    "owners": [
+      "jfernandez@igalia.com"
+    ],
+    "expires": "Apr 22, 2027"
+  },
   "This suite tests some android features on Linux and should never expire.",
   {
     "prefix": "android",

@@ -63,6 +63,17 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       scoped_refptr<network::SharedURLLoaderFactory>
           network_url_loader_factory);
 
+  // Creates a ServiceWorkerMainResourceLoaderInterceptor for a download
+  // request ("Save link as", "Save image as", <a download>). Returns nullptr
+  // if the interceptor could not be created for the URL.
+  // Precondition: `resource_request.trusted_params` must be set; its
+  // `isolation_info` is consumed when constructing the ServiceWorkerClient.
+  // Requires features::kServiceWorkerInterceptDownloads to be enabled.
+  static std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
+  CreateForDownload(
+      const network::ResourceRequest& resource_request,
+      base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle);
+
   ServiceWorkerMainResourceLoaderInterceptor(
       const ServiceWorkerMainResourceLoaderInterceptor&) = delete;
   ServiceWorkerMainResourceLoaderInterceptor& operator=(

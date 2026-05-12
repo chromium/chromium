@@ -129,6 +129,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     // content.
     int64_t range_request_from = kInvalidRange;
     int64_t range_request_to = kInvalidRange;
+
+    // True if a Service Worker fetch handler produced the original response.
+    // On resume such downloads cannot be range-continued (SW responses are
+    // one-shot full bodies), so resumption forces a restart and re-dispatches
+    // the fetch event from offset 0.
+    bool fetched_via_service_worker = false;
   };
 
   // Information about the current state of the download destination.
@@ -423,6 +429,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   }
 
   bool fetch_error_body() const { return fetch_error_body_; }
+
+  bool fetched_via_service_worker() const {
+    return request_info_.fetched_via_service_worker;
+  }
 
   uint64_t ukm_download_id() const { return ukm_download_id_; }
 

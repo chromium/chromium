@@ -300,6 +300,15 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     permissions_policy_ = permissions_policy.CopyAsOptional();
   }
 
+  // When true, the Service Worker download interceptor (gated by
+  // features::kServiceWorkerInterceptDownloads) must not run for this request.
+  // Set on resumes of network-fetched downloads so the resume continues
+  // against the network factory rather than being intercepted by a SW that
+  // would return an unrelated full response.
+  void set_skip_service_worker_interception(bool skip) {
+    skip_service_worker_interception_ = skip;
+  }
+
   OnStartedCallback& callback() { return callback_; }
   bool content_initiated() const { return content_initiated_; }
   const std::string& last_modified() const { return last_modified_; }
@@ -359,6 +368,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   std::optional<network::PermissionsPolicy> permissions_policy() const {
     return permissions_policy_;
   }
+  bool skip_service_worker_interception() const {
+    return skip_service_worker_interception_;
+  }
 
   // STATE CHANGING: All save_info_ sub-objects will be in an indeterminate
   // state following this call.
@@ -415,6 +427,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   bool has_user_gesture_;
   bool update_first_party_url_on_redirect_;
   std::optional<network::PermissionsPolicy> permissions_policy_;
+  bool skip_service_worker_interception_;
 };
 
 }  // namespace download

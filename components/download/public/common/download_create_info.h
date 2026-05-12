@@ -166,6 +166,10 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // response.
   bool fetch_error_body = false;
 
+  // True if a Service Worker fetch handler produced this response. Such
+  // responses cannot be served by parallel range requests.
+  bool fetched_via_service_worker = false;
+
   // The request headers that has been sent in the download request.
   DownloadUrlParameters::RequestHeadersType request_headers;
 

@@ -222,6 +222,8 @@ download_pb::InProgressInfo DownloadDBConversions::InProgressInfoToProto(
       static_cast<int32_t>(in_progress_info.credentials_mode));
   proto.set_range_request_from(in_progress_info.range_request_from);
   proto.set_range_request_to(in_progress_info.range_request_to);
+  proto.set_fetched_via_service_worker(
+      in_progress_info.fetched_via_service_worker);
   return proto;
 }
 
@@ -281,6 +283,9 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
     info.range_request_from = proto.range_request_from();
   if (proto.has_range_request_to())
     info.range_request_to = proto.range_request_to();
+  if (proto.has_fetched_via_service_worker()) {
+    info.fetched_via_service_worker = proto.fetched_via_service_worker();
+  }
 
   return info;
 }

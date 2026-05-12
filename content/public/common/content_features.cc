@@ -936,6 +936,12 @@ BASE_FEATURE(kServiceWorkerAutoPreload, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOptimizeWebRequestProxyForServiceWorkerAutoPreload,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// crbug.com/40410035: When enabled, download requests ("Save link as",
+// "Save image as", <a download>) are intercepted by service workers, allowing
+// the service worker's fetch event handler to provide a response.
+BASE_FEATURE(kServiceWorkerInterceptDownloads,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // crbug.com/374606637: When this is enabled, race-network-and-fetch-hander will
 // prioritize the response processing for the network request over the
 // processing for the fetch handler.

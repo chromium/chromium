@@ -48,6 +48,12 @@ bool IsParallelizableDownload(const DownloadCreateInfo& create_info,
     return false;
   }
 
+  // A Service Worker fetch handler produces one response from one invocation;
+  // its loader cannot be re-driven for parallel range slices.
+  if (create_info.fetched_via_service_worker) {
+    return false;
+  }
+
   // To enable parallel download, following conditions need to be satisfied.
   // 1. Feature |kParallelDownloading| enabled.
   // 2. Strong validators response headers. i.e. ETag and Last-Modified.

@@ -2648,5 +2648,77 @@ TEST_F(DownloadItemTest, LargeHttpUrlNotTruncatedAfterComplete) {
   EXPECT_EQ(large_http_url, item->GetURL().spec());
 }
 
+// On resume of a network-fetched download, the params handed to the delegate
+// must opt out of Service Worker interception. The SW would otherwise
+// produce a fresh full-body response that would be appended to the partial
+// bytes already on disk.
+TEST_F(DownloadItemTest, ResumeOfNetworkFetchedDownloadSkipsServiceWorker) {
+  create_info()->fetched_via_service_worker = false;
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+
+  bool captured_skip_sw = false;
+  int64_t captured_offset = -1;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_delegate(), MockResumeInterruptedDownload(_))
+      .WillOnce([&](DownloadUrlParameters* params) {
+        captured_skip_sw = params->skip_service_worker_interception();
+        captured_offset = params->offset();
+        run_loop.Quit();
+      });
+
+  EXPECT_CALL(*download_file, Detach()).Times(AnyNumber());
+  EXPECT_CALL(*download_file, FullPath())
+      .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
+  // FILE_TRANSIENT_ERROR is a continuable interrupt — preserves the offset.
+  item->DestinationObserverAsWeakPtr()->DestinationError(
+      DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR, 100,
+      std::unique_ptr<crypto::SecureHash>());
+  run_loop.Run();
+
+  EXPECT_TRUE(captured_skip_sw);
+  EXPECT_EQ(100, captured_offset);
+}
+
+// On resume of a Service-Worker-fetched download, the resume must restart
+// from offset 0 (SW responses can't be range-served) and re-dispatch the
+// fetch event — i.e. NOT skip SW interception.
+TEST_F(DownloadItemTest, ResumeOfSWFetchedDownloadRestartsAndKeepsSW) {
+  create_info()->fetched_via_service_worker = true;
+  DownloadItemImpl* item = CreateDownloadItem();
+  ASSERT_TRUE(item->fetched_via_service_worker());
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+
+  bool captured_skip_sw = true;  // Default to opposite of expected.
+  int64_t captured_offset = -1;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_delegate(), MockResumeInterruptedDownload(_))
+      .WillOnce([&](DownloadUrlParameters* params) {
+        captured_skip_sw = params->skip_service_worker_interception();
+        captured_offset = params->offset();
+        run_loop.Quit();
+      });
+
+  // Interrupt with a normally continuable reason. Even so, the SW-fetched
+  // flag must force a restart.
+  EXPECT_CALL(*download_file, Cancel()).Times(AnyNumber());
+  EXPECT_CALL(*download_file, Detach()).Times(AnyNumber());
+  EXPECT_CALL(*download_file, FullPath())
+      .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
+  item->DestinationObserverAsWeakPtr()->DestinationError(
+      DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR, 100,
+      std::unique_ptr<crypto::SecureHash>());
+  run_loop.Run();
+
+  // Restart cleared the offset; SW interception remains enabled so the SW
+  // fetch handler can re-run from scratch.
+  EXPECT_EQ(0, captured_offset);
+  EXPECT_FALSE(captured_skip_sw);
+}
+
 }  // namespace
 }  // namespace download

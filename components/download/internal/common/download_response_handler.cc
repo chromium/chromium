@@ -202,6 +202,7 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
   create_info->credentials_mode = credentials_mode_;
   create_info->isolation_info = std::move(isolation_info_);
   create_info->require_safety_checks = require_safety_checks_;
+  create_info->fetched_via_service_worker = head.was_fetched_via_service_worker;
 
   HandleResponseHeaders(head.headers.get(), create_info.get());
   return create_info;
