@@ -47,7 +47,6 @@ experimental domain SmartCardEmulation
       shutdown
 
       # Maps to SCARD_E_UNKNOWN_CARD.
-      # TODO(crbug.com/472114998): Rename Mojo's kUnknownError to kUnknownCard to match.
       unknown-card
 
       # Error code that is not mapped in this enum.

@@ -56,7 +56,7 @@ enum SmartCardError {
   kNoService,
   kCommError,
   kInternalError,
-  kUnknownError,
+  kUnknownCard,
   kServerTooBusy,
   kUnexpected,
   kShutdown,

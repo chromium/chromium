@@ -46,7 +46,7 @@ namespace smartCardProviderPrivate {
     NO_SERVICE,
     COMM_ERROR,
     INTERNAL_ERROR,
-    UNKNOWN_ERROR,
+    UNKNOWN_CARD,
     SERVER_TOO_BUSY,
     UNEXPECTED,
     SHUTDOWN,

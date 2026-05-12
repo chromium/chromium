@@ -100,8 +100,8 @@ device::mojom::SmartCardResultPtr ProviderResultCodeToSmartCardResult(
       return SmartCardResult::NewError(SmartCardError::kCommError);
     case scard_api::ResultCode::kInternalError:
       return SmartCardResult::NewError(SmartCardError::kInternalError);
-    case scard_api::ResultCode::kUnknownError:
-      return SmartCardResult::NewError(SmartCardError::kUnknownError);
+    case scard_api::ResultCode::kUnknownCard:
+      return SmartCardResult::NewError(SmartCardError::kUnknownCard);
     case scard_api::ResultCode::kServerTooBusy:
       return SmartCardResult::NewError(SmartCardError::kServerTooBusy);
     case scard_api::ResultCode::kUnexpected:

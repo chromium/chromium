@@ -100,7 +100,7 @@ device::mojom::SmartCardError ToMojoSmartCardError(
            device::mojom::SmartCardError::kUnexpected},
           {ResultCodeEnum::Shutdown, device::mojom::SmartCardError::kShutdown},
           {ResultCodeEnum::UnknownCard,
-           device::mojom::SmartCardError::kUnknownError},
+           device::mojom::SmartCardError::kUnknownCard},
           {ResultCodeEnum::Unknown, device::mojom::SmartCardError::kUnknown},
       });
 
