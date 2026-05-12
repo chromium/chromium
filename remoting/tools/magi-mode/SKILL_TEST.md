@@ -93,3 +93,7 @@ JSON files:
 
 This ensures that tests can still be run even if the automation script is not
 fully functional in the current environment.
+
+## See Also
+
+*   [SKILL_TEST_PLAN.md](SKILL_TEST_PLAN.md) for the overall testing strategy and methodology.
