@@ -133,4 +133,10 @@ tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
 # b/488388275
 tast.health.RunCameraFrameAnalysisRoutine
 
+# b/512210525
+tast.crash.ValidateFirmwareDumpGeneration.multi_session_policy_all@brya
+tast.crash.ValidateFirmwareDumpGeneration.policy_all@brya
+tast.crash.ValidateFirmwareDumpGeneration.policy_none@brya
+tast.crash.ValidateFirmwareDumpGeneration.policy_wifi@brya
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
