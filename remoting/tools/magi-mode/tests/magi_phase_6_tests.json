@@ -1,0 +1,65 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Synthesis",
+    "description": "Verify synthesis of drafts.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 6,
+            "name": "Synthesis - Merge Clean Reviews",
+            "override_inputs": {
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "ACCEPT",
+                        "checklist": {
+                            "no_use_after_free": true
+                        }
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/synthesized_file.cc"
+                ],
+                "valid_json": false,
+                "content_patterns": {
+                    "testdata/synthesized_file.cc": "// Synthesized by MAGI"
+                }
+            }
+        },
+        {
+            "phase": 6,
+            "name": "Synthesis - Handle Rejection",
+            "override_inputs": {
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_use_after_free": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/sample_ipc.cc",
+                                "comment": "Use after free detected!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/fix_plan.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/fix_plan.json": "\"address_use_after_free\": true"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,51 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Verification",
+    "description": "Verify build and test execution.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 7,
+            "name": "Verification - Build Success",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/synthesized_file.cc"
+                    ]
+                }
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/build_log.txt"
+                ],
+                "valid_json": false,
+                "content_patterns": {
+                    "testdata/build_log.txt": "BUILD SUCCESS"
+                }
+            }
+        },
+        {
+            "phase": 7,
+            "name": "Verification - Build Failure",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/synthesized_file.cc"
+                    ]
+                }
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/build_log.txt"
+                ],
+                "valid_json": false,
+                "content_patterns": {
+                    "testdata/build_log.txt": "BUILD FAILED"
+                }
+            }
+        }
+    ]
+}

@@ -27,18 +27,23 @@ class AgentInvoker:
     def __init__(self, harness_type):
         self.harness_type = harness_type
 
-    def invoke(self, prompt, expected_files, cwd=None):
+    def invoke(self, prompt, expected_files, expected_outputs, cwd=None):
         """Invokes an agent with the given prompt.
 
         Args:
             prompt: The instruction for the agent.
             expected_files: List of file paths where output is expected.
+            expected_outputs: Dict of expected outputs for mocking.
             cwd: Working directory for the agent invocation.
         """
         if self.harness_type == 'JETSKI':
             return self._invoke_jetski(prompt, cwd)
         elif self.harness_type == 'GENERIC_CLI':
             return self._invoke_generic_cli(prompt, expected_files)
+        elif self.harness_type == 'MOCK':
+            return self._invoke_mock(
+                prompt, expected_files, expected_outputs, cwd
+            )
         else:
             raise ValueError(f"Unknown harness type: {self.harness_type}")
 
@@ -80,6 +85,31 @@ class AgentInvoker:
             "verification..."
         )
         return all(os.path.exists(f) for f in expected_files)
+
+    def _invoke_mock(self, prompt, expected_files, expected_outputs, cwd=None):
+        print("[MOCK] Simulating agent output...")
+        content_patterns = expected_outputs.get('content_patterns', {})
+
+        temp_dir = cwd if cwd else os.path.dirname(expected_files[0])
+
+        for rel_path, pattern in content_patterns.items():
+            full_path = os.path.join(temp_dir, rel_path)
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+            with open(full_path, 'w', encoding='utf-8') as file_handle:
+                if full_path.endswith('.json'):
+                    file_handle.write('{' + pattern + '}')
+                else:
+                    file_handle.write(pattern)
+
+        for f in expected_files:
+            if not os.path.exists(f):
+                os.makedirs(os.path.dirname(f), exist_ok=True)
+                with open(f, 'w', encoding='utf-8') as file_handle:
+                    if f.endswith('.json'):
+                        file_handle.write('{}')
+                    else:
+                        file_handle.write('')
+        return True
 
 def run_test_case(case, base_inputs, invoker, original_test_dir):
     """Runs a single test case."""
@@ -124,7 +154,9 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
             expected_files = [full_output_path]
 
         # Invoke agent
-        success = invoker.invoke(prompt, expected_files, cwd=temp_dir)
+        success = invoker.invoke(
+            prompt, expected_files, expected_outputs, cwd=temp_dir
+        )
         if not success:
             print(f"FAIL: Agent invocation failed for {case['name']}")
             return False
@@ -190,7 +222,7 @@ def main():
     parser.add_argument(
         '--harness',
         default='JETSKI',
-        choices=['JETSKI', 'GENERIC_CLI'],
+        choices=['JETSKI', 'GENERIC_CLI', 'MOCK'],
         help="Harness type",
     )
     args = parser.parse_args()

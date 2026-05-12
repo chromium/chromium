@@ -1,0 +1,51 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Review Analysis",
+    "description": "Verify expert reviewer agents.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 4,
+            "name": "Security Review - Use After Free",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/bind_post_task_helper.cc"
+                    ]
+                }
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/review.security.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/review.security.json": "\"no_uaf_via_unretained\": false"
+                }
+            }
+        },
+        {
+            "phase": 4,
+            "name": "Security Review - Clean File",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/file1.cc"
+                    ]
+                }
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/review.security.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/review.security.json": "\"verdict\": \"ACCEPT\""
+                }
+            }
+        }
+    ]
+}

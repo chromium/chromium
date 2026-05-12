@@ -66,3 +66,19 @@ common flaws to be used in both mocked and real agent tests:
     flaws in the test dataset without excessive false positives.
 *   **Safety**: Verification that the build and test steps are never
     skipped during a synthesis flow.
+
+## Reporting
+
+To ensure transparency and verify that no critical steps (such as building and
+testing) are skipped during execution, the testing agent MUST generate a
+structured **Test Execution Report** artifact after running a suite of tests.
+
+The report must include:
+*   **Summary**: Total cases executed, passed, failed, and skipped.
+*   **Detailed Results Table**:
+    *   **Phase**: The protocol phase tested.
+    *   **Test Case Name**: Descriptive name.
+    *   **Result**: PASS/FAIL.
+    *   **Build Executed**: Yes/No/NA (Crucial for verifying safety).
+    *   **Tests Run**: Yes/No/NA (Crucial for verifying safety).
+    *   **Consensus Reached**: Yes/No/NA (For Phase 5).
