@@ -64,3 +64,21 @@ source_set("interactive_ui_tests") {
     "//ui/base/interaction",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "selection_overlay_browsertest.cc" ]
+  deps = [
+    ":selection",
+    "//base",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+}

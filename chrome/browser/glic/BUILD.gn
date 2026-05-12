@@ -768,6 +768,7 @@ source_set("browser_tests") {
       "//chrome/browser/glic/common",
       "//chrome/browser/glic/common:browser_tests",
       "//chrome/browser/glic/selection",
+      "//chrome/browser/glic/selection:browser_tests",
       "//chrome/browser/glic/suggestions:test_support",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/permissions:test_support",
