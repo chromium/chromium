@@ -202,6 +202,13 @@ static_library("test_support") {
     "//ui/base/unowned_user_data",
   ]
 
+  if (is_android || is_mac || is_win || is_chromeos) {
+    deps += [
+      "//chrome/browser/device_reauth",
+      "//components/device_reauth",
+    ]
+  }
+
   if (enable_background_mode) {
     deps += [ "//chrome/browser/background/extensions" ]
   }
@@ -5491,8 +5498,8 @@ if (!is_android) {
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
         "../browser/lifetime/application_lifetime_chromeos_browsertest.cc",
 
-        # TODO(crbug.com/510716187): Enable for other platforms once macOS native
-        # window ID translation is implemented.
+        # TODO(crbug.com/510716187): Enable for other platforms once macOS
+        # native window ID translation is implemented.
         "../browser/media/webrtc/capture_handle_app_window_browsertest.cc",
         "../browser/media/webrtc/get_all_screens_media_browsertest.cc",
         "../browser/media/webrtc/multi_capture/multi_capture_data_service_browsertest.cc",

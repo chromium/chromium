@@ -33,6 +33,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -61,6 +62,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile_key.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/device_reauth/device_authenticator_common.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -444,6 +446,15 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
     ash::SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&ash::TestSystemWebAppManager::BuildDefault));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+    ChromeDeviceAuthenticatorFactory::GetInstance()->SetTestingFactory(
+        this, base::BindRepeating([](content::BrowserContext* browser)
+                                      -> std::unique_ptr<KeyedService> {
+          return std::make_unique<DeviceAuthenticatorProxy>();
+        }));
+#endif
   }
 
   // Prefs for incognito profiles are set in CreateIncognitoPrefService().

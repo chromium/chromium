@@ -71,6 +71,7 @@ class AutofillField;
 class AutofillProfile;
 class CreditCard;
 class CreditCardAccessManager;
+class AutofillAiAccessManager;
 
 class FormData;
 class FormFieldData;
@@ -239,6 +240,9 @@ class BrowserAutofillManager : public AutofillManager {
   // Gets the `AtMemoryManager` owned by `this`. This will be used to handle
   // queries to the `AccessibilityQueryService`.
   AtMemoryManager& GetAtMemoryManager();
+
+  // Gets the Autofill AI access manager owned by `this`.
+  virtual AutofillAiAccessManager& GetAutofillAiAccessManager();
 
   // Triggers suggestions for @memory.
   void TriggerAtMemorySuggestions(const FieldGlobalId& field_id);
@@ -653,6 +657,11 @@ class BrowserAutofillManager : public AutofillManager {
   // The credit card access manager, used to access local and server cards.
   // Lazily initialized: access only through GetCreditCardAccessManager().
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
+
+  // The AutofillAI access manager, used to access local and server
+  // EntityInstance values for filling. It handles all required authentication
+  // and fetching steps needed to get the real values to be filled.
+  std::unique_ptr<AutofillAiAccessManager> autofill_ai_access_manager_;
 
   // Manages Buy Now, Pay Later related autofill flows and logic.
   // Lazily initialized: access only through GetPaymentsBnplManager().
