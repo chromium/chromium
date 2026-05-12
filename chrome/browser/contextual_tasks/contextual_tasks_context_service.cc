@@ -39,7 +39,6 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -867,8 +866,7 @@ std::optional<base::TimeDelta>
 ContextualTasksContextService::GetDurationSinceLastActive(
     content::WebContents* web_contents) {
   if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-    if (auto* tracker =
-            tab->GetTabFeatures()->contextual_tasks_tab_visit_tracker()) {
+    if (auto* tracker = ContextualTasksTabVisitTracker::From(tab)) {
       return tracker->GetDurationSinceLastActive();
     }
   }
@@ -879,8 +877,7 @@ std::optional<base::TimeDelta>
 ContextualTasksContextService::GetDurationOfCurrentOrLastVisit(
     content::WebContents* web_contents) {
   if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-    if (auto* tracker =
-            tab->GetTabFeatures()->contextual_tasks_tab_visit_tracker()) {
+    if (auto* tracker = ContextualTasksTabVisitTracker::From(tab)) {
       return tracker->GetDurationOfCurrentOrLastVisit();
     }
   }

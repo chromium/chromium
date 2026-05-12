@@ -21,6 +21,10 @@ namespace actor {
 class ActorTabData;
 }  // namespace actor
 
+namespace contextual_tasks {
+class ContextualTasksTabVisitTracker;
+}  // namespace contextual_tasks
+
 namespace actor::ui {
 class ActorUiTabControllerInterface;
 }  // namespace actor::ui
@@ -79,6 +83,8 @@ class TabFeatures {
   std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
   std::unique_ptr<NewTabPagePreloadPipelineManager>
       new_tab_page_preload_pipeline_manager_;
+  std::unique_ptr<contextual_tasks::ContextualTasksTabVisitTracker>
+      contextual_tasks_tab_visit_tracker_;
   std::unique_ptr<lens::TabContextualizationController>
       tab_contextualization_controller_;
 

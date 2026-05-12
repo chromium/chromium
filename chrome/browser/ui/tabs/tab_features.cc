@@ -502,8 +502,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasksContext)) {
     contextual_tasks_tab_visit_tracker_ =
-        std::make_unique<contextual_tasks::ContextualTasksTabVisitTracker>(
-            tab.GetContents());
+        GetUserDataFactory()
+            .CreateInstance<contextual_tasks::ContextualTasksTabVisitTracker>(
+                tab, tab);
   }
 #endif
 

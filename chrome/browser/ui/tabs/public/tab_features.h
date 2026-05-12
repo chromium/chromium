@@ -231,10 +231,6 @@ class TabFeatures {
     return commerce_ui_tab_helper_.get();
   }
 
-  contextual_tasks::ContextualTasksTabVisitTracker*
-  contextual_tasks_tab_visit_tracker() {
-    return contextual_tasks_tab_visit_tracker_.get();
-  }
 
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
     return extension_side_panel_manager_.get();

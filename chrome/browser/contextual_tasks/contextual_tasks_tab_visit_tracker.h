@@ -11,14 +11,22 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace tabs {
+class TabInterface;
+}
 
 namespace contextual_tasks {
 
 // Tracks the duration of the last foreground visit to a tab.
 class ContextualTasksTabVisitTracker : public content::WebContentsObserver {
  public:
-  explicit ContextualTasksTabVisitTracker(content::WebContents* contents);
+  explicit ContextualTasksTabVisitTracker(tabs::TabInterface& tab);
   ~ContextualTasksTabVisitTracker() override;
+
+  DECLARE_USER_DATA(ContextualTasksTabVisitTracker);
+  static ContextualTasksTabVisitTracker* From(tabs::TabInterface* tab);
 
   // Returns the duration of the last visit (the time the tab spent in the
   // foreground before it was last hidden). If the tab is currently in the
@@ -49,6 +57,9 @@ class ContextualTasksTabVisitTracker : public content::WebContentsObserver {
   base::TimeTicks current_visit_start_time_;
   base::TimeDelta last_visit_duration_;
   base::TimeTicks last_visit_end_time_;
+
+  ::ui::ScopedUnownedUserData<ContextualTasksTabVisitTracker>
+      scoped_unowned_user_data_;
 
   raw_ptr<const base::TickClock> clock_;
 };

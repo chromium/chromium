@@ -9,8 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace contextual_tasks {
 
@@ -27,8 +29,13 @@ class ContextualTasksTabVisitTrackerTest
     // Start from a hidden state to ensure we can test transition to visible.
     web_contents()->WasHidden();
 
+    ON_CALL(mock_tab_, GetContents())
+        .WillByDefault(testing::Return(web_contents()));
+    ON_CALL(mock_tab_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(user_data_host_));
+
     tracker_owner_ =
-        std::make_unique<ContextualTasksTabVisitTracker>(web_contents());
+        std::make_unique<ContextualTasksTabVisitTracker>(mock_tab_);
     tracker_ = tracker_owner_.get();
 
     tracker_->SetClockForTesting(task_environment()->GetMockTickClock());
@@ -41,6 +48,8 @@ class ContextualTasksTabVisitTrackerTest
   }
 
  protected:
+  tabs::MockTabInterface mock_tab_;
+  ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<ContextualTasksTabVisitTracker> tracker_owner_;
   raw_ptr<ContextualTasksTabVisitTracker> tracker_;
 };

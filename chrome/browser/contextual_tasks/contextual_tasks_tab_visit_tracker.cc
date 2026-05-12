@@ -5,20 +5,31 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 
 #include "base/time/default_tick_clock.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 namespace contextual_tasks {
 
+DEFINE_USER_DATA(ContextualTasksTabVisitTracker);
+
 ContextualTasksTabVisitTracker::ContextualTasksTabVisitTracker(
-    content::WebContents* contents)
-    : content::WebContentsObserver(contents),
+    tabs::TabInterface& tab)
+    : content::WebContentsObserver(tab.GetContents()),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this),
       clock_(base::DefaultTickClock::GetInstance()) {
-  if (contents->GetVisibility() == content::Visibility::VISIBLE) {
+  if (tab.GetContents()->GetVisibility() == content::Visibility::VISIBLE) {
     current_visit_start_time_ = clock_->NowTicks();
   }
 }
 
 ContextualTasksTabVisitTracker::~ContextualTasksTabVisitTracker() = default;
+
+// static
+ContextualTasksTabVisitTracker* ContextualTasksTabVisitTracker::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void ContextualTasksTabVisitTracker::SetClockForTesting(
     const base::TickClock* clock) {
