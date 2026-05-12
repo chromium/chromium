@@ -810,6 +810,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   // Workarounds
   void OnFboChanged() const;
+  void ApplyRecreateFboWorkaroundIfNeeded() const;
   void OnUseFramebuffer() const;
   void UpdateFramebufferSRGB(Framebuffer* framebuffer);
 
@@ -4841,11 +4842,13 @@ void GLES2DecoderImpl::DoFinish() {
   api()->glFinishFn();
   ProcessPendingReadPixels(true);
   ProcessPendingQueries(true);
+  ApplyRecreateFboWorkaroundIfNeeded();
 }
 
 void GLES2DecoderImpl::DoFlush() {
   api()->glFlushFn();
   ProcessPendingQueries(false);
+  ApplyRecreateFboWorkaroundIfNeeded();
 }
 
 void GLES2DecoderImpl::DoActiveTexture(GLenum texture_unit) {
@@ -5175,12 +5178,68 @@ uint32_t GLES2DecoderImpl::GetAndClearBackbufferClearBitsForTest() {
   return clear_bits;
 }
 
+void GLES2DecoderImpl::ApplyRecreateFboWorkaroundIfNeeded() const {
+  if (!workarounds().recreate_fbo_upon_flush) {
+    return;
+  }
+
+  Framebuffer* draw_fbo = framebuffer_state_.bound_draw_framebuffer.get();
+  if (!draw_fbo || draw_fbo->service_id() == 0) {
+    return;
+  }
+
+  bool need_workaround = false;
+
+  const GLenum attachments[] = {GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT};
+  for (GLenum attachment_point : attachments) {
+    const Framebuffer::Attachment* attachment =
+        draw_fbo->GetAttachment(attachment_point);
+    if (!attachment) {
+      continue;
+    }
+
+    if (attachment->IsRenderbufferAttachment()) {
+      need_workaround = true;
+      break;
+    } else if (attachment->IsTextureAttachment()) {
+      GLuint client_id = attachment->object_name();
+      const TextureRef* texture_ref = texture_manager()->GetTexture(client_id);
+      if (texture_ref) {
+        const Texture* texture = texture_ref->texture();
+        if (texture->HasImmutableStorage()) {
+          GLenum target = attachment->target();
+          GLint level = attachment->level();
+          if (!texture->IsLevelCleared(target, level)) {
+            need_workaround = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  if (need_workaround) {
+    framebuffer_manager_.get()->RecreateFramebufferServiceId(draw_fbo);
+    if (framebuffer_state_.bound_read_framebuffer.get() == draw_fbo) {
+      api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, draw_fbo->service_id());
+      draw_fbo->ReattachAttachments(GL_FRAMEBUFFER);
+      api()->glReadBufferFn(draw_fbo->read_buffer());
+    } else {
+      api()->glBindFramebufferEXTFn(GL_DRAW_FRAMEBUFFER,
+                                    draw_fbo->service_id());
+      draw_fbo->ReattachAttachments(GL_DRAW_FRAMEBUFFER);
+    }
+  }
+}
+
 void GLES2DecoderImpl::OnFboChanged() const {
   state_.fbo_binding_for_scissor_workaround_dirty = true;
   state_.stencil_state_changed_since_validation = true;
 
-  if (workarounds().flush_on_framebuffer_change)
+  if (workarounds().flush_on_framebuffer_change) {
     api()->glFlushFn();
+    ApplyRecreateFboWorkaroundIfNeeded();
+  }
 }
 
 // Called after the FBO is checked for completeness.
@@ -16468,7 +16527,9 @@ GLsync GLES2DecoderImpl::DoFenceSync(GLenum condition, GLbitfield flags) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name, "invalid flags");
     return 0;
   }
-  return api()->glFenceSyncFn(condition, flags);
+  GLsync sync = api()->glFenceSyncFn(condition, flags);
+  ApplyRecreateFboWorkaroundIfNeeded();
+  return sync;
 }
 
 GLsizei GLES2DecoderImpl::InternalFormatSampleCountsHelper(
