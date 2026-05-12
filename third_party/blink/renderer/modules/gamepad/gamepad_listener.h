@@ -6,9 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_LISTENER_H_
 
 namespace device {
-template <class T>
-class GamepadImpl;
-using Gamepad = GamepadImpl<void>;
+class Gamepad;
 }
 
 namespace blink {

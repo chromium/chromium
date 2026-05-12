@@ -44,9 +44,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace device {
-template <class T>
-class GamepadImpl;
-using Gamepad = GamepadImpl<void>;
+class Gamepad;
 }
 
 namespace blink {

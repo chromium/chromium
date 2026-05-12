@@ -114,11 +114,7 @@ enum class GamepadHand { kNone = 0, kLeft = 1, kRight = 2 };
 // memory between hardware polling threads and the rest of the browser. See
 // also gamepads.h.
 //
-// TODO(crbug.com/355003174): It's a template to avoid the clang plugin that
-// prevents inline ctors, as we need the class to be trivially copyable for use
-// in shared memory.
-template <class T>
-class GamepadImpl {
+class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepad {
  public:
   static constexpr size_t kIdLengthCap = 128;
   static constexpr size_t kAxesLengthCap = 16;
@@ -185,8 +181,6 @@ class GamepadImpl {
 
   bool is_xr = false;
 };
-
-using Gamepad = GamepadImpl<void>;
 
 static_assert(std::is_trivially_copyable_v<Gamepad>);
 

@@ -13,9 +13,7 @@
 namespace device {
 
 union SensorReading;
-template <class T>
-struct SensorReadingSharedBufferImpl;
-using SensorReadingSharedBuffer = SensorReadingSharedBufferImpl<void>;
+struct SensorReadingSharedBuffer;
 
 class SensorReadingSharedBufferReader {
  public:

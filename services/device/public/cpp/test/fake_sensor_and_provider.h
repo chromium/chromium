@@ -17,9 +17,7 @@
 
 namespace device {
 
-template <class T>
-struct SensorReadingSharedBufferImpl;
-using SensorReadingSharedBuffer = SensorReadingSharedBufferImpl<void>;
+struct SensorReadingSharedBuffer;
 
 // This encapsulates the pattern of waiting for an event and returning whether
 // that event was received from `Wait`. This makes it easy to do the right thing

@@ -14,16 +14,10 @@ namespace device {
 // This structure represents sensor reading buffer: sensor reading and seqlock
 // for synchronization.
 //
-// TODO(crbug.com/355003174): It's a template to avoid the clang plugin that
-// prevents inline ctors, as we need the class to be trivially copyable for use
-// in shared memory.
-template <class T = void>
-struct SensorReadingSharedBufferImpl {
+struct SensorReadingSharedBuffer {
   SensorReadingField<OneWriterSeqLock> seqlock;
   SensorReading reading;
 };
-
-using SensorReadingSharedBuffer = SensorReadingSharedBufferImpl<void>;
 
 // Gets the shared reading buffer offset for the given sensor type.
 uint64_t GetSensorReadingSharedBufferOffset(mojom::SensorType type);
