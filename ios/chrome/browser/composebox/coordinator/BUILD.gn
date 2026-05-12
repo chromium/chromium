@@ -31,8 +31,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/composebox/ui/presentation",
-    "//ios/chrome/browser/tabs/model",
-    "//ios/web",
     "//ios/web/public",
     "//ui/base",
   ]

@@ -67,8 +67,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 @end
 
 @implementation ComposeboxViewController {
-  // WebView for the SRP, when AI Mode Immersive SRP is enabled.
-  UIView* _webView;
   // The list of constraints for the current position. Updates once the current
   // position changes (e.g. on orientation change).
   NSMutableArray<NSLayoutConstraint*>* _constraintsForCurrentPosition;
@@ -675,22 +673,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       self.preferredContentSize =
           CGSizeMake(self.view.bounds.size.width, totalHeight);
     }
-  }
-}
-
-#pragma mark - ComposeboxNavigationConsumer
-
-- (void)setWebView:(UIView*)webView {
-  if (_webView == webView) {
-    return;
-  }
-  [_webView removeFromSuperview];
-  _webView = webView;
-  if (webView) {
-    webView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view insertSubview:webView atIndex:0];
-    AddSameConstraintsWithInsets(webView, _omniboxPopupContainer,
-                                 NSDirectionalEdgeInsetsMake(4, 0, 0, 0));
   }
 }
 

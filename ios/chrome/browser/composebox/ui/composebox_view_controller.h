@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
-#import "ios/chrome/browser/composebox/ui/composebox_navigation_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 
 @class ComposeboxInputPlateViewController;
@@ -24,8 +23,7 @@
 
 // View Controller that contains the composebox, presenting it modally.
 @interface ComposeboxViewController
-    : UIViewController <ComposeboxNavigationConsumer,
-                        OmniboxPopupPresenterDelegate,
+    : UIViewController <OmniboxPopupPresenterDelegate,
                         UIAdaptivePresentationControllerDelegate>
 
 // Creates an instance with the theme of the input plate.

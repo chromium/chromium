@@ -106,12 +106,8 @@
 
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  web::WebState::CreateParams params =
-      web::WebState::CreateParams(self.profile);
   _navigationMediator = [[ComposeboxNavigationMediator alloc]
-      initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent
-                      webStateParams:params];
-  _navigationMediator.consumer = _viewController;
+      initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent];
   _navigationMediator.delegate = self;
 
   if (experimental_flags::IsOmniboxDebuggingEnabled()) {

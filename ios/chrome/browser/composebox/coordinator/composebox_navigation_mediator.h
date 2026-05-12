@@ -8,10 +8,9 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
-#import "ios/web/public/web_state.h"
 
-@protocol ComposeboxNavigationConsumer;
 @class ComposeboxNavigationMediator;
+class GURL;
 class UrlLoadingBrowserAgent;
 
 // Delegate for the composebox navigation mediator.
@@ -31,17 +30,12 @@ class UrlLoadingBrowserAgent;
 // A mediator for the composebox's navigation.
 @interface ComposeboxNavigationMediator : NSObject <ComposeboxURLLoader>
 
-// The consumer for this mediator.
-@property(nonatomic, weak) id<ComposeboxNavigationConsumer> consumer;
-
 // The delegate for this mediator.
 @property(nonatomic, weak) id<ComposeboxNavigationMediatorDelegate> delegate;
 
 // Initializes the mediator.
 - (instancetype)initWithUrlLoadingBrowserAgent:
-                    (UrlLoadingBrowserAgent*)urlLoadingBrowserAgent
-                                webStateParams:
-                                    (const web::WebState::CreateParams&)params;
+    (UrlLoadingBrowserAgent*)urlLoadingBrowserAgent;
 
 // Disconnects the mediator.
 - (void)disconnect;

@@ -433,11 +433,6 @@ inline constexpr char kComposeboxIOSName[] = "ComposeboxIOS";
 inline constexpr char kComposeboxIOSDescription[] =
     "Enables the composebox that replaces the regular omnibox in edit state.";
 
-inline constexpr char kComposeboxImmersiveSRPName[] =
-    "Enable the immersive SRP within the composebox";
-inline constexpr char kComposeboxImmersiveSRPDescription[] =
-    "When enabled, the composebox will open SRPs in an embedded web view.";
-
 inline constexpr char kComposeboxIpadName[] = "ComposeboxIpad";
 inline constexpr char kComposeboxIpadDescription[] =
     "Enables the composeboxIpad feature.";

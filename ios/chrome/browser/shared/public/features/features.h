@@ -111,8 +111,6 @@ BASE_DECLARE_FEATURE(kLensOverlayCustomBottomSheet);
 // Feature flag to check headers for lens searches.
 BASE_DECLARE_FEATURE(kLensSearchHeadersCheckEnabled);
 
-// Used to gate the immersive SRP in the Composebox.
-BASE_DECLARE_FEATURE(kComposeboxImmersiveSRP);
 
 // Variations of Composebox.
 extern const char kComposeboxParam[];

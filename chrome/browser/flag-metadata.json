@@ -1795,11 +1795,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "composebox-immersive-srp",
-    "owners": ["lpromero@chromium.com", "christianxu@chromium.org"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "composebox-ios",
     "owners": [ "christianxu@google.com", "bling-search@google.com" ],
     "expiry_milestone": 160
