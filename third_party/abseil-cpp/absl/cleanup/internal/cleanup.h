@@ -19,6 +19,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/internal/hardening.h"
 #include "absl/base/macros.h"
 #include "absl/base/thread_annotations.h"
 #include "absl/utility/utility.h"
@@ -55,7 +56,7 @@ class Storage {
   }
 
   Storage(Storage&& other) {
-    ABSL_HARDENING_ASSERT(other.IsCallbackEngaged());
+    absl::base_internal::HardeningAssert(other.IsCallbackEngaged());
 
     ::new (GetCallbackBuffer()) Callback(std::move(other.GetCallback()));
     is_callback_engaged_ = true;

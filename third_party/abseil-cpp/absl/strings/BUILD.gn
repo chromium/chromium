@@ -660,6 +660,7 @@ absl_test("cord_test") {
     "//third_party/abseil-cpp/absl/log:check",
     "//third_party/abseil-cpp/absl/random",
     "//third_party/abseil-cpp/absl/types:compare",
+    "//third_party/abseil-cpp/absl/types:span",
   ]
 }
 

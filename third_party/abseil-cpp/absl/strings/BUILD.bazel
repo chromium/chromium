@@ -1014,6 +1014,7 @@ cc_test(
         "//absl/log:check",
         "//absl/random",
         "//absl/types:compare",
+        "//absl/types:span",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

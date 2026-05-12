@@ -520,6 +520,7 @@ EXPORTS
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NNABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NOABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
     ?Copy@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@ABV312@V?$FunctionRef@$$A6AXPAXPBX@Z@2@@Z
+    ?CopyCordToSpan@absl@@YAIABVCord@1@V?$Span@D@1@@Z
     ?CopyCordToString@absl@@YAXABVCord@1@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?CopyPrefix@CordRepBtree@cord_internal@absl@@AAE?AUCopyResult@123@I_N@Z
     ?CopySuffix@CordRepBtree@cord_internal@absl@@AAE?AUCopyResult@123@I@Z

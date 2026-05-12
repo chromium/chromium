@@ -69,6 +69,18 @@ TEST(MakeUniqueForOverwriteTest, Basic) {
   p = absl::make_unique_for_overwrite<int>();
 }
 
+// The initialization tests needs to suppress dead-store elimination, otherwise
+// memset is optimized away, and lifetime is assumed begin after new, triggering
+// uninitalized variable warnings. Various tricks to prevent memset from being
+// optimized away still result in uninitialized variable warnings.  Once we move
+// to a C++20 floor we can delegate to std::make_unique_for_overwrite and avoid
+// testing absl::make_unique_for_overwrite.
+// https://github.com/gcc-mirror/gcc/blob/be1da01067c898a3e3979bfb1edd05f115ab2e3e/libstdc%2B%2B-v3/testsuite/20_util/unique_ptr/creation/for_overwrite.cc#L1
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+#endif
+
 // InitializationVerifier fills in a pattern when allocated so we can
 // distinguish between its default and value initialized states (without
 // accessing truly uninitialized memory).
@@ -113,6 +125,10 @@ TEST(Initialization, MakeUniqueForOverwriteArray) {
   EXPECT_EQ(pattern, p[1].a);
   EXPECT_EQ(pattern, p[1].b);
 }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC pop_options
+#endif
 
 struct ArrayWatch {
   void* operator new[](size_t n) {

@@ -38,15 +38,22 @@ ABSL_NAMESPACE_BEGIN
 using std::apply;
 using std::exchange;
 using std::forward;
-using std::in_place;
-using std::in_place_index;
+
+inline constexpr const std::in_place_t& in_place ABSL_DEPRECATE_AND_INLINE() =
+    std::in_place;
+
+template <size_t I>
+inline constexpr const std::in_place_index_t<I>& in_place_index
+ABSL_DEPRECATE_AND_INLINE() = std::in_place_index<I>;
 
 template <size_t I>
 using in_place_index_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_index_t<I>;
 
 using in_place_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_t;
 
-using std::in_place_type;
+template <class T>
+inline constexpr const std::in_place_type_t<T>& in_place_type
+ABSL_DEPRECATE_AND_INLINE() = std::in_place_type<T>;
 
 template <class T>
 using in_place_type_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_type_t<T>;

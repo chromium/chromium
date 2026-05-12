@@ -521,6 +521,7 @@ EXPORTS
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NNAEBVFormatConversionSpecImpl@12@PEAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NOAEBVFormatConversionSpecImpl@12@PEAVFormatSinkImpl@12@@Z
     ?Copy@container_internal@absl@@YAXAEAVCommonFields@12@AEBUPolicyFunctions@12@AEBV312@V?$FunctionRef@$$A6AXPEAXPEBX@Z@2@@Z
+    ?CopyCordToSpan@absl@@YA_KAEBVCord@1@V?$Span@D@1@@Z
     ?CopyCordToString@absl@@YAXAEBVCord@1@PEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?CopyPrefix@CordRepBtree@cord_internal@absl@@AEAA?AUCopyResult@123@_K_N@Z
     ?CopySuffix@CordRepBtree@cord_internal@absl@@AEAA?AUCopyResult@123@_K@Z

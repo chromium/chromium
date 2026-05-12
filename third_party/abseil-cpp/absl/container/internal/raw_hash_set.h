@@ -409,6 +409,8 @@ inline bool IsEmptyGeneration(const GenerationType* generation) {
 // - In order to prevent user code from depending on iteration order for small
 //   tables, we would need to randomize the iteration order somehow.
 constexpr size_t SooCapacity() { return 1; }
+// Maximum capacity of a table where we don't need to hash any keys.
+constexpr size_t MaxSmallCapacity() { return 1; }
 // Sentinel type to indicate SOO CommonFields construction.
 struct soo_tag_t {};
 // Sentinel type to indicate SOO CommonFields construction with full size.
@@ -426,7 +428,9 @@ struct no_seed_empty_tag_t {};
 constexpr bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
 
 // Whether a table is small enough that we don't need to hash any keys.
-constexpr bool IsSmallCapacity(size_t capacity) { return capacity <= 1; }
+constexpr bool IsSmallCapacity(size_t capacity) {
+  return capacity <= MaxSmallCapacity();
+}
 
 // Converts `n` into the next valid capacity, per `IsValidCapacity`.
 constexpr size_t NormalizeCapacity(size_t n) {
@@ -566,6 +570,16 @@ class HashtableCapacityImpl {
                                            : (size_t{1} << capacity_data_) - 1;
   }
 
+  constexpr bool is_small() const {
+    // Small tables have capacity 0 or 1. This expression is valid for both
+    // capacity storage modes.
+    // Comparing capacity_data_ directly leads to a better generated code.
+    // One byte comparison is used before computing the capacity in order to
+    // detect small tables faster for critical path.
+    static_assert(MaxSmallCapacity() == 1);
+    return capacity_data_ <= 1;
+  }
+
  private:
   // We use these sentinel capacity values in debug mode to indicate different
   // classes of bugs.
@@ -634,6 +648,7 @@ class PerTableSeedImpl {
 template <HashtableCapacityStorageMode StorageMode>
 class HashtableInlineDataImpl {
  public:
+  static constexpr HashtableCapacityStorageMode kStorageMode = StorageMode;
   using PerTableSeed = PerTableSeedImpl<
       std::conditional_t<StorageMode == kCapacityByValue, uint16_t, uint8_t>>;
   using HashtableCapacity = HashtableCapacityImpl<StorageMode>;
@@ -656,6 +671,7 @@ class HashtableInlineDataImpl {
     return HashtableCapacity::FromRawData(capacity_internal_);
   }
   size_t capacity() const { return maybe_invalid_capacity().capacity(); }
+  bool is_small() const { return maybe_invalid_capacity().is_small(); }
 
   void set_capacity(HashtableCapacity c) { capacity_internal_ = c.ToRawData(); }
   void set_capacity(size_t c) { set_capacity(HashtableCapacity(c)); }
@@ -747,7 +763,11 @@ static_assert(
     sizeof(HashtableInlineDataImpl<kCapacityByLog>::HashtableCapacity) == 1);
 static_assert(sizeof(HashtableInlineDataImpl<kCapacityByLog>) == 8);
 
+#ifndef ABSL_SWISSTABLE_INTERNAL_ENABLE_CAPACITY_BY_LOG
 using HashtableInlineData = HashtableInlineDataImpl<kCapacityByValue>;
+#else
+using HashtableInlineData = HashtableInlineDataImpl<kCapacityByLog>;
+#endif  // ABSL_SWISSTABLE_INTERNAL_ENABLE_CAPACITY_BY_LOG
 using PerTableSeed = HashtableInlineData::PerTableSeed;
 using HashtableCapacity = HashtableInlineData::HashtableCapacity;
 
@@ -1240,7 +1260,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
   void set_capacity(size_t c) {
     set_capacity(HashtableCapacity(c));
   }
-  bool is_small() const { return IsSmallCapacity(capacity()); }
+  bool is_small() const { return inline_data_.is_small(); }
 
   // The number of slots we can still fill without needing to rehash.
   // This is stored in the heap allocation before the control bytes.
@@ -1434,13 +1454,25 @@ inline void AssertIsValidForComparison(const ctrl_t* ctrl,
                                        GenerationType generation,
                                        const GenerationType* generation_ptr) {
   if (!SwisstableDebugEnabled()) return;
-  const bool ctrl_is_valid_for_comparison =
-      ctrl == nullptr || ctrl == DefaultIterControl() || IsFull(*ctrl);
+  const bool ctrl_is_valid_for_comparison = [ctrl]() {
+    if (ctrl == nullptr) return true;
+    if (ctrl == DefaultIterControl()) return true;
+    // Note: if the following line crashes, then it's likely that `ctrl` is from
+    // a backing array that has been deallocated. If you see a crash here, it
+    // likely means that you are comparing an invalid iterator from a table that
+    // has rehashed, moved, or been destroyed.
+    return IsFull(*ctrl);
+  }();
   if (SwisstableGenerationsEnabled()) {
     if (ABSL_PREDICT_FALSE(generation != *generation_ptr)) {
-      ABSL_RAW_LOG(FATAL,
-                   "Invalid iterator comparison. The table could have rehashed "
-                   "or moved since this iterator was initialized.");
+      // Note: in the case of a rehash, we would expect to see a sanitizer crash
+      // above when `ctrl` is dereferenced so this assertion will only catch
+      // moved table cases, unless we're using a custom allocator that does not
+      // deallocate the old backing array (e.g. an arena allocator).
+      ABSL_RAW_LOG(
+          FATAL,
+          "Invalid iterator comparison. The table was likely moved (or "
+          "possibly rehashed) since this iterator was initialized.");
     }
     if (ABSL_PREDICT_FALSE(!ctrl_is_valid_for_comparison)) {
       ABSL_RAW_LOG(

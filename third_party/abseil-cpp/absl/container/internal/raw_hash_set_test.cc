@@ -926,12 +926,20 @@ TEST(Table, EmptyFunctorOptimization) {
   static_assert(std::is_empty<std::equal_to<absl::string_view>>::value, "");
   static_assert(std::is_empty<std::allocator<int>>::value, "");
 
-  struct MockTable {
+  struct MockTableByValue {
     size_t capacity;
     uint64_t size;
     void* ctrl;
     void* slots;
   };
+  struct MockTableByLog {
+    uint64_t size;
+    void* ctrl;
+    void* slots;
+  };
+  using MockTable =
+      std::conditional_t<HashtableInlineData::kStorageMode == kCapacityByValue,
+                         MockTableByValue, MockTableByLog>;
   struct StatelessHash {
     size_t operator()(absl::string_view) const { return 0; }
   };
@@ -2974,6 +2982,19 @@ TYPED_TEST(SooTest, IteratorInvalidAssertsEqualityOperatorRehash) {
   for (int i = 0; i < 10; ++i) t.insert(i);
 
   EXPECT_DEATH_IF_SUPPORTED(void(iter == t.begin()), InvalidIteratorMatcher());
+}
+
+TYPED_TEST(SooTest, IteratorInvalidAssertsEqualityOperatorMovedFrom) {
+  if (!SwisstableGenerationsEnabled())
+    GTEST_SKIP() << "Generations not enabled.";
+
+  TypeParam t;
+  for (int i = 0; i < 10; ++i) t.insert(i);
+  auto iter = t.begin();
+
+  TypeParam t2 = std::move(t);
+
+  EXPECT_DEATH_IF_SUPPORTED(void(iter == t2.begin()), InvalidIteratorMatcher());
 }
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)

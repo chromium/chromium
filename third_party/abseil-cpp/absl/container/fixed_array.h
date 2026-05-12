@@ -44,6 +44,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/dynamic_annotations.h"
+#include "absl/base/internal/hardening.h"
 #include "absl/base/internal/iterator_traits.h"
 #include "absl/base/macros.h"
 #include "absl/base/optimization.h"
@@ -222,7 +223,7 @@ class ABSL_ATTRIBUTE_WARN_UNUSED FixedArray {
   // Returns a reference the ith element of the fixed array.
   // REQUIRES: 0 <= i < size()
   reference operator[](size_type i) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    ABSL_HARDENING_ASSERT(i < size());
+    absl::base_internal::HardeningAssertLT(i, size());
     return data()[i];
   }
 
@@ -230,7 +231,7 @@ class ABSL_ATTRIBUTE_WARN_UNUSED FixedArray {
   // ith element of the fixed array.
   // REQUIRES: 0 <= i < size()
   const_reference operator[](size_type i) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    ABSL_HARDENING_ASSERT(i < size());
+    absl::base_internal::HardeningAssertLT(i, size());
     return data()[i];
   }
 
@@ -258,14 +259,14 @@ class ABSL_ATTRIBUTE_WARN_UNUSED FixedArray {
   //
   // Returns a reference to the first element of the fixed array.
   reference front() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    ABSL_HARDENING_ASSERT(!empty());
+    absl::base_internal::HardeningAssertNonEmpty(*this);
     return data()[0];
   }
 
   // Overload of FixedArray::front() to return a reference to the first element
   // of a fixed array of const values.
   const_reference front() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    ABSL_HARDENING_ASSERT(!empty());
+    absl::base_internal::HardeningAssertNonEmpty(*this);
     return data()[0];
   }
 
@@ -273,14 +274,14 @@ class ABSL_ATTRIBUTE_WARN_UNUSED FixedArray {
   //
   // Returns a reference to the last element of the fixed array.
   reference back() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    ABSL_HARDENING_ASSERT(!empty());
+    absl::base_internal::HardeningAssertNonEmpty(*this);
     return data()[size() - 1];
   }
 
   // Overload of FixedArray::back() to return a reference to the last element
   // of a fixed array of const values.
   const_reference back() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    ABSL_HARDENING_ASSERT(!empty());
+    absl::base_internal::HardeningAssertNonEmpty(*this);
     return data()[size() - 1];
   }
 

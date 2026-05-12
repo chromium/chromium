@@ -3411,8 +3411,8 @@ TEST(Btree, IteratorAdditionOutOfBounds) {
   EXPECT_EQ(backward, set.begin());
 
   if (IsAssertEnabled()) {
-    EXPECT_DEATH(forward += 1, "n == 0");
-    EXPECT_DEATH(backward += -1, "position >= node->start");
+    EXPECT_DEATH(forward += 1, "");
+    EXPECT_DEATH(backward += -1, "");
   }
 }
 
@@ -3455,8 +3455,8 @@ TEST(Btree, IteratorSubtractionOutOfBounds) {
   EXPECT_EQ(forward, set.end());
 
   if (IsAssertEnabled()) {
-    EXPECT_DEATH(backward -= 1, "position >= node->start");
-    EXPECT_DEATH(forward -= -1, "n == 0");
+    EXPECT_DEATH(backward -= 1, "");
+    EXPECT_DEATH(forward -= -1, "");
   }
 }
 
@@ -3465,7 +3465,7 @@ TEST(Btree, DereferencingEndIterator) {
 
   absl::btree_set<int> set;
   for (int i = 0; i < 1000; ++i) set.insert(i);
-  EXPECT_DEATH(*set.end(), R"regex(Dereferencing end\(\) iterator)regex");
+  EXPECT_DEATH(*set.end(), "");
 }
 
 TEST(Btree, InvalidIteratorComparison) {
@@ -3477,13 +3477,10 @@ TEST(Btree, InvalidIteratorComparison) {
     set2.insert(i);
   }
 
-  constexpr const char *kValueInitDeathMessage =
-      "Comparing default-constructed iterator with .*non-default-constructed "
-      "iterator";
   typename absl::btree_set<int>::iterator iter1, iter2;
   EXPECT_EQ(iter1, iter2);
-  EXPECT_DEATH(void(set1.begin() == iter1), kValueInitDeathMessage);
-  EXPECT_DEATH(void(iter1 == set1.begin()), kValueInitDeathMessage);
+  EXPECT_DEATH(void(set1.begin() == iter1), "");
+  EXPECT_DEATH(void(iter1 == set1.begin()), "");
 
   constexpr const char *kDifferentContainerDeathMessage =
       "Comparing iterators from different containers";

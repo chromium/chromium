@@ -1086,6 +1086,24 @@ void Cord::CopyToArraySlowPath(char* absl_nonnull dst) const {
   }
 }
 
+size_t CopyCordToSpan(const Cord& src, absl::Span<char> dst) {
+  if (src.size() <= dst.size()) {
+    src.CopyToArrayImpl(dst.data());
+    return src.size();
+  }
+
+  const size_t result = dst.size();
+  for (absl::string_view chunk : src.Chunks()) {
+    size_t n = std::min(chunk.size(), dst.size());
+    if (n == 0) {
+      break;
+    }
+    memcpy(dst.data(), chunk.data(), n);
+    dst.remove_prefix(n);
+  }
+  return result;
+}
+
 Cord Cord::ChunkIterator::AdvanceAndReadBytes(size_t n) {
   // Failure of this assertion indicates an attempt to iterate past `end()`.
   absl::base_internal::HardeningAssertGE(bytes_remaining_, n);

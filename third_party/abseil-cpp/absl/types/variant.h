@@ -56,13 +56,17 @@ template <size_t I, typename T>
 using variant_alternative_t ABSL_REFACTOR_INLINE
     = std::variant_alternative_t<I, T>;
 
-using std::variant_npos;
+inline constexpr size_t variant_npos ABSL_REFACTOR_INLINE
+    = std::variant_npos;
 
 template <typename T>
 using variant_size ABSL_REFACTOR_INLINE
     = std::variant_size<T>;
 
-using std::variant_size_v;
+template <typename T>
+inline constexpr size_t variant_size_v ABSL_REFACTOR_INLINE
+    = std::variant_size_v<T>;
+
 using std::visit;
 
 namespace variant_internal {

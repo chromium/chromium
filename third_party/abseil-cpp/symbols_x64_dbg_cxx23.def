@@ -2731,6 +2731,7 @@ EXPORTS
     ??R<lambda_1>@?0???$emplace_back@V?$unique_ptr@VFlagStateInterface@flags_internal@absl@@U?$default_delete@VFlagStateInterface@flags_internal@absl@@@__Cr@std@@@__Cr@std@@@?$vector@V?$unique_ptr@VFlagStateInterface@flags_internal@absl@@U?$default_delete@VFlagStateInterface@flags_internal@absl@@@__Cr@std@@@__Cr@std@@V?$allocator@V?$unique_ptr@VFlagStateInterface@flags_internal@absl@@U?$default_delete@VFlagStateInterface@flags_internal@absl@@@__Cr@std@@@__Cr@std@@@23@@__Cr@std@@QEAAAEAV?$unique_ptr@VFlagStateInterface@flags_internal@absl@@U?$default_delete@VFlagStateInterface@flags_internal@absl@@@__Cr@std@@@23@$$QEAV423@@Z@QEBA?A?<auto>@@XZ
     ??R<lambda_1>@?0???$emplace_back@W4Source@UnrecognizedFlag@absl@@AEAV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@?$vector@UUnrecognizedFlag@absl@@V?$allocator@UUnrecognizedFlag@absl@@@__Cr@std@@@__Cr@std@@QEAAAEAUUnrecognizedFlag@absl@@$$QEAW4Source@45@AEAV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@23@@Z@QEBA?A?<auto>@@XZ
     ??R<lambda_1>@?0??Append@FormatSinkImpl@str_format_internal@absl@@QEAAX_KD@Z@QEBA?A?<auto>@@0@Z
+    ??R<lambda_1>@?0??AssertIsValidForComparison@container_internal@absl@@YAXPEBW4ctrl_t@23@EPEBE@Z@QEBA?A?<auto>@@XZ
     ??R<lambda_1>@?0??AssertSameContainer@container_internal@absl@@YAXPEBW4ctrl_t@23@0AEBQEBX1PEBE2@Z@QEBA?A?<auto>@@_NPEBD@Z
     ??R<lambda_1>@?0??CompareSlowPath@Cord@absl@@AEBAHAEBV23@_K1@Z@QEBA?A?<auto>@@PEAVChunkIterator@23@PEAV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??R<lambda_1>@?0??CompareSlowPath@Cord@absl@@AEBAHV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@_K1@Z@QEBA?A?<auto>@@PEAVChunkIterator@23@PEAV456@@Z
@@ -3088,6 +3089,7 @@ EXPORTS
     ?Copy@flags_internal@absl@@YAXP6APEAXW4FlagOp@12@PEBXPEAX2@Z12@Z
     ?CopyBeginTo@CordRepBtree@cord_internal@absl@@AEBAPEAV123@_K0@Z
     ?CopyConstruct@flags_internal@absl@@YAXP6APEAXW4FlagOp@12@PEBXPEAX2@Z12@Z
+    ?CopyCordToSpan@absl@@YA_KAEBVCord@1@V?$Span@D@1@@Z
     ?CopyCordToString@absl@@YAXAEBVCord@1@PEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?CopyInlineToString@InlineData@cord_internal@absl@@QEBAXPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?CopyPrefix@CordRepBtree@cord_internal@absl@@AEAA?AUCopyResult@123@_K_N@Z
@@ -3762,6 +3764,7 @@ EXPORTS
     ?MatchesConversions@ParsedFormatBase@str_format_internal@absl@@AEBA_N_NV?$initializer_list@W4FormatConversionCharSet@absl@@@std@@@Z
     ?MaxFlatLength@CordTestAccess@strings_internal@absl@@SA_KXZ
     ?MaxFramesInLogStackTrace@log_internal@absl@@YAHXZ
+    ?MaxSmallCapacity@container_internal@absl@@YA_KXZ
     ?MaxStorableSize@container_internal@absl@@YA_KXZ
     ?MaxVarintSize@log_internal@absl@@YA_KXZ
     ?MaybeBecomeIdle@WaiterBase@synchronization_internal@absl@@KAXXZ
@@ -5413,6 +5416,8 @@ EXPORTS
     ?is_sampled_seed@?$HashtableInlineDataImpl@$0A@@container_internal@absl@@QEBA_NXZ
     ?is_short@Rep@CordBuffer@absl@@QEBA_NXZ
     ?is_single_group@container_internal@absl@@YA_N_K@Z
+    ?is_small@?$HashtableCapacityImpl@$0A@@container_internal@absl@@QEBA_NXZ
+    ?is_small@?$HashtableInlineDataImpl@$0A@@container_internal@absl@@QEBA_NXZ
     ?is_small@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@$$V@container_internal@absl@@AEBA_NXZ
     ?is_small@CommonFields@container_internal@absl@@QEBA_NXZ
     ?is_snapshot@CordzHandle@cord_internal@absl@@QEBA_NXZ

@@ -62,6 +62,7 @@
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/compare.h"
+#include "absl/types/span.h"
 
 // convenience local constants
 static constexpr auto FLAT = absl::cord_internal::FLAT;
@@ -733,6 +734,53 @@ TEST_P(CordTest, AppendToString) {
   VerifyAppendCordToString(MaybeHardened(
       absl::MakeFragmentedCord({"fragmented ", "cord ", "to ", "test ",
                                 "appending ", "to ", "a ", "string."})));
+}
+
+static void VerifyCopyToSpan(const absl::Cord& cord) {
+  // Test with span exactly the same size as the cord.
+  {
+    std::string dst(cord.size(), '\0');
+    size_t copied = absl::CopyCordToSpan(cord, absl::MakeSpan(dst));
+    EXPECT_EQ(copied, cord.size());
+    EXPECT_EQ(dst, cord);
+  }
+
+  // Test with span larger than the cord.
+  {
+    std::string dst(cord.size() + 10, 'x');
+    size_t copied = absl::CopyCordToSpan(cord, absl::MakeSpan(dst));
+    EXPECT_EQ(copied, cord.size());
+    EXPECT_EQ(absl::string_view(dst).substr(0, copied), cord);
+    if (cord.size() < dst.size()) {
+      absl::string_view tail = absl::string_view(dst).substr(copied);
+      EXPECT_EQ(tail, std::string(tail.size(), 'x'));
+    }
+  }
+
+  // Test with span smaller than the cord.
+  {
+    size_t target_size = cord.size() / 2;
+    std::string dst(target_size, '\0');
+    size_t copied = absl::CopyCordToSpan(cord, absl::MakeSpan(dst));
+    EXPECT_EQ(copied, target_size);
+    EXPECT_EQ(dst, std::string(cord).substr(0, target_size));
+  }
+
+  // Test with empty span.
+  {
+    char c = 'x';
+    size_t copied = absl::CopyCordToSpan(cord, absl::MakeSpan(&c, 0));
+    EXPECT_EQ(copied, 0);
+    EXPECT_EQ(c, 'x');
+  }
+}
+
+TEST_P(CordTest, CopyToSpan) {
+  VerifyCopyToSpan(absl::Cord());  // Empty cords cannot be hardened.
+  VerifyCopyToSpan(MaybeHardened(absl::Cord("small cord")));
+  VerifyCopyToSpan(MaybeHardened(
+      absl::MakeFragmentedCord({"fragmented ", "cord ", "to ", "test ",
+                                "copying ", "to ", "a ", "span."})));
 }
 
 TEST_P(CordTest, AppendEmptyBuffer) {

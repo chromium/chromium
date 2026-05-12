@@ -378,4 +378,14 @@ TEST(StackTrace, NestedSignal) {
 }
 #endif
 
+TEST(StackTrace, NoNullptrInPopulatedRange) {
+  constexpr int kMaxDepth = 1024;
+  void* results[kMaxDepth];
+  int depth = absl::GetStackTrace(results, kMaxDepth, 0);
+  for (int i = 0; i < depth; ++i) {
+    EXPECT_NE(results[i], nullptr) << "Unexpected nullptr found at index " << i;
+  }
+}
+
+
 }  // namespace

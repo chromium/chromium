@@ -98,6 +98,7 @@
 #include "absl/strings/string_view.h"
 #include "absl/types/compare.h"
 #include "absl/types/optional.h"
+#include "absl/types/span.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -107,6 +108,7 @@ template <typename Releaser>
 Cord MakeCordFromExternal(absl::string_view, Releaser&&);
 void CopyCordToString(const Cord& src, std::string* absl_nonnull dst);
 void AppendCordToString(const Cord& src, std::string* absl_nonnull dst);
+[[nodiscard]] size_t CopyCordToSpan(const Cord& src, absl::Span<char> dst);
 
 // Cord memory accounting modes
 enum class CordMemoryAccounting {
@@ -433,6 +435,12 @@ class Cord {
   // conversion operator to `std::string`.
   friend void AppendCordToString(const Cord& src,
                                  std::string* absl_nonnull dst);
+
+  // CopyCordToSpan()
+  //
+  // Copies up to `dest.size()` bytes starting from the beginning of `src` to
+  // `dst`.  Returns the number of bytes copied.
+  friend size_t CopyCordToSpan(const Cord& src, absl::Span<char> dst);
 
   class CharIterator;
 
