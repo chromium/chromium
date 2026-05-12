@@ -4024,7 +4024,15 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Checks password details page offers move to account option if the password is
 // saved in the local store.
-- (void)testMovePasswordToAccountStoreIfSignedIn {
+// TODO(crbug.com/512447836): Test is flaky.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testMovePasswordToAccountStoreIfSignedIn \
+  FLAKY_testMovePasswordToAccountStoreIfSignedIn
+#else
+#define MAYBE_testMovePasswordToAccountStoreIfSignedIn \
+  testMovePasswordToAccountStoreIfSignedIn
+#endif
+- (void)MAYBE_testMovePasswordToAccountStoreIfSignedIn {
   // Save form to be moved to account later.
   SavePasswordFormToProfileStore();
 
