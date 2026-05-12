@@ -262,6 +262,7 @@ if (current_toolchain == default_toolchain) {
       "usb.icon",
       "usb_chrome_refresh.icon",
       "usb_off_chrome_refresh.icon",
+      "v8_off.icon",
       "video_library.icon",
       "videocam.icon",
       "videocam_chrome_refresh.icon",
@@ -322,7 +323,6 @@ if (current_toolchain == default_toolchain) {
         "google_chrome/page_insights_color.icon",
         "google_chrome/pen_spark.icon",
         "google_chrome/play_circle_spark.icon",
-        "google_chrome/v8_off.icon",
       ]
     }
   }
