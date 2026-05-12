@@ -881,6 +881,11 @@ inline constexpr char kIOSActorToolsName[] = "iOS Actor Tools";
 inline constexpr char kIOSActorToolsDescription[] =
     "Enables all actor tools on iOS.";
 
+inline constexpr char kIOSBackendPromoServiceIntegrationName[] =
+    "IOS Backend Promo Service Integration";
+inline constexpr char kIOSBackendPromoServiceIntegrationDescription[] =
+    "Enables Backend Promo Service integration.";
+
 inline constexpr char kIOSBrowserEditMenuMetricsName[] =
     "Browser edit menu metrics";
 inline constexpr char kIOSBrowserEditMenuMetricsDescription[] =

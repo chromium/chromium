@@ -1270,6 +1270,13 @@ bool IsAssistantAimMinimizedStateEnabled() {
   return base::FeatureList::IsEnabled(kAssistantAimMinimizedState);
 }
 
+BASE_FEATURE(kIOSBackendPromoServiceIntegration,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSBackendPromoServiceIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(kIOSBackendPromoServiceIntegration);
+}
+
 BASE_FEATURE(kUseUIGraphicsImageRendererForFallbackIcons,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

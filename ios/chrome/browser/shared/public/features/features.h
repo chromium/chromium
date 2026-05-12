@@ -1022,6 +1022,12 @@ BASE_DECLARE_FEATURE(kAssistantAimMinimizedState);
 // Returns true if the `AssistantAimMinimizedState` feature is enabled.
 bool IsAssistantAimMinimizedStateEnabled();
 
+// Feature flag to enable Backend Promo Service integration.
+BASE_DECLARE_FEATURE(kIOSBackendPromoServiceIntegration);
+
+// Returns true if kIOSBackendPromoServiceIntegration is enabled.
+bool IsIOSBackendPromoServiceIntegrationEnabled();
+
 // Feature flag to enable the use of UIGraphicsImageRenderer for fallback icons.
 BASE_DECLARE_FEATURE(kUseUIGraphicsImageRendererForFallbackIcons);
 
