@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 
 #include <dawn/webgpu.h>
+#include <unistd.h>
 
 #include <memory>
 #include <utility>
@@ -495,6 +496,24 @@ std::unique_ptr<VulkanImageRepresentation> OzoneImageBacking::ProduceVulkan(
     native_pixmap_handle.planes[0].size = image_size.GetArea();
     native_pixmap_handle.planes[1].offset = image_size.GetArea();
     native_pixmap_handle.planes[1].size = image_size.GetArea() / 2;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    base::CheckedNumeric<uint64_t> checked_required =
+        native_pixmap_handle.planes[1].offset;
+    checked_required += native_pixmap_handle.planes[1].size;
+    if (!checked_required.IsValid()) {
+      return nullptr;
+    }
+    const uint64_t required_buf_size = checked_required.ValueOrDie();
+    const off_t dmabuf_size =
+        lseek(native_pixmap_handle.planes[0].fd.get(), 0, SEEK_END);
+    if (dmabuf_size < 0 ||
+        base::saturated_cast<uint64_t>(dmabuf_size) < required_buf_size) {
+      LOG(ERROR) << "MT2T rewrite plane[1] end [" << required_buf_size
+                 << "] exceeds FD[0] size [" << dmabuf_size << "]";
+      return nullptr;
+    }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
   auto vulkan_image = vulkan_impl.CreateImageFromGpuMemoryHandle(
       vulkan_device_queue,
