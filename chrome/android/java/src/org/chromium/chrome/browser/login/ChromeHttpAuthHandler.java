@@ -17,7 +17,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -172,10 +171,9 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
 
     private boolean shouldProvideAutofillUrl() {
         if (mTab == null) return false;
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH)
-                && (AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
-                                UserPrefs.get(mTab.getProfile()))
-                        == AndroidAutofillAvailabilityStatus.AVAILABLE);
+        return AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
+                        UserPrefs.get(mTab.getProfile()))
+                == AndroidAutofillAvailabilityStatus.AVAILABLE;
     }
 
     @NativeMethods

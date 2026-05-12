@@ -32,7 +32,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -167,7 +166,6 @@ public class ChromeHttpAuthHandlerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH)
     public void testAutofillUrlProvidedWhenAvailable() throws Exception {
         AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                 AndroidAutofillAvailabilityStatus.AVAILABLE);
@@ -183,7 +181,6 @@ public class ChromeHttpAuthHandlerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH)
     public void testAutofillUrlNotProvidedWhenNotAvailable() throws Exception {
         AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                 AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
@@ -199,26 +196,7 @@ public class ChromeHttpAuthHandlerTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH)
-    public void testAutofillUrlNotProvidedWhenFeatureDisabled() throws Exception {
-        AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
-                AndroidAutofillAvailabilityStatus.AVAILABLE);
-
-        ChromeHttpAuthHandler handler = triggerAuth();
-        verifyAuthDialogVisibility(handler, true);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            handler, hasAutofillImportance(View.IMPORTANT_FOR_AUTOFILL_NO));
-                });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH,
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH_ORIGIN_NAME
-    })
+    @EnableFeatures(AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH_ORIGIN_NAME)
     public void testAutofillUrlProvidedWhenFeatureOriginEnabled() throws Exception {
         AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                 AndroidAutofillAvailabilityStatus.AVAILABLE);
@@ -235,7 +213,6 @@ public class ChromeHttpAuthHandlerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH)
     @DisableFeatures(AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH_ORIGIN_NAME)
     public void testAutofillUrlProvidedWhenFeatureOriginDisabled() throws Exception {
         AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(

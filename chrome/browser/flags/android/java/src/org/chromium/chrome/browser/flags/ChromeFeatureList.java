@@ -176,8 +176,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE =
             "AndroidAppIntegrationMultiDataSource";
     public static final String ANDROID_APP_RATING_PROMPT = "AndroidAppRatingPrompt";
-    public static final String ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH =
-            "AndroidAutofillSupportForHttpAuth";
     public static final String ANDROID_AUTO_MINTED_TWA = "AndroidAutoMintedTWA";
     public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
     public static final String ANDROID_BOOKMARK_BAR_FAST_FOLLOW = "AndroidBookmarkBarFastFollow";
