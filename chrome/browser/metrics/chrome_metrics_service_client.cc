@@ -92,6 +92,7 @@
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_service_client.h"
@@ -179,11 +180,11 @@
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/metrics/k12_age_classification_metrics_provider.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
+#include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_metrics_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
-#include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"
 #else
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
@@ -1438,10 +1439,26 @@ void ChromeMetricsServiceClient::SetIsProcessRunningForTesting(
 }
 
 bool ChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {
+  // Note: Incognito is handled separately, see
+  // MetricsServicesManager::UpdateUkmService().
+  PrefService* local_state = g_browser_process->local_state();
+  if (metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure(local_state)) {
+    return metrics::MetricsReportingChoiceService::
+        IsAdvancedMetricsReportingEnabled(local_state);
+  }
   return UkmConsentStateObserver::IsUkmAllowedForAllProfiles();
 }
 
 bool ChromeMetricsServiceClient::IsDwaAllowedForAllProfiles() {
+  // Note: Incognito is handled separately, see
+  // MetricsServicesManager::UpdateUkmService().
+  PrefService* local_state = g_browser_process->local_state();
+  if (metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure(local_state)) {
+    return metrics::MetricsReportingChoiceService::
+        IsAdvancedMetricsReportingEnabled(local_state);
+  }
   return UkmConsentStateObserver::IsDwaAllowedForAllProfiles();
 }
 

@@ -30,6 +30,8 @@ constexpr NoInitialUkmConsentStateTag NoInitialUkmConsentState;
 //
 // For one profile, UKM is allowed iff URL-keyed anonymized data collection is
 // enabled.
+// TODO(@heychirag): UkmConsentStateObserver will need to be removed completely
+// once migration to the new three-level metrics reporting state is complete.
 class UkmConsentStateObserver
     : public syncer::SyncServiceObserver,
       public unified_consent::UrlKeyedDataCollectionConsentHelper::Observer {

@@ -110,6 +110,15 @@ bool MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
 }
 
 // static
+bool MetricsReportingChoiceService::IsAdvancedMetricsReportingEnabled(
+    const PrefService* local_state) {
+  CHECK(local_state);
+  MetricsReportingLevel level = static_cast<MetricsReportingLevel>(
+      local_state->GetInteger(prefs::kMetricsReportingLevel));
+  return level == MetricsReportingLevel::kAdvanced;
+}
+
+// static
 bool MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
     const PrefService* local_state) {
   CHECK(local_state);

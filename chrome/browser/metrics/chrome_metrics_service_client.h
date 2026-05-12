@@ -132,6 +132,9 @@ class ChromeMetricsServiceClient
   bool IsReportingPolicyManaged() override;
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
   bool IsOnCellularConnection() override;
+  // TODO(@heychirag): Upon deprecation of UkmConsentStateObserver, we can
+  // directly call MetricsReportingChoiceService::
+  // IsAdvancedMetricsReportingEnabled()
   bool IsUkmAllowedForAllProfiles() override;
   bool IsDwaAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;

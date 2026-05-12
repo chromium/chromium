@@ -98,6 +98,23 @@ TEST_F(MetricsReportingChoiceServiceTest,
       MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(&prefs_));
 }
 
+TEST_F(MetricsReportingChoiceServiceTest, IsAdvancedMetricsReportingEnabled) {
+  prefs_.SetInteger(prefs::kMetricsReportingLevel,
+                    static_cast<int>(MetricsReportingLevel::kNone));
+  EXPECT_FALSE(MetricsReportingChoiceService::IsAdvancedMetricsReportingEnabled(
+      &prefs_));
+
+  prefs_.SetInteger(prefs::kMetricsReportingLevel,
+                    static_cast<int>(MetricsReportingLevel::kBasic));
+  EXPECT_FALSE(MetricsReportingChoiceService::IsAdvancedMetricsReportingEnabled(
+      &prefs_));
+
+  prefs_.SetInteger(prefs::kMetricsReportingLevel,
+                    static_cast<int>(MetricsReportingLevel::kAdvanced));
+  EXPECT_TRUE(MetricsReportingChoiceService::IsAdvancedMetricsReportingEnabled(
+      &prefs_));
+}
+
 TEST_F(MetricsReportingChoiceServiceTest,
        FeatureStateTakesPreviousSessionValue_EnabledToDisabled) {
   feature_list_.InitAndDisableFeature(
