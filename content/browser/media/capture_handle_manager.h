@@ -35,20 +35,20 @@ class CONTENT_EXPORT CaptureHandleManager {
   // This method should be called after starting a video capture session of
   // a MediaStreamDevice, to subscribe for its CaptureHandle changes.
   // The permission to observe the CaptureHandle depends on |capturer|'s origin.
-  void OnCaptureStarted(
+  void OnTabCaptureStarted(
       const std::string& label,
       const blink::MediaStreamDevice& captured_device,
       GlobalRenderFrameHostId capturer,
       DeviceCaptureHandleChangeCallback handle_change_callback);
 
   // Stops tracking a previously tracked capture session.
-  void OnCaptureStopped(const std::string& label,
-                        const blink::MediaStreamDevice& captured_device);
+  void OnTabCaptureStopped(const std::string& label,
+                           const blink::MediaStreamDevice& captured_device);
 
   // Should be called when devices change. It is essentially equivalent to
-  // calling OnCaptureStopped() on all sessions with the right |label|,
-  // then calling OnCaptureStarted() on all |new_devices|.
-  void OnCaptureDevicesUpdated(
+  // calling OnTabCaptureStopped() on all sessions with the right |label|,
+  // then calling OnTabCaptureStarted() on all |new_devices|.
+  void OnTabCaptureDevicesUpdated(
       const std::string& label,
       blink::mojom::StreamDevicesSetPtr new_stream_devices,
       GlobalRenderFrameHostId capturer,

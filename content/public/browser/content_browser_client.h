@@ -838,11 +838,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsMultiCaptureAllowed(
       content::RenderFrameHost* render_frame_host);
 
-  // Returns the WebContents associated with the given window if it is allowed
-  // to expose a capture handle. Returns nullptr otherwise.
-  virtual content::WebContents* GetWebContentsFromWindowIfCaptureHandleAllowed(
-      gfx::NativeWindow window);
-
   // Allow the embedder to control the maximum renderer process count. Only
   // applies if it is set to a non-zero value.  Once this limit is exceeded,
   // existing processes will be reused whenever possible, see

@@ -107,7 +107,6 @@
 #include "chrome/browser/media/webrtc/audio_debug_recordings_handler.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/chrome_screen_enumerator.h"
-#include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/media/webrtc/rtc_diagnostic_logging_utils.h"
@@ -2732,12 +2731,6 @@ bool ChromeContentBrowserClient::IsMultiCaptureAllowed(
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-content::WebContents*
-ChromeContentBrowserClient::GetWebContentsFromWindowIfCaptureHandleAllowed(
-    gfx::NativeWindow window) {
-  return ::GetWebContentsFromWindowIfCaptureHandleAllowed(window);
 }
 
 bool ChromeContentBrowserClient::IsFileAccessAllowed(

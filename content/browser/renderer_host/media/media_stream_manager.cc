@@ -479,20 +479,6 @@ bool IsApplicationLoopbackAudioDevice(MediaStreamDevice* device) {
          media::AudioDeviceDescription::IsApplicationLoopbackDevice(device->id);
 }
 
-bool IsWindowCaptureId(const std::string& device_id) {
-  content::DesktopMediaID desktop_id =
-      content::DesktopMediaID::Parse(device_id);
-  return !desktop_id.is_null() &&
-         desktop_id.type == content::DesktopMediaID::TYPE_WINDOW;
-}
-
-// Capture handle can only be exposed for individual tabs, IWAs,
-// and standalone PWAs.
-bool IsEligibleForCaptureHandle(const std::string& device_id) {
-  return WebContentsMediaCaptureId::Parse(device_id, nullptr) ||
-         IsWindowCaptureId(device_id);
-}
-
 }  // namespace
 
 // MediaStreamManager::DeviceRequest represents a request to either enumerate
@@ -4609,7 +4595,7 @@ void MediaStreamManager::MaybeStartTrackingCaptureHandleConfig(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!blink::IsVideoInputMediaType(captured_device.type) ||
-      !IsEligibleForCaptureHandle(captured_device.id)) {
+      !WebContentsMediaCaptureId::Parse(captured_device.id, nullptr)) {
     return;
   }
 
@@ -4619,7 +4605,7 @@ void MediaStreamManager::MaybeStartTrackingCaptureHandleConfig(
   // bind base::Unretained(&capture_handle_manager_).
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&CaptureHandleManager::OnCaptureStarted,
+      base::BindOnce(&CaptureHandleManager::OnTabCaptureStarted,
                      base::Unretained(&capture_handle_manager_), label,
                      captured_device, request.requesting_render_frame_host_id,
                      base::BindPostTask(GetIOThreadTaskRunner({}),
@@ -4632,7 +4618,7 @@ void MediaStreamManager::MaybeStopTrackingCaptureHandleConfig(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!blink::IsVideoInputMediaType(captured_device.type) ||
-      !IsEligibleForCaptureHandle(captured_device.id)) {
+      !WebContentsMediaCaptureId::Parse(captured_device.id, nullptr)) {
     return;
   }
 
@@ -4640,7 +4626,7 @@ void MediaStreamManager::MaybeStopTrackingCaptureHandleConfig(
   // it is owned by MediaStreamManager, which is in turn owned by
   // BrowserMainLoop.
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CaptureHandleManager::OnCaptureStopped,
+      FROM_HERE, base::BindOnce(&CaptureHandleManager::OnTabCaptureStopped,
                                 base::Unretained(&capture_handle_manager_),
                                 label, captured_device));
 }
@@ -4661,7 +4647,7 @@ void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
   blink::mojom::StreamDevices& filtered_new_devices =
       *filtered_new_devices_set->stream_devices[0];
   if (new_devices.video_device.has_value() &&
-      IsEligibleForCaptureHandle(new_devices.video_device->id)) {
+      WebContentsMediaCaptureId::Parse(new_devices.video_device->id, nullptr)) {
     filtered_new_devices.video_device = new_devices.video_device.value();
   }
 
@@ -4670,7 +4656,7 @@ void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
   // BrowserMainLoop.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&CaptureHandleManager::OnCaptureDevicesUpdated,
+      base::BindOnce(&CaptureHandleManager::OnTabCaptureDevicesUpdated,
                      base::Unretained(&capture_handle_manager_), label,
                      std::move(filtered_new_devices_set),
                      request.requesting_render_frame_host_id,

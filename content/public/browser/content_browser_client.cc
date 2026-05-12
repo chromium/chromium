@@ -428,12 +428,6 @@ bool ContentBrowserClient::IsMultiCaptureAllowed(
   return false;
 }
 
-content::WebContents*
-ContentBrowserClient::GetWebContentsFromWindowIfCaptureHandleAllowed(
-    gfx::NativeWindow window) {
-  return nullptr;
-}
-
 size_t ContentBrowserClient::GetMaxRendererProcessCountOverride() {
   return 0u;
 }
