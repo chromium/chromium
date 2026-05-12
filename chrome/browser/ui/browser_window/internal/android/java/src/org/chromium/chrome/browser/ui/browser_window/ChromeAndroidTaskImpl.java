@@ -1239,6 +1239,11 @@ final class ChromeAndroidTaskImpl
         useActivity(
                 topActivityScopedObjects ->
                         mWindowStateManager.update(topActivityScopedObjects.mActivity));
+
+        for (var feature : mFeatures.values()) {
+            feature.onTaskVisibilityChanged(isVisible);
+        }
+
         if (mId == null || taskId != mId || mState != State.PENDING_UPDATE) return;
         if (!isVisible) {
             @PendingAction

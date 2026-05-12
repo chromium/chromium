@@ -1567,6 +1567,28 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void onTaskVisibilityChanged_invokesOnTaskVisibilityChangedForFeature() {
+        // Arrange.
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl)
+                        createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
+        var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
+
+        // Act.
+        chromeAndroidTask.onTaskVisibilityChanged(/* taskId= */ 1, /* isVisible= */ true);
+        chromeAndroidTask.onTaskVisibilityChanged(/* taskId= */ 1, /* isVisible= */ false);
+
+        // Assert.
+        assertEquals(2, testFeature.mTaskVisibilityChangeHistory.size());
+        assertTrue(testFeature.mTaskVisibilityChangeHistory.get(0));
+        assertFalse(testFeature.mTaskVisibilityChangeHistory.get(1));
+    }
+
+    @Test
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void canResize_noRestrictions() {
         // Arrange.
@@ -3834,6 +3856,9 @@ public class ChromeAndroidTaskImplUnitTest {
         /** Records the {@code hasFocus} values passed to {@link #onTaskFocusChanged}. */
         final List<Boolean> mTaskFocusChangeHistory = new ArrayList<>();
 
+        /** Records the {@code isVisible} values passed to {@link #onTaskVisibilityChanged}. */
+        final List<Boolean> mTaskVisibilityChangeHistory = new ArrayList<>();
+
         /** Records the {@link TabModel} passed to {@link #onTabModelSelected}. */
         final List<TabModel> mTabModelSelectedHistory = new ArrayList<>();
 
@@ -3874,6 +3899,11 @@ public class ChromeAndroidTaskImplUnitTest {
         @Override
         public void onTaskFocusChanged(boolean hasFocus) {
             mTaskFocusChangeHistory.add(hasFocus);
+        }
+
+        @Override
+        public void onTaskVisibilityChanged(boolean isVisible) {
+            mTaskVisibilityChangeHistory.add(isVisible);
         }
 
         @Override

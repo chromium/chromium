@@ -50,6 +50,11 @@ public class TabbedWindowStateTracker implements ChromeAndroidTaskFeature {
         // TODO: Implement this method.
     }
 
+    @Override
+    public void onTaskVisibilityChanged(boolean isVisible) {
+        ChromeMultiInstancePersistentStore.writeIsVisible(mWindowId, isVisible);
+    }
+
     private void saveWindowBounds(int displayId, Rect boundsInPx) {
         // Only persist bounds if the task is on the primary display. This is to avoid the persisted
         // bounds from being incorrectly used to start an activity in a different non-primary

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.graphics.Rect;
@@ -89,5 +90,37 @@ public class TabbedWindowStateTrackerUnitTest {
         assertEquals(WINDOW_ID_0, infoList.get(0).windowId);
         assertTrue(infoList.get(0).isVisible);
         assertEquals(new Rect(), infoList.get(0).bounds);
+    }
+
+    @Test
+    public void testOnTaskVisibilityChanged_isVisible() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(WINDOW_ID_0, true);
+
+        // Act.
+        mTracker.onTaskVisibilityChanged(true);
+
+        // Verify.
+        List<CrashRecoveryWindowInfo> infoList =
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+        assertEquals(1, infoList.size());
+        assertEquals(WINDOW_ID_0, infoList.get(0).windowId);
+        assertTrue(infoList.get(0).isVisible);
+    }
+
+    @Test
+    public void testOnTaskVisibilityChanged_isNotVisible() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(WINDOW_ID_0, true);
+
+        // Act.
+        mTracker.onTaskVisibilityChanged(false);
+
+        // Verify.
+        List<CrashRecoveryWindowInfo> infoList =
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+        assertEquals(1, infoList.size());
+        assertEquals(WINDOW_ID_0, infoList.get(0).windowId);
+        assertFalse(infoList.get(0).isVisible);
     }
 }

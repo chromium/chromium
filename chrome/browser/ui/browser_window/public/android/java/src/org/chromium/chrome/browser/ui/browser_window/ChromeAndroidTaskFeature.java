@@ -128,6 +128,13 @@ public interface ChromeAndroidTaskFeature {
     default void onTaskFocusChanged(boolean hasFocus) {}
 
     /**
+     * Called by a {@link ChromeAndroidTask} when the Task visibility changes.
+     *
+     * @param isVisible True if the Task is visible.
+     */
+    default void onTaskVisibilityChanged(boolean isVisible) {}
+
+    /**
      * Called when the selected {@link TabModel} changes. This is also invoked when the feature is
      * added to a {@link ChromeAndroidTask}.
      *
