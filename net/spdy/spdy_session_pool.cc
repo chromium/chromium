@@ -812,7 +812,11 @@ base::WeakPtr<SpdySession> SpdySessionPool::FindMatchingIpSession(
     for (auto alias_it = range.first; alias_it != range.second; ++alias_it) {
       // Found a potential alias.
       const SpdySessionKey& alias_key = alias_it->second;
-      CHECK(alias_key.socket_tag() == SocketTag());
+      if (alias_key.socket_tag() != key.socket_tag()) {
+        // TODO(crbug.com/346835898): Consider changing session's socket tag
+        // if possible, in a way similar to OnHostResolutionCompleteShared().
+        continue;
+      }
 
       auto available_session_it = LookupAvailableSessionByKey(alias_key);
       CHECK(available_session_it != available_sessions_.end());

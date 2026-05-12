@@ -936,6 +936,70 @@ TEST_F(SpdySessionPoolTest, IPPoolingSocketTagCrash) {
   TryCreateAliasedSpdySession(spdy_session_pool_, key_a_tag2,
                               test_hosts[0].iplist);
 }
+
+// Regression test for crbug.com/507733124.
+// Verifies that FindMatchingIpSessionForServiceEndpoint() returns nullptr
+// when evaluating an existing aliased session that has a different
+// SocketTag than the request.
+TEST_F(SpdySessionPoolTest,
+       FindMatchingIpSessionForServiceEndpointSocketTagMismatch) {
+  // Define two hosts with identical IP address.
+  constexpr int kTestPort = 443;
+  struct TestHosts {
+    std::string name;
+    std::string iplist;
+  };
+  SocketTag tag1(SocketTag::UNSET_UID, 1);
+  auto test_hosts = std::to_array<TestHosts>({
+      {"www.example.org", "192.168.0.1"},
+      {"mail.example.org", "192.168.0.1"},
+  });
+
+  // Populate the HostResolver cache.
+  session_deps_.host_resolver->set_synchronous_mode(true);
+  for (auto& test_host : test_hosts) {
+    session_deps_.host_resolver->rules()->AddIPLiteralRule(
+        test_host.name, test_host.iplist, /*canonical_name=*/std::string());
+  }
+
+  SpdySessionKey key_a_tag1(
+      HostPortPair(test_hosts[0].name, kTestPort), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, tag1,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
+  SpdySessionKey key_b_no_tag(
+      HostPortPair(test_hosts[1].name, kTestPort), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  data.set_connect_data(connect_data);
+
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+
+  // Open Session 1 to A with tag 1.
+  base::WeakPtr<SpdySession> session1 =
+      CreateSpdySession(http_session_.get(), key_a_tag1, NetLogWithSource());
+
+  // Create ServiceEndpoint for B with the same IP.
+  IPAddress ip_address;
+  ASSERT_TRUE(ip_address.AssignFromIPLiteral("192.168.0.1"));
+  ServiceEndpoint endpoint;
+  endpoint.ipv4_endpoints.emplace_back(ip_address, kTestPort);
+
+  // Attempt to find matching IP session for B (no tag).
+  // Since Session 1 has a different SocketTag (tag1), it should not be matched.
+  base::WeakPtr<SpdySession> result =
+      spdy_session_pool_->FindMatchingIpSessionForServiceEndpoint(
+          key_b_no_tag, endpoint, /*dns_aliases=*/{});
+  EXPECT_FALSE(result);
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(SpdySessionPoolTest, IPPoolingDnsAlpn) {
