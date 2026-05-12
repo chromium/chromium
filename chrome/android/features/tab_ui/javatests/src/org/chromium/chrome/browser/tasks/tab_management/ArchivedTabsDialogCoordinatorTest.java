@@ -53,7 +53,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -67,7 +66,6 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
-import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Observer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -178,20 +176,22 @@ public class ArchivedTabsDialogCoordinatorTest {
                 });
 
         mArchivedTabModelOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
+        waitForArchivedTabModelsToLoad(mArchivedTabModelOrchestrator);
         mArchivedTabModel = mArchivedTabModelOrchestrator.getTabModelSelector().getModel(false);
         mUserActionTester = new UserActionTester();
         mTabArchiveSettings = mArchivedTabModelOrchestrator.getTabArchiveSettings();
         mTabArchiveSettings.setShouldShowDialogIphForTesting(false);
-        waitForArchivedTabModelsToLoad(mArchivedTabModelOrchestrator);
     }
 
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mArchivedTabModel
-                            .getTabRemover()
-                            .forceCloseTabs(TabClosureParams.closeAllTabs().build());
+                    if (mArchivedTabModel != null) {
+                        mArchivedTabModel
+                                .getTabRemover()
+                                .forceCloseTabs(TabClosureParams.closeAllTabs().build());
+                    }
                     mTabArchiveSettings.resetSettingsForTesting();
                 });
     }
@@ -1464,24 +1464,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     private void waitForArchivedTabModelsToLoad(
             ArchivedTabModelOrchestrator archivedTabModelOrchestrator) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    CallbackHelper callbackHelper = new CallbackHelper();
-                    if (archivedTabModelOrchestrator.isTabModelInitialized()) {
-                        callbackHelper.notifyCalled();
-                    } else {
-                        archivedTabModelOrchestrator.addObserver(
-                                new Observer() {
-                                    @Override
-                                    public void onTabModelCreated(TabModel archivedTabModel) {
-                                        archivedTabModelOrchestrator.removeObserver(this);
-                                        callbackHelper.notifyCalled();
-                                    }
-                                });
-                    }
-
-                    return null;
-                });
+        CriteriaHelper.pollUiThread(() -> archivedTabModelOrchestrator.isTabModelInitialized());
     }
 
     private void dismissIphMessage(int numOfArchivedTabs) {
