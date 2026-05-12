@@ -209,7 +209,15 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
             VerificationStatus::kNoStatus);
 }
 
-TEST_F(EntityInstanceAndroidTest, DateConversion) {
+// Makes sure the `EntityInstance` C++ -> Java -> C++ conversion results in the
+// object equal to the initial entity. This process has to known caveats:
+// * The name attributes have a parsed substructure in C++, which is not stored
+//   in Java. An existing entity instance is provided to the conversion method
+//   to keep the substructure.
+// * The dates (modified date and use date) are stored with microsecond
+//   precision in C++ and millisecond precision in Java. This means the test
+//   will work as long as the dates have zero microseconds.
+TEST_F(EntityInstanceAndroidTest, DoubleConversion) {
   EntityInstance passport = test::GetPassportEntityInstance();
   EntityInstanceAndroid entity_instance_android(
       passport, /*is_enabled=*/true, /*is_eligible_for_wallet_storage=*/true,
@@ -225,8 +233,7 @@ TEST_F(EntityInstanceAndroidTest, DateConversion) {
   EntityInstance converted_passport =
       converted_entity.ToEntityInstance(passport);
 
-  EXPECT_EQ(passport.date_modified().InMillisecondsSinceUnixEpoch(),
-            converted_passport.date_modified().InMillisecondsSinceUnixEpoch());
+  EXPECT_EQ(passport, converted_passport);
 }
 
 }  // namespace

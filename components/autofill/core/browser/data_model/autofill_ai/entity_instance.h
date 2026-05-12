@@ -467,6 +467,8 @@ class EntityInstance final {
   std::string frecency_override_;
 };
 
+std::ostream& operator<<(std::ostream& os,
+                         const EntityInstance::EntityMetadata& m);
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);
 std::ostream& operator<<(std::ostream& os, const EntityInstance::RecordType& t);
 std::ostream& operator<<(std::ostream& os, const EntityInstance& e);

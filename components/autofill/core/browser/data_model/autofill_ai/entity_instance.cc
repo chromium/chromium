@@ -367,6 +367,15 @@ bool EntityInstance::MigrationOrder(const EntityInstance& lhs,
   return lhs.use_date() > rhs.use_date();
 }
 
+std::ostream& operator<<(std::ostream& os,
+                         const EntityInstance::EntityMetadata& m) {
+  os << "- guid: " << '"' << m.guid << '"' << std::endl;
+  os << "- date modified: " << '"' << m.date_modified << '"' << std::endl;
+  os << "- use count: " << m.use_count << std::endl;
+  os << "- use date: " << '"' << m.use_date << '"' << std::endl;
+  return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
   os << a.type() << ": " << '"'
      << a.GetInfo(a.type().field_type(), /*app_locale=*/"en-US",
@@ -394,12 +403,11 @@ std::ostream& operator<<(std::ostream& os,
 std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
   os << "- name: " << '"' << e.type() << '"' << std::endl;
   os << "- nickname: " << '"' << e.nickname() << '"' << std::endl;
-  os << "- guid: " << '"' << e.guid() << '"' << std::endl;
-  os << "- use date: " << '"' << e.use_date() << '"' << std::endl;
-  os << "- date modified: " << '"' << e.date_modified() << '"' << std::endl;
   os << "- record type: " << e.record_type() << std::endl;
   os << "- are attributes read only: "
      << (e.are_attributes_read_only() ? "true" : "false") << std::endl;
+  os << e.metadata() << std::endl;
+
   for (const AttributeInstance& a : e.attributes()) {
     os << "- attribute " << a << std::endl;
   }

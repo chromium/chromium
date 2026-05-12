@@ -68,6 +68,7 @@ EntityInstanceAndroid::EntityInstanceAndroid(
                   IsMaskedStorageSupported(entity_instance.type(),
                                            entity_instance.record_type())),
       record_type(entity_instance.record_type()),
+      nickname(entity_instance.nickname()),
       metadata(entity_instance.guid().value(),
                entity_instance.date_modified(),
                entity_instance.use_count(),
@@ -139,7 +140,7 @@ EntityInstance EntityInstanceAndroid::ToEntityInstance(
           metadata.guid.empty()
               ? base::Uuid::GenerateRandomV4().AsLowercaseString()
               : metadata.guid),
-      nickname, metadata.date_modified, metadata.use_count, base::Time(),
+      nickname, metadata.date_modified, metadata.use_count, metadata.use_date,
       record_type, EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 }
