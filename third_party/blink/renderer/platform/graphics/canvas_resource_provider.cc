@@ -1597,10 +1597,21 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate) {
-  return CreateSharedImageProviderForSoftwareCompositorBase<
-      CanvasNon2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, ShouldInitialize::kNo,
-      shared_image_interface_provider, delegate);
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    return nullptr;
+  }
+
+  CHECK(format == viz::SharedImageFormat::N32Format() ||
+        format == viz::SinglePlaneFormat::kRGBA_F16);
+
+  auto provider = std::make_unique<CanvasNon2DResourceProviderSharedImage>(
+      size, format, alpha_type, color_space, shared_image_interface_provider,
+      delegate);
+  if (provider->IsValid()) {
+    return provider;
+  }
+
+  return nullptr;
 }
 
 std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
