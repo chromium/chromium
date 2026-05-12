@@ -25,6 +25,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
+#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/ntp_logging_events.h"
@@ -43,10 +44,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/search/ntp_user_data_logger.h"
-#endif
 
 class GURL;
 class OptimizationGuideKeyedService;
@@ -261,9 +258,9 @@ class NewTabPageHandler
   // loadable.
   bool SyncMicrosoftModulesWithAuth();
 
+  NTPUserDataLogger logger_;
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  NTPUserDataLogger logger_;
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
       theme_service_observation_{this};
   base::ScopedObservation<PromoService, PromoServiceObserver>

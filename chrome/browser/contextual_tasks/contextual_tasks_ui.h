@@ -49,7 +49,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/host_zoom_map.h"
-#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"  // nogncheck
 #endif
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)

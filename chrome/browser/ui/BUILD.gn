@@ -1559,8 +1559,6 @@ static_library("ui") {
       "//chrome/browser/ui/passwords/settings:impl",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/performance_controls:impl",
-      "//chrome/browser/ui/search",
-      "//chrome/browser/ui/search:impl",
       "//chrome/browser/ui/search_engine_choice",
       "//chrome/browser/ui/search_engine_choice:impl",
       "//chrome/browser/ui/shared_highlighting",
@@ -1901,7 +1899,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui_browser",
       "//chrome/browser/ui/webui_browser:impl",
-      "//chrome/browser/ui/search:impl",
 
       # TODO(crbug.com/382237520): Remove this once NTP code is modularized.
       "//chrome/browser/ui/lens:impl",
@@ -2068,6 +2065,8 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/browser/new_tab_page:impl",
+      "//chrome/browser/ui/search",
+      "//chrome/browser/ui/search:impl",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/cr_components/searchbox",
       "//chrome/browser/ui/webui/cr_components/searchbox:searchbox_impl",
@@ -2076,6 +2075,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ntp_microsoft_auth:untrusted",
       "//chrome/browser/ui/webui/searchbox",
     ]
+    allow_circular_includes_from += [ "//chrome/browser/ui/search:impl" ]
     if (is_android) {
       sources += [
         "webui/new_tab_page/stub_searchbox_handler.cc",

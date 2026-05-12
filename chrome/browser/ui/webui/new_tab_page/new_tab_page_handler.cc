@@ -513,12 +513,9 @@ NewTabPageHandler::NewTabPageHandler(
     const std::vector<ntp::ModuleIdDetail>* module_id_details)
     : SettingsEnabledObserver(
           optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
       logger_(profile,
               chrome::ChromeUINewTabPageURLAsGURL(),
               ntp_navigation_start_time),
-#endif
       ntp_custom_background_service_(ntp_custom_background_service),
       logo_service_(logo_service),
 // TODO(b/502297163): Implement for Android.

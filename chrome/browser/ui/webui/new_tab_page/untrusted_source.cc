@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/new_tab_page_untrusted_resources.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
@@ -42,10 +43,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
 #include "url/url_util.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/search/ntp_user_data_logger.h"
-#endif
 
 using URLBlocklistState = policy::URLBlocklist::URLBlocklistState;
 
@@ -332,11 +329,9 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
       one_google_bar_service_->one_google_bar_data();
 
   if (one_google_bar_load_start_time_.has_value()) {
-#if !BUILDFLAG(IS_ANDROID)
     NTPUserDataLogger::LogOneGoogleBarFetchDuration(
         /*success=*/data.has_value(),
         /*duration=*/base::TimeTicks::Now() - *one_google_bar_load_start_time_);
-#endif
     one_google_bar_load_start_time_ = std::nullopt;
   }
 

@@ -874,6 +874,7 @@ source_set("core") {
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/profiles:impl",
     "//chrome/browser/ui/safety_hub:impl",
+    "//chrome/browser/ui/search:impl",
     "//chrome/browser/ui/startup:impl",
     "//chrome/browser/ui/sync:impl",
     "//chrome/browser/ui/tab_contents:impl",
@@ -954,7 +955,6 @@ source_set("core") {
       "//chrome/browser/ui/content_settings:impl",
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/search",
-      "//chrome/browser/ui/search:impl",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:features",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -1187,7 +1187,16 @@ source_set("core") {
     deps += [ "//ui/webui/resources/cr_components/composebox:mojo_bindings" ]
   }
 
-  if (!is_android || enable_webui_ntp) {
+  if ((!is_android && !is_ios) || enable_webui_ntp || enable_pdf) {
+    deps += [ "//ui/webui/resources/cr_components/help_bubble:mojo_bindings" ]
+  }
+
+  if (enable_webui_ntp) {
+    deps +=
+        [ "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings" ]
+  }
+
+  if ((!is_android || enable_webui_ntp) && toolkit_views) {
     deps += [ "//chrome/browser/ui/webui/skills" ]
   }
 
@@ -1603,6 +1612,13 @@ static_library("browser") {
 
     # TODO(crbug.com/507421089): Remove this circular dependency.
     "//chrome/browser/history:impl",
+
+    # TODO(crbug.com/418180294): Remove this circular dependency when:
+    # - after_startup_task_utils.h,
+    # - history_service_factory.h,
+    # - identity_manager_factory.h
+    # ... get componentized.
+    "//chrome/browser/ui/search:impl",
   ]
 
   public_deps = [
@@ -2039,6 +2055,7 @@ static_library("browser") {
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/safety_hub:impl",
+    "//chrome/browser/ui/search:impl",
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/side_panel",
@@ -3772,16 +3789,6 @@ static_library("browser") {
     }
 
     #!is_android
-    deps += [
-      # TODO(crbug.com/418180294): Remove this circular dependency when:
-      # - after_startup_task_utils.h,
-      # - history_service_factory.h,
-      # - identity_manager_factory.h
-      # ... get componentized.
-      "//chrome/browser/ui/search:impl",
-    ]
-
-    #!is_android
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
     allow_circular_includes_from += [
@@ -3835,13 +3842,6 @@ static_library("browser") {
       # //c/b/feature_engagement gets modularized.
       "//chrome/browser/ui/global_media_controls:impl",
 
-      # TODO(crbug.com/418180294): Remove this circular dependency when:
-      # - after_startup_task_utils.h,
-      # - history_service_factory.h,
-      # - identity_manager_factory.h
-      # ... get componentized.
-      "//chrome/browser/ui/search:impl",
-
       # TODO(crbug.com/364501603): Remove this circular dependency when the
       # following files get
       # componentized:
@@ -3850,7 +3850,6 @@ static_library("browser") {
       # - c/b/resource_coordinator/time.h"
       # - c/b/enterprise/browser_management/management_service_factory.h"
       # - c/b/page_content_annotations/page_content_annotations_service_factory.h"
-
       "//chrome/browser/ui/browser_window/internal",
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the

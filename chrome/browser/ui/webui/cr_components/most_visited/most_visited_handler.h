@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
@@ -18,12 +19,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile.h"
 #include "url/gurl.h"
 #else
-#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #endif
 
@@ -43,30 +42,6 @@ enum class MostVisitedShowActions {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:MostVisitedShowActions)
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(b/502297163): Implement for Android.
-namespace ntp_tiles {
-struct NTPTileImpression;
-}
-class StubUserDataLogger {
- public:
-  StubUserDataLogger(Profile* profile, const GURL& url, base::Time time) {}
-  void LogEvent(int event, base::TimeDelta delta) {}
-  void LogMostVisitedImpression(
-      const ntp_tiles::NTPTileImpression& impression) {}
-  void LogMostVisitedLoaded(base::TimeDelta delta,
-                            bool is_top_sites_enabled,
-                            bool is_custom_links_enabled,
-                            bool is_enterprise_shortcuts_enabled,
-                            bool is_shortcuts_visible,
-                            bool is_expanded) {}
-  void LogMostVisitedNavigation(
-      const ntp_tiles::NTPTileImpression& impression) {}
-};
-using UserDataLogger = StubUserDataLogger;
-#else
-using UserDataLogger = NTPUserDataLogger;
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // Handles bidirectional communication between MV tiles and the browser.
 class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
@@ -155,7 +130,7 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
 
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;
   raw_ptr<content::WebContents> web_contents_;
-  UserDataLogger logger_;
+  NTPUserDataLogger logger_;
   base::Time ntp_navigation_start_time_;
   GURL last_blocklisted_;
 

@@ -18,10 +18,6 @@
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#error "Instant is only used on desktop";
-#endif
-
 // This enum must match the numbering for NewTabPageLogoShown in enums.xml.
 // Do not reorder or remove items, and only add new items before
 // LOGO_IMPRESSION_TYPE_MAX.
