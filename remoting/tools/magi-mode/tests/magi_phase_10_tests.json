@@ -1,0 +1,27 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Retrospective",
+    "description": "Verify retrospective phase.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 10,
+            "name": "Retrospective - Success",
+            "override_inputs": {
+                "trace": "All phases completed successfully."
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/retrospective.md"
+                ],
+                "valid_json": false,
+                "content_patterns": {
+                    "testdata/retrospective.md": "# Retrospective"
+                }
+            }
+        }
+    ]
+}

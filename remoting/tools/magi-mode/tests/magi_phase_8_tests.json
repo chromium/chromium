@@ -1,0 +1,48 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Iteration",
+    "description": "Verify iteration on drafts.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 8,
+            "name": "Iteration - Fix Build Failure",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/synthesized_file.cc"
+                    ]
+                },
+                "build_log": "BUILD FAILED: undefined reference to FeatureX"
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/synthesized_file.cc"
+                ],
+                "valid_json": false,
+                "content_patterns": {
+                    "testdata/synthesized_file.cc": "void FeatureX()"
+                }
+            }
+        },
+        {
+            "phase": 8,
+            "name": "Iteration - No Changes Needed",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/synthesized_file.cc"
+                    ]
+                },
+                "build_log": "BUILD SUCCESS"
+            },
+            "expected_outputs": {
+                "files_created": [],
+                "content_patterns": {}
+            }
+        }
+    ]
+}

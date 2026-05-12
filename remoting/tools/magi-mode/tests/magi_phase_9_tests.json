@@ -1,0 +1,48 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Final Approval",
+    "description": "Verify final approval phase.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 9,
+            "name": "Final Approval - Success",
+            "override_inputs": {
+                "state_block_overrides": {
+                    "status": "VERIFIED"
+                }
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/approval.txt"
+                ],
+                "valid_json": false,
+                "content_patterns": {
+                    "testdata/approval.txt": "APPROVED"
+                }
+            }
+        },
+        {
+            "phase": 9,
+            "name": "Final Approval - User Rejects",
+            "override_inputs": {
+                "state_block_overrides": {
+                    "status": "VERIFIED"
+                },
+                "user_feedback": "Needs more tests"
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/iteration_plan.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/iteration_plan.json": "\"needs_more_tests\": true"
+                }
+            }
+        }
+    ]
+}
