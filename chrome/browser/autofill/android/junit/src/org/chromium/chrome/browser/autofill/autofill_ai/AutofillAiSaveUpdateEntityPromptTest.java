@@ -56,7 +56,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -100,7 +99,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
                         .setGuid("")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .build();
         mPrompt =
@@ -409,7 +407,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
                         .setGuid("")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .build();
         mPrompt.onDone(updatedEntity, /* descriptionStringId= */ 0, /* acceptButtonStringId= */ 0);
@@ -449,7 +446,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
                         .setGuid("")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .build();
         mPrompt.onDone(updatedEntity, /* descriptionStringId= */ 0, /* acceptButtonStringId= */ 0);

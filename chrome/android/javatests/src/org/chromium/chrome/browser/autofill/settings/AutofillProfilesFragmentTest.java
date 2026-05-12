@@ -120,7 +120,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -1517,7 +1516,6 @@ public class AutofillProfilesFragmentTest {
                         .setGuid("guid1")
                         .setRecordType(
                                 org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 12))
                         .setUseCount(0)
                         .build();
 
@@ -1952,7 +1950,6 @@ public class AutofillProfilesFragmentTest {
                         .setGuid("guid1")
                         .setRecordType(
                                 org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 12))
                         .setUseCount(0)
                         .setRequiresReauthToSee(true)
                         .build();
@@ -2002,7 +1999,6 @@ public class AutofillProfilesFragmentTest {
                         .setGuid("guid1")
                         .setRecordType(
                                 org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 12))
                         .setUseCount(0)
                         .setRequiresReauthToSee(true)
                         .build();

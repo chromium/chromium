@@ -40,9 +40,6 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -316,12 +313,9 @@ public class AutofillAiDelegate {
         pref.setEnabled(!disabled);
         pref.setOnPreferenceClickListener(
                 preference -> {
-                    Instant nowInstant = Instant.ofEpochMilli(TimeUtils.currentTimeMillis());
-                    LocalDate modifiedDate =
-                            nowInstant.atZone(ZoneId.systemDefault()).toLocalDate();
                     showEntityEditor(
                             new EntityInstance.Builder(entityType)
-                                    .setModifiedDate(modifiedDate)
+                                    .setModifiedDate(TimeUtils.currentTimeMillis())
                                     .setUseCount(0)
                                     .setRecordType(
                                             entityType.isEligibleForWalletStorage()

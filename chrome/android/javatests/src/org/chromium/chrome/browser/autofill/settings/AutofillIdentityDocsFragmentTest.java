@@ -73,7 +73,6 @@ import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.test.util.MockitoHelper;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -554,7 +553,6 @@ public class AutofillIdentityDocsFragmentTest {
                 new EntityInstance.Builder(passportType)
                         .setGuid("guid1")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 12))
                         .setUseCount(0)
                         .setRequiresReauthToSee(true)
                         .build();
@@ -601,7 +599,6 @@ public class AutofillIdentityDocsFragmentTest {
                         .setGuid("guid1")
                         .setRecordType(
                                 org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 12))
                         .setUseCount(0)
                         .setRequiresReauthToSee(true)
                         .build();

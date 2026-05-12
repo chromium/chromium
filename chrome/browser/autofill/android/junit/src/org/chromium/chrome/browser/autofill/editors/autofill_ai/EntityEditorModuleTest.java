@@ -230,7 +230,6 @@ public class EntityEditorModuleTest {
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGuid("guid")
                     .setRecordType(RecordType.LOCAL)
-                    .setModifiedDate(LocalDate.of(2026, 2, 15))
                     .setUseCount(0)
                     .addAttribute(
                             new AttributeInstance(
@@ -245,7 +244,6 @@ public class EntityEditorModuleTest {
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGuid("")
                     .setRecordType(RecordType.LOCAL)
-                    .setModifiedDate(LocalDate.of(2026, 2, 15))
                     .setUseCount(0)
                     .build();
 
@@ -253,7 +251,6 @@ public class EntityEditorModuleTest {
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGuid("")
                     .setRecordType(RecordType.SERVER_WALLET)
-                    .setModifiedDate(LocalDate.of(2026, 2, 15))
                     .setUseCount(0)
                     .build();
 
@@ -261,7 +258,6 @@ public class EntityEditorModuleTest {
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGuid("guid")
                     .setRecordType(RecordType.SERVER_WALLET)
-                    .setModifiedDate(LocalDate.of(2026, 2, 15))
                     .setUseCount(0)
                     .addAttribute(
                             new AttributeInstance(
@@ -276,7 +272,6 @@ public class EntityEditorModuleTest {
                     .setGuid("guid")
                     .setRecordType(RecordType.SERVER_WALLET)
                     .setIsMaskedServerEntity(true)
-                    .setModifiedDate(LocalDate.of(2026, 2, 15))
                     .setUseCount(0)
                     .build();
 
@@ -493,7 +488,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(PASSPORT_TYPE)
                         .setGuid("")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .build();
         showEditorDialog(newPassport);
@@ -579,7 +573,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(PASSPORT_TYPE)
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .addAttribute(
                                 new AttributeInstance(
@@ -626,7 +619,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(PASSPORT_TYPE)
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .addAttribute(
                                 new AttributeInstance(
@@ -687,7 +679,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(PASSPORT_TYPE)
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .addAttribute(
                                 new AttributeInstance(
@@ -779,7 +770,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(passportType)
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .addAttribute(
                                 new AttributeInstance(
@@ -838,7 +828,6 @@ public class EntityEditorModuleTest {
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
                         .setIsMaskedServerEntity(false)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .build();
         showEditorDialog(localVehicle);
@@ -922,7 +911,6 @@ public class EntityEditorModuleTest {
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
                         .setIsMaskedServerEntity(false)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .build();
         showEditorDialog(passportEntity);
@@ -996,7 +984,6 @@ public class EntityEditorModuleTest {
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
                         .setIsMaskedServerEntity(false)
-                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .build();
         showEditorDialog(passportEntity);

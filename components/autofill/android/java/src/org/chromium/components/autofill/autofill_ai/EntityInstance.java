@@ -8,13 +8,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance.DateValue;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance.StringValue;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +39,7 @@ public class EntityInstance {
         private final EntityType mEntityType;
         private final List<AttributeInstance> mAttributes = new ArrayList<>();
         private String mNickname = "";
-        private @Nullable LocalDate mModifiedDate;
+        private long mModifiedDateMillis;
         private @Nullable Integer mUseCount;
         private boolean mRequiresReauthToSee;
         private boolean mIsMaskedServerEntity;
@@ -69,8 +68,8 @@ public class EntityInstance {
             return this;
         }
 
-        public Builder setModifiedDate(LocalDate modifiedDate) {
-            mModifiedDate = modifiedDate;
+        public Builder setModifiedDate(long modifiedDateMillis) {
+            mModifiedDateMillis = modifiedDateMillis;
             return this;
         }
 
@@ -90,20 +89,13 @@ public class EntityInstance {
         }
 
         public EntityInstance build() {
-            if (mModifiedDate == null) {
-                throw new IllegalStateException("mModifiedDate cannot be null");
+            if (mModifiedDateMillis == 0) {
+                mModifiedDateMillis = TimeUtils.currentTimeMillis();
             }
             if (mUseCount == null) {
                 throw new IllegalStateException("mUseCount cannot be null");
             }
-            EntityMetadata metadata =
-                    new EntityMetadata(
-                            mGuid,
-                            mModifiedDate
-                                    .atStartOfDay(ZoneId.systemDefault())
-                                    .toInstant()
-                                    .toEpochMilli(),
-                            mUseCount);
+            EntityMetadata metadata = new EntityMetadata(mGuid, mModifiedDateMillis, mUseCount);
             return new EntityInstance(
                     mRecordType,
                     mEntityType,
