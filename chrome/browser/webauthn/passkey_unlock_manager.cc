@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -99,8 +101,16 @@ void PasskeyUnlockManager::NotifyObservers() {
 void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
     Browser* browser,
     trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser->profile());
+  // Default to the first account if the account is not present in the cookie
+  // jar. This can happen in tests, or if account state changed right before
+  // this code.
+  size_t account_index =
+      identity_manager->GetSessionIndexForPrimaryAccount().value_or(0u);
   NavigateParams params(GetSingletonTabNavigateParams(
-      browser, GaiaUrls::GetInstance()->signin_chrome_passkey_unlock_url()));
+      browser,
+      GaiaUrls::GetInstance()->SigninChromePasskeyUnlockUrl(account_index)));
   // Allow the window to close itself.
   params.opened_by_another_window = true;
 

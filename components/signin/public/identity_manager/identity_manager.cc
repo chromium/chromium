@@ -25,6 +25,7 @@
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/diagnostics_provider.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -371,6 +372,26 @@ AccountInfo IdentityManager::FindExtendedAccountInfoByGaiaId(
 
 AccountsInCookieJarInfo IdentityManager::GetAccountsInCookieJar() const {
   return gaia_cookie_manager_service_->ListAccounts();
+}
+
+std::optional<size_t> IdentityManager::GetSessionIndexForPrimaryAccount()
+    const {
+  CoreAccountInfo primary_account_info =
+      GetPrimaryAccountInfo(ConsentLevel::kSignin);
+  if (primary_account_info.gaia.empty()) {
+    return std::nullopt;
+  }
+
+  AccountsInCookieJarInfo accounts_in_cookie_jar = GetAccountsInCookieJar();
+  const std::vector<gaia::ListedAccount>& accounts =
+      accounts_in_cookie_jar.GetAllAccounts();
+  for (size_t i = 0; i < accounts.size(); ++i) {
+    if (accounts[i].gaia_id == primary_account_info.gaia) {
+      return i;
+    }
+  }
+
+  return std::nullopt;
 }
 
 PrimaryAccountMutator* IdentityManager::GetPrimaryAccountMutator() {

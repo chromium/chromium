@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const GURL& reauth_chrome_dice() const;
   const GURL& signin_chrome_sync_keys_retrieval_url() const;
   const std::string_view signin_chrome_passkey_unlock_kdi_parameter() const;
-  const GURL& signin_chrome_passkey_unlock_url() const;
+  GURL SigninChromePasskeyUnlockUrl(size_t account_index) const;
   const GURL& signin_chrome_sync_keys_recoverability_degraded_url() const;
   const GURL& service_logout_url() const;
   const GURL& oauth_multilogin_url() const;

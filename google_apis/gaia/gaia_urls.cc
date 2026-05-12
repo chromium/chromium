@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/macros/concat.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_config.h"
@@ -265,8 +266,14 @@ const GURL& GaiaUrls::signin_chrome_sync_keys_retrieval_url() const {
   return signin_chrome_sync_keys_retrieval_url_;
 }
 
-const GURL& GaiaUrls::signin_chrome_passkey_unlock_url() const {
-  return signin_chrome_passkey_unlock_url_;
+GURL GaiaUrls::SigninChromePasskeyUnlockUrl(size_t account_index) const {
+  if (!base::FeatureList::IsEnabled(
+          gaia::features::kSigninChromePasskeyUnlockUrlUsesAccountIndex)) {
+    return signin_chrome_passkey_unlock_url_;
+  }
+  return net::AppendQueryParameter(signin_chrome_passkey_unlock_url_,
+                                   "authuser",
+                                   base::NumberToString(account_index));
 }
 
 const std::string_view GaiaUrls::signin_chrome_passkey_unlock_kdi_parameter()

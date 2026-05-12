@@ -15,4 +15,9 @@ namespace gaia::features {
 BASE_FEATURE(kGetAccountCapabilitiesUsesGetAllVisibleUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Intended as a Finch killswitch.
+// Enabled by default in M150. Remove in or after M153.
+BASE_FEATURE(kSigninChromePasskeyUnlockUrlUsesAccountIndex,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace gaia::features

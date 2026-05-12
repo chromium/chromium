@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -358,6 +359,11 @@ class IdentityManager : public KeyedService,
   // triggered and there will be a subsequent invocation of
   // IdentityManager::Observer::OnAccountsInCookieJarChanged().
   AccountsInCookieJarInfo GetAccountsInCookieJar() const;
+
+  // Returns the session index of the primary account in the cookie jar, or
+  // std::nullopt if the primary account is not signed in or not found in the
+  // cookie jar.
+  std::optional<size_t> GetSessionIndexForPrimaryAccount() const;
 
   // Returns pointer to the object used to change the signed-in state of the
   // primary account, if supported on the current platform. Otherwise, returns

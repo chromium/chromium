@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -46,6 +47,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -58,6 +60,8 @@
 #include "device/fido/public/public_key_credential_descriptor.h"
 #include "device/fido/public/public_key_credential_user_entity.h"
 #include "google_apis/gaia/gaia_switches.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1000,7 +1004,7 @@ enum MagicArchUnlockResponse {
 };
 
 // Tests the UI steps that show a pop-up window.
-class AuthenticatorWindowTest : public InProcessBrowserTest {
+class AuthenticatorWindowTest : public SigninBrowserTestBase {
  public:
   void SetUp() override {
     https_server_.RegisterRequestHandler(
@@ -1019,6 +1023,7 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     https_server_.StartAcceptingConnections();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -1035,7 +1040,7 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
       // Close the dialog before the entire browser is torn down.
       model_->SetStep(AuthenticatorRequestDialogModel::Step::kClosed);
     }
-    InProcessBrowserTest::TearDownOnMainThread();
+    SigninBrowserTestBase::TearDownOnMainThread();
   }
 
   void set_magic_arch_response(MagicArchUnlockResponse response) {
@@ -1045,6 +1050,7 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
  protected:
   scoped_refptr<AuthenticatorRequestDialogModel> model_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  std::string last_authuser_parameter_;
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleNetworkRequest(
@@ -1053,6 +1059,7 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
     const std::string_view path = url.path();
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     if (path.contains("/encryption/unlock/")) {
+      net::GetValueForKeyInQuery(url, "authuser", &last_authuser_parameter_);
       response->set_code(net::HTTP_OK);
       switch (magic_arch_response_) {
         case kNone:
@@ -1279,6 +1286,25 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, UINavigatesAway) {
   model_->SetStep(
       AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
   model_->SetStep(AuthenticatorRequestDialogModel::Step::kNotStarted);
+}
+
+// Regression test for crbug.com/505059790.
+// Make sure the correct authuser index is set when invoking MagicArch.
+IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, MultiAccountIndex) {
+  set_magic_arch_response(kRecoverySuccess);
+  std::vector<AccountInfo> accounts = SetAccountsCookiesAndTokens(
+      {"another@example.com", "primary@example.com"});
+
+  identity_test_env()->SetPrimaryAccount("primary@example.com",
+                                         signin::ConsentLevel::kSignin);
+
+  GURL expected_url = GaiaUrls::GetInstance()->SigninChromePasskeyUnlockUrl(1);
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+  model_->SetStep(
+      AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
+  navigation_observer.Wait();
+  EXPECT_EQ(last_authuser_parameter_, "1");
 }
 
 // Run with:

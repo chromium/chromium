@@ -12,7 +12,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_features.h"
@@ -472,4 +474,23 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_NotAJson) {
       "gaia-config", GetTestFilePath("not_a_json.txt"));
 
   EXPECT_DEATH_IF_SUPPORTED(gaia_urls(), "Couldn't parse Gaia config file");
+}
+
+TEST_F(GaiaUrlsTest, SigninChromePasskeyUnlockUrl_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      gaia::features::kSigninChromePasskeyUnlockUrlUsesAccountIndex);
+  EXPECT_EQ(gaia_urls()->SigninChromePasskeyUnlockUrl(1).spec(),
+            base::StrCat({"https://accounts.google.com/encryption/unlock/",
+                          kSigninChromeSyncKeysPlatformSuffix,
+                          "?kdi=CAESDgoMaHdfcHJvdGVjdGVk&authuser=1"}));
+}
+
+TEST_F(GaiaUrlsTest, SigninChromePasskeyUnlockUrl_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      gaia::features::kSigninChromePasskeyUnlockUrlUsesAccountIndex);
+  EXPECT_EQ(gaia_urls()->SigninChromePasskeyUnlockUrl(0).spec(),
+            base::StrCat({"https://accounts.google.com/encryption/unlock/",
+                          kSigninChromeSyncKeysPlatformSuffix,
+                          "?kdi=CAESDgoMaHdfcHJvdGVjdGVk"}));
 }

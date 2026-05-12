@@ -138,15 +138,9 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
   EXPECT_EQ(initial_tab_count + 1, tab_strip_model->count());
   content::WebContents* new_contents = tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(new_contents);
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(GURL("https://accounts.google.com/encryption/unlock/"
-                 "chromeos?kdi=CAESDgoMaHdfcHJvdGVjdGVk"),
-            new_contents->GetVisibleURL());
-#else
-  EXPECT_EQ(GURL("https://accounts.google.com/encryption/unlock/"
-                 "desktop?kdi=CAESDgoMaHdfcHJvdGVjdGVk"),
-            new_contents->GetVisibleURL());
-#endif
+  EXPECT_THAT(
+      new_contents->GetVisibleURL().spec(),
+      testing::StartsWith("https://accounts.google.com/encryption/unlock/"));
   TrustedVaultEncryptionKeysTabHelper* tab_helper =
       TrustedVaultEncryptionKeysTabHelper::FromWebContents(new_contents);
   ASSERT_TRUE(tab_helper);
