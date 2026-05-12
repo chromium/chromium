@@ -4,15 +4,18 @@
 
 #include "content/browser/webrtc/webrtc_internals.h"
 
-#include <stddef.h>
-
+#include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -53,6 +56,22 @@ constexpr char kGetDisplayMedia[] = "getDisplayMedia";
 // This is intended to limit DoS attacks against the browser process consisting
 // of many getUserMedia()/getDisplayMedia() calls. See https://crbug.com/804440.
 const size_t kMaxMediaEntries = 1000;
+
+// Controls the polling interval used to refresh getStats() data for
+// chrome://webrtc-internals. The "interval" param is clamped to [200ms, 60s].
+BASE_FEATURE(kWebRtcInternalsStatsPollingInterval,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr base::TimeDelta kDefaultStatsPollingInterval = base::Seconds(1);
+constexpr base::TimeDelta kMinStatsPollingInterval = base::Milliseconds(200);
+constexpr base::TimeDelta kMaxStatsPollingInterval = base::Seconds(60);
+const base::FeatureParam<base::TimeDelta> kStatsPollingIntervalDuration{
+    &kWebRtcInternalsStatsPollingInterval, "interval",
+    kDefaultStatsPollingInterval};
+
+base::TimeDelta GetStatsPollingInterval() {
+  return std::clamp(kStatsPollingIntervalDuration.Get(),
+                    kMinStatsPollingInterval, kMaxStatsPollingInterval);
+}
 
 // Makes sure that |dict| has a List under path "log".
 base::ListValue& EnsureLogList(base::DictValue& dict) {
@@ -891,7 +910,7 @@ void WebRTCInternals::UpdateStatsTimer() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (num_connected_connections_ > 0 && !observers_.empty()) {
     if (!stats_timer_.IsRunning()) {
-      stats_timer_.Start(FROM_HERE, base::Seconds(1), this,
+      stats_timer_.Start(FROM_HERE, GetStatsPollingInterval(), this,
                          &WebRTCInternals::RequestStandardStats);
     }
   } else {
