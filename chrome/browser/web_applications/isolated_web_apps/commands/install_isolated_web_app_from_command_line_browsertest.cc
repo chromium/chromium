@@ -4,12 +4,12 @@
 
 #include <memory>
 #include <optional>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/repeating_test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,17 +19,14 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
-#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -57,6 +54,19 @@ class InstallIsolatedWebAppFromCommandLineBrowserTest
     WebAppBrowserTestBase::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    WebAppBrowserTestBase::SetUpOnMainThread();
+    WebAppProvider::GetForTest(browser()->profile())
+        ->isolated_web_app_dev_install_manager()
+        .OnReportInstallationResultForTesting(future_.GetCallback());
+  }
+
+  webapps::AppId GetInstalledAppId() {
+    auto result = future_.Take();
+    CHECK(result.has_value()) << result.error();
+    return result.value().url_info.app_id();
+  }
+
   WebAppRegistrar& GetWebAppRegistrar() {
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     CHECK(provider != nullptr);
@@ -65,6 +75,9 @@ class InstallIsolatedWebAppFromCommandLineBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::RepeatingTestFuture<
+      IsolatedWebAppDevInstallManager::MaybeInstallIsolatedWebAppCommandSuccess>
+      future_;
 };
 
 class InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest
@@ -90,17 +103,9 @@ class InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest
   GURL GetAppUrl() const { return embedded_test_server()->base_url(); }
 };
 
-// TODO(https://crbugs.com/507023073): Remove once the test is fixed.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_UrlAppFromCommandLineIsInstalled \
-  DISABLED_AppFromCommandLineIsInstalled
-#else
-#define MAYBE_UrlAppFromCommandLineIsInstalled AppFromCommandLineIsInstalled
-#endif
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
-                       MAYBE_UrlAppFromCommandLineIsInstalled) {
-  WebAppTestInstallObserver observer(browser()->profile());
-  webapps::AppId id = observer.BeginListeningAndWait();
+                       UrlAppFromCommandLineIsInstalled) {
+  webapps::AppId id = GetInstalledAppId();
 
   EXPECT_TRUE(
       GetWebAppRegistrar().AppMatches(id, WebAppFilter::IsIsolatedApp()));
@@ -163,8 +168,7 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
                        MAYBE_FileAppFromCommandLineIsInstalled) {
-  WebAppTestInstallObserver observer(browser()->profile());
-  webapps::AppId id = observer.BeginListeningAndWait();
+  webapps::AppId id = GetInstalledAppId();
 
   ASSERT_TRUE(bundle_id_);
   ASSERT_EQ(
