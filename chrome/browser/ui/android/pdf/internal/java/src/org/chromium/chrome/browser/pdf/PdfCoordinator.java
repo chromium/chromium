@@ -198,9 +198,6 @@ public class PdfCoordinator
         }
         mToolbarCoordinator =
                 PdfUtils.isInlinePdfV2Enabled() ? new PdfToolbarCoordinator(mView, this) : null;
-        // TODO(crbug.com/496635305): Remove this log after mToolbarCoordinator is used
-        // elsewhere.
-        Log.d(TAG, "Toolbar coordinator is null: " + (mToolbarCoordinator == null));
     }
 
     /**
