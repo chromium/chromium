@@ -1031,6 +1031,45 @@ TEST_F(ContentAutofillDriverTest, BadMessageIfFieldWithoutForm) {
       std::nullopt);
 }
 
+// Tests that all form signatures (primary, alternative, and structural) are
+// correctly preserved when form predictions are routed from the browser to the
+// renderer.
+TEST_F(ContentAutofillDriverTest, FormSignaturesPreservedDuringRouting) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::debug::kAutofillShowTypePredictions);
+
+  FormData form = test::CreateTestAddressFormData();
+  // Register the form with the browser-side driver to establish its origin and
+  // frame mapping, allowing the router to correctly target the renderer frame.
+  driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                       /*removed_forms=*/{});
+  test_api(driver()).LiftForTest(form);
+
+  FormStructure form_structure(form);
+  FormSignature expected_signature = form_structure.form_signature();
+  FormSignature expected_alternative_signature =
+      form_structure.alternative_form_signature();
+  FormSignature expected_structural_signature =
+      form_structure.structural_form_signature();
+
+  // Asynchronously route the predictions to the renderer and wait for the
+  // Mojo message to be processed by the agent.
+  base::RunLoop run_loop;
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
+  driver().browser_events().SendTypePredictionsToRenderer(form_structure);
+  run_loop.RunUntilIdle();
+
+  auto predictions = agent().GetFieldTypePredictionsAvailable();
+  ASSERT_TRUE(predictions);
+  ASSERT_EQ(predictions->size(), 1u);
+  EXPECT_EQ(predictions->front().signature,
+            base::NumberToString(expected_signature.value()));
+  EXPECT_EQ(predictions->front().alternative_signature,
+            base::NumberToString(expected_alternative_signature.value()));
+  EXPECT_EQ(predictions->front().structural_form_signature,
+            base::NumberToString(expected_structural_signature.value()));
+}
+
 }  // namespace
 
 }  // namespace autofill

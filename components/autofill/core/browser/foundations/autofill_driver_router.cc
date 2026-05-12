@@ -587,6 +587,8 @@ void AutofillDriverRouter::SendTypePredictionsToRenderer(
     renderer_fdp.data = std::move(renderer_form);
     renderer_fdp.signature = browser_fdp.signature;
     renderer_fdp.alternative_signature = browser_fdp.alternative_signature;
+    renderer_fdp.structural_form_signature =
+        browser_fdp.structural_form_signature;
     for (const FormFieldData& field : renderer_fdp.data.fields()) {
       renderer_fdp.fields.push_back(
           std::move(field_predictions[field.global_id()]));

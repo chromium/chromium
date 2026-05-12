@@ -17,6 +17,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -47,6 +48,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/version_info/version_info.h"
@@ -2424,6 +2426,29 @@ TEST_F(FormStructureTestImpl, UpdateFormData_PreservesRationalizedTypes) {
   test_api(form_structure).UpdateFormData(form);
   EXPECT_EQ(form_structure.field(1)->Type().GetCreditCardType(),
             CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
+}
+
+// Tests that FormStructure's LogBuffer operator (used for
+// chrome://autofill-internals/) includes all three form signatures: primary,
+// alternative, and structural.
+TEST_F(FormStructureTestImpl, LogBuffer_FormSignatures) {
+  FormData form;
+  form.set_url(GURL("http://foo.com"));
+  FormFieldData field;
+  field.set_name(u"field1");
+  field.set_form_control_type(FormControlType::kInputText);
+  field.set_renderer_id(test::MakeFieldRendererId());
+  test_api(form).Append(field);
+
+  FormStructure form_structure(form);
+  LogBuffer buffer;
+  buffer << form_structure;
+
+  std::string json;
+  EXPECT_TRUE(base::JSONWriter::Write(*buffer.RetrieveResult(), &json));
+  EXPECT_THAT(json, testing::HasSubstr("Form signature:"));
+  EXPECT_THAT(json, testing::HasSubstr("Form alternative signature:"));
+  EXPECT_THAT(json, testing::HasSubstr("Form structural signature:"));
 }
 
 }  // namespace

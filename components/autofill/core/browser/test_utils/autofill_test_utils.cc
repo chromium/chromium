@@ -83,7 +83,10 @@ bool operator==(const FormFieldDataPredictions& a,
 bool operator==(const FormDataPredictions& a, const FormDataPredictions& b) {
   return test::WithoutUnserializedData(test::WithoutValues(a.data)) ==
              test::WithoutUnserializedData(test::WithoutValues(b.data)) &&
-         a.signature == b.signature && a.fields == b.fields;
+         a.signature == b.signature &&
+         a.alternative_signature == b.alternative_signature &&
+         a.structural_form_signature == b.structural_form_signature &&
+         a.fields == b.fields;
 }
 
 namespace test {

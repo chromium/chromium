@@ -733,6 +733,18 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                           " - ",
                           base::NumberToString(
                               HashFormSignature(form.form_signature()))});
+  buffer << "\n Form alternative signature: "
+         << base::StrCat({base::NumberToString(
+                              form.alternative_form_signature().value()),
+                          " - ",
+                          base::NumberToString(HashFormSignature(
+                              form.alternative_form_signature()))});
+  buffer << "\n Form structural signature: "
+         << base::StrCat(
+                {base::NumberToString(form.structural_form_signature().value()),
+                 " - ",
+                 base::NumberToString(
+                     HashFormSignature(form.structural_form_signature()))});
   buffer << "\n Form name: " << form.form_name();
   buffer << "\n Identifiers: "
          << base::StrCat(
@@ -827,6 +839,12 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                           " - ",
                           base::NumberToString(HashFormSignature(
                               form.alternative_form_signature()))});
+  buffer << Tr{} << "Form structural signature:"
+         << base::StrCat(
+                {base::NumberToString(form.structural_form_signature().value()),
+                 " - ",
+                 base::NumberToString(
+                     HashFormSignature(form.structural_form_signature()))});
   buffer << Tr{} << "Form name:" << form.form_name();
   buffer << Tr{} << "Identifiers: "
          << base::StrCat(
