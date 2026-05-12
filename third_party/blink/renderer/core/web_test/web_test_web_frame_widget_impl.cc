@@ -98,7 +98,8 @@ void WebTestWebFrameWidgetImpl::WillBeginMainFrame() {
   WebFrameWidgetImpl::WillBeginMainFrame();
 }
 
-void WebTestWebFrameWidgetImpl::ScheduleAnimation(bool urgent) {
+void WebTestWebFrameWidgetImpl::ScheduleAnimation(cc::BeginMainFrameReason,
+                                                  bool urgent) {
   ScheduleAnimationInternal(GetTestRunner()->animation_requires_raster());
 }
 
@@ -138,7 +139,8 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   // When using threaded compositing, have the WeFrameWidgetImpl normally
   // schedule a request for a frame, as we use the compositor's scheduler.
   if (Thread::CompositorThread()) {
-    WebFrameWidgetImpl::ScheduleAnimation(/*urgent=*/false);
+    WebFrameWidgetImpl::ScheduleAnimation(cc::BeginMainFrameReason::kOther,
+                                          /*urgent=*/false);
     return;
   }
 

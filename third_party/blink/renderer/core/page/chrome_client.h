@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "cc/input/event_listener_properties.h"
 #include "cc/input/overscroll_behavior.h"
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/paint/draw_image.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -169,9 +170,16 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
     ScheduleAnimation(view, delay, /*urgent=*/false);
   }
 
-  virtual void ScheduleAnimation(const LocalFrameView* local_frame_view,
+  virtual void ScheduleAnimation(const LocalFrameView* view,
                                  base::TimeDelta delay,
                                  bool urgent) = 0;
+
+  virtual void ScheduleAnimation(const LocalFrameView* view,
+                                 cc::BeginMainFrameReason reason,
+                                 base::TimeDelta delay,
+                                 bool urgent) {
+    ScheduleAnimation(view, delay, urgent);
+  }
 
   // Tells the browser that another page has accessed the DOM of the initial
   // empty document of a main frame.

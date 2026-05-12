@@ -1760,7 +1760,8 @@ void WebFrameWidgetImpl::DidCompletePageScaleAnimation() {
     std::move(page_scale_animation_for_testing_callback_).Run();
 }
 
-void WebFrameWidgetImpl::ScheduleAnimation(bool urgent) {
+void WebFrameWidgetImpl::ScheduleAnimation(cc::BeginMainFrameReason reason,
+                                           bool urgent) {
   if (!View()->does_composite()) {
     non_composited_client_->ScheduleNonCompositedAnimation();
     return;
@@ -1770,7 +1771,7 @@ void WebFrameWidgetImpl::ScheduleAnimation(bool urgent) {
     return;
   }
 
-  widget_base_->LayerTreeHost()->SetNeedsAnimate(urgent);
+  widget_base_->LayerTreeHost()->SetNeedsAnimate(reason, urgent);
 }
 
 void WebFrameWidgetImpl::FocusChanged(mojom::blink::FocusState focus_state) {
@@ -3399,7 +3400,14 @@ void WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout(
 void WebFrameWidgetImpl::RequestAnimationAfterDelay(
     const base::TimeDelta& delay,
     bool urgent) {
-  widget_base_->RequestAnimationAfterDelay(delay, urgent);
+  RequestAnimationAfterDelay(cc::BeginMainFrameReason::kOther, delay, urgent);
+}
+
+void WebFrameWidgetImpl::RequestAnimationAfterDelay(
+    cc::BeginMainFrameReason reason,
+    const base::TimeDelta& delay,
+    bool urgent) {
+  widget_base_->RequestAnimationAfterDelay(reason, delay, urgent);
 }
 
 void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {

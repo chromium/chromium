@@ -970,8 +970,9 @@ void WebPagePopupImpl::FocusChanged(mojom::blink::FocusState focus_state) {
                                          mojom::blink::FocusState::kFocused);
 }
 
-void WebPagePopupImpl::ScheduleAnimation(bool urgent) {
-  widget_base_->LayerTreeHost()->SetNeedsAnimate(urgent);
+void WebPagePopupImpl::ScheduleAnimation(cc::BeginMainFrameReason reason,
+                                         bool urgent) {
+  widget_base_->LayerTreeHost()->SetNeedsAnimate(reason, urgent);
 }
 
 void WebPagePopupImpl::UpdateVisualProperties(

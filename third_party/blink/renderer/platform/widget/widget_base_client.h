@@ -152,7 +152,11 @@ class WidgetBaseClient {
   virtual void FocusChanged(mojom::blink::FocusState focus_state) {}
 
   // Call to request an animation frame from the compositor.
-  virtual void ScheduleAnimation(bool urgent) {}
+  virtual void ScheduleAnimation(cc::BeginMainFrameReason reason, bool urgent) {
+  }
+  void ScheduleAnimation(bool urgent) {
+    ScheduleAnimation(cc::BeginMainFrameReason::kOther, urgent);
+  }
 
   // TODO(bokan): Temporary to unblock synthetic gesture events running under
   // VR. https://crbug.com/940063

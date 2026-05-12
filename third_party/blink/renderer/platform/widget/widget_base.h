@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_timeline.h"
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/browser_controls_params.h"
@@ -248,8 +249,14 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Posts a task with the given delay, then calls ScheduleAnimation() on the
   // WidgetBaseClient.
-  void RequestAnimationAfterDelay(const base::TimeDelta& delay,
+  void RequestAnimationAfterDelay(cc::BeginMainFrameReason,
+                                  const base::TimeDelta& delay,
                                   bool urgent = false);
+
+  void RequestAnimationAfterDelay(const base::TimeDelta& delay,
+                                  bool urgent = false) {
+    RequestAnimationAfterDelay(cc::BeginMainFrameReason::kOther, delay, urgent);
+  }
 
   void ShowVirtualKeyboard();
   void UpdateSelectionBounds();

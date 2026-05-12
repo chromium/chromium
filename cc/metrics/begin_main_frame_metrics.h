@@ -10,6 +10,21 @@
 
 namespace cc {
 
+// Reason that a BeginMainFrame was triggered. Used for metrics only,
+// specifically: |Compositing.BeginMainFrame.BMFReason*|.
+enum class BeginMainFrameReason {
+  kOther = 0,
+  kRAF = 1,
+  kIntersectionObserver = 2,
+  kCSSAnimation = 3,
+  kMaxValue = kCSSAnimation
+};
+
+inline constexpr size_t BeginMainFrameReasonSize =
+    static_cast<size_t>(BeginMainFrameReason::kMaxValue) + 1;
+
+static_assert(BeginMainFrameReasonSize <= 7);
+
 // Latency timing data for Main Frame lifecycle updates triggered by cc.
 // The data is captured in LocalFrameViewUKMAggregator and passed back through
 // the proxy when a main frame ends. LayerTreeHost updates the update_layers_
