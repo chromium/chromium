@@ -831,6 +831,16 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       const unsigned char_start =
           fragment_paint_info.from + *block_caret_char_offset;
       const unsigned char_end = char_start + 1;
+      // Clip to the character cell so that any cached SkTextBlob reused by
+      // GraphicsContext::DrawText for the whole fragment can only repaint
+      // this one character with the override color.
+      PhysicalRect char_paint_rect =
+          cursor_.CurrentLocalRect(char_start, char_end);
+      char_paint_rect.Move(physical_box.offset);
+      const LineRelativeRect char_clip_rect =
+          LineRelativeRect::Create(char_paint_rect, rotation);
+      GraphicsContextStateSaver clip_state_saver(context);
+      context.Clip(gfx::RectF(char_clip_rect));
       std::optional<GraphicsContextStateSaver> fit_text_state_saver;
       text_painter.ApplyTextFitScale(fragment_paint_info,
                                      &fit_text_state_saver);
