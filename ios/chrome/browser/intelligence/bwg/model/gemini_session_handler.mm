@@ -361,6 +361,10 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   RecordGeminiRegenerateButtonTapped(optionType);
 }
 
+- (void)geminiLiveUserDidBargeIn {
+  // TODO(crbug.com/512507489): Implement barge-in logic.
+}
+
 #pragma mark - Private
 
 // Finds the web state with the given client ID as unique identifier.
