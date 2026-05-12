@@ -39,20 +39,20 @@ std::vector<T*> GetAllChildrenOfType(views::View* root) {
   return result;
 }
 
+using PrefConflict = AccessibilityPrefsMergeConflictController::PrefConflict;
+
 class FakeController : public AccessibilityPrefsMergeConflictController {
  public:
-  using PrefConflict = AccessibilityPrefsMergeConflictController::PrefConflict;
-
   explicit FakeController(std::vector<PrefConflict> conflicts)
       : AccessibilityPrefsMergeConflictController(std::move(conflicts)) {}
 
-  void UpdateConflict(std::string_view pref_name, bool value) override {
+  void UpdateConflict(std::string_view pref_name, base::Value value) override {
     last_updated_pref = pref_name;
-    last_updated_value = value;
+    last_updated_value = std::move(value);
   }
 
   std::string last_updated_pref;
-  bool last_updated_value = false;
+  base::Value last_updated_value;
 };
 
 class MockCallback {
@@ -83,26 +83,22 @@ class AccessibilityPrefsMergeConflictDialogTest : public AshTestBase {
 };
 
 TEST_F(AccessibilityPrefsMergeConflictDialogTest, BuildsRowsFromConflicts) {
-  std::vector<FakeController::PrefConflict> conflicts = {{
-      prefs::kAccessibilityHighContrastEnabled,
-      true,
-      false,
-  }};
+  std::vector<FakeController::PrefConflict> conflicts;
+  conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
+                         base::Value(true), base::Value(false));
 
-  auto controller = std::make_unique<FakeController>(conflicts);
+  auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
 
   EXPECT_EQ(GetAllChildrenOfType<HoverHighlightView>(dialog).size(), 1u);
 }
 
 TEST_F(AccessibilityPrefsMergeConflictDialogTest, ToggleReflectsInitialState) {
-  std::vector<FakeController::PrefConflict> conflicts = {{
-      prefs::kAccessibilityHighContrastEnabled,
-      true,
-      false,
-  }};
+  std::vector<FakeController::PrefConflict> conflicts;
+  conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
+                         base::Value(true), base::Value(false));
 
-  auto controller = std::make_unique<FakeController>(conflicts);
+  auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
 
   auto* item = GetAllChildrenOfType<HoverHighlightView>(dialog)[0];
@@ -113,13 +109,11 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest, ToggleReflectsInitialState) {
 
 TEST_F(AccessibilityPrefsMergeConflictDialogTest,
        ClickingRowTogglesAndUpdatesController) {
-  std::vector<FakeController::PrefConflict> conflicts = {{
-      prefs::kAccessibilityHighContrastEnabled,
-      true,
-      false,
-  }};
+  std::vector<FakeController::PrefConflict> conflicts;
+  conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
+                         base::Value(true), base::Value(false));
 
-  auto controller = std::make_unique<FakeController>(conflicts);
+  auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* controller_ptr = controller.get();
 
   auto* dialog = ShowDialog(std::move(controller));
@@ -137,13 +131,11 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
 
 TEST_F(AccessibilityPrefsMergeConflictDialogTest,
        AccessibilityStateStaysInSyncWithToggle) {
-  std::vector<FakeController::PrefConflict> conflicts = {{
-      prefs::kAccessibilityHighContrastEnabled,
-      true,
-      false,
-  }};
+  std::vector<FakeController::PrefConflict> conflicts;
+  conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
+                         base::Value(true), base::Value(false));
 
-  auto controller = std::make_unique<FakeController>(conflicts);
+  auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
 
   auto* item = GetAllChildrenOfType<HoverHighlightView>(dialog)[0];
@@ -166,13 +158,11 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
        ClickingAcceptButtonCallsCloseCallback) {
   EXPECT_CALL(on_closing_callback_, Callback()).Times(1);
 
-  std::vector<FakeController::PrefConflict> conflicts = {{
-      prefs::kAccessibilityHighContrastEnabled,
-      true,
-      false,
-  }};
+  std::vector<FakeController::PrefConflict> conflicts;
+  conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
+                         base::Value(true), base::Value(false));
 
-  auto controller = std::make_unique<FakeController>(conflicts);
+  auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
 
   LeftClickOn(dialog->GetAcceptButtonForTesting());
@@ -182,13 +172,11 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
        ClickingGoSettingsButtonCallsCloseCallback) {
   EXPECT_CALL(on_closing_callback_, Callback()).Times(1);
 
-  std::vector<FakeController::PrefConflict> conflicts = {{
-      prefs::kAccessibilityHighContrastEnabled,
-      true,
-      false,
-  }};
+  std::vector<FakeController::PrefConflict> conflicts;
+  conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
+                         base::Value(true), base::Value(false));
 
-  auto controller = std::make_unique<FakeController>(conflicts);
+  auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
 
   LeftClickOn(dialog->GetCancelButtonForTesting());

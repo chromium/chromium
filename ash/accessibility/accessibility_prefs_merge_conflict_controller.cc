@@ -21,30 +21,52 @@ std::vector<PrefConflict> BuildConflicts(base::DictValue locked_prefs,
                                          base::DictValue pending_prefs) {
   std::vector<PrefConflict> conflicts;
 
+  auto* prefs = AccessibilityController::Get()->GetActiveUserPrefs();
+
   for (const auto& pref : GetAccessibilityPrefBatchesWithSyncEnabled()) {
-    // TODO(crbug.com/485997707): Handle `kLocalClobberRemote`.
-    if (pref.resolution_policy != ConflictResolutionPolicy::kDialogNeeded) {
-      continue;
+    switch (pref.resolution_policy) {
+      case ConflictResolutionPolicy::kDialogNeeded: {
+        const base::Value* locked_value = locked_prefs.Find(pref.pref_name);
+        const base::Value* pending_value = pending_prefs.Find(pref.pref_name);
+        if (!locked_value && !pending_value) {
+          continue;
+        }
+        if ((locked_value && pending_value) &&
+            (*locked_value == *pending_value)) {
+          continue;
+        }
+        // Normalize the conflict.
+        conflicts.emplace_back(
+            pref.pref_name,
+            locked_value ? locked_value->Clone()
+                         : prefs->GetDefaultPrefValue(pref.pref_name)->Clone(),
+            pending_value
+                ? pending_value->Clone()
+                : prefs->GetDefaultPrefValue(pref.pref_name)->Clone());
+        continue;
+      }
+      case ConflictResolutionPolicy::kLocalClobberRemote:
+      case ConflictResolutionPolicy::kNone:
+        continue;
     }
-
-    bool local = locked_prefs.FindBool(pref.pref_name).value_or(false);
-    bool pending = pending_prefs.FindBool(pref.pref_name).value_or(false);
-
-    if (local == pending) {
-      continue;
-    }
-
-    conflicts.push_back({
-        pref.pref_name,
-        local,
-        pending,
-    });
   }
 
   return conflicts;
 }
 
 }  // namespace
+
+PrefConflict::PrefConflict(std::string pref_name,
+                           base::Value local_value,
+                           base::Value pending_value)
+    : pref_name(std::move(pref_name)),
+      local_value(std::move(local_value)),
+      pending_value(std::move(pending_value)) {}
+
+PrefConflict::PrefConflict(PrefConflict&&) = default;
+PrefConflict& PrefConflict::operator=(PrefConflict&&) = default;
+
+PrefConflict::~PrefConflict() = default;
 
 // static
 std::unique_ptr<AccessibilityPrefsMergeConflictController>
@@ -82,12 +104,12 @@ AccessibilityPrefsMergeConflictController::
 
 void AccessibilityPrefsMergeConflictController::UpdateConflict(
     std::string_view pref_name,
-    bool value) {
+    base::Value value) {
   auto* prefs = Shell::Get()->accessibility_controller()->GetActiveUserPrefs();
   for (auto& conflict : conflicts_) {
     if (conflict.pref_name == pref_name) {
-      conflict.local_value = value;
-      prefs->SetBoolean(pref_name, value);
+      conflict.local_value = value.Clone();
+      prefs->Set(pref_name, value);
       return;
     }
   }
@@ -118,7 +140,7 @@ AccessibilityPrefsMergeConflictController::
   auto* pref_service =
       Shell::Get()->accessibility_controller()->GetActiveUserPrefs();
   for (auto& conflict : conflicts_) {
-    pref_service->SetBoolean(conflict.pref_name, conflict.local_value);
+    pref_service->Set(conflict.pref_name, conflict.local_value);
   }
 }
 

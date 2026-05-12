@@ -206,7 +206,8 @@ void AccessibilityPrefsMergeConflictDialog::BuildResolutionList(
       match = true;
       AddScrollListToggleItem(main_container, *config.icon,
                               l10n_util::GetStringUTF16(config.label_id),
-                              conflict.pref_name, conflict.local_value);
+                              conflict.pref_name,
+                              conflict.local_value.GetBool());
       break;
     }
 
@@ -308,7 +309,7 @@ void AccessibilityPrefsMergeConflictDialog::OnPrefRowPressed(
       new_state ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
                 : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
 
-  controller_->UpdateConflict(pref_name, new_state);
+  controller_->UpdateConflict(pref_name, base::Value(new_state));
 }
 
 BEGIN_METADATA(AccessibilityPrefsMergeConflictDialog)

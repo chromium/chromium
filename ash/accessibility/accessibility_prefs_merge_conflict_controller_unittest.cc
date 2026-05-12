@@ -27,10 +27,12 @@ static constexpr const char* kBatch1_NonLockablePref =
 // Batch 3 prefs.
 static constexpr const char* kBatch3_LockablePref =
     prefs::kAccessibilitySelectToSpeakEnabled;
-
-}  // namespace
+static constexpr const char* kBatch3_LockablePref_NoDialog =
+    prefs::kDockedMagnifierScale;
 
 using PrefConflict = AccessibilityPrefsMergeConflictController::PrefConflict;
+
+}  // namespace
 
 class AccessibilityPrefsMergeConflictControllerTest : public AshTestBase {
  public:
@@ -46,8 +48,8 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
   base::DictValue locked;
   base::DictValue pending;
 
-  locked.Set(kBatch3_LockablePref, true);
-  pending.Set(kBatch3_LockablePref, false);
+  locked.Set(kBatch3_LockablePref, base::Value(true));
+  pending.Set(kBatch3_LockablePref, base::Value(false));
 
   auto conflicts =
       AccessibilityPrefsMergeConflictController::BuildConflictsForTest(
@@ -55,8 +57,8 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
 
   ASSERT_EQ(conflicts.size(), 1u);
   EXPECT_EQ(conflicts[0].pref_name, kBatch3_LockablePref);
-  EXPECT_TRUE(conflicts[0].local_value);
-  EXPECT_FALSE(conflicts[0].pending_value);
+  EXPECT_TRUE(conflicts[0].local_value.GetBool());
+  EXPECT_FALSE(conflicts[0].pending_value.GetBool());
 }
 
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
@@ -130,26 +132,31 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
           std::move(locked), std::move(pending));
 
   ASSERT_EQ(conflicts.size(), 1u);
-  EXPECT_FALSE(conflicts[0].local_value);  // default
-  EXPECT_TRUE(conflicts[0].pending_value);
+  EXPECT_FALSE(conflicts[0].local_value.GetBool());  // default
+  EXPECT_TRUE(conflicts[0].pending_value.GetBool());
 }
 
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
        UpdateConflictsUpdatesPrefAndState) {
   // Feature enabled not needed.
-  std::vector<PrefConflict> conflicts = {
-      {kBatch1_LockablePref, true, false},
-      {kBatch3_LockablePref, false, true},
-  };
+  std::vector<PrefConflict> conflicts;
+  conflicts.emplace_back(kBatch1_LockablePref, base::Value(true),
+                         base::Value(false));
+  conflicts.emplace_back(kBatch3_LockablePref, base::Value(false),
+                         base::Value(true));
+  conflicts.emplace_back(kBatch3_LockablePref_NoDialog, base::Value(0.),
+                         base::Value(1.));
 
   auto controller = AccessibilityPrefsMergeConflictController::CreateForTest(
       std::move(conflicts));
-  controller->UpdateConflict(kBatch1_LockablePref, false);
-  controller->UpdateConflict(kBatch3_LockablePref, true);
+  controller->UpdateConflict(kBatch1_LockablePref, base::Value(false));
+  controller->UpdateConflict(kBatch3_LockablePref, base::Value(true));
+  controller->UpdateConflict(kBatch3_LockablePref_NoDialog, base::Value(2.));
 
   auto* prefs = Shell::Get()->accessibility_controller()->GetActiveUserPrefs();
   EXPECT_FALSE(prefs->GetBoolean(kBatch1_LockablePref));
   EXPECT_TRUE(prefs->GetBoolean(kBatch3_LockablePref));
+  EXPECT_EQ(prefs->GetValue(kBatch3_LockablePref_NoDialog), base::Value(2.));
 }
 
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
@@ -160,7 +167,8 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
   auto controller = AccessibilityPrefsMergeConflictController::CreateForTest(
       std::move(conflicts));
 
-  EXPECT_DEATH(controller->UpdateConflict("nonexistent_pref", true), "");
+  EXPECT_DEATH(
+      controller->UpdateConflict("nonexistent_pref", base::Value(true)), "");
 }
 
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
@@ -175,9 +183,9 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
   registrar.Add(kBatch1_LockablePref,
                 base::BindLambdaForTesting([&]() { notified = true; }));
 
-  std::vector<PrefConflict> conflicts = {
-      {kBatch1_LockablePref, true, false},
-  };
+  std::vector<PrefConflict> conflicts;
+  conflicts.emplace_back(kBatch1_LockablePref, base::Value(true),
+                         base::Value(false));
 
   auto controller = AccessibilityPrefsMergeConflictController::CreateForTest(
       std::move(conflicts));
