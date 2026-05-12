@@ -251,7 +251,8 @@ void ConnectorDataPipeGetter::Read(mojo::ScopedDataPipeProducerHandle pipe,
     CHECK(file_->IsValid());
     auto overhead =
         deobfuscator_->CalculateDeobfuscationOverhead(file_->bytes());
-    if (!overhead.value()) {
+    if (!overhead.has_value()) {
+      std::move(callback).Run(net::ERR_FAILED, 0);
       return;
     }
     // Pass the size of the deobfuscated data to the data pipe producer.

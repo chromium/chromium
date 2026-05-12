@@ -150,7 +150,7 @@ base::expected<size_t, Error> GetObfuscatedChunkSize(
   std::array<uint8_t, kChunkSizePrefixSize> size;
   std::copy_n(data.begin(), kChunkSizePrefixSize, size.begin());
   size_t chunk_size = base::U32FromBigEndian(size);
-  if (chunk_size > kMaxChunkSize) {
+  if (chunk_size < kAuthTagSize || chunk_size > kMaxChunkSize) {
     return base::unexpected(Error::kDeobfuscationFailed);
   }
   return base::ok(chunk_size);

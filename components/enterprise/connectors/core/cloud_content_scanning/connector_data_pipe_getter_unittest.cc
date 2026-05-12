@@ -427,4 +427,73 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationTest) {
 
   ASSERT_EQ(original_content, deobfuscated_content);
 }
+
+TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationErrorTest) {
+  if (!is_file_data_pipe() || !is_resumable_upload()) {
+    return;
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      enterprise_obfuscation::kEnterpriseFileObfuscation);
+
+  // Write invalid obfuscated data (chunk size too large).
+  // 4 bytes size prefix is immediately after the header.
+  std::string obfuscated_content_str(1024, '\0');
+  obfuscated_content_str.replace(enterprise_obfuscation::kHeaderSize, 4, 4,
+                                 '\xFF');
+
+  std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
+      CreateDataPipeGetter(obfuscated_content_str, true);
+  ASSERT_TRUE(data_pipe_getter);
+
+  mojo::ScopedDataPipeProducerHandle data_pipe_producer;
+  mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, data_pipe_producer,
+                                                 data_pipe_consumer));
+
+  base::RunLoop run_loop;
+  data_pipe_getter->Read(
+      std::move(data_pipe_producer),
+      base::BindLambdaForTesting([&run_loop](int32_t status, uint64_t size) {
+        EXPECT_EQ(net::ERR_FAILED, status);
+        EXPECT_EQ(0u, size);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationZeroChunkTest) {
+  if (!is_file_data_pipe() || !is_resumable_upload()) {
+    return;
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      enterprise_obfuscation::kEnterpriseFileObfuscation);
+
+  // Write invalid obfuscated data (chunk size 0). First 4 bytes after the
+  // header are 0, which means chunk size is 0.
+  std::string obfuscated_content_str(1024, '\0');
+
+  std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
+      CreateDataPipeGetter(obfuscated_content_str, true);
+  ASSERT_TRUE(data_pipe_getter);
+
+  mojo::ScopedDataPipeProducerHandle data_pipe_producer;
+  mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, data_pipe_producer,
+                                                 data_pipe_consumer));
+
+  base::RunLoop run_loop;
+  data_pipe_getter->Read(
+      std::move(data_pipe_producer),
+      base::BindLambdaForTesting([&run_loop](int32_t status, uint64_t size) {
+        EXPECT_EQ(net::ERR_FAILED, status);
+        EXPECT_EQ(0u, size);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 }  // namespace enterprise_connectors

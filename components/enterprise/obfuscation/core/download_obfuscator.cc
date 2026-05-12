@@ -37,6 +37,10 @@ base::expected<int64_t, Error> CalculateDeobfuscationOverheadImpl(
       return RecordAndReturn<int64_t>(base::unexpected(chunk_size.error()));
     }
     offset += chunk_size.value();
+    if (offset > total_size) {
+      return RecordAndReturn<int64_t>(
+          base::unexpected(Error::kDeobfuscationFailed));
+    }
     num_chunks++;
   }
   int64_t chunk_overhead = kAuthTagSize + kChunkSizePrefixSize;
