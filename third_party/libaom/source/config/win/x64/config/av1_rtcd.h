@@ -307,6 +307,10 @@ RTCD_EXTERN void (*av1_highbd_iwht4x4_16_add)(const tran_low_t *input, uint8_t *
 void av1_highbd_iwht4x4_1_add_c(const tran_low_t *input, uint8_t *dest, int dest_stride, int bd);
 #define av1_highbd_iwht4x4_1_add av1_highbd_iwht4x4_1_add_c
 
+void av1_interp_cubic_rate_dist_c(const double *p1, const double *p2, double x, double * const rate_f, double * const distbysse_f);
+void av1_interp_cubic_rate_dist_sse2(const double *p1, const double *p2, double x, double * const rate_f, double * const distbysse_f);
+#define av1_interp_cubic_rate_dist av1_interp_cubic_rate_dist_sse2
+
 void av1_inv_txfm2d_add_16x16_c(const int32_t *input, uint16_t *output, int stride, TX_TYPE tx_type, int bd);
 #define av1_inv_txfm2d_add_16x16 av1_inv_txfm2d_add_16x16_c
 

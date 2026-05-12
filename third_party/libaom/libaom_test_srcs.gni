@@ -87,6 +87,7 @@ aom_unit_test_encoder_sources = [
   "//third_party/libaom/source/libaom/test/masked_variance_test.cc",
   "//third_party/libaom/source/libaom/test/metadata_test.cc",
   "//third_party/libaom/source/libaom/test/minmax_test.cc",
+  "//third_party/libaom/source/libaom/test/model_rd_test.cc",
   "//third_party/libaom/source/libaom/test/monochrome_test.cc",
   "//third_party/libaom/source/libaom/test/multilayer_metadata_test.cc",
   "//third_party/libaom/source/libaom/test/mv_cost_test.cc",
