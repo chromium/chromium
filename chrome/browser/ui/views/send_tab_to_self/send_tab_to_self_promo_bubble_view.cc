@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -121,7 +122,7 @@ void SendTabToSelfPromoBubbleView::InitLayout() {
         ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(GetButtonStringId(is_enhanced_ui)));
     // base::Unretained() is safe here because this outlives the button.
-    SetAcceptCallback(base::BindRepeating(
+    SetAcceptCallback(base::BindOnce(
         &SendTabToSelfPromoBubbleView::HandleSignInButtonClicked,
         base::Unretained(this)));
     return;
