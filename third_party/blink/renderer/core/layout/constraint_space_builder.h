@@ -220,6 +220,13 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     EnsureRareData()->is_inside_repeatable_content = b;
   }
 
+  void SetIsInsideBreakAvoid(bool b) {
+    if (!b && !space_.rare_data_) {
+      return;
+    }
+    EnsureRareData()->is_inside_break_avoid = b;
+  }
+
   void DisableFurtherFragmentation() {
     if (space_.HasBlockFragmentation()) {
       rare_data_->block_direction_fragmentation_type = kFragmentNone;

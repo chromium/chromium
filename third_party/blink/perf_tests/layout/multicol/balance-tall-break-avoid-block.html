@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script src="../../resources/runner.js"></script>
+<style>
+  [data-child-count] {
+    break-inside: avoid;
+  }
+</style>
+<pre id="log"></pre>
+<div id="target" style="display:none; columns:2; width:40em; orphans:1; widows:1; line-height:20px;">
+  <div data-child-count="300"></div>
+  <div data-child-count="250"></div>
+  <div data-child-count="250"></div>
+</div>
+<script>
+  for (let block of document.querySelectorAll("[data-child-count]")) {
+    const child_count = parseInt(block.getAttribute("data-child-count"));
+    for (let i = 0; i < child_count; i++) {
+      child = document.createElement("div");
+      child.innerText = "line";
+      block.appendChild(child);
+    }
+  }
+
+  var target = document.getElementById("target");
+  var style = target.style;
+
+  function test() {
+    style.display = "block";
+    PerfTestRunner.forceLayout();
+    style.display = "none";
+    PerfTestRunner.forceLayout();
+  }
+
+  PerfTestRunner.measureRunsPerSecond({
+    description: "Measures performance of multicol balancing of tall blocks with break-inside:avoid.",
+    run: test
+  });
+</script>

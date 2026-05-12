@@ -350,6 +350,7 @@ void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
 
   if (parent_space.IsInsideBalancedColumns())
     builder->SetIsInsideBalancedColumns();
+  builder->SetIsInsideBreakAvoid(parent_space.IsInsideBreakAvoid());
 
   // We lack the required machinery to resume layout inside out-of-flow
   // positioned elements during regular layout. OOFs are handled by regular
@@ -385,10 +386,14 @@ void SetupSpaceBuilderForFragmentation(
   LayoutUnit fragmentainer_block_offset =
       FragmentainerOffset(parent_fragment_builder, /*is_for_children=*/true) +
       fragmentainer_offset_delta;
-  return SetupSpaceBuilderForFragmentation(
+  SetupSpaceBuilderForFragmentation(
       parent_fragment_builder.GetConstraintSpace(), child,
       fragmentainer_block_offset, fragmentainer_block_size,
       parent_fragment_builder.RequiresContentBeforeBreaking(), builder);
+  if (IsAvoidBreakValue(parent_fragment_builder.GetConstraintSpace(),
+                        parent_fragment_builder.Style().BreakInside())) {
+    builder->SetIsInsideBreakAvoid(true);
+  }
 }
 
 void SetupFragmentBuilderForFragmentation(
@@ -1393,6 +1398,7 @@ ConstraintSpace CreateConstraintSpaceForFragmentainer(
     DCHECK_EQ(fragmentation_type, kFragmentColumn);
     space_builder.SetIsInsideBalancedColumns();
   }
+  space_builder.SetIsInsideBreakAvoid(false);
   space_builder.SetMinBreakAppeal(min_break_appeal);
   space_builder.SetBaselineAlgorithmType(
       parent_space.GetBaselineAlgorithmType());

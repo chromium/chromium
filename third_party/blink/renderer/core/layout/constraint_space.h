@@ -370,6 +370,12 @@ class CORE_EXPORT ConstraintSpace final {
     return rare_data_ && rare_data_->is_inside_repeatable_content;
   }
 
+  // Return true if this is inside of (and affected by) an ancestor with
+  // break-inside:avoid.
+  bool IsInsideBreakAvoid() const {
+    return rare_data_ && rare_data_->is_inside_break_avoid;
+  }
+
   // Whether the current constraint space is for the newly established
   // Formatting Context.
   bool IsNewFormattingContext() const {
@@ -913,6 +919,7 @@ class CORE_EXPORT ConstraintSpace final {
           is_at_fragmentainer_start(other.is_at_fragmentainer_start),
           should_repeat(other.should_repeat),
           is_inside_repeatable_content(other.is_inside_repeatable_content),
+          is_inside_break_avoid(other.is_inside_break_avoid),
           should_text_box_trim_node_start(
               other.should_text_box_trim_node_start),
           should_text_box_trim_node_end(other.should_text_box_trim_node_end),
@@ -1018,6 +1025,7 @@ class CORE_EXPORT ConstraintSpace final {
           propagate_child_break_values != other.propagate_child_break_values ||
           should_repeat != other.should_repeat ||
           is_inside_repeatable_content != other.is_inside_repeatable_content ||
+          is_inside_break_avoid != other.is_inside_break_avoid ||
           should_text_box_trim_node_start !=
               other.should_text_box_trim_node_start ||
           should_text_box_trim_node_end !=
@@ -1082,7 +1090,8 @@ class CORE_EXPORT ConstraintSpace final {
           min_break_appeal != kBreakAppealLastResort ||
           propagate_child_break_values || is_at_fragmentainer_start ||
           should_repeat || is_inside_repeatable_content ||
-          should_text_box_trim_node_start || should_text_box_trim_node_end ||
+          is_inside_break_avoid || should_text_box_trim_node_start ||
+          should_text_box_trim_node_end ||
           should_text_box_trim_fragmentainer_start ||
           should_text_box_trim_fragmentainer_end ||
           should_force_text_box_trim_end ||
@@ -1355,6 +1364,7 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_at_fragmentainer_start : 1 = false;
     unsigned should_repeat : 1 = false;
     unsigned is_inside_repeatable_content : 1 = false;
+    unsigned is_inside_break_avoid : 1 = false;
     unsigned should_text_box_trim_node_start : 1 = false;
     unsigned should_text_box_trim_node_end : 1 = false;
     unsigned should_text_box_trim_fragmentainer_start : 1 = false;
