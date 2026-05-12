@@ -205,32 +205,6 @@ void LocalPrinterAsh::OnServerPrintersChanged(
   }
 }
 
-void LocalPrinterAsh::CreatePrintJob(mojom::PrintJobPtr job,
-                                     CreatePrintJobCallback callback) {
-  Profile* profile = GetProfile();
-  DCHECK(profile);
-  ash::CupsPrintJobManager* print_job_manager =
-      ash::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
-  ash::printing::proto::PrintSettings settings;
-  settings.set_color(
-      printing::IsColorModelSelected(job->color_mode).value()
-          ? ash::printing::proto::PrintSettings_ColorMode_COLOR
-          : ash::printing::proto::PrintSettings_ColorMode_BLACK_AND_WHITE);
-  settings.set_duplex(
-      static_cast<ash::printing::proto::PrintSettings_DuplexMode>(
-          job->duplex_mode));
-  settings.set_copies(job->copies);
-  ash::printing::proto::MediaSize media_size;
-  media_size.set_width(job->media_size.width());
-  media_size.set_height(job->media_size.height());
-  media_size.set_vendor_id(job->media_vendor_id);
-  *settings.mutable_media_size() = media_size;
-  print_job_manager->CreatePrintJob(job->device_name, job->title, job->job_id,
-                                    job->page_count, job->source,
-                                    job->source_id, std::move(settings));
-  std::move(callback).Run();
-}
-
 void LocalPrinterAsh::CancelPrintJob(const std::string& printer_id,
                                      unsigned int job_id,
                                      CancelPrintJobCallback callback) {

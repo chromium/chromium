@@ -27,11 +27,6 @@ class MockLocalPrinter : public FakeLocalPrinter {
                AddPrintServerObserverCallback callback),
               (override));
   MOCK_METHOD(void,
-              CreatePrintJob,
-              (crosapi::mojom::PrintJobPtr job,
-               CreatePrintJobCallback callback),
-              (override));
-  MOCK_METHOD(void,
               CancelPrintJob,
               (const std::string& printer_id,
                uint32_t job_id,

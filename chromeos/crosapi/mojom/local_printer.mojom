@@ -229,9 +229,6 @@ enum PrintJobSource {
 // printing from Lacros.
 [Uuid="81aea7f5-a52b-4f88-8037-951f3c174f1e"]
 interface LocalPrinter {
-  // Adds a new print job to the ash print job manager.
-  CreatePrintJob@5(PrintJob job) => ();
-
   // Cancels a print job. Forwards to CancelPrintJob() in
   // chromeos/components/print_management/mojom/printing_manager.mojom.
   [MinVersion=3]
