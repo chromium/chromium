@@ -7,10 +7,12 @@
 #include <limits>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "net/http/http_request_headers.h"
 #include "net/storage_access_api/status.h"
@@ -135,6 +137,11 @@ void EnclaveWebSocketClient::Connect() {
         "Reauthentication", *reauthentication_token_));
   }
 
+  uint32_t options = network::mojom::kWebSocketOptionBlockAllCookies;
+  if (base::FeatureList::IsEnabled(kWebAuthnEnclaveSocketMaxPriorityMode)) {
+    options |= network::mojom::kWebSocketOptionMaximumPriority;
+  }
+
   network_context_factory_.Run()->CreateWebSocket(
       service_url_, {kEnclaveWebSocketProtocol},
       net::StorageAccessApiStatus::kNone,
@@ -142,8 +149,7 @@ void EnclaveWebSocketClient::Connect() {
           url::Origin::Create(service_url_)),
       std::move(additional_headers), network::OriginatingProcessId::browser(),
       url::Origin::Create(service_url_),
-      network::mojom::ClientSecurityState::New(),
-      network::mojom::kWebSocketOptionBlockAllCookies,
+      network::mojom::ClientSecurityState::New(), options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_remote),
       /*url_loader_network_observer=*/mojo::NullRemote(),

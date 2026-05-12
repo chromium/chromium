@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_PUBLIC_FEATURES_H_
 
 #include "base/component_export.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -188,6 +189,10 @@ BASE_DECLARE_FEATURE(kWebAuthnCreatePinWhenSystemUvDisabled);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnWinPrfOnCreate);
 #endif  // BUILDFLAG(IS_WIN)
+
+// Enable max priority mode in websocket connections to the enclave.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnEnclaveSocketMaxPriorityMode);
 
 }  // namespace device
 
