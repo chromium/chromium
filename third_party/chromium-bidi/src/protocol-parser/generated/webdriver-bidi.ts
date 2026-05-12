@@ -632,6 +632,7 @@ export const BrowsingContextCommandSchema = z.lazy(() =>
     BrowsingContext.NavigateSchema,
     BrowsingContext.PrintSchema,
     BrowsingContext.ReloadSchema,
+    BrowsingContext.SetBypassCspSchema,
     BrowsingContext.SetViewportSchema,
     BrowsingContext.TraverseHistorySchema,
   ]),
@@ -648,6 +649,7 @@ export const BrowsingContextResultSchema = z.lazy(() =>
     BrowsingContext.NavigateResultSchema,
     BrowsingContext.PrintResultSchema,
     BrowsingContext.ReloadResultSchema,
+    BrowsingContext.SetBypassCspResultSchema,
     BrowsingContext.SetViewportResultSchema,
     BrowsingContext.TraverseHistoryResultSchema,
   ]),
@@ -1075,6 +1077,29 @@ export namespace BrowsingContext {
   export const ReloadResultSchema = z.lazy(
     () => BrowsingContext.NavigateResultSchema,
   );
+}
+export namespace BrowsingContext {
+  export const SetBypassCspSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browsingContext.setBypassCSP'),
+      params: BrowsingContext.SetBypassCspParametersSchema,
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const SetBypassCspParametersSchema = z.lazy(() =>
+    z.object({
+      bypass: z.union([z.literal(true), z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const SetBypassCspResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace BrowsingContext {
   export const SetViewportSchema = z.lazy(() =>
@@ -3648,30 +3673,13 @@ export namespace Input {
 export namespace Input {
   export const PointerCommonPropertiesSchema = z.lazy(() =>
     z.object({
-      width: JsUintSchema.default(1).optional(),
-      height: JsUintSchema.default(1).optional(),
-      pressure: z.number().default(0).optional(),
-      tangentialPressure: z.number().default(0).optional(),
-      twist: z
-        .number()
-        .int()
-        .nonnegative()
-        .gte(0)
-        .lte(359)
-        .default(0)
-        .optional(),
-      altitudeAngle: z
-        .number()
-        .gte(0)
-        .lte(1.5707963267948966)
-        .default(0)
-        .optional(),
-      azimuthAngle: z
-        .number()
-        .gte(0)
-        .lte(6.283185307179586)
-        .default(0)
-        .optional(),
+      width: JsUintSchema.optional(),
+      height: JsUintSchema.optional(),
+      pressure: z.number().gte(0).lte(1).optional(),
+      tangentialPressure: z.number().gte(-1).lte(1).optional(),
+      twist: z.number().int().nonnegative().gte(0).lte(359).optional(),
+      altitudeAngle: z.number().gte(0).lte(1.5707963267948966).optional(),
+      azimuthAngle: z.number().gte(0).lte(6.283185307179586).optional(),
     }),
   );
 }

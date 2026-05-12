@@ -106,6 +106,9 @@ export interface BidiCommandParameterParser {
   parseNavigateParams(params: unknown): BrowsingContext.NavigateParameters;
   parsePrintParams(params: unknown): BrowsingContext.PrintParameters;
   parseReloadParams(params: unknown): BrowsingContext.ReloadParameters;
+  parseSetBypassCspParams(
+    params: unknown,
+  ): BrowsingContext.SetBypassCspParameters;
   parseSetViewportParams(
     params: unknown,
   ): BrowsingContext.SetViewportParameters;

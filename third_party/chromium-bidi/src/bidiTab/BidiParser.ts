@@ -161,6 +161,11 @@ export class BidiParser implements BidiCommandParameterParser {
   parseReloadParams(params: unknown): BrowsingContext.ReloadParameters {
     return Parser.BrowsingContext.parseReloadParams(params);
   }
+  parseSetBypassCspParams(
+    params: unknown,
+  ): BrowsingContext.SetBypassCspParameters {
+    return Parser.BrowsingContext.parseSetBypassCspParams(params);
+  }
   parseSetViewportParams(
     params: unknown,
   ): BrowsingContext.SetViewportParameters {
