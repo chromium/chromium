@@ -131,7 +131,7 @@ ts_modules = [
   "common/braille/braille_key_types.ts",
   "common/braille/braille_table.ts",
   "common/braille/nav_braille.ts",
-  "common/braille/tenji/sandboxed_tenji_wrapper.ts",
+  "services/tenji/sandboxed_tenji_wrapper.ts",
   "common/bridge_constants.ts",
   "common/command.ts",
   "common/command_store.ts",
@@ -289,7 +289,6 @@ run_jsbundler("copied_files") {
   ]
 
   sources = [
-    "common/braille/tenji/sandboxed_tenji_wrapper.html",
     "images/chromevox.svg",
     "images/close-36.png",
     "images/close-hover-36.png",
@@ -303,6 +302,7 @@ run_jsbundler("copied_files") {
     "offscreen/offscreen.html",
     "panel/panel.css",
     "panel/panel.html",
+    "services/tenji/sandboxed_tenji_wrapper.html",
     "tutorial/practice_areas/jump_commands.html",
     "tutorial/practice_areas/selects.html",
   ]
@@ -467,6 +467,7 @@ js2gtest("chromevox_extension_js_tests") {
     "background/phonetic_data_test.js",
     "common/key_sequence_test.js",
     "common/spannable_test.js",
+    "services/tenji/sandboxed_tenji_wrapper_test.js",
     "testing/mock_feedback_test.js",
   ]
 

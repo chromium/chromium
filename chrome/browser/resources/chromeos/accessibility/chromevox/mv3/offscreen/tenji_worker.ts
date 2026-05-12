@@ -84,7 +84,7 @@ export class TenjiWorker {
     }
 
     this.sandbox_!.src =
-        '/chromevox/mv3/common/braille/tenji/sandboxed_tenji_wrapper.html';
+        '/chromevox/mv3/services/tenji/sandboxed_tenji_wrapper.html';
     const tenjiData: chrome.accessibilityPrivate.TenjiData = {} as
         chrome.accessibilityPrivate.TenjiData;
     tenjiData.wrapperJs =

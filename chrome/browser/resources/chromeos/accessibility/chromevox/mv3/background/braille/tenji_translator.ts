@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Imported so sandboxed_tenji_wrapper.js executes in the background bundle,
+// making its TestImportManager exports available to
+// sandboxed_tenji_wrapper_test.js.
+import '../../services/tenji/sandboxed_tenji_wrapper.js';
+
 import {ArrayBufferUtil} from '/common/array_buffer_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
