@@ -816,6 +816,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Shows the "Autofill payments" omnibox chip that appears for relevant
   // payment checkout forms.
   virtual void ShowOmniboxAutofillChip() = 0;
+
+  // Hides the "Autofill payments" omnibox chip that appears for relevant
+  // payment checkout forms.
+  virtual void HideOmniboxAutofillChip() = 0;
 #endif
 };
 

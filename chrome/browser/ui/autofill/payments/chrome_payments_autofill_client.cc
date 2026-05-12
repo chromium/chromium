@@ -1259,6 +1259,17 @@ void ChromePaymentsAutofillClient::ShowOmniboxAutofillChip() {
   }
 }
 
+void ChromePaymentsAutofillClient::HideOmniboxAutofillChip() {
+  if (tabs::TabInterface* tab_interface =
+          tabs::TabInterface::MaybeGetFromContents(web_contents())) {
+    if (autofill::OmniboxAutofillPageActionController* controller =
+            autofill::OmniboxAutofillPageActionController::From(
+                *tab_interface)) {
+      controller->Hide();
+    }
+  }
+}
+
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

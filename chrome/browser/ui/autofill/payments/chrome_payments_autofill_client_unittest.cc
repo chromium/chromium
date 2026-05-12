@@ -1039,6 +1039,28 @@ TEST_F(ChromePaymentsAutofillClientOmniboxTest, ShowOmniboxAutofillChip) {
   chrome_payments_client()->ShowOmniboxAutofillChip();
 }
 
+TEST_F(ChromePaymentsAutofillClientOmniboxTest, HideOmniboxAutofillChip) {
+  tabs::MockTabInterface mock_tab_interface;
+  ui::UnownedUserDataHost user_data_host;
+  ON_CALL(mock_tab_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host));
+
+  page_actions::MockPageActionController mock_page_action_controller;
+  OmniboxAutofillPageActionController omnibox_controller(
+      mock_tab_interface, mock_page_action_controller);
+
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab_interface);
+
+  EXPECT_CALL(mock_page_action_controller,
+              HideSuggestionChip(kActionAutofillPayment))
+      .Times(1);
+  EXPECT_CALL(mock_page_action_controller, Hide(kActionAutofillPayment))
+      .Times(1);
+
+  chrome_payments_client()->HideOmniboxAutofillChip();
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

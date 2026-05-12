@@ -239,6 +239,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
   void ShowOmniboxAutofillChip() override;
+  void HideOmniboxAutofillChip() override;
 #endif
 
   // Begin TestPaymentsAutofillClient-specific section.
@@ -453,6 +454,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<OmniboxAutofillDelegate> omnibox_autofill_delegate_;
 
   bool omnibox_autofill_chip_shown_ = false;
+
+  bool omnibox_autofill_chip_hidden_ = false;
 #endif
 };
 

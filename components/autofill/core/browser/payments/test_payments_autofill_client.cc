@@ -492,6 +492,10 @@ TestPaymentsAutofillClient::GetOmniboxAutofillDelegate() {
 void TestPaymentsAutofillClient::ShowOmniboxAutofillChip() {
   omnibox_autofill_chip_shown_ = true;
 }
+
+void TestPaymentsAutofillClient::HideOmniboxAutofillChip() {
+  omnibox_autofill_chip_hidden_ = true;
+}
 #endif
 
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
