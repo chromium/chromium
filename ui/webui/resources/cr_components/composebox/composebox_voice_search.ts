@@ -178,7 +178,7 @@ export class ComposeboxVoiceSearchElement extends
       /**
        * Controls the `continuous` parameter of the Webkit Speech API. When
        * enabled, the API dynamically determines when to stop listening based on
-       * speech patterns.
+       * speech patterns. If this is enabled, `idleTimeout` is ignored.
        */
       dynamicTimeoutEnabled: {type: Boolean},
       /**
@@ -191,7 +191,8 @@ export class ComposeboxVoiceSearchElement extends
       /**
        * Time in milliseconds to wait before closing the UI if no interaction
        * has occurred since start, OR last word spoken. The default
-       * value matches the Google3 AIM implementation.
+       * value matches the Google3 AIM implementation. If
+       * `dynamicTimeoutEnabled` is set, then this number is ignored.
        */
       idleTimeout: {type: Number},
     };
@@ -262,7 +263,9 @@ export class ComposeboxVoiceSearchElement extends
 
   start() {
     this.errorMessage_ = '';
-    this.voiceRecognition_.continuous = this.dynamicTimeoutEnabled;
+    // If continuous is false, then speech webkit determines when to end, and
+    // there is no manual set timeout.
+    this.voiceRecognition_.continuous = !this.dynamicTimeoutEnabled;
     this.voiceRecognition_.start();
     this.state_ = State.STARTED;
     this.resetIdleTimer_();
@@ -304,7 +307,7 @@ export class ComposeboxVoiceSearchElement extends
     }
     // If there is text transcribed, process it as final.
     if (this.transcript_) {
-      this.onFinalResult_(this.transcript_);
+      this.onFinalResult_(this.transcript_, /* force_submit=*/ true);
       return;
     }
     this.onError_(VoiceSearchError.NO_SPEECH);
@@ -324,6 +327,8 @@ export class ComposeboxVoiceSearchElement extends
 
 
   private onResult_(e: SpeechRecognitionEvent) {
+    // First reset, in case of early return before second reset
+    // (done again to not include time taken to process results in timeout).
     this.resetIdleTimer_();
     switch (this.state_) {
       case State.STARTED:
@@ -355,13 +360,6 @@ export class ComposeboxVoiceSearchElement extends
 
     const speechResult = results[e.resultIndex];
     assert(speechResult);
-    // Process final results if is fully final.
-    if (!!speechResult && speechResult.isFinal) {
-      this.finalResult_ = speechResult[0]!.transcript;
-      this.transcript_ = this.finalResult_;
-      this.onFinalResult_(this.finalResult_);
-      return;
-    }
 
     // Process interim results based on confidence.
     for (let j = 0; j < results.length; j++) {
@@ -373,10 +371,17 @@ export class ComposeboxVoiceSearchElement extends
       if (result.confidence > RECOGNITION_CONFIDENCE_THRESHOLD) {
         this.finalResult_ += result.transcript;  // Displayed
       } else {
+        // TODO(crbug.com/511795841) Delete this deprecated feature.
         this.interimResult_ += result.transcript;
       }
     }
     this.fire('transcript-update', this.transcript_);
+
+    // Once all the work is done (may have delays depending on load), to avoid
+    // including that time in the timeout, reset the timer again. This schedules
+    // a potential submission of the transcript. Once `this.idleTimeout`
+    // timespan has passed, the timeout callback will submit the query.
+    this.resetIdleTimer_();
 
     // Force-stop long queries if queryLengthLimit is not undefined.
     if (this.queryLengthLimit !== undefined &&
@@ -387,14 +392,14 @@ export class ComposeboxVoiceSearchElement extends
 
   private onEnd_() {
     switch (this.state_) {
-    // If voiceRecognition calls `onEnd_` with the state being anything other
-    // than RESULT_FINAL, close out voice search since there was an error.
-    // The Web Speech API normally fires `onerror` before `onend` for explicit
-    // errors. However, for transient or silent errors (e.g., mic disconnection
-    // or manual aborts), `onerror` is bypassed and `onend` is called directly.
-    // Thus, if the state is anything other than RESULT_FINAL or ERROR_RECEIVED,
-    // we use this switch as a fallback router to manually catch these silent
-    // failures and pipe them to `onError_`.
+        // If voiceRecognition calls `onEnd_` with the state being anything
+        // other than `RESULT_FINAL` or `ERROR_RECEIVED` or `SPEECH_RECEIVED` or
+        // `RESULT_RECEIVED`, close out voice search since there was a silent
+        // failure with setting up audio or transcription. `RESULT_RECEIVED` is
+        // not okay if `continuous` is false since that means that speech webkit
+        // is the source of truth for timing out, and it has decided to time out
+        // and quit by itself by sending `onend` even though this frontend
+        // component is still expecting results.
       case State.STARTED:
         this.onError_(VoiceSearchError.AUDIO_CAPTURE);
         return;
@@ -403,7 +408,12 @@ export class ComposeboxVoiceSearchElement extends
         return;
       case State.SPEECH_RECEIVED:
       case State.RESULT_RECEIVED:
-        this.onError_(VoiceSearchError.NO_MATCH);
+        // If `continuous` is disabled, that means that speech
+        // webkit is the source of truth for timing out and has
+        // decided to time out.
+        if (!this.dynamicTimeoutEnabled) {
+          this.onError_(VoiceSearchError.NO_MATCH);
+        }
         return;
       case State.UNINITIALIZED:
       case State.ERROR_RECEIVED:
