@@ -5263,7 +5263,7 @@ static_library("browser") {
 
   if (enterprise_watermark) {
     deps += [
-      "//chrome/browser/enterprise/watermark:watermark_view_lib",
+      "//chrome/browser/enterprise/watermark:watermark_lib",
       "//chrome/browser/ui/webui/watermark",
       "//components/enterprise/watermarking",
       "//components/enterprise/watermarking/content",

@@ -100,8 +100,8 @@ class WatermarkBrowserTest
             BrowserView::GetBrowserViewForBrowser(browser())
                 ->GetContentsContainerViews()[0]
                 ->data_protection_overlay_view()) {
-      data_protection_overlay_view->SetString(watermark_message, kTestFillColor,
-                                              kTestOutlineColor, kTestFontSize);
+      data_protection_overlay_view->SetWatermarkText(
+          watermark_message, kTestFillColor, kTestOutlineColor, kTestFontSize);
       return true;
     }
     return false;

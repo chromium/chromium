@@ -14,7 +14,7 @@ source_set("data_protection_view_lib") {
   ]
 
   public_deps = [
-    "//chrome/browser/enterprise/watermark:watermark_view_lib",
+    "//chrome/browser/enterprise/watermark:watermark_lib",
     "//components/enterprise/watermarking",
     "//ui/views",
   ]

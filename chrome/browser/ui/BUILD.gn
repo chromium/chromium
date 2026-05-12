@@ -1592,7 +1592,7 @@ static_library("ui") {
       "//chrome/browser/content_extraction",
       "//chrome/browser/download",
       "//chrome/browser/download:impl",
-      "//chrome/browser/enterprise/watermark:watermark_view_lib",
+      "//chrome/browser/enterprise/data_protection:data_protection_view_lib",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/headless:command_processor",
       "//chrome/browser/hid",

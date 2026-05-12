@@ -2720,7 +2720,7 @@ if (!is_android) {
       "//chrome/browser/engagement:browser_tests",
       "//chrome/browser/enterprise/browser_management:management_identity",
       "//chrome/browser/enterprise/incognito",
-      "//chrome/browser/enterprise/watermark:watermark_view_lib",
+      "//chrome/browser/enterprise/data_protection:data_protection_view_lib",
       "//chrome/browser/error_reporting:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/external_protocol",
@@ -10353,7 +10353,7 @@ test("unit_tests") {
 
   if (toolkit_views) {
     deps += [
-      "//chrome/browser/enterprise/watermark:watermark_view_lib",
+      "//chrome/browser/enterprise/data_protection:data_protection_view_lib",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/actions",
       "//chrome/browser/ui/actions:actions_headers",

@@ -1,4 +1,4 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,12 +33,12 @@ class DataProtectionOverlayView : public views::View {
   // Convenience function to draw a simple, text-based watermark. `text` must be
   // UTF-8 encoded.
   // `font_size` must be a positive integer.
-  void SetString(const std::string& text,
-                 SkColor fill_color,
-                 SkColor outline_color,
-                 int font_size);
+  void SetWatermarkText(const std::string& text,
+                        SkColor fill_color,
+                        SkColor outline_color,
+                        int font_size);
 
-  // Alternative to SetString. Allows watermark to be set to any drawing
+  // Alternative to SetWatermarkText. Allows watermark to be set to any drawing
   // represented by a cc::PaintRecord instance.
   void SetWatermarkPaintRecord(cc::PaintRecord record);
 

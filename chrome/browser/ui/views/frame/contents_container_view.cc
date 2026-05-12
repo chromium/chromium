@@ -388,8 +388,8 @@ void ContentsContainerView::ApplyWatermarkSettings(
     SkColor fill_color,
     SkColor outline_color,
     int font_size) {
-  data_protection_overlay_view_->SetString(watermark_text, fill_color,
-                                           outline_color, font_size);
+  data_protection_overlay_view_->SetWatermarkText(watermark_text, fill_color,
+                                                  outline_color, font_size);
 }
 
 void ContentsContainerView::UpdateDevToolsDockedPlacement() {

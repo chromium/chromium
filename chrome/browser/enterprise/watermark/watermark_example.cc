@@ -77,9 +77,9 @@ void WatermarkExample::CreateExampleView(views::View* container) {
   watermark_view_ = watermark_container->AddChildView(
       std::make_unique<
           enterprise_data_protection::DataProtectionOverlayView>());
-  watermark_view_->SetString("Private! Confidential", kDefaultExampleFillColor,
-                             kDefaultExampleOutlineColor,
-                             kDefaultExampleFontSize);
+  watermark_view_->SetWatermarkText(
+      "Private! Confidential", kDefaultExampleFillColor,
+      kDefaultExampleOutlineColor, kDefaultExampleFontSize);
   box_layout->SetFlexForView(watermark_container, 13);
 
   // Background checkbox and text
@@ -216,7 +216,7 @@ WatermarkTextArea::WatermarkTextArea(
 
 void WatermarkTextArea::OnTextChanged() {
   Textfield::OnTextChanged();
-  watermark_view_->SetString(
+  watermark_view_->SetWatermarkText(
       base::UTF16ToUTF8(GetText()), kDefaultExampleFillColor,
       kDefaultExampleOutlineColor, kDefaultExampleFontSize);
 }

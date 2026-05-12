@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("watermark_view_lib") {
+source_set("watermark_lib") {
   sources = [
     "settings.cc",
     "settings.h",
@@ -35,11 +35,11 @@ executable("watermark_app") {
   ]
 
   deps = [
-    ":watermark_view_lib",
+    ":watermark_lib",
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
-    "//chrome/browser/enterprise",
+    "//chrome/browser/enterprise/data_protection:data_protection_view_lib",
     "//ui/base/metadata",
     "//ui/color:mixers",
     "//ui/gfx",
