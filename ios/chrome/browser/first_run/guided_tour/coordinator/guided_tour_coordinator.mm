@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
@@ -212,11 +213,13 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
         [anchorView convertRect:[anchorView bounds]
                          toView:self.baseViewController.view];
 
-    BOOL onLeftHalfOfScreen =
-        CGRectGetMidX(self.baseViewController.view.bounds) >
-        CGRectGetMidX(anchorFrameInBaseViewController);
-    return (onLeftHalfOfScreen) ? BubbleAlignmentTopOrLeading
-                                : BubbleAlignmentBottomOrTrailing;
+    CGFloat screenCenterX = CGRectGetMidX(self.baseViewController.view.bounds);
+    CGFloat anchorFrameCenterX = CGRectGetMidX(anchorFrameInBaseViewController);
+
+    BOOL onLeadingHalfOfScreen =
+        EdgeLeadsEdge(anchorFrameCenterX, screenCenterX);
+    return onLeadingHalfOfScreen ? BubbleAlignmentTopOrLeading
+                                 : BubbleAlignmentBottomOrTrailing;
   } else if (_step == GuidedTourStep::kTabGridTabGroup) {
     return BubbleAlignmentBottomOrTrailing;
   }
@@ -233,7 +236,7 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   } else {
     // The TabGrid Page Control steps should cut out the entire page control,
     // not just the anchor view.
-    cutoutView = [LayoutGuideCenterForBrowser(nil)
+    cutoutView = [LayoutGuideCenterForBrowser(self.browser)
         referencedViewUnderName:kTabGridPageControlGuide];
   }
   return cutoutView;
