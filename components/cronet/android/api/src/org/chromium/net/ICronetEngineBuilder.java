@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.net;
 
-import androidx.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -75,7 +73,7 @@ public abstract class ICronetEngineBuilder {
     // Proxy.HttpConnectCallback to fail later on (due to ABI mismatch), this has been renamed to
     // setProxyOptionsV2. This way, callers will always get an UnsupportedOperationException at
     // CronetEngine.Builder#setProxyOptions time, if the implementation being used is too old.
-    public ICronetEngineBuilder setProxyOptionsV2(@Nullable ProxyOptions proxyOptions) {
+    public ICronetEngineBuilder setProxyOptionsV2(ProxyOptions proxyOptions) {
         // API layer last resort: prevents calling setProxyOptionsV2 on an implementation that does
         // not know about it.
         throw new UnsupportedOperationException(

@@ -10,7 +10,6 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 import android.content.Context;
 import android.net.http.HttpEngine;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresExtension;
 import androidx.annotation.VisibleForTesting;
@@ -163,8 +162,7 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     }
 
     @Override
-    public ICronetEngineBuilder setProxyOptionsV2(
-            @Nullable org.chromium.net.ProxyOptions proxyOptions) {
+    public ICronetEngineBuilder setProxyOptionsV2(org.chromium.net.ProxyOptions proxyOptions) {
         AndroidProxyOptions.apply(mBackend, proxyOptions);
         return this;
     }
