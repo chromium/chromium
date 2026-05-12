@@ -452,6 +452,7 @@ interface CSSConditionRule : CSSGroupingRule
     method constructor
 interface CSSContainerRule : CSSConditionRule
     attribute @@toStringTag
+    getter conditions
     getter containerName
     getter containerQuery
     method constructor

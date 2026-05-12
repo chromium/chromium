@@ -1195,7 +1195,7 @@
       // @container allowing multiple comma separated container queries.
       // Also introduces the 'conditions' attribute on CSSContainerRule.
       name: "CommaSeparatedContainerQueries",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Return the current target from composedPath() while
