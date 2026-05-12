@@ -54,6 +54,15 @@ void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
 
+// Returns true if `IsClipboardCopyAllowedByPolicy` needs to be called for the
+// provided context. This is not required to be called before
+// `IsClipboardCopyAllowedByPolicy` as it includes logic to return early in
+// cases where policies aren't set or no restrictions are applied to the given
+// context, this helper is provided as a convenience for caller code that wants
+// to keep code synchronous when no enterprise restrictions are to be applied.
+bool IsCopyPolicyCheckRequired(const content::ClipboardEndpoint& source,
+                               const ui::ClipboardMetadata& metadata);
+
 // This function checks if data dragged from a browser tab is allowed to be
 // dragged to the OS according to the following policies:
 // - DataControlsRules

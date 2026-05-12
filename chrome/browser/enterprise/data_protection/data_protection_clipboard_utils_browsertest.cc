@@ -940,18 +940,21 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyAllowed) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.ExpectNoReport();
 
+  auto source = content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(GURL("https://google.com")),
+      base::BindLambdaForTesting(
+          [this]() { return contents()->GetBrowserContext(); }),
+      *contents()->GetPrimaryMainFrame());
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  EXPECT_FALSE(IsCopyPolicyCheckRequired(source, metadata));
+
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(
-          ui::DataTransferEndpoint(GURL("https://google.com")),
-          base::BindLambdaForTesting(
-              [this]() { return contents()->GetBrowserContext(); }),
-          *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("foo", "", {}),
-      future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
 
   auto data = future.Get<content::ClipboardPasteData>();
   EXPECT_EQ(data.text, u"foo");
@@ -1006,18 +1009,20 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyReported) {
                                  })"},
                                  machine_scope());
 
+  auto source = CreateURLClipboardEndpoint(test_url_1());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::SvgType(),
+  };
+  EXPECT_TRUE(IsCopyPolicyCheckRequired(source, metadata));
+
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(
-      /*source=*/CreateURLClipboardEndpoint(test_url_1()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::SvgType(),
-      },
-      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
 
   auto data = future.Get<content::ClipboardPasteData>();
   EXPECT_EQ(data.text, u"foo");
@@ -1075,18 +1080,20 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
 
+  auto source = CreateURLClipboardEndpoint(test_url_0());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::SvgType(),
+  };
+  EXPECT_TRUE(IsCopyPolicyCheckRequired(source, metadata));
+
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(
-      /*source=*/CreateURLClipboardEndpoint(test_url_0()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::SvgType(),
-      },
-      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
 
   helper.WaitForDialogToInitialize();
   helper.CloseDialogWithoutBypass();
@@ -1149,18 +1156,20 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
+  auto source = CreateURLClipboardEndpoint(test_url_1());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PngType(),
+  };
+  EXPECT_TRUE(IsCopyPolicyCheckRequired(source, metadata));
+
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(
-      /*source=*/CreateURLClipboardEndpoint(test_url_1()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::PngType(),
-      },
-      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
 
   helper.WaitForDialogToInitialize();
 
@@ -1231,18 +1240,20 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
+  auto source = CreateURLClipboardEndpoint(test_url_0());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  EXPECT_TRUE(IsCopyPolicyCheckRequired(source, metadata));
+
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(
-      /*source=*/CreateURLClipboardEndpoint(test_url_0()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::PlainTextType(),
-      },
-      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
 
   helper.WaitForDialogToInitialize();
 
@@ -1312,18 +1323,20 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
+  auto source = CreateURLClipboardEndpoint(test_url_1());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::HtmlType(),
+  };
+  EXPECT_TRUE(IsCopyPolicyCheckRequired(source, metadata));
+
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(
-      /*source=*/CreateURLClipboardEndpoint(test_url_1()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::HtmlType(),
-      },
-      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
 
   helper.WaitForDialogToInitialize();
 
@@ -1432,18 +1445,20 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
+  auto source = CreateURLClipboardEndpoint(test_url_0());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::HtmlType(),
+  };
+  EXPECT_TRUE(IsCopyPolicyCheckRequired(source, metadata));
+
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(
-      /*source=*/CreateURLClipboardEndpoint(test_url_0()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::HtmlType(),
-      },
-      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
 
   helper.WaitForDialogToInitialize();
 
@@ -1539,15 +1554,16 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
           ui::ClipboardBuffer::kCopyPaste),
   };
 
+  auto source = CreateURLClipboardEndpoint("https://source.com");
+  EXPECT_TRUE(IsCopyPolicyCheckRequired(source, metadata));
+
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       copy_future;
-  IsClipboardCopyAllowedByPolicy(
-      /*source=*/CreateURLClipboardEndpoint("https://source.com"),
-      /*metadata=*/
-      metadata, MakeClipboardPasteData("foo", "", {}),
-      copy_future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 copy_future.GetCallback());
 
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 
@@ -1890,19 +1906,20 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
     content::ClipboardPasteData data;
     data.html = u"<html></html>";
 
+    auto source = CreateURLClipboardEndpoint(test_url_0());
+    ui::ClipboardMetadata metadata = {
+        .size = 26,
+        .format_type = ui::ClipboardFormatType::HtmlType(),
+    };
+    EXPECT_TRUE(IsCopyPolicyCheckRequired(source, metadata));
+
     base::test::TestFuture<const ui::ClipboardFormatType&,
                            const content::ClipboardPasteData&,
                            std::optional<std::u16string>>
         copy_future;
-    IsClipboardCopyAllowedByPolicy(
-        /*source=*/CreateURLClipboardEndpoint(test_url_0()),
-        /*metadata=*/
-        {
-            .size = 26,
-            .format_type = ui::ClipboardFormatType::HtmlType(),
-        },
-        /*data=*/data,
-        /*callback=*/copy_future.GetCallback());
+    IsClipboardCopyAllowedByPolicy(source, metadata,
+                                   /*data=*/data,
+                                   /*callback=*/copy_future.GetCallback());
 
     EXPECT_TRUE(copy_future.IsReady());
     run_loop.Run();

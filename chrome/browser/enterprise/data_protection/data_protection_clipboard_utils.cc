@@ -777,6 +777,39 @@ void IsClipboardCopyAllowedByPolicy(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 }
 
+bool IsCopyPolicyCheckRequired(const content::ClipboardEndpoint& source,
+                               const ui::ClipboardMetadata& metadata) {
+  if (SkipDataControlOrContentAnalysisChecks(source)) {
+    return false;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          data_controls::kEnableClipboardDataControlsAndroid)) {
+    return false;
+  }
+#else
+  // IsUrlAllowedToCopy checks a deprecated CopyPreventionSettings that isn't
+  // applicable on Clank.
+  std::u16string replacement_data;
+  ClipboardRestrictionService* service =
+      ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
+          source.browser_context());
+  if (!service->IsUrlAllowedToCopy(GetUrlFromEndpoint(source),
+                                   metadata.size.value_or(0),
+                                   &replacement_data)) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return data_controls::ChromeRulesServiceFactory::GetInstance()
+                 ->GetForBrowserContext(source.browser_context())
+                 ->GetCopyRestrictedBySourceVerdict(GetUrlFromEndpoint(source))
+                 .level() != data_controls::Rule::Level::kNotSet ||
+         data_controls::ChromeRulesServiceFactory::GetInstance()
+                 ->GetForBrowserContext(source.browser_context())
+                 ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source))
+                 .level() != data_controls::Rule::Level::kNotSet;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void IsClipboardShareAllowedByPolicy(
     const content::ClipboardEndpoint& source,
