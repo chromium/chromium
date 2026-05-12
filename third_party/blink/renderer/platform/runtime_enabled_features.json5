@@ -3945,7 +3945,7 @@
     },
     {
       name: "NavigateEventClearOnRestore",
-      status: "test",
+      status: "stable",
     },
     {
       name: "NavigateEventDeferCrossDocumentCommit",
