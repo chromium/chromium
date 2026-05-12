@@ -27,6 +27,7 @@ enum GPUFeatureName {
     "texture-formats-tier1",
     "texture-formats-tier2",
     "primitive-index",
+    "subgroup-size-control",
 
     // Non-standard (not currently in the spec).
     "chromium-experimental-timestamp-query-inside-passes",
