@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [16.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v15.0.0...chromium-bidi-v16.0.0) (2026-05-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* export only ESM ([#4144](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4144))
+* **chrome:** update the pinned browser version to 149.0.7790.0 ([#4128](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4128))
+* **chrome:** update the pinned browser version to 148.0.7764.0 ([#4115](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4115))
+
+### Features
+
+* **chrome:** update the pinned browser version to 148.0.7764.0 ([#4115](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4115)) ([4d8c783](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4d8c78331aa38a41eea84f304345ee1bd210aa44))
+* **chrome:** update the pinned browser version to 149.0.7790.0 ([#4128](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4128)) ([71b2e20](https://github.com/GoogleChromeLabs/chromium-bidi/commit/71b2e2098d2d79a5f7a06480e390c9d7b8dd008f))
+* export only ESM ([#4144](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4144)) ([7800efe](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7800efe3bdcafe01b45a58e51f33920246810936))
+* implement `emulation.setScrollbarTypeOverride` ([#4103](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4103)) ([16444a7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/16444a72eda3f21d6771d2b265352e957958c009))
+
 ## [15.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v14.0.0...chromium-bidi-v15.0.0) (2026-02-11)
 
 
