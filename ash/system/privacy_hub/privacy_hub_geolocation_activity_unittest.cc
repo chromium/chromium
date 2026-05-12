@@ -22,7 +22,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -242,7 +241,6 @@ TEST_P(PrivacyHubGeolocationApplyArcLocationUpdatesTest, UpdateTest) {
   EXPECT_EQ(PreviousAccessLevel(), controller_->PreviousAccessLevel());
 
   controller_->ApplyArcLocationUpdate(IncomingValueToBeSynced());
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ExpectedNewAccessLevel(), controller_->AccessLevel());
   EXPECT_EQ(ExpectedNewPreviousAccessLevel(),
             controller_->PreviousAccessLevel());
