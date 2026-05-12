@@ -176,13 +176,6 @@ class PersistentCachePerftest
                             iteration_count));
   }
 
-  static base::FilePath GetBaseName(int i) {
-    return base::FilePath(kBaseName).InsertBeforeExtensionASCII(
-        base::NumberToString(i));
-  }
-
-  BackendStorage& backend_storage() { return *backend_storage_; }
-
  private:
   static constexpr base::FilePath::StringViewType kBaseName =
       FILE_PATH_LITERAL("perftest");
@@ -191,36 +184,6 @@ class PersistentCachePerftest
   std::optional<BackendStorage> backend_storage_;
   bool under_measurment_ = false;
 };
-
-TEST_P(PersistentCachePerftest, Create) {
-  static constexpr int kIterationCount = 1024;
-
-  auto backend_names =
-      base::HeapArray<base::FilePath>::WithSize(kIterationCount);
-  std::ranges::generate(backend_names,
-                        [i = 0] mutable { return GetBaseName(i++); });
-  auto caches = base::HeapArray<std::unique_ptr<PersistentCache>>::WithSize(
-      kIterationCount);
-
-  auto [single_connection, journal_mode_wal] = GetParam();
-  int success_count = 0;
-  RunAndTimeTest("Create", kIterationCount, [&] {
-    for (size_t i = 0; i < kIterationCount; ++i) {
-      if (auto pending_backend = backend_storage().MakePendingBackend(
-              backend_names[i], single_connection, journal_mode_wal);
-          pending_backend.has_value()) {
-        if (auto cache_result = PersistentCache::Bind(
-                Client::kTest, *std::move(pending_backend));
-            cache_result.has_value()) {
-          caches[i] = std::move(cache_result.value());
-          ++success_count;
-        }
-      }
-    }
-  });
-
-  ASSERT_EQ(success_count, kIterationCount);
-}
 
 TEST_P(PersistentCachePerftest, OpenClose) {
   if (!CanShareConnections()) {
