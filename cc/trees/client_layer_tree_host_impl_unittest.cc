@@ -2637,7 +2637,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest, AnimationSchedulingPendingTree) {
   EXPECT_FALSE(did_request_redraw_);
   EXPECT_FALSE(did_request_commit_);
 
-  host_impl_->AnimatePendingTreeAfterCommit();
+  client_host_impl(host_impl_.get())->AnimatePendingTreeAfterCommit();
 
   // An animation exists on the pending layer. Doing
   // AnimatePendingTreeAfterCommit() requests another frame.

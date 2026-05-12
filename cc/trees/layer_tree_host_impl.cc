@@ -719,14 +719,6 @@ bool LayerTreeHostImpl::CanDraw() const {
   return true;
 }
 
-void LayerTreeHostImpl::AnimatePendingTreeAfterCommit() {
-  // Animate the pending tree layer animations to put them at initial positions
-  // and starting state. There is no need to run other animations on pending
-  // tree because they depend on user inputs so the state is identical to what
-  // the active tree has.
-  AnimateLayers(CurrentBeginFrameArgs().frame_time, /* is_active_tree */ false);
-}
-
 void LayerTreeHostImpl::Animate() {
   AnimateInternal();
 }

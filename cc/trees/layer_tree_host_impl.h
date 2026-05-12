@@ -233,7 +233,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool Mutate(base::TimeTicks monotonic_time);
   void ActivateAnimations();
   void Animate();
-  void AnimatePendingTreeAfterCommit();
   void DidAnimateScrollOffset();
   void SetFullViewportDamage();
   void SetViewportDamage(const gfx::Rect& damage_rect);
