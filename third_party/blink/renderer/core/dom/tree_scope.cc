@@ -494,26 +494,6 @@ void TreeScope::ClearAdoptedStyleSheets() {
   }
 }
 
-void TreeScope::ReplaceAdoptedStyleSheet(CSSStyleSheet& old_sheet,
-                                         CSSStyleSheet& new_sheet) {
-  CHECK(new_sheet.IsConstructed());
-  CHECK_EQ(old_sheet.ConstructorDocument(), new_sheet.ConstructorDocument());
-  CHECK_EQ(new_sheet.ConstructorDocument(), GetDocument());
-
-  if (!HasAdoptedStyleSheets()) {
-    return;
-  }
-
-  for (auto& sheet : *adopted_style_sheets_) {
-    if (sheet == &old_sheet) {
-      StyleSheetWasRemoved(&old_sheet);
-      sheet = &new_sheet;
-      StyleSheetWasAdded(&new_sheet);
-      return;
-    }
-  }
-}
-
 void TreeScope::AppendAdoptedStyleSheets(
     HeapVector<Member<CSSStyleSheet>>&& adopted_style_sheets) {
   EnsureAdoptedStyleSheets();

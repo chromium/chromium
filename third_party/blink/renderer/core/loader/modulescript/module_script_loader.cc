@@ -337,11 +337,16 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       // then set moduleScript to the result of creating a CSS module script
       // given sourceText and settingsObject.</spec>
       {
-        // This can be reached via the parser via modulepreload (which disallows
-        // script), so we need to allow user agent script.
-        ScriptForbiddenScope::AllowUserAgentScript allow_script;
-        module_script_ = ValueWrapperSyntheticModuleScript::
-            CreateCSSWrapperSyntheticModuleScript(params, modulator_);
+        // Retrieve the pre-created CSS module from the module map entry and
+        // update the contents with the fetch result. The empty CSSStyleSheet
+        // was created at fetch start time in FetchSingleModuleScript.
+        ModuleScript* pre_created = modulator_->GetFetchedModuleScript(
+            params.SourceURL(), ModuleType::kCSS);
+        CHECK(pre_created);
+        module_script_ =
+            ValueWrapperSyntheticModuleScript::UpdateCSSModuleScript(
+                static_cast<ValueWrapperSyntheticModuleScript*>(pre_created),
+                params.GetSourceText().ToString(), modulator_);
       }
       break;
     case ResolvedModuleType::kJavaScript:

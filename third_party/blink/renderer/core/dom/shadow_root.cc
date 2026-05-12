@@ -27,9 +27,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_mode.h"
@@ -327,59 +325,6 @@ V8SlotAssignmentMode ShadowRoot::slotAssignment() const {
                                   : V8SlotAssignmentMode::Enum::kNamed);
 }
 
-class PendingModuleEntry final : public SingleModuleClient {
- public:
-  PendingModuleEntry(ShadowRoot* shadow_root,
-                     Modulator* modulator,
-                     CSSStyleSheet* placeholder_sheet)
-      : shadow_root_(shadow_root),
-        modulator_(modulator),
-        placeholder_sheet_(placeholder_sheet) {}
-  ~PendingModuleEntry() override = default;
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(shadow_root_);
-    visitor->Trace(modulator_);
-    visitor->Trace(placeholder_sheet_);
-    SingleModuleClient::Trace(visitor);
-  }
-
- private:
-  void NotifyModuleLoadFinished(ModuleScript* script,
-                                v8::ModuleImportPhase) override {
-    // The fetch may have failed, in which case script is null. Leave the empty
-    // placeholder unchanged.
-    if (!script) {
-      return;
-    }
-    // The context may have been destroyed (e.g. by navigation) before we get
-    // here.
-    ScriptState* script_state = modulator_->GetScriptState();
-    ScriptState::Scope scope(script_state);
-    if (!script_state->ContextIsValid()) {
-      return;
-    }
-    v8::Isolate* isolate = script_state->GetIsolate();
-    CHECK(isolate);
-    v8::HandleScope handle_scope(isolate);
-    CSSStyleSheet* fetched_sheet = V8CSSStyleSheet::ToWrappable(
-        isolate, static_cast<const ValueWrapperSyntheticModuleScript*>(script)
-                     ->GetExport(isolate));
-    // The CSS module may have failed to instantiate (e.g. parse error).
-    if (!fetched_sheet) {
-      return;
-    }
-    // Replace the empty placeholder sheet in adoptedStyleSheets with the
-    // fetched stylesheet. This preserves the ordering established at parse
-    // time.
-    shadow_root_->ReplaceAdoptedStyleSheet(*placeholder_sheet_, *fetched_sheet);
-  }
-
-  Member<ShadowRoot> shadow_root_;
-  Member<Modulator> modulator_;
-  Member<CSSStyleSheet> placeholder_sheet_;
-};
-
 HeapVector<Member<CSSStyleSheet>> ShadowRoot::ResolveAdoptedStyleSheets(
     const AtomicString& shadowrootadoptedstylesheets_attribute_value) {
   CHECK(RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled(
@@ -433,26 +378,12 @@ HeapVector<Member<CSSStyleSheet>> ShadowRoot::ResolveAdoptedStyleSheets(
                                ModuleScriptCustomFetchType::kNone, nullptr);
       }
 
+      // If the module is not yet in the module map, initiate a fetch. This
+      // pre-creates an empty CSSStyleSheet wrapped in a module on the entry.
+      // FetchSingle is a no-op if the entry already exists.
       const ModuleScript* module_script =
           modulator->GetFetchedModuleScript(resolved_url, ModuleType::kCSS);
-      if (module_script) {
-        CSSStyleSheet* sheet = V8CSSStyleSheet::ToWrappable(
-            isolate,
-            static_cast<const ValueWrapperSyntheticModuleScript*>(module_script)
-                ->GetExport(isolate));
-        CHECK_EQ(sheet->ConstructorDocument(), GetDocument());
-        sheets.push_back(*sheet);
-      } else {
-        // Initiate a fetch if it's not already in the module map. First insert
-        // an empty placeholder into `sheets` to preserve the order, then fetch
-        // the module and replace the placeholder when it finishes.
-        CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
-        CSSStyleSheet* placeholder_sheet =
-            CSSStyleSheet::Create(GetDocument(), init, ASSERT_NO_EXCEPTION);
-        sheets.push_back(*placeholder_sheet);
-
-        PendingModuleEntry* entry = MakeGarbageCollected<PendingModuleEntry>(
-            this, modulator, placeholder_sheet);
+      if (!module_script) {
         ScriptFetchOptions options;
         ModuleScriptFetchRequest module_request(
             resolved_url, ModuleType::kCSS,
@@ -462,8 +393,23 @@ HeapVector<Member<CSSStyleSheet>> ShadowRoot::ResolveAdoptedStyleSheets(
             ModuleImportPhase::kEvaluation);
         modulator->FetchSingle(module_request, window->Fetcher(),
                                ModuleGraphLevel::kTopLevelModuleFetch,
-                               ModuleScriptCustomFetchType::kNone, entry);
+                               ModuleScriptCustomFetchType::kNone, nullptr);
+        module_script =
+            modulator->GetFetchedModuleScript(resolved_url, ModuleType::kCSS);
       }
+
+      // If the module map already has a finished failed entry for this URL,
+      // there is no pre-created sheet to adopt, so skip this specifier.
+      // TODO(crbug.com/448174611): Add devtools message for this scenario.
+      if (!module_script) {
+        continue;
+      }
+      CSSStyleSheet* sheet = V8CSSStyleSheet::ToWrappable(
+          isolate,
+          static_cast<const ValueWrapperSyntheticModuleScript*>(module_script)
+              ->GetExport(isolate));
+      CHECK_EQ(sheet->ConstructorDocument(), GetDocument());
+      sheets.push_back(*sheet);
     }
   }
   return sheets;

@@ -26,6 +26,14 @@ class CORE_EXPORT ValueWrapperSyntheticModuleScript final
   CreateCSSWrapperSyntheticModuleScript(const ModuleScriptCreationParams&,
                                         Modulator* settings_object);
 
+  // Update a CSS module script with source text by calling replaceSync on its
+  // CSSStyleSheet. Returns the same module_script on success, or a new error
+  // module script on failure.
+  static ValueWrapperSyntheticModuleScript* UpdateCSSModuleScript(
+      ValueWrapperSyntheticModuleScript* module_script,
+      const String& source_text,
+      Modulator* settings_object);
+
   static ValueWrapperSyntheticModuleScript*
   CreateJSONWrapperSyntheticModuleScript(const ModuleScriptCreationParams&,
                                          Modulator* settings_object);
