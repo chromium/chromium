@@ -9812,4 +9812,4 @@ crbug.com/511249206 [ Mac ] virtual/compositor-timeline-trigger/external/wpt/scr
 crbug.com/502696520 http/tests/inspector-protocol/page/subframe-navigation.js [ Failure Pass ]
 
 # Gardener 2026-05-12
-crbug.com/512358723 [ Mac ] external/wpt/css/css-overscroll-behavior/overscroll-behavior.html [ Failure Pass ]
+crbug.com/512358723 [ Mac ] external/wpt/css/css-overscroll-behavior/overscroll-behavior.html [ Failure Pass Timeout ]
