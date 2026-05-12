@@ -120,6 +120,7 @@ if (toolchain_has_rust) {
       "compiler_specific.h",
       "immediate_crash.h",
     ]
+    deps = [ "//build:buildflag_header_h" ]
     visibility = [ ":*" ]
   }
 }
