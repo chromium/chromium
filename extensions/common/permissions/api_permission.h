@@ -138,7 +138,7 @@ class APIPermissionInfo {
 
     // Indicates that the permission shouldn't trigger the full warning on
     // the login screen of the managed-guest session. See
-    // prefs::kManagedSessionUseFullLoginWarning. Most permissions are
+    // ash::prefs::kManagedSessionUseFullLoginWarning. Most permissions are
     // considered powerful enough to warrant the full warning,
     // so the default for permissions (by not including this flag) is to trigger
     // it. Reach out to the privacy team when you add a new permission to check

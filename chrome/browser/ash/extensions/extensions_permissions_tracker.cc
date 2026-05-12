@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
@@ -273,14 +273,14 @@ void ExtensionsPermissionsTracker::UpdateLocalState() {
 
   DCHECK(pending_forced_extensions_.empty() || any_unsafe);
 
-  local_state_->SetBoolean(prefs::kManagedSessionUseFullLoginWarning,
+  local_state_->SetBoolean(ash::prefs::kManagedSessionUseFullLoginWarning,
                            any_unsafe);
 }
 
 // static
 void ExtensionsPermissionsTracker::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kManagedSessionUseFullLoginWarning,
+  registry->RegisterBooleanPref(ash::prefs::kManagedSessionUseFullLoginWarning,
                                 true);
 }
 

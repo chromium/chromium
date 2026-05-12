@@ -578,14 +578,6 @@ inline constexpr char kTextToSpeechPitch[] = "settings.tts.speech_pitch";
 // system volume, and higher than 1.0 is louder.
 inline constexpr char kTextToSpeechVolume[] = "settings.tts.speech_volume";
 
-// Boolean pref indicating whether the message displayed on the login screen for
-// the managed guest session should be the full warning or not.
-// True means the full warning should be displayed.
-// False means the normal warning should be displayed.
-// It's true by default, unless it's ensured that all extensions are "safe".
-inline constexpr char kManagedSessionUseFullLoginWarning[] =
-    "managed_session.use_full_warning";
-
 // Amount of times the release notes suggestion chip should be
 // shown before it disappears.
 inline constexpr char kReleaseNotesSuggestionChipTimesLeftToShow[] =

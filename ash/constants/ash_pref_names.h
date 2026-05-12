@@ -2867,6 +2867,18 @@ inline constexpr char kSessionWaitForInitialUserActivity[] =
     "session.wait_for_initial_user_activity";
 
 //-----------------------------------------------------------------------------
+// Login screen related Prefs
+//-----------------------------------------------------------------------------
+
+// Boolean pref indicating whether the message displayed on the login screen for
+// the managed guest session should be the full warning or not.
+// True means the full warning should be displayed.
+// False means the normal warning should be displayed.
+// It's true by default, unless it's ensured that all extensions are "safe".
+inline constexpr char kManagedSessionUseFullLoginWarning[] =
+    "managed_session.use_full_warning";
+
+//-----------------------------------------------------------------------------
 // Automatic reboot related Prefs
 //-----------------------------------------------------------------------------
 
