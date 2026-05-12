@@ -151,7 +151,8 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -423,8 +424,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Nullable
-    private MVCListAdapter.ListItem findItemById(Iterable<MVCListAdapter.ListItem> items, int id) {
-        for (MVCListAdapter.ListItem item : items) {
+    private ListItem findItemById(Iterable<ListItem> items, int id) {
+        for (ListItem item : items) {
             if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID) == id) {
                 return item;
             }
@@ -433,11 +434,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     private void assertMenuTreesAreEqual(
-            Iterable<MVCListAdapter.ListItem> items,
+            Iterable<ListItem> items,
             List<MenuItem> expectedNodes,
-            BiConsumer<MVCListAdapter.ListItem, Object> assertionLogic) {
-        List<MVCListAdapter.ListItem> itemList = new ArrayList<>();
-        for (MVCListAdapter.ListItem item : items) {
+            BiConsumer<ListItem, Object> assertionLogic) {
+        List<ListItem> itemList = new ArrayList<>();
+        for (ListItem item : items) {
             itemList.add(item);
         }
 
@@ -450,9 +451,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     private void assertMenuTreesAreEqualRecursively(
-            MVCListAdapter.ListItem item,
-            MenuItem expectedNode,
-            BiConsumer<MVCListAdapter.ListItem, Object> assertionLogic) {
+            ListItem item, MenuItem expectedNode, BiConsumer<ListItem, Object> assertionLogic) {
         assertionLogic.accept(item, expectedNode.property);
 
         boolean hasSubItems =
@@ -461,7 +460,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         if (!hasSubItems) return;
 
-        List<MVCListAdapter.ListItem> subItems =
+        List<ListItem> subItems =
                 item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
         Assert.assertNotNull(subItems);
 
@@ -473,8 +472,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         }
     }
 
-    private void assertMenuItemsAreEqual(
-            Iterable<MVCListAdapter.ListItem> items, List<MenuItem> expectedItems) {
+    private void assertMenuItemsAreEqual(Iterable<ListItem> items, List<MenuItem> expectedItems) {
 
         assertMenuTreesAreEqual(
                 items,
@@ -487,8 +485,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 });
     }
 
-    private void assertMenuTitlesAreEqual(
-            Iterable<MVCListAdapter.ListItem> items, List<MenuItem> expectedTitles) {
+    private void assertMenuTitlesAreEqual(Iterable<ListItem> items, List<MenuItem> expectedTitles) {
         Context context = ContextUtils.getApplicationContext();
         assertMenuTreesAreEqual(
                 items,
@@ -511,8 +508,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 });
     }
 
-    private void assertMenuItemsHaveIcons(
-            Iterable<MVCListAdapter.ListItem> items, List<MenuItem> expectedItems) {
+    private void assertMenuItemsHaveIcons(Iterable<ListItem> items, List<MenuItem> expectedItems) {
 
         assertMenuTreesAreEqual(
                 items,
@@ -535,13 +531,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 });
     }
 
-    private void assertActionBarItemsAreEqual(
-            MVCListAdapter.ModelList modelList, Integer... expectedItems) {
-        MVCListAdapter.ListItem iconRow = findItemById(modelList, R.id.icon_row_menu_id);
+    private void assertActionBarItemsAreEqual(ModelList modelList, Integer... expectedItems) {
+        ListItem iconRow = findItemById(modelList, R.id.icon_row_menu_id);
         assertNotNull(iconRow);
         List<Integer> actualItems = new ArrayList<>();
-        for (MVCListAdapter.ListItem icon :
-                iconRow.model.get(AppMenuItemProperties.ADDITIONAL_ICONS)) {
+        for (ListItem icon : iconRow.model.get(AppMenuItemProperties.ADDITIONAL_ICONS)) {
             actualItems.add(icon.model.get(AppMenuItemProperties.MENU_ITEM_ID));
         }
 
@@ -641,7 +635,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .shouldShowTranslateMenuItem(any(Tab.class));
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 new ArrayList<>(
@@ -705,7 +699,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .shouldShowTranslateMenuItem(any(Tab.class));
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 new ArrayList<>(
@@ -768,7 +762,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModel.getCount()).thenReturn(1);
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems = new ArrayList<>();
         List<MenuItem> expectedTitles = new ArrayList<>();
@@ -931,7 +925,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setMenuOptions(new MenuOptions().withShowTranslate().withAutoDarkEnabled());
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems = new ArrayList<>();
         List<MenuItem> expectedTitles = new ArrayList<>();
@@ -1086,7 +1080,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         .withAutoDarkEnabled());
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems = new ArrayList<>();
         List<MenuItem> expectedTitles = new ArrayList<>();
@@ -1238,7 +1232,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         .withAutoDarkEnabled());
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 new ArrayList<>(
@@ -1308,7 +1302,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).shouldShowIconBeforeItem();
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 new ArrayList<>(
@@ -1380,7 +1374,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
         assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 Arrays.asList(
@@ -1410,7 +1404,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
         assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 Arrays.asList(
@@ -1440,7 +1434,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
         assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 Arrays.asList(
@@ -1465,7 +1459,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
         assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 Arrays.asList(
@@ -1494,7 +1488,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
         assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 Arrays.asList(
@@ -1521,7 +1515,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
         assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 Arrays.asList(
@@ -1547,7 +1541,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
         assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 Arrays.asList(
@@ -1570,7 +1564,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 MenuGroup.TABLET_EMPTY_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems = new ArrayList<>();
 
@@ -1626,7 +1620,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 new ArrayList<>(
@@ -1730,7 +1724,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowManagedByMenuItem(any(Tab.class));
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         List<MenuItem> expectedItems =
                 new ArrayList<>(
@@ -1806,7 +1800,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowManagedByMenuItem(any(Tab.class));
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         // TODO(crbug.com/427240031): Stop asserting on menu items that are not subject of this
         // test.
@@ -1916,7 +1910,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         // On phone, we do not show 'New Window'.
         mIsTabletScreen = false;
         mIsMultiWindowApiSupported = true;
-        MVCListAdapter.ModelList modelList = createMenuForMultiWindow();
+        ModelList modelList = createMenuForMultiWindow();
         assertFalse(isMenuVisible(modelList, R.id.new_window_menu_id));
 
         // Multi-window mode, with a single instance (no adjacent instance running) makes
@@ -1941,7 +1935,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                     /* taskId= */ i);
         }
 
-        MVCListAdapter.ModelList modelList2 = createMenuForMultiWindow();
+        ModelList modelList2 = createMenuForMultiWindow();
         assertFalse(isMenuVisible(modelList2, R.id.new_window_menu_id));
     }
 
@@ -1954,7 +1948,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         mIsMoveToOtherWindowSupported = true;
 
-        MVCListAdapter.ModelList modelList = createMenuForMultiWindow();
+        ModelList modelList = createMenuForMultiWindow();
         assertTrue(isMenuVisible(modelList, R.id.move_to_other_window_menu_id));
     }
 
@@ -1968,13 +1962,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         MultiWindowTestUtils.createInstance(
                 /* instanceId= */ 0, /* url= */ "https://url0", /* tabCount= */ 1, /* taskId= */ 0);
 
-        MVCListAdapter.ModelList modelList = createMenuForMultiWindow();
+        ModelList modelList = createMenuForMultiWindow();
         assertFalse(isMenuVisible(modelList, R.id.manage_all_windows_menu_id));
 
         MultiWindowTestUtils.createInstance(
                 /* instanceId= */ 1, /* url= */ "https://url1", /* tabCount= */ 1, /* taskId= */ 1);
 
-        MVCListAdapter.ModelList modelList2 = createMenuForMultiWindow();
+        ModelList modelList2 = createMenuForMultiWindow();
         assertTrue(isMenuVisible(modelList2, R.id.manage_all_windows_menu_id));
     }
 
@@ -1982,7 +1976,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void testPageMenuItems_universalInstall() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
-        MVCListAdapter.ModelList modelList = createMenuForMultiWindow();
+        ModelList modelList = createMenuForMultiWindow();
         assertTrue(
                 isMenuVisibleInSubmenu(
                         modelList, R.id.save_and_print_parent_menu_id, R.id.universal_install));
@@ -2001,7 +1995,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .shouldShowManagedByMenuItem(any(Tab.class));
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertTrue(isMenuVisible(modelList, R.id.managed_by_menu_id));
     }
@@ -2015,7 +2009,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .shouldShowContentFilterHelpCenterMenuItem(any(Tab.class));
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertTrue(isMenuVisible(modelList, R.id.menu_item_content_filter_help_center_id));
     }
@@ -2032,10 +2026,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(true).when(mIncognitoReauthControllerMock).isReauthPageShowing();
         doReturn(mIncognitoTabModel).when(mTabModelSelector).getCurrentModel();
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         verify(mIncognitoReauthControllerMock).isReauthPageShowing();
 
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.new_incognito_tab_menu_id);
+        ListItem item = findItemById(modelList, R.id.new_incognito_tab_menu_id);
         assertFalse(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
@@ -2050,10 +2044,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         .withAutoDarkEnabled());
 
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         verifyNoMoreInteractions(mIncognitoReauthControllerMock);
 
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.new_incognito_tab_menu_id);
+        ListItem item = findItemById(modelList, R.id.new_incognito_tab_menu_id);
         assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
@@ -2064,7 +2058,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertFalse(isMenuVisible(modelList, R.id.reader_mode_menu_id));
     }
@@ -2077,7 +2071,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertTrue(
                 isMenuVisible(
@@ -2093,7 +2087,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         Context context = ContextUtils.getApplicationContext();
         assertTrue(
@@ -2111,7 +2105,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         Context context = ContextUtils.getApplicationContext();
         assertTrue(
@@ -2127,7 +2121,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(new GURL(getOriginalNativeNtpUrl()));
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         Context context = ContextUtils.getApplicationContext();
         assertFalse(
@@ -2147,7 +2141,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setMenuOptions(new MenuOptions());
         doReturn(true).when(mMockDefaultBrowserPromoUtils).shouldShowAppMenuItemEntryPoint();
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         // Verify that that the menu item exists.
         assertTrue(
@@ -2171,7 +2165,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertFalse(
                 "Default Browser Promo item should not be visible",
@@ -2191,7 +2185,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         // hide it.
         doReturn(true).when(mMockDefaultBrowserPromoUtils).shouldShowAppMenuItemEntryPoint();
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertFalse(
                 "Default Browser Promo item should be hidden by the param",
@@ -2205,35 +2199,33 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_DISTILLER_EXAMPLE_URL);
         when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertFalse(isMenuVisible(modelList, R.id.page_zoom_id));
     }
 
-    private MVCListAdapter.ModelList setUpMenuWithIncognitoReauthPage(boolean isShowing) {
+    private ModelList setUpMenuWithIncognitoReauthPage(boolean isShowing) {
         setUpMocksForOverviewMenu();
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
         prepareMocksForGroupTabsOnTabModel(mIncognitoTabModel);
         doReturn(isShowing).when(mIncognitoReauthControllerMock).isReauthPageShowing();
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         verify(mIncognitoReauthControllerMock, atLeastOnce()).isReauthPageShowing();
         return modelList;
     }
 
     @Test
     public void testSelectTabsOption_IsEnabled_InIncognitoMode_When_IncognitoReauthIsNotShowing() {
-        MVCListAdapter.ModelList modelList =
-                setUpMenuWithIncognitoReauthPage(/* isShowing= */ false);
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.menu_select_tabs);
+        ModelList modelList = setUpMenuWithIncognitoReauthPage(/* isShowing= */ false);
+        ListItem item = findItemById(modelList, R.id.menu_select_tabs);
         assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
     @Test
     public void testSelectTabsOption_IsDisabled_InIncognitoMode_When_IncognitoReauthIsShowing() {
-        MVCListAdapter.ModelList modelList =
-                setUpMenuWithIncognitoReauthPage(/* isShowing= */ true);
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.menu_select_tabs);
+        ModelList modelList = setUpMenuWithIncognitoReauthPage(/* isShowing= */ true);
+        ListItem item = findItemById(modelList, R.id.menu_select_tabs);
         assertFalse(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
@@ -2243,11 +2235,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         prepareMocksForGroupTabsOnTabModel(mTabModel);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
         verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
 
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.menu_select_tabs);
+        ListItem item = findItemById(modelList, R.id.menu_select_tabs);
         assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
@@ -2259,11 +2251,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
         verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
 
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.menu_select_tabs);
+        ListItem item = findItemById(modelList, R.id.menu_select_tabs);
         assertFalse(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
@@ -2275,11 +2267,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Tab mockTab1 = mock(Tab.class);
         when(mTabModel.getTabAt(0)).thenReturn(mockTab1);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
         verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
 
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.menu_select_tabs);
+        ListItem item = findItemById(modelList, R.id.menu_select_tabs);
         assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
@@ -2288,11 +2280,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForOverviewMenu();
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
         verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
 
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.menu_select_tabs);
+        ListItem item = findItemById(modelList, R.id.menu_select_tabs);
         assertFalse(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
@@ -2305,9 +2297,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setMenuOptions(new MenuOptions());
         mActivityTabProvider.setForTesting(ntpTab);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.ntp_customization_id);
+        ListItem item = findItemById(modelList, R.id.ntp_customization_id);
         assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
     }
 
@@ -2325,7 +2317,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertTrue(isMenuVisible(modelList, R.id.listen_to_feed_id));
     }
 
@@ -2343,7 +2335,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertFalse(isMenuVisible(modelList, R.id.listen_to_feed_id));
     }
 
@@ -2361,7 +2353,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertFalse(isMenuVisible(modelList, R.id.listen_to_feed_id));
     }
 
@@ -2379,7 +2371,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertFalse(isMenuVisible(modelList, R.id.listen_to_feed_id));
     }
 
@@ -2397,7 +2389,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertFalse(isMenuVisible(modelList, R.id.listen_to_feed_id));
     }
 
@@ -2644,7 +2636,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void testReadAloudMenuItem_readAloudNotEnabled() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         setUpMocksForPageMenu();
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertFalse(isMenuVisible(modelList, R.id.readaloud_menu_id));
     }
 
@@ -2653,7 +2645,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mReadAloudController.isReadable(any())).thenReturn(false);
         setUpMocksForPageMenu();
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertFalse(isMenuVisible(modelList, R.id.readaloud_menu_id));
     }
 
@@ -2662,7 +2654,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mReadAloudController.isReadable(any())).thenReturn(true);
         setUpMocksForPageMenu();
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertTrue(isMenuVisible(modelList, R.id.readaloud_menu_id));
     }
 
@@ -2702,13 +2694,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     private boolean hasReadAloudInMenu() {
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getModelList();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getModelList();
         if (modelList == null) {
             return false;
         }
-        Iterator<MVCListAdapter.ListItem> it = modelList.iterator();
+        Iterator<ListItem> it = modelList.iterator();
         while (it.hasNext()) {
-            MVCListAdapter.ListItem li = it.next();
+            ListItem li = it.next();
             int id = li.model.get(AppMenuItemProperties.MENU_ITEM_ID);
             if (id == R.id.readaloud_menu_id) {
                 return true;
@@ -2729,13 +2721,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).shouldShowIconBeforeItem();
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
-        MVCListAdapter.ListItem parentItem =
-                findItemById(modelList, R.id.extensions_parent_menu_id);
+        ListItem parentItem = findItemById(modelList, R.id.extensions_parent_menu_id);
         assertNotNull("Extensions parent menu item not found.", parentItem);
 
-        List<MVCListAdapter.ListItem> isolatedExtensionMenu = Arrays.asList(parentItem);
+        List<ListItem> isolatedExtensionMenu = Arrays.asList(parentItem);
 
         List<MenuItem> expectedItems =
                 Arrays.asList(
@@ -2770,14 +2761,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setMenuOptions(new MenuOptions());
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
-        MVCListAdapter.ListItem parentItem =
-                findItemById(modelList, R.id.extensions_parent_menu_id);
+        ListItem parentItem = findItemById(modelList, R.id.extensions_parent_menu_id);
         assertNull("Extensions parent menu item should NOT be present.", parentItem);
 
-        MVCListAdapter.ListItem originalItem =
-                findItemById(modelList, R.id.extensions_menu_menu_id);
+        ListItem originalItem = findItemById(modelList, R.id.extensions_menu_menu_id);
         assertNotNull("Original extensions menu item should be present.", originalItem);
 
         assertFalse(
@@ -2792,7 +2781,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void testAddToGroup() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertTrue(isMenuVisible(modelList, R.id.add_to_group_menu_id));
     }
 
@@ -2801,7 +2790,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertFalse(isMenuVisible(modelList, R.id.add_to_group_menu_id));
     }
 
@@ -2833,7 +2822,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpIncognitoMocks();
     }
 
-    private MVCListAdapter.ModelList createMenuForMultiWindow() {
+    private ModelList createMenuForMultiWindow() {
         doReturn(mIsMultiWindow).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
         doReturn(mIsMultiWindowApiSupported)
                 .when(mTabbedAppMenuPropertiesDelegate)
@@ -2878,7 +2867,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         || (!bitMultiInstance && bitMoveToOtherWindowSupported)) continue;
 
                 mFlagCombinations[i] = true;
-                MVCListAdapter.ModelList modelList = createMenuForMultiWindow();
+                ModelList modelList = createMenuForMultiWindow();
                 if (showNewWindow != null) {
                     if (showNewWindow) {
                         assertTrue(getFlags(), isMenuVisible(modelList, R.id.new_window_menu_id));
@@ -2953,23 +2942,22 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 mIsMoveToOtherWindowSupported);
     }
 
-    private boolean isMenuVisible(MVCListAdapter.ModelList modelList, int itemId) {
+    private boolean isMenuVisible(ModelList modelList, int itemId) {
         return findItemById(modelList, itemId) != null;
     }
 
-    private MVCListAdapter.ModelList createModelList(List<MVCListAdapter.ListItem> items) {
-        MVCListAdapter.ModelList modelList = new MVCListAdapter.ModelList();
+    private ModelList createModelList(List<ListItem> items) {
+        ModelList modelList = new ModelList();
         if (items != null) {
-            for (MVCListAdapter.ListItem item : items) {
+            for (ListItem item : items) {
                 modelList.add(item);
             }
         }
         return modelList;
     }
 
-    private List<MVCListAdapter.ListItem> getSubmenuItems(
-            MVCListAdapter.ModelList modelList, int parentId) {
-        for (MVCListAdapter.ListItem item : modelList) {
+    private List<ListItem> getSubmenuItems(ModelList modelList, int parentId) {
+        for (ListItem item : modelList) {
             if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID) == parentId) {
                 return item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
             }
@@ -2977,13 +2965,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         return null;
     }
 
-    private boolean isMenuVisibleInSubmenu(
-            MVCListAdapter.ModelList modelList, int parentId, int itemId) {
-        List<MVCListAdapter.ListItem> submenu = getSubmenuItems(modelList, parentId);
+    private boolean isMenuVisibleInSubmenu(ModelList modelList, int parentId, int itemId) {
+        List<ListItem> submenu = getSubmenuItems(modelList, parentId);
 
         if (submenu == null) return false;
 
-        for (MVCListAdapter.ListItem subItem : submenu) {
+        for (ListItem subItem : submenu) {
             if (subItem.model.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
                 return true;
             }
@@ -2992,13 +2979,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     private boolean isMenuVisibleWithCorrectTitle(
-            MVCListAdapter.ModelList modelList, int itemId, String expectedTitle) {
-        MVCListAdapter.ListItem menuItem = findItemById(modelList, itemId);
+            ModelList modelList, int itemId, String expectedTitle) {
+        ListItem menuItem = findItemById(modelList, itemId);
         if (menuItem == null) return false;
         return menuItem.model.get(AppMenuItemProperties.TITLE) == expectedTitle;
     }
 
-    private String getMenuTitle(MVCListAdapter.ListItem item) {
+    private String getMenuTitle(ListItem item) {
         CharSequence title =
                 item.model.containsKey(AppMenuItemProperties.TITLE)
                         ? item.model.get(AppMenuItemProperties.TITLE)
@@ -3016,9 +3003,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         return title.toString();
     }
 
-    private String getMenuTitles(Iterable<MVCListAdapter.ListItem> modelList) {
+    private String getMenuTitles(Iterable<ListItem> modelList) {
         StringBuilder items = new StringBuilder();
-        for (MVCListAdapter.ListItem item : modelList) {
+        for (ListItem item : modelList) {
             CharSequence title =
                     item.model.containsKey(AppMenuItemProperties.TITLE)
                             ? item.model.get(AppMenuItemProperties.TITLE)
@@ -3188,7 +3175,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isIncognito()).thenReturn(false);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertTrue(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
     }
@@ -3200,7 +3187,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isIncognito()).thenReturn(true);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertFalse(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
     }
@@ -3212,7 +3199,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
         when(mTab.isIncognito()).thenReturn(false);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertFalse(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
     }
@@ -3224,7 +3211,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isIncognito()).thenReturn(false);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertFalse(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
     }
@@ -3237,9 +3224,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.isIncognito()).thenReturn(false);
 
         // 1. Default state: Overlay is NOT showing.
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertTrue(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
-        MVCListAdapter.ListItem item = findItemById(modelList, R.id.lens_overlay_menu_id);
+        ListItem item = findItemById(modelList, R.id.lens_overlay_menu_id);
         assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
 
         // 2. State change: Overlay is NOW showing.
@@ -3265,14 +3252,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         // Bookmark bar is visible.
         when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenReturn(true);
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        MVCListAdapter.ListItem bookmarksParent =
-                findItemById(modelList, R.id.bookmarks_parent_menu_id);
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
         assertNotNull(bookmarksParent);
-        List<MVCListAdapter.ListItem> subItems =
+        List<ListItem> subItems =
                 bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-        MVCListAdapter.ListItem toggleItem = null;
-        for (MVCListAdapter.ListItem item : subItems) {
+        ListItem toggleItem = null;
+        for (ListItem item : subItems) {
             if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
                     == R.id.toggle_bookmarks_bar_menu_id) {
                 toggleItem = item;
@@ -3291,7 +3277,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         subItems =
                 bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
         toggleItem = null;
-        for (MVCListAdapter.ListItem item : subItems) {
+        for (ListItem item : subItems) {
             if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
                     == R.id.toggle_bookmarks_bar_menu_id) {
                 toggleItem = item;
@@ -3311,12 +3297,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        MVCListAdapter.ListItem bookmarksParent =
-                findItemById(modelList, R.id.bookmarks_parent_menu_id);
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
         assertNotNull(bookmarksParent);
 
-        List<MVCListAdapter.ListItem> subItems =
+        List<ListItem> subItems =
                 bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
 
         List<MenuItem> expectedSubItems =
@@ -3340,12 +3325,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        MVCListAdapter.ListItem bookmarksParent =
-                findItemById(modelList, R.id.bookmarks_parent_menu_id);
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
         assertNotNull(bookmarksParent);
 
-        List<MVCListAdapter.ListItem> subItems =
+        List<ListItem> subItems =
                 bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
 
         List<MenuItem> expectedSubItems =
@@ -3394,12 +3378,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        MVCListAdapter.ListItem bookmarksParent =
-                findItemById(modelList, R.id.bookmarks_parent_menu_id);
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
         assertNotNull(bookmarksParent);
 
-        List<MVCListAdapter.ListItem> subItems =
+        List<ListItem> subItems =
                 bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
 
         List<MenuItem> expectedSubItems =
@@ -3429,13 +3412,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        MVCListAdapter.ListItem bookmarksParent =
-                findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        List<MVCListAdapter.ListItem> subItems =
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
+        List<ListItem> subItems =
                 bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
 
-        MVCListAdapter.ListItem bookmarkListItem = findItemById(subItems, R.id.bookmark_menu_id);
+        ListItem bookmarkListItem = findItemById(subItems, R.id.bookmark_menu_id);
         assertNotNull(bookmarkListItem);
 
         LazyOneshotSupplier<Drawable> iconSupplier =
