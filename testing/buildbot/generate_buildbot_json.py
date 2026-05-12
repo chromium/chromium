@@ -759,11 +759,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       # For skylab, we need to pop the correct `autotest_name`. This field
       # defines what wrapper we use in OS infra. e.g. for gtest it's
       # https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/autotest/files/server/site_tests/chromium/chromium.py
-      if 'autotest_name' not in test and not has_ctp_tag_criteria:
-        if 'benchmark' in test:
-          test['autotest_name'] = 'chromium_Telemetry'
-        else:
-          test['autotest_name'] = 'chromium'
+      if not has_ctp_tag_criteria:  # pragma: no cover
+        assert test.get(
+            'autotest_name'), f'{test} in {builder} does not have autotest_name'
 
     # Apply any replacements specified for the test for the builder
     self.replace_test_args(test, test_name, builder_name)

@@ -273,6 +273,7 @@ chromium_luci.configure_targets(
             "nvidia_geforce_gtx_1660": True,
             "out_dir_arg": True,
             "skia_gold_test": True,
+            "skylab-use-tauto-chromium-wrapper": True,
             "skylab-20-tests-per-shard": True,
             "skylab-40-tests-per-shard": True,
             "skylab-50-tests-per-shard": True,

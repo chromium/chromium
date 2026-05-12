@@ -912,6 +912,11 @@
       'result_format': 'tast',
     },
   },
+  'skylab-use-tauto-chromium-wrapper': {
+    'skylab': {
+      'autotest_name': 'chromium',
+    },
+  },
   'swarming_containment_auto': {
     'fail_if_unused': False,
     'swarming': {

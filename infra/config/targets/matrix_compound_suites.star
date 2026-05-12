@@ -606,6 +606,7 @@ targets.legacy_matrix_compound_suite(
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
             mixins = [
                 "skylab-rdb-native",
+                "skylab-use-tauto-chromium-wrapper",
             ],
             variants = [
                 "CROS_GPU_BRYA_RELEASE_LKGM",
@@ -620,6 +621,7 @@ targets.legacy_matrix_compound_suite(
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
             mixins = [
                 "skylab-rdb-native",
+                "skylab-use-tauto-chromium-wrapper",
             ],
             variants = [
                 "CROS_GPU_CORSOLA_RELEASE_LKGM",
@@ -634,6 +636,7 @@ targets.legacy_matrix_compound_suite(
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
             mixins = [
                 "skylab-rdb-native",
+                "skylab-use-tauto-chromium-wrapper",
             ],
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
@@ -642,6 +645,7 @@ targets.legacy_matrix_compound_suite(
         "gpu_passthrough_telemetry_tests": targets.legacy_matrix_config(
             mixins = [
                 "skylab-rdb-native",
+                "skylab-use-tauto-chromium-wrapper",
             ],
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
@@ -650,6 +654,7 @@ targets.legacy_matrix_compound_suite(
         "gpu_webcodecs_telemetry_test": targets.legacy_matrix_config(
             mixins = [
                 "skylab-rdb-native",
+                "skylab-use-tauto-chromium-wrapper",
             ],
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
@@ -658,6 +663,7 @@ targets.legacy_matrix_compound_suite(
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
             mixins = [
                 "skylab-rdb-native",
+                "skylab-use-tauto-chromium-wrapper",
             ],
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
@@ -666,6 +672,7 @@ targets.legacy_matrix_compound_suite(
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
             mixins = [
                 "skylab-rdb-native",
+                "skylab-use-tauto-chromium-wrapper",
             ],
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
@@ -680,6 +687,7 @@ targets.legacy_matrix_compound_suite(
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
             mixins = [
                 "skylab-rdb-native",
+                "skylab-use-tauto-chromium-wrapper",
             ],
             variants = [
                 "CROS_GPU_SKYRIM_RELEASE_LKGM",

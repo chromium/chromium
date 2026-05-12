@@ -4532,8 +4532,11 @@ MATRIX_COMPOUND_SKYLAB_REF = """\
     'cros_skylab_basic': {
       'benchmark_suite': {
         'benchmark': 'something',
+        'autotest_name': 'chromium_Telemetry',
       },
-      'gtest_suite': { },
+      'gtest_suite': {
+        'autotest_name': 'chromium',
+      },
     },
   },
   'compound_suites': {},
@@ -4621,11 +4624,13 @@ ENABLED_AND_DISABLED_MATRIX_COMPOUND_SKYLAB_REF = """\
         'skylab': {
         },
         'timeout': 3600,
+        'autotest_name': 'chromium',
       },
       'tast.foo': {
         'skylab': {
         },
         'timeout': 3600,
+        'autotest_name': 'tast.chrome-from-gcs',
       },
     },
 

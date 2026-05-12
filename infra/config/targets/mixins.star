@@ -209,6 +209,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "skylab-use-tauto-chromium-wrapper",
+    skylab = targets.skylab(
+        autotest_name = "chromium",
+    ),
+)
+
+targets.mixin(
     name = "skylab-50-tests-per-shard",
     skylab = targets.skylab(
         cros_test_max_in_shard = 50,
