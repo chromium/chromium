@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_MAC_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/native_widget_mac.h"
 
 class BrowserWidget;
@@ -78,6 +82,7 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   remote_cocoa::ApplicationHost* GetRemoteCocoaApplicationHost() override;
   void OnWindowInitialized() override;
   void OnWidgetInitDone() override;
+  void OnWidgetThemeChanged(views::Widget* widget) override;
   void OnWindowDestroying(gfx::NativeWindow window) override;
 
   // Overridden from CommandObserver:
@@ -86,6 +91,13 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
  private:
   raw_ptr<BrowserView> browser_view_;  // Weak. Our ClientView.
   BrowserWindowTouchBarViewsDelegate* __strong touch_bar_delegate_;
+  NSView* __strong background_view_;
+
+  std::optional<ui::NativeTheme::PreferredColorScheme>
+      last_preferred_color_scheme_;
+  std::optional<SkColor> last_theme_color_;
+
+  void UpdateBackground();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_MAC_H_

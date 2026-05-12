@@ -54,6 +54,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/native_theme/native_theme.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -210,7 +211,10 @@ void BrowserNativeWidgetMac::OnWidgetDestroyed(views::Widget* widget) {
     chrome::RemoveCommandObserver(browser_view_->browser(), IDC_FORWARD, this);
   }
   touch_bar_delegate_ = nullptr;
+  background_view_ = nil;
   browser_view_ = nullptr;
+  last_preferred_color_scheme_.reset();
+  last_theme_color_.reset();
   NativeWidgetMac::OnWidgetDestroyed(widget);
 }
 
@@ -543,23 +547,12 @@ void BrowserNativeWidgetMac::OnWindowInitialized() {
 
 void BrowserNativeWidgetMac::OnWidgetInitDone() {
   NativeWidgetMac::OnWidgetInitDone();
+  UpdateBackground();
+}
 
-  if (features::IsGlassFrameEnabled()) {
-    NSWindow* ns_window = GetNSWindowHost()->GetInProcessNSWindow();
-    if (ns_window) {
-      NSView* content_view = [ns_window contentView];
-      CHECK(content_view);
-      NSVisualEffectView* effect_view =
-          [[NSVisualEffectView alloc] initWithFrame:content_view.bounds];
-      effect_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-      effect_view.material = NSVisualEffectMaterialUnderWindowBackground;
-      effect_view.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-      effect_view.state = NSVisualEffectStateActive;
-      [content_view addSubview:effect_view
-                    positioned:NSWindowBelow
-                    relativeTo:nil];
-    }
-  }
+void BrowserNativeWidgetMac::OnWidgetThemeChanged(views::Widget* widget) {
+  NativeWidgetMac::OnWidgetThemeChanged(widget);
+  UpdateBackground();
 }
 
 void BrowserNativeWidgetMac::OnWindowDestroying(
@@ -668,4 +661,62 @@ void BrowserNativeWidgetMac::AnnounceTextInInProcessWindow(
         ns_window, NSAccessibilityAnnouncementRequestedNotification,
         notification_info);
   }
+}
+
+void BrowserNativeWidgetMac::UpdateBackground() {
+  if (!features::IsGlassFrameEnabled()) {
+    return;
+  }
+
+  auto color_scheme = browser_view_->GetNativeTheme()->preferred_color_scheme();
+  auto theme_color =
+      browser_view_->GetColorProvider()->GetColor(ui::kColorFrameActive);
+
+  if (background_view_ && last_preferred_color_scheme_ == color_scheme &&
+      last_theme_color_ == theme_color) {
+    return;
+  }
+
+  last_preferred_color_scheme_ = color_scheme;
+  last_theme_color_ = theme_color;
+
+  if (background_view_) {
+    [background_view_ removeFromSuperview];
+  }
+  background_view_ = nil;
+
+  NSWindow* ns_window = GetNSWindowHost()->GetInProcessNSWindow();
+  if (!ns_window) {
+    return;
+  }
+
+  NSView* content_view = [ns_window contentView];
+
+  NSVisualEffectView* effect_view =
+      [[NSVisualEffectView alloc] initWithFrame:content_view.bounds];
+  effect_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+
+  const bool is_dark_mode =
+      color_scheme == ui::NativeTheme::PreferredColorScheme::kDark;
+  effect_view.material = is_dark_mode ? NSVisualEffectMaterialSelection
+                                      : NSVisualEffectMaterialSidebar;
+  effect_view.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+  effect_view.state = NSVisualEffectStateActive;
+
+  CGFloat r = SkColorGetR(theme_color) / 255.0;
+  CGFloat g = SkColorGetG(theme_color) / 255.0;
+  CGFloat b = SkColorGetB(theme_color) / 255.0;
+
+  NSView* tint_layer = [[NSView alloc] initWithFrame:effect_view.bounds];
+  tint_layer.wantsLayer = YES;
+  tint_layer.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+  tint_layer.layer.backgroundColor =
+      [NSColor colorWithSRGBRed:r green:g blue:b alpha:0.4].CGColor;
+
+  [effect_view addSubview:tint_layer];
+
+  background_view_ = effect_view;
+  [content_view addSubview:background_view_
+                positioned:NSWindowBelow
+                relativeTo:nil];
 }
