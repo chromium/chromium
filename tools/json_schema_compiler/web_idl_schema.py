@@ -710,15 +710,6 @@ class Operation:
     # If no type was specified but there is a parameters property, we can infer
     # this is a promise definition for an asynchronous return.
     elif 'type' not in return_type and 'parameters' in return_type:
-      # TODO(tjudkins): The optionality of the callback is only relevant for
-      # contexts that don't support promise based calls and for the few
-      # functions which don't support promise based calls, as the callback is
-      # always inherently optional when using a promise based call instead. It
-      # would be nice to just get rid of the 'optional' property here and always
-      # treat it as optional when we remove the context restrictions for promise
-      # based calls.
-      if not HasExtendedAttribute(self.node, 'requiredCallback'):
-        return_type['optional'] = True
       # For legacy reasons Promise based returns are represented on a
       # "returns_async" property.
       # TODO(crbug.com/428187556): Once we've migrated schemas to WebIDL, we

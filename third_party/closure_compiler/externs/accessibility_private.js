@@ -511,14 +511,14 @@ chrome.accessibilityPrivate.getDisplayNameForLocale = function(localeCodeToTrans
 
 /**
  * Called to request battery status from Chrome OS system.
- * @param {function(string): void} callback Resolves with battery description as
- *     a string.
+ * @param {function(string): void=} callback Resolves with battery description
+ *     as a string.
  */
 chrome.accessibilityPrivate.getBatteryDescription = function(callback) {};
 
 /**
  * Called to request an install of the Pumpkin semantic parser for Dictation.
- * @param {function(!chrome.accessibilityPrivate.PumpkinData): void} callback
+ * @param {function(!chrome.accessibilityPrivate.PumpkinData): void=} callback
  *     Resolves when Pumpkin download finishes.
  */
 chrome.accessibilityPrivate.installPumpkinForDictation = function(callback) {};
@@ -526,14 +526,14 @@ chrome.accessibilityPrivate.installPumpkinForDictation = function(callback) {};
 /**
  * Called to request an install of the FaceGaze assets DLC, which contains files
  * (e.g. the FaceLandmarker model) required for FaceGaze to work.
- * @param {function(!chrome.accessibilityPrivate.FaceGazeAssets): void} callback
- *     Resolves when the DLC download finishes.
+ * @param {function(!chrome.accessibilityPrivate.FaceGazeAssets): void=}
+ *     callback Resolves when the DLC download finishes.
  */
 chrome.accessibilityPrivate.installFaceGazeAssets = function(callback) {};
 
 /**
  * Installs the Tenji Braille DLC
- * @param {function(!chrome.accessibilityPrivate.TenjiData): void} callback
+ * @param {function(!chrome.accessibilityPrivate.TenjiData): void=} callback
  *     Resolves when Tenji download finishes.
  */
 chrome.accessibilityPrivate.installTenji = function(callback) {};
@@ -633,7 +633,7 @@ chrome.accessibilityPrivate.setPointScanState = function(state) {};
 /**
  * Sets current ARC app to use native ARC support.
  * @param {boolean} enabled True for ChromeVox (native), false for TalkBack.
- * @param {function(!chrome.accessibilityPrivate.SetNativeChromeVoxResponse): void}
+ * @param {function(!chrome.accessibilityPrivate.SetNativeChromeVoxResponse): void=}
  *     callback Resolves with the response.
  */
 chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function(enabled, callback) {};
@@ -742,7 +742,7 @@ chrome.accessibilityPrivate.performAcceleratorAction = function(acceleratorActio
 /**
  * Checks to see if an accessibility feature is enabled.
  * @param {!chrome.accessibilityPrivate.AccessibilityFeature} feature
- * @param {function(boolean): void} callback Resolves with whether the feature
+ * @param {function(boolean): void=} callback Resolves with whether the feature
  *     is enabled.
  */
 chrome.accessibilityPrivate.isFeatureEnabled = function(feature, callback) {};
@@ -763,9 +763,8 @@ chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(show, anchor, is
  * @param {string} title The title of the confirmation dialog.
  * @param {string} description The description to show within the confirmation
  *     dialog.
- * @param {?string|undefined} cancelName The human-readable name of the cancel
- *     button.
- * @param {function(boolean): void} callback Resolves when the dialog is
+ * @param {string=} cancelName The human-readable name of the cancel button.
+ * @param {function(boolean): void=} callback Resolves when the dialog is
  *     confirmed or cancelled.
  */
 chrome.accessibilityPrivate.showConfirmationDialog = function(title, description, cancelName, callback) {};
@@ -776,7 +775,7 @@ chrome.accessibilityPrivate.showConfirmationDialog = function(title, description
  * example, the key code for '/' would return the string '!' if the current
  * input method is French.
  * @param {number} keyCode
- * @param {function(string): void} callback Resolves with the resulting Dom key
+ * @param {function(string): void=} callback Resolves with the resulting Dom key
  *     string.
  */
 chrome.accessibilityPrivate.getLocalizedDomKeyStringForKeyCode = function(keyCode, callback) {};
@@ -796,7 +795,7 @@ chrome.accessibilityPrivate.silenceSpokenFeedback = function() {};
 /**
  * Returns the contents of a DLC.
  * @param {!chrome.accessibilityPrivate.DlcType} dlc The DLC of interest.
- * @param {function(ArrayBuffer): void} callback A promise that resolves when
+ * @param {function(ArrayBuffer): void=} callback A promise that resolves when
  *     the contents are returned.
  */
 chrome.accessibilityPrivate.getDlcContents = function(dlc, callback) {};
@@ -806,7 +805,7 @@ chrome.accessibilityPrivate.getDlcContents = function(dlc, callback) {};
  * @param {!chrome.accessibilityPrivate.DlcType} dlc The DLC of interest.
  * @param {!chrome.accessibilityPrivate.TtsVariant} variant The TTS voice
  *     variant.
- * @param {function(ArrayBuffer): void} callback A promise that resolves when
+ * @param {function(ArrayBuffer): void=} callback A promise that resolves when
  *     the contents are returned.
  */
 chrome.accessibilityPrivate.getTtsDlcContents = function(dlc, variant, callback) {};
@@ -814,7 +813,7 @@ chrome.accessibilityPrivate.getTtsDlcContents = function(dlc, variant, callback)
 /**
  * Returns the bounds of the displays in density-independent pixels in screen
  * coordinates.
- * @param {function(!Array<!chrome.accessibilityPrivate.ScreenRect>): void}
+ * @param {function(!Array<!chrome.accessibilityPrivate.ScreenRect>): void=}
  *     callback A promise that resolves when the result is returned.
  */
 chrome.accessibilityPrivate.getDisplayBounds = function(callback) {};

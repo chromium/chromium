@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ chrome.quickUnlockPrivate.CredentialRequirements;
  * Returns a token that can be used for future operations and the number of
  * seconds until the token expires.
  * @param {string} accountPassword The account password for the logged in user.
- * @param {function(!chrome.quickUnlockPrivate.TokenInfo): void} onComplete
+ * @param {function(!chrome.quickUnlockPrivate.TokenInfo): void=} onComplete
  */
 chrome.quickUnlockPrivate.getAuthToken = function(accountPassword, onComplete) {};
 
@@ -85,7 +85,7 @@ chrome.quickUnlockPrivate.setLockScreenEnabled = function(token, enabled, onComp
  * @param {string} token The authentication token.
  * @param {string} pin The PIN of the logged in user.
  * @param {boolean} enabled Whether to enable PIN auto submit.
- * @param {function(boolean): void} onComplete Called with true if the quick
+ * @param {function(boolean): void=} onComplete Called with true if the quick
  *     unlock state was updated,     false otherwise. The update is treated as a
  *     single atomic operation.
  */
@@ -93,14 +93,14 @@ chrome.quickUnlockPrivate.setPinAutosubmitEnabled = function(token, pin, enabled
 
 /**
  * Tests wether it is currently possible to authenticate using PIN.
- * @param {function(boolean): void} onComplete
+ * @param {function(boolean): void=} onComplete
  */
 chrome.quickUnlockPrivate.canAuthenticatePin = function(onComplete) {};
 
 /**
  * Returns the set of quick unlock modes that are available for the user to use.
  * Some quick unlock modes may be disabled by policy.
- * @param {function(!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>): void}
+ * @param {function(!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>): void=}
  *     onComplete
  */
 chrome.quickUnlockPrivate.getAvailableModes = function(onComplete) {};
@@ -108,7 +108,7 @@ chrome.quickUnlockPrivate.getAvailableModes = function(onComplete) {};
 /**
  * Returns the quick unlock modes that are currently enabled and usable on the
  * lock screen.
- * @param {function(!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>): void}
+ * @param {function(!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>): void=}
  *     onComplete
  */
 chrome.quickUnlockPrivate.getActiveModes = function(onComplete) {};
@@ -119,7 +119,7 @@ chrome.quickUnlockPrivate.getActiveModes = function(onComplete) {};
  * @param {!chrome.quickUnlockPrivate.QuickUnlockMode} mode The quick unlock
  *     mode that is used.
  * @param {string} credential The given credential.
- * @param {function(!chrome.quickUnlockPrivate.CredentialCheck): void}
+ * @param {function(!chrome.quickUnlockPrivate.CredentialCheck): void=}
  *     onComplete Called with a list of warnings and errors the given
  *     |credential| has (or an empty list if there are none).
  */
@@ -129,7 +129,7 @@ chrome.quickUnlockPrivate.checkCredential = function(mode, credential, onComplet
  * Gets the credential requirements for the given unlock mode.
  * @param {!chrome.quickUnlockPrivate.QuickUnlockMode} mode The quick unlock
  *     mode that is used.
- * @param {function(!chrome.quickUnlockPrivate.CredentialRequirements): void}
+ * @param {function(!chrome.quickUnlockPrivate.CredentialRequirements): void=}
  *     onComplete Called with the credential requirements of the given
  *     |mode|.
  */
@@ -143,7 +143,7 @@ chrome.quickUnlockPrivate.getCredentialRequirements = function(mode, onComplete)
  * @param {!Array<string>} credentials The associated credential for each mode.
  *     To keep the     credential the same for the associated mode, pass an
  *     empty string.
- * @param {function(): void} onComplete Called with true if the quick unlock
+ * @param {function(): void=} onComplete Called with true if the quick unlock
  *     state was updated,     false otherwise. The update is treated as a single
  *     atomic operation.
  */

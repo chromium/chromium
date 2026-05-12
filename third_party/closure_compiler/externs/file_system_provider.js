@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -435,7 +435,7 @@ chrome.fileSystemProvider.unmount = function(options, callback) {};
 
 /**
  * Returns all file systems mounted by the extension.
- * @param {function(!Array<!chrome.fileSystemProvider.FileSystemInfo>): void}
+ * @param {function(!Array<!chrome.fileSystemProvider.FileSystemInfo>): void=}
  *     callback Callback to receive the result of $(ref:getAll) function.
  * @see https://developer.chrome.com/extensions/fileSystemProvider#method-getAll
  */
@@ -445,7 +445,7 @@ chrome.fileSystemProvider.getAll = function(callback) {};
  * Returns information about a file system with the passed
  * <code>fileSystemId</code>.
  * @param {string} fileSystemId
- * @param {function(!chrome.fileSystemProvider.FileSystemInfo): void} callback
+ * @param {function(!chrome.fileSystemProvider.FileSystemInfo): void=} callback
  *     Callback to receive the result of $(ref:get) function.
  * @see https://developer.chrome.com/extensions/fileSystemProvider#method-get
  */

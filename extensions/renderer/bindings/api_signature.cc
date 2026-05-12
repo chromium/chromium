@@ -42,13 +42,18 @@ std::unique_ptr<APISignature::ReturnsAsync> BuildReturnsAsyncFromValues(
     const base::DictValue& returns_async_spec) {
   auto returns_async = std::make_unique<APISignature::ReturnsAsync>();
 
-  returns_async->promise_support =
-      returns_async_spec.Find("does_not_support_promises")
-          ? binding::APIPromiseSupport::kUnsupported
-          : binding::APIPromiseSupport::kSupported;
-  std::optional<bool> callback_optional =
-      returns_async_spec.FindBool("optional");
-  returns_async->optional = callback_optional.value_or(false);
+  // We only need to know if the callback is required for functions which don't
+  // support Promise-based calls, otherwise we ignore what the schema says and
+  // treat them as optional because callbacks are omitted when using
+  // Promise-based APIs.
+  if (returns_async_spec.Find("does_not_support_promises")) {
+    returns_async->promise_support = binding::APIPromiseSupport::kUnsupported;
+    returns_async->optional =
+        returns_async_spec.FindBool("optional").value_or(false);
+  } else {
+    returns_async->promise_support = binding::APIPromiseSupport::kSupported;
+    returns_async->optional = true;
+  }
 
   // If response validation is enabled, parse the callback signature. Otherwise,
   // there's no reason to, so don't bother.
@@ -113,10 +118,6 @@ class ArgumentParser {
   // with a normalized array of values such that each entry in |result| is
   // positionally correct with the signature. Omitted arguments will be
   // empty v8::Local<v8::Value> handles in the array.
-  // |allow_omitted_final_argument| indicates that the final argument is allowed
-  // to be omitted, even if it is not flagged as optional. This is used to allow
-  // callers to omit the final "callback" argument if promises can be used
-  // instead.
   // Returns true if the arguments were successfully resolved.
   // Note: This only checks arguments against their basic types, not other
   // values (like specific required properties or values).
@@ -124,8 +125,7 @@ class ArgumentParser {
       base::span<const v8::Local<v8::Value>> provided,
       base::span<const std::unique_ptr<ArgumentSpec>> expected,
       v8::LocalVector<v8::Value>* result,
-      size_t index,
-      bool allow_omitted_final_argument);
+      size_t index);
 
   // Attempts to match the next argument to the given |spec|.
   // If the next argument does not match and |spec| is optional, uses a null
@@ -247,17 +247,10 @@ bool ArgumentParser::ParseArgumentsImpl(bool signature_has_callback) {
     return false;
   }
 
-  // We allow the final argument to be omitted if the signature expects a
-  // callback and promise-based APIs are supported. If the caller omits this
-  // callback, the invocation is assumed to expect to a promise.
-  bool allow_omitted_final_argument =
-      signature_has_callback &&
-      promise_support_ == binding::APIPromiseSupport::kSupported;
-
   v8::LocalVector<v8::Value> resolved_arguments(v8::Isolate::GetCurrent(),
                                                 signature_->size());
   if (!ResolveArguments(*provided_arguments_, *signature_, &resolved_arguments,
-                        0u, allow_omitted_final_argument)) {
+                        0u)) {
     error_ = api_errors::NoMatchingSignature();
     return false;
   }
@@ -283,8 +276,7 @@ bool ArgumentParser::ResolveArguments(
     base::span<const v8::Local<v8::Value>> provided,
     base::span<const std::unique_ptr<ArgumentSpec>> expected,
     v8::LocalVector<v8::Value>* result,
-    size_t index,
-    bool allow_omitted_final_argument) {
+    size_t index) {
   // If the provided arguments and expected arguments are both empty, it means
   // we've successfully matched all provided arguments to the expected
   // signature.
@@ -322,7 +314,7 @@ bool ArgumentParser::ResolveArguments(
     // also not the default.
     if (can_match &&
         ResolveArguments(provided.subspan<1>(), expected.subspan<1>(), result,
-                         index + 1, allow_omitted_final_argument)) {
+                         index + 1)) {
       return true;
     }
   }
@@ -338,23 +330,12 @@ bool ArgumentParser::ResolveArguments(
     // Assume the expected argument was omitted.
     (*result)[index] = v8::Local<v8::Value>();
     // See comments above for recursion notes.
-    if (ResolveArguments(provided, expected.subspan<1>(), result, index + 1,
-                         allow_omitted_final_argument)) {
+    if (ResolveArguments(provided, expected.subspan<1>(), result, index + 1)) {
       return true;
     }
   }
 
-  // A required argument was not matched. There is only one case in which this
-  // is allowed: a required callback has been left off of the provided arguments
-  // when Promises are supported; if this is the case,
-  // |allow_omitted_final_argument| is true and there should be no provided
-  // arguments left.
-  if (allow_omitted_final_argument && provided.size() == 0 &&
-      expected.size() == 1) {
-    (*result)[index] = v8::Local<v8::Value>();
-    return true;
-  }
-
+  // A required argument was not matched.
   return false;
 }
 

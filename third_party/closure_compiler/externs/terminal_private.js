@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,19 +30,18 @@ chrome.terminalPrivate.OutputType = {
  * Starts new process.
  * @param {string} processName Name of the process to open. May be 'crosh' or
  *     'vmshell'.
- * @param {?Array<string>|undefined} args Command line arguments to pass to the
- *     process.
- * @param {function(string): void} callback Resolves with the ID of the launched
- *     process. If no process was launched, the promise is rejected.
+ * @param {!Array<string>=} args Command line arguments to pass to the process.
+ * @param {function(string): void=} callback Resolves with the ID of the
+ *     launched process. If no process was launched, the promise is rejected.
  */
 chrome.terminalPrivate.openTerminalProcess = function(processName, args, callback) {};
 
 /**
  * Starts new vmshell process.
- * @param {?Array<string>|undefined} args Command line arguments to pass to
- *     vmshell.
- * @param {function(string): void} callback Resolves with the ID of the launched
- *     vmshell process. If no process was launched, the promise is rejected.
+ * @param {!Array<string>=} args Command line arguments to pass to vmshell.
+ * @param {function(string): void=} callback Resolves with the ID of the
+ *     launched vmshell process. If no process was launched, the promise is
+ *     rejected.
  */
 chrome.terminalPrivate.openVmshellProcess = function(args, callback) {};
 
@@ -93,7 +92,7 @@ chrome.terminalPrivate.openWindow = function(data) {};
 
 /**
  * Open the Terminal Settings page.
- * @param {function(): void} callback Promise that resolves when complete.
+ * @param {function(): void=} callback Promise that resolves when complete.
  */
 chrome.terminalPrivate.openOptionsPage = function(callback) {};
 
@@ -101,7 +100,7 @@ chrome.terminalPrivate.openOptionsPage = function(callback) {};
  * Open the System Settings at the specified subpage.
  * @param {string} subpage Name of subpage to open.  Currently only 'crostini'
  *     supported.
- * @param {function(): void} callback Promise that resolves when complete.
+ * @param {function(): void=} callback Promise that resolves when complete.
  */
 chrome.terminalPrivate.openSettingsSubpage = function(subpage, callback) {};
 
@@ -110,21 +109,21 @@ chrome.terminalPrivate.openSettingsSubpage = function(subpage, callback) {};
  * Terminal, e.g. which feature flags are enabled.
  * @param {function({
  *   tast: boolean
- * }): void} callback Resolves with the info object.
+ * }): void=} callback Resolves with the info object.
  */
 chrome.terminalPrivate.getOSInfo = function(callback) {};
 
 /**
  * Returns specified pref values, ignoring any not in allowlist.
  * @param {!Array<string>} paths Paths of prefs to fetch.
- * @param {function(Object): void} callback Resolves with prefs.
+ * @param {function(Object): void=} callback Resolves with prefs.
  */
 chrome.terminalPrivate.getPrefs = function(paths, callback) {};
 
 /**
  * Sets specified prefs, ignoring any not in allowlist.
  * @param {Object} prefs Prefs to update keyed by paths.
- * @param {function(): void} callback Resolves when complete.
+ * @param {function(): void=} callback Resolves when complete.
  */
 chrome.terminalPrivate.setPrefs = function(prefs, callback) {};
 

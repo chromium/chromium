@@ -25,9 +25,18 @@ ReturnsAsyncBuilder& ReturnsAsyncBuilder::AddPromiseSupport() {
 std::unique_ptr<APISignature::ReturnsAsync> ReturnsAsyncBuilder::Build() {
   std::unique_ptr<APISignature::ReturnsAsync> returns_async =
       std::make_unique<APISignature::ReturnsAsync>();
-  if (signature_)
+  if (signature_) {
     returns_async->signature = std::move(signature_);
-  returns_async->optional = optional_;
+  }
+  // Note: this mirrors the logic we do in BuildReturnsAsyncFromValues in
+  // extensions/renderer/bindings/api_signature.cc, where all promise supporting
+  // APIs mark the returns_async field as optional (i.e. the callback argument
+  // on the signature can be left off).
+  if (promise_support_ == binding::APIPromiseSupport::kSupported) {
+    returns_async->optional = true;
+  } else {
+    returns_async->optional = optional_;
+  }
   returns_async->promise_support = promise_support_;
 
   return returns_async;

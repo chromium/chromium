@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,6 @@ chrome.commandLinePrivate = {};
  * Chrome.
  * @param {string} name The name of a command line switch, without leading "--",
  *     such as "enable-experimental-extension-apis".
- * @param {function(boolean): void} callback
+ * @param {function(boolean): void=} callback
  */
 chrome.commandLinePrivate.hasSwitch = function(name, callback) {};

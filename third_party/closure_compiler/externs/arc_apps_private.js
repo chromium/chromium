@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ chrome.arcAppsPrivate.AppInfo;
 /**
  * Returns info of the installed ARC apps that are launchable, including ready
  * and non-ready apps.
- * @param {function(!Array<!chrome.arcAppsPrivate.AppInfo>): void} callback
+ * @param {function(!Array<!chrome.arcAppsPrivate.AppInfo>): void=} callback
  */
 chrome.arcAppsPrivate.getLaunchableApps = function(callback) {};
 

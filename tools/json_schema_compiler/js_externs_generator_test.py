@@ -86,8 +86,7 @@ namespace fakeApi {
         [instanceOf = SomeType] optional object optionalSomeType,
         optional boolean bool,
         optional Baz baz,
-        double num,
-        VoidCallback callback);
+        double num);
 
     static void multipleOptionalParams(
         optional DOMString param1,
@@ -174,7 +173,7 @@ chrome.fakeApi.lastError;
  * Does something exciting! And what's more, this is a multiline function
  * comment! It goes onto multiple lines!
  * @param {!chrome.fakeApi.Baz} baz The baz to use.
- * @param {function(): void} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/fakeApi#method-doSomething
  */
 chrome.fakeApi.doSomething = function(baz, callback) {};
@@ -221,10 +220,9 @@ chrome.fakeApi.optionalParam = function(callback) {};
  * @param {?boolean|undefined} bool
  * @param {?chrome.fakeApi.Baz|undefined} baz
  * @param {number} num
- * @param {function(): void} callback
  * @see https://developer.chrome.com/extensions/fakeApi#method-nonFinalOptionalParams
  */
-chrome.fakeApi.nonFinalOptionalParams = function(string, num, obj, someType, optionalSomeType, bool, baz, num, callback) {};
+chrome.fakeApi.nonFinalOptionalParams = function(string, num, obj, someType, optionalSomeType, bool, baz, num) {};
 
 /**
  * @param {string=} param1

@@ -99,10 +99,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
     RunFunctionAndExpectError(
         function, context, 0, nullptr,
         "Uncaught TypeError: " +
-            api_errors::InvocationError(
-                "idle.queryState",
-                "integer detectionIntervalInSeconds, function callback",
-                api_errors::NoMatchingSignature()));
+            api_errors::InvocationError("idle.queryState",
+                                        "integer detectionIntervalInSeconds, "
+                                        "optional function callback",
+                                        api_errors::NoMatchingSignature()));
   }
 
   {

@@ -212,7 +212,6 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual(
         {
             'name': 'callback',
-            'optional': True,
             'parameters': [{
                 'type': 'string'
             }],
@@ -220,7 +219,6 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual(
         {
             'name': 'callback',
-            'optional': True,
             'parameters': [{
                 'optional': True,
                 'type': 'string'
@@ -229,7 +227,6 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual(
         {
             'name': 'callback',
-            'optional': True,
             'parameters': [{
                 '$ref': 'ExampleType'
             }],
@@ -237,13 +234,11 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual(
         {
             'name': 'callback',
-            'optional': True,
             'parameters': [],
         }, getFunctionAsyncReturn(schema, 'undefinedPromiseReturn'))
     self.assertEqual(
         {
             'name': 'callback',
-            'optional': True,
             'parameters': [{
                 'type': 'array',
                 'items': {
@@ -254,7 +249,6 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual(
         {
             'name': 'callback',
-            'optional': True,
             'parameters': [{
                 'type': 'array',
                 'items': {
@@ -392,8 +386,6 @@ class WebIdlSchemaTest(unittest.TestCase):
         {
             'name':
             'callback',
-            'optional':
-            True,
             'description':
             'General description for the promise return.',
             'parameters': [{
@@ -414,7 +406,6 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual(
         {
             'name': 'callback',
-            'optional': True,
             'parameters': [{
                 'type': 'boolean',
                 'name': 'justAName'
@@ -988,29 +979,6 @@ class WebIdlSchemaTest(unittest.TestCase):
     deprecated_property = getProperty(schema, 'DEPRECATED_PROPERTY')
     self.assertEqual('This property is deprecated',
                      deprecated_property['deprecated'])
-
-  # Tests that a function defined with the requiredCallback extended attribute
-  # does not have the returns_async field marked as optional after processing.
-  # Note: These are only relevant to contexts which don't support promise based
-  # calls, or for specific functions which still do not support promises.
-  def testRequiredCallbackFunction(self):
-    idl = web_idl_schema.Load('test/web_idl/required_callback_function.idl')
-    self.assertEqual(1, len(idl))
-    self.assertEqual(
-        {
-            'name': 'callback',
-            'parameters': [{
-                'type': 'string'
-            }],
-        }, getFunctionAsyncReturn(idl[0], 'requiredCallbackFunction'))
-    self.assertEqual(
-        {
-            'name': 'callback',
-            'optional': True,
-            'parameters': [{
-                'type': 'string'
-            }],
-        }, getFunctionAsyncReturn(idl[0], 'notRequiredCallbackFunction'))
 
   # Tests that extended attributes being listed on the the line previous to a
   # node come through correctly and don't throw off and associated descriptions.

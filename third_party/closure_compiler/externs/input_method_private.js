@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -259,7 +259,7 @@ chrome.inputMethodPrivate.InputMethodSettings;
  * @param {function({
  *   isPhysicalKeyboardAutocorrectEnabled: boolean,
  *   isImeMenuActivated: boolean
- * }): void} callback Resolves with the config object.
+ * }): void=} callback Resolves with the config object.
  */
 chrome.inputMethodPrivate.getInputMethodConfig = function(callback) {};
 
@@ -271,13 +271,13 @@ chrome.inputMethodPrivate.getInputMethodConfig = function(callback) {};
  *   id: string,
  *   name: string,
  *   indicator: string
- * }>): void} callback Resolves with the input method objects.
+ * }>): void=} callback Resolves with the input method objects.
  */
 chrome.inputMethodPrivate.getInputMethods = function(callback) {};
 
 /**
  * Gets the current input method.
- * @param {function(string): void} callback Resolves with the current input
+ * @param {function(string): void=} callback Resolves with the current input
  *     method.
  */
 chrome.inputMethodPrivate.getCurrentInputMethod = function(callback) {};
@@ -301,7 +301,7 @@ chrome.inputMethodPrivate.switchToLastUsedInputMethod = function(callback) {};
 
 /**
  * Fetches a list of all the words currently in the dictionary.
- * @param {function(!Array<string>): void} callback Resolves once the list of
+ * @param {function(!Array<string>): void=} callback Resolves once the list of
  *     dictionary words are ready.
  */
 chrome.inputMethodPrivate.fetchAllDictionaryWords = function(callback) {};
@@ -364,7 +364,7 @@ chrome.inputMethodPrivate.openOptionsPage = function(inputMethodId) {};
  *   before: string,
  *   selected: string,
  *   after: string
- * }): void} callback Resolves to provide the result
+ * }): void=} callback Resolves to provide the result
  */
 chrome.inputMethodPrivate.getSurroundingText = function(beforeLength, afterLength, callback) {};
 
@@ -372,7 +372,7 @@ chrome.inputMethodPrivate.getSurroundingText = function(beforeLength, afterLengt
  * Gets the current values of all settings for a particular input method
  * @param {string} engineID The ID of the engine (e.g. 'zh-t-i0-pinyin',
  *     'xkb:us::eng')
- * @param {function((!chrome.inputMethodPrivate.InputMethodSettings|undefined)): void}
+ * @param {function((!chrome.inputMethodPrivate.InputMethodSettings|undefined)): void=}
  *     callback Resolves with the settings
  */
 chrome.inputMethodPrivate.getSettings = function(engineID, callback) {};
@@ -432,7 +432,7 @@ chrome.inputMethodPrivate.notifyInputMethodReadyForTesting = function() {};
 /**
  * Gets the aggregate status of all language packs for a given input method.
  * @param {string} inputMethodId Fully qualified ID of the input method
- * @param {function(!chrome.inputMethodPrivate.LanguagePackStatus): void}
+ * @param {function(!chrome.inputMethodPrivate.LanguagePackStatus): void=}
  *     callback Resolves with a LanguagePackStatus when the operation completes.
  */
 chrome.inputMethodPrivate.getLanguagePackStatus = function(inputMethodId, callback) {};

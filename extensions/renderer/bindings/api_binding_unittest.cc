@@ -471,10 +471,11 @@ TEST_F(APIBindingUnittest, TestBasicAPICalls) {
                                             api_errors::NoMatchingSignature()));
   ExpectPass(binding_object, "obj.intAndCallback(1, function() {})", "[1]",
              true);
-  ExpectFailure(binding_object, "obj.intAndCallback(function() {})",
-                api_errors::InvocationError("test.intAndCallback",
-                                            "integer int, function callback",
-                                            api_errors::NoMatchingSignature()));
+  ExpectFailure(
+      binding_object, "obj.intAndCallback(function() {})",
+      api_errors::InvocationError("test.intAndCallback",
+                                  "integer int, optional function callback",
+                                  api_errors::NoMatchingSignature()));
 
   // ...And an interesting case (throwing an error during parsing).
   ExpectThrow(binding_object,
@@ -2440,10 +2441,11 @@ TEST_F(APIBindingUnittest, TestPromiseWithJSUpdateArgumentsPreValidate) {
   {
     // Calling supportsPromises with a string which we have not set up the
     // custom hook for should cause an error.
-    ExpectFailure(binding_object, "obj.supportsPromises('foo');",
-                  api_errors::InvocationError(
-                      "test.supportsPromises", "integer int, function callback",
-                      api_errors::NoMatchingSignature()));
+    ExpectFailure(
+        binding_object, "obj.supportsPromises('foo');",
+        api_errors::InvocationError("test.supportsPromises",
+                                    "integer int, optional function callback",
+                                    api_errors::NoMatchingSignature()));
     EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
                               context->Global(), context, "firstArgument"));
   }
@@ -2495,10 +2497,11 @@ TEST_F(APIBindingUnittest, TestPromiseWithJSUpdateArgumentsPostValidate) {
 
   {
     // Calling the method with an invalid signature should never enter the hook.
-    ExpectFailure(binding_object, "return obj.supportsPromises('foo');",
-                  api_errors::InvocationError(
-                      "test.supportsPromises", "integer int, function callback",
-                      api_errors::NoMatchingSignature()));
+    ExpectFailure(
+        binding_object, "return obj.supportsPromises('foo');",
+        api_errors::InvocationError("test.supportsPromises",
+                                    "integer int, optional function callback",
+                                    api_errors::NoMatchingSignature()));
     EXPECT_EQ("undefined", GetStringPropertyFromObject(
                                context->Global(), context, "firstArgument"));
   }

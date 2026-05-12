@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,7 +113,7 @@ chrome.bluetooth.BluetoothFilter;
 
 /**
  * Get information about the Bluetooth adapter.
- * @param {function(!chrome.bluetooth.AdapterState): void} callback Called with
+ * @param {function(!chrome.bluetooth.AdapterState): void=} callback Called with
  *     an AdapterState object describing the adapter state.
  * @see https://developer.chrome.com/extensions/bluetooth#method-getAdapterState
  */
@@ -122,7 +122,7 @@ chrome.bluetooth.getAdapterState = function(callback) {};
 /**
  * Get information about a Bluetooth device known to the system.
  * @param {string} deviceAddress Address of device to get.
- * @param {function(!chrome.bluetooth.Device): void} callback Called with the
+ * @param {function(!chrome.bluetooth.Device): void=} callback Called with the
  *     Device object describing the device.
  * @see https://developer.chrome.com/extensions/bluetooth#method-getDevice
  */
@@ -131,12 +131,12 @@ chrome.bluetooth.getDevice = function(deviceAddress, callback) {};
 /**
  * Get a list of Bluetooth devices known to the system, including paired and
  * recently discovered devices.
- * @param {?chrome.bluetooth.BluetoothFilter|undefined} filter Some criteria to
- *     filter the list of returned bluetooth devices. If the filter is not set
- *     or set to <code>{}</code>, returned device list will contain all
- *     bluetooth devices. Right now this is only supported in ChromeOS, for
- *     other platforms, a full list is returned.
- * @param {function(!Array<!chrome.bluetooth.Device>): void} callback Called
+ * @param {!chrome.bluetooth.BluetoothFilter=} filter Some criteria to filter
+ *     the list of returned bluetooth devices. If the filter is not set or set
+ *     to <code>{}</code>, returned device list will contain all bluetooth
+ *     devices. Right now this is only supported in ChromeOS, for other
+ *     platforms, a full list is returned.
+ * @param {function(!Array<!chrome.bluetooth.Device>): void=} callback Called
  *     when the search is completed.
  * @see https://developer.chrome.com/extensions/bluetooth#method-getDevices
  */

@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,21 +81,21 @@ chrome.settingsPrivate.setPref = function(name, value, pageId, callback) {};
 
 /**
  * Gets an array of all the prefs.
- * @param {function(!Array<!chrome.settingsPrivate.PrefObject>): void} callback
+ * @param {function(!Array<!chrome.settingsPrivate.PrefObject>): void=} callback
  */
 chrome.settingsPrivate.getAllPrefs = function(callback) {};
 
 /**
  * Gets the value of a specific pref.
  * @param {string} name
- * @param {function(!chrome.settingsPrivate.PrefObject): void} callback
+ * @param {function(!chrome.settingsPrivate.PrefObject): void=} callback
  */
 chrome.settingsPrivate.getPref = function(name, callback) {};
 
 /**
  * Gets the default page zoom factor. Possible values are currently between 0.25
  * and 5. For a full list, see zoom::kPresetBrowserZoomFactors.
- * @param {function(number): void} callback
+ * @param {function(number): void=} callback
  */
 chrome.settingsPrivate.getDefaultZoom = function(callback) {};
 

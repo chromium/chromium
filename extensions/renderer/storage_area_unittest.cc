@@ -118,7 +118,7 @@ TEST_F(StorageAreaTest, InvalidInvocationError) {
       "Uncaught TypeError: " +
           api_errors::InvocationError(
               "storage.get",
-              "optional [string|array|object] keys, function callback",
+              "optional [string|array|object] keys, optional function callback",
               "No matching signature."));
 }
 

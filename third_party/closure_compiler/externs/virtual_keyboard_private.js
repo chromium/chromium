@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -145,7 +145,7 @@ chrome.virtualKeyboardPrivate.keyboardLoaded = function(callback) {};
 
 /**
  * Gets the virtual keyboard configuration.
- * @param {function(!chrome.virtualKeyboardPrivate.KeyboardConfig): void}
+ * @param {function(!chrome.virtualKeyboardPrivate.KeyboardConfig): void=}
  *     callback Called when querying virtual keyboard configuration is complete.
  */
 chrome.virtualKeyboardPrivate.getKeyboardConfig = function(callback) {};
@@ -221,7 +221,7 @@ chrome.virtualKeyboardPrivate.setWindowBoundsInScreen = function(bounds) {};
  * @param {{
  *   itemIds: (!Array<string>|undefined)
  * }} options
- * @param {function(!Array<!chrome.virtualKeyboardPrivate.ClipboardItem>): void}
+ * @param {function(!Array<!chrome.virtualKeyboardPrivate.ClipboardItem>): void=}
  *     callback Called when querying the ClipboardHistory is complete.
  */
 chrome.virtualKeyboardPrivate.getClipboardHistory = function(options, callback) {};

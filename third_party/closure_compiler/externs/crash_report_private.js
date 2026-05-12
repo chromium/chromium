@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,6 @@ chrome.crashReportPrivate.ErrorInfo;
  * Report and upload an error to Crash.
  * @param {!chrome.crashReportPrivate.ErrorInfo} info Information about the
  *     error.
- * @param {function(): void} callback Called when the error has been uploaded.
+ * @param {function(): void=} callback Called when the error has been uploaded.
  */
 chrome.crashReportPrivate.reportError = function(info, callback) {};

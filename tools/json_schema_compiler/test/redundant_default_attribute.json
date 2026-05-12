@@ -16,6 +16,8 @@
         ],
         "returns_async": {
           "name": "callback",
+          "description": "Note: we mark this as not supporting promises because 'optional' is otherwise ignored and would not cause an error",
+          "does_not_support_promises": true,
           "optional": false,
           "parameters": []
         }

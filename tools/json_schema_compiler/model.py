@@ -400,9 +400,11 @@ class ReturnsAsync(object):
   - |name| the name of the asynchronous return, generally 'callback'
   - |simple_name| the name of this ReturnsAsync without a namespace
   - |description| a description of the ReturnsAsync (if provided)
-  - |optional| whether specifying the ReturnsAsync is "optional" (in situations
-               where promises are supported, this will be ignored as promises
-               inheriently make a callback optional)
+  - |optional| whether specifying the ReturnsAsync is "optional". This is only
+               relevant for APIs that don't support promises and is otherwise
+               just set to True later on in the bindings when an APISignature is
+               created. However we also set it to true here for other consumers
+               of the model e.g. documentation and externs generation.
   - |params| a list of parameters supplied to the function in the case of using
              callbacks, or the list of properties on the returned object in the
              case of using promises
@@ -415,10 +417,13 @@ class ReturnsAsync(object):
     self.name = json.get('name')
     self.simple_name = _StripNamespace(self.name, namespace)
     self.description = json.get('description')
-    self.optional = _GetWithDefaultChecked(parent, json, 'optional', False)
     self.nocompile = json.get('nocompile')
     self.parent = parent
     self.can_return_promise = json.get('does_not_support_promises') is None
+    if (self.can_return_promise):
+      self.optional = True
+    else:
+      self.optional = _GetWithDefaultChecked(parent, json, 'optional', False)
 
     if json.get('returns') is not None:
       raise ValueError(

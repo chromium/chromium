@@ -34,7 +34,7 @@ chrome.test = {};
  *     isLoggedIn: (boolean|undefined),
  *     isScreenLocked: (boolean|undefined)
  *   }|undefined)
- * }): void} callback
+ * }): void=} callback
  * @see https://developer.chrome.com/extensions/test#method-getConfig
  */
 chrome.test.getConfig = function(callback) {};
@@ -275,7 +275,7 @@ chrome.test.runWithUserGesture = function(functionToRun) {};
  * Sends a string message one round trip from the renderer to the browser
  * process and back.
  * @param {string} message
- * @param {function(string): void} callback
+ * @param {function(string): void=} callback
  * @see https://developer.chrome.com/extensions/test#method-waitForRoundTrip
  */
 chrome.test.waitForRoundTrip = function(message, callback) {};

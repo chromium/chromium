@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
   std::string source = extension->GetResourceURL("background.js").spec();
   std::string message =
       "Uncaught TypeError: Error in invocation of alarms.getAll"
-      "(function callback): No matching signature.";
+      "(optional function callback): No matching signature.";
 
   CheckRuntimeError(errors[1].get(), extension->id(), source,
                     false,  // not incognito
