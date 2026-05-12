@@ -109,14 +109,14 @@ if (_is_default_toolchain) {
     include_64_bit_webview = false
     omit_dex = true
 
-    # Adding deps on recycler view in the base WebView APK will end up keeping the
-    # Java in the base APK instead of the WebLayer DFM, even though it is not
-    # needed in the base APK.
+    # Adding deps on recycler view in the base WebView APK will end up keeping
+    # the Java in the base APK instead of the WebLayer DFM, even though it is
+    # not needed in the base APK.
     #
     # If you hit this check and are adding a dep to //ui/android:ui_java, use
-    # //ui/android:ui_no_recycler_view instead. If you hit this check because you
-    # are adding //third_party/android_deps:android_support_*, use the androidx
-    # version of the dep instead.
+    # //ui/android:ui_no_recycler_view instead. If you hit this check because
+    # you are adding //third_party/android_deps:android_support_*, use the
+    # androidx version of the dep instead.
     # TODO(b/165810905): Use per-feature -keep rules in R8 once supported, then
     # this can be removed.
     assert_no_deps =
@@ -435,9 +435,9 @@ if (_is_default_toolchain) {
       ":browser_java",
       "//android_webview/js_sandbox:js_sandbox_service_java",
 
-      # This includes AwResource, which may be called via JNI. We're including it
-      # here because there's currently no good way to enforce that it gets included
-      # when it's depended on via JNI.
+      # This includes AwResource, which may be called via JNI. We're including
+      # it here because there's currently no good way to enforce that it gets
+      # included when it's depended on via JNI.
       ":common_java",
       "//android_webview/glue:glue_java",
       "//android_webview/nonembedded:nonembedded_java",
@@ -730,8 +730,8 @@ if (_is_default_toolchain) {
     ]
   }
 
-  # Separate target to allow for a dependency on GmsCore without pulling in all of
-  # android_webview_java. It compiles the abstract class; implementations are
+  # Separate target to allow for a dependency on GmsCore without pulling in all
+  # of android_webview_java. It compiles the abstract class; implementations are
   # compiled separately.
   android_library("common_platform_services_java") {
     sources = [
@@ -755,8 +755,8 @@ if (_is_default_toolchain) {
     ]
 
     # The appropriate .class file will be loaded via a dependency to a library
-    # like :platform_service_bridge_upstream_implementation_java below. We only include the
-    # .java file because other files in the target depend on it.
+    # like :platform_service_bridge_upstream_implementation_java below. We only
+    # include the .java file because other files in the target depend on it.
   }
 
   android_library("crash_client_java") {
@@ -1066,8 +1066,8 @@ if (_is_default_toolchain) {
       "webui_resources.pak",
     ]
 
-    # webui/resources has way too many resources. The allowlist is trim this down
-    # to a reasonable size
+    # webui/resources has way too many resources. The allowlist is trim this
+    # down to a reasonable size
     _allowlist = "ui/grit_resources_allowlist.txt"
     inputs = [ _allowlist ]
     grit_flags = [
@@ -1405,7 +1405,9 @@ if (_is_default_toolchain && enable_resource_allowlist_generation) {
   }
   generate_resource_allowlist("system_webview_pak_allowlist") {
     deps = [ ":system_webview_pak_allowlist_inputs" ]
-    inputs = [ "$root_out_dir/lib.unstripped/libsystem_webview_pak_allowlist_inputs$shlib_extension" ]
+    inputs = [
+      "$root_out_dir/libsystem_webview_pak_allowlist_inputs$shlib_extension",
+    ]
     output = system_webview_pak_allowlist
   }
 }

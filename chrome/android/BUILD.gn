@@ -890,7 +890,8 @@ if (_is_default_toolchain) {
     # Include sources from tab_management_java_sources.gni.
     sources += public_tab_management_java_sources
 
-    # TODO(crbug.com/40259582): Make tab_ui/ a module so that these sources can be included in "chrome_all_java".
+    # TODO(crbug.com/40259582): Make tab_ui/ a module so that these sources can
+    # be included in "chrome_all_java".
     sources += internal_tab_management_java_sources
 
     srcjar_deps += [ ":chrome_jni_headers" ]
@@ -900,23 +901,24 @@ if (_is_default_toolchain) {
 
     resources_package = "org.chromium.chrome"
 
-    # TODO(crbug.com/40106499): Instead of adding source files, add it as a separate
-    # dependency when circular deps is resolved.
+    # TODO(crbug.com/40106499): Instead of adding source files, add it as a
+    # separate dependency when circular deps is resolved.
     sources += share_java_sources
     deps += share_java_deps
 
-    # TODO(crbug.com/40172295): Instead of adding source files, add it as a separate
-    # dependency when circular deps is resolved.
+    # TODO(crbug.com/40172295): Instead of adding source files, add it as a
+    # separate dependency when circular deps is resolved.
     sources += price_tracking_java_sources
     deps += price_tracking_java_deps
 
-    # TODO(crbug.com/40182305): Instead of adding source files, add it as a separate
-    # dependency when circular deps is resolved.
+    # TODO(crbug.com/40182305): Instead of adding source files, add it as a
+    # separate dependency when circular deps is resolved.
     sources += commerce_subscriptions_java_sources
     deps += commerce_subscriptions_java_deps
 
-    # TODO(crbug.com/395908100): Some bookmark files aren't able to be modularized,
-    # include them directly in chrome_java in the meantime and refactor one-by-one.
+    # TODO(crbug.com/395908100): Some bookmark files aren't able to be
+    # modularized, include them directly in chrome_java in the meantime and
+    # refactor one-by-one.
     sources += unmodularized_bookmarks_java_files
 
     if (enable_printing) {
@@ -929,7 +931,8 @@ if (_is_default_toolchain) {
     }
 
     public_deps = [
-      # TODO(crbug.com/40167648): This is temporary to not break downstream targets.
+      # TODO(crbug.com/40167648): This is temporary to not break downstream
+      # targets.
       "//chrome/browser/notifications:java",
     ]
 
@@ -942,15 +945,15 @@ if (_is_default_toolchain) {
     }
   }
 
-  # Template for strict mode detection enabling/disabling so that proguard strips out
-  # strict mode code when detection is disabled.
+  # Template for strict mode detection enabling/disabling so that proguard
+  # strips out strict mode code when detection is disabled.
   java_cpp_template("chrome_strict_mode_switch") {
     sources = [
       "java/src/org/chromium/chrome/browser/ChromeStrictModeSwitch.template",
     ]
 
-    # Strict mode detection is disabled for canary channel in order to catch bugs
-    # related to strict mode detection being turned off early (before beta
+    # Strict mode detection is disabled for canary channel in order to catch
+    # bugs related to strict mode detection being turned off early (before beta
     # channel). Strict mode detection is enabled for dev channel because dev
     # channel has more users than canary channel.
     if (is_java_debug || android_channel == "default" ||
@@ -963,8 +966,8 @@ if (_is_default_toolchain) {
     java_package = "org.chromium.chrome.browser"
   }
 
-  # This is a list of all chrome module java dependencies. New features should be
-  # added to this list.
+  # This is a list of all chrome module java dependencies. New features should
+  # be added to this list.
   java_group("chrome_all_java") {
     deps = [
       ":chrome_java",
@@ -1870,7 +1873,7 @@ if (_is_default_toolchain) {
       _resource_allowlist_target = "${_variant}_resource_allowlist"
       _resource_allowlist_file =
           "$target_gen_dir/${_variant}_resource_allowlist.txt"
-      _lib_path = "/lib.unstripped/" + _lib + shlib_extension
+      _lib_path = "/" + _lib + shlib_extension
 
       generate_resource_allowlist(_resource_allowlist_target) {
         _fat_lib_toolchain = current_toolchain
@@ -2094,8 +2097,8 @@ if (_is_default_toolchain) {
     ]
   }
 
-  # Target for classes which should be in the base module, even when //chrome code
-  # is in a DFM.
+  # Target for classes which should be in the base module, even when //chrome
+  # code is in a DFM.
   android_library("base_module_java") {
     sources = [
       "java/src/org/chromium/chrome/app/TrichromeZygotePreload.java",
@@ -2212,7 +2215,8 @@ if (_is_default_toolchain) {
     }
 
     if (use_mlkit_for_aicore) {
-      # MLKitInitProvider must be in the base manifest, so the lib must be in the base module.
+      # MLKitInitProvider must be in the base manifest, so the lib must be in
+      # the base module.
       deps += [ "//third_party/android_deps:com_google_mlkit_common_java" ]
     }
 
@@ -2430,7 +2434,8 @@ if (_is_default_toolchain) {
       deps += [
         "//chrome/browser/ui/android/extensions/windowing/internal:javatests",
 
-        # TODO(crbug.com/473636857): Include in normal builds once all Android support is finished.
+        # TODO(crbug.com/473636857): Include in normal builds once all Android
+        # support is finished.
         "//chrome/browser/ui/browser_window/internal:javatests",
       ]
     }
@@ -2617,8 +2622,8 @@ if (_is_default_toolchain) {
   }
 
   group("chrome_nocompile_tests") {
-    # Tests which check that build errors are thrown when expected and that build
-    # validation tools (ex: lint) do not get silently disabled.
+    # Tests which check that build errors are thrown when expected and that
+    # build validation tools (ex: lint) do not get silently disabled.
     testonly = true
 
     # No-compile tests use an output directory dedicated to no-compile tests.
@@ -2692,7 +2697,8 @@ if (_is_default_toolchain) {
       }
 
       if (enable_manifest_verification) {
-        # Trichrome6432 verifies all bundle modules, so only check base module here.
+        # Trichrome6432 verifies all bundle modules, so only check base module
+        # here.
         expected_android_manifest = "expectations/${_main_trichrome_chrome_bundle_target}__base.AndroidManifest.expected"
       }
       if (enable_libs_and_assets_verification) {
@@ -2890,7 +2896,8 @@ if (_is_default_toolchain) {
       include_32_bit_webview = false
       static_library_provider = ":trichrome_library_64_apk"
       if (enable_manifest_verification) {
-        # Trichrome6432 verifies all bundle modules, so only check base module here.
+        # Trichrome6432 verifies all bundle modules, so only check base module
+        # here.
         expected_android_manifest = "expectations/trichrome_chrome_64_bundle__base.AndroidManifest.expected"
       }
       if (enable_libs_and_assets_verification) {
@@ -2922,7 +2929,8 @@ if (_is_default_toolchain) {
         include_64_bit_webview = false
         static_library_provider = ":trichrome_library_32_apk"
         if (enable_manifest_verification) {
-          # Trichrome6432 verifies all bundle modules, so only check base module here.
+          # Trichrome6432 verifies all bundle modules, so only check base module
+          # here.
           expected_android_manifest = "expectations/trichrome_chrome_32_bundle__base.AndroidManifest.expected"
         }
         if (enable_libs_and_assets_verification) {
@@ -3313,17 +3321,11 @@ if (_is_default_toolchain) {
   libchrome_impl("libchrome") {
     define_unwind_table_target =
         add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
-    if (enable_resource_allowlist_generation) {
-      # Make sure allowlist_inputs is built first so when concurrent_links == 1
-      # it comes before the actual (very slow) link step.
-      deps = [ ":libchrome_inputs" ]
-    }
-
     module_descs = chrome_module_descs
 
-    # Java and native targets form two independent compile graphs. Deps from java targets
-    # onto native ones (or vice versa) are unnecessary and reduce parallelism.
-    # This prevents deps from native -> java.
+    # Java and native targets form two independent compile graphs. Deps from
+    # java targets onto native ones (or vice versa) are unnecessary and reduce
+    # parallelism. This prevents deps from native -> java.
     assert_no_deps = [ "//build/android:build_java" ]
   }
 } else {  # _is_default_toolchain
@@ -3370,11 +3372,6 @@ libmonochrome_tmpl("libmonochrome") {
   enable_target = current_toolchain == _trichrome_browser_toolchain
   define_unwind_table_target =
       add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm"
-  if (enable_resource_allowlist_generation) {
-    # Make sure allowlist_inputs is built first so when concurrent_links == 1
-    # it comes before the actual (very slow) link step.
-    deps = [ ":libmonochrome_inputs($_trichrome_browser_toolchain)" ]
-  }
 }
 
 if (current_toolchain == _trichrome_browser_toolchain) {

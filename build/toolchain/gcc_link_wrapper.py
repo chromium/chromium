@@ -38,8 +38,9 @@ def main():
   parser.add_argument('--strip',
                       help='The strip binary to run',
                       metavar='PATH')
-  parser.add_argument('--unstripped-file',
-                      help='Executable file produced by linking command',
+  parser.add_argument('--symbols-file',
+                      help='.so file with .debug sections '
+                      '(if different from --output)',
                       metavar='FILE')
   parser.add_argument('--map-file',
                       help=('Use --Wl,-Map to generate a map file. Will be '
@@ -64,7 +65,7 @@ def main():
   # Finally, strip the linked executable (if desired).
   if args.strip:
     result = subprocess.call(
-        CommandToRun([args.strip, '-o', args.output, args.unstripped_file]))
+        CommandToRun([args.strip, '-o', args.output, args.symbols_file]))
 
   return result
 
