@@ -99,8 +99,14 @@ void MediaDocumentParser::CreateDocumentStructure() {
   source->setAttribute(html_names::kSrcAttr,
                        AtomicString(GetDocument()->Url()));
 
-  if (DocumentLoader* loader = GetDocument()->Loader())
+  if (DocumentLoader* loader = GetDocument()->Loader()) {
     source->setType(loader->MimeType());
+  }
+
+  if (GetDocument()->Url().ProtocolIsInHttpFamily()) {
+    media->setAttribute(html_names::kCrossoriginAttr,
+                        AtomicString("anonymous"));
+  }
 
   media->AppendChild(source);
 
