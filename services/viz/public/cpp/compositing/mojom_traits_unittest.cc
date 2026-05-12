@@ -13,10 +13,14 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/frame_sinks/blit_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/frame_timing_details.h"
+#include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -24,10 +28,13 @@
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
+#include "components/viz/common/vertical_scroll_direction.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
@@ -56,16 +63,23 @@
 #include "services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/begin_frame_args.mojom.h"
+#include "services/viz/public/mojom/compositing/blit_request.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame.mojom.h"
 #include "services/viz/public/mojom/compositing/filter_operation.mojom.h"
 #include "services/viz/public/mojom/compositing/filter_operations.mojom.h"
+#include "services/viz/public/mojom/compositing/frame_interval_inputs.mojom.h"
+#include "services/viz/public/mojom/compositing/frame_sink_bundle_id.mojom.h"
+#include "services/viz/public/mojom/compositing/frame_timing_details.mojom.h"
+#include "services/viz/public/mojom/compositing/region_capture_bounds.mojom.h"
 #include "services/viz/public/mojom/compositing/returned_resource.mojom.h"
 #include "services/viz/public/mojom/compositing/selection.mojom.h"
 #include "services/viz/public/mojom/compositing/surface_info.mojom.h"
 #include "services/viz/public/mojom/compositing/surface_range.mojom.h"
+#include "services/viz/public/mojom/compositing/thread.mojom.h"
 #include "services/viz/public/mojom/compositing/tracked_element_rects.mojom.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom.h"
 #include "services/viz/public/mojom/compositing/trees_in_viz_timing.mojom.h"
+#include "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom.h"
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
 #include "skia/public/mojom/tile_mode_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,6 +95,8 @@
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
+#include "ui/gfx/presentation_feedback.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
 
 namespace viz {
@@ -1660,6 +1676,116 @@ TEST_F(StructTraitsTest, TreesInVizBadTimestampOrderTest) {
       timestamps, out));
 }
 
+TEST_F(StructTraitsTest, RegionCaptureBounds) {
+  RegionCaptureBounds input;
+  const RegionCaptureCropId crop_id = base::Token::CreateRandom();
+  const gfx::Rect bounds(10, 20, 30, 40);
+  input.Set(crop_id, bounds);
+
+  RegionCaptureBounds output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::RegionCaptureBounds>(
+      input, output));
+  EXPECT_EQ(input, output);
+}
+
+TEST_F(StructTraitsTest, VerticalScrollDirection) {
+  const VerticalScrollDirection input = VerticalScrollDirection::kDown;
+  VerticalScrollDirection output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::VerticalScrollDirection>(
+          input, output));
+  EXPECT_EQ(input, output);
+}
+
+TEST_F(StructTraitsTest, FrameTimingDetails) {
+  FrameTimingDetails input;
+  input.received_compositor_frame_timestamp = base::TimeTicks::Now();
+  input.embedded_frame_timestamp = base::TimeTicks::Now();
+  input.draw_start_timestamp = base::TimeTicks::Now();
+  input.swap_timings.swap_start = base::TimeTicks::Now();
+  input.swap_timings.swap_end = base::TimeTicks::Now();
+  input.presentation_feedback.timestamp = base::TimeTicks::Now();
+  input.presentation_feedback.interval = base::Milliseconds(16);
+  input.presentation_feedback.flags = gfx::PresentationFeedback::kVSync;
+  input.frame_id = BeginFrameId(1, 2);
+
+  FrameTimingDetails output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::FrameTimingDetails>(
+      input, output));
+  EXPECT_EQ(input.received_compositor_frame_timestamp,
+            output.received_compositor_frame_timestamp);
+  EXPECT_EQ(input.embedded_frame_timestamp, output.embedded_frame_timestamp);
+  EXPECT_EQ(input.draw_start_timestamp, output.draw_start_timestamp);
+  EXPECT_EQ(input.swap_timings.swap_start, output.swap_timings.swap_start);
+  EXPECT_EQ(input.swap_timings.swap_end, output.swap_timings.swap_end);
+  EXPECT_EQ(input.presentation_feedback.timestamp,
+            output.presentation_feedback.timestamp);
+  EXPECT_EQ(input.presentation_feedback.interval,
+            output.presentation_feedback.interval);
+  EXPECT_EQ(input.presentation_feedback.flags,
+            output.presentation_feedback.flags);
+  EXPECT_EQ(input.frame_id, output.frame_id);
+}
+
+TEST_F(StructTraitsTest, BlitRequest) {
+  BlitRequest input(gfx::Point(1, 2), LetterboxingBehavior::kLetterbox,
+                    gpu::ClientSharedImage::CreateForTesting(),
+                    gpu::SyncToken(), true);
+
+  BlitRequest output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::BlitRequest>(input, output));
+}
+
+TEST_F(StructTraitsTest, FrameIntervalInputs) {
+  FrameIntervalInputs input;
+  input.frame_time = base::TimeTicks::Now();
+  input.has_input = true;
+  input.has_user_input = false;
+  input.major_scroll_speed_in_pixels_per_second = 100.5f;
+  ContentFrameIntervalInfo info;
+  info.type = ContentFrameIntervalType::kVideo;
+  info.frame_interval = base::Milliseconds(16);
+  info.duplicate_count = 2;
+  input.content_interval_info.push_back(info);
+  input.has_only_content_frame_interval_updates = true;
+
+  FrameIntervalInputs output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::FrameIntervalInputs>(
+      input, output));
+  EXPECT_EQ(input.frame_time, output.frame_time);
+  EXPECT_EQ(input.has_input, output.has_input);
+  EXPECT_EQ(input.has_user_input, output.has_user_input);
+  EXPECT_EQ(input.major_scroll_speed_in_pixels_per_second,
+            output.major_scroll_speed_in_pixels_per_second);
+  ASSERT_EQ(input.content_interval_info.size(),
+            output.content_interval_info.size());
+  EXPECT_EQ(input.content_interval_info[0].type,
+            output.content_interval_info[0].type);
+  EXPECT_EQ(input.content_interval_info[0].frame_interval,
+            output.content_interval_info[0].frame_interval);
+  EXPECT_EQ(input.content_interval_info[0].duplicate_count,
+            output.content_interval_info[0].duplicate_count);
+  EXPECT_EQ(input.has_only_content_frame_interval_updates,
+            output.has_only_content_frame_interval_updates);
+}
+
+TEST_F(StructTraitsTest, Thread) {
+  Thread input{base::PlatformThreadId::ForTest(123), Thread::Type::kCompositor};
+  Thread output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::Thread>(input, output));
+  EXPECT_EQ(input, output);
+}
+
+TEST_F(StructTraitsTest, FrameSinkBundleId) {
+  FrameSinkBundleId input(1, 2);
+  FrameSinkBundleId output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::FrameSinkBundleId>(
+      input, output));
+  EXPECT_EQ(input, output);
+}
+
 namespace {
 
 auto AnyTimeTicks() {
@@ -2224,6 +2350,242 @@ void TreesInVizTimingFuzz(const TreesInVizTiming& input) {
 }
 FUZZ_TEST(StructTraitsTest, TreesInVizTimingFuzz)
     .WithDomains(AnyTreesInVizTiming());
+
+auto AnyToken() {
+  return fuzztest::ConstructorOf<base::Token>(fuzztest::Arbitrary<uint64_t>(),
+                                              fuzztest::Arbitrary<uint64_t>());
+}
+
+auto AnySwapTimings() {
+  return fuzztest::ConstructorOf<gfx::SwapTimings>(AnyTimeTicks(),
+                                                   AnyTimeTicks());
+}
+
+auto AnyPresentationFeedback() {
+  return fuzztest::ConstructorOf<gfx::PresentationFeedback>(
+      AnyTimeTicks(), AnyTimeDelta(), fuzztest::Arbitrary<uint32_t>());
+}
+
+auto AnyRegionCaptureBounds() {
+  return fuzztest::Map(
+      [](std::vector<std::pair<base::Token, gfx::Rect>> bounds) {
+        return RegionCaptureBounds(
+            base::flat_map<RegionCaptureCropId, gfx::Rect>(std::move(bounds)));
+      },
+      fuzztest::VectorOf(fuzztest::PairOf(AnyToken(), AnyRect())));
+}
+
+auto AnyVerticalScrollDirection() {
+  return fuzztest::ElementOf({VerticalScrollDirection::kNull,
+                              VerticalScrollDirection::kDown,
+                              VerticalScrollDirection::kUp});
+}
+
+auto AnyFrameTimingDetails() {
+  return fuzztest::Map(
+      [](base::TimeTicks received, base::TimeTicks embedded,
+         base::TimeTicks draw_start, const gfx::SwapTimings& swap_timings,
+         const gfx::PresentationFeedback& feedback, BeginFrameId frame_id,
+         base::TimeTicks start_update, base::TimeTicks start_prepare,
+         base::TimeTicks start_draw, base::TimeTicks submit) {
+        FrameTimingDetails details;
+        details.received_compositor_frame_timestamp = received;
+        details.embedded_frame_timestamp = embedded;
+        details.draw_start_timestamp = draw_start;
+        details.swap_timings = swap_timings;
+        details.presentation_feedback = feedback;
+        details.frame_id = frame_id;
+        details.start_update_display_tree = start_update;
+        details.start_prepare_to_draw = start_prepare;
+        details.start_draw_layers = start_draw;
+        details.submit_compositor_frame = submit;
+        return details;
+      },
+      AnyTimeTicks(), AnyTimeTicks(), AnyTimeTicks(), AnySwapTimings(),
+      AnyPresentationFeedback(), AnyBeginFrameId(), AnyTimeTicks(),
+      AnyTimeTicks(), AnyTimeTicks(), AnyTimeTicks());
+}
+
+auto AnyTrackedElementId() {
+  return AnyToken();
+}
+
+auto AnyFrameToken() {
+  return fuzztest::OneOf(
+      fuzztest::Map(
+          [](const base::UnguessableToken& token) {
+            return blink::FrameToken(blink::LocalFrameToken(token));
+          },
+          AnyUnguessableToken()),
+      fuzztest::Map(
+          [](const base::UnguessableToken& token) {
+            return blink::FrameToken(blink::RemoteFrameToken(token));
+          },
+          AnyUnguessableToken()));
+}
+
+auto AnyTrackedElementRect() {
+  return fuzztest::Map(
+      [](const TrackedElementId& id, const gfx::Rect& bounds,
+         bool add_to_metadata, const std::optional<blink::FrameToken>& token,
+         const std::optional<base::UnguessableToken>& parent_token) {
+        std::optional<blink::LocalFrameToken> parent_local_token;
+        if (parent_token) {
+          parent_local_token = blink::LocalFrameToken(*parent_token);
+        }
+        return TrackedElementRect(id, bounds, add_to_metadata, token,
+                                  parent_local_token);
+      },
+      AnyTrackedElementId(), AnyRect(), fuzztest::Arbitrary<bool>(),
+      fuzztest::OptionalOf(AnyFrameToken()),
+      fuzztest::OptionalOf(AnyUnguessableToken()));
+}
+
+auto AnyTrackedElementRects() {
+  return fuzztest::Map(
+      [](std::vector<std::pair<TrackedElementFeature,
+                               std::vector<TrackedElementRect>>> data) {
+        return TrackedElementRects(data.begin(), data.end());
+      },
+      fuzztest::VectorOf(fuzztest::PairOf(
+          fuzztest::ElementOf(
+              {TrackedElementFeature::kTrackedElementFeatureMax}),
+          fuzztest::VectorOf(AnyTrackedElementRect()))));
+}
+
+auto AnyLetterboxingBehavior() {
+  return fuzztest::ElementOf({LetterboxingBehavior::kDoNotLetterbox,
+                              LetterboxingBehavior::kLetterbox});
+}
+
+auto AnyBlitRequest() {
+  return fuzztest::Map(
+      [](const gfx::Point& offset, LetterboxingBehavior behavior,
+         bool populates_mappable) {
+        return BlitRequest(offset, behavior,
+                           gpu::ClientSharedImage::CreateForTesting(),
+                           gpu::SyncToken(), populates_mappable);
+      },
+      AnyPoint(), AnyLetterboxingBehavior(), fuzztest::Arbitrary<bool>());
+}
+
+auto AnyContentFrameIntervalType() {
+  return fuzztest::ElementOf(
+      {ContentFrameIntervalType::kVideo,
+       ContentFrameIntervalType::kAnimatingImage,
+       ContentFrameIntervalType::kScrollBarFadeOutAnimation,
+       ContentFrameIntervalType::kCompositorScroll});
+}
+
+auto AnyContentFrameIntervalInfo() {
+  return fuzztest::Map(
+      [](ContentFrameIntervalType type, base::TimeDelta interval,
+         uint32_t count) {
+        ContentFrameIntervalInfo info;
+        info.type = type;
+        info.frame_interval = interval;
+        info.duplicate_count = count;
+        return info;
+      },
+      AnyContentFrameIntervalType(), AnyTimeDelta(),
+      fuzztest::Arbitrary<uint32_t>());
+}
+
+auto AnyFrameIntervalInputs() {
+  return fuzztest::Map(
+      [](base::TimeTicks time, bool has_input, bool has_user_input, float speed,
+         std::vector<ContentFrameIntervalInfo> info, bool only_updates) {
+        FrameIntervalInputs inputs;
+        inputs.frame_time = time;
+        inputs.has_input = has_input;
+        inputs.has_user_input = has_user_input;
+        inputs.major_scroll_speed_in_pixels_per_second = speed;
+        inputs.content_interval_info = std::move(info);
+        inputs.has_only_content_frame_interval_updates = only_updates;
+        return inputs;
+      },
+      AnyTimeTicks(), fuzztest::Arbitrary<bool>(), fuzztest::Arbitrary<bool>(),
+      fuzztest::Arbitrary<float>(),
+      fuzztest::VectorOf(AnyContentFrameIntervalInfo()),
+      fuzztest::Arbitrary<bool>());
+}
+
+auto AnyThreadType() {
+  return fuzztest::ElementOf({Thread::Type::kMain, Thread::Type::kIO,
+                              Thread::Type::kCompositor, Thread::Type::kVideo,
+                              Thread::Type::kOther});
+}
+
+auto AnyThread() {
+  return fuzztest::Map(
+      [](int id, Thread::Type type) {
+        return Thread{base::PlatformThreadId::ForTest(id), type};
+      },
+      fuzztest::Arbitrary<int>(), AnyThreadType());
+}
+
+auto AnyFrameSinkBundleId() {
+  return fuzztest::ConstructorOf<FrameSinkBundleId>(
+      fuzztest::Arbitrary<uint32_t>(), fuzztest::Arbitrary<uint32_t>());
+}
+
+void RegionCaptureBoundsFuzz(const RegionCaptureBounds& input) {
+  RegionCaptureBounds output;
+  mojo::test::SerializeAndDeserialize<mojom::RegionCaptureBounds>(input,
+                                                                  output);
+}
+FUZZ_TEST(StructTraitsTest, RegionCaptureBoundsFuzz)
+    .WithDomains(AnyRegionCaptureBounds());
+
+void VerticalScrollDirectionFuzz(VerticalScrollDirection input) {
+  VerticalScrollDirection output;
+  mojo::test::SerializeAndDeserialize<mojom::VerticalScrollDirection>(input,
+                                                                      output);
+}
+FUZZ_TEST(StructTraitsTest, VerticalScrollDirectionFuzz)
+    .WithDomains(AnyVerticalScrollDirection());
+
+void FrameTimingDetailsFuzz(const FrameTimingDetails& input) {
+  FrameTimingDetails output;
+  mojo::test::SerializeAndDeserialize<mojom::FrameTimingDetails>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, FrameTimingDetailsFuzz)
+    .WithDomains(AnyFrameTimingDetails());
+
+void TrackedElementRectsFuzz(const TrackedElementRects& input) {
+  TrackedElementRects output;
+  mojo::test::SerializeAndDeserialize<mojom::TrackedElementRects>(input,
+                                                                  output);
+}
+FUZZ_TEST(StructTraitsTest, TrackedElementRectsFuzz)
+    .WithDomains(AnyTrackedElementRects());
+
+void BlitRequestFuzz(BlitRequest input) {
+  BlitRequest output;
+  mojo::test::SerializeAndDeserialize<mojom::BlitRequest>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, BlitRequestFuzz).WithDomains(AnyBlitRequest());
+
+void FrameIntervalInputsFuzz(const FrameIntervalInputs& input) {
+  FrameIntervalInputs output;
+  mojo::test::SerializeAndDeserialize<mojom::FrameIntervalInputs>(input,
+                                                                  output);
+}
+FUZZ_TEST(StructTraitsTest, FrameIntervalInputsFuzz)
+    .WithDomains(AnyFrameIntervalInputs());
+
+void ThreadFuzz(const Thread& input) {
+  Thread output;
+  mojo::test::SerializeAndDeserialize<mojom::Thread>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, ThreadFuzz).WithDomains(AnyThread());
+
+void FrameSinkBundleIdFuzz(const FrameSinkBundleId& input) {
+  FrameSinkBundleId output;
+  mojo::test::SerializeAndDeserialize<mojom::FrameSinkBundleId>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, FrameSinkBundleIdFuzz)
+    .WithDomains(AnyFrameSinkBundleId());
 
 }  // namespace
 

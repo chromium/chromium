@@ -70,6 +70,14 @@ test("services_unittests") {
     "StructTraitsTest.SharedImageFormatFuzz",
     "StructTraitsTest.CopyOutputResultFuzz",
     "StructTraitsTest.TreesInVizTimingFuzz",
+    "StructTraitsTest.RegionCaptureBoundsFuzz",
+    "StructTraitsTest.VerticalScrollDirectionFuzz",
+    "StructTraitsTest.FrameTimingDetailsFuzz",
+    "StructTraitsTest.TrackedElementRectsFuzz",
+    "StructTraitsTest.BlitRequestFuzz",
+    "StructTraitsTest.FrameIntervalInputsFuzz",
+    "StructTraitsTest.ThreadFuzz",
+    "StructTraitsTest.FrameSinkBundleIdFuzz",
   ]
 
   data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
