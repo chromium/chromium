@@ -84,6 +84,8 @@ extern NSString* const kToolsMenuSetTabReminder;
 extern NSString* const kToolsMenuShareChromeId;
 // WhatsNew item accessibility Identifier.
 extern NSString* const kToolsMenuWhatsNewId;
+// Level Up item accessibility Identifier.
+extern NSString* const kToolsMenuLevelUpId;
 // Open Price Notifications accessibility Identifier.
 extern NSString* const kToolsMenuPriceNotifications;
 // Edit Actions item accessibility Identifier.

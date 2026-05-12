@@ -35,6 +35,8 @@ IOSOverflowMenuDestination HistogramDestinationFromDestination(
       return IOSOverflowMenuDestination::kPriceNotifications;
     case overflow_menu::Destination::Cobalt:
       return IOSOverflowMenuDestination::kCobalt;
+    case overflow_menu::Destination::LevelUp:
+      return IOSOverflowMenuDestination::kLevelUp;
   }
 }
 

@@ -5049,6 +5049,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_HISTORY" desc="The title for the context menu item to hide History. This should match the title of the History destination in the menu." meaning="[iOS only] [Length: Unlimited]">
         Hide History
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_LEVEL_UP" desc="The title for the context menu item to hide Level Up. This should match the title of the Level Up destination in the menu." meaning="[iOS only] [Length: Unlimited]">
+        Hide Level Up
+      </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_PASSWORDS" desc="The title for the context menu item to hide Passwords. This should match the title of the Passwords destination in the menu." meaning="[iOS only] [Length: Unlimited]">
         Hide Password Manager
       </message>
@@ -8300,6 +8303,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_TOOLS_MENU_LENS_COPIED_IMAGE" desc="If a user has an image on their clipboard, this string will appear as an option when the user long-presses on Chrome's search icon and Lens is enabled. The user can select this option to search the image using Lens. This string is a complete sentence. If necessary for your language, you can translate as 'Lens image that you copied.'" meaning="[Length:Unlimited]">
         Lens image you copied
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_LEVEL_UP" desc="The iOS menu item for opening Level Up [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
+        Level Up
       </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH" desc="The iOS menu item for opening a new Incognito tab and doing a new search in that tab." meaning="Do a new search in a new Incognito tab">
         Incognito Search

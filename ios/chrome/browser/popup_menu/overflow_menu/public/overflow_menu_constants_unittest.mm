@@ -56,6 +56,9 @@ TEST_F(OverflowMenuConstantsTest, DestinationConversion) {
       case overflow_menu::Destination::Cobalt:
         finalExpectedDestination = overflow_menu::Destination::Cobalt;
         break;
+      case overflow_menu::Destination::LevelUp:
+        finalExpectedDestination = overflow_menu::Destination::LevelUp;
+        break;
     }
 
     // If there's no finalExpectedDestination, then the loop has looped through

@@ -1405,6 +1405,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="SpotlightDebugger"/>
   <int value="10" label="PriceNotifications"/>
   <int value="11" label="Cobalt"/>
+  <int value="12" label="LevelUp"/>
 </enum>
 
 <!-- LINT.ThenChange(

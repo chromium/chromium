@@ -60,7 +60,8 @@ enum class IOSOverflowMenuDestination {
   kSpotlightDebugger = 9,
   kPriceNotifications = 10,
   kCobalt = 11,
-  kMaxValue = kCobalt,
+  kLevelUp = 12,
+  kMaxValue = kLevelUp,
 };
 // LINT.ThenChange(
 // /ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h:destination,
