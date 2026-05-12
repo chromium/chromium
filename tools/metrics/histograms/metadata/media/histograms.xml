@@ -890,7 +890,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Android.AAudioSetDeviceId.{Direction}.{Result}"
-    enum="AndroidAudioDeviceType" expires_after="2026-06-21">
+    enum="AndroidAudioDeviceType" expires_after="M155">
   <owner>mjel@google.com</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
