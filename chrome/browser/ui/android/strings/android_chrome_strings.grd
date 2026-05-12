@@ -7526,6 +7526,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_GLIC_ACTOR_TASK_IN_PROGRESS" desc="Snackbar message shown when a Glic actor task is still in progress.">
         Your task is still in progress
       </message>
+      <message name="IDS_GLIC_INCOGNITO_NOT_AVAILABLE" desc="Text displayed in a snackbar when clicking the Glic toolbar button in an Incognito tab.">
+        Gemini isn’t available in Incognito mode
+      </message>
 
       <!-- Immersive Playback Confirmation Dialog strings -->
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_TITLE" desc="Title of the dialog asking the user to confirm entering immersive playback mode." translateable="false">

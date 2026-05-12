@@ -48,6 +48,7 @@ public class AdaptiveToolbarFeaturesUnitTest {
     public void setUp() {
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mContext = ApplicationProvider.getApplicationContext();
     }
 

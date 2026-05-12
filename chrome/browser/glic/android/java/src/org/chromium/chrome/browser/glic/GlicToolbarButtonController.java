@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -105,6 +107,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
                 new ButtonSpec.Builder(createDoneSpec())
                         .setCollapsedDrawable(collapsedDrawable)
                         .build();
+        setShouldShowOnIncognitoTabs(true);
     }
 
     private ButtonSpec createReviewSpec() {
@@ -153,7 +156,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
 
     @Override
     protected boolean shouldShowButton(@Nullable Tab tab) {
-        if (tab == null || tab.isOffTheRecord() || UrlUtilities.isNtpUrl(tab.getUrl())) {
+        if (tab == null || UrlUtilities.isNtpUrl(tab.getUrl())) {
             return false;
         }
         // TODO(crbug.com/499354469): Add proper checks for glic availability.
@@ -171,6 +174,11 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
         }
 
         assumeNonNull(tab);
+        if (tab.isOffTheRecord()) {
+            mButtonData.setButtonSpec(new ButtonSpec.Builder(mDefaultSpec).build());
+            return buttonData;
+        }
+
         mStateController.updateObservations(tab.getProfile());
         mStateController.updateButtonState();
 
@@ -223,6 +231,25 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
 
         if (mTaskMenuCoordinator != null && mTaskMenuCoordinator.isShowing()) {
             mTaskMenuCoordinator.dismiss();
+            return;
+        }
+
+        Tab tab = mActiveTabSupplier.get();
+        if (tab != null && tab.isOffTheRecord()) {
+            if (mActivity instanceof SnackbarManager.SnackbarManageable) {
+                SnackbarManager snackbarManager =
+                        ((SnackbarManager.SnackbarManageable) mActivity).getSnackbarManager();
+                if (snackbarManager != null) {
+                    snackbarManager.showSnackbar(
+                            Snackbar.make(
+                                            mActivity.getString(
+                                                    R.string.glic_incognito_not_available),
+                                            null,
+                                            Snackbar.TYPE_NOTIFICATION,
+                                            Snackbar.UMA_GLIC)
+                                    .setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS));
+                }
+            }
             return;
         }
 

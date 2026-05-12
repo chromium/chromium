@@ -486,6 +486,7 @@ chromium-metrics-reviews@google.com.
   <int value="87" label="UMA_EXCLUSIVE_ACCESS_BUBBLE"/>
   <int value="88" label="UMA_CONTEXTUAL_TASKS_BOTTOM_SHEET_CLOSED_UNDO"/>
   <int value="89" label="UMA_ACTOR"/>
+  <int value="90" label="UMA_GLIC"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java:SnackbarIdentifier) -->

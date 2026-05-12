@@ -88,6 +88,7 @@ public class GlicToolbarButtonControllerTest {
         mActivity = Robolectric.setupActivity(Activity.class);
 
         when(mTab.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         ActorKeyedServiceFactory.setForTesting(mActorService);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
@@ -138,7 +139,7 @@ public class GlicToolbarButtonControllerTest {
         when(mTab.isIncognito()).thenReturn(true);
         ButtonData buttonData = mController.get(mTab);
 
-        Assert.assertFalse(buttonData.canShow());
+        Assert.assertTrue(buttonData.canShow());
     }
 
     @Test
@@ -312,6 +313,7 @@ public class GlicToolbarButtonControllerTest {
 
         // Switch profile.
         Profile newProfile = mock(Profile.class);
+        when(newProfile.getOriginalProfile()).thenReturn(newProfile);
         Tab newTab = mock(Tab.class);
         when(newTab.getProfile()).thenReturn(newProfile);
         when(newTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
