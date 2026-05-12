@@ -382,6 +382,7 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
   if (!delegate_->IsViewDragging(*view_to_reparent) &&
       !previous_bounds_in_screen.IsEmpty()) {
     view_to_reparent->SetPaintToLayer();
+    view_to_reparent->layer()->SetFillsBoundsOpaquely(false);
     view_to_reparent->SetProperty(kPreviousCollectionBounds,
                                   previous_bounds_in_screen);
   }
