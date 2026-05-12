@@ -15,6 +15,7 @@ build_webui("build") {
   ts_files = [
     "logs_app.ts",
     "logs_app.html.ts",
+    "logs_app_helpers.ts",
     "logs_browser_proxy.ts",
   ]
 

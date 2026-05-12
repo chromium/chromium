@@ -24,6 +24,60 @@ h1 {
   text-align: center;
 }
 
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.header-container button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid var(--google-grey-300);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  z-index: 10;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  min-width: 150px;
+}
+
+th.proto .dropdown-content {
+  left: auto;
+  right: 0;
+}
+
+.dropdown-content label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dropdown-content {
+    background-color: var(--google-grey-800);
+    color: var(--google-grey-200);
+    border-color: var(--google-grey-700);
+  }
+}
+
 table {
   border-collapse: collapse;
   table-layout: fixed;
@@ -37,8 +91,9 @@ td {
   text-align: left;
 }
 
-th {
+.header-cell {
   background-color: var(--google-grey-100);
+  position: relative;
 }
 
 .time {
@@ -69,7 +124,7 @@ th {
     color: var(--google-grey-200);
   }
 
-  th {
+  .header-cell {
     background-color: var(--google-grey-800);
   }
 
