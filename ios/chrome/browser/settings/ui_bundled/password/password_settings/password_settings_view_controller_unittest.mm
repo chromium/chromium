@@ -43,13 +43,8 @@ NSString* GetExpectedSavePasswordsItemTitle() {
 // Helper method that returns the expected title for the passwords in other apps
 // table view item.
 NSString* GetExpectedPasswordsInOtherAppsItemTitle() {
-  if (@available(iOS 18.0, *)) {
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_IOS18);
-  } else {
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS);
-  }
+  return l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_IOS18);
 }
 
 }  // namespace
@@ -164,29 +159,17 @@ TEST_F(PasswordSettingsViewControllerTest,
           GetTableViewItem(SectionIdentifierPasswordsInOtherApps, /*item=*/0));
   EXPECT_NSEQ(passwords_in_other_apps_item.text,
               GetExpectedPasswordsInOtherAppsItemTitle());
-  if (@available(iOS 18, *)) {
-    EXPECT_NSEQ(
-        passwords_in_other_apps_item.leadingDetailText,
-        l10n_util::GetNSString(
-            IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION));
-    EXPECT_FALSE(passwords_in_other_apps_item.trailingDetailText);
-    EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
-              UITableViewCellAccessoryNone);
+  EXPECT_NSEQ(
+      passwords_in_other_apps_item.leadingDetailText,
+      l10n_util::GetNSString(
+          IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION));
+  EXPECT_FALSE(passwords_in_other_apps_item.trailingDetailText);
+  EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
+            UITableViewCellAccessoryNone);
 
-    // Check that the "Turn on AutoFill…" button is in the table view.
-    EXPECT_TRUE(
-        HasTableViewItem(SectionIdentifierPasswordsInOtherApps, /*item=*/1));
-  } else {
-    EXPECT_FALSE(passwords_in_other_apps_item.leadingDetailText);
-    EXPECT_NSEQ(passwords_in_other_apps_item.trailingDetailText,
-                l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
-    EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
-              UITableViewCellAccessoryDisclosureIndicator);
-
-    // Check that the "Turn on AutoFill…" button isn't in the table view.
-    EXPECT_FALSE(
-        HasTableViewItem(SectionIdentifierPasswordsInOtherApps, /*item=*/1));
-  }
+  // Check that the "Turn on AutoFill…" button is in the table view.
+  EXPECT_TRUE(
+      HasTableViewItem(SectionIdentifierPasswordsInOtherApps, /*item=*/1));
 }
 
 TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
@@ -201,14 +184,10 @@ TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
               l10n_util::GetNSString(IDS_IOS_SETTING_ON));
   EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
             UITableViewCellAccessoryDisclosureIndicator);
-  if (@available(iOS 18, *)) {
-    EXPECT_NSEQ(
-        passwords_in_other_apps_item.leadingDetailText,
-        l10n_util::GetNSString(
-            IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION));
-  } else {
-    EXPECT_FALSE(passwords_in_other_apps_item.leadingDetailText);
-  }
+  EXPECT_NSEQ(
+      passwords_in_other_apps_item.leadingDetailText,
+      l10n_util::GetNSString(
+          IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION));
 
   // Check that the "Turn on AutoFill…" button isn't in the table view.
   EXPECT_FALSE(
@@ -218,30 +197,27 @@ TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
 // Tests that the right histogram is logged when tapping the "Turn on AutoFill…"
 // button.
 TEST_F(PasswordSettingsViewControllerTest, TurnOnAutoFillButtonMetric) {
-  // The "Turn on AutoFill…" button is only available on iOS 18+.
-  if (@available(iOS 18.0, *)) {
-    [controller() setPasswordsInOtherAppsEnabled:NO];
+  [controller() setPasswordsInOtherAppsEnabled:NO];
 
-    // Make sure bucket counts are all initially zero.
-    histogram_tester().ExpectTotalCount(
-        kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, 0);
+  // Make sure bucket counts are all initially zero.
+  histogram_tester().ExpectTotalCount(
+      kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, 0);
 
-    // Simulate a tap on the "Turn on AutoFill…" button.
-    [controller() tableView:controller().tableView
-        didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:1]];
+  // Simulate a tap on the "Turn on AutoFill…" button.
+  [controller() tableView:controller().tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:1]];
 
-    // Wait for the histogram to be logged.
-    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-        TestTimeouts::action_timeout(), ^bool() {
-          return histogram_tester().GetBucketCount(
-                     kTurnOnCredentialProviderExtensionPromptOutcomeHistogram,
-                     false) == 1;
-        }));
+  // Wait for the histogram to be logged.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return histogram_tester().GetBucketCount(
+                   kTurnOnCredentialProviderExtensionPromptOutcomeHistogram,
+                   false) == 1;
+      }));
 
-    // Verify that only the expected metric was logged.
-    histogram_tester().ExpectUniqueSample(
-        kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, false, 1);
-  }
+  // Verify that only the expected metric was logged.
+  histogram_tester().ExpectUniqueSample(
+      kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, false, 1);
 }
 
 TEST_F(PasswordSettingsViewControllerTest,

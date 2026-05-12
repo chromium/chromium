@@ -40,28 +40,7 @@ CGFloat const kContentOptimalWidth = 327;
 CGFloat const kCheckmarkIconSize = 18;
 CGFloat const kSubtitleMarginLayoutGuideHeight = 24;
 
-// Helper method that returns the string to use as title.
-NSString* GetTitleString() {
-  if (@available(iOS 18.0, *)) {
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER_IOS18);
-  } else {
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER);
-  }
-}
 
-// Helper method that returns the string to use in the caption view that
-// provides instructions on how to turn off autofill in other apps.
-NSString* GetTurnOffCaptionTitleString() {
-  if (@available(iOS 18.0, *)) {
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS18);
-  } else {
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS17);
-  }
-}
 
 }  // namespace
 
@@ -115,7 +94,8 @@ NSString* GetTurnOffCaptionTitleString() {
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _titleText = GetTitleString();
+    _titleText = l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER_IOS18);
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
     _subtitleText = l10n_util::GetNSString(
         IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE);
@@ -673,7 +653,8 @@ NSString* GetTurnOffCaptionTitleString() {
 // Returns caption text that shows below the subtitle in `turnOffInstructions`.
 - (UITextView*)drawCaptionTextView {
   NSString* text;
-  text = GetTurnOffCaptionTitleString();
+  text = l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS18);
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kGrey600Color],
     NSFontAttributeName :

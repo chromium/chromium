@@ -93,29 +93,6 @@ NSString* GetSavePasswordsItemTitle() {
   return l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS_PASSKEYS);
 }
 
-// Helper method that returns the string to use as title for the
-// `passwordsInOtherAppsItem`.
-NSString* GetPasswordsInOtherAppsItemTitle() {
-  if (@available(iOS 18.0, *)) {
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_IOS18);
-  } else {
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS);
-  }
-}
-
-// Helper method that returns whether the `turnOnPasswordsInOtherAppsItem`
-// should be visible depending on the given `passwords_in_other_apps_enabled`
-// status.
-BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
-    BOOL passwords_in_other_apps_enabled) {
-  BOOL should_show_item = NO;
-  if (@available(iOS 18, *)) {
-    should_show_item = !passwords_in_other_apps_enabled;
-  }
-  return should_show_item;
-}
 
 }  // namespace
 
@@ -161,9 +138,6 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
   // off status will be omitted until this is populated.
   BOOL _passwordsInOtherAppsEnabled;
 
-  // Whether the `turnOnPasswordsInOtherAppsItem` should be visible.
-  BOOL _shouldShowTurnOnPasswordsInOtherAppsItem;
-
   // UI elements
 
   // The item related to the switch for the password manager setting.
@@ -201,8 +175,6 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _passwordsInOtherAppsEnabled = NO;
-    _shouldShowTurnOnPasswordsInOtherAppsItem =
-        ShouldShowTurnOnPasswordsInOtherAppsItem(_passwordsInOtherAppsEnabled);
   }
   return self;
 }
@@ -322,30 +294,24 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
       break;
     }
     case ItemTypeTurnOnPasswordsInOtherAppsButton: {
-      if (@available(iOS 18.0, *)) {
-        base::RecordAction(
-            base::UserMetricsAction("MobilePasswordSettingsTurnOnAutoFill"));
+      base::RecordAction(
+          base::UserMetricsAction("MobilePasswordSettingsTurnOnAutoFill"));
 
-        // Disable the button as the API that's about to be called
-        // (`-requestToTurnOnCredentialProviderExtensionWithCompletionHandler`)
-        // won't accept other requests for the following 10 seconds.
-        [self setTurnOnPasswordsInOtherAppsItemEnabled:NO];
+      // Disable the button as the API that's about to be called
+      // (`-requestToTurnOnCredentialProviderExtensionWithCompletionHandler`)
+      // won't accept other requests for the following 10 seconds.
+      [self setTurnOnPasswordsInOtherAppsItemEnabled:NO];
 
-        // Show the prompt that allows setting the app as a credential provider.
-        scoped_refptr<base::SequencedTaskRunner> currentTaskRunner =
-            base::SequencedTaskRunner::GetCurrentDefault();
-        __weak __typeof(self) weakSelf = self;
-        [ASSettingsHelper
-            requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
-                BOOL appWasEnabledForAutoFill) {
-              [weakSelf
-                  handleTurnOnAutofillPromptOutcome:appWasEnabledForAutoFill
-                                  currentTaskRunner:currentTaskRunner];
-            }];
-      } else {
-        // This item shouldn't be shown on iOS versions prior to 18.
-        NOTREACHED();
-      }
+      // Show the prompt that allows setting the app as a credential provider.
+      scoped_refptr<base::SequencedTaskRunner> currentTaskRunner =
+          base::SequencedTaskRunner::GetCurrentDefault();
+      __weak __typeof(self) weakSelf = self;
+      [ASSettingsHelper
+          requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
+              BOOL appWasEnabledForAutoFill) {
+            [weakSelf handleTurnOnAutofillPromptOutcome:appWasEnabledForAutoFill
+                                      currentTaskRunner:currentTaskRunner];
+          }];
       break;
     }
     case ItemTypeBulkMovePasswordsToAccountButton: {
@@ -481,11 +447,10 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
   TableViewMultiDetailTextItem* passwordsInOtherAppsItem =
       [[TableViewMultiDetailTextItem alloc]
           initWithType:ItemTypePasswordsInOtherApps];
-  passwordsInOtherAppsItem.text = GetPasswordsInOtherAppsItemTitle();
-  if (@available(iOS 18.0, *)) {
-    passwordsInOtherAppsItem.leadingDetailText = l10n_util::GetNSString(
-        IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION);
-  }
+  passwordsInOtherAppsItem.text = l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_IOS18);
+  passwordsInOtherAppsItem.leadingDetailText = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION);
   passwordsInOtherAppsItem.accessibilityIdentifier =
       kPasswordSettingsPasswordsInOtherAppsRowId;
   return passwordsInOtherAppsItem;
@@ -748,8 +713,6 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
   }
 
   _passwordsInOtherAppsEnabled = enabled;
-  _shouldShowTurnOnPasswordsInOtherAppsItem =
-      ShouldShowTurnOnPasswordsInOtherAppsItem(_passwordsInOtherAppsEnabled);
 
   if (_modelLoadStatus == ModelNotLoaded) {
     return;
@@ -946,7 +909,7 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
 // Whether the `passwordsInOtherAppsItem` should be tappable and lead to the
 // Passwords in Other Apps screen.
 - (BOOL)shouldPasswordsInOtherAppsBeTappable {
-  return !_shouldShowTurnOnPasswordsInOtherAppsItem;
+  return _passwordsInOtherAppsEnabled;
 }
 
 // Adds or removes the `turnOnPasswordsInOtherAppsItem` from the table view if
@@ -966,11 +929,11 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
 
   // First check if an update is required or if the item's visibility is already
   // as needed.
-  if (_shouldShowTurnOnPasswordsInOtherAppsItem == itemAlreadyExists) {
+  if (!_passwordsInOtherAppsEnabled == itemAlreadyExists) {
     return;
   }
 
-  if (_shouldShowTurnOnPasswordsInOtherAppsItem) {
+  if (!_passwordsInOtherAppsEnabled) {
     _turnOnPasswordsInOtherAppsItem =
         [self createTurnOnPasswordsInOtherAppsItem];
     [self setTurnOnPasswordsInOtherAppsItemEnabled:YES];
