@@ -27,7 +27,8 @@ public interface AppMenuHandler {
         AppMenuItemType.BUTTON_ROW,
         AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
         AppMenuItemType.SUBMENU_HEADER,
-        AppMenuItemType.DIVIDER
+        AppMenuItemType.DIVIDER,
+        AppMenuItemType.BOOKMARK
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AppMenuItemType {
@@ -55,11 +56,14 @@ public interface AppMenuHandler {
         /** A divider item to distinguish between menu item groupings. */
         int DIVIDER = 5;
 
+        /** A bookmark item. */
+        int BOOKMARK = 6;
+
         /**
          * The number of menu item types specified above. If you add a menu item type you MUST
          * increment this.
          */
-        int NUM_ENTRIES = 6;
+        int NUM_ENTRIES = 7;
     }
 
     /**

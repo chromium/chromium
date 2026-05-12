@@ -8,6 +8,7 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuBlocker.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuBookmarkItemProperties.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuButtonHelper.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuClickHandler.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuCoordinator.java",
@@ -25,6 +26,7 @@ android_library("java") {
     ":java_resources",
     "//base:supplier_java",
     "//chrome/browser/android/lifecycle:java",
+    "//components/bookmarks/common/android:bookmarks_java",
     "//components/browser_ui/util/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",

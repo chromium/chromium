@@ -605,6 +605,10 @@ class AppMenuHandlerImpl
                 AppMenuItemType.DIVIDER,
                 new LayoutViewBuilder<>(R.layout.divider_line_menu_item),
                 DividerLineMenuItemViewBinder::bind);
+        adapter.registerType(
+                AppMenuItemType.BOOKMARK,
+                new LayoutViewBuilder<>(standardItemResId),
+                AppMenuItemViewBinder::bindStandardItem);
     }
 
     private void registerViewBinders(
