@@ -8669,6 +8669,32 @@
             ]
         }
     ],
+    "DesktopOmniboxSimplification": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PedalRowWithPlusButtonOnly_20260512",
+                    "params": {
+                        "Omnibox_AddContextButtonVariant": "below_results",
+                        "Omnibox_ContextButtonHasBackground": "false",
+                        "Omnibox_ContextButtonShapeIsOblong": "true",
+                        "Omnibox_ContextButtonShowSuggestionLabel": "false",
+                        "Omnibox_HideClassicContextButton": "false",
+                        "Omnibox_ShowLensSearchChip": "false"
+                    },
+                    "enable_features": [
+                        "WebUIOmniboxSimplification"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxStarterPackExpansion": [
         {
             "platforms": [
