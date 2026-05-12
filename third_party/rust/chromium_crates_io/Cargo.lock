@@ -276,6 +276,7 @@ dependencies = [
  "serde_json",
  "serde_json_lenient",
  "shared-brotli-patch-decoder",
+ "siphasher",
  "skrifa",
  "small_ctor",
  "static_assertions",
@@ -1587,6 +1588,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "simd-adler32"
 version = "0.3.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "siphasher"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
