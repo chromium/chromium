@@ -12,6 +12,8 @@
 #include "components/optimization_guide/proto/features/finds.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace finds {
@@ -81,6 +83,35 @@ TEST_F(FindsUtilsTest, IsAllowedByEnterprisePolicy) {
       static_cast<int>(optimization_guide::model_execution::prefs::
                            ModelExecutionEnterprisePolicyValue::kDisable));
   EXPECT_FALSE(IsAllowedByEnterprisePolicy(prefs()));
+}
+TEST_F(FindsUtilsTest, IsHistorySyncAndMsbbEnabled) {
+  prefs()->registry()->RegisterBooleanPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  syncer::TestSyncService sync_service;
+
+  // Both History Sync and MSBB disabled.
+  sync_service.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, false);
+  prefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  EXPECT_FALSE(IsHistorySyncAndMsbbEnabled(&sync_service, prefs()));
+
+  // Only History Sync enabled.
+  sync_service.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  EXPECT_FALSE(IsHistorySyncAndMsbbEnabled(&sync_service, prefs()));
+
+  // Only MSBB enabled.
+  sync_service.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, false);
+  prefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  EXPECT_FALSE(IsHistorySyncAndMsbbEnabled(&sync_service, prefs()));
+
+  // Both History Sync and MSBB enabled.
+  sync_service.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  EXPECT_TRUE(IsHistorySyncAndMsbbEnabled(&sync_service, prefs()));
 }
 
 }  // namespace finds

@@ -11,11 +11,15 @@
 #include "chrome/browser/finds/core/finds_service.h"
 #include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,9 +47,19 @@ class FindsTabHelperTest : public ChromeRenderViewHostTestHarness {
       GTEST_SKIP() << "Unsupported platform for FindsTabHelper";
     }
 
-    FindsService::RegisterProfilePrefs(pref_service_.registry());
-    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-        pref_service_.registry());
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::TestSyncService>();
+        }));
+
+    auto* sync_service = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+    sync_service->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, true);
+
+    profile()->GetPrefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
@@ -54,7 +68,8 @@ class FindsTabHelperTest : public ChromeRenderViewHostTestHarness {
 
     FindsTabHelper::CreateForWebContents(
         web_contents(), finds::FindsServiceFactory::GetForProfile(profile()),
-        /*opt_guide_service=*/nullptr, template_url_service_, &pref_service_);
+        /*opt_guide_service=*/nullptr, template_url_service_,
+        profile()->GetPrefs());
     tab_helper_ = FindsTabHelper::FromWebContents(web_contents());
 
     finds_service_ = FindsServiceFactory::GetForProfile(profile());
@@ -110,7 +125,6 @@ class FindsTabHelperTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestingPrefServiceSimple pref_service_;
   MockFindsServiceObserver finds_service_observer_;
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   raw_ptr<FindsService> finds_service_ = nullptr;
@@ -133,21 +147,22 @@ TEST_F(FindsTabHelperTest, TestNonForwardBackNavToSRPDoesNotCount) {
 }
 
 TEST_F(FindsTabHelperTest, TestOptInInteracted) {
-  pref_service_.SetBoolean(prefs::kFindsOptInPromoUserInteracted, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kFindsOptInPromoUserInteracted,
+                                    true);
   EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
   SimulateSRPBackNavigations(srp_return_count_threshold_);
   EXPECT_EQ(srp_return_count(), 0);
 }
 
 TEST_F(FindsTabHelperTest, TestOptInMaxCountExceeded) {
-  pref_service_.SetInteger(prefs::kFindsOptInPromoShownCount, 100);
+  profile()->GetPrefs()->SetInteger(prefs::kFindsOptInPromoShownCount, 100);
   EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
   SimulateSRPBackNavigations(srp_return_count_threshold_);
   EXPECT_EQ(srp_return_count(), 0);
 }
 
 TEST_F(FindsTabHelperTest, TestOptInCooldownNotPassed) {
-  pref_service_.SetInt64(
+  profile()->GetPrefs()->SetInt64(
       prefs::kFindsOptInPromoLastShownTimestamp,
       (base::Time::Now() + base::Days(1)).InMillisecondsSinceUnixEpoch());
   EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
@@ -156,10 +171,29 @@ TEST_F(FindsTabHelperTest, TestOptInCooldownNotPassed) {
 }
 
 TEST_F(FindsTabHelperTest, TestEnterprisePolicyDisabled) {
-  pref_service_.SetInteger(
+  profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::kFindsEnterprisePolicyAllowed,
       static_cast<int>(optimization_guide::model_execution::prefs::
                            ModelExecutionEnterprisePolicyValue::kDisable));
+  EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
+  SimulateSRPBackNavigations(srp_return_count_threshold_);
+  EXPECT_EQ(srp_return_count(), 0);
+}
+TEST_F(FindsTabHelperTest, TestMSBBDisabled) {
+  profile()->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
+  SimulateSRPBackNavigations(srp_return_count_threshold_);
+  EXPECT_EQ(srp_return_count(), 0);
+}
+
+TEST_F(FindsTabHelperTest, TestHistorySyncDisabled) {
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile()));
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, false);
+  sync_service->FireStateChanged();
+
   EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
   SimulateSRPBackNavigations(srp_return_count_threshold_);
   EXPECT_EQ(srp_return_count(), 0);

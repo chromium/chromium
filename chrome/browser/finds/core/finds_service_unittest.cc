@@ -24,6 +24,8 @@
 #include "components/optimization_guide/proto/features/finds.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,6 +66,11 @@ class FindsServiceTest : public testing::Test {
     optimization_guide::model_execution::prefs::RegisterProfilePrefs(
         prefs_.registry());
     FindsService::RegisterProfilePrefs(prefs_.registry());
+    prefs_.registry()->RegisterBooleanPref(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+        false);
+    prefs_.SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
     opt_guide_service_ = std::make_unique<
         testing::NiceMock<MockOptimizationGuideKeyedService>>();
     history_service_ =
@@ -72,7 +79,7 @@ class FindsServiceTest : public testing::Test {
         notifications::test::MockNotificationScheduleService>>();
     service_ = std::make_unique<FindsService>(
         opt_guide_service_.get(), history_service_.get(), &prefs_,
-        notification_schedule_service_.get());
+        notification_schedule_service_.get(), &sync_service_);
   }
 
  protected:
@@ -83,6 +90,7 @@ class FindsServiceTest : public testing::Test {
   std::unique_ptr<history::MockHistoryService> history_service_;
   std::unique_ptr<notifications::test::MockNotificationScheduleService>
       notification_schedule_service_;
+  syncer::TestSyncService sync_service_;
   std::unique_ptr<FindsService> service_;
   base::HistogramTester histogram_tester_;
 
@@ -109,10 +117,32 @@ TEST_F(FindsServiceTest, VerifyThemeNotInterestedCooldownPref) {
                   .Find("Shopping"));
 }
 
+TEST_F(FindsServiceTest, DeleteNotificationsOnMSBBToggle) {
+  EXPECT_CALL(
+      *notification_schedule_service_,
+      DeleteNotifications(notifications::SchedulerClientType::kChromeFinds))
+      .Times(1);
+
+  prefs_.SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+}
+
+TEST_F(FindsServiceTest, DeleteNotificationsOnHistorySyncToggle) {
+  EXPECT_CALL(
+      *notification_schedule_service_,
+      DeleteNotifications(notifications::SchedulerClientType::kChromeFinds))
+      .Times(1);
+
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, false);
+  // TestSyncService requires explicit firing of observer events.
+  sync_service_.FireStateChanged();
+}
+
 TEST_F(FindsServiceTest, HistoryServiceUnavailable) {
-  auto service =
-      std::make_unique<FindsService>(opt_guide_service_.get(), nullptr, &prefs_,
-                                     notification_schedule_service_.get());
+  auto service = std::make_unique<FindsService>(
+      opt_guide_service_.get(), nullptr, &prefs_,
+      notification_schedule_service_.get(), &sync_service_);
 
   bool callback_called = false;
   service->ExecuteModelAndScheduleNotification(
@@ -128,9 +158,9 @@ TEST_F(FindsServiceTest, HistoryServiceUnavailable) {
 }
 
 TEST_F(FindsServiceTest, OptimizationGuideUnavailable) {
-  auto service =
-      std::make_unique<FindsService>(nullptr, history_service_.get(), &prefs_,
-                                     notification_schedule_service_.get());
+  auto service = std::make_unique<FindsService>(
+      nullptr, history_service_.get(), &prefs_,
+      notification_schedule_service_.get(), &sync_service_);
 
   bool callback_called = false;
   service->ExecuteModelAndScheduleNotification(
@@ -143,6 +173,41 @@ TEST_F(FindsServiceTest, OptimizationGuideUnavailable) {
   histogram_tester_.ExpectUniqueSample(
       "Finds.Result",
       FindsService::Result::Status::kOptimizationGuideUnavailable, 1);
+}
+
+TEST_F(FindsServiceTest, HistorySyncDisabled) {
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, false);
+  sync_service_.FireStateChanged();
+
+  bool callback_called = false;
+  service_->ExecuteModelAndScheduleNotification(
+      base::BindLambdaForTesting([&](FindsService::Result result) {
+        EXPECT_EQ(FindsService::Result::Status::kDisabledByHistorySyncOrMsbb,
+                  result.status);
+        callback_called = true;
+      }));
+  EXPECT_TRUE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      "Finds.Result",
+      FindsService::Result::Status::kDisabledByHistorySyncOrMsbb, 1);
+}
+
+TEST_F(FindsServiceTest, MSBBDisabled) {
+  prefs_.SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+
+  bool callback_called = false;
+  service_->ExecuteModelAndScheduleNotification(
+      base::BindLambdaForTesting([&](FindsService::Result result) {
+        EXPECT_EQ(FindsService::Result::Status::kDisabledByHistorySyncOrMsbb,
+                  result.status);
+        callback_called = true;
+      }));
+  EXPECT_TRUE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      "Finds.Result",
+      FindsService::Result::Status::kDisabledByHistorySyncOrMsbb, 1);
 }
 
 TEST_F(FindsServiceTest, EmptyHistory) {
@@ -426,8 +491,9 @@ TEST_F(FindsServiceTest, VerifyMaxHistoryEntriesDefault) {
 }
 
 TEST_F(FindsServiceTest, EmptyNotificationService) {
-  auto service = std::make_unique<FindsService>(
-      opt_guide_service_.get(), history_service_.get(), &prefs_, nullptr);
+  auto service = std::make_unique<FindsService>(opt_guide_service_.get(),
+                                                history_service_.get(), &prefs_,
+                                                nullptr, &sync_service_);
 
   EXPECT_CALL(*history_service_, QueryHistory(_, _, _, _))
       .WillOnce([](const std::u16string& text_query,

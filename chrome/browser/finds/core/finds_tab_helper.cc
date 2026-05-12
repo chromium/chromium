@@ -100,7 +100,7 @@ void FindsTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (pref_service_ && !IsAllowedByEnterprisePolicy(pref_service_)) {
+  if (!finds_service_->IsFindsFeatureAllowedForUser()) {
     return;
   }
 

@@ -16,8 +16,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace finds {
 
@@ -44,6 +46,7 @@ FindsServiceFactory::FindsServiceFactory()
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(NotificationScheduleServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 FindsServiceFactory::~FindsServiceFactory() = default;
@@ -67,9 +70,12 @@ FindsServiceFactory::BuildServiceInstanceForBrowserContext(
                                            ServiceAccessType::EXPLICIT_ACCESS);
   notifications::NotificationScheduleService* notification_schedule_service =
       NotificationScheduleServiceFactory::GetForKey(profile->GetProfileKey());
-  return std::make_unique<FindsService>(opt_guide_service, history_service,
-                                        profile->GetPrefs(),
-                                        notification_schedule_service);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+
+  return std::make_unique<FindsService>(
+      opt_guide_service, history_service, profile->GetPrefs(),
+      notification_schedule_service, sync_service);
 }
 
 }  // namespace finds

@@ -36,6 +36,8 @@ static_library("core") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/search_engines",
+    "//components/sync",
+    "//components/unified_consent",
     "//content/public/browser",
   ]
 }
@@ -56,11 +58,13 @@ source_set("unit_tests") {
     "//chrome/browser/notifications/scheduler/test:test_support",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/search_engines",
+    "//chrome/browser/sync:factories",
     "//chrome/test:test_support",
     "//components/history/core/browser",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
+    "//components/sync:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

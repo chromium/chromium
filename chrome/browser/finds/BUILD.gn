@@ -18,5 +18,7 @@ static_library("finds") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:factories",
+    "//components/sync",
   ]
 }

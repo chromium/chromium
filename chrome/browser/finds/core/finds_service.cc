@@ -36,6 +36,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
+#include "components/unified_consent/pref_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using SuggestionTheme =
@@ -209,11 +213,32 @@ FindsService::FindsService(
     OptimizationGuideKeyedService* opt_guide_service,
     history::HistoryService* history_service,
     PrefService* pref_service,
-    notifications::NotificationScheduleService* notification_schedule_service)
+    notifications::NotificationScheduleService* notification_schedule_service,
+    syncer::SyncService* sync_service)
     : opt_guide_service_(opt_guide_service),
       history_service_(history_service),
       pref_service_(pref_service),
-      notification_schedule_service_(notification_schedule_service) {
+      notification_schedule_service_(notification_schedule_service),
+      sync_service_(sync_service) {
+  CHECK(pref_service_);
+  // Observe changes to the underlying permission signals to proactively clear
+  // scheduled notifications if the user revokes history sync or MSBB
+  // permissions.
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      base::BindRepeating(
+          &FindsService::MaybeDeleteNotificationsOnPermissionLoss,
+          base::Unretained(this)));
+
+  if (sync_service_) {
+    sync_observation_.Observe(sync_service_);
+  }
+
+  // Clean up any stale existing scheduled notifications if permissions are not
+  // currently granted.
+  MaybeDeleteNotificationsOnPermissionLoss();
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -233,12 +258,36 @@ void FindsService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void FindsService::OnStateChanged(syncer::SyncService* sync) {
+  MaybeDeleteNotificationsOnPermissionLoss();
+}
+
+void FindsService::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_observation_.Reset();
+  sync_service_ = nullptr;
+}
+
+void FindsService::MaybeDeleteNotificationsOnPermissionLoss() {
+  if (!IsFindsFeatureAllowedForUser() && notification_schedule_service_) {
+    notification_schedule_service_->DeleteNotifications(
+        notifications::SchedulerClientType::kChromeFinds);
+  }
+}
+
 void FindsService::ExecuteModelAndScheduleNotification(
     base::OnceCallback<void(Result)> callback) {
   if (!IsAllowedByEnterprisePolicy(pref_service_)) {
     RecordFindsResultAndRunCallback(
         std::move(callback), {Result::Status::kDisabledByEnterprisePolicy,
                               "Error: Feature disabled by enterprise policy."});
+    return;
+  }
+
+  if (!IsHistorySyncAndMsbbEnabled(sync_service_, pref_service_)) {
+    RecordFindsResultAndRunCallback(
+        std::move(callback), {Result::Status::kDisabledByHistorySyncOrMsbb,
+                              "Error: Feature disabled because History Sync or "
+                              "MSBB is not enabled."});
     return;
   }
 
@@ -286,7 +335,7 @@ void FindsService::ExecuteModelAndScheduleNotification(
 
 void FindsService::RecordThemeURLVisited(
     optimization_guide::proto::FindsMetadata::ThemeType theme_type) {
-  if (!IsAllowedByEnterprisePolicy(pref_service_)) {
+  if (!IsFindsFeatureAllowedForUser()) {
     return;
   }
 
@@ -307,7 +356,7 @@ void FindsService::RecordThemeURLVisited(
 }
 
 void FindsService::SRPBackNavigationCountForOptInReached() {
-  if (!IsAllowedByEnterprisePolicy(pref_service_)) {
+  if (!IsFindsFeatureAllowedForUser()) {
     return;
   }
 
@@ -315,8 +364,16 @@ void FindsService::SRPBackNavigationCountForOptInReached() {
       FindsOptInTriggerReason::kSrpBackNavigationCount);
 }
 
+bool FindsService::IsFindsFeatureAllowedForUser() {
+  return IsAllowedByEnterprisePolicy(pref_service_) &&
+         IsHistorySyncAndMsbbEnabled(sync_service_, pref_service_);
+}
+
 void FindsService::MaybeRescheduleNotifications() {
   if (!notification_schedule_service_) {
+    return;
+  }
+  if (!IsFindsFeatureAllowedForUser()) {
     return;
   }
   notification_schedule_service_->GetClientOverview(
@@ -343,7 +400,7 @@ bool FindsService::ScheduleNotificationForInternalsPage() {
 
 void FindsService::CheckFindsNotificationsEnabledAndMaybeExecute() {
 #if BUILDFLAG(IS_ANDROID)
-  if (!IsAllowedByEnterprisePolicy(pref_service_)) {
+  if (!IsFindsFeatureAllowedForUser()) {
     return;
   }
   FindsServiceAndroid::CheckAreFindsNotificationsEnabledAndroid(
@@ -493,7 +550,7 @@ bool FindsService::ScheduleNotificationWithModelResult(
           std::move(scheduler_params)));
   // Track model execution timestamp to properly cooldown the model from being
   // rerun during the window between scheduling and notification being shown.
-  finds::MarkModelExecutionLastTimestamp(pref_service_);
+  MarkModelExecutionLastTimestamp(pref_service_);
 
   return true;
 }
@@ -509,7 +566,7 @@ void FindsService::NotifyOptInCriteriaFulfilled(
   for (auto& observer : observers_) {
     observer.OnOptInCriteriaFulfilled();
   }
-  finds::RecordOptInCriteriaFulfilled(reason);
+  RecordOptInCriteriaFulfilled(reason);
 }
 
 }  // namespace finds
