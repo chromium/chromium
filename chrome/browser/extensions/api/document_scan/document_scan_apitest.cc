@@ -110,15 +110,6 @@ class DocumentScanApiTest : public ExtensionApiTest,
     auto* lorgnette_manager = static_cast<ash::FakeLorgnetteScannerManager*>(
         ash::LorgnetteScannerManagerFactory::GetForBrowserContext(profile()));
 
-    // Set up Lorgnette's GetCurrentConfig response.
-    lorgnette::ScannerConfig config;
-    lorgnette::OptionGroup* group = config.add_option_groups();
-    group->set_title("title");
-    group->add_members("item1");
-    group->add_members("item2");
-    lorgnette_manager->ConfigureGetCurrentConfigResponse(
-        lorgnette::OPERATION_RESULT_SUCCESS, std::move(config));
-
     // Set up Lorgnette's StartPreparedScan response.
     lorgnette_manager->SetStartPreparedScanResult(
         lorgnette::OPERATION_RESULT_SUCCESS);
@@ -138,6 +129,10 @@ class DocumentScanApiTest : public ExtensionApiTest,
     lorgnette::ScannerConfig config_template;
     (*config_template.mutable_options())["option1"] =
         CreateTestScannerOption("option1", 5);
+    lorgnette::OptionGroup* group = config_template.add_option_groups();
+    group->set_title("title");
+    group->add_members("item1");
+    group->add_members("item2");
     for (auto& scanner : scanners) {
       lorgnette_manager()->AddScanner(std::move(scanner), config_template);
     }

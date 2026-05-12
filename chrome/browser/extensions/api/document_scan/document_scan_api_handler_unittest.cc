@@ -159,7 +159,8 @@ class DocumentScanAPIHandlerTest : public testing::Test {
   // the scanner that gets created.  Otherwise, a constant ID will be used.
   std::string CreateScannerIdForExtension(
       scoped_refptr<const Extension> extension,
-      bool unique_id = true) {
+      bool unique_id = true,
+      std::optional<lorgnette::ScannerConfig> config = std::nullopt) {
     auto scanner_info = CreateTestScannerInfo();
     if (unique_id) {
       static size_t counter = 0;
@@ -168,7 +169,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     }
     const std::string the_scanner_id = scanner_info.name();
 
-    AddScanners({std::move(scanner_info)});
+    AddScanners({std::move(scanner_info)}, std::move(config));
     ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
 
     GetScannerListFuture list_future;
@@ -193,14 +194,20 @@ class DocumentScanAPIHandlerTest : public testing::Test {
             testing_profile_.get()));
   }
 
-  void AddScanners(std::vector<lorgnette::ScannerInfo> scanners) {
+  void AddScanners(
+      std::vector<lorgnette::ScannerInfo> scanners,
+      std::optional<lorgnette::ScannerConfig> config = std::nullopt) {
     auto* scanner_manager = GetLorgnetteScannerManager();
     lorgnette::ScannerConfig config_template;
-    lorgnette::ScannerOption option1;
-    option1.set_name("option1");
-    option1.set_option_type(lorgnette::TYPE_INT);
-    option1.mutable_int_value()->add_value(5);
-    (*config_template.mutable_options())["option1"] = option1;
+    if (config.has_value()) {
+      config_template = std::move(config).value();
+    } else {
+      lorgnette::ScannerOption option1;
+      option1.set_name("option1");
+      option1.set_option_type(lorgnette::TYPE_INT);
+      option1.mutable_int_value()->add_value(5);
+      (*config_template.mutable_options())["option1"] = option1;
+    }
 
     for (auto& scanner : scanners) {
       scanner_manager->AddScanner(std::move(scanner), config_template);
@@ -212,8 +219,11 @@ class DocumentScanAPIHandlerTest : public testing::Test {
   // further operations.  Note that this will always use a unique scanner ID for
   // the scanner that is created.
   std::string OpenScannerForExtension(
-      scoped_refptr<const Extension> extension) {
-    return OpenScannerWithId(extension, CreateScannerIdForExtension(extension));
+      scoped_refptr<const Extension> extension,
+      std::optional<lorgnette::ScannerConfig> config = std::nullopt) {
+    return OpenScannerWithId(
+        extension, CreateScannerIdForExtension(extension, /*unique_id=*/true,
+                                               std::move(config)));
   }
 
   // "Discover" and open a scanner, start a scan on that scanner, and return the
@@ -752,9 +762,6 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_SecondOpenClosesFirstHandle) {
   const std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
 
-  GetLorgnetteScannerManager()->ConfigureGetCurrentConfigResponse(
-      lorgnette::OPERATION_RESULT_SUCCESS, std::nullopt);
-
   // The first open succeeds because the scanner is not open.
   OpenScannerFuture future1;
   document_scan_api_handler_->OpenScanner(extension_, scanner_id,
@@ -832,15 +839,14 @@ TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_NoScanner) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_ValidScanner) {
-  std::string scanner_handle = OpenScannerForExtension(extension_);
-  EXPECT_FALSE(scanner_handle.empty());
-
   lorgnette::ScannerConfig config;
   lorgnette::OptionGroup* group = config.add_option_groups();
   group->set_title("group-title");
   group->add_members("group-member");
-  GetLorgnetteScannerManager()->ConfigureGetCurrentConfigResponse(
-      lorgnette::OPERATION_RESULT_SUCCESS, std::move(config));
+
+  std::string scanner_handle =
+      OpenScannerForExtension(extension_, std::move(config));
+  EXPECT_FALSE(scanner_handle.empty());
 
   GetOptionGroupsFuture future;
   document_scan_api_handler_->GetOptionGroups(extension_, scanner_handle,
@@ -859,6 +865,8 @@ TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_ValidScanner) {
 TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_DBusFailure) {
   std::string scanner_handle = OpenScannerForExtension(extension_);
   EXPECT_FALSE(scanner_handle.empty());
+
+  GetLorgnetteScannerManager()->SimulateDBusFailure(true);
 
   GetOptionGroupsFuture future;
   document_scan_api_handler_->GetOptionGroups(extension_, scanner_handle,

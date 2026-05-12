@@ -410,15 +410,29 @@ void FakeLorgnetteScannerManager::GetCurrentConfig(
     const lorgnette::GetCurrentConfigRequest& request,
     GetCurrentConfigCallback callback) {
   CHECK(request.has_scanner());
-  std::optional<lorgnette::GetCurrentConfigResponse> response;
-  if (get_current_config_result_.has_value()) {
-    response.emplace();
-    *response->mutable_scanner() = request.scanner();
-    response->set_result(*get_current_config_result_);
-    if (get_current_config_config_.has_value()) {
-      *response->mutable_config() = *get_current_config_config_;
-    }
+
+  if (simulate_dbus_failure_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
   }
+
+  lorgnette::GetCurrentConfigResponse response;
+  *response.mutable_scanner() = request.scanner();
+
+  const std::string& handle = request.scanner().token();
+  auto it = std::ranges::find_if(scanners_, [&handle](const auto& s) {
+    return s.active_session.has_value() &&
+           s.active_session->config.scanner().token() == handle;
+  });
+
+  if (it != scanners_.end()) {
+    response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+    *response.mutable_config() = it->active_session->config;
+  } else {
+    response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
@@ -572,13 +586,6 @@ void FakeLorgnetteScannerManager::AddScanner(
                          capabilities.has_value()
                              ? std::move(*capabilities)
                              : CreateDefaultCapabilities());
-}
-
-void FakeLorgnetteScannerManager::ConfigureGetCurrentConfigResponse(
-    std::optional<lorgnette::OperationResult> result,
-    std::optional<lorgnette::ScannerConfig> config) {
-  get_current_config_result_ = std::move(result);
-  get_current_config_config_ = std::move(config);
 }
 
 void FakeLorgnetteScannerManager::SetStartPreparedScanResult(

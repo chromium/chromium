@@ -81,14 +81,6 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
                   std::optional<lorgnette::ScannerCapabilities> capabilities =
                       std::nullopt);
 
-  // Configures the response returned by GetCurrentConfig().
-  // If `result` has no value, the response will be nullopt (that's the
-  // default). Otherwise, the response will consist of the given values and the
-  // scanner from the request.
-  void ConfigureGetCurrentConfigResponse(
-      std::optional<lorgnette::OperationResult> result,
-      std::optional<lorgnette::ScannerConfig> config);
-
   // Sets the result field of the response returned by StartPreparedScan().
   // - If `result` has no value, the response will be nullopt (that's the
   //   default).
@@ -147,8 +139,6 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
 
   bool simulate_dbus_failure_ = false;
   std::vector<ScannerState> scanners_;
-  std::optional<lorgnette::OperationResult> get_current_config_result_;
-  std::optional<lorgnette::ScannerConfig> get_current_config_config_;
   std::optional<lorgnette::OperationResult> start_prepared_scan_result_;
   std::optional<lorgnette::OperationResult> read_scan_data_result_;
   std::vector<std::string> read_scan_data_chunks_;
