@@ -23,6 +23,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.button.MaterialButton;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
@@ -76,6 +77,16 @@ class AppMenuItemViewBinder {
             }
         } else if (key == AppMenuItemProperties.ICON) {
             setIcon(view, model);
+        } else if (key == AppMenuBookmarkItemProperties.ICON_SUPPLIER) {
+            LazyOneshotSupplier<Drawable> iconSupplier =
+                    model.get(AppMenuBookmarkItemProperties.ICON_SUPPLIER);
+            if (iconSupplier != null) {
+                iconSupplier.onAvailable(
+                        (drawable) -> {
+                            model.set(AppMenuItemProperties.ICON, drawable);
+                        });
+                iconSupplier.get();
+            }
         } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
             view.setOnTouchListener(
                     new OnPeripheralClickListener(
@@ -283,6 +294,16 @@ class AppMenuItemViewBinder {
                     .setIsExpanded(model.get(AppMenuItemWithSubmenuProperties.IS_EXPANDED));
         } else if (key == AppMenuItemProperties.ICON) {
             setIcon(view, model);
+        } else if (key == AppMenuBookmarkItemProperties.ICON_SUPPLIER) {
+            LazyOneshotSupplier<Drawable> iconSupplier =
+                    model.get(AppMenuBookmarkItemProperties.ICON_SUPPLIER);
+            if (iconSupplier != null) {
+                iconSupplier.onAvailable(
+                        (drawable) -> {
+                            model.set(AppMenuItemProperties.ICON, drawable);
+                        });
+                iconSupplier.get();
+            }
         } else if (key == AppMenuItemWithSubmenuProperties.CLICK_LISTENER) {
             view.setOnClickListener(model.get(AppMenuItemWithSubmenuProperties.CLICK_LISTENER));
         } else if (key == AppMenuItemProperties.HOVER_LISTENER) {

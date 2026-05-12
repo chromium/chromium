@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -28,6 +29,7 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
@@ -49,10 +51,12 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -63,6 +67,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
+import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
@@ -104,6 +109,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuBookmarkItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -116,6 +122,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -247,6 +254,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private HubManager mHubManager;
     @Mock private PaneManager mPaneManager;
     @Mock private Pane mPane;
+    @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -405,6 +413,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
+
+        mTabbedAppMenuPropertiesDelegate.setImageFetcherForTesting(mBookmarkImageFetcher);
     }
 
     @After
@@ -413,10 +423,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Nullable
-    private MVCListAdapter.ListItem findItemById(MVCListAdapter.ModelList modelList, int id) {
-        for (MVCListAdapter.ListItem listItem : modelList) {
-            if (listItem.model.get(AppMenuItemProperties.MENU_ITEM_ID) == id) {
-                return listItem;
+    private MVCListAdapter.ListItem findItemById(Iterable<MVCListAdapter.ListItem> items, int id) {
+        for (MVCListAdapter.ListItem item : items) {
+            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID) == id) {
+                return item;
             }
         }
         return null;
@@ -502,22 +512,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     private void assertMenuItemsHaveIcons(
-            MVCListAdapter.ModelList modelList, Integer... expectedItems) {
-        List<Integer> actualItems = new ArrayList<>();
-        for (MVCListAdapter.ListItem item : modelList) {
-            if (item.model.containsKey(AppMenuItemProperties.ICON)
-                    && item.model.get(AppMenuItemProperties.ICON) != null) {
-                actualItems.add(item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
-            }
-        }
-
-        assertThat(
-                "menu items with icons were:" + getMenuTitles(modelList),
-                actualItems,
-                Matchers.containsInAnyOrder(expectedItems));
-    }
-
-    private void assertMenuItemsHaveIcons(
             Iterable<MVCListAdapter.ListItem> items, List<MenuItem> expectedItems) {
 
         assertMenuTreesAreEqual(
@@ -526,9 +520,17 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 (item, expectedId) -> {
                     if (item.type != AppMenuHandler.AppMenuItemType.BUTTON_ROW
                             && item.type != AppMenuHandler.AppMenuItemType.DIVIDER) {
-                        Assert.assertNotNull(
+                        boolean hasIcon =
+                                item.model.containsKey(AppMenuItemProperties.ICON)
+                                        && item.model.get(AppMenuItemProperties.ICON) != null;
+                        boolean hasIconSupplier =
+                                item.model.containsKey(AppMenuBookmarkItemProperties.ICON_SUPPLIER)
+                                        && item.model.get(
+                                                        AppMenuBookmarkItemProperties.ICON_SUPPLIER)
+                                                != null;
+                        Assert.assertTrue(
                                 "Item should have an icon: " + getMenuTitle(item),
-                                item.model.get(AppMenuItemProperties.ICON));
+                                hasIcon || hasIconSupplier);
                     }
                 });
     }
@@ -1290,20 +1292,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.help_id)));
 
         assertMenuItemsAreEqual(modelList, expectedItems);
-    }
-
-    @Test
-    @Config(qualifiers = "sw320dp")
-    public void testPageMenuItemsIcons_Phone_RegularPage_iconsAfterMenuItems() {
-        setUpMocksForPageMenu();
-        setMenuOptions(new MenuOptions().withAllSet().setNativePage(false));
-        doReturn(false).when(mTabbedAppMenuPropertiesDelegate).shouldShowIconBeforeItem();
-
-        assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-
-        Integer[] expectedItems = {R.id.update_menu_id, R.id.reader_mode_prefs_id};
-        assertMenuItemsHaveIcons(modelList, expectedItems);
     }
 
     @Test
@@ -3429,6 +3417,45 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.bookmark_folder_menu_id, item(0)));
 
         assertMenuItemsAreEqual(subItems, expectedSubItems);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
+    @SuppressWarnings("unchecked")
+    public void testBookmarkMenu_Favicons() {
+        BookmarkId bookmarkId = mBookmarkModel.getChildAt(mBookmarkModel.getDesktopFolderId(), 0);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        MVCListAdapter.ListItem bookmarksParent =
+                findItemById(modelList, R.id.bookmarks_parent_menu_id);
+        List<MVCListAdapter.ListItem> subItems =
+                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+
+        MVCListAdapter.ListItem bookmarkListItem = findItemById(subItems, R.id.bookmark_menu_id);
+        assertNotNull(bookmarkListItem);
+
+        LazyOneshotSupplier<Drawable> iconSupplier =
+                bookmarkListItem.model.get(AppMenuBookmarkItemProperties.ICON_SUPPLIER);
+        assertNotNull(iconSupplier);
+
+        Drawable mockFavicon = mock(Drawable.class);
+        doAnswer(
+                        invocation -> {
+                            ((Callback<Drawable>) invocation.getArgument(1)).onResult(mockFavicon);
+                            return null;
+                        })
+                .when(mBookmarkImageFetcher)
+                .fetchFaviconForBookmark(eq(bookmarkItem), any());
+
+        // Accessing the supplier should trigger the fetch.
+        iconSupplier.get();
+
+        verify(mBookmarkImageFetcher).fetchFaviconForBookmark(eq(bookmarkItem), any());
+        assertEquals(mockFavicon, iconSupplier.get());
     }
 
     private static MenuItem item(Object id, MenuItem... subItems) {

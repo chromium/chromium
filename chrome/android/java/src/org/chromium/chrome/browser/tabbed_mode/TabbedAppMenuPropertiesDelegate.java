@@ -22,6 +22,8 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -31,6 +33,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
+import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
@@ -67,6 +70,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
+import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ui.lens.LensOverlayTabHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -76,9 +80,12 @@ import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomMenuItemCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomProperties;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -144,6 +151,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private final OneshotSupplier<HubManager> mHubManagerSupplier;
 
+    private @Nullable BookmarkImageFetcher mImageFetcher;
+
     public TabbedAppMenuPropertiesDelegate(
             Context context,
             ActivityTabProvider activityTabProvider,
@@ -205,6 +214,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 TabbedAppMenuItemType.ZOOM_ITEM,
                 new LayoutViewBuilder<>(R.layout.page_zoom_menu_item),
                 PageZoomMenuItemViewBinder::bind);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        if (mImageFetcher != null) {
+            mImageFetcher.destroy();
+            mImageFetcher = null;
+        }
     }
 
     @Override
@@ -807,6 +825,25 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.ic_toolbar_24dp : 0));
     }
 
+    private BookmarkImageFetcher getImageFetcher() {
+        if (mImageFetcher == null) {
+            Profile profile = getProfileFromTabModel();
+            BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
+            assert bookmarkModel != null;
+            mImageFetcher =
+                    new BookmarkImageFetcher(
+                            profile,
+                            mContext,
+                            bookmarkModel,
+                            ImageFetcherFactory.createImageFetcher(
+                                    ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                                    profile.getProfileKey(),
+                                    GlobalDiscardableReferencePool.getReferencePool()),
+                            FaviconUtils.createCircularIconGenerator(mContext));
+        }
+        return mImageFetcher;
+    }
+
     private List<ListItem> getBookmarkItemList(List<BookmarkId> ids, BookmarkModel bookmarkModel) {
         List<ListItem> submenuItems = new ArrayList<>();
         for (BookmarkId id : ids) {
@@ -855,15 +892,27 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                             .with(AppMenuItemProperties.TITLE, item.getTitle())
                             .with(AppMenuBookmarkItemProperties.BOOKMARK_ID, item.getId())
                             .with(
-                                    AppMenuItemProperties.ICON,
-                                    AppCompatResources.getDrawable(
-                                            mContext,
-                                            shouldShowIconBeforeItem()
-                                                    ? R.drawable.ic_star_24dp
-                                                    : Resources.ID_NULL))
+                                    AppMenuBookmarkItemProperties.ICON_SUPPLIER,
+                                    shouldShowIconBeforeItem() ? createIconSupplierFor(item) : null)
+                            .with(AppMenuItemProperties.ICON_NO_TINT, !item.isFolder())
                             .build();
             return new ListItem(AppMenuHandler.AppMenuItemType.BOOKMARK, model);
         }
+    }
+
+    private LazyOneshotSupplier<Drawable> createIconSupplierFor(BookmarkItem item) {
+        if (item.isFolder()) {
+            return LazyOneshotSupplier.fromSupplier(
+                    () ->
+                            AppCompatResources.getDrawable(
+                                    mContext, R.drawable.ic_folder_outline_24dp));
+        }
+        return new LazyOneshotSupplierImpl<>() {
+            @Override
+            public void doSet() {
+                getImageFetcher().fetchFaviconForBookmark(item, this::set);
+            }
+        };
     }
 
     private ListItem buildBookmarksItem() {
@@ -1653,5 +1702,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         var profile = mTabModelSelector.getModel(false).getProfile();
         assert profile != null;
         return profile;
+    }
+
+    @VisibleForTesting
+    public void setImageFetcherForTesting(BookmarkImageFetcher imageFetcher) {
+        mImageFetcher = imageFetcher;
     }
 }
