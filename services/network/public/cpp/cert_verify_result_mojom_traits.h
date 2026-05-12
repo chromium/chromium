@@ -14,6 +14,7 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_certificate.h"
+#include "net/net_buildflags.h"
 #include "services/network/public/mojom/cert_verify_result.mojom-shared.h"
 #include "third_party/boringssl/src/include/openssl/pki/ocsp.h"
 
@@ -53,6 +54,12 @@ class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
       const net::CertVerifyResult& result) {
     return result.ct_requirement_status;
   }
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  static std::optional<int32_t> crs_root_id(
+      const net::CertVerifyResult& result) {
+    return result.crs_root_id;
+  }
+#endif
 
   static bool Read(network::mojom::CertVerifyResultDataView data,
                    net::CertVerifyResult* out);

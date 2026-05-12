@@ -852,6 +852,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()))});
   }
 
+  base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("b.example.com", "/simple.html")));
 
@@ -860,6 +861,16 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   EXPECT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
   ssl_test_util::CheckAuthenticatedState(tab, ssl_test_util::AuthState::NONE);
+
+  // The proto did not have a crs_root_id set on the anchor, check that the
+  // histograms recorded the unknown bucket.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_GE(
+      histograms.GetBucketCount("Net.Certificate.TrustAnchor2.Request",
+                                net::CertVerifyResult::kCrsRootIdUnknownId),
+      1u);
+  histograms.ExpectUniqueSample("Net.Certificate.TrustAnchor2.Verify",
+                                net::CertVerifyResult::kCrsRootIdUnknownId, 1u);
 
   {
     // We reject empty CRS updates, so create a new cert root that doesn't match
@@ -947,6 +958,66 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_AUTHORITY_INVALID,
       ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
+}
+
+IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
+                       CrsRootId) {
+  net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::EmbeddedTestServer::ServerCertificateConfig server_config;
+  server_config.dns_names = {"*.example.com"};
+  https_server_ok.SetSSLConfig(server_config);
+  https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
+
+  // Clear test roots so that cert validation only happens with
+  // what's in Chrome Root Store.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  ASSERT_TRUE(https_server_ok.Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("a.example.com", "/simple.html")));
+
+  // Check that the page is blocked depending on contents of Chrome Root Store.
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
+  EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
+  ssl_test_util::CheckAuthenticationBrokenState(
+      tab, net::CERT_STATUS_AUTHORITY_INVALID,
+      ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
+
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+  constexpr int32_t kFakeCrsRootId = 98238;
+
+  {
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->set_crs_root_id(kFakeCrsRootId);
+    InstallCRSUpdate(std::move(root_store_proto));
+  }
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("b.example.com", "/simple.html")));
+
+  // Check that the anchor histograms are recorded using the id from the
+  // Chrome Root Store proto.
+  tab = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
+  EXPECT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
+  ssl_test_util::CheckAuthenticatedState(tab, ssl_test_util::AuthState::NONE);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_GE(histograms.GetBucketCount("Net.Certificate.TrustAnchor2.Request",
+                                      kFakeCrsRootId),
+            1u);
+  histograms.ExpectUniqueSample("Net.Certificate.TrustAnchor2.Verify",
+                                kFakeCrsRootId, 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
@@ -1735,6 +1806,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   // Client should advertise the MTC Trust Anchor ID, server should send
   // matching MTC cert.
 
+  constexpr int32_t kFakeCrsRootId = 98700;
+
   // Install CRS proto with the MTC anchor and the legacy anchor.
   {
     chrome_root_store::RootStore root_store_proto;
@@ -1744,6 +1817,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
         root_store_proto.add_mtc_anchors();
     mtc_anchor->set_log_id(base::as_string_view(kMtcLogId));
     mtc_anchor->set_tls_trust_anchor(true);
+    mtc_anchor->set_crs_root_id(kFakeCrsRootId);
 
     chrome_root_store::TrustAnchor* anchor =
         root_store_proto.add_trust_anchors();
@@ -1785,11 +1859,22 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
           web_contents,
           https_server_ok.GetCertificate(kLegacyCertConfigNumber));
     }
+    base::HistogramTester histograms;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), https_server_ok.GetURL(kHostname, "/title2.html")));
     EXPECT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetTitle(),
               u"Title Of Awesomeness");
     ASSERT_GT(certificate_observer.num_observed_responses(), 0u);
+    if (GetParam()) {
+      // If the MTC was used, the histograms for the MTC anchor CRS ID should
+      // have been recorded.
+      metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+      EXPECT_GE(histograms.GetBucketCount(
+                    "Net.Certificate.TrustAnchor2.Request", kFakeCrsRootId),
+                1u);
+      histograms.ExpectUniqueSample("Net.Certificate.TrustAnchor2.Verify",
+                                    kFakeCrsRootId, 1u);
+    }
   }
 
   {

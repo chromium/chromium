@@ -1214,6 +1214,12 @@ mojom("mojom_network_param") {
     "//url/mojom:url_mojom_scheme_host_port",
   ]
 
+  enabled_features = []
+
+  if (chrome_root_store_supported) {
+    enabled_features += [ "is_chrome_root_store_supported" ]
+  }
+
   if (!is_ios) {
     export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
     export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"

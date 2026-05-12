@@ -1654,36 +1654,39 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Certificate.TrustAnchor.Request" enum="NetTrustAnchors"
-    expires_after="never">
-<!-- expires-never: Used for CA risk assessment ( https://goto.google.com/chrome-root-ca-stats ) -->
-
-  <owner>rsleevi@chromium.org</owner>
+    expires_after="2026-11-05">
+  <owner>mattm@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
     The SHA-256 hash of the subjectPublicKeyInfo of the most-specific trust
     anchor encountered in a successfully-verified certificate chain, during an
     HTTP URL request. The associated root certificate can be looked up using
     https://crt.sh/?spkisha256= .
+
+    This histogram is being replaced by Net.Certificate.TrustAnchor2.Request and
+    will be removed once the new histogram has built up enough history.
   </summary>
 </histogram>
 
 <histogram name="Net.Certificate.TrustAnchor.Verify" enum="NetTrustAnchors"
-    expires_after="never">
-<!-- expires-never: Used for CA risk assessment ( https://goto.google.com/chrome-root-ca-stats ) -->
-
-  <owner>rsleevi@chromium.org</owner>
+    expires_after="2026-11-05">
+  <owner>mattm@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
     The SHA-256 hash of the subjectPublicKeyInfo of the most-specific trust
     anchor encountered in a successfully-verified certificate chain, during
     verification time. The associated root certificate can be looked up using
     https://crt.sh/?spkisha256= .
+
+    This histogram is being replaced by Net.Certificate.TrustAnchor2.Verify and
+    will be removed once the new histogram has built up enough history.
   </summary>
 </histogram>
 
 <histogram name="Net.Certificate.TrustAnchor.VerifyOutOfDate"
-    enum="BooleanOutOfDate" expires_after="never">
-<!-- expires-never: Used for CA risk assessment ( https://goto.google.com/chrome-root-ca-stats ) -->
-
-  <owner>rsleevi@chromium.org</owner>
+    enum="BooleanOutOfDate" expires_after="2026-11-05">
+  <owner>mattm@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
     This histogram is recorded every time Chrome successfully validates a
     certificate, but cannot determine a public trust anchor from the verified
@@ -1694,6 +1697,43 @@ chromium-metrics-reviews@google.com.
     list is out of date. This histogram is temporary until the transition to a
     unified root store (in source), at which point, the OS store will no longer
     be consulted for known roots.
+  </summary>
+</histogram>
+
+<histogram name="Net.Certificate.TrustAnchor2.Request" enum="CrsRootIds"
+    expires_after="never">
+<!-- expires-never: Used for CA risk assessment ( https://goto.google.com/chrome-root-ca-stats ) -->
+
+  <owner>mattm@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    For each HTTP URL request satisfied by an active connection (non-cached
+    requests), where the server certificate verified successfully and the Chrome
+    Root Store is being used, records the Chrome Root Store stable ID of the
+    root of trust of the successfully verified certificate chain. In the case
+    where the Chrome Root Store includes trusted intermediate CA certificates
+    and the verified path terminated at a trusted intermediate, the ID will be
+    that of the root certificate, as if the path had been built all the way to
+    the root.
+  </summary>
+</histogram>
+
+<histogram name="Net.Certificate.TrustAnchor2.Verify" enum="CrsRootIds"
+    expires_after="never">
+<!-- expires-never: Used for CA risk assessment ( https://goto.google.com/chrome-root-ca-stats ) -->
+
+  <owner>mattm@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    For each certificate verification, where the certificate verified
+    successfully and the Chrome Root Store is being used, records the Chrome
+    Root Store stable ID of the root of trust of the successfully verified
+    certificate chain. Does not include cached verifications, and is only
+    recorded once when multiple identical verification inputs are coalesced into
+    a single verification attempt. In the case where the Chrome Root Store
+    includes trusted intermediate CA certificates and the verified path
+    terminated at a trusted intermediate, the ID will be that of the root
+    certificate, as if the path had been built all the way to the root.
   </summary>
 </histogram>
 

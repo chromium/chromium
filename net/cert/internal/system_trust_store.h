@@ -83,6 +83,10 @@ class SystemTrustStore {
   virtual const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
       base::span<const uint8_t> log_id) const = 0;
 
+  // Returns the crs_root_id for `path`, or nullopt if unknown.
+  virtual std::optional<int32_t> GetCrsRootIdForCert(
+      const bssl::CertPathBuilderResultPath* path) const = 0;
+
   virtual bssl::TrustStore* eutl_trust_store() = 0;
 #endif
 };

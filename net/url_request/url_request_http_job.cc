@@ -88,6 +88,7 @@
 #include "net/log/net_log_util.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
+#include "net/net_buildflags.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -191,22 +192,29 @@ base::DictValue CookieInclusionStatusNetLogParams(
 // which is expected to be ordered with the leaf cert first and the root cert
 // last. This complements the per-verification histogram
 // Net.Certificate.TrustAnchor.Verify
-void LogTrustAnchor(const std::vector<SHA256HashValue>& spki_hashes) {
+void LogTrustAnchor(const SSLInfo& ssl_info) {
   // Don't record metrics if there are no hashes; this is true if the HTTP
   // load did not come from an active network connection, such as the disk
   // cache or a synthesized response.
-  if (spki_hashes.empty()) {
-    return;
+  if (!ssl_info.public_key_hashes.empty()) {
+    int32_t id = 0;
+    for (const auto& hash : ssl_info.public_key_hashes) {
+      id = GetNetTrustAnchorHistogramIdForSPKI(hash);
+      if (id != 0) {
+        break;
+      }
+    }
+    // TODO(crbug.com/347047630): Remove this after the new histogram has
+    // accumulated sufficient history.
+    base::UmaHistogramSparse("Net.Certificate.TrustAnchor.Request", id);
   }
 
-  int32_t id = 0;
-  for (const auto& hash : spki_hashes) {
-    id = GetNetTrustAnchorHistogramIdForSPKI(hash);
-    if (id != 0) {
-      break;
-    }
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  if (ssl_info.crs_root_id.has_value()) {
+    base::UmaHistogramSparse("Net.Certificate.TrustAnchor2.Request",
+                             *ssl_info.crs_root_id);
   }
-  base::UmaHistogramSparse("Net.Certificate.TrustAnchor.Request", id);
+#endif
 }
 
 CookieOptions CreateCookieOptions(
@@ -1237,7 +1245,7 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
   if (transaction_ && transaction_->GetResponseInfo()) {
     const SSLInfo& ssl_info = transaction_->GetResponseInfo()->ssl_info;
     if (!IsCertificateError(result)) {
-      LogTrustAnchor(ssl_info.public_key_hashes);
+      LogTrustAnchor(ssl_info);
     }
   }
 

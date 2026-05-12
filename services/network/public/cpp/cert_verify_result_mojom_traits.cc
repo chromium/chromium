@@ -19,6 +19,9 @@ bool StructTraits<
                                  net::CertVerifyResult* out) {
   out->cert_status = data.cert_status();
   out->is_issued_by_known_root = data.is_issued_by_known_root();
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  out->crs_root_id = data.crs_root_id();
+#endif
   return data.ReadVerifiedCert(&out->verified_cert) &&
          data.ReadPublicKeyHashes(&out->public_key_hashes) &&
          data.ReadOcspResult(&out->ocsp_result) && data.ReadScts(&out->scts) &&

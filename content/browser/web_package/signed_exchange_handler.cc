@@ -50,6 +50,7 @@
 #include "net/cert/x509_util.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream.h"
+#include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/cpp/features.h"
@@ -667,6 +668,9 @@ void SignedExchangeHandler::OnVerifyCert(int32_t error_code,
   ssl_info.is_fatal_cert_error = net::IsCertStatusError(ssl_info.cert_status);
   ssl_info.signed_certificate_timestamps = cv_result.scts;
   ssl_info.ct_policy_compliance = cv_result.policy_compliance;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  ssl_info.crs_root_id = cv_result.crs_root_id;
+#endif
   response_head->ssl_info = std::move(ssl_info);
 
   if (!request_matcher_->MatchRequest(envelope_->response_headers())) {

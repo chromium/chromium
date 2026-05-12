@@ -45,6 +45,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
+#include "net/net_buildflags.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -268,6 +269,15 @@ class MockSystemTrustStore : public SystemTrustStore {
                : nullptr;
   }
 
+  void SetMockCrsRootId(std::optional<int32_t> crs_root_id) {
+    mock_crs_root_id_ = crs_root_id;
+  }
+
+  std::optional<int32_t> GetCrsRootIdForCert(
+      const bssl::CertPathBuilderResultPath* path) const override {
+    return mock_crs_root_id_;
+  }
+
   bssl::TrustStore* eutl_trust_store() override { return &eutl_trust_store_; }
 
   void SetMockChromeRootConstraints(
@@ -297,6 +307,7 @@ class MockSystemTrustStore : public SystemTrustStore {
   std::optional<TrustStoreChrome::MtcAnchorExtraData>
       mock_mtc_anchor_extra_data_;
   bool mock_is_locally_trusted_root_ = false;
+  std::optional<int32_t> mock_crs_root_id_;
   std::vector<ChromeRootCertConstraints> mock_chrome_root_constraints_;
   bssl::TrustStoreInMemory eutl_trust_store_;
 #endif
@@ -536,6 +547,10 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     mock_system_trust_store_->SetMockMTCAnchorData(std::move(data));
   }
 
+  void SetMockCrsRootId(std::optional<int32_t> crs_root_id) {
+    mock_system_trust_store_->SetMockCrsRootId(crs_root_id);
+  }
+
   void SetMockChromeRootConstraints(
       base::span<const StaticChromeRootCertConstraints>
           chrome_root_constraints) {
@@ -620,6 +635,7 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
+  base::HistogramTester histograms;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -628,6 +644,9 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
 
   int error = callback.WaitForResult();
   EXPECT_THAT(error, IsOk());
+  // When CRS is not being used (mock_crs_version_ == 0), the anchor usage
+  // histogram should not be recorded.
+  histograms.ExpectTotalCount("Net.Certificate.TrustAnchor2.Verify", 0u);
 }
 
 TEST_F(CertVerifyProcBuiltinTest, SimpleSignaturelessMtcSuccess) {
@@ -731,6 +750,115 @@ TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcNonTrivialProof) {
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+TEST_F(CertVerifyProcBuiltinTest, CrsAnchorUsageHistogram) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  constexpr int32_t kFakeRootId = 8369;
+  for (bool has_crs_root_id : {false, true}) {
+    SCOPED_TRACE(has_crs_root_id);
+    if (has_crs_root_id) {
+      SetMockCrsRootId(kFakeRootId);
+    } else {
+      SetMockCrsRootId(std::nullopt);
+    }
+    for (bool is_known_root : {false, true}) {
+      SCOPED_TRACE(is_known_root);
+      SetMockCRSVersion(1);
+      SetMockIsKnownRoot(is_known_root);
+      base::HistogramTester histograms;
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+             &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsOk());
+      if (has_crs_root_id) {
+        histograms.ExpectUniqueSample("Net.Certificate.TrustAnchor2.Verify",
+                                      kFakeRootId, 1u);
+      } else {
+        // When the root store does not have a crs_root_id set for the anchor,
+        // one of the special values will be recorded, depending if it is a
+        // known root or not.
+        histograms.ExpectUniqueSample(
+            "Net.Certificate.TrustAnchor2.Verify",
+            is_known_root ? CertVerifyResult::kCrsRootIdUnknownId
+                          : CertVerifyResult::kCrsRootIdPrivatelyTrustedRoot,
+            1u);
+      }
+    }
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest, MtcCrsAnchorUsageHistogram) {
+  constexpr uint8_t kMtcLogId[] = {0x09, 0x08, 0x07};
+  net::MtcLogBuilder mtc_log(kMtcLogId);
+  // TODO(crbug.com/469624806): improve interface for creating MTC cert
+  // builders.
+  std::unique_ptr<net::CertBuilder> mtc_leaf1 =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+  uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf1);
+  mtc_log.AdvanceLandmark();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+  bssl::TrustStoreInMemory trust_store;
+  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      kMtcLogId, mtc_log.GetLandmarkSubtreeHashes());
+  ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+  AddTrustStore(&trust_store);
+
+  auto leaf_der = mtc_log.CreateSignaturelessCertificate(leaf_index);
+  ASSERT_TRUE(leaf_der);
+  scoped_refptr<X509Certificate> chain =
+      X509Certificate::CreateFromBytes(*leaf_der);
+  ASSERT_TRUE(chain);
+
+  constexpr int32_t kFakeRootId = 3691;
+  for (bool has_crs_root_id : {false, true}) {
+    SCOPED_TRACE(has_crs_root_id);
+    if (has_crs_root_id) {
+      SetMockCrsRootId(kFakeRootId);
+    } else {
+      SetMockCrsRootId(std::nullopt);
+    }
+    for (bool is_known_root : {false, true}) {
+      SCOPED_TRACE(is_known_root);
+      SetMockCRSVersion(1);
+      SetMockIsKnownMtcAnchor(is_known_root);
+      base::HistogramTester histograms;
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+             &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsOk());
+      EXPECT_EQ(is_known_root, verify_result.is_issued_by_known_root);
+      if (has_crs_root_id) {
+        histograms.ExpectUniqueSample("Net.Certificate.TrustAnchor2.Verify",
+                                      kFakeRootId, 1u);
+      } else {
+        // When the root store does not have a crs_root_id set for the anchor,
+        // one of the special values will be recorded, depending if it is a
+        // known root or not.
+        histograms.ExpectUniqueSample(
+            "Net.Certificate.TrustAnchor2.Verify",
+            is_known_root ? CertVerifyResult::kCrsRootIdUnknownId
+                          : CertVerifyResult::kCrsRootIdPrivatelyTrustedRoot,
+            1u);
+      }
+    }
+  }
+}
+
 TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcRevocation) {
   constexpr uint8_t kMtcLogId[] = {0x09, 0x08, 0x07};
   net::MtcLogBuilder mtc_log(kMtcLogId);

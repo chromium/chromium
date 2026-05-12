@@ -227,6 +227,20 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Zstd"/>
 </enum>
 
+<enum name="CrsRootIds">
+<!-- The first three values are special values defined in
+CertVerifyResult::CrsRootIdSpecialValues. -->
+
+  <int value="0" label="Error"/>
+  <int value="1" label="Locally-installed trust anchor"/>
+  <int value="2" label="Unknown CRS root ID"/>
+<!-- The remaining values are defined in root_store.textproto. Old values should be left in the histogram enum even after the anchors with that ID are removed from the root_store.textproto, as old versions of Chrome may still log them, and for historical analysis. -->
+
+<!-- TODO(crbug.com/347047630): Add script to generate labels from
+root_store.textproto and fill in the rest of the IDs. -->
+
+</enum>
+
 <enum name="CTRequirementStatus">
   <int value="0" label="CT_NOT_REQUIRED"/>
   <int value="1" label="CT_REQUIREMENTS_MET"/>

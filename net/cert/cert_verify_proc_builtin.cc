@@ -50,6 +50,7 @@
 #include "net/cert/x509_util.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
+#include "net/net_buildflags.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/cert_issuer_source_static.h"
 #include "third_party/boringssl/src/pki/common_cert_errors.h"
@@ -379,6 +380,15 @@ class CertVerifyProcTrustStore {
 
   bssl::TrustStore* eutl_trust_store() {
     return system_trust_store_->eutl_trust_store();
+  }
+
+  std::optional<int32_t> GetCrsRootIdForCert(
+      const bssl::CertPathBuilderResultPath* path) const {
+    return system_trust_store_->GetCrsRootIdForCert(path);
+  }
+
+  int64_t chrome_root_store_version() const {
+    return system_trust_store_->chrome_root_store_version();
   }
 #endif
 
@@ -1487,6 +1497,25 @@ int AssignVerifyResult(
       verify_result->is_issued_by_known_root =
           trust_store->IsKnownRoot(trusted_cert);
     }
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    // crs_root_id should only be set when the Chrome Root Store is being used,
+    // which is true when chrome_root_store_version is non-zero.
+    if (trust_store->chrome_root_store_version()) {
+      std::optional<int32_t> crs_root_id =
+          trust_store->GetCrsRootIdForCert(&partial_path);
+      if (crs_root_id.has_value()) {
+        verify_result->crs_root_id = crs_root_id;
+      } else {
+        // If CRS was used but the return was nullopt, it either means this is
+        // a privately trusted root, or that the root store just didn't have an
+        // id set for this anchor.
+        verify_result->crs_root_id =
+            verify_result->is_issued_by_known_root
+                ? CertVerifyResult::kCrsRootIdUnknownId
+                : CertVerifyResult::kCrsRootIdPrivatelyTrustedRoot;
+      }
+    }
+#endif
   }
 
   if (path_is_valid && (verification_type == VerificationType::kEV)) {
@@ -1721,6 +1750,10 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
     LogNameNormalizationMetrics(".Builtin", verify_result->verified_cert.get(),
                                 verify_result->is_issued_by_known_root);
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    if (verify_result->crs_root_id.has_value()) {
+      base::UmaHistogramSparse("Net.Certificate.TrustAnchor2.Verify",
+                               verify_result->crs_root_id.value());
+    }
     if (base::FeatureList::IsEnabled(features::kVerifyQWACs)) {
       MaybeVerify1QWAC(best_path_possibly_invalid,
                        cur_attempt.use_system_time

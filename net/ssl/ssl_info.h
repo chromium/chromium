@@ -12,6 +12,7 @@
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "net/net_buildflags.h"
 
 namespace net {
 
@@ -110,6 +111,14 @@ class NET_EXPORT SSLInfo {
   // True if there was a certificate error which should be treated as fatal,
   // and false otherwise.
   bool is_fatal_cert_error = false;
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // The stable identifier of the root of the chain of `verified_cert`, or one
+  // of the special values in CertVerifyResult::CrsRootIdSpecialValues.
+  // May be nullopt in builds where CRS is optionally supported but was not
+  // used, or when the SSLInfo was loaded from cache.
+  std::optional<int32_t> crs_root_id;
+#endif
 };
 
 }  // namespace net

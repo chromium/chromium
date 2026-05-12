@@ -25,5 +25,8 @@ struct CertVerifyResult {
   CTPolicyCompliance policy_compliance;
   CTRequirementsStatus ct_requirement_status;
 
+  [EnableIf=is_chrome_root_store_supported]
+  int32? crs_root_id;
+
   // LINT.ThenChange(/net/cert/cert_verify_result.h:CertVerifyResult)
 };
