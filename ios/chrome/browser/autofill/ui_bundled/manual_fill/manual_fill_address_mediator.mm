@@ -161,7 +161,7 @@ std::vector<AutofillProfile> FetchAddresses(
   }
 
   NSString* manageAddressesTitle =
-      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_ADDRESSES);
+      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_ADDRESSES_AND_MORE);
   __weak __typeof(self) weakSelf = self;
   ManualFillActionItem* manageAddressesItem = [[ManualFillActionItem alloc]
       initWithTitle:manageAddressesTitle
