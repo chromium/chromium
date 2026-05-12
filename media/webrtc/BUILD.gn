@@ -21,15 +21,6 @@ component("webrtc") {
     "webrtc_features.h",
   ]
 
-  if (is_mac) {
-    sources += [
-      "application_audio_capture_id_mac.h",
-      "application_audio_capture_id_mac.mm",
-    ]
-    frameworks = [ "AppKit.framework" ]
-    libs = [ "objc" ]
-  }
-
   defines = [ "IS_MEDIA_WEBRTC_IMPL" ]
 
   deps = [
@@ -62,8 +53,4 @@ source_set("unit_tests") {
     "audio_processor_test.cc",
     "helpers_unittest.cc",
   ]
-
-  if (is_mac) {
-    sources += [ "application_audio_capture_id_mac_unittest.mm" ]
-  }
 }

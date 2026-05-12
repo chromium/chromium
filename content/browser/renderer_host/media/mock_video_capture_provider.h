@@ -45,7 +45,8 @@ class MockVideoCaptureProvider : public VideoCaptureProvider {
       GetApplicationAudioCaptureId,
       (DesktopMediaID::Id session_id,
        base::OnceCallback<void(
-           const std::optional<media::ApplicationAudioCaptureId>&)> callback),
+           const std::optional<desktop_capture::ApplicationAudioCaptureId>&)>
+           callback),
       (override));
 #endif
 };

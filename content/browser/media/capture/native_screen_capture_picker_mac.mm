@@ -17,11 +17,11 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/timer/timer.h"
+#include "content/browser/media/capture/desktop_capture_util_mac.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
-#include "media/webrtc/application_audio_capture_id_mac.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/webrtc/modules/desktop_capture/mac/window_list_utils.h"
@@ -258,9 +258,8 @@ void NativeScreenCapturePickerMac::UpdateAudioStatusForSession(
     // window.
     if (!session.primary_audio_capture_id && filter.includedWindows.count > 0) {
       SCWindow* first_window = filter.includedWindows.firstObject;
-      session.primary_audio_capture_id =
-          media::GetApplicationAudioCaptureIdForProcess(
-              GetWindowOwnerPid(first_window.windowID));
+      session.primary_audio_capture_id = GetApplicationAudioCaptureIdForProcess(
+          GetWindowOwnerPid(first_window.windowID));
       if (session.primary_audio_capture_id) {
         VLOG(1) << "NSCPM::UpdateAudioStatus: session " << session_id
                 << " Set primary_audio_capture_id = "
@@ -274,7 +273,7 @@ void NativeScreenCapturePickerMac::UpdateAudioStatusForSession(
     if (session.primary_audio_capture_id && session.stop_audio_callback) {
       bool primary_app_present = false;
       for (SCWindow* window in filter.includedWindows) {
-        if (media::GetApplicationAudioCaptureIdForProcess(GetWindowOwnerPid(
+        if (GetApplicationAudioCaptureIdForProcess(GetWindowOwnerPid(
                 window.windowID)) == session.primary_audio_capture_id) {
           primary_app_present = true;
           break;
@@ -429,7 +428,8 @@ void NativeScreenCapturePickerMac::GetApplicationAudioCaptureId(
     DesktopMediaID::Id session_id,
     GetApplicationAudioCaptureIdCallback callback) {
   DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
-  std::optional<media::ApplicationAudioCaptureId> application_audio_capture_id;
+  std::optional<desktop_capture::ApplicationAudioCaptureId>
+      application_audio_capture_id;
 
   auto it = sessions_.find(session_id);
   if (it != sessions_.end()) {

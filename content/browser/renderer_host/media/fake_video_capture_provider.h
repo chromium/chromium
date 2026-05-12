@@ -37,8 +37,8 @@ class FakeVideoCaptureProvider : public VideoCaptureProvider {
   void GetApplicationAudioCaptureId(
       DesktopMediaID::Id session_id,
       base::OnceCallback<void(
-          const std::optional<media::ApplicationAudioCaptureId>&)> callback)
-      override;
+          const std::optional<desktop_capture::ApplicationAudioCaptureId>&)>
+          callback) override;
 #endif
 
  private:

@@ -47,8 +47,9 @@ void FakeVideoCaptureProvider::CloseNativeScreenCapturePicker(
 #if BUILDFLAG(IS_MAC)
 void FakeVideoCaptureProvider::GetApplicationAudioCaptureId(
     DesktopMediaID::Id session_id,
-    base::OnceCallback<void(
-        const std::optional<media::ApplicationAudioCaptureId>&)> callback) {
+    base::OnceCallback<
+        void(const std::optional<desktop_capture::ApplicationAudioCaptureId>&)>
+        callback) {
   std::move(callback).Run(std::nullopt);
 }
 #endif

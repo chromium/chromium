@@ -247,7 +247,8 @@ class CONTENT_EXPORT VideoCaptureManager
   void GetApplicationAudioCaptureId(
       DesktopMediaID::Id session_id,
       base::OnceCallback<void(
-          const std::optional<media::ApplicationAudioCaptureId>&)> callback);
+          const std::optional<desktop_capture::ApplicationAudioCaptureId>&)>
+          callback);
 #endif
 
   VideoCaptureProvider& video_capture_provider() {

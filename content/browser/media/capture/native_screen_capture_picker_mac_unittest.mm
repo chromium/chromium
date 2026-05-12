@@ -18,10 +18,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
+#include "content/public/browser/desktop_capture.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/capture/video/mac/test/screen_capture_kit_test_helper.h"
 #include "media/capture/video/video_capture_device.h"
-#include "media/webrtc/application_audio_capture_id_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -224,7 +224,7 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
       DesktopMediaID::Id session_id,
       const std::optional<std::string>& expected_bundle_id) {
     base::test::TestFuture<
-        const std::optional<media::ApplicationAudioCaptureId>&>
+        const std::optional<desktop_capture::ApplicationAudioCaptureId>&>
         future;
     picker_->GetApplicationAudioCaptureId(session_id, future.GetCallback());
     const auto& capture_id = future.Get();

@@ -2,22 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/webrtc/application_audio_capture_id_mac.h"
+#include "content/browser/media/capture/desktop_capture_util_mac.h"
 
 #import <AppKit/AppKit.h>
-#include <libproc.h>
 
+#include <optional>
 #include <string_view>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/timer/elapsed_timer.h"
+#include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/public/browser/browser_thread.h"
+#include "third_party/webrtc/modules/desktop_capture/mac/window_list_utils.h"
 
-namespace media {
+namespace content {
+
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -90,8 +95,8 @@ std::optional<std::string> GetBundleIdForProcess(pid_t pid) {
 
 }  // namespace
 
-std::optional<ApplicationAudioCaptureId> GetApplicationAudioCaptureIdForProcess(
-    pid_t pid) {
+std::optional<desktop_capture::ApplicationAudioCaptureId>
+GetApplicationAudioCaptureIdForProcess(pid_t pid) {
   base::ElapsedTimer timer;
   std::optional<std::string> bundle_id = GetBundleIdForProcess(pid);
 
@@ -111,8 +116,8 @@ std::optional<ApplicationAudioCaptureId> GetApplicationAudioCaptureIdForProcess(
     // Capturing non-Chromium application window.
     RecordGetAppAudioCaptureIdMetrics(timer.Elapsed(),
                                       GetAppAudioCaptureIdMacResult::kSuccess);
-    return std::make_optional<ApplicationAudioCaptureId>(*bundle_id,
-                                                         std::nullopt);
+    return std::make_optional<desktop_capture::ApplicationAudioCaptureId>(
+        *bundle_id, std::nullopt);
   }
 
   std::optional<std::string> pwa_installer_bundle_id =
@@ -122,7 +127,7 @@ std::optional<ApplicationAudioCaptureId> GetApplicationAudioCaptureIdForProcess(
     // browser.
     RecordGetAppAudioCaptureIdMetrics(timer.Elapsed(),
                                       GetAppAudioCaptureIdMacResult::kSuccess);
-    return std::make_optional<ApplicationAudioCaptureId>(
+    return std::make_optional<desktop_capture::ApplicationAudioCaptureId>(
         *truncated_chromium_bundle_id, std::make_optional(pid));
   }
 
@@ -147,9 +152,35 @@ std::optional<ApplicationAudioCaptureId> GetApplicationAudioCaptureIdForProcess(
   }
   RecordGetAppAudioCaptureIdMetrics(timer.Elapsed(),
                                     GetAppAudioCaptureIdMacResult::kSuccess);
-  return std::make_optional<ApplicationAudioCaptureId>(
+  return std::make_optional<desktop_capture::ApplicationAudioCaptureId>(
       *truncated_chromium_bundle_id,
       std::make_optional(browser_apps[0].processIdentifier));
 }
 
-}  // namespace media
+void GetApplicationAudioCaptureIdInternal(
+    DesktopMediaID desktop_media_id,
+    desktop_capture::GetApplicationAudioCaptureIdCallback callback) {
+  if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &GetApplicationAudioCaptureIdInternal, desktop_media_id,
+            base::BindPostTaskToCurrentDefault(std::move(callback))));
+    return;
+  }
+
+  if (desktop_media_id.id_type ==
+      DesktopMediaID::IdType::kNativePickerSession) {
+    content::MediaStreamManager::GetInstance()
+        ->video_capture_manager()
+        ->GetApplicationAudioCaptureId(desktop_media_id.id,
+                                       std::move(callback));
+  } else {
+    std::optional<desktop_capture::ApplicationAudioCaptureId> media_id =
+        GetApplicationAudioCaptureIdForProcess(
+            webrtc::GetWindowOwnerPid(desktop_media_id.id));
+    std::move(callback).Run(media_id);
+  }
+}
+
+}  // namespace content

@@ -21,8 +21,8 @@ static_assert(BUILDFLAG(IS_MAC));
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
+#include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
-#include "media/webrtc/application_audio_capture_id_mac.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -87,7 +87,8 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
     // Timer to cleanup the session state after the device is closed.
     base::OneShotTimer cleanup_timer;
 
-    std::optional<media::ApplicationAudioCaptureId> primary_audio_capture_id;
+    std::optional<desktop_capture::ApplicationAudioCaptureId>
+        primary_audio_capture_id;
     base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback;
   };
 

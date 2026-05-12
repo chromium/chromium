@@ -468,8 +468,9 @@ void VideoCaptureManager::CloseNativeScreenCapturePicker(
 #if BUILDFLAG(IS_MAC)
 void VideoCaptureManager::GetApplicationAudioCaptureId(
     DesktopMediaID::Id session_id,
-    base::OnceCallback<void(
-        const std::optional<media::ApplicationAudioCaptureId>&)> callback) {
+    base::OnceCallback<
+        void(const std::optional<desktop_capture::ApplicationAudioCaptureId>&)>
+        callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   video_capture_provider_->GetApplicationAudioCaptureId(session_id,
                                                         std::move(callback));

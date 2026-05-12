@@ -79,8 +79,9 @@ void InProcessVideoCaptureProvider::CloseNativeScreenCapturePicker(
 #if BUILDFLAG(IS_MAC)
 void InProcessVideoCaptureProvider::GetApplicationAudioCaptureId(
     DesktopMediaID::Id session_id,
-    base::OnceCallback<void(
-        const std::optional<media::ApplicationAudioCaptureId>&)> callback) {
+    base::OnceCallback<
+        void(const std::optional<desktop_capture::ApplicationAudioCaptureId>&)>
+        callback) {
   if (!native_screen_capture_picker_) {
     std::move(callback).Run(std::nullopt);
     return;

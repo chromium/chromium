@@ -13,10 +13,6 @@
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "media/webrtc/application_audio_capture_id_mac.h"
-#endif
-
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace media {
@@ -31,7 +27,7 @@ class NativeScreenCapturePicker {
 
 #if BUILDFLAG(IS_MAC)
   using GetApplicationAudioCaptureIdCallback = base::OnceCallback<void(
-      const std::optional<media::ApplicationAudioCaptureId>&)>;
+      const std::optional<desktop_capture::ApplicationAudioCaptureId>&)>;
 #endif
 
   // Opens the picker dialog.

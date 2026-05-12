@@ -21,6 +21,7 @@
 
 namespace {
 NSRunningApplication* g_mock_app = nil;
+NSArray<NSRunningApplication*>* g_mock_apps = nil;
 }  // namespace
 
 @interface DesktopCaptureUtilFakeNSRunningApplication : NSObject
@@ -36,12 +37,18 @@ NSRunningApplication* g_mock_app = nil;
 @interface DesktopCaptureUtilMockNSRunningApplication : NSObject
 + (nullable NSRunningApplication*)runningApplicationWithProcessIdentifier:
     (pid_t)pid;
++ (NSArray<NSRunningApplication*>*)runningApplicationsWithBundleIdentifier:
+    (NSString*)bundleIdentifier;
 @end
 
 @implementation DesktopCaptureUtilMockNSRunningApplication
 + (nullable NSRunningApplication*)runningApplicationWithProcessIdentifier:
     (pid_t)pid {
   return g_mock_app;
+}
++ (NSArray<NSRunningApplication*>*)runningApplicationsWithBundleIdentifier:
+    (NSString*)bundleIdentifier {
+  return g_mock_apps;
 }
 @end
 
@@ -71,10 +78,10 @@ class FakeVideoCaptureProvider : public VideoCaptureProvider {
   void GetApplicationAudioCaptureId(
       DesktopMediaID::Id session_id,
       base::OnceCallback<void(
-          const std::optional<media::ApplicationAudioCaptureId>&)> callback)
-      override {
+          const std::optional<desktop_capture::ApplicationAudioCaptureId>&)>
+          callback) override {
     // Return a fake ID for testing.
-    std::move(callback).Run(media::ApplicationAudioCaptureId{
+    std::move(callback).Run(desktop_capture::ApplicationAudioCaptureId{
         .bundle_id = "com.example.FakeApp",
         .pid = 1234,
     });
@@ -159,6 +166,187 @@ TEST_F(DesktopCaptureUtilTest,
           .pid = 1234,
       };
   EXPECT_EQ(expected, future.Get());
+}
+
+TEST_F(DesktopCaptureUtilTest,
+       GetApplicationAudioCaptureIdForProcess_NotFound) {
+  g_mock_app = nil;
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationWithProcessIdentifier:));
+
+  auto identifier = GetApplicationAudioCaptureIdForProcess(123);
+  EXPECT_FALSE(identifier.has_value());
+}
+
+TEST_F(DesktopCaptureUtilTest,
+       GetApplicationAudioCaptureIdForProcess_NonChromium) {
+  DesktopCaptureUtilFakeNSRunningApplication* fake_app =
+      [[DesktopCaptureUtilFakeNSRunningApplication alloc] init];
+  fake_app.bundleIdentifier = @"com.example.app";
+  fake_app.processIdentifier = 123;
+  g_mock_app = (NSRunningApplication*)fake_app;
+
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationWithProcessIdentifier:));
+
+  auto identifier = GetApplicationAudioCaptureIdForProcess(123);
+  ASSERT_TRUE(identifier.has_value());
+  EXPECT_EQ(identifier->bundle_id, "com.example.app");
+  EXPECT_FALSE(identifier->pid.has_value());
+}
+
+struct BundleIdTestParams {
+  NSString* input_bundle_id;
+  std::string expected_truncated_id;
+};
+
+class DesktopCaptureUtilBrowserTest
+    : public testing::TestWithParam<BundleIdTestParams> {};
+
+TEST_P(DesktopCaptureUtilBrowserTest, TruncatesCorrectly) {
+  const BundleIdTestParams& params = GetParam();
+
+  DesktopCaptureUtilFakeNSRunningApplication* fake_app =
+      [[DesktopCaptureUtilFakeNSRunningApplication alloc] init];
+  fake_app.bundleIdentifier = params.input_bundle_id;
+  fake_app.processIdentifier = 123;
+  g_mock_app = (NSRunningApplication*)fake_app;
+
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationWithProcessIdentifier:));
+
+  auto identifier = GetApplicationAudioCaptureIdForProcess(123);
+  ASSERT_TRUE(identifier.has_value());
+  EXPECT_EQ(identifier->bundle_id, params.expected_truncated_id);
+  ASSERT_TRUE(identifier->pid.has_value());
+  EXPECT_EQ(identifier->pid.value(), 123);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DesktopCaptureUtilBrowserTest,
+    testing::Values(
+        // Standard browsers
+        BundleIdTestParams{@"com.google.Chrome", "com.google.Chrome"},
+        BundleIdTestParams{@"org.chromium.Chromium", "org.chromium.Chromium"},
+        BundleIdTestParams{@"com.microsoft.edgemac", "com.microsoft.edgemac"},
+        BundleIdTestParams{@"com.operasoftware.Opera",
+                           "com.operasoftware.Opera"},
+
+        // Variants
+        BundleIdTestParams{@"com.google.Chrome.beta", "com.google.Chrome"},
+        BundleIdTestParams{@"com.google.Chrome.canary", "com.google.Chrome"},
+        BundleIdTestParams{@"com.google.Chrome.dev", "com.google.Chrome"},
+        BundleIdTestParams{@"com.microsoft.edgemac.beta",
+                           "com.microsoft.edgemac"}));
+
+struct PwaTestParams {
+  NSString* pwa_bundle_id;
+  NSString* browser_bundle_id;
+  std::string expected_id;
+};
+
+class DesktopCaptureUtilPwaTest : public testing::TestWithParam<PwaTestParams> {
+};
+
+TEST_P(DesktopCaptureUtilPwaTest, ResolvesToBrowser) {
+  const PwaTestParams& params = GetParam();
+
+  DesktopCaptureUtilFakeNSRunningApplication* fake_app =
+      [[DesktopCaptureUtilFakeNSRunningApplication alloc] init];
+  fake_app.bundleIdentifier = params.pwa_bundle_id;
+  fake_app.processIdentifier = 123;
+  g_mock_app = (NSRunningApplication*)fake_app;
+
+  DesktopCaptureUtilFakeNSRunningApplication* fake_browser =
+      [[DesktopCaptureUtilFakeNSRunningApplication alloc] init];
+  fake_browser.bundleIdentifier = params.browser_bundle_id;
+  fake_browser.processIdentifier = 456;
+  g_mock_apps = @[ (NSRunningApplication*)fake_browser ];
+
+  base::apple::ScopedObjCClassSwizzler swizzler_pid(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationWithProcessIdentifier:));
+  base::apple::ScopedObjCClassSwizzler swizzler_bundle(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationsWithBundleIdentifier:));
+
+  auto identifier = GetApplicationAudioCaptureIdForProcess(123);
+  ASSERT_TRUE(identifier.has_value());
+  EXPECT_EQ(identifier->bundle_id, params.expected_id);
+  ASSERT_TRUE(identifier->pid.has_value());
+  EXPECT_EQ(identifier->pid.value(), 456);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DesktopCaptureUtilPwaTest,
+    testing::Values(
+        PwaTestParams{@"org.chromium.Chromium.app.a1b2c3",
+                      @"org.chromium.Chromium", "org.chromium.Chromium"},
+        PwaTestParams{@"com.google.Chrome.beta.app.d4e5f6",
+                      @"com.google.Chrome.beta", "com.google.Chrome"},
+        PwaTestParams{@"com.microsoft.edgemac.app.g7h8i9",
+                      @"com.microsoft.edgemac", "com.microsoft.edgemac"}));
+
+TEST_F(DesktopCaptureUtilTest,
+       GetApplicationAudioCaptureIdForProcess_PWA_BrowserNotFound) {
+  DesktopCaptureUtilFakeNSRunningApplication* fake_app =
+      [[DesktopCaptureUtilFakeNSRunningApplication alloc] init];
+  fake_app.bundleIdentifier = @"org.chromium.Chromium.app.a1b2c3";
+  fake_app.processIdentifier = 123;
+  g_mock_app = (NSRunningApplication*)fake_app;
+
+  g_mock_apps = @[];  // Empty list
+
+  base::apple::ScopedObjCClassSwizzler swizzler_pid(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationWithProcessIdentifier:));
+  base::apple::ScopedObjCClassSwizzler swizzler_bundle(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationsWithBundleIdentifier:));
+
+  auto identifier = GetApplicationAudioCaptureIdForProcess(123);
+  EXPECT_FALSE(identifier.has_value());
+}
+
+TEST_F(DesktopCaptureUtilTest,
+       GetApplicationAudioCaptureIdForProcess_PWA_MultipleBrowsers) {
+  DesktopCaptureUtilFakeNSRunningApplication* fake_app =
+      [[DesktopCaptureUtilFakeNSRunningApplication alloc] init];
+  fake_app.bundleIdentifier = @"org.chromium.Chromium.app.a1b2c3";
+  fake_app.processIdentifier = 123;
+  g_mock_app = (NSRunningApplication*)fake_app;
+
+  DesktopCaptureUtilFakeNSRunningApplication* fake_browser =
+      [[DesktopCaptureUtilFakeNSRunningApplication alloc] init];
+  fake_browser.bundleIdentifier = @"org.chromium.Chromium";
+  fake_browser.processIdentifier = 456;
+  g_mock_apps = @[
+    (NSRunningApplication*)fake_browser, (NSRunningApplication*)fake_browser
+  ];
+
+  base::apple::ScopedObjCClassSwizzler swizzler_pid(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationWithProcessIdentifier:));
+  base::apple::ScopedObjCClassSwizzler swizzler_bundle(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationsWithBundleIdentifier:));
+
+  auto identifier = GetApplicationAudioCaptureIdForProcess(123);
+  EXPECT_FALSE(identifier.has_value());
 }
 
 }  // namespace content
