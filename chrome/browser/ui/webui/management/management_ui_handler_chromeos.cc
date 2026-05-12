@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -781,8 +780,11 @@ void ManagementUIHandlerChromeOS::GetManagementStatus(
   std::string account_manager = GetAccountManager(profile);
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
   auto* primary_profile =
-      primary_user ? ash::ProfileHelper::Get()->GetProfileByUser(primary_user)
-                   : nullptr;
+      primary_user
+          ? Profile::FromBrowserContext(
+                ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+                    primary_user))
+          : nullptr;
   const bool primary_user_managed =
       primary_profile ? IsProfileManaged(primary_profile) : false;
 
