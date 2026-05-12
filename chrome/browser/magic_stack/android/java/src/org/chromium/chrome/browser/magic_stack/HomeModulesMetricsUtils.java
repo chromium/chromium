@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_TAB_RESUMPTION;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.NTP_THEME_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PASSWORD_CHECKUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
@@ -135,6 +136,8 @@ public class HomeModulesMetricsUtils {
                 return "TabGroupSyncPromo";
             case QUICK_DELETE_PROMO:
                 return "QuickDeletePromo";
+            case NTP_THEME_PROMO:
+                return "NtpThemePromo";
             case HISTORY_SYNC_PROMO:
                 return "HistorySyncPromo";
             case TIPS_NOTIFICATIONS_PROMO:
@@ -195,6 +198,8 @@ public class HomeModulesMetricsUtils {
                 return PASSWORD_CHECKUP_PROMO;
             case "SetupListCelebratoryPromo":
                 return SETUP_LIST_CELEBRATORY_PROMO;
+            case "NtpThemePromo":
+                return NTP_THEME_PROMO;
             default:
                 Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;

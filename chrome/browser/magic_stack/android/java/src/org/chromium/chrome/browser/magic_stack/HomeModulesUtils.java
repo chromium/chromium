@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.NTP_THEME_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PASSWORD_CHECKUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
@@ -83,7 +84,8 @@ public class HomeModulesUtils {
                             SAVE_PASSWORDS_PROMO,
                             PASSWORD_CHECKUP_PROMO,
                             SETUP_LIST_TWO_CELL_CONTAINER,
-                            SETUP_LIST_CELEBRATORY_PROMO));
+                            SETUP_LIST_CELEBRATORY_PROMO,
+                            NTP_THEME_PROMO));
 
     static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
         return sEducationalTipCardList.contains(moduleType);
@@ -131,6 +133,7 @@ public class HomeModulesUtils {
             case TAB_GROUP_PROMO:
             case TAB_GROUP_SYNC_PROMO:
             case QUICK_DELETE_PROMO:
+            case NTP_THEME_PROMO:
             case HISTORY_SYNC_PROMO:
             case TIPS_NOTIFICATIONS_PROMO:
             case ENHANCED_SAFE_BROWSING_PROMO:

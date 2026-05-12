@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.educational_tip.cards.AddressBarPlacementProm
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.EnhancedSafeBrowsingPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.NtpThemePromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.PasswordCheckupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.QuickDeletePromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.SavePasswordsPromoCoordinator;
@@ -70,6 +71,9 @@ public class EducationalTipCardProviderFactory {
             case ModuleType.SETUP_LIST_CELEBRATORY_PROMO:
                 return new SetupListCelebratoryPromoCoordinator(
                         onModuleClickedCallback, actionDelegate);
+            case ModuleType.NTP_THEME_PROMO:
+                return new NtpThemePromoCoordinator(
+                        onModuleClickedCallback, callbackController, actionDelegate);
             default:
                 assert false : "Educational tip module's card type not supported!";
                 return null;

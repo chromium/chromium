@@ -1264,6 +1264,15 @@
       <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_SYNC_DESCRIPTION" desc="Description of the Tab group promo in the educational tip module on NTP.">
         You’ll find your groups in the tab group section across all your devices
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_NTP_THEME_TITLE" desc="Title of the NTP theme promo in the educational tip module on NTP.">
+        Customize your page
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_NTP_THEME_DESCRIPTION" desc="Description of the NTP theme promo in the educational tip module on NTP.">
+        Make Chrome your own by choosing a custom background theme
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_NTP_THEME_PROMO_BUTTON" desc="Text on the clickable button for the ntp theme promo in the Educational tip module on NTP.">
+        Customize
+      </message>
       <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_TITLE" desc="Title of the quick delete promo in the educational tip module on NTP.">
         Manage your browsing data
       </message>

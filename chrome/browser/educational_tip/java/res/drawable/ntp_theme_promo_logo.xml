@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector android:autoMirrored="true" android:height="28dp"
+    android:viewportHeight="28"
+    android:viewportWidth="28"
+    android:width="28dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <clip-path android:pathData="M0,0h28v28h-28z"/>
+        <path android:fillColor="@color/educational_tip_card_logo_color_11"
+            android:pathData="M13,24C12.45,24 11.975,23.808 11.575,23.425C11.192,23.025 11,22.55 11,22V18H8C7.45,18 6.975,17.808 6.575,17.425C6.192,17.025 6,16.55 6,16V9C6,7.9 6.392,6.958 7.175,6.175C7.958,5.392 8.9,5 10,5H22V16C22,16.55 21.8,17.025 21.4,17.425C21.017,17.808 20.55,18 20,18H17V22C17,22.55 16.8,23.025 16.4,23.425C16.017,23.808 15.55,24 15,24H13ZM8,12H20V7H19V11H17V7H16V9H14V7H10C9.45,7 8.975,7.2 8.575,7.6C8.192,7.983 8,8.45 8,9V12ZM8,16H20V14H8V16ZM8,16V14V16Z"/>
+    </group>
+</vector>

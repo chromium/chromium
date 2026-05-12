@@ -280,7 +280,8 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.SIGN_IN_PROMO,
                         ModuleType.SAVE_PASSWORDS_PROMO,
                         ModuleType.PASSWORD_CHECKUP_PROMO,
-                        ModuleType.SETUP_LIST_CELEBRATORY_PROMO);
+                        ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
+                        ModuleType.NTP_THEME_PROMO);
         when(mModuleRegistry.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
 

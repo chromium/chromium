@@ -33,6 +33,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DefaultBrowserPromo"/>
   <variant name="EnhancedSafeBrowsingPromo"/>
   <variant name="HistorySyncPromo"/>
+  <variant name="NtpThemePromo"/>
   <variant name="PasswordCheckupPromo"/>
   <variant name="PriceChange"/>
   <variant name="QuickDeletePromo"/>

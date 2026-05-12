@@ -45,6 +45,9 @@ public interface EducationTipModuleActionDelegate {
     /** Opens the app menu and highlights the quick delete menu item. */
     void openAndHighlightQuickDeleteMenuItem();
 
+    /** Opens the NTP theme customization bottom sheet. */
+    void openNtpThemeCustomizationBottomSheet();
+
     /**
      * Opens the the history sync opt in page.
      *

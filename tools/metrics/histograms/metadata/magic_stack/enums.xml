@@ -54,6 +54,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Save Passwords Promo Card"/>
   <int value="17" label="Password Checkup Promo Card"/>
   <int value="18" label="Setup List Celebratory Promo Card"/>
+  <int value="19" label="Ntp Theme Promo Card"/>
 </enum>
 
 </enums>
