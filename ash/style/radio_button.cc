@@ -48,8 +48,8 @@ gfx::ImageSkia RadioButton::GetImage(ButtonState for_state) const {
 
 const gfx::VectorIcon& RadioButton::GetVectorIcon() const {
   if (icon_type_ == IconType::kCircle) {
-    return selected() ? views::kRadioButtonActiveIcon
-                      : views::kRadioButtonNormalIcon;
+    return selected() ? views::kRadioButtonActiveOldIcon
+                      : views::kRadioButtonNormalOldIcon;
   }
   return kHollowCheckCircleIcon;
 }

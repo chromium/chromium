@@ -204,7 +204,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlocked) {
                 IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(views::kEyeCrossedRefreshOldIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -241,7 +241,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedPermanent) {
           IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+            GetImageModel(views::kEyeRefreshOldIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -278,7 +278,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedTemporary) {
                 IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+            GetImageModel(views::kEyeRefreshOldIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -307,7 +307,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByPolicy) {
           IDS_PAGE_INFO_COOKIES_DESCRIPTION,
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(views::kEyeCrossedRefreshOldIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
@@ -344,7 +344,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByPolicy) {
           IDS_PAGE_INFO_COOKIES_DESCRIPTION,
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+            GetImageModel(views::kEyeRefreshOldIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
@@ -380,7 +380,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByExtension) {
           IDS_PAGE_INFO_COOKIES_DESCRIPTION,
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(views::kEyeCrossedRefreshOldIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
@@ -417,7 +417,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByExtension) {
           IDS_PAGE_INFO_COOKIES_DESCRIPTION,
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+            GetImageModel(views::kEyeRefreshOldIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
@@ -455,7 +455,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedBySetting) {
           IDS_PAGE_INFO_COOKIES_DESCRIPTION,
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(views::kEyeCrossedRefreshOldIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
@@ -493,7 +493,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedBySetting) {
           IDS_PAGE_INFO_COOKIES_DESCRIPTION,
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+            GetImageModel(views::kEyeRefreshOldIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());

@@ -370,7 +370,7 @@ views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
               .SetImageModel(
                   views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
-                      views::kUnpinIcon,
+                      views::kUnpinOldIcon,
                       apply_accent_colors
                           ? static_cast<ui::ColorId>(
                                 cros_tokens::kCrosSysSystemOnPrimaryContainer)
@@ -382,7 +382,7 @@ views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
                       : nullptr)
               .SetToggledImageModel(
                   views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(views::kPinIcon,
+                  ui::ImageModel::FromVectorIcon(views::kPinOldIcon,
                                                  kColorAshButtonIconColor,
                                                  kHoldingSpaceIconSize))
               .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)

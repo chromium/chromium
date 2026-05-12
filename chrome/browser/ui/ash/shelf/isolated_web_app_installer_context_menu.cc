@@ -36,7 +36,7 @@ void IsolatedWebAppInstallerContextMenu::GetMenuModel(
 
   menu->AddItemWithStringIdAndIcon(ash::MENU_CLOSE,
                                    IDS_SHELF_CONTEXT_MENU_CLOSE,
-                                   GetMenuItemIcon(views::kCloseIcon));
+                                   GetMenuItemIcon(views::kCloseOldIcon));
 
   std::move(callback).Run(std::move(menu));
 }

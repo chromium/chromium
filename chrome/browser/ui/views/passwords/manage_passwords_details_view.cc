@@ -240,9 +240,9 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
   eye_icon->SetID(
       static_cast<int>(ManagePasswordsViewIDs::kRevealPasswordButton));
   views::SetImageFromVectorIconWithColor(
-      eye_icon, views::kEyeIcon, {ui::kColorIcon, ui::kColorIconDisabled});
+      eye_icon, views::kEyeOldIcon, {ui::kColorIcon, ui::kColorIconDisabled});
   views::SetToggledImageFromVectorIconWithColor(
-      eye_icon, views::kEyeCrossedIcon,
+      eye_icon, views::kEyeCrossedOldIcon,
       {ui::kColorIcon, ui::kColorIconDisabled});
   views::InstallCircleHighlightPathGenerator(eye_icon);
   eye_icon->SetCallback(

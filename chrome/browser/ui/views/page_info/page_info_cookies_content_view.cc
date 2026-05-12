@@ -43,8 +43,8 @@ using ::content_settings::CookieControlsUtil;
 const ui::ImageModel GetThirdPartyCookiesIcon(
     bool third_party_cookies_enabled) {
   return PageInfoViewFactory::GetImageModel(
-      third_party_cookies_enabled ? views::kEyeRefreshIcon
-                                  : views::kEyeCrossedRefreshIcon);
+      third_party_cookies_enabled ? views::kEyeRefreshOldIcon
+                                  : views::kEyeCrossedRefreshOldIcon);
 }
 
 class ThirdPartyCookieLabelWrapper : public views::BoxLayoutView {
@@ -473,7 +473,7 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
   third_party_cookies_row_->SetTitle(l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL));
   third_party_cookies_row_->SetIcon(
-      PageInfoViewFactory::GetImageModel(views::kEyeCrossedRefreshIcon));
+      PageInfoViewFactory::GetImageModel(views::kEyeCrossedRefreshOldIcon));
   third_party_cookies_row_->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
 

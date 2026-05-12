@@ -152,7 +152,7 @@ void InSessionAuthDialogContentsView::AddCloseButton() {
           base::BindRepeating(
               &InSessionAuthDialogContentsView::OnCloseButtonPressed,
               weak_ptr_factory_.GetWeakPtr()),
-          views::kIcCloseIcon);
+          views::kIcCloseOldIcon);
 
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->GetViewAccessibility().SetName(

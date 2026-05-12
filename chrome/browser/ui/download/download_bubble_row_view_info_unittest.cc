@@ -302,7 +302,7 @@ TEST_F(DownloadBubbleRowViewInfoTest, InterruptedInfo) {
   } kTestCases[] = {
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED},
        false,
-       &views::kInfoChromeRefreshIcon,
+       &views::kInfoChromeRefreshOldIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
        false,

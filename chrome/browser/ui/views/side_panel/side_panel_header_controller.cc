@@ -224,7 +224,7 @@ SidePanelHeaderController::CreateCloseButton() {
   auto button =
       CreateImageButton(base::BindRepeating(&SidePanelHeaderController::Close,
                                             base::Unretained(this)),
-                        views::kIcCloseIcon);
+                        views::kIcCloseOldIcon);
   button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_CLOSE));
   button->SetProperty(views::kElementIdentifierKey,

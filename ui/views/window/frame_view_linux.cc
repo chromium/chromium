@@ -86,23 +86,23 @@ void FrameViewLinux::CreateCaptionButtons() {
   close_button_ = create_button(
       base::BindRepeating(&Widget::CloseWithReason, base::Unretained(widget_),
                           Widget::ClosedReason::kCloseButtonClicked),
-      CAPTION_BUTTON_ICON_CLOSE, HTCLOSE, kWindowControlCloseIcon,
+      CAPTION_BUTTON_ICON_CLOSE, HTCLOSE, kWindowControlCloseOldIcon,
       IDS_APP_ACCNAME_CLOSE);
 
   minimize_button_ = create_button(
       base::BindRepeating(&Widget::Minimize, base::Unretained(widget_)),
-      CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON, kWindowControlMinimizeIcon,
+      CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON, kWindowControlMinimizeOldIcon,
       IDS_APP_ACCNAME_MINIMIZE);
 
   maximize_button_ = create_button(
       base::BindRepeating(&Widget::Maximize, base::Unretained(widget_)),
       CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE, HTMAXBUTTON,
-      kWindowControlMaximizeIcon, IDS_APP_ACCNAME_MAXIMIZE);
+      kWindowControlMaximizeOldIcon, IDS_APP_ACCNAME_MAXIMIZE);
 
   restore_button_ = create_button(
       base::BindRepeating(&Widget::Restore, base::Unretained(widget_)),
       CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE, HTMAXBUTTON,
-      kWindowControlRestoreIcon, IDS_APP_ACCNAME_RESTORE);
+      kWindowControlRestoreOldIcon, IDS_APP_ACCNAME_RESTORE);
 }
 
 FrameViewLinux::~FrameViewLinux() {

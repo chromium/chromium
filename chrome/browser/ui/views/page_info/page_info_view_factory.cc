@@ -669,7 +669,7 @@ const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteVectorIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return vector_icons::kPageInsightsIcon;
 #else
-  return views::kInfoChromeRefreshIcon;
+  return views::kInfoChromeRefreshOldIcon;
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

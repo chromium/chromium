@@ -95,7 +95,7 @@ void NotificationOverflowView::AddIcon(
 
   if (image_views_.size() > kMaxOverflowIcons) {
     if (!overflow_icon_) {
-      auto icon = ui::ImageModel::FromVectorIcon(views::kOptionsIcon,
+      auto icon = ui::ImageModel::FromVectorIcon(views::kOptionsOldIcon,
                                                  ui::kColorIcon, kIconSize);
       auto overflow_icon =
           std::make_unique<message_center::ProportionalImageView>(

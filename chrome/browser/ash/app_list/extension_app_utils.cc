@@ -39,9 +39,10 @@ void AddMenuItemIconsForSystemApps(const std::string& app_id,
     const int index = start_index + i;
     if (menu_model->GetLabelAt(index) ==
         l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW)) {
-      menu_model->SetIcon(index, ui::ImageModel::FromVectorIcon(
-                                     views::kNewWindowIcon, ui::kColorMenuIcon,
-                                     ash::kAppContextMenuIconSize));
+      menu_model->SetIcon(
+          index, ui::ImageModel::FromVectorIcon(views::kNewWindowOldIcon,
+                                                ui::kColorMenuIcon,
+                                                ash::kAppContextMenuIconSize));
     }
   }
 }

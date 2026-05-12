@@ -114,8 +114,8 @@ int GetLabelForStatus(CookieControlsState controls_state) {
 
 const gfx::VectorIcon& GetVectorIcon(CookieControlsState controls_state) {
   return controls_state == CookieControlsState::kBlocked3pc
-             ? views::kEyeCrossedRefreshIcon
-             : views::kEyeRefreshIcon;
+             ? views::kEyeCrossedRefreshOldIcon
+             : views::kEyeRefreshOldIcon;
 }
 }  // namespace
 

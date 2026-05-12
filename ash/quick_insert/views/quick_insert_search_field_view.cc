@@ -98,8 +98,8 @@ QuickInsertSearchFieldView::QuickInsertSearchFieldView(
                         base::BindRepeating(
                             &QuickInsertSearchFieldView::ClearButtonPressed,
                             base::Unretained(this)),
-                        IconButton::Type::kSmallFloating, &views::kIcCloseIcon,
-                        IDS_APP_LIST_CLEAR_SEARCHBOX))
+                        IconButton::Type::kSmallFloating,
+                        &views::kIcCloseOldIcon, IDS_APP_LIST_CLEAR_SEARCHBOX))
                     .CopyAddressTo(&clear_button_)
                     .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
                     .SetVisible(false))

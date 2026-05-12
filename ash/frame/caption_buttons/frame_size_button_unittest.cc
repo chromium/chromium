@@ -117,11 +117,11 @@ class FrameSizeButtonTestWidgetDelegate : public views::WidgetDelegateView {
               views::CaptionButtonLayoutSize::kNonBrowserCaption));
       caption_button_container_->SetButtonImage(
           views::CAPTION_BUTTON_ICON_MINIMIZE,
-          views::kWindowControlMinimizeIcon);
+          views::kWindowControlMinimizeOldIcon);
       caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_MENU,
                                                 chromeos::kFloatWindowIcon);
       caption_button_container_->SetButtonImage(
-          views::CAPTION_BUTTON_ICON_CLOSE, views::kWindowControlCloseIcon);
+          views::CAPTION_BUTTON_ICON_CLOSE, views::kWindowControlCloseOldIcon);
       caption_button_container_->SetButtonImage(
           views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
           chromeos::kWindowControlLeftSnappedIcon);
@@ -130,7 +130,7 @@ class FrameSizeButtonTestWidgetDelegate : public views::WidgetDelegateView {
           chromeos::kWindowControlRightSnappedIcon);
       caption_button_container()->SetButtonImage(
           views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
-          views::kWindowControlMaximizeIcon);
+          views::kWindowControlMaximizeOldIcon);
 
       AddChildViewRaw(caption_button_container_.get());
     }

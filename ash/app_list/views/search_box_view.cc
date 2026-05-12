@@ -209,7 +209,7 @@ std::u16string GetCategoryName(SearchResult* search_result) {
 // Returns the check box icon that is shown on the category filter menu item.
 ui::ImageModel GetCheckboxImage(bool checked) {
   return ui::ImageModel::FromVectorIcon(
-      checked ? views::kCheckboxActiveIcon : views::kCheckboxNormalIcon,
+      checked ? views::kCheckboxActiveOldIcon : views::kCheckboxNormalOldIcon,
       checked ? cros_tokens::kCrosSysPrimary : cros_tokens::kCrosSysSecondary,
       kAppContextMenuIconSize);
 }
@@ -761,7 +761,7 @@ void SearchBoxView::OnThemeChanged() {
       GetColorProvider()->GetColor(kColorAshButtonIconColor);
   close_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
+      ui::ImageModel::FromVectorIcon(views::kIcCloseOldIcon, button_icon_color,
                                      GetSearchBoxIconSize()));
   // Update the icon of the Sunfish-session button.
   SunfishButtonVisibilityChanged();

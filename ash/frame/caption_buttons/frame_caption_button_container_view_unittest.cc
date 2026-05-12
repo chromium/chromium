@@ -84,7 +84,7 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
         views::CaptionButtonLayoutSize::kNonBrowserCaption));
     for (int icon = 0; icon < views::CAPTION_BUTTON_ICON_COUNT; ++icon) {
       container->SetButtonImage(static_cast<views::CaptionButtonIcon>(icon),
-                                views::kWindowControlCloseIcon);
+                                views::kWindowControlCloseOldIcon);
     }
     container->SizeToPreferredSize();
   }

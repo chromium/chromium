@@ -368,7 +368,7 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
       GetCollapseState() != VerticalTabStripCollapseState::kExpanded;
 
   const gfx::VectorIcon& icon = (is_collapsed == base::i18n::IsRTL())
-                                    ? views::kMenuOpenIcon
+                                    ? views::kMenuOpenOldIcon
                                     : views::kMenuCloseIcon;
 
   const auto& text =

@@ -683,12 +683,12 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       menu_sections.back().emplace_back(
           MenuItemModel{.command_id = HoldingSpaceCommandId::kPinItem,
                         .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN,
-                        .icon = raw_ref(views::kPinIcon)});
+                        .icon = raw_ref(views::kPinOldIcon)});
     } else {
       menu_sections.back().emplace_back(
           MenuItemModel{.command_id = HoldingSpaceCommandId::kUnpinItem,
                         .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN,
-                        .icon = raw_ref(views::kUnpinIcon)});
+                        .icon = raw_ref(views::kUnpinOldIcon)});
     }
   }
 

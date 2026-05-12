@@ -108,7 +108,7 @@ void LensRegionSearchInstructionsView::Init() {
   views::InstallCircleHighlightPathGenerator(close_button_.get());
   constructed_close_button_ = AddChildView(std::move(close_button_));
   views::SetImageFromVectorIconWithColor(
-      constructed_close_button_, views::kIcCloseIcon, kCloseButtonSize,
+      constructed_close_button_, views::kIcCloseOldIcon, kCloseButtonSize,
       {kColorFeatureLensPromoBubbleForeground,
        kColorFeatureLensPromoBubbleForeground});
 }

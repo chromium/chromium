@@ -121,7 +121,7 @@ RelatedAppRowView::RelatedAppRowView(
 
   auto* app_settings_page_link = uninstall_button_container->AddChildView(
       views::CreateVectorImageButtonWithNativeTheme(
-          std::move(callback), views::kLaunchIcon, kLinkIconSize));
+          std::move(callback), views::kLaunchOldIcon, kLinkIconSize));
 
   views::InstallCircleHighlightPathGenerator(app_settings_page_link);
   app_settings_page_link->SetTooltipText(l10n_util::GetStringUTF16(

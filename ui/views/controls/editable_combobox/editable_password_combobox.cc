@@ -51,10 +51,11 @@ std::unique_ptr<ToggleImageButton> CreateEye(
   // Add the outset for the focus ring to match the behavior of the `Arrow`
   // element in `EditableCombobox`.
   views::FocusRing::Get(button.get())->SetOutsetFocusRingDisabled(false);
-  SetImageFromVectorIconWithColor(button.get(), kEyeIcon,
+  SetImageFromVectorIconWithColor(button.get(), kEyeOldIcon,
                                   {ui::kColorIcon, ui::kColorIconDisabled});
   SetToggledImageFromVectorIconWithColor(
-      button.get(), kEyeCrossedIcon, {ui::kColorIcon, ui::kColorIconDisabled});
+      button.get(), kEyeCrossedOldIcon,
+      {ui::kColorIcon, ui::kColorIconDisabled});
 
   ConfigureComboboxButtonInkDrop(button.get());
   // We need this so the eye icon is not covered when the combo box view is

@@ -147,7 +147,7 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
                 IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)),
         CheckViewProperty(CookieControlsContentView::kToggleButton,
                           &views::ToggleButton::GetIsOn, true),
-        CheckIcon(RichControlsContainerView::kIcon, views::kEyeRefreshIcon));
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeRefreshOldIcon));
   }
 
   auto CheckStateForNoException() {
@@ -163,7 +163,7 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
             l10n_util::GetStringUTF16(
                 IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
         CheckIcon(RichControlsContainerView::kIcon,
-                  views::kEyeCrossedRefreshIcon));
+                  views::kEyeCrossedRefreshOldIcon));
   }
 
   auto CheckFeedbackButtonVisible(bool visible) {

@@ -259,7 +259,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       gfx::Size(kBackButtonSizeDp, kBackButtonSizeDp));
   back_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, icon_color_id,
+      ui::ImageModel::FromVectorIcon(views::kIcCloseOldIcon, icon_color_id,
                                      kCrossSizeDp));
   back_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   back_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);

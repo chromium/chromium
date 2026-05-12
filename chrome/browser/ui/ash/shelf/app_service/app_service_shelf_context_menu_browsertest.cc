@@ -109,11 +109,11 @@ class AppServiceShelfContextMenuWebAppBrowserTest
 
   const gfx::VectorIcon& GetExpectedLaunchNewIcon(int command_id) {
     if (command_id == ash::USE_LAUNCH_TYPE_REGULAR) {
-      return views::kNewTabIcon;
+      return views::kNewTabOldIcon;
     } else if (command_id == ash::USE_LAUNCH_TYPE_WINDOW) {
-      return views::kNewWindowIcon;
+      return views::kNewWindowOldIcon;
     } else {
-      return views::kOpenIcon;
+      return views::kOpenOldIcon;
     }
   }
 
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
   EXPECT_EQ(menu_section->menu_model->GetIconAt(menu_section->command_index)
                 .GetVectorIcon()
                 .vector_icon(),
-            &views::kOpenIcon);
+            &views::kOpenOldIcon);
 }
 
 IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,

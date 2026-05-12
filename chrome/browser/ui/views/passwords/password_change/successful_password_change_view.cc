@@ -118,10 +118,10 @@ std::unique_ptr<views::View> CreateUsernamePasswordWithEyeIcon(
   eye_icon->SetToggledTooltipText(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
   eye_icon->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  views::SetImageFromVectorIconWithColor(eye_icon, views::kEyeIcon,
+  views::SetImageFromVectorIconWithColor(eye_icon, views::kEyeOldIcon,
                                          {ui::kColorIcon, ui::kColorIcon});
   views::SetToggledImageFromVectorIconWithColor(
-      eye_icon, views::kEyeCrossedIcon, {ui::kColorIcon, ui::kColorIcon});
+      eye_icon, views::kEyeCrossedOldIcon, {ui::kColorIcon, ui::kColorIcon});
 
   base::RepeatingCallback<void(bool)> auth_result_callback =
       base::BindRepeating(

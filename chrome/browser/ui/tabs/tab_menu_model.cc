@@ -362,8 +362,8 @@ void TabMenuModel::Build(int index) {
     SetIconForCommandId(
         TabStripModel::CommandTogglePinned,
         ui::ImageModel::FromVectorIcon(
-            will_pin ? views::kPinIcon : views::kUnpinIcon, ui::kColorMenuIcon,
-            ui::SimpleMenuModel::kDefaultIconSize));
+            will_pin ? views::kPinOldIcon : views::kUnpinOldIcon,
+            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
   }
 
   const bool will_mute = !AreAllSitesMuted(*tab_strip_, indices);

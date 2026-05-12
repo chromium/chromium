@@ -137,8 +137,8 @@ std::unique_ptr<views::ImageView> PaymentRequestItemList::Item::CreateCheckmark(
       std::make_unique<views::ImageView>();
   checkmark->SetID(static_cast<int>(DialogViewID::CHECKMARK_VIEW));
   checkmark->SetCanProcessEventsWithinSubtree(false);
-  checkmark->SetImage(
-      ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon, kCheckmarkColor));
+  checkmark->SetImage(ui::ImageModel::FromVectorIcon(views::kMenuCheckOldIcon,
+                                                     kCheckmarkColor));
   checkmark->SetVisible(selected);
   checkmark->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   return checkmark;

@@ -32,7 +32,7 @@ LoginTooltipView::LoginTooltipView(const std::u16string& message,
     : LoginBaseBubbleView(std::move(anchor_view)) {
   info_icon_ = AddChildView(std::make_unique<views::ImageView>());
   info_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      views::kInfoIcon,
+      views::kInfoOldIcon,
       static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
       kInfoIconSizeDp));
 

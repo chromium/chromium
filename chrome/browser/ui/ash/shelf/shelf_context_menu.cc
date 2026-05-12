@@ -207,27 +207,27 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
   switch (type) {
     case ash::LAUNCH_NEW:
       if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_TAB) {
-        return views::kNewTabIcon;
+        return views::kNewTabOldIcon;
       }
       if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW) {
-        return views::kNewWindowIcon;
+        return views::kNewWindowOldIcon;
       }
-      return views::kOpenIcon;
+      return views::kOpenOldIcon;
     case ash::MENU_CLOSE:
-      return views::kCloseIcon;
+      return views::kCloseOldIcon;
     case ash::SHOW_APP_INFO:
-      return views::kInfoIcon;
+      return views::kInfoOldIcon;
     case ash::UNINSTALL:
-      return views::kUninstallIcon;
+      return views::kUninstallOldIcon;
     case ash::SETTINGS:
       return vector_icons::kSettingsIcon;
     case ash::TOGGLE_PIN:
-      return controller_->IsPinned(item_.id) ? views::kUnpinIcon
-                                             : views::kPinIcon;
+      return controller_->IsPinned(item_.id) ? views::kUnpinOldIcon
+                                             : views::kPinOldIcon;
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
-      return views::kNewWindowIcon;
+      return views::kNewWindowOldIcon;
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
-      return views::kNewIncognitoWindowIcon;
+      return views::kNewIncognitoWindowOldIcon;
     case ash::USE_LAUNCH_TYPE_REGULAR:
     case ash::USE_LAUNCH_TYPE_WINDOW:
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
@@ -244,9 +244,9 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
     case ash::SHUTDOWN_BRUSCHETTA_OS:
       return ash::kShutdownGuestOsIcon;
     case ash::CROSTINI_USE_HIGH_DENSITY:
-      return views::kLinuxHighDensityIcon;
+      return views::kLinuxHighDensityOldIcon;
     case ash::CROSTINI_USE_LOW_DENSITY:
-      return views::kLinuxLowDensityIcon;
+      return views::kLinuxLowDensityOldIcon;
     case ash::SWAP_WITH_NEXT:
     case ash::SWAP_WITH_PREVIOUS:
       return gfx::VectorIcon::EmptyIcon();

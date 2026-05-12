@@ -179,7 +179,7 @@ TEST_F(DownloadBubbleSecurityViewInfoTestGM3, InterruptedInfo) {
        false,
        "Your organization blocked this file because it didn't meet a security "
        "policy",
-       &views::kInfoChromeRefreshIcon,
+       &views::kInfoChromeRefreshOldIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
        false,

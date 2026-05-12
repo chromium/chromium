@@ -294,9 +294,9 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
   // TODO(hewer): Resolve this so two float icons are no longer needed.
   SetButtonImage(views::CAPTION_BUTTON_ICON_MENU, chromeos::kFloatWindowIcon);
   SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
-                 views::kWindowControlMinimizeIcon);
+                 views::kWindowControlMinimizeOldIcon);
   SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
-                 views::kWindowControlCloseIcon);
+                 views::kWindowControlCloseOldIcon);
 
   // The float button relies on minimum size to know if it can be floated, which
   // can only be checked after the widget has been initialized.
@@ -628,13 +628,13 @@ void FrameCaptionButtonContainerView::UpdateSizeButton() {
   const bool floated = widget_->GetNativeWindow()->GetProperty(
                            kWindowStateTypeKey) == WindowStateType::kFloated;
 
-  const gfx::VectorIcon& restore_icon = use_zoom_icons
-                                            ? chromeos::kWindowControlDezoomIcon
-                                            : views::kWindowControlRestoreIcon;
+  const gfx::VectorIcon& restore_icon =
+      use_zoom_icons ? chromeos::kWindowControlDezoomIcon
+                     : views::kWindowControlRestoreOldIcon;
   const gfx::VectorIcon& maximize_icon =
       use_zoom_icons ? chromeos::kWindowControlZoomIcon
                      : (floated ? chromeos::kUnfloatButtonIcon
-                                : views::kWindowControlMaximizeIcon);
+                                : views::kWindowControlMaximizeOldIcon);
 
   const bool use_restore_frame = chromeos::ShouldUseRestoreFrame(widget_);
   SetButtonImage(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,

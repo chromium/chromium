@@ -170,7 +170,7 @@ class ClosePromoButton : public views::ImageButton {
     constexpr int kIconSize = 16;
     SetImageModel(views::ImageButton::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
-                      views::kIcCloseIcon,
+                      views::kIcCloseOldIcon,
                       delegate_->GetHelpBubbleForegroundColorId(), kIconSize));
 
     constexpr float kCloseButtonFocusRingHaloThickness = 1.25f;

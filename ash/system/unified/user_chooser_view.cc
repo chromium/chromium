@@ -251,7 +251,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
         base::BindRepeating(
             &UserChooserDetailedViewController::TransitionToMainView,
             base::Unretained(controller)),
-        IconButton::Type::kMedium, &views::kIcCloseIcon,
+        IconButton::Type::kMedium, &views::kIcCloseOldIcon,
         IDS_APP_ACCNAME_CLOSE));
   }
 

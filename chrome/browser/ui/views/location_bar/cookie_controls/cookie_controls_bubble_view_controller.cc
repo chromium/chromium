@@ -55,7 +55,7 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
                             kOmitSchemePathAndTrivialSubdomains}};
 
 const gfx::VectorIcon& GetToggleIcon(bool enabled) {
-  return enabled ? views::kEyeRefreshIcon : views::kEyeCrossedRefreshIcon;
+  return enabled ? views::kEyeRefreshOldIcon : views::kEyeCrossedRefreshOldIcon;
 }
 }  // namespace
 

@@ -115,24 +115,24 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
   switch (command_id) {
     case ash::LAUNCH_NEW:
       if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW)
-        return views::kNewWindowIcon;
+        return views::kNewWindowOldIcon;
       if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_TAB)
-        return views::kNewTabIcon;
+        return views::kNewTabOldIcon;
       // The LAUNCH_NEW command is for an ARC app.
-      return views::kLaunchIcon;
+      return views::kLaunchOldIcon;
     case ash::TOGGLE_PIN:
-      return string_id == IDS_APP_LIST_CONTEXT_MENU_PIN ? views::kPinIcon
-                                                        : views::kUnpinIcon;
+      return string_id == IDS_APP_LIST_CONTEXT_MENU_PIN ? views::kPinOldIcon
+                                                        : views::kUnpinOldIcon;
     case ash::SHOW_APP_INFO:
-      return views::kInfoIcon;
+      return views::kInfoOldIcon;
     case ash::OPTIONS:
-      return views::kOptionsIcon;
+      return views::kOptionsOldIcon;
     case ash::UNINSTALL:
-      return views::kUninstallIcon;
+      return views::kUninstallOldIcon;
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
-      return views::kNewWindowIcon;
+      return views::kNewWindowOldIcon;
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
-      return views::kNewIncognitoWindowIcon;
+      return views::kNewIncognitoWindowOldIcon;
     case ash::INSTALL:
       // Deprecated.
       return gfx::VectorIcon::EmptyIcon();

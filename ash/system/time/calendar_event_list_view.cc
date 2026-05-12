@@ -145,7 +145,7 @@ CalendarEventListView::CalendarEventListView(
           views::Button::PressedCallback(
               base::BindRepeating(&CalendarViewController::CloseEventListView,
                                   base::Unretained(calendar_view_controller))),
-          IconButton::Type::kMediumFloating, &views::kIcCloseIcon,
+          IconButton::Type::kMediumFloating, &views::kIcCloseOldIcon,
           IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   scroll_view_->SetAllowKeyboardScrolling(false);

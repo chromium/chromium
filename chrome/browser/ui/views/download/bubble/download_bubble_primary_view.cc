@@ -92,7 +92,7 @@ void DownloadBubblePrimaryView::MaybeAddOtrInfoRow(Browser* browser) {
   info_icon->SetBorder(
       views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ICON)));
   info_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      views::kInfoIcon, kColorDownloadBubbleInfoIcon,
+      views::kInfoOldIcon, kColorDownloadBubbleInfoIcon,
       GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
 
   auto* info_label =

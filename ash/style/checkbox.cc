@@ -40,7 +40,8 @@ gfx::ImageSkia Checkbox::GetImage(ButtonState for_state) const {
 }
 
 const gfx::VectorIcon& Checkbox::GetVectorIcon() const {
-  return selected() ? views::kCheckboxActiveIcon : views::kCheckboxNormalIcon;
+  return selected() ? views::kCheckboxActiveOldIcon
+                    : views::kCheckboxNormalOldIcon;
 }
 
 bool Checkbox::IsIconOnTheLeftSide() {

@@ -190,7 +190,7 @@ void ActiveSessionAuthView::AddHeaderAndCloseButton(
       .SetEnabled(true)
       .SetCallback(base::BindRepeating(&ActiveSessionAuthView::Close,
                                        base::Unretained(this)))
-      .SetVectorIcon(&views::kIcCloseIcon);
+      .SetVectorIcon(&views::kIcCloseOldIcon);
 
   close_button_ = close_button_view->AddChildView(builder.Build());
 }

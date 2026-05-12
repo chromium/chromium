@@ -56,8 +56,8 @@ AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
   auto image_view = std::make_unique<NonAccessibleImageView>();
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetImage(ui::ImageModel::FromVectorIcon(
-      target >= 1 ? views::kMenuCheckIcon : kFingerprintIcon, ui::kColorAccent,
-      kFingerprintSize));
+      target >= 1 ? views::kMenuCheckOldIcon : kFingerprintIcon,
+      ui::kColorAccent, kFingerprintSize));
   animation_container->AddChildView(std::move(image_view));
 
   auto ring_progress_bar = std::make_unique<RingProgressBar>();

@@ -258,7 +258,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       CHECK_EQ(icon, &vector_icons::kPageInsightsIcon);
 #else
-      CHECK_EQ(icon, &views::kInfoChromeRefreshIcon);
+      CHECK_EQ(icon, &views::kInfoChromeRefreshOldIcon);
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowAboutThisSite;

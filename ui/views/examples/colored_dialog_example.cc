@@ -154,7 +154,7 @@ ColoredDialogChooser::ColoredDialogChooser() {
       base::BindRepeating(&ColoredDialogChooser::ButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_CHOOSER_BUTTON),
-      views::kInfoIcon));
+      views::kInfoOldIcon));
 
   confirmation_label_ = AddChildView(
       std::make_unique<views::Label>(std::u16string(), style::CONTEXT_LABEL));

@@ -46,7 +46,7 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
-      return IconAndColor{&views::kInfoChromeRefreshIcon,
+      return IconAndColor{&views::kInfoChromeRefreshOldIcon,
                           kColorDownloadItemIconDangerous};
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
@@ -58,7 +58,7 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
                             kColorDownloadItemIconDangerous};
       }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-      return IconAndColor{&views::kInfoChromeRefreshIcon,
+      return IconAndColor{&views::kInfoChromeRefreshOldIcon,
                           kColorDownloadItemIconDangerous};
     }
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
@@ -86,7 +86,7 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
 
   if (model.GetLastFailState() ==
       offline_items_collection::FailState::FILE_BLOCKED) {
-    return IconAndColor{&views::kInfoChromeRefreshIcon,
+    return IconAndColor{&views::kInfoChromeRefreshOldIcon,
                         kColorDownloadItemIconDangerous};
   }
 
@@ -132,7 +132,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
         return IconAndColor{&kDownloadWarningIcon,
                             kColorDownloadItemIconWarning};
       case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
-        return IconAndColor{&views::kInfoChromeRefreshIcon,
+        return IconAndColor{&views::kInfoChromeRefreshOldIcon,
                             kColorDownloadItemIconWarning};
       default:
         break;
@@ -159,7 +159,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
       return IconAndColorForDangerousUiPattern();
 
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
-      return IconAndColor{&views::kInfoChromeRefreshIcon,
+      return IconAndColor{&views::kInfoChromeRefreshOldIcon,
                           kColorDownloadItemIconWarning};
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:

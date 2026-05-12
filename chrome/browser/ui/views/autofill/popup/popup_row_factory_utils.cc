@@ -666,7 +666,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
           CreateExecuteSoonWrapper(std::move(deletion_action)),
-          views::kIcCloseIcon, kCloseIconSize);
+          views::kIcCloseOldIcon, kCloseIconSize);
 
   // We are making sure that the vertical distance from the delete button edges
   // to the cell border is the same as the horizontal distance.

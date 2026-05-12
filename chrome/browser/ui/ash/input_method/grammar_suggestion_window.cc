@@ -103,7 +103,7 @@ void GrammarSuggestionWindow::OnThemeChanged() {
   ignore_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
-          views::kCloseIcon,
+          views::kCloseOldIcon,
           ResolveSemanticColor(cros_styles::ColorName::kTextColorPrimary)));
 
   BubbleDialogDelegateView::OnThemeChanged();

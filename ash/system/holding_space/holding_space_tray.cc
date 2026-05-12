@@ -173,7 +173,7 @@ std::unique_ptr<views::ImageView> CreateDropTargetIcon(
       gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize));
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
-  icon->SetImage(CreateForegroundImageModel(tray, views::kUnpinIcon));
+  icon->SetImage(CreateForegroundImageModel(tray, views::kUnpinOldIcon));
   return icon;
 }
 

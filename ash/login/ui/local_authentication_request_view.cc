@@ -236,7 +236,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   const ui::ColorId icon_color_id = cros_tokens::kCrosSysOnSurface;
   close_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, icon_color_id,
+      ui::ImageModel::FromVectorIcon(views::kIcCloseOldIcon, icon_color_id,
                                      kCrossSizeDp));
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);

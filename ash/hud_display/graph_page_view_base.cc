@@ -74,14 +74,14 @@ END_METADATA
 void SetMinimizeIconToButton(views::ImageButton* button) {
   button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kWindowControlMinimizeIcon,
+      ui::ImageModel::FromVectorIcon(views::kWindowControlMinimizeOldIcon,
                                      kHUDDefaultColor, kMinMaxButtonIconSize));
 }
 
 void SetRestoreIconToButton(views::ImageButton* button) {
   button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kWindowControlRestoreIcon,
+      ui::ImageModel::FromVectorIcon(views::kWindowControlRestoreOldIcon,
                                      kHUDDefaultColor, kMinMaxButtonIconSize));
 }
 

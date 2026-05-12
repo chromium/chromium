@@ -42,10 +42,10 @@ BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
   // Elide the origin at the front of the text.
   SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
 
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          views::kLaunchIcon, kColorPipWindowForeground, kBackToTabImageSize));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(views::kLaunchOldIcon,
+                                               kColorPipWindowForeground,
+                                               kBackToTabImageSize));
 
   // Prevent DCHECKing for our non-opaque background.
   SetTextSubpixelRenderingEnabled(false);

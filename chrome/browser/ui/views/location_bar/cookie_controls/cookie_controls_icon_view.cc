@@ -316,8 +316,8 @@ views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
   return controls_state_ == CookieControlsState::kBlocked3pc
-             ? views::kEyeCrossedRefreshIcon
-             : views::kEyeRefreshIcon;
+             ? views::kEyeCrossedRefreshOldIcon
+             : views::kEyeRefreshOldIcon;
 }
 
 void CookieControlsIconView::UpdateTooltipForFocus() {}

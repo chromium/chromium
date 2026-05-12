@@ -167,16 +167,16 @@ void OpaqueBrowserFrameView::InitViews() {
   if (GetFrameButtonStyle() == FrameButtonStyle::kMdButton) {
     minimize_button_ = CreateFrameCaptionButton(
         views::CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON,
-        views::kWindowControlMinimizeIcon);
+        views::kWindowControlMinimizeOldIcon);
     maximize_button_ = CreateFrameCaptionButton(
         views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE, HTMAXBUTTON,
-        views::kWindowControlMaximizeIcon);
-    restore_button_ =
-        CreateFrameCaptionButton(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
-                                 HTMAXBUTTON, views::kWindowControlRestoreIcon);
+        views::kWindowControlMaximizeOldIcon);
+    restore_button_ = CreateFrameCaptionButton(
+        views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE, HTMAXBUTTON,
+        views::kWindowControlRestoreOldIcon);
     close_button_ =
         CreateFrameCaptionButton(views::CAPTION_BUTTON_ICON_CLOSE, HTMAXBUTTON,
-                                 views::kWindowControlCloseIcon);
+                                 views::kWindowControlCloseOldIcon);
   } else if (GetFrameButtonStyle() == FrameButtonStyle::kImageButton) {
     minimize_button_ =
         CreateImageButton(IDR_MINIMIZE, IDR_MINIMIZE_H, IDR_MINIMIZE_P,

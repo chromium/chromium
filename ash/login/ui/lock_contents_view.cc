@@ -252,7 +252,7 @@ class UserAddingScreenIndicator : public views::View {
     info_icon_ = AddChildView(std::make_unique<views::ImageView>());
     info_icon_->SetPreferredSize(gfx::Size(kInfoIconSizeDp, kInfoIconSizeDp));
     info_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        views::kInfoIcon, kColorAshIconColorPrimary));
+        views::kInfoOldIcon, kColorAshIconColorPrimary));
 
     std::u16string message =
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_USER_ADDING_BANNER);

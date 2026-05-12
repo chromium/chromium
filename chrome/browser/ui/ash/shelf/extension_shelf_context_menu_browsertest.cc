@@ -24,11 +24,11 @@ class ExtensionShelfContextMenuBrowserTest
 
   const gfx::VectorIcon& GetExpectedLaunchNewIcon(int command_id) {
     if (command_id == ash::USE_LAUNCH_TYPE_REGULAR) {
-      return views::kNewTabIcon;
+      return views::kNewTabOldIcon;
     } else if (command_id == ash::USE_LAUNCH_TYPE_WINDOW) {
-      return views::kNewWindowIcon;
+      return views::kNewWindowOldIcon;
     } else {
-      return views::kOpenIcon;
+      return views::kOpenOldIcon;
     }
   }
 };

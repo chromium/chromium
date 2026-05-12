@@ -64,7 +64,7 @@ void ShelfWindowWatcherItemDelegate::GetContextMenu(
   // Show a default context menu with just an extra close item.
   menu->AddItemWithStringIdAndIcon(
       CommandId::MENU_CLOSE, IDS_CLOSE,
-      ui::ImageModel::FromVectorIcon(views::kCloseIcon,
+      ui::ImageModel::FromVectorIcon(views::kCloseOldIcon,
                                      ui::kColorAshSystemUIMenuIcon));
   std::move(callback).Run(std::move(menu));
 }

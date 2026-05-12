@@ -268,12 +268,12 @@ void ButtonExample::CreateExampleView(View* container) {
           .Build();
   md_icon_text_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kInfoIcon));
+      ui::ImageModel::FromVectorIcon(views::kInfoOldIcon));
 
   view->AddChildView(ImageButton::CreateIconButton(
       base::BindRepeating(&ButtonExample::ImageButtonPressed,
                           base::Unretained(this)),
-      views::kLaunchIcon, u"Icon button"));
+      views::kLaunchOldIcon, u"Icon button"));
   view->AddChildView(std::make_unique<views::MdTextButtonWithDownArrow>(
       base::BindRepeating(&ButtonExample::ImageButtonPressed,
                           base::Unretained(this)),
