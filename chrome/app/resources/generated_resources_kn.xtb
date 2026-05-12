@@ -71,7 +71,7 @@
 <translation id="1042248468362992359">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಬಳಸಲು ಮೊಬೈಲ್ ಡೇಟಾಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">ಕ್ರಿಯೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="1045487161760507186">ನೀವು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವ ಅಗತ್ಯವಿಲ್ಲ ಏಕೆಂದರೆ ಅದು Google Password Manager ನಲ್ಲಿ ನಿಮಗಾಗಿ ಸೇವ್ ಆಗಿರುತ್ತದೆ</translation>
-<translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{ಈ ಸಾಧನದಲ್ಲಿ 1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ}one{ಈ ಸಾಧನದಲ್ಲಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ}other{ಈ ಸಾಧನದಲ್ಲಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{ಈ ಸಾಧನದಲ್ಲಿ 1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಲಾಗಿದೆ}one{ಈ ಸಾಧನದಲ್ಲಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಲಾಗಿದೆ}other{ಈ ಸಾಧನದಲ್ಲಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="1046572983040892965">ವಿಂಡೋವನ್ನು ಮೇಲಕ್ಕೆ ಮತ್ತು ಎಡಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="104710386808485638">Linux ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕೇ?</translation>
 <translation id="1047431265488717055">ಲಿಂಕ್ ಪ&amp;ಠ್ಯ ಕಾಪಿ ಮಾಡಿ</translation>
@@ -478,7 +478,7 @@
 <translation id="131188242279372879">ಡೌನ್‌ಲೋಡ್‌ಗಳಿಗಾಗಿ Chrome ನ ಉನ್ನತ ಮಟ್ಟದ ಭದ್ರತೆಯನ್ನು ಪಡೆಯಲು ವರ್ಧಿತ ಸುರಕ್ಷತೆಯನ್ನು ಅನ್ವೇಷಿಸಿ</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿಧಾನಗೊಳಿಸುವ ಟ್ಯಾಬ್ ಅನ್ನು ಸರಿಪಡಿಸಿ}one{ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿಧಾನಗೊಳಿಸುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸರಿಪಡಿಸಿ}other{ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿಧಾನಗೊಳಿಸುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸರಿಪಡಿಸಿ}}</translation>
 <translation id="1312721752506309252">ಸುಧಾರಿತ ಸುರಕ್ಷತೆ ಆನ್ ಆಗಿದೆ</translation>
-<translation id="13130607084115184">ಉಳಿಸಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ. ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಿಕೊಳ್ಳಲು, <ph name="BEGIN_LINK" />CSV ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.<ph name="END_LINK" /></translation>
+<translation id="13130607084115184">ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ. ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲು, <ph name="BEGIN_LINK" />CSV ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.<ph name="END_LINK" /></translation>
 <translation id="1313405956111467313">ಸ್ವಯಂಚಾಲಿತ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಲ್ಲೂ ಸೇರಿದಂತೆ, ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
@@ -2745,7 +2745,7 @@
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ಅವರ ಮೂಲಕ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
 <translation id="2857047802954430547">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2857195263461649321">Gemini ನಲ್ಲಿ ನೀವು ಎಲ್ಲಿಗೆ ನಿಲ್ಲಿಸಿದ್ದೀರೋ, ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರಿಸಿ</translation>
-<translation id="2859741939921354763"><ph name="BRAND" /> ಗೆ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</translation>
+<translation id="2859741939921354763"><ph name="BRAND" /> ಗೆ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಿ</translation>
 <translation id="2860284453253554297">Enterprise ನೀತಿಗಳು</translation>
 <translation id="2860710618359053450">ದವಡೆಯನ್ನು ಬಲಕ್ಕೆ ಸರಿಸುವುದು</translation>
 <translation id="2861301611394761800">ಸಿಸ್ಟಂ ಅಪ್‌ಡೇಟ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಂ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
@@ -3561,7 +3561,7 @@
 <translation id="3443545121847471732">6-ಅಂಕಿಯ ಪಿನ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="3443702190855647469">ಕನೆಕ್ಟ್ ಮಾಡಲಾದ ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> ಅವಧಿ ಮೀರಿದೆ</translation>
-<translation id="3443754338602062261">ನಿಮ್ಮ <ph name="BRAND" /> ನಲ್ಲಿ ಈ ಖಾತೆಗಳಿಗೆ ನೀವು ಈಗಾಗಲೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ. ಕೆಳಗಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಲ್ಲಿ ಒಂದನ್ನು ಆಮದು ಮಾಡಲು ನೀವು ಆರಿಸಿದರೆ, ಅದು ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಒಂದನ್ನು ಬದಲಾಯಿಸುತ್ತದೆ.</translation>
+<translation id="3443754338602062261">ನಿಮ್ಮ <ph name="BRAND" /> ನಲ್ಲಿ ಈ ಖಾತೆಗಳಿಗೆ ನೀವು ಈಗಾಗಲೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ. ಕೆಳಗಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಲ್ಲಿ ಒಂದನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಲು ನೀವು ಆರಿಸಿದರೆ, ಅದು ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಒಂದನ್ನು ಬದಲಾಯಿಸುತ್ತದೆ.</translation>
 <translation id="344449859752187052">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3445140416168872040"><ph name="URL" /> ಗಾಗಿ ಅನುಮತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ನಿಮಿಷ</translation>
@@ -4014,7 +4014,7 @@
 <translation id="3741510433331996336">ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="3742235229730461951">ಕೊರಿಯನ್ ಕೀಬೋರ್ಡ್ ಲೇಔಟ್</translation>
 <translation id="3743842571276656710"><ph name="DEVICE_NAME" /> ಸಾಧನದ ಜೊತೆ ಜೋಡಿಸಲು ಪಿನ್ ನಮೂದಿಸಿ</translation>
-<translation id="3744219658596020825">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿಕೊಳ್ಳಲಾಗಿಲ್ಲ</translation>
+<translation id="3744219658596020825">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲಾಗಿಲ್ಲ</translation>
 <translation id="3745306754941902605">ಅಡುಗೆಮನೆ</translation>
 <translation id="3748424433435232460">ಈ ಖಾತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಈಗಾಗಲೇ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3748466028423001972">ಕೆಳಗಿನ ವೀಕ್ಷಣೆಯೊಂದಿಗೆ ಸ್ವ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -6892,7 +6892,7 @@
 <translation id="5787420647064736989">ಸಾಧನದ ಹೆಸರು</translation>
 <translation id="5787582109651427233"><ph name="BEGIN_LINK_LOYALTY_CARDS" />ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳು<ph name="END_LINK_LOYALTY_CARDS" /> ಅಥವಾ Google Pay <ph name="BEGIN_LINK_PAYMENT_METHODS" />ಪಾವತಿ ವಿಧಾನಗಳನ್ನು<ph name="END_LINK_PAYMENT_METHODS" /> ಸೇರಿಸಲು ಅಥವಾ ನಿರ್ವಹಿಸಲು Google Wallet ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="5788367137662787332">ಕ್ಷಮಿಸಿ, <ph name="DEVICE_LABEL" /> ಸಾಧನದಲ್ಲಿನ ಕನಿಷ್ಠ ಒಂದೇ ಒಂದು ಭಾಗವನ್ನೂ ಜೋಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
-<translation id="5789581866075720267">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಿಕೊಳ್ಳಲು, CSV ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
+<translation id="5789581866075720267">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲು, CSV ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5790085346892983794">ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="5790651917470750848">ಪೋರ್ಟ್ ಫಾರ್ವರ್ಡ್ ಮಾಡುವಿಕೆ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="5792076233957036027">ಎಲ್ಲಾ ಕನೆಕ್ಷನ್‌ಗಳಲ್ಲಿ</translation>
@@ -6920,7 +6920,7 @@
 <translation id="5801051031414037185">ಫೋನ್ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="5801568494490449797">ಪ್ರಾಶಸ್ತ್ಯಗಳು</translation>
 <translation id="5801848377610914194">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹುಡುಕಲು ಮತ್ತು ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳನ್ನು ಹುಡುಕಲು ದೈನಂದಿನ ಭಾಷೆಯನ್ನು ಬಳಸಿ. ಈ ಸೆಟ್ಟಿಂಗ್ ಆನ್ ಆಗಿದೆ.</translation>
-<translation id="5803689677801500549">ಉಳಿಸಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ. <ph name="USER_EMAIL" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಿಕೊಳ್ಳಲು, <ph name="BEGIN_LINK" />CSV ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ.<ph name="END_LINK" /></translation>
+<translation id="5803689677801500549">ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ. <ph name="USER_EMAIL" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲು, <ph name="BEGIN_LINK" />CSV ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ.<ph name="END_LINK" /></translation>
 <translation id="5804198298544152115">ತಲ್ಲೀನಗೊಳಿಸುವ ಅನುಭವಗಳನ್ನು ಹೆಚ್ಚಿಸಲು ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ನಿಮ್ಮ ಹ್ಯಾಂಡ್‌ಗಳು ಮತ್ತು ಬೆರಳುಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="5804241973901381774">ಅನುಮತಿಗಳು</translation>
 <translation id="5804259315582798390">ಸ್ಥಳೀಯ ಡೇಟಾ ರಿಕವರಿಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
@@ -7136,7 +7136,7 @@
 <translation id="5946591249682680882">ವರದಿ ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">ಮೌಸ್‌ ಅನ್ನು ಡಬಲ್‌-ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="594783581676390841">{NUM_EVENTS,plural, =1{1 ಈವೆಂಟ್ ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ ಮತ್ತು ಅದನ್ನು ತೋರಿಸಲಾಗಿಲ್ಲ}one{# ಈವೆಂಟ್‌ಗಳನ್ನು ಪಾರ್ಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ ಮತ್ತು ಅವುಗಳನ್ನು ತೋರಿಸಲಾಗಿಲ್ಲ}other{# ಈವೆಂಟ್‌ಗಳನ್ನು ಪಾರ್ಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ ಮತ್ತು ಅವುಗಳನ್ನು ತೋರಿಸಲಾಗಿಲ್ಲ}}</translation>
-<translation id="5948476936444935795">ಆಮದು ಪ್ರಕ್ರಿಯೆ ರದ್ದುಮಾಡಿ</translation>
+<translation id="5948476936444935795">ಇಂಪೋರ್ಟ್ ಪ್ರಕ್ರಿಯೆ ರದ್ದುಮಾಡಿ</translation>
 <translation id="5948536763493709626">ಕೀಬೋರ್ಡ್ ಅಥವಾ ಮೌಸ್ ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಿ ಅಥವಾ ನಿಮ್ಮ ಟಚ್‌ಸ್ಕ್ರೀನ್ ಬಳಸಿ ಸೆಟಪ್ ಮುಂದುವರಿಸಿ. ನೀವು ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಬಳಸುತ್ತಿದ್ದರೆ, ನಿಮ್ಮ ಸಾಧನಗಳು ಜೋಡಿಸಲು ಸಿದ್ಧವಾಗಿವೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="5949795028157144515">ಡೆವಲಪರ್ ಮೋಡ್ ಆಫ್ ಆಗಿದೆ. ಕೆಲವು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="594993197557058302">1-4 ಮಾರ್ಪಡಿಸುವ ಕೀಗಳನ್ನು (ctrl, alt, shift, ಹುಡುಕಾಟ ಅಥವಾ ಲಾಂಚರ್) ಮತ್ತು ಇನ್ನೂ 1 ಕೀ ಅನ್ನು ಒತ್ತಿ. ನೀವು ಒಂದೇ ಕೀ ಅನ್ನು ಸಹ ಆಯ್ಕೆಮಾಡಬಹುದು.</translation>
@@ -8730,7 +8730,7 @@
 <translation id="7064209589142995848">ಕಂಟೆಂಟ್ ಟ್ರಾನ್ಸ್‌ಫರ್</translation>
 <translation id="7064734931812204395">Linux ಕಂಟೇನರ್ ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಇದು 30 ನಿಮಿಷಗಳವರೆಗೆ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="7065223852455347715">ಈ ಸಾಧನವನ್ನು ಎಂಟರ್‌ರ್ಪ್ರೈಸ್ ನೋಂದಣಿಯನ್ನು ತಡೆಯುವ ಮೋಡ್‌ನಲ್ಲಿ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ನೀವು ಸಾಧನವನ್ನು ನೋಂದಣಿ ಮಾಡಲು ಬಯಸಿದರೆ ನೀವು ಮೊದಲಿಗೆ ಸಾಧನ ಮರುಪ್ರಾಪ್ತಿಯನ್ನು ಮಾಡಬೇಕಾದ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
-<translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> ಗಾಗಿ 1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ}one{<ph name="USER_EMAIL" /> ಗಾಗಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ}other{<ph name="USER_EMAIL" /> ಗಾಗಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> ಗಾಗಿ 1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಲಾಗಿದೆ}one{<ph name="USER_EMAIL" /> ಗಾಗಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಲಾಗಿದೆ}other{<ph name="USER_EMAIL" /> ಗಾಗಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7065534935986314333">ಸಿಸ್ಟಂ ಬಗ್ಗೆ</translation>
 <translation id="706626672220389329">ಹಂಚಿಕೆಯನ್ನು ಅಳವಡಿಸುವಲ್ಲಿ ದೋಷವಿದೆ. ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ಹಂಚಿಕೆಯನ್ನು ಈಗಾಗಲೇ ಅಳವಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="7066572364168923329">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಸೆಟಪ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -9408,7 +9408,7 @@
 <translation id="7547317915858803630">ಎಚ್ಚರಿಕೆ: ನಿಮ್ಮ <ph name="PRODUCT_NAME" /> ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೆಟ್‌ವರ್ಕ್ ಡ್ರೈವ್‌ನಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗಿದೆ. ಇದರಿಂದಾಗಿ ನಿಧಾನವಾಗುವುದು, ಕ್ರ್ಯಾಶ್‌ಗಳಲ್ಲಿ ಅಥವಾ ಡೇಟಾ ನಷ್ಟವಾಗುವುದರಲ್ಲಿಯೂ ಇದು ಕೊನೆಗೊಳ್ಳಬಹುದು.</translation>
 <translation id="754836352246153944">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ. ಮೆನು ತೆರೆಯಲು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7548856833046333824">ಲೆಮನಾಡ್</translation>
-<translation id="7549250950481368089">ಉಳಿಸಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ. <ph name="BRAND" /> ಗೆ <ph name="BEGIN_LINK" />ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ<ph name="END_LINK" />.</translation>
+<translation id="7549250950481368089">ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ. <ph name="BRAND" /> ಗೆ <ph name="BEGIN_LINK" />ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
 <translation id="7549434883223124329">ಸಾಧನದ ಭಾಷೆಯನ್ನು ಬದಲಿಸಬೇಕೆ?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">ಸಂಗ್ರಹಣೆ, ಪವರ್, ಭಾಷೆ</translation>
@@ -9479,7 +9479,7 @@
 <translation id="7602805861133750578">ನೀವು ಈಗ ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳು, Gemini ಚಾಟ್‌ಗಳು ಮತ್ತು AI ಮೋಡ್ ಥ್ರೆಡ್‌ಗಳನ್ನು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ನಿರ್ವಹಿಸಬಹುದು. ಇದನ್ನು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಅನ್‌ಪಿನ್ ಮಾಡಿ.</translation>
 <translation id="7602868996817972616">ಈ ಪುಟದ ಕುರಿತು Google ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="7603785829538808504">ಕೆಳಗೆ ಪಟ್ಟಿ ಮಾಡಲಾದ ಸೈಟ್‌ಗಳು ಕಸ್ಟಮ್ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಅನುಸರಿಸುತ್ತವೆ</translation>
-<translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಮದು ಮಾಡಿಕೊಳ್ಳಲಾಗಿಲ್ಲ}one{{NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿಕೊಳ್ಳಲಾಗಿಲ್ಲ}other{{NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿಕೊಳ್ಳಲಾಗಿಲ್ಲ}}</translation>
+<translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲಾಗಿಲ್ಲ}one{{NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲಾಗಿಲ್ಲ}other{{NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲಾಗಿಲ್ಲ}}</translation>
 <translation id="7605163396341021431">ಈ Chromebook ನಲ್ಲಿ USB ಸಾಧನಗಳ ಮೇಲೆ Android ಆ್ಯಪ್‌ಗಳ ನಿಯಂತ್ರಣವನ್ನು ನೀಡಿ</translation>
 <translation id="7605594153474022051">ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
 <translation id="7606248551867844312">ಕ್ರಾಪ್ ಮಾಡುವುದನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
@@ -10450,7 +10450,7 @@
 <translation id="8255927332875030912">ಹುಡುಕಾಟ + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">ಸ್ಪಾರ್ಕಿ</translation>
 <translation id="8257950718085972371">ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ನಿರ್ಬಂಧಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
-<translation id="8258027225380843424">ಯಶಸ್ವಿಯಾಗಿ ಆಮದು ಮಾಡಲಾಗಿದೆ!</translation>
+<translation id="8258027225380843424">ಯಶಸ್ವಿಯಾಗಿ ಇಂಪೋರ್ಟ್ ಮಾಡಲಾಗಿದೆ!</translation>
 <translation id="8259048637628995340">ತಡೆರಹಿತ ಅನುಭವಕ್ಕಾಗಿ ನಿಮ್ಮ Android ಫೋನ್ ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="8260177673299865994">ಡೌನ್‌ಲೋಡ್ ರಕ್ಷಣೆಯನ್ನು ಸುಧಾರಿಸಿ</translation>
 <translation id="8260864402787962391">ಮೌಸ್</translation>
@@ -10813,7 +10813,7 @@
 <translation id="8512476990829870887">ಪ್ರಕ್ರಿಯೆ ಕೊನೆಗೊಳಿಸಿ</translation>
 <translation id="851263357009351303">ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಲು <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="8513108775083588393">ಸ್ವಯಂ-ತಿರುಗು</translation>
-<translation id="8513357934662532537"><ph name="USER_EMAIL" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಿಕೊಳ್ಳಲು, CSV ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ.</translation>
+<translation id="8513357934662532537"><ph name="USER_EMAIL" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲು, CSV ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="8514746246728959655">ಬೇರೊಂದು ಭದ್ರತೆ ಕೀಯನ್ನು ಬಳಸಿ ನೋಡಿ</translation>
 <translation id="8514828975162859845">ಕೇಕ್ ಪಾಪ್‌ಗಳು</translation>
 <translation id="8514955299594277296">ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಉಳಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ)</translation>

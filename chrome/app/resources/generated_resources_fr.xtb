@@ -3697,7 +3697,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3541823293333232175">Attribué</translation>
 <translation id="354323442562085715">Rédigez, planifiez, codez et plus encore</translation>
 <translation id="3543296862747913985">Description</translation>
-<translation id="3543298914473315872">Processus de l'outil de mise à jour</translation>
+<translation id="3543298914473315872">Processus du programme de mise à jour</translation>
 <translation id="3543393733900874979">Échec de la mise à jour (erreur : <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3544058026430919413">Une entreprise peut définir un groupe de sites autorisés à utiliser des cookies pour partager votre activité dans le groupe. Cette option est désactivée en navigation privée.</translation>
 <translation id="3544879808695557954">Nom d'utilisateur (facultatif)</translation>
@@ -8209,7 +8209,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6714871567554212732">Afficher plus de détails sur <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Les sites Web ne sont pas autorisés à utiliser votre micro</translation>
 <translation id="6716049856796700977">Rien ne peut utiliser votre position. Toutefois, les applis et sites pourront toujours la voir via votre adresse IP. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="671868032356459320">Champ d'application de l'outil de mise à jour : <ph name="OUTCOMES" /></translation>
+<translation id="671868032356459320">Champ d'application du programme de mise à jour : <ph name="OUTCOMES" /></translation>
 <translation id="6718728708077839052">Gérer les autorisations de l'appli parente</translation>
 <translation id="671928215901716392">Verrouillage d'écran</translation>
 <translation id="6719839880830057298">Importation du fichier terminée</translation>
@@ -11059,7 +11059,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8680251145628383637">Connectez-vous pour retrouver vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils. De plus, vous serez automatiquement connecté à vos services Google.</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour afficher des annonces intrusives ou trompeuses</translation>
 <translation id="8682730193597992579">L'imprimante <ph name="PRINTER_NAME" /> est connectée et prête</translation>
-<translation id="8683720831806477407">Champ d'application de l'outil de mise à jour</translation>
+<translation id="8683720831806477407">Champ d'application du programme de mise à jour</translation>
 <translation id="8684471948980641888">Autoriser la synchronisation sur les réseaux facturés à l'usage</translation>
 <translation id="8685540043423825702">Votre profil Chrome</translation>
 <translation id="8685882652128627032">Cliquer pour ouvrir la boîte de dialogue "Ajouter une recherche sur un site"</translation>

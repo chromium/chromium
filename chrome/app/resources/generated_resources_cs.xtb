@@ -4567,7 +4567,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4116480382905329353">Detekováno jednou</translation>
 <translation id="4116704186509653070">Otevřít znovu</translation>
 <translation id="4117714603282104018">Hmatová odezva touchpadu</translation>
-<translation id="4117854923024277067">Snímek obrazovky se může použít s vaším pokynem nebo se může smazat</translation>
+<translation id="4117854923024277067">Snímek obrazovky se může použít s vaším promptem nebo se může smazat</translation>
 <translation id="4118579674665737931">Restartujte zařízení a zkuste to znovu.</translation>
 <translation id="4120388883569225797">Tento bezpečnostní klíč nelze resetovat</translation>
 <translation id="4120817667028078560">Cesta je příliš dlouhá</translation>
@@ -6617,7 +6617,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5576472948015790634">Teď můžete skupiny karet a chaty s Gemini na jednom místě spravovat. Tlačítko můžete kdykoli odepnout.</translation>
 <translation id="557722062034137776">Resetování zařízení nebude mít vliv na vaše účty Google ani na data synchronizovaná s těmito účty. Všechny soubory uložené místně v zařízení však budou smazány.</translation>
 <translation id="5578059481725149024">Automatické přihlášení</translation>
-<translation id="5578387000057347457">Zadáním vlastního pokynu nebo zvýrazněním textu vytvořit obrázek</translation>
+<translation id="5578387000057347457">Zadáním vlastního promptu nebo zvýrazněním textu vytvořit obrázek</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 položka je uložena jen na tomto zařízení. Pokud ji chcete používat na jiných zařízeních, <ph name="BEGIN_LINK" />uložte ji do svého účtu Google<ph name="END_LINK" />.}few{{ITEM_COUNT} položky jsou uložené jen na tomhle zařízení. Pokud je chcete používat i na jiných zařízeních, <ph name="BEGIN_LINK" />uložte je do svého účtu Google<ph name="END_LINK" />.}many{{ITEM_COUNT} položky je uloženo jen na tomhle zařízení. Pokud je chcete používat i na jiných zařízeních, <ph name="BEGIN_LINK" />uložte je do svého účtu Google<ph name="END_LINK" />.}other{{ITEM_COUNT} položek je uloženo jen na tomhle zařízení. Pokud je chcete používat i na jiných zařízeních, <ph name="BEGIN_LINK" />uložte je do svého účtu Google<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Odebrat web <ph name="SITE" /> ze seznamu <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Překlad do jazyka <ph name="LANGUAGE" /> byl dokončen</translation>

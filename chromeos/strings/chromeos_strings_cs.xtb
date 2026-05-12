@@ -41,7 +41,7 @@
 <translation id="1145018782460575098">Okno aktualizace firmwaru externích zařízení je otevřené. Dostupné aktualizace: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Články nápovědy a odpovědi na časté dotazy ohledně Chromebooků</translation>
 <translation id="1154390310959620237">Můžete si přizpůsobit pouze pět zkratek. Pokud chcete přidat novou, nějakou smažte.</translation>
-<translation id="1155154308031262006">Zadejte pokyn</translation>
+<translation id="1155154308031262006">Zadejte prompt</translation>
 <translation id="115705039208660697">ananasy</translation>
 <translation id="1164939766849482256">Spořič obrazovky Od úsvitu do setmění</translation>
 <translation id="1171349345463658120">písečná laguna</translation>
@@ -142,7 +142,7 @@
           Pokud chcete získat další jedinečné a rozmanité možnosti obrázků AI, vyberte Inspiruj mě.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Při vytváření pomocí AI se pokyn odesílá na servery Google AI, aby vygenerovaly obrázky a aby tuhle službu bylo možné vylepšovat. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          Při vytváření pomocí AI se prompt odesílá na servery Google AI, aby vygenerovaly obrázky a aby tuhle službu bylo možné vylepšovat. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Generativní umělá inteligence je experimentální, na počátku vývoje a v současnosti má omezenou dostupnost.</translation>
@@ -219,7 +219,7 @@
 <translation id="1801418420130173017">Deaktivovat tmavý motiv</translation>
 <translation id="1807246157184219062">Světlé</translation>
 <translation id="1808803439260407870">Klasické umění</translation>
-<translation id="181434555916624618">Výsledky s lidmi se zatím nezobrazují. Zkuste jiný pokyn.</translation>
+<translation id="181434555916624618">Výsledky s lidmi se zatím nezobrazují. Zkuste jiný prompt.</translation>
 <translation id="1815850098929213707">Vybraná klávesa je <ph name="KEYS" />. Klepnutím na tlačítko ovládací prvek upravíte</translation>
 <translation id="1818174214124933000">Když vyberete Odeslat, vaše zpětná vazba a obsah (zobrazené níže) budou odeslány do Googlu, zkontrolovány lidmi a použity k trénování nebo vylepšování našich produktů a služeb v souladu se <ph name="LINK_POLICY_BEGIN" />zásadami ochrany soukromí<ph name="LINK_POLICY_END" /> a <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />smluvními podmínkami společnosti Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Objekty</translation>
@@ -365,7 +365,7 @@
 <translation id="2446553403094072641">Přesnost pohyblivé řádové čárky</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2448857983905133469">Nástroje pro výuku</translation>
-<translation id="2468124392950503650">Vyberte pokyn nebo si projděte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />průvodce pokyny<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
+<translation id="2468124392950503650">Vyberte prompt nebo si projděte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />průvodce prompty<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Pomocí funkce Pomozte mi s psaním založené na Google AI můžete vytvořit koncept nebo vylepšit stávající text</translation>
 <translation id="2475982808118771221">Došlo k chybě</translation>
 <translation id="2480572840229215612">krabi</translation>
@@ -446,7 +446,7 @@
 <translation id="2878126681324394319">Stáhnout model k vytváření souhrnů a názvů</translation>
 <translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="2880569433548999039">Spořič obrazovky s plynoucími oblaky</translation>
-<translation id="2882230315487799269">Upravit pokyn pro AI</translation>
+<translation id="2882230315487799269">Upravit prompt pro AI</translation>
 <translation id="2888298276507578975">Zadejte výzvu jako například „napiš poděkování“</translation>
 <translation id="2890557891229184386">tropický ostrov</translation>
 <translation id="2895772081848316509">tmavé</translation>
@@ -497,7 +497,7 @@
 <translation id="3170673040743561620">Položte dokument na skener</translation>
 <translation id="3174321110679064523">Tapeta od úsvitu do setmění</translation>
 <translation id="3178532070248519384">avantgarda</translation>
-<translation id="3182676044300231689">Zadejte pokyn, například „uprav text, aby zněl jistěji“</translation>
+<translation id="3182676044300231689">Zadejte prompt, například „uprav text, aby zněl jistěji“</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
 <translation id="319101249942218879">Obrázek avatara se změnil</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
@@ -697,7 +697,7 @@
 <translation id="4113067922640381334">Máte přístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tmavý režim</translation>
 <translation id="4126551873361000548">O 10 sekund zpět</translation>
-<translation id="4128271910628504223">Zadejte pokyn jako „nakresli mlžný les“</translation>
+<translation id="4128271910628504223">Zadejte prompt jako „nakresli mlžný les“</translation>
 <translation id="4130035430755296270">Umístěním kurzoru zobrazíte další možnosti rozvržení.</translation>
 <translation id="4131410914670010031">Černobíle</translation>
 <translation id="4137700675046373159">v sobotu</translation>
@@ -731,13 +731,13 @@
 <translation id="4249717042534905822">v neděli</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
 <translation id="4251839292699800785">Stylová kancelář</translation>
-<translation id="4252261480746798874">Když vyberete Vytvořit vlastní, můžete napsat vlastní pokyn. Můžete také zvolit Vybrat motiv a pak vybrat podtržená slova k přizpůsobení AI tapety.
+<translation id="4252261480746798874">Když vyberete Vytvořit vlastní, můžete napsat vlastní prompt. Můžete také zvolit Vybrat motiv a pak vybrat podtržená slova k přizpůsobení AI tapety.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Pokud chcete získat další jedinečné a rozmanité možnosti obrázků AI, vyberte Inspiruj mě.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Když vytvoříte vlastní tapetu, odešle se pokyn na servery Google, aby vygenerovaly obrázky a aby tuhle službu bylo možné vylepšovat. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />smluvní podmínky a zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neuvádějte žádné osobní, citlivé ani důvěrné informace.
+          Když vytvoříte vlastní tapetu, odešle se prompt na servery Google, aby vygenerovaly obrázky a aby tuhle službu bylo možné vylepšovat. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />smluvní podmínky a zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neuvádějte žádné osobní, citlivé ani důvěrné informace.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Generativní umělá inteligence může dělat chyby, včetně chyb týkajících se lidí, proto si informace raději ověřte. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Další informace<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
@@ -760,7 +760,7 @@
 <translation id="4320904097188876154">neonově růžová</translation>
 <translation id="432961742358282111">Kliknutím pravým tlačítkem nebo podržením získáte definice, překlady nebo převody jednotek. Tuto funkci můžete spravovat šipkami vlevo nebo vpravo.</translation>
 <translation id="4333390807948134856">Klávesa <ph name="KEY_NAME" /> byla stisknuta</translation>
-<translation id="4334293042716981313">Můžete taky <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />napsat svůj vlastní pokyn<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
+<translation id="4334293042716981313">Můžete taky <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />napsat svůj vlastní prompt<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">klávesa</translation>
 <translation id="4356100841225547054">Vypnout zvuk</translation>
 <translation id="4361257691546579041">APN je typu výchozí.</translation>
@@ -775,7 +775,7 @@
 <translation id="4394049700291259645">Deaktivovat</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> se restartuje</translation>
 <translation id="4395835743215824109">přizpůsobit klávesnici</translation>
-<translation id="439946595190720558">Toto pozadí bylo vytvořeno umělou inteligencí s použitím následujícího pokynu: „<ph name="PROMPT" />“.</translation>
+<translation id="439946595190720558">Toto pozadí bylo vytvořeno umělou inteligencí s použitím následujícího promptu: „<ph name="PROMPT" />“.</translation>
 <translation id="4415951057168511744">Aktuální avatar</translation>
 <translation id="4417830657741848074">Váš administrátor nastavil automatické spouštění některých aplikací. Některé z těchto aplikací není dovoleno zavřít.</translation>
 <translation id="4422041425070339732">šipka dolů</translation>
