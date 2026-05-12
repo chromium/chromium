@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
-import android.view.ViewStub;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -93,11 +92,7 @@ public class MinimizedCustomTabIphControllerUnitTest {
         mController =
                 new MinimizedCustomTabIphController(
                         mActivity, mActivityTabProvider, mUserEducationHelper, mProfileSupplier);
-        ViewStub minimizeStub = mActivity.findViewById(R.id.minimize_button_stub);
-        View minimizeView =
-                minimizeStub != null
-                        ? minimizeStub.inflate()
-                        : mActivity.findViewById(R.id.custom_tabs_minimize_button);
+        View minimizeView = mActivity.findViewById(R.id.custom_tabs_minimize_button);
         minimizeView.setVisibility(View.VISIBLE);
     }
 

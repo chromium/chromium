@@ -5,7 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- LINT.IfChange(MenuButton) -->
 <org.chromium.chrome.browser.toolbar.menu_button.MenuButton
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -35,4 +34,3 @@ found in the LICENSE file.
         android:background="@null"
         android:visibility="gone" />
 </org.chromium.chrome.browser.toolbar.menu_button.MenuButton>
-<!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tabs_toolbar.xml:MenuButton) -->

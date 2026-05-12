@@ -508,10 +508,7 @@ public class CustomTabsConnection {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     try (TraceEvent e = TraceEvent.scoped("InitializeViewHierarchy")) {
-                        int toolbarLayoutId =
-                                ChromeFeatureList.sCctToolbarRefactor.isEnabled()
-                                        ? R.layout.new_custom_tab_toolbar
-                                        : R.layout.custom_tabs_toolbar;
+                        int toolbarLayoutId = R.layout.new_custom_tab_toolbar;
                         WarmupManager.getInstance()
                                 .initializeViewHierarchy(
                                         ContextUtils.getApplicationContext(),

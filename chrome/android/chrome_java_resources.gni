@@ -496,7 +496,6 @@ chrome_java_resources = [
   "java/res/layout/custom_tabs_minimize_button.xml",
   "java/res/layout/custom_tabs_minimized_card.xml",
   "java/res/layout/custom_tabs_sidepanel_maximize.xml",
-  "java/res/layout/custom_tabs_toolbar.xml",
   "java/res/layout/custom_tabs_toolbar_button.xml",
   "java/res/layout/custom_tabs_topbar.xml",
   "java/res/layout/custom_tile_edit_layout.xml",

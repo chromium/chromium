@@ -740,7 +740,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabVersionCompatTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/BrandingSecurityButtonAnimationDelegateUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/BrowserServicesThemeColorProviderUnitTest.java",
-      "src/org/chromium/chrome/browser/customtabs/features/toolbar/ButtonVisibilityRuleUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabHistoryIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarColorControllerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarCoordinatorUnitTest.java",

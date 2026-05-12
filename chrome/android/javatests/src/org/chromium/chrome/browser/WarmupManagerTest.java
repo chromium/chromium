@@ -245,10 +245,7 @@ public class WarmupManagerTest {
     @UiThreadTest
     public void testInflateLayout() {
         int layoutId = R.layout.custom_tabs_control_container;
-        int toolbarId =
-                ChromeFeatureList.sCctToolbarRefactor.isEnabled()
-                        ? R.layout.new_custom_tab_toolbar
-                        : R.layout.custom_tabs_toolbar;
+        int toolbarId = R.layout.new_custom_tab_toolbar;
         mWarmupManager.initializeViewHierarchy(mContext, layoutId, toolbarId);
         Assert.assertTrue(mWarmupManager.hasViewHierarchyWithToolbar(layoutId, mContext));
     }

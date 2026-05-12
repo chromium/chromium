@@ -5,7 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- LINT.IfChange(IncognitoIcon) -->
 <org.chromium.ui.widget.ChromeImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -19,4 +18,3 @@ found in the LICENSE file.
     app:srcCompat="@drawable/ic_incognito_fill_18dp"
     app:tint="@color/default_icon_color_light"
     android:contentDescription="@string/accessibility_incognito_badge" />
-<!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tabs_toolbar.xml:IncognitoIcon) -->

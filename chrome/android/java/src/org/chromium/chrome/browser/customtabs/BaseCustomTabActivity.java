@@ -1076,9 +1076,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     @Override
     protected int getToolbarLayoutId() {
-        return ChromeFeatureList.sCctToolbarRefactor.isEnabled()
-                ? R.layout.new_custom_tab_toolbar
-                : R.layout.custom_tabs_toolbar;
+        return R.layout.new_custom_tab_toolbar;
     }
 
     @Override

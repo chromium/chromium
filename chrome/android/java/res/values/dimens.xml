@@ -213,7 +213,6 @@ found in the LICENSE file.
     <dimen name="custom_tabs_adaptive_button_bg_padding_vert">10dp</dimen>
     <dimen name="custom_tabs_toolbar_vertical_padding">16dp</dimen>
     <dimen name="custom_tabs_toolbar_horizontal_padding">8dp</dimen>
-    <dimen name="custom_tabs_toolbar_horizontal_margin_no_start">8dp</dimen>
     <dimen name="custom_tabs_toolbar_menu_dot_top_margin">6dp</dimen>
     <dimen name="custom_tabs_toolbar_menu_dot_end_margin">10dp</dimen>
     <dimen name="min_toolbar_icon_side_padding">6dp</dimen>
