@@ -48,7 +48,8 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
   // initialized.
   virtual bool Initialize(SoundKey key,
                           std::string_view data,
-                          media::AudioCodec codec) = 0;
+                          media::AudioCodec codec,
+                          bool loop = false) = 0;
 
   // Plays sound identified by |key|, returns false if SoundsManager
   // was not properly initialized.
