@@ -29,24 +29,6 @@ _DO_NOT_EDIT_WARNING = """// This file is auto-generated from
 
 """
 
-# TODO(crbug.com/40285824): Remove this and generate code using safer
-# constructs.
-_ALLOW_UNSAFE_BUFFERS = """
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-"""
-_allow_unsafe_buffers_filenames = [
-    "gpu/command_buffer/common/gles2_cmd_format_autogen.h",
-    "gpu/command_buffer/service/context_state_impl_autogen.h",
-    "gpu/command_buffer/service/gles2_cmd_decoder_autogen.h",
-    "gpu/command_buffer/service/gles2_cmd_decoder_unittest_2_autogen.h",
-    "gpu/command_buffer/service/raster_decoder_autogen.h",
-]
-
 # TODO(crbug.com/390223051): Remove this and generate code using safer
 # constructs.
 _ALLOW_UNSAFE_LIBC_CALLS = """
@@ -829,9 +811,8 @@ class CWriter():
 
   To be used with the `with` statement. Returns a normal `file` type, open only
   for writing - any existing files with that name will be overwritten. It will
-  automatically write the contents of `_LICENSE`, `_DO_NOT_EDIT_WARNING` and
-  `_ALLOW_UNSAFE_BUFFERS` at the beginning.
-
+  automatically write the contents of `_LICENSE` and `_DO_NOT_EDIT_WARNING`
+  at the beginning.
   Example:
     with CWriter("file.cpp") as myfile:
       myfile.write("hello")
@@ -840,8 +821,6 @@ class CWriter():
   def __init__(self, filename, year):
     self.filename = filename
     self._ENTER_MSG = _LICENSE % year + _DO_NOT_EDIT_WARNING % _lower_prefix
-    if (filename in _allow_unsafe_buffers_filenames):
-        self._ENTER_MSG += _ALLOW_UNSAFE_BUFFERS
     if (filename in _allow_unsafe_libc_calls_filenames):
         self._ENTER_MSG += _ALLOW_UNSAFE_LIBC_CALLS
     self._EXIT_MSG = ""
@@ -2093,7 +2072,7 @@ class GENnHandler(TypeHandler):
     param_name = func.GetLastOriginalArg().name
     f.write("  auto %(name)s_copy = std::make_unique<GLuint[]>(n);\n"
             "  GLuint* %(name)s_safe = %(name)s_copy.get();\n"
-            "  std::copy(%(name)s, %(name)s + n, %(name)s_safe);\n"
+            "  std::copy(%(name)s, UNSAFE_TODO(%(name)s + n), %(name)s_safe);\n"
             "  if (!%(ns)sCheckUniqueAndNonNullIds(n, %(name)s_safe) ||\n"
             "      !%(func)sHelper(n, %(name)s_safe)) {\n"
             "    return error::kInvalidArguments;\n"
@@ -2266,8 +2245,8 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs) {
     args = func.GetCmdArgs()
     for arg in args:
       f.write("    %s = _%s;\n" % (arg.name, arg.name))
-    f.write("    memcpy(ImmediateDataAddress(this),\n")
-    f.write("           _%s, ComputeDataSize(_n));\n" % last_arg.name)
+    f.write("    UNSAFE_TODO(memcpy(ImmediateDataAddress(this),\n")
+    f.write("           _%s, ComputeDataSize(_n)));\n" % last_arg.name)
     f.write("  }\n")
     f.write("\n")
 
@@ -2696,8 +2675,8 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs) {
     args = func.GetCmdArgs()
     for arg in args:
       f.write("    %s = _%s;\n" % (arg.name, arg.name))
-    f.write("    memcpy(ImmediateDataAddress(this),\n")
-    f.write("           _%s, ComputeDataSize(_n));\n" % last_arg.name)
+    f.write("    UNSAFE_TODO(memcpy(ImmediateDataAddress(this),\n")
+    f.write("           _%s, ComputeDataSize(_n)));\n" % last_arg.name)
     f.write("  }\n")
     f.write("\n")
 
@@ -3334,18 +3313,21 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
     args = func.GetCmdArgs()
     for arg in args:
       arg.WriteSetCode(f, 4, "_%s" % arg.name)
-    f.write("    memcpy(ImmediateDataAddress(this),\n")
+    f.write("    UNSAFE_TODO(memcpy(ImmediateDataAddress(this),\n")
     if self.__NeedsToCalcDataCount(func):
-      f.write("           _%s, ComputeEffectiveDataSize(%s));" %
+      f.write("           _%s, ComputeEffectiveDataSize(%s)));" %
                  (last_arg.name, func.GetOriginalArgs()[0].name))
       f.write("""
     DCHECK_GE(ComputeDataSize(), ComputeEffectiveDataSize(%(arg)s));
-    char* pointer = reinterpret_cast<char*>(ImmediateDataAddress(this)) +
-        ComputeEffectiveDataSize(%(arg)s);
-    memset(pointer, 0, ComputeDataSize() - ComputeEffectiveDataSize(%(arg)s));
+    char* pointer = UNSAFE_TODO(
+        reinterpret_cast<char*>(ImmediateDataAddress(this)) +
+        ComputeEffectiveDataSize(%(arg)s));
+    UNSAFE_TODO(memset(
+        pointer, 0,
+        ComputeDataSize() - ComputeEffectiveDataSize(%(arg)s)));
 """ % { 'arg': func.GetOriginalArgs()[0].name, })
     else:
-      f.write("           _%s, ComputeDataSize());\n" % last_arg.name)
+      f.write("           _%s, ComputeDataSize()));\n" % last_arg.name)
     f.write("  }\n")
     f.write("\n")
 
@@ -3684,9 +3666,9 @@ TEST_F(%(prefix)sImplementationTest,
     args = func.GetCmdArgs()
     for arg in args:
       arg.WriteSetCode(f, 4, "_%s" % arg.name)
-    f.write("    memcpy(ImmediateDataAddress(this),\n")
+    f.write("    UNSAFE_TODO(memcpy(ImmediateDataAddress(this),\n")
     pointer_arg = func.GetLastOriginalPointerArg()
-    f.write("           _%s, ComputeDataSize(_count));\n" % pointer_arg.name)
+    f.write("           _%s, ComputeDataSize(_count)));\n" % pointer_arg.name)
     f.write("  }\n")
     f.write("\n")
 
@@ -4056,7 +4038,8 @@ TEST_P(%(test_name)s, %(name)sInvalidHeader) {
       -1,
   };
   for (size_t ii = 0; ii < std::size(kTests); ++ii) {
-    SetBucketAsCStrings(kBucketId, 1, kSource, kTests[ii], kValidStrEnd);
+    SetBucketAsCStrings(kBucketId, 1, kSource, UNSAFE_TODO(kTests[ii]),
+                        kValidStrEnd);
     cmds::%(name)s cmd;
     cmd.Init(%(cmd_args)s);
     EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
@@ -4173,7 +4156,7 @@ class GLcharHandler(CustomHandler):
     for arg in args:
       arg.WriteSetCode(f, 4, "_%s" % arg.name)
     code = """
-    memcpy(ImmediateDataAddress(this), _%s, _data_size);
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _%s, _data_size));
   }
 
 """
@@ -6455,7 +6438,7 @@ bool %s::GetStateAs%s(
           f.write("      *num_written = %d;\n" % len(state['states']))
           f.write("      if (params) {\n")
           for ndx,item in enumerate(state['states']):
-            f.write("        params[%d] = static_cast<%s>(%s);\n" %
+            f.write("        UNSAFE_TODO(params[%d]) = static_cast<%s>(%s);\n" %
                        (ndx, gl_type, item['name']))
           f.write("      }\n")
           f.write("      return true;\n")
@@ -6467,19 +6450,19 @@ bool %s::GetStateAs%s(
               f.write("      *num_written = %d;\n" % item_len)
               f.write("      if (params) {\n")
               if item['type'] == gl_type:
-                f.write("        memcpy(params, %s, sizeof(%s) * %d);\n" %
+                f.write("        UNSAFE_TODO(memcpy(params, %s, sizeof(%s) * %d));\n" %
                            (item['name'], item['type'], item_len))
               else:
                 f.write("        for (size_t i = 0; i < %s; ++i) {\n" %
                            item_len)
-                f.write("          params[i] = %s;\n" %
+                f.write("          UNSAFE_TODO(params[i]) = %s;\n" %
                            (GetGLGetTypeConversion(gl_type, item['type'],
-                                                   "%s[i]" % item['name'])))
+                                                   "UNSAFE_TODO(%s[i])" % item['name'])))
                 f.write("        }\n");
             else:
               f.write("      *num_written = 1;\n")
               f.write("      if (params) {\n")
-              f.write("        params[0] = %s;\n" %
+              f.write("        UNSAFE_TODO(params[0]) = %s;\n" %
                          (GetGLGetTypeConversion(gl_type, item['type'],
                                                  item['name'])))
             f.write("      }\n")

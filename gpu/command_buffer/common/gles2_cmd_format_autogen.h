@@ -8,11 +8,6 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_AUTOGEN_H_
 
@@ -930,12 +925,14 @@ struct ClearBufferfvImmediate {
     SetHeader();
     buffer = _buffer;
     drawbuffers = _drawbuffers;
-    memcpy(ImmediateDataAddress(this), _value,
-           ComputeEffectiveDataSize(buffer));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _value,
+                       ComputeEffectiveDataSize(buffer)));
     DCHECK_GE(ComputeDataSize(), ComputeEffectiveDataSize(buffer));
-    char* pointer = reinterpret_cast<char*>(ImmediateDataAddress(this)) +
-                    ComputeEffectiveDataSize(buffer);
-    memset(pointer, 0, ComputeDataSize() - ComputeEffectiveDataSize(buffer));
+    char* pointer =
+        UNSAFE_TODO(reinterpret_cast<char*>(ImmediateDataAddress(this)) +
+                    ComputeEffectiveDataSize(buffer));
+    UNSAFE_TODO(memset(pointer, 0,
+                       ComputeDataSize() - ComputeEffectiveDataSize(buffer)));
   }
 
   void* Set(void* cmd,
@@ -986,12 +983,14 @@ struct ClearBufferivImmediate {
     SetHeader();
     buffer = _buffer;
     drawbuffers = _drawbuffers;
-    memcpy(ImmediateDataAddress(this), _value,
-           ComputeEffectiveDataSize(buffer));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _value,
+                       ComputeEffectiveDataSize(buffer)));
     DCHECK_GE(ComputeDataSize(), ComputeEffectiveDataSize(buffer));
-    char* pointer = reinterpret_cast<char*>(ImmediateDataAddress(this)) +
-                    ComputeEffectiveDataSize(buffer);
-    memset(pointer, 0, ComputeDataSize() - ComputeEffectiveDataSize(buffer));
+    char* pointer =
+        UNSAFE_TODO(reinterpret_cast<char*>(ImmediateDataAddress(this)) +
+                    ComputeEffectiveDataSize(buffer));
+    UNSAFE_TODO(memset(pointer, 0,
+                       ComputeDataSize() - ComputeEffectiveDataSize(buffer)));
   }
 
   void* Set(void* cmd,
@@ -1042,12 +1041,14 @@ struct ClearBufferuivImmediate {
     SetHeader();
     buffer = _buffer;
     drawbuffers = _drawbuffers;
-    memcpy(ImmediateDataAddress(this), _value,
-           ComputeEffectiveDataSize(buffer));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _value,
+                       ComputeEffectiveDataSize(buffer)));
     DCHECK_GE(ComputeDataSize(), ComputeEffectiveDataSize(buffer));
-    char* pointer = reinterpret_cast<char*>(ImmediateDataAddress(this)) +
-                    ComputeEffectiveDataSize(buffer);
-    memset(pointer, 0, ComputeDataSize() - ComputeEffectiveDataSize(buffer));
+    char* pointer =
+        UNSAFE_TODO(reinterpret_cast<char*>(ImmediateDataAddress(this)) +
+                    ComputeEffectiveDataSize(buffer));
+    UNSAFE_TODO(memset(pointer, 0,
+                       ComputeDataSize() - ComputeEffectiveDataSize(buffer)));
   }
 
   void* Set(void* cmd,
@@ -2414,7 +2415,8 @@ struct DeleteBuffersImmediate {
   void Init(GLsizei _n, const GLuint* _buffers) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _buffers, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _buffers, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _buffers) {
@@ -2456,7 +2458,8 @@ struct DeleteFramebuffersImmediate {
   void Init(GLsizei _n, const GLuint* _framebuffers) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _framebuffers, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _framebuffers, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _framebuffers) {
@@ -2530,7 +2533,8 @@ struct DeleteRenderbuffersImmediate {
   void Init(GLsizei _n, const GLuint* _renderbuffers) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _renderbuffers, ComputeDataSize(_n));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _renderbuffers,
+                       ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _renderbuffers) {
@@ -2572,7 +2576,8 @@ struct DeleteSamplersImmediate {
   void Init(GLsizei _n, const GLuint* _samplers) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _samplers, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _samplers, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _samplers) {
@@ -2678,7 +2683,8 @@ struct DeleteTexturesImmediate {
   void Init(GLsizei _n, const GLuint* _textures) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _textures, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _textures, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _textures) {
@@ -2720,7 +2726,7 @@ struct DeleteTransformFeedbacksImmediate {
   void Init(GLsizei _n, const GLuint* _ids) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _ids, ComputeDataSize(_n));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _ids, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _ids) {
@@ -3404,7 +3410,8 @@ struct GenBuffersImmediate {
   void Init(GLsizei _n, GLuint* _buffers) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _buffers, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _buffers, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, GLuint* _buffers) {
@@ -3479,7 +3486,8 @@ struct GenFramebuffersImmediate {
   void Init(GLsizei _n, GLuint* _framebuffers) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _framebuffers, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _framebuffers, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, GLuint* _framebuffers) {
@@ -3521,7 +3529,8 @@ struct GenRenderbuffersImmediate {
   void Init(GLsizei _n, GLuint* _renderbuffers) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _renderbuffers, ComputeDataSize(_n));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _renderbuffers,
+                       ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, GLuint* _renderbuffers) {
@@ -3563,7 +3572,8 @@ struct GenSamplersImmediate {
   void Init(GLsizei _n, GLuint* _samplers) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _samplers, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _samplers, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, GLuint* _samplers) {
@@ -3605,7 +3615,8 @@ struct GenTexturesImmediate {
   void Init(GLsizei _n, GLuint* _textures) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _textures, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _textures, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, GLuint* _textures) {
@@ -3647,7 +3658,7 @@ struct GenTransformFeedbacksImmediate {
   void Init(GLsizei _n, GLuint* _ids) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _ids, ComputeDataSize(_n));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _ids, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, GLuint* _ids) {
@@ -6143,7 +6154,8 @@ struct InvalidateFramebufferImmediate {
     SetHeader(_count);
     target = _target;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _attachments, ComputeDataSize(_count));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _attachments,
+                       ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -6202,7 +6214,8 @@ struct InvalidateSubFramebufferImmediate {
     y = _y;
     width = _width;
     height = _height;
-    memcpy(ImmediateDataAddress(this), _attachments, ComputeDataSize(_count));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _attachments,
+                       ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -7240,7 +7253,7 @@ struct SamplerParameterfvImmediate {
     SetHeader();
     sampler = _sampler;
     pname = _pname;
-    memcpy(ImmediateDataAddress(this), _params, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _params, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLuint _sampler, GLenum _pname, const GLfloat* _params) {
@@ -7324,7 +7337,7 @@ struct SamplerParameterivImmediate {
     SetHeader();
     sampler = _sampler;
     pname = _pname;
-    memcpy(ImmediateDataAddress(this), _params, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _params, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLuint _sampler, GLenum _pname, const GLint* _params) {
@@ -8635,7 +8648,7 @@ struct TexParameterfvImmediate {
     SetHeader();
     target = _target;
     pname = _pname;
-    memcpy(ImmediateDataAddress(this), _params, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _params, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLenum _target, GLenum _pname, const GLfloat* _params) {
@@ -8719,7 +8732,7 @@ struct TexParameterivImmediate {
     SetHeader();
     target = _target;
     pname = _pname;
-    memcpy(ImmediateDataAddress(this), _params, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _params, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLenum _target, GLenum _pname, const GLint* _params) {
@@ -9115,7 +9128,8 @@ struct Uniform1fvImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLfloat* _v) {
@@ -9196,7 +9210,8 @@ struct Uniform1ivImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLint* _v) {
@@ -9278,7 +9293,8 @@ struct Uniform1uivImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLuint* _v) {
@@ -9363,7 +9379,8 @@ struct Uniform2fvImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLfloat* _v) {
@@ -9448,7 +9465,8 @@ struct Uniform2ivImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLint* _v) {
@@ -9534,7 +9552,8 @@ struct Uniform2uivImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLuint* _v) {
@@ -9623,7 +9642,8 @@ struct Uniform3fvImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLfloat* _v) {
@@ -9712,7 +9732,8 @@ struct Uniform3ivImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLint* _v) {
@@ -9802,7 +9823,8 @@ struct Uniform3uivImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLuint* _v) {
@@ -9900,7 +9922,8 @@ struct Uniform4fvImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLfloat* _v) {
@@ -9998,7 +10021,8 @@ struct Uniform4ivImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLint* _v) {
@@ -10097,7 +10121,8 @@ struct Uniform4uivImmediate {
     SetHeader(_count);
     location = _location;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _v, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLint _location, GLsizei _count, const GLuint* _v) {
@@ -10188,7 +10213,8 @@ struct UniformMatrix2fvImmediate {
     location = _location;
     count = _count;
     transpose = _transpose;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -10245,7 +10271,8 @@ struct UniformMatrix2x3fvImmediate {
     location = _location;
     count = _count;
     transpose = _transpose;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -10302,7 +10329,8 @@ struct UniformMatrix2x4fvImmediate {
     location = _location;
     count = _count;
     transpose = _transpose;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -10359,7 +10387,8 @@ struct UniformMatrix3fvImmediate {
     location = _location;
     count = _count;
     transpose = _transpose;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -10416,7 +10445,8 @@ struct UniformMatrix3x2fvImmediate {
     location = _location;
     count = _count;
     transpose = _transpose;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -10473,7 +10503,8 @@ struct UniformMatrix3x4fvImmediate {
     location = _location;
     count = _count;
     transpose = _transpose;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -10530,7 +10561,8 @@ struct UniformMatrix4fvImmediate {
     location = _location;
     count = _count;
     transpose = _transpose;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -10587,7 +10619,8 @@ struct UniformMatrix4x2fvImmediate {
     location = _location;
     count = _count;
     transpose = _transpose;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -10644,7 +10677,8 @@ struct UniformMatrix4x3fvImmediate {
     location = _location;
     count = _count;
     transpose = _transpose;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _value, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -10795,7 +10829,7 @@ struct VertexAttrib1fvImmediate {
   void Init(GLuint _indx, const GLfloat* _values) {
     SetHeader();
     indx = _indx;
-    memcpy(ImmediateDataAddress(this), _values, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _values, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLuint _indx, const GLfloat* _values) {
@@ -10875,7 +10909,7 @@ struct VertexAttrib2fvImmediate {
   void Init(GLuint _indx, const GLfloat* _values) {
     SetHeader();
     indx = _indx;
-    memcpy(ImmediateDataAddress(this), _values, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _values, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLuint _indx, const GLfloat* _values) {
@@ -10959,7 +10993,7 @@ struct VertexAttrib3fvImmediate {
   void Init(GLuint _indx, const GLfloat* _values) {
     SetHeader();
     indx = _indx;
-    memcpy(ImmediateDataAddress(this), _values, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _values, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLuint _indx, const GLfloat* _values) {
@@ -11052,7 +11086,7 @@ struct VertexAttrib4fvImmediate {
   void Init(GLuint _indx, const GLfloat* _values) {
     SetHeader();
     indx = _indx;
-    memcpy(ImmediateDataAddress(this), _values, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _values, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLuint _indx, const GLfloat* _values) {
@@ -11140,7 +11174,7 @@ struct VertexAttribI4ivImmediate {
   void Init(GLuint _indx, const GLint* _values) {
     SetHeader();
     indx = _indx;
-    memcpy(ImmediateDataAddress(this), _values, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _values, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLuint _indx, const GLint* _values) {
@@ -11233,7 +11267,7 @@ struct VertexAttribI4uivImmediate {
   void Init(GLuint _indx, const GLuint* _values) {
     SetHeader();
     indx = _indx;
-    memcpy(ImmediateDataAddress(this), _values, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _values, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLuint _indx, const GLuint* _values) {
@@ -11914,7 +11948,8 @@ struct GenQueriesEXTImmediate {
   void Init(GLsizei _n, GLuint* _queries) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _queries, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _queries, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, GLuint* _queries) {
@@ -11956,7 +11991,8 @@ struct DeleteQueriesEXTImmediate {
   void Init(GLsizei _n, const GLuint* _queries) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _queries, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _queries, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _queries) {
@@ -12341,7 +12377,8 @@ struct GenVertexArraysOESImmediate {
   void Init(GLsizei _n, GLuint* _arrays) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _arrays, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _arrays, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, GLuint* _arrays) {
@@ -12383,7 +12420,8 @@ struct DeleteVertexArraysOESImmediate {
   void Init(GLsizei _n, const GLuint* _arrays) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _arrays, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _arrays, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _arrays) {
@@ -13694,7 +13732,8 @@ struct DiscardFramebufferEXTImmediate {
     SetHeader(_count);
     target = _target;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _attachments, ComputeDataSize(_count));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _attachments,
+                       ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -13779,7 +13818,8 @@ struct DrawBuffersEXTImmediate {
   void Init(GLsizei _count, const GLenum* _bufs) {
     SetHeader(_count);
     count = _count;
-    memcpy(ImmediateDataAddress(this), _bufs, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _bufs, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLsizei _count, const GLenum* _bufs) {
@@ -14102,7 +14142,8 @@ struct WindowRectanglesEXTImmediate {
     SetHeader(_count);
     mode = _mode;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _box, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _box, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLenum _mode, GLsizei _count, const GLint* _box) {
@@ -14403,7 +14444,8 @@ struct CreateAndTexStorage2DSharedImageINTERNALImmediate {
   void Init(GLuint _texture, const GLbyte* _mailbox) {
     SetHeader();
     texture = _texture;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLuint _texture, const GLbyte* _mailbox) {
@@ -14533,7 +14575,8 @@ struct CopySharedImageINTERNALImmediate {
     y = _y;
     width = _width;
     height = _height;
-    memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize()));
   }
 
   void* Set(void* cmd,
@@ -14612,7 +14655,8 @@ struct CopySharedImageToTextureINTERNALImmediate {
     width = _width;
     height = _height;
     is_dst_origin_top_left = _is_dst_origin_top_left;
-    memcpy(ImmediateDataAddress(this), _src_mailbox, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _src_mailbox, ComputeDataSize()));
   }
 
   void* Set(void* cmd,
@@ -15467,7 +15511,7 @@ struct FramebufferPixelLocalClearValuefvANGLEImmediate {
   void Init(GLint _plane, const GLfloat* _value) {
     SetHeader();
     plane = _plane;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _value, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLint _plane, const GLfloat* _value) {
@@ -15512,7 +15556,7 @@ struct FramebufferPixelLocalClearValueivANGLEImmediate {
   void Init(GLint _plane, const GLint* _value) {
     SetHeader();
     plane = _plane;
-    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize());
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _value, ComputeDataSize()));
   }
 
   void* Set(void* cmd, GLint _plane, const GLint* _value) {
@@ -15563,11 +15607,14 @@ struct FramebufferPixelLocalClearValueuivANGLEImmediate {
   void Init(GLint _plane, const GLuint* _value) {
     SetHeader();
     plane = _plane;
-    memcpy(ImmediateDataAddress(this), _value, ComputeEffectiveDataSize(plane));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _value,
+                       ComputeEffectiveDataSize(plane)));
     DCHECK_GE(ComputeDataSize(), ComputeEffectiveDataSize(plane));
-    char* pointer = reinterpret_cast<char*>(ImmediateDataAddress(this)) +
-                    ComputeEffectiveDataSize(plane);
-    memset(pointer, 0, ComputeDataSize() - ComputeEffectiveDataSize(plane));
+    char* pointer =
+        UNSAFE_TODO(reinterpret_cast<char*>(ImmediateDataAddress(this)) +
+                    ComputeEffectiveDataSize(plane));
+    UNSAFE_TODO(memset(pointer, 0,
+                       ComputeDataSize() - ComputeEffectiveDataSize(plane)));
   }
 
   void* Set(void* cmd, GLint _plane, const GLuint* _value) {
@@ -15614,7 +15661,8 @@ struct BeginPixelLocalStorageANGLEImmediate {
   void Init(GLsizei _count, const GLenum* _loadops) {
     SetHeader(_count);
     count = _count;
-    memcpy(ImmediateDataAddress(this), _loadops, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _loadops, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLsizei _count, const GLenum* _loadops) {
@@ -15658,7 +15706,8 @@ struct EndPixelLocalStorageANGLEImmediate {
   void Init(GLsizei _count, const GLenum* _storeops) {
     SetHeader(_count);
     count = _count;
-    memcpy(ImmediateDataAddress(this), _storeops, ComputeDataSize(_count));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _storeops, ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd, GLsizei _count, const GLenum* _storeops) {

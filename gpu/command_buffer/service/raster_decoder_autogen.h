@@ -8,11 +8,6 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // It is included by raster_cmd_decoder.cc
 #ifndef GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_AUTOGEN_H_
@@ -61,7 +56,7 @@ error::Error RasterDecoderImpl::HandleGenQueriesEXTImmediate(
   }
   auto queries_copy = std::make_unique<GLuint[]>(n);
   GLuint* queries_safe = queries_copy.get();
-  std::copy(queries, queries + n, queries_safe);
+  std::copy(queries, UNSAFE_TODO(queries + n), queries_safe);
   if (!gles2::CheckUniqueAndNonNullIds(n, queries_safe) ||
       !GenQueriesEXTHelper(n, queries_safe)) {
     return error::kInvalidArguments;

@@ -8,11 +8,6 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // It is included by gles2_cmd_decoder.cc
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_AUTOGEN_H_
@@ -1121,7 +1116,7 @@ error::Error GLES2DecoderImpl::HandleGenBuffersImmediate(
   }
   auto buffers_copy = std::make_unique<GLuint[]>(n);
   GLuint* buffers_safe = buffers_copy.get();
-  std::copy(buffers, buffers + n, buffers_safe);
+  std::copy(buffers, UNSAFE_TODO(buffers + n), buffers_safe);
   if (!CheckUniqueAndNonNullIds(n, buffers_safe) ||
       !GenBuffersHelper(n, buffers_safe)) {
     return error::kInvalidArguments;
@@ -1161,7 +1156,7 @@ error::Error GLES2DecoderImpl::HandleGenFramebuffersImmediate(
   }
   auto framebuffers_copy = std::make_unique<GLuint[]>(n);
   GLuint* framebuffers_safe = framebuffers_copy.get();
-  std::copy(framebuffers, framebuffers + n, framebuffers_safe);
+  std::copy(framebuffers, UNSAFE_TODO(framebuffers + n), framebuffers_safe);
   if (!CheckUniqueAndNonNullIds(n, framebuffers_safe) ||
       !GenFramebuffersHelper(n, framebuffers_safe)) {
     return error::kInvalidArguments;
@@ -1187,7 +1182,7 @@ error::Error GLES2DecoderImpl::HandleGenRenderbuffersImmediate(
   }
   auto renderbuffers_copy = std::make_unique<GLuint[]>(n);
   GLuint* renderbuffers_safe = renderbuffers_copy.get();
-  std::copy(renderbuffers, renderbuffers + n, renderbuffers_safe);
+  std::copy(renderbuffers, UNSAFE_TODO(renderbuffers + n), renderbuffers_safe);
   if (!CheckUniqueAndNonNullIds(n, renderbuffers_safe) ||
       !GenRenderbuffersHelper(n, renderbuffers_safe)) {
     return error::kInvalidArguments;
@@ -1215,7 +1210,7 @@ error::Error GLES2DecoderImpl::HandleGenSamplersImmediate(
   }
   auto samplers_copy = std::make_unique<GLuint[]>(n);
   GLuint* samplers_safe = samplers_copy.get();
-  std::copy(samplers, samplers + n, samplers_safe);
+  std::copy(samplers, UNSAFE_TODO(samplers + n), samplers_safe);
   if (!CheckUniqueAndNonNullIds(n, samplers_safe) ||
       !GenSamplersHelper(n, samplers_safe)) {
     return error::kInvalidArguments;
@@ -1240,7 +1235,7 @@ error::Error GLES2DecoderImpl::HandleGenTexturesImmediate(
   }
   auto textures_copy = std::make_unique<GLuint[]>(n);
   GLuint* textures_safe = textures_copy.get();
-  std::copy(textures, textures + n, textures_safe);
+  std::copy(textures, UNSAFE_TODO(textures + n), textures_safe);
   if (!CheckUniqueAndNonNullIds(n, textures_safe) ||
       !GenTexturesHelper(n, textures_safe)) {
     return error::kInvalidArguments;
@@ -1269,7 +1264,7 @@ error::Error GLES2DecoderImpl::HandleGenTransformFeedbacksImmediate(
   }
   auto ids_copy = std::make_unique<GLuint[]>(n);
   GLuint* ids_safe = ids_copy.get();
-  std::copy(ids, ids + n, ids_safe);
+  std::copy(ids, UNSAFE_TODO(ids + n), ids_safe);
   if (!CheckUniqueAndNonNullIds(n, ids_safe) ||
       !GenTransformFeedbacksHelper(n, ids_safe)) {
     return error::kInvalidArguments;
@@ -4540,7 +4535,7 @@ error::Error GLES2DecoderImpl::HandleGenQueriesEXTImmediate(
   }
   auto queries_copy = std::make_unique<GLuint[]>(n);
   GLuint* queries_safe = queries_copy.get();
-  std::copy(queries, queries + n, queries_safe);
+  std::copy(queries, UNSAFE_TODO(queries + n), queries_safe);
   if (!CheckUniqueAndNonNullIds(n, queries_safe) ||
       !GenQueriesEXTHelper(n, queries_safe)) {
     return error::kInvalidArguments;
@@ -4660,7 +4655,7 @@ error::Error GLES2DecoderImpl::HandleGenVertexArraysOESImmediate(
   }
   auto arrays_copy = std::make_unique<GLuint[]>(n);
   GLuint* arrays_safe = arrays_copy.get();
-  std::copy(arrays, arrays + n, arrays_safe);
+  std::copy(arrays, UNSAFE_TODO(arrays + n), arrays_safe);
   if (!CheckUniqueAndNonNullIds(n, arrays_safe) ||
       !GenVertexArraysOESHelper(n, arrays_safe)) {
     return error::kInvalidArguments;

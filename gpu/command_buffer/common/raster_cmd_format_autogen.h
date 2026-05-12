@@ -128,7 +128,8 @@ struct GenQueriesEXTImmediate {
   void Init(GLsizei _n, GLuint* _queries) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _queries, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _queries, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, GLuint* _queries) {
@@ -170,7 +171,8 @@ struct DeleteQueriesEXTImmediate {
   void Init(GLsizei _n, const GLuint* _queries) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _queries, ComputeDataSize(_n));
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _queries, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _queries) {
@@ -354,7 +356,8 @@ struct BeginRasterCHROMIUMImmediate {
     can_use_lcd_text = _can_use_lcd_text;
     visible = _visible;
     hdr_headroom = _hdr_headroom;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize()));
   }
 
   void* Set(void* cmd,
@@ -719,7 +722,7 @@ struct DeletePaintCachePathsINTERNALImmediate {
   void Init(GLsizei _n, const GLuint* _ids) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _ids, ComputeDataSize(_n));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _ids, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _ids) {
@@ -807,7 +810,7 @@ struct DeletePaintCacheEffectsINTERNALImmediate {
   void Init(GLsizei _n, const GLuint* _ids) {
     SetHeader(_n);
     n = _n;
-    memcpy(ImmediateDataAddress(this), _ids, ComputeDataSize(_n));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _ids, ComputeDataSize(_n)));
   }
 
   void* Set(void* cmd, GLsizei _n, const GLuint* _ids) {
@@ -936,7 +939,8 @@ struct CopySharedImageINTERNALImmediate {
     src_height = _src_height;
     dest_width = _dest_width;
     dest_height = _dest_height;
-    memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize()));
   }
 
   void* Set(void* cmd,
@@ -1030,7 +1034,8 @@ struct WritePixelsINTERNALImmediate {
     shm_id = _shm_id;
     shm_offset = _shm_offset;
     pixels_offset = _pixels_offset;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize()));
   }
 
   void* Set(void* cmd,
@@ -1141,7 +1146,8 @@ struct WritePixelsYUVINTERNALImmediate {
     plane2_offset = _plane2_offset;
     plane3_offset = _plane3_offset;
     plane4_offset = _plane4_offset;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize()));
   }
 
   void* Set(void* cmd,
@@ -1282,7 +1288,8 @@ struct ReadbackARGBImagePixelsINTERNALImmediate {
     shm_offset = _shm_offset;
     color_space_offset = _color_space_offset;
     pixels_offset = _pixels_offset;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize()));
   }
 
   void* Set(void* cmd,
@@ -1421,7 +1428,8 @@ struct ReadbackYUVImagePixelsINTERNALImmediate {
     u_stride = _u_stride;
     v_offset = _v_offset;
     v_stride = _v_stride;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize()));
   }
 
   void* Set(void* cmd,

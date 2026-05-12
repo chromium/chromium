@@ -114,8 +114,8 @@ struct AssociateMailboxImmediate {
     flags = _flags;
     view_format_count = _view_format_count;
     count = _count;
-    memcpy(ImmediateDataAddress(this), _mailbox_and_view_formats,
-           ComputeDataSize(_count));
+    UNSAFE_TODO(memcpy(ImmediateDataAddress(this), _mailbox_and_view_formats,
+                       ComputeDataSize(_count)));
   }
 
   void* Set(void* cmd,
@@ -203,7 +203,8 @@ struct AssociateMailboxForBufferImmediate {
     id = _id;
     generation = _generation;
     usage = _usage;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+    UNSAFE_TODO(
+        memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize()));
   }
 
   void* Set(void* cmd,
