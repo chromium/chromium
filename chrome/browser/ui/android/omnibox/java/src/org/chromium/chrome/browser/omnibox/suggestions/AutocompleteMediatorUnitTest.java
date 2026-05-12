@@ -70,7 +70,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
@@ -165,8 +164,6 @@ public class AutocompleteMediatorUnitTest {
     private ModelList mSuggestionModels;
     private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
     private SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
-    private SettableNonNullObservableSupplier<@FuseboxCoordinator.FuseboxLayoutMode Integer>
-            mFuseboxLayoutModeSupplier;
     private Context mContext;
 
     @Before
@@ -184,7 +181,6 @@ public class AutocompleteMediatorUnitTest {
         AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
         mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
         mFuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
-        mFuseboxLayoutModeSupplier = ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
 
         lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
 
@@ -206,10 +202,6 @@ public class AutocompleteMediatorUnitTest {
                 .doReturn(mFuseboxStateSupplier)
                 .when(mFuseboxCoordinator)
                 .getFuseboxStateSupplier();
-        lenient()
-                .doReturn(mFuseboxLayoutModeSupplier)
-                .when(mFuseboxCoordinator)
-                .getFuseboxLayoutModeSupplier();
 
         mMediator =
                 new AutocompleteMediator(
@@ -1691,14 +1683,6 @@ public class AutocompleteMediatorUnitTest {
 
         assertFalse(mListModel.get(SuggestionListProperties.ROUND_TOP_CORNERS));
         assertFalse(mListModel.get(SuggestionListProperties.DRAW_OVER_ANCHOR));
-
-        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
-        mFuseboxStateSupplier.set(FuseboxState.DISABLED);
-        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        assertFalse(mListModel.get(SuggestionListProperties.ROUND_TOP_CORNERS));
-        assertTrue(mListModel.get(SuggestionListProperties.DRAW_OVER_ANCHOR));
     }
 
     @Test
