@@ -41,6 +41,10 @@ _DEBUG_SCRIPT = pathlib.Path('/tmp/debug_generate_system_modulemap.sh')
 _STRIP = re.compile(r'\nmodule _Builtin_stdatomic \[system\] \{.*?\}\n',
                     re.MULTILINE | re.DOTALL)
 
+_MODULEMAP_START = re.compile(
+    r'^\b(?:(?:explicit|framework)\s+)*module\s+"?([^" ]+)"?\s.*\{',
+    re.MULTILINE)
+
 
 # Path.absolute() only exists in python 3.11, gmacs still have python3.9
 # Similar to Path.resolve() but doesn't follow symlinks.
@@ -155,6 +159,30 @@ class Header:
   private: bool
   textual: bool
   requires: list[str] = dataclasses.field(default_factory=list)
+
+
+def split_modulemap(modulemap: str) -> dict[str, str]:
+  results = {}
+  upto = 0
+  for m in _MODULEMAP_START.finditer(modulemap):
+    # This is a submodule of a previously referenced module
+    if m.start() < upto:
+      continue
+    depth = 0
+    for c in range(m.start(), len(modulemap)):
+      # Brace counting is pretty rudimentary, and could fail in theory.
+      # However, in practice, they seem to work pretty well.
+      # A user is highly unlikely to write a "{" without a "}" in a comment, for
+      # example.
+      if modulemap[c] == '{':
+        depth += 1
+      elif modulemap[c] == '}':
+        depth -= 1
+        if depth == 0:
+          upto = c + 1
+          results[m.group(1)] = modulemap[m.start():upto]
+          break
+  return results
 
 
 def parse_modulemap(
@@ -323,8 +351,11 @@ cd "{os.getcwd()}"
     return headers
 
 
-def combine_modulemaps(out: pathlib.Path, modulemaps: list[pathlib.Path],
-                       headers: List[Header], module_name: str) -> str:
+def combine_modulemaps(out: pathlib.Path,
+                       modulemaps: list[pathlib.Path],
+                       headers: List[Header],
+                       module_name: str,
+                       extra_modules: list[(str, pathlib.Path)] = []) -> str:
   """Generates the combined modulemap output string from dependencies."""
   custom_header_prefix = os.path.relpath(
       _SRC_PREFIX / 'buildtools/third_party/libc++', out.parent)
@@ -377,6 +408,18 @@ def combine_modulemaps(out: pathlib.Path, modulemaps: list[pathlib.Path],
       s.write('  export *\n')
       s.write('}\n')
 
+    for content, source_modulemap in extra_modules:
+      prefix = os.path.relpath(source_modulemap.parent, out.parent)
+
+      def rebase_path(p: str) -> str:
+        return os.path.normpath(os.path.join(prefix, p))
+
+      mm_content = _SIMPLE_HEADER_RE.sub(
+          lambda m: f'{m.group(1)}{rebase_path(m.group(2))}{m.group(3)}',
+          content)
+      s.write(mm_content)
+      s.write('\n')
+
     if module_name:
       s.write('}\n')
     return s.getvalue()
@@ -415,10 +458,23 @@ def main(args, extra_args):
         debug=args.debug,
     )
 
-  out_str = combine_modulemaps(out=args.output,
-                               modulemaps=args.modulemap,
-                               headers=deps,
-                               module_name=args.module_name)
+  known_modules = {}
+  for modulemap in args.partial_modulemap:
+    for name, content in split_modulemap(modulemap.read_text()).items():
+      known_modules[name] = (content, modulemap)
+
+  for module in args.module:
+    if module not in known_modules:
+      available = ', '.join(sorted(known_modules))
+      raise ValueError(f"Module '{module}' not found in partial modulemaps. "
+                       f"Available: {available}")
+
+  out_str = combine_modulemaps(
+      out=args.output,
+      modulemaps=args.modulemap,
+      headers=deps,
+      module_name=args.module_name,
+      extra_modules=[known_modules[module] for module in args.module])
   args.output.write_text(out_str)
 
 
@@ -442,6 +498,19 @@ if __name__ == '__main__':
       type=pathlib.Path,
       required=True,
       help='Path to a modulemap to merge. Can be specified multiple times.')
+  parser.add_argument(
+      '--partial-modulemap',
+      action='append',
+      type=pathlib.Path,
+      default=[],
+      help=('Path to a modulemap to partially merge. '
+            'Top-level modules must be specified via --module.'))
+  parser.add_argument('--module',
+                      action='append',
+                      type=str,
+                      default=[],
+                      help=('Name of a top-level module to selectively extract '
+                            'from partial modulemaps.'))
   parser.add_argument('--os', help="GN's $target_os variable")
   parser.add_argument('--cpu', help="GN's $target_cpu variable")
   parser.add_argument(

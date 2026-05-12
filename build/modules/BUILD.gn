@@ -44,25 +44,78 @@ if (use_unified_system_module) {
     script = "//build/modules/unified/generate_system_modulemap.py"
 
     args = [
-             "--clang",
-             rebase_path("${clang_base_path}/bin/clang++", root_build_dir),
-             "--sysroot",
-             rebase_path(sysroot, root_build_dir),
-             "--output",
-             rebase_path(modulemap, root_build_dir),
-             "--modulemap",
-             rebase_path("//third_party/libc++/src/include/module.modulemap.in",
-                         root_build_dir),
-             "--modulemap",
-             rebase_path("${clang_dir}/module.modulemap", root_build_dir),
-             "--module-name",
-             "//build/modules:system",
-             "--os",
-             current_os,
-             "--cpu",
-             current_cpu,
-             "--",
-           ] + cpu_abi_cflags
+      "--clang",
+      rebase_path("${clang_base_path}/bin/clang++", root_build_dir),
+      "--output",
+      rebase_path(modulemap, root_build_dir),
+      "--modulemap",
+      rebase_path("//third_party/libc++/src/include/module.modulemap.in",
+                  root_build_dir),
+      "--modulemap",
+      rebase_path("${clang_dir}/module.modulemap", root_build_dir),
+      "--module-name",
+      "//build/modules:system",
+      "--os",
+      current_os,
+      "--cpu",
+      current_cpu,
+    ]
+    if (is_apple) {
+      # Apple provides its own modulemap files. We don't need to do sysroot
+      # scanning.
+      foreach(modulemap,
+              [
+                "DarwinFoundation1.modulemap",
+                "DarwinFoundation2.modulemap",
+                "DarwinFoundation3.modulemap",
+                "libunwind.modulemap",
+              ]) {
+        path = "${sysroot}/usr/include/${modulemap}"
+        inputs += [ path ]
+        args += [
+          "--partial-modulemap",
+          rebase_path(path, root_build_dir),
+        ]
+      }
+      foreach(module,
+              [
+                "TargetConditionals",
+                "_AvailabilityInternal",
+                "_DarwinFoundation1",
+                "_DarwinFoundation2",
+                "_DarwinFoundation3",
+                "alloca",
+                "libunwind",
+                "nl_types",
+                "os_availability",
+                "pthread",
+                "runetype",
+                "sched",
+                "sys_appleapiopts",
+                "sys_cdefs",
+                "sys_qos",
+                "sys_resource",
+                "sys_select",
+                "sys_types",
+                "sys_wait",
+                "unistd",
+                "unwind",
+                "xlocale",
+              ]) {
+        args += [
+          "--module",
+          module,
+        ]
+      }
+    } else {
+      # We need to pass the sysroot in so that it can scan it to generate a
+      # modulemap for the sysroot headers.
+      args += [
+        "--sysroot",
+        rebase_path(sysroot, root_build_dir),
+      ]
+    }
+    args += [ "--" ] + cpu_abi_cflags
     if (is_chromeos) {
       args += cros_cpu_abi_cflags
     }
@@ -86,5 +139,13 @@ if (use_unified_system_module) {
     deps = [ ":system_modulemap" ]
 
     defines = [ "_LIBCPP_WCHAR_H_HAS_CONST_OVERLOADS" ]
+    if (is_apple) {
+      # On apple platforms, _modules/_unistd.h, for example, is guarded with
+      # #if __building_module(unistd).
+      # This would fail for us because it's now in a mega-module called
+      # "system".
+      # This should *not* propagate to dependencies so it should be safe.
+      defines += [ "__building_module(x)=1" ]
+    }
   }
 }
