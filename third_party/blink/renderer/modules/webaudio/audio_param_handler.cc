@@ -1539,29 +1539,31 @@ bool AudioParamHandler::IsEventCurrent(const ParamEvent* event,
   // just past `current_time`/`sample_rate`.  Then `SetValueCurveAtTime()` will
   // be processed again before advancing to `SetValueAtTime()`.  The number of
   // frames to be processed should be zero in this case.
-  if (next_event && next_event->Time() < current_frame / sample_rate) {
-    // But if the current event is a SetValue event and the event time is
-    // between currentFrame - 1 and currentFrame (in time). we don't want to
-    // skip it.  If we do skip it, the SetValue event is completely skipped
-    // and not applied, which is wrong.  Other events don't have this problem.
-    // (Because currentFrame is unsigned, we do the time check in this funny,
-    // but equivalent way.)
-    double event_frame = event->Time() * sample_rate;
-
-    // Condition is currentFrame - 1 < eventFrame <= currentFrame, but
-    // currentFrame is unsigned and could be 0, so use
-    // currentFrame < eventFrame + 1 instead.
-    if (!(((event->GetType() == ParamEvent::Type::kSetValue ||
-            event->GetType() == ParamEvent::Type::kSetValueCurveEnd) &&
-           (event_frame <= current_frame) &&
-           (current_frame < event_frame + 1)))) {
-      // This is not the special SetValue event case, and nextEvent is
-      // in the past. We can skip processing of this event since it's
-      // in past.
-      return false;
-    }
+  if (!next_event) {
+    return true;
   }
-  return true;
+
+  if (next_event->Time() * sample_rate >= current_frame) {
+    return true;
+  }
+
+  // But if the current event is a SetValue event and the event time is
+  // between currentFrame - 1 and currentFrame (in time). we don't want to
+  // skip it.  If we do skip it, the SetValue event is completely skipped
+  // and not applied, which is wrong.  Other events don't have this problem.
+  // (Because currentFrame is unsigned, we do the time check in this funny,
+  // but equivalent way.)
+  const double event_frame = event->Time() * sample_rate;
+
+  // If this is not the special SetValue event case and nextEvent is in the past
+  // we can skip processing of this event since it's in past.
+  //
+  // Condition is currentFrame - 1 < eventFrame <= currentFrame, but
+  // currentFrame is unsigned and could be 0, so use
+  // currentFrame < eventFrame + 1 instead.
+  return (event->GetType() == ParamEvent::Type::kSetValue ||
+          event->GetType() == ParamEvent::Type::kSetValueCurveEnd) &&
+         (event_frame <= current_frame) && (current_frame < event_frame + 1);
 }
 
 void AudioParamHandler::ClampNewEventsToCurrentTime(double current_time) {
