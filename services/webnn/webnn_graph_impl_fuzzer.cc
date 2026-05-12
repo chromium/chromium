@@ -356,10 +356,14 @@ auto AnyConv2dKind() {
       {mojom::Conv2d::Kind::kDirect, mojom::Conv2d::Kind::kTransposed});
 }
 
+constexpr auto kAllPool2dKinds = std::to_array<mojom::Pool2d::Kind>({
+    mojom::Pool2d::Kind::kMaxPool2d,
+    mojom::Pool2d::Kind::kAveragePool2d,
+    mojom::Pool2d::Kind::kL2Pool2d,
+});
+
 auto AnyPool2dKind() {
-  return fuzztest::ElementOf<mojom::Pool2d::Kind>(
-      {mojom::Pool2d::Kind::kMaxPool2d, mojom::Pool2d::Kind::kAveragePool2d,
-       mojom::Pool2d::Kind::kL2Pool2d});
+  return fuzztest::ElementOf<mojom::Pool2d::Kind>(kAllPool2dKinds);
 }
 
 auto AnyQuantizationKind() {
@@ -368,13 +372,21 @@ auto AnyQuantizationKind() {
                                                 QuantizationKind::kPerBlock});
 }
 
+constexpr auto kAllReduceKinds = std::to_array<mojom::Reduce::Kind>({
+    mojom::Reduce::Kind::kL1,
+    mojom::Reduce::Kind::kL2,
+    mojom::Reduce::Kind::kLogSum,
+    mojom::Reduce::Kind::kLogSumExp,
+    mojom::Reduce::Kind::kMax,
+    mojom::Reduce::Kind::kMean,
+    mojom::Reduce::Kind::kMin,
+    mojom::Reduce::Kind::kProduct,
+    mojom::Reduce::Kind::kSum,
+    mojom::Reduce::Kind::kSumSquare,
+});
+
 auto AnyReduceKind() {
-  return fuzztest::ElementOf<mojom::Reduce::Kind>(
-      {mojom::Reduce::Kind::kL1, mojom::Reduce::Kind::kL2,
-       mojom::Reduce::Kind::kLogSum, mojom::Reduce::Kind::kLogSumExp,
-       mojom::Reduce::Kind::kMax, mojom::Reduce::Kind::kMean,
-       mojom::Reduce::Kind::kMin, mojom::Reduce::Kind::kProduct,
-       mojom::Reduce::Kind::kSum, mojom::Reduce::Kind::kSumSquare});
+  return fuzztest::ElementOf<mojom::Reduce::Kind>(kAllReduceKinds);
 }
 
 auto AnyRoundingType() {
@@ -684,23 +696,28 @@ auto AnyPadParams() {
 }
 
 auto AnyPool2dParams() {
-  return fuzztest::FlatMap(
-      [](mojom::Pool2d::Kind pool2d_kind) {
-        return fuzztest::StructOf<Pool2dParams>(
-            AnyOperandDataTypeFor(GetPool2dDataTypes(pool2d_kind)),
-            fuzztest::Just(pool2d_kind), AnyRoundingType(),
-            AnyDimSize(),                // batch
-            AnyDimSize(),                // channels
-            AnyDimSize(),                // input_height
-            AnyDimSize(),                // input_width
-            AnyPadding2d(),              // padding
-            AnySize2d(),                 // window_dimensions
-            AnyStrides2d(),              // strides
-            AnyDilations2d(),            // dilations
-            fuzztest::Arbitrary<bool>()  // is_input_constant
-        );
+  SupportedDataTypes pool2d_data_types;
+  for (auto kind : kAllPool2dKinds) {
+    pool2d_data_types.PutAll(GetPool2dDataTypes(kind));
+  }
+
+  return fuzztest::Filter(
+      [](const Pool2dParams& params) {
+        return GetPool2dDataTypes(params.pool2d_kind).Has(params.data_type);
       },
-      AnyPool2dKind());
+      fuzztest::StructOf<Pool2dParams>(
+          AnyOperandDataTypeFor(pool2d_data_types), AnyPool2dKind(),
+          AnyRoundingType(),
+          AnyDimSize(),                // batch
+          AnyDimSize(),                // channels
+          AnyDimSize(),                // input_height
+          AnyDimSize(),                // input_width
+          AnyPadding2d(),              // padding
+          AnySize2d(),                 // window_dimensions
+          AnyStrides2d(),              // strides
+          AnyDilations2d(),            // dilations
+          fuzztest::Arbitrary<bool>()  // is_input_constant
+          ));
 }
 
 auto AnyQuantizationParams() {
@@ -711,21 +728,25 @@ auto AnyQuantizationParams() {
 }
 
 auto AnyReduceParams() {
-  return fuzztest::FlatMap(
-      [](mojom::Reduce::Kind reduce_kind) {
-        return fuzztest::StructOf<ReduceParams>(
-            AnyOperandDataTypeFor(GetReduceDataTypes(reduce_kind)),
-            fuzztest::Just(reduce_kind),
-            fuzztest::InRange<uint32_t>(1, 8),   // rank
-            fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
-            fuzztest::InRange<uint32_t>(0, 8),   // num_axes
-            fuzztest::ArrayOf<8>(                // axes
-                fuzztest::InRange<uint32_t>(0, 7)),
-            fuzztest::Arbitrary<bool>(),  // keep_dimensions
-            fuzztest::Arbitrary<bool>()   // is_input_constant
-        );
+  SupportedDataTypes reduce_data_types;
+  for (auto kind : kAllReduceKinds) {
+    reduce_data_types.PutAll(GetReduceDataTypes(kind));
+  }
+
+  return fuzztest::Filter(
+      [](const ReduceParams& params) {
+        return GetReduceDataTypes(params.reduce_kind).Has(params.data_type);
       },
-      AnyReduceKind());
+      fuzztest::StructOf<ReduceParams>(
+          AnyOperandDataTypeFor(reduce_data_types), AnyReduceKind(),
+          fuzztest::InRange<uint32_t>(1, 8),   // rank
+          fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+          fuzztest::InRange<uint32_t>(0, 8),   // num_axes
+          fuzztest::ArrayOf<8>(                // axes
+              fuzztest::InRange<uint32_t>(0, 7)),
+          fuzztest::Arbitrary<bool>(),  // keep_dimensions
+          fuzztest::Arbitrary<bool>()   // is_input_constant
+          ));
 }
 
 auto AnyScatterElementsParams() {
