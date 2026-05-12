@@ -24898,18 +24898,20 @@
             ]
         }
     ],
-    "VerticalTabsChromeOS": [
+    "VerticalTabs": [
         {
             "platforms": [
-                "chromeos"
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "IPH_VerticalTabstripTutorialFeature",
-                        "VerticalTabsLaunch",
-                        "VerticalTabsNewBadge"
+                        "VerticalTabs",
+                        "VerticalTabsPreviewBadge"
                     ]
                 }
             ]
@@ -24935,6 +24937,26 @@
                     "enable_features": [
                         "IPH_VerticalTabsExpandOnHoverFeature",
                         "VerticalTabsExpandOnHover"
+                    ]
+                }
+            ]
+        }
+    ],
+    "VerticalTabsLaunch": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_VerticalTabstripTutorialFeature",
+                        "VerticalTabsLaunch",
+                        "VerticalTabsNewBadge"
                     ]
                 }
             ]

@@ -1012,9 +1012,7 @@ void ToolsMenuModel::Build(Browser* browser) {
     // TODO(crbug.com/475222200): When in immersive, swapping between tab
     // strip types create duplicate tab strips. Until that is resolved,
     // disable the ability to swap between tab strips while in immersive.
-    // Note that in unit tests, `immersive_controller` may not exist.
-    if (auto* immersive_controller = ImmersiveModeController::From(browser);
-        immersive_controller && !immersive_controller->IsEnabled()) {
+    if (!ImmersiveModeController::From(browser)->IsEnabled()) {
       if (controller->ShouldDisplayVerticalTabs()) {
         AddItemWithStringIdAndVectorIcon(this, IDC_TOGGLE_VERTICAL_TABS,
                                          IDS_SWITCH_TO_HORIZONTAL_TAB,
