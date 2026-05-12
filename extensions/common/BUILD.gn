@@ -810,9 +810,6 @@ if (enable_extensions) {
       "//content/test:test_support",
       "//extensions:test_support",
     ]
-
-    # The fuzzed code needs more RAM that the default limit.
-    libfuzzer_options = [ "rss_limit_mb=4096" ]
   }
 
   fuzzer_test("extension_url_pattern_fuzzer") {
@@ -830,9 +827,6 @@ if (enable_extensions) {
       "//base",
       "//third_party/icu/fuzzers:fuzzer_support",
     ]
-
-    # The fuzzed code needs more RAM that the default limit.
-    libfuzzer_options = [ "rss_limit_mb=4096" ]
   }
 
   fuzzer_test("extension_api_scripts_internal_serialization_fuzzer") {
@@ -845,8 +839,5 @@ if (enable_extensions) {
       "//third_party/abseil-cpp:absl",
       "//third_party/icu/fuzzers:fuzzer_support",
     ]
-
-    # The fuzzed code needs more RAM that the default limit.
-    libfuzzer_options = [ "rss_limit_mb=4096" ]
   }
 }
