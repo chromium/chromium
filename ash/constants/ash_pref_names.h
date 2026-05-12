@@ -3906,6 +3906,16 @@ inline constexpr char kSkyVaultMigrationStartTime[] =
 inline constexpr char kCustomizationDefaultWallpaperURL[] =
     "customization.default_wallpaper_url";
 
+//-----------------------------------------------------------------------------
+// Apps related Prefs
+//-----------------------------------------------------------------------------
+
+// A string pref that contains either a Chrome app ID (see
+// extensions::ExtensionId) or an Android package name (using Java package
+// naming conventions) of the preferred note-taking app. An empty value
+// indicates that the user hasn't selected an app yet.
+inline constexpr char kNoteTakingAppId[] = "settings.note_taking_app_id";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

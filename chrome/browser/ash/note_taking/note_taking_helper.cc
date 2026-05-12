@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/stylus_utils.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
@@ -296,7 +296,7 @@ std::vector<NoteTakingAppInfo> NoteTakingHelper::GetAvailableApps(
 
   // Determine which app, if any, is selected as the preferred note taking app.
   const std::string pref_app_id =
-      profile->GetPrefs()->GetString(prefs::kNoteTakingAppId);
+      profile->GetPrefs()->GetString(ash::prefs::kNoteTakingAppId);
   for (auto& info : infos) {
     if (info.app_id == pref_app_id) {
       info.preferred = true;
@@ -308,7 +308,8 @@ std::vector<NoteTakingAppInfo> NoteTakingHelper::GetAvailableApps(
 }
 
 std::string NoteTakingHelper::GetPreferredAppId(Profile* profile) {
-  std::string app_id = profile->GetPrefs()->GetString(prefs::kNoteTakingAppId);
+  std::string app_id =
+      profile->GetPrefs()->GetString(ash::prefs::kNoteTakingAppId);
   if (IsInstalledApp(app_id, profile))
     return app_id;
   return std::string();
@@ -319,10 +320,11 @@ void NoteTakingHelper::SetPreferredApp(Profile* profile,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile);
 
-  if (app_id == profile->GetPrefs()->GetString(prefs::kNoteTakingAppId))
+  if (app_id == profile->GetPrefs()->GetString(ash::prefs::kNoteTakingAppId)) {
     return;
+  }
 
-  profile->GetPrefs()->SetString(prefs::kNoteTakingAppId, app_id);
+  profile->GetPrefs()->SetString(ash::prefs::kNoteTakingAppId, app_id);
 
   for (Observer& observer : observers_)
     observer.OnPreferredNoteTakingAppUpdated(profile);
@@ -339,7 +341,8 @@ void NoteTakingHelper::LaunchAppForNewNote(Profile* profile) {
   DCHECK(profile);
 
   LaunchResult result = LaunchResult::NO_APP_SPECIFIED;
-  std::string app_id = profile->GetPrefs()->GetString(prefs::kNoteTakingAppId);
+  std::string app_id =
+      profile->GetPrefs()->GetString(ash::prefs::kNoteTakingAppId);
   if (!app_id.empty())
     result = LaunchAppInternal(profile, app_id);
   UMA_HISTOGRAM_ENUMERATION(kPreferredLaunchResultHistogramName,

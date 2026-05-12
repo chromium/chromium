@@ -377,7 +377,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackPageDown, 0);
 
   // Don't sync the note-taking app; it may not be installed on other devices.
-  registry->RegisterStringPref(::prefs::kNoteTakingAppId, std::string());
+  registry->RegisterStringPref(ash::prefs::kNoteTakingAppId, std::string());
 
   registry->RegisterBooleanPref(::prefs::kLockScreenAutoStartOnlineReauth,
                                 false);

@@ -475,12 +475,6 @@ inline constexpr char kShowMobileDataNotification[] =
 inline constexpr char kChromeOSReleaseNotesVersion[] =
     "settings.release_notes.version";
 
-// A string pref that contains either a Chrome app ID (see
-// extensions::ExtensionId) or an Android package name (using Java package
-// naming conventions) of the preferred note-taking app. An empty value
-// indicates that the user hasn't selected an app yet.
-inline constexpr char kNoteTakingAppId[] = "settings.note_taking_app_id";
-
 // Automatically open online re-authentication window on the lock screen.
 inline constexpr char kLockScreenAutoStartOnlineReauth[] =
     "lock_screen_auto_start_online_reauth";
