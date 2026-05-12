@@ -22,10 +22,12 @@ AndroidTabModelEventBridge::AndroidTabModelEventBridge(
       << "TabStrip API assumes that there is always at least one selected tab.";
   last_selected_tab_ = active_tab->GetHandle();
   model_->AddObserver(this);
+  adapter_->GetRoot()->AddObserver(this);
 }
 
 AndroidTabModelEventBridge::~AndroidTabModelEventBridge() {
   model_->RemoveObserver(this);
+  adapter_->GetRoot()->RemoveObserver(this);
 }
 
 void AndroidTabModelEventBridge::AddObserver(events::EventObserver* observer) {
@@ -91,21 +93,27 @@ void AndroidTabModelEventBridge::DidAddTab(TabAndroid* tab,
   event->tabs.push_back(std::move(created_container));
   Notify(std::move(event));
 }
-
-// TODO(crbug.com/509647569): add WillMoveTab plumbing so that we can capture
-// the "from" position.
-void AndroidTabModelEventBridge::DidMoveTab(TabAndroid* tab,
-                                            int new_index,
-                                            int old_index) {
+void AndroidTabModelEventBridge::OnChildMoved(
+    const tabs::TabCollection::Position& to_position,
+    const NodeData& node_data) {
   auto event = mojom::OnNodeMovedEvent::New();
-  event->id = NodeId::FromTabHandle(tab->GetHandle());
-  // Note: GetPositionForAbsoluteIndex relies on the current state of the model.
-  // Since we don't have a snapshot of the old state, we'll just use the
-  // absolute index for now.
-  // TODO(crbug.com/494284032): Improve this by capturing the old position
-  // during WillMoveTab if necessary.
-  event->from = Position(old_index);
-  event->to = adapter_->GetPositionForAbsoluteIndex(new_index);
+
+  if (std::holds_alternative<tabs::TabHandle>(node_data.handle)) {
+    tabs::TabHandle tab_handle = std::get<tabs::TabHandle>(node_data.handle);
+    event->id = NodeId::FromTabHandle(tab_handle);
+  } else {
+    tabs::TabCollection::Handle collection_handle =
+        std::get<tabs::TabCollection::Handle>(node_data.handle);
+    event->id = NodeId::FromTabCollectionHandle(collection_handle);
+  }
+
+  event->from = tabs_api::Position(
+      node_data.position.index,
+      adapter_->GetPathForCollection(node_data.position.parent_handle));
+  event->to = tabs_api::Position(
+      to_position.index,
+      adapter_->GetPathForCollection(to_position.parent_handle));
+
   Notify(std::move(event));
 }
 
