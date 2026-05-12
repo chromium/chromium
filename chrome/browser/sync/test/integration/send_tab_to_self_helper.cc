@@ -241,13 +241,11 @@ void SendTabToSelfActiveChecker::EntriesRemovedRemotely(
 SendTabToSelfMultiDeviceActiveChecker::SendTabToSelfMultiDeviceActiveChecker(
     syncer::DeviceInfoTracker* tracker)
     : tracker_(tracker) {
-  tracker_->AddObserver(this);
+  observation_.Observe(tracker_);
 }
 
 SendTabToSelfMultiDeviceActiveChecker::
-    ~SendTabToSelfMultiDeviceActiveChecker() {
-  tracker_->RemoveObserver(this);
-}
+    ~SendTabToSelfMultiDeviceActiveChecker() = default;
 
 bool SendTabToSelfMultiDeviceActiveChecker::IsExitConditionSatisfied(
     std::ostream* os) {
@@ -268,12 +266,11 @@ SendTabToSelfDeviceDisabledChecker::SendTabToSelfDeviceDisabledChecker(
     syncer::DeviceInfoTracker* tracker,
     const std::string& device_guid)
     : tracker_(tracker), device_guid_(device_guid) {
-  tracker_->AddObserver(this);
+  observation_.Observe(tracker_);
 }
 
-SendTabToSelfDeviceDisabledChecker::~SendTabToSelfDeviceDisabledChecker() {
-  tracker_->RemoveObserver(this);
-}
+SendTabToSelfDeviceDisabledChecker::~SendTabToSelfDeviceDisabledChecker() =
+    default;
 
 bool SendTabToSelfDeviceDisabledChecker::IsExitConditionSatisfied(
     std::ostream* os) {

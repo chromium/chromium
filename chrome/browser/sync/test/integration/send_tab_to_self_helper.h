@@ -206,6 +206,9 @@ class SendTabToSelfMultiDeviceActiveChecker
 
  private:
   const raw_ptr<syncer::DeviceInfoTracker> tracker_;
+  base::ScopedObservation<syncer::DeviceInfoTracker,
+                          syncer::DeviceInfoTracker::Observer>
+      observation_{this};
 };
 
 // Class that allows waiting until device has send_tab_to_self disabled.
@@ -226,6 +229,9 @@ class SendTabToSelfDeviceDisabledChecker
  private:
   const raw_ptr<syncer::DeviceInfoTracker> tracker_;
   std::string device_guid_;
+  base::ScopedObservation<syncer::DeviceInfoTracker,
+                          syncer::DeviceInfoTracker::Observer>
+      observation_{this};
 };
 
 class SendTabToSelfUrlDeletedChecker
