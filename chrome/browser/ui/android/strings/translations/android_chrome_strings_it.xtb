@@ -271,6 +271,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2226826835915474236">Scorciatoie non attive</translation>
 <translation id="2227179592712503583">Rimuovi suggerimento</translation>
 <translation id="2227444325776770048">Continua come <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Visualizza tutte le informazioni salvate</translation>
 <translation id="2230777942707397948">Finestra vuota</translation>
 <translation id="223356358902285214">Attività web e app</translation>
 <translation id="2233735624724508540">Scegli un periodo di tempo, quindi tocca Elimina dati</translation>
@@ -483,6 +484,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3057938290530993634">Tocca e tieni premuto per fissare i siti web più visitati e accedervi facilmente la prossima volta</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> preferito}other{<ph name="BOOKMARKS_COUNT_MANY" /> preferiti}}</translation>
 <translation id="3062802207422175757">Articoli relativi ai tuoi interessi su Chrome</translation>
+<translation id="3066107845790462226">Scarica frame</translation>
 <translation id="3066573403916685335">Sposta giù</translation>
 <translation id="3067505415088964188">Prezzo basso</translation>
 <translation id="3070005020161560471">Traduci automaticamente</translation>
@@ -1216,6 +1218,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6264485186158353794">Torna nell'area protetta</translation>
 <translation id="6267106249090587268">Notifiche <ph name="SEPARATOR" /> Chrome ha rimosso queste autorizzazioni a causa di spam o contenuti ingannevoli</translation>
 <translation id="6276708887952587684">Visualizza il codice sorgente della pagina</translation>
+<translation id="62768169905160414">Copia frame</translation>
 <translation id="6277522088822131679">Si è verificato un problema durante la stampa della pagina. Riprova.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Elimina dati di navigazione; seleziona i dati da eliminare</translation>

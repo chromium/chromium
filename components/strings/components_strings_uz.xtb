@@ -469,6 +469,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1717688554309417925">Qarz tekshiruvi xizmatlari</translation>
 <translation id="1719434663396780149">Narxi tushishi haqidagi bildirishnomalar yoniq. Bu parametrni <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> orqali oʻzgartira olasiz.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
+<translation id="1720318856472900922">TLS WWW serveri haqiqiylik tekshiruvi</translation>
 <translation id="1720941539803966190">Qoʻllanmani yopish</translation>
 <translation id="1721424275792716183">* Bu maydoncha kiritilishi shart</translation>
 <translation id="1723636263173393300">Bu siyosat uchun ruxsat etilgan yorliqlar soni: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -2470,6 +2471,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4855395119669662878">Administrator <ph name="DATE_TIME" /> da fayllarni <ph name="CLOUD_PROVIDER" /> xizmatiga yuklaydi. Fayllarni yuklash yakunlanmaguncha qurlima aloqada qolsin. Yuklash vaqtida qurilmadagi fayllarni faqat oʻqish mumkin.</translation>
 <translation id="485902285759009870">Kod tasdiqlanmoqda...</translation>
 <translation id="4860260582253463350">YouTubeda davom ettirish uchun shaxsingizni tasdiqlang Ota-onangiz yoki vasiyingiz Family Link orqali belgilagan sozlamalar amal qiladi.</translation>
+<translation id="4862642413395066333">OCSP javoblarini imzolash</translation>
 <translation id="4864406669374375262">Versiya qatori vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="486459320933704969">Bu saytga kirishingiz uchun ota-onangiz yoki vasiyingiz ruxsat berishi kerak</translation>
 <translation id="4864801646102013152">Uyni jihozlash</translation>
@@ -3438,6 +3440,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="634500758737709758">Qanday boriladi</translation>
 <translation id="6348220984832452017">Joriy oʻzgarishlar</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ilovasini oʻrnatish</translation>
+<translation id="6350739641326887427">Pix kodidan nusxa olib oʻtirmasdan, oson toʻlang. <ph name="BEGIN_LINK1" />Ishlash tartibi<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Brauzer maʼlumotlarini oʻchirish</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Hech qanday}=1{1 ta parol (<ph name="DOMAIN_LIST" /> uchun, sinxronlandi)}=2{2 ta parol (<ph name="DOMAIN_LIST" /> uchun, sinxronlandi)}other{# ta parol (<ph name="DOMAIN_LIST" /> uchun, sinxronlandi)}}</translation>
 <translation id="6354918092619878358">SECG elliptik egri chiziqli secp256r1 (ANSI X9.62 prime256v1, NIST P-256) ochiq kalit algoritmi</translation>
@@ -3654,6 +3657,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="668132230070712111">Video Google Drive omboriga saqlandi</translation>
 <translation id="6681790815630918386">CVC saqlandi</translation>
 <translation id="6683022854667115063">Quloqliklar</translation>
+<translation id="6686570026048064255">Pix kodni aniqlash funksiyasini faolsizlantirish uchun <ph name="BEGIN_LINK1" />Chrome sozlamalarini<ph name="END_LINK1" /> oching</translation>
 <translation id="6687230248707087982">Konvert (oddiy)</translation>
 <translation id="6687335167692595844">Shrift hajmi zarur</translation>
 <translation id="6688743156324860098">Yangilash…</translation>
@@ -4489,6 +4493,7 @@ Batafsil axborot:
 <translation id="7947285636476623132">Kartangiz muddatining tugash yilini tekshiring va yana urinib ko‘ring</translation>
 <translation id="7947310711271925113">Pop musiqa</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome funksiyalari bilan tanishish uchun avval Tab, keyin Enter tugmasini bosing</translation>
+<translation id="7948579849190819732">Joriy varaq</translation>
 <translation id="7949135979217012031">Antivirus va zararli dasturlardan himoya</translation>
 <translation id="7950027195171824198">Chrome sozlamalari orqali cookie parametrlarini boshqarish</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
@@ -4896,6 +4901,7 @@ Batafsil axborot:
 <translation id="8597726363542221027">Minilgan avtomobillar</translation>
 <translation id="8600271352425265729">Faqat shu safar</translation>
 <translation id="860043288473659153">Karta egasining ismi</translation>
+<translation id="8601206103050338563">TLS WWW mijoz haqiqiylik tekshiruvi</translation>
 <translation id="8601456038554914806">Suv sporti jihozlari</translation>
 <translation id="8601782593888534566">Ilmiy fantastika va fantaziya</translation>
 <translation id="8604103095921958091">Hozir olib, keyin toʻlash xizmat shartlari ekrani toʻliq hajmda ochildi.</translation>

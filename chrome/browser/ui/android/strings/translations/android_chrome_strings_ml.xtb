@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">സജീവമല്ലാത്ത കുറുക്കുവഴികൾ</translation>
 <translation id="2227179592712503583">നിർദ്ദേശം നീക്കം ചെയ്യുക</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> എന്ന പേരിൽ തുടരുക</translation>
+<translation id="2230411774874187555">നിങ്ങളുടെ സംരക്ഷിച്ച എല്ലാ വിവരങ്ങളും നേടുക</translation>
 <translation id="2230777942707397948">ശൂന്യമായ വിൻഡോ</translation>
 <translation id="223356358902285214">വെബ്, ആപ്പ് ആക്റ്റിവിറ്റി</translation>
 <translation id="2233735624724508540">ഒരു സമയപരിധി തിരഞ്ഞെടുത്ത് ഡാറ്റ ഇല്ലാതാക്കുക ടാപ്പ് ചെയ്യുക</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">അടുത്ത തവണ എളുപ്പത്തിൽ ആക്‌സസ് ചെയ്യാൻ, നിങ്ങൾ ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച വെബ്‌സൈറ്റുകൾ പിൻ ചെയ്യാൻ ടാപ്പ് ചെയ്‌ത് പിടിക്കുക</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ബുക്ക്‌മാർക്ക്}other{<ph name="BOOKMARKS_COUNT_MANY" /> ബുക്ക്‌മാർക്കുകൾ}}</translation>
 <translation id="3062802207422175757">Chrome-ൽ നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങളിലെ ലേഖനങ്ങൾ കാണൂ</translation>
+<translation id="3066107845790462226">വീഡിയോ ഫ്രെയിം ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="3066573403916685335">താഴേക്ക് നീക്കുക</translation>
 <translation id="3067505415088964188">കുറഞ്ഞ നിരക്ക്</translation>
 <translation id="3070005020161560471">സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">തിരികെ സുരക്ഷയിലേക്ക്</translation>
 <translation id="6267106249090587268">അറിയിപ്പുകൾ <ph name="SEPARATOR" /> സ്‌പാം അല്ലെങ്കിൽ വഞ്ചനാപരമായ ഉള്ളടക്കങ്ങൾ കാരണം Chrome ഈ അനുമതികൾ നീക്കം ചെയ്‌തു</translation>
 <translation id="6276708887952587684">പേജ് ഉറവിടം കാണുക</translation>
+<translation id="62768169905160414">വീഡിയോ ഫ്രെയിം പകർത്തുക</translation>
 <translation id="6277522088822131679">പേജ് പ്രിന്റുചെയ്യുന്നതിൽ ഒരു പ്രശ്‌നമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6278428485366576908">തീം</translation>
 <translation id="6291294824436685757">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക; ഇല്ലാതാക്കാനുള്ള ഡാറ്റ തിരഞ്ഞെടുക്കുക</translation>

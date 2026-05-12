@@ -271,6 +271,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2226826835915474236">Dreceres inactives</translation>
 <translation id="2227179592712503583">Suprimeix el suggeriment</translation>
 <translation id="2227444325776770048">Continua com a <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Obtén tota la teva informació desada</translation>
 <translation id="2230777942707397948">Finestra buida</translation>
 <translation id="223356358902285214">Activitat al web i en aplicacions</translation>
 <translation id="2233735624724508540">Tria un període de temps i, a continuació, toca Suprimeix les dades</translation>
@@ -483,6 +484,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3057938290530993634">Mantén premuts els llocs web que més visites per fixar-los i accedir-hi fàcilment la propera vegada</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> adreça d'interès}other{<ph name="BOOKMARKS_COUNT_MANY" /> adreces d'interès}}</translation>
 <translation id="3062802207422175757">Articles relacionats amb els teus interessos a Chrome</translation>
+<translation id="3066107845790462226">Baixa el fotograma</translation>
 <translation id="3066573403916685335">Mou cap avall</translation>
 <translation id="3067505415088964188">El preu és baix</translation>
 <translation id="3070005020161560471">Tradueix automàticament</translation>
@@ -1216,6 +1218,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6264485186158353794">Torna a una pàgina segura</translation>
 <translation id="6267106249090587268">Notificacions <ph name="SEPARATOR" /> Chrome ha suprimit aquests permisos perquè el lloc web conté contingut brossa o enganyós</translation>
 <translation id="6276708887952587684">Mostra el codi font de la pàgina</translation>
+<translation id="62768169905160414">Copia el fotograma</translation>
 <translation id="6277522088822131679">Hi ha hagut un problema en imprimir la pàgina. Torneu-ho a provar.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Suprimeix les dades de navegació. Selecciona les dades que vols suprimir.</translation>

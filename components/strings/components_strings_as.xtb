@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">ডেবিট আৰু চেকিং সেৱা</translation>
 <translation id="1719434663396780149">মূল্য কমাৰ সতৰ্কবাৰ্তাৰ সুবিধাটো অন আছে। আপুনি <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />ত এইটো সলনি কৰিব পাৰে।</translation>
 <translation id="1719838434204287058">২৪ x ৩০ ইঞ্চি</translation>
+<translation id="1720318856472900922">TLS WWW ছাৰ্ভাৰৰ বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ</translation>
 <translation id="1720941539803966190">টিউট’ৰিয়েল বন্ধ কৰক</translation>
 <translation id="1721424275792716183">* ক্ষেত্ৰটো আৱশ্যকীয়</translation>
 <translation id="1723636263173393300">এই নীতিটোত <ph name="MAX_ITEMS_LIMIT" /> টাতকৈ অধিক শ্বৰ্টকাট থাকিব নালাগে।</translation>
@@ -2471,6 +2472,7 @@
 <translation id="4855395119669662878">আপোনাৰ প্ৰশাসকে <ph name="DATE_TIME" />ত আপোনাৰ ফাইল <ph name="CLOUD_PROVIDER" />ত আপল’ড কৰা আৰম্ভ কৰিব। আপোনাৰ ফাইল আপল’ড কৰা সম্পূৰ্ণ নোহোৱালৈকে আপোনাৰ ডিভাইচ সংযুক্ত কৰি ৰাখক। আপল’ড চলি থকাৰ সময়ত আপুনি কেৱল স্থানীয় ফাইলহে পঢ়িব পাৰিব।</translation>
 <translation id="485902285759009870">ক’ডটো সত্যাপন কৰি থকা হৈছে...</translation>
 <translation id="4860260582253463350">YouTubeলৈ অব্যাহত ৰাখিবলৈ, আমি আপোনাৰ পৰিচয়টো নিশ্চিত কৰিব লাগিব। আপুনি আপোনাৰ অভিভাৱক বা বৈধ অভিভাৱকে Family Linkত ছেট আপ কৰা ছেটিং পাব।</translation>
+<translation id="4862642413395066333">OCSP সঁহাৰিত চহী কৰা</translation>
 <translation id="4864406669374375262">সংস্কৰণৰ ষ্ট্ৰিং ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি কৰা হৈছে</translation>
 <translation id="486459320933704969">আ্ৰপুনি এই ৱেবছাইটটো চোৱাত আপত্তি নাই বুলি এগৰাকী অভিভাৱক অথবা প্ৰাপ্তবয়স্ক পৰিয়ালৰ লোকে জনাব লাগিব</translation>
 <translation id="4864801646102013152">ঘৰৰ উন্নতি সাধন</translation>
@@ -3439,6 +3441,7 @@
 <translation id="634500758737709758">দিক্-নিৰ্দেশনা</translation>
 <translation id="6348220984832452017">ভিন্নতা সক্ৰিয় কৰক</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ইনষ্টল কৰক</translation>
+<translation id="6350739641326887427">Pix ক’ড প্ৰতিলিপি আৰু পে’ষ্ট নকৰাকৈ পৰিশোধ কৰক। <ph name="BEGIN_LINK1" />এইটোৱে কেনেকৈ কাম কৰে চাওক<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ব্ৰাউজিঙৰ ডেটা মচক</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{এটাও নাই}=1{১টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে, ছিংক কৰা আছে)}=2{২টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে, ছিংক কৰা আছে)}one{#টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে, ছিংক কৰা আছে)}other{#টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে, ছিংক কৰা আছে)}}</translation>
 <translation id="6354918092619878358">SECG উপবৃত্তাকাৰ লেখ secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3655,6 +3658,7 @@
 <translation id="668132230070712111">ভিডিঅ’ Google Driveত ছেভ কৰা হৈছে</translation>
 <translation id="6681790815630918386">CVC ছেভ কৰা হৈছে</translation>
 <translation id="6683022854667115063">হেডফ’ন</translation>
+<translation id="6686570026048064255">Pix ক’ড চিনাক্তকৰণ অফ কৰিবলৈ, <ph name="BEGIN_LINK1" />Chromeৰ ছেটিঙ<ph name="END_LINK1" />লৈ যাওক</translation>
 <translation id="6687230248707087982">এনভেল’প (উকা)</translation>
 <translation id="6687335167692595844">ফ’ণ্টৰ আকাৰ অনুৰোধ কৰা হৈছে</translation>
 <translation id="6688743156324860098">আপডে’ট কৰক…</translation>
@@ -4490,6 +4494,7 @@
 <translation id="7947285636476623132">আপোনাৰ ক্ৰেডিট কার্ডৰ ম্যাদ উকলাৰ বছৰ পৰীক্ষা কৰি আকৌ চেষ্টা কৰক</translation>
 <translation id="7947310711271925113">পপ সংগীত</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ সুবিধাসমূহৰ বিষয়ে জানিবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
+<translation id="7948579849190819732">বৰ্তমান টেব</translation>
 <translation id="7949135979217012031">এণ্টিভাইৰাছ আৰু মালৱেৰ</translation>
 <translation id="7950027195171824198">Chromeৰ ছেটিঙত আপোনাৰ কুকিৰ অগ্ৰাধিকাৰ পৰিচালনা কৰক</translation>
 <translation id="7951415247503192394">(৩২-বিট)</translation>
@@ -4897,6 +4902,7 @@
 <translation id="8597726363542221027">ব্যৱহাৰ কৰা বাহন</translation>
 <translation id="8600271352425265729">কেৱল এইবাৰৰ বাবে</translation>
 <translation id="860043288473659153">কার্ডৰ গৰাকীৰ নাম</translation>
+<translation id="8601206103050338563">TLS WWW ক্লাইণ্টৰ বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ</translation>
 <translation id="8601456038554914806">জলক্ৰীড়াৰ সা-সৰঞ্জাম</translation>
 <translation id="8601782593888534566">কল্প-বিজ্ঞান আৰু ফেণ্টাছী</translation>
 <translation id="8604103095921958091">এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰকৰ সেৱাৰ চৰ্তাৱলীৰ স্ক্ৰীন সম্পূৰ্ণ উচ্চতাত খোলা হৈছে।</translation>

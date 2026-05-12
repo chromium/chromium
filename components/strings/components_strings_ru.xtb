@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">Дебетовые и расчетные услуги</translation>
 <translation id="1719434663396780149">Оповещения о скидках включены. Чтобы отключить их, откройте <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 дюймов</translation>
+<translation id="1720318856472900922">Аутентификация сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрыть руководство</translation>
 <translation id="1721424275792716183">*Обязательное поле</translation>
 <translation id="1723636263173393300">Максимальное число ярлыков для этого правила: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -2474,6 +2475,7 @@
 <translation id="4855395119669662878">Администратор начнет загрузку файлов в сервис <ph name="CLOUD_PROVIDER" /> в <ph name="DATE_TIME" />. Не отключайте устройство, пока загрузка не завершится. Во время нее вы можете только читать локальные файлы.</translation>
 <translation id="485902285759009870">Проверка кода…</translation>
 <translation id="4860260582253463350">Прежде чем перейти на YouTube, подтверди, что это действительно ты. Будут выбраны параметры, заданные твоим родителем или законным представителем в Family Link.</translation>
+<translation id="4862642413395066333">Подпись ответов OCSP</translation>
 <translation id="4864406669374375262">Версия скопирована в буфер обмена</translation>
 <translation id="486459320933704969">Чтобы смотреть этот сайт, тебе нужно разрешение родителя или законного представителя.</translation>
 <translation id="4864801646102013152">Ремонт и обустройство дома</translation>
@@ -4495,6 +4497,7 @@
 <translation id="7947285636476623132">Проверьте год в сроке действия карты и повторите попытку</translation>
 <translation id="7947310711271925113">Поп-музыка</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы узнать больше о функциях Chrome, нажмите Tab, а затем Ввод.</translation>
+<translation id="7948579849190819732">Текущая вкладка</translation>
 <translation id="7949135979217012031">Антивирусы и защита от вредоносного ПО</translation>
 <translation id="7950027195171824198">Задать параметры файлов cookie в настройках Chrome</translation>
 <translation id="7951415247503192394">(32 бит)</translation>
@@ -4902,6 +4905,7 @@
 <translation id="8597726363542221027">Подержанные транспортные средства</translation>
 <translation id="8600271352425265729">Только в этот раз</translation>
 <translation id="860043288473659153">Имя владельца карты</translation>
+<translation id="8601206103050338563">Клиентская аутентификация TLS WWW</translation>
 <translation id="8601456038554914806">Инвентарь для водных видов спорта</translation>
 <translation id="8601782593888534566">Научная фантастика и фэнтези</translation>
 <translation id="8604103095921958091">Экран с условиями покупки в рассрочку открыт полностью.</translation>

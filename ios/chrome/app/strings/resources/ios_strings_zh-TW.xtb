@@ -142,7 +142,6 @@
 <translation id="147982357559798527">已變更</translation>
 <translation id="1486096554574027028">搜尋密碼</translation>
 <translation id="1491277525950327607">輕觸兩下即可切換設定</translation>
-<translation id="1491965206608166851">從任何應用程式使用已儲存的密碼和通行密鑰登入</translation>
 <translation id="1492417797159476138">你已在這個網站上儲存此使用者名稱</translation>
 <translation id="1497590942294823549">選單 → 密碼管理工具</translation>
 <translation id="1498283581832036924">系統不會刪除你的 <ph name="WEBSITE" /> 帳戶。</translation>
@@ -358,12 +357,10 @@
 <translation id="2199562093267256223">這麼做會將此群組從已登入 <ph name="USER_EMAIL" /> 的所有裝置中刪除。</translation>
 <translation id="2202084845446535117">沒有電子郵件帳戶</translation>
 <translation id="2214453882118345682">使用相機購物、翻譯及辨識所見內容。</translation>
-<translation id="2215819824168709130">隱藏「追蹤價格」資訊卡</translation>
 <translation id="2216366330550244277">前往商品頁面</translation>
 <translation id="2219935992754556187">Chrome 會使用 Face ID 保護你的私密資料</translation>
 <translation id="2220529011494928058">回報問題</translation>
 <translation id="2223461067862937305">建立 QR code</translation>
-<translation id="2225701818156393674">產品已加入追蹤的產品清單。</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2236949375853147973">我的活動</translation>
 <translation id="2237869114829007407">取得任何網頁或主題的總覽資訊和重要洞察</translation>
@@ -554,7 +551,6 @@
 <translation id="2902312830803030883">更多動作</translation>
 <translation id="2904788871580817212">開啟的分頁中有產品降價，原價為 <ph name="PREVIOUS_PRICE" />，現價為 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">你有 <ph name="NUMBER_OF_PASSWORDS" /> 組密碼重複使用，可能導致安全性風險。</translation>
-<translation id="29153882450867370">隱藏「追蹤價格」</translation>
 <translation id="291754862089661335">將這個方框對準 QR 圖碼或條碼</translation>
 <translation id="2918688092312652908">標示為未閱讀</translation>
 <translation id="2922210239002704889">開啟首頁或鍵盤</translation>
@@ -566,6 +562,7 @@
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
 <translation id="2975761176769946178">必須輸入網址</translation>
 <translation id="297667759942911166">在分頁群組中協作</translation>
+<translation id="298696743524648170">如要使用 Chrome 內建 Gemini，請登入 Google 帳戶</translation>
 <translation id="2987670534697681860">請先通過身分驗證，才能在這部裝置上存取所有密碼。</translation>
 <translation id="2989523299700148168">最近造訪過</translation>
 <translation id="2989805286512600854">在新分頁中開啟</translation>
@@ -620,6 +617,7 @@
 <translation id="31652791196570636">關閉</translation>
 <translation id="3167868116600277716">「探索」動態消息</translation>
 <translation id="3169472444629675720">探索</translation>
+<translation id="3172755898799085680">Gemini 不支援這個頁面</translation>
 <translation id="3174662312949010067">你也可以在其他裝置上使用已儲存的密碼。</translation>
 <translation id="3177338796769255211">只要在裝置上登入帳戶，即可存取書籤和其他資訊</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護你和你的裝置不受危險網站攻擊)</translation>
@@ -995,6 +993,7 @@
 <translation id="4552042254369397518">複製中…</translation>
 <translation id="4553044860350038560">更多密碼金鑰</translation>
 <translation id="4564893319561643483">隱藏「<ph name="TITLE" />」</translation>
+<translation id="456502772933839252">正在分享「<ph name="PAGE_TITLE" />」</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4568230126482344545">隱藏「最近開啟的分頁」</translation>
 <translation id="4578835633387306383">開啟…</translation>
@@ -1134,7 +1133,6 @@
 <translation id="4992255726304765516">分頁群組顏色：<ph name="COLOR" /></translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5009127379503001909">繼續瀏覽</translation>
-<translation id="5012914568031465281">無法追蹤價格。</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">傳送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">過去 15 分鐘</translation>
@@ -1404,6 +1402,7 @@
 <translation id="5936065461722368675">翻譯整頁內容</translation>
 <translation id="5937560539988385583">已翻譯網頁</translation>
 <translation id="5938160824633642847">你的裝置空間即將用盡，請在釋出空間後再試一次。</translation>
+<translation id="5941711191222866238">最小化</translation>
 <translation id="5944869793365969636">掃描 QR 圖碼</translation>
 <translation id="5948291296578561264">可讓你將相片儲存至相片庫。</translation>
 <translation id="5948605885471592910">查看及管理所有開啟的項目</translation>
@@ -2168,6 +2167,7 @@
 <translation id="8515534223594179607">匯出瀏覽資料</translation>
 <translation id="8522147671363140027">{count,plural, =1{這 {count} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}other{這 {count} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}}</translation>
 <translation id="8524799873541103884">第 <ph name="FIRST_VISIBLE_TAB" /> 至 <ph name="LAST_VISIBLE_TAB" /> 個<ph name="INCOGNITO" />分頁，共 <ph name="NUMBER_OF_OPEN_TABS" /> 個</translation>
+<translation id="8525306231823319788">全螢幕</translation>
 <translation id="8528009254289981965">在無痕模式中開啟其他應用程式的連結</translation>
 <translation id="8529767659511976195">新功能</translation>
 <translation id="8531572740963685410">PDF</translation>
@@ -2289,7 +2289,6 @@
 <translation id="8879952635974818770">個人化內容</translation>
 <translation id="8887595428614802520">關閉所有分頁和群組</translation>
 <translation id="8888595487174963247">移除提醒</translation>
-<translation id="8891031436559779793">如果產品在任何網站上降價，你就會收到通知。</translation>
 <translation id="8893208530912252670">影片</translation>
 <translation id="8898822736010347272">將部分已造訪網頁的網址、特定的系統資訊和部分網頁內容傳送至 Google，以協助發現新威脅並保障所有網路使用者的安全。</translation>
 <translation id="8900845556227858314">瀏覽器 App</translation>

@@ -1229,6 +1229,14 @@ La disponibilidad de las extensiones seguirá estando controlada por otras polí
 <translation id="1858775210076906272">Configuración rellenada previamente de Kerberos</translation>
 <translation id="1861206724856734193">Configura una lista de reglas de prevención de filtración de datos.</translation>
 <translation id="1862267110714201519">Inhabilitar la función de ventana fantasma</translation>
+<translation id="1862749749551522146">La aleatorización del tamaño del grupo de sockets es un mecanismo de seguridad que impide que los atacantes aprovechen los límites de capacidad deterministas para obtener información entre sitios.
+Si la capacidad de un grupo es normalmente de 128 sockets, este mecanismo limita aleatoriamente el grupo entre 128 y 256.
+Esto puede permitir hasta el doble de conexiones al proxy, pero en la práctica el valor esperado es más bien 1,2 veces.
+
+Esto afecta a los ajustes de <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" /> y <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+En lugar de definir el límite superior, este es el doble de sus valores (aunque, en la práctica, el valor esperado suele ser 1,2 veces superior).
+
+Esta opción está habilitada de forma predeterminada en todos los grupos, pero esta política permite inhabilitarla específicamente en los grupos de proxies.</translation>
 <translation id="1865417998205858223">Permisos clave</translation>
 <translation id="1865867000796030567">Si se habilita esta política, el valor de la clave del archivo de manifiesto de <ph name="REQUIRED_PLATFORM_VERSION" /> de la aplicación de kiosco sin retardo con inicio automático se usará como prefijo de la versión seleccionada para la actualización automática.
 
@@ -2332,6 +2340,24 @@ Esta política solo se aplica a los nuevos intentos de conexión y no anula las 
 <translation id="252742292004421898">Permitir la API Direct Sockets en estos sitios</translation>
 <translation id="2528762900096510743">Habilitar el servicio de cierre de sesión automático</translation>
 <translation id="2529880111512635313">Configura la lista de aplicaciones y extensiones de instalación forzada</translation>
+<translation id="2530090617700835618">Definir esta política permite especificar el número máximo de conexiones simultáneas por servidor proxy para solicitudes de WebSocket.
+
+Para modificar los límites de solicitudes que no son de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Si no se establece esta política, se utilizará el valor predeterminado (128).
+
+Algunas aplicaciones web consumen muchas conexiones con las solicitudes GET pendientes, por lo que un valor inferior a 128 puede hacer que la red del navegador se bloquee si se abren muchas aplicaciones web de este tipo.
+Algunos servidores proxy no son capaces de gestionar un número elevado de conexiones simultáneas por cliente, lo que se puede solucionar estableciendo un valor inferior para esta política.
+
+El valor debe ser igual o superior a 6.
+Si defines un valor inferior a ese límite, se usará 6.
+Si estableces un valor inferior al predeterminado (128), debes hacerlo bajo tu propia responsabilidad.
+
+El valor debe ser igual o inferior a 256.
+Si defines un valor superior a ese límite, se usará 256.
+Si defines un valor superior al predeterminado (128), lo haces bajo tu propia responsabilidad.
+
+Ten en cuenta que los límites implementados se ven afectados por <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="253135976343875019">Tiempo de espera de inactividad cuando el dispositivo está conectado a la red</translation>
 <translation id="2532480434098051405">Permitir Inserción de imágenes y mejorar los modelos de IA.</translation>
 <translation id="2535370400681639351">Si se habilita esta política, las solicitudes de autenticación gnubby se enviarán a una conexión de host remota mediante un proxy.
@@ -4734,15 +4760,6 @@ Si se le asigna el valor <ph name="DISABLE_UNPUBLISHED" /> (1) a esta política,
 
           Si no se asigna ningún valor a esta política, los mensajes de voz se inhabilitarán inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlos en cualquier momento.</translation>
 <translation id="4173974507809462880">Mostrar la pantalla de dirección de desplazamiento del panel táctil durante el inicio de sesión</translation>
-<translation id="4175770453187201981">Esta política controla las integraciones de Modo IA de Google en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.
-
-Para acceder a esta función, Google debe estar configurado como buscador predeterminado del usuario.
-
-0/sin definir: la función estará disponible para los usuarios.
-
-1: La función no estará disponible para los usuarios.
-
-Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="417956245902013347">Habilita la función de accesibilidad de resaltado del símbolo de intercalación de texto en la pantalla de inicio de sesión.
 
           Si se asigna el valor "True" a esta política, el resaltado del símbolo de intercalación estará siempre habilitado en la pantalla de inicio de sesión.
@@ -5265,6 +5282,24 @@ Para obtener más información sobre <ph name="IP_PROTECTION_NAME" />, consulta 
 
 <ph name="IP_PROTECTION_NAME" /> se lanzará a partir de la versión M139.</translation>
 <translation id="4525328580251166229">Controla las políticas relacionadas con el subsistema Bruschetta.</translation>
+<translation id="452801090660038046">Definir esta política permite especificar el número máximo de conexiones simultáneas por servidor proxy para solicitudes que no son de WebSocket.
+
+Para modificar los límites de solicitudes de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Si no se establece esta política, se utilizará el valor predeterminado (128).
+
+Algunas aplicaciones web consumen muchas conexiones con las solicitudes GET pendientes, por lo que un valor inferior a 128 puede hacer que la red del navegador se bloquee si se abren muchas aplicaciones web de este tipo.
+Algunos servidores proxy no son capaces de gestionar un número elevado de conexiones simultáneas por cliente, lo que se puede solucionar estableciendo un valor inferior para esta política.
+
+El valor debe ser igual o superior a 6.
+Si defines un valor inferior a ese límite, se usará 6.
+Si estableces un valor inferior al predeterminado (128), debes hacerlo bajo tu propia responsabilidad.
+
+El valor debe ser igual o inferior a 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
+Si defines un valor superior a ese límite, se usará 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
+Si defines un valor superior al predeterminado (128), lo haces bajo tu propia responsabilidad.
+
+Ten en cuenta que los límites implementados se ven afectados por <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Inhabilita la función <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Esta política está obsoleta.</translation>
 <translation id="4531706050939927436">Las aplicaciones para Android se pueden instalar de manera forzada desde la consola de administración de Google usando Google Play. No utilizan esta política.</translation>
@@ -5690,23 +5725,6 @@ Si se inhabilita esta política, la promoción de la extensión del proveedor de
       Si se habilita, se mostrará la pantalla de introducción de Gemini.
 
       Si no se define la política, la pantalla de introducción de Gemini se saltará para los usuarios gestionados por empresas y se mostrará a los usuarios no gestionados.</translation>
-<translation id="4781685421378746692">Esta política controla el uso compartido de contenido de páginas y archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y <ph name="GOOGLE_LENS_PRODUCT_NAME" /> mediante el panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
-
-Ten en cuenta que esta política no afecta a <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo pueden los usuarios compartir información con la función cuando usan <ph name="PRODUCT_NAME" />.
-
-0/sin definir: los usuarios pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
-
-1: los usuarios no pueden compartir contenido de páginas ni archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Los puntos de entrada para compartir contexto y el panel lateral se inhabilitarán u ocultarán.
-
-Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el buscador predeterminado de los usuarios, ya que la función está inhabilitada.
-
-Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el omnibox o en el cuadro de búsqueda de la página Nueva pestaña, mientras que esta política controla el uso compartido de contexto mediante el panel lateral o de las pestañas.
-
-Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que se puede inhabilitar mediante <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4783415902268741066">Permitir que se muestre la página más reciente de resultados del buscador predeterminado en un panel lateral del navegador</translation>
 <translation id="4786784434769279324">Acciones que se ejecutarán cuando el ordenador esté inactivo</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado de la página de impresión.
@@ -6862,15 +6880,6 @@ Varias políticas indican orígenes que afectan a las solicitudes al dispositivo
 <translation id="5481873128882951841">Inhabilitar cancelación de ruido de Krisp</translation>
 <translation id="5483012943408894695">Orígenes o patrones de nombres de host en los que no se deben aplicar restricciones de orígenes no seguros</translation>
 <translation id="5483065054530244863">Permite certificados SHA-1 firmados emitidos por anclajes de veracidad locales</translation>
-<translation id="5485491014653571963">Este ajuste permite las integraciones de la aplicación Gemini.
-
-Si se le asigna el valor 0 o no se le asigna ningún valor, la integración de Gemini estará disponible para los usuarios.
-
-Si se le asigna el valor 1, la integración de Gemini no estará disponible para los usuarios.
-
-Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para obtener más información, consulta el artículo del Centro de Ayuda https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
 <translation id="5486917900445838803">Si se habilita esta política o no se le asigna ningún valor, se activará la aceleración de gráficos en caso de que esté disponible.
 
       Si se inhabilita esta política, se desactivará la aceleración de gráficos.</translation>
@@ -7125,29 +7134,6 @@ Cuando se define para <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política habili
 <translation id="5622924058222112599">Habilitar proceso de lanzamiento de CECPQ2 predeterminado</translation>
 <translation id="5623304306796942802">Pedir cuando varios certificados coincidan</translation>
 <translation id="5624310713789233422">Controlar la visibilidad de la insignia del perfil de empresa en la barra de herramientas</translation>
-<translation id="5624334866248253262">Configura una lista de reglas de control de datos para evitar filtraciones de datos.
-
-      Cada regla consta de los siguientes elementos:
-      - Campos de condición para activar esa regla. Las reglas solo se activarán si la acción del usuario coincide con todos los campos rellenados en sus campos de <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> y <ph name="DATA_CONTROLS_NOT" />. En el caso de los subcampos de la lista, solo es necesario que coincida una entrada; por ejemplo, basta con que coincida un patrón de URL para activar la regla.
-      - Una lista de restricciones que deben aplicarse. En función de la restricción, puede que solo estén disponibles las condiciones <ph name="DATA_CONTROLS_SOURCES" /> o <ph name="DATA_CONTROLS_DESTINATIONS" />.
-
-      Se pueden añadir reglas para:
-      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
-      - Controlar el bloqueo de capturas de pantalla según las pestañas de origen.
-
-      Si se le asigna el valor True a la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />, se informará al administrador de las reglas activadas.
-      Al nivel de restricción se le puede asignar uno de estos valores: BLOCK, WARN o REPORT.
-      - Si se asigna el valor BLOCK al nivel de restricción, la acción no se permitirá.
-      - Si se asigna el valor WARN al nivel de restricción, se advertirá al usuario, que podrá elegir si continúa con la acción o la cancela.
-      - Si se asigna el valor REPORT al nivel de restricción, la acción del usuario no se interrumpirá, pero se enviará un informe si la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> está habilitada.
-
-      Notas:
-      - Los patrones de URL deben tener el formato que se indica en esta página: https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-      - Para ver las reglas de prevención de filtraciones de datos específicas de <ph name="PRODUCT_OS_NAME" />, consulta también la política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.
-
-      Esta política solo está disponible para los usuarios con una licencia de Chrome Enterprise Premium asignada.</translation>
 <translation id="5625771176514429288">Se permitirá ejecutar aplicaciones de Chrome en estas plataformas.</translation>
 <translation id="5627270992026554674">Impedir que los profesores usen la lista de clase de Google Classroom.</translation>
 <translation id="5630352020869108293">Restaurar la última sesión</translation>
@@ -10752,6 +10738,7 @@ Por ello, esta política solo debe inhabilitarse si usas una solución de seguri
 <translation id="7941975817681987555">No predecir las acciones de red en ninguna conexión de red</translation>
 <translation id="794447754389837404">Bloquear el acceso a la red privada en la API Direct Sockets en estos sitios</translation>
 <translation id="7945445169067895719">Bloquear el dispositivo al suspenderlo o al cerrar la tapa</translation>
+<translation id="7945744599423774764">Permitir la aleatorización del tamaño del grupo de sockets para proxies</translation>
 <translation id="7946350455013548764">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los dispositivos HID. Si se le asigna el valor 2, se denegará el acceso a los dispositivos HID.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.
@@ -11340,6 +11327,7 @@ Si no se le asigna ningún valor, el control con gestos faciales se inhabilitar�
 <translation id="8337114537412769126">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, se especificarán los parámetros utilizados al buscar sugerencias con POST. Se compone de pares de nombre-valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se sustituirá por datos de términos de búsqueda reales.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda de sugerencias se enviarán mediante el método GET.</translation>
+<translation id="8337200442224446773">Evitar la aleatorización del grupo de sockets para proxies</translation>
 <translation id="8337961007759352651">Las secuencias de comandos de workers (web workers, service workers, etc.) requieren un tipo de MIME de JavaScript, como <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Las secuencias de comandos de workers que tengan tipos de MIME antiguos, como <ph name="MIMETYPE_TEXT_ASCII" />, se rechazarán.</translation>
 <translation id="8339089771335211509">WebRTC solo usará la interfaz al conectarse a una red pública, y no se conectará a través de direcciones IP privadas.</translation>
 <translation id="8339420913453596618">Segundo factor inhabilitado</translation>
@@ -11770,6 +11758,7 @@ Si se le asigna el valor False, no se recogerán datos de políticas ni la hora 
 En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
 <translation id="8619748440665904084">Inhabilitar la importación de los datos para autocompletar formularios en la primera ejecución</translation>
+<translation id="8621146428060651659">Permitir la aleatorización del grupo de sockets para proxies</translation>
 <translation id="862621549134406761">Habilitar comprobación de uso de claves RSA</translation>
 <translation id="8626826495474944836">Requerir aislamiento de sitio web para todos los sitios</translation>
 <translation id="8630797597241896082">Permitir IA generativa en VC Background y mejorar los modelos de IA</translation>

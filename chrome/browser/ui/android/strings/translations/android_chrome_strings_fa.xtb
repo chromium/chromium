@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">میان‌برهای غیرفعال</translation>
 <translation id="2227179592712503583">حذف پیشنهاد</translation>
 <translation id="2227444325776770048">ادامه دادن به‌عنوان <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">دریافت همه اطلاعات ذخیره‌شده شما</translation>
 <translation id="2230777942707397948">پنجره خالی</translation>
 <translation id="223356358902285214">فعالیت‌ها در وب و برنامه</translation>
 <translation id="2233735624724508540">یک بازه زمانی انتخاب کنید و سپس روی «حذف داده‌ها» تک‌ضرب بزنید</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">برای سنجاق کردن وب‌سایت‌های پربازدید خود و دسترسی آسان به آن‌ها در دفعات بعدی، تک‌ضرب بزنید و نگه دارید</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> نشانک}one{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}other{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}}</translation>
 <translation id="3062802207422175757">‏مقاله‌های مربوط با علایقتان در Chrome</translation>
+<translation id="3066107845790462226">بارگیری فریم ویدیو</translation>
 <translation id="3066573403916685335">حرکت به پایین</translation>
 <translation id="3067505415088964188">قیمت پایین است</translation>
 <translation id="3070005020161560471">ترجمه خودکار</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">بازگشت به ایمنی</translation>
 <translation id="6267106249090587268">‏اعلان‌ها <ph name="SEPARATOR" /> Chrome این اجازه‌ها را به‌دلیل هرزنامه یا محتواهای گمراه‌کننده برداشت</translation>
 <translation id="6276708887952587684">مشاهده منبع صفحه</translation>
+<translation id="62768169905160414">کپی کردن فریم ویدیو</translation>
 <translation id="6277522088822131679">در چاپ صفحه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="6278428485366576908">زمینه</translation>
 <translation id="6291294824436685757">حذف داده‌های مرور؛ داده‌های مدنظر برای حذف را انتخاب کنید</translation>

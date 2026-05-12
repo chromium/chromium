@@ -96,7 +96,6 @@
 <translation id="2018528049276128029">У кожному профілі Chrome зберігається власна інформація, як-от закладки, історія, паролі тощо</translation>
 <translation id="2018879682492276940">Помилка встановлення. Повторіть спробу.</translation>
 <translation id="2024959665595762054">Щоб зберігати й використовувати дані Chrome в обліковому записі Google, підтвердьте свою особу</translation>
-<translation id="2026377840141807639">Профілі Chrome допомагають розділити особистий і робочий вебперегляд. Додайте новий профіль просто зараз.</translation>
 <translation id="2034233344106846793">Chrome автоматично переходить на протокол HTTPS, коли це можливо</translation>
 <translation id="2039417478970545937">Налаштування.</translation>
 <translation id="2066690553719545730">Завжди показувати режим ШІ</translation>
@@ -145,6 +144,9 @@
 <translation id="2569974318947988067">Chrome спробує перейти на протокол HTTPS</translation>
 <translation id="2571392474191184472">Вебпереглядачем Chrome керує адміністратор вашої організації</translation>
 <translation id="2574930892358684005">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Щоб переглядати веб-сторінки окремо, ви можете створити власний профіль Chrome.</translation>
+<translation id="2575799939951057838">З міркувань безпеки Chrome вимикає оптимізацію JavaScript, коли ви вперше відвідуєте сайт.
+
+Якщо ця сторінка не працює належним чином, дозвольте оптимізацію.</translation>
 <translation id="2580411288591421699">Поки Google Chrome працює, неможливо встановити версію, аналогічну поточній. Закрийте Google Chrome і повторіть спробу.</translation>
 <translation id="2586406160782125153">Дані веб-перегляду буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Не вдалося кешувати завантажену програму встановлення. Помилка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -447,7 +449,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5736850870166430177">Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chrome також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки</translation>
 <translation id="5756509061973259733">Профіль Chrome із цим обліковим записом уже існує на цьому пристрої</translation>
 <translation id="5759947850379142561">Виберіть будь-який текст чи зображення, за яким потрібно виконати пошук через Google Об’єктив, або натисніть клавішу Escape, щоб вийти</translation>
-<translation id="5762867845020858790">Додайте новий профіль Chrome, щоб окремо зберігати закладки, паролі й налаштування.</translation>
 <translation id="5779427581965287859">Зробіть Chrome вебпереглядачем за умовчанням і закріпіть його на панелі завдань</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не вдалося запустити Chrome. Повторіть спробу.</translation>
@@ -561,7 +562,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6800285125190089494">Швидше входьте на сайти завдяки збереженим паролям у Chrome для iOS</translation>
 <translation id="6831043979455480757">Перекласти</translation>
 <translation id="683440813066116847">Вхідне правило для Google Chrome Canary дозволяє трафік mDNS.</translation>
-<translation id="6841242485723266823">Профілі Chrome допомагають розділити різні сфери вашого життя. Додайте новий профіль просто зараз.</translation>
 <translation id="684888714667046800">Не вдалося підключитися до Інтернету. Якщо ви використовуєте брандмауер, переконайтеся, що <ph name="PRODUCT_EXE_NAME" /> є в білому списку.</translation>
 <translation id="6859580922007887573">Натисніть, щоб продовжити</translation>
 <translation id="6877155553248388166">правий нижній кут області пошуку: <ph name="RIGHT" />% праворуч, <ph name="BOTTOM" />% знизу</translation>
@@ -752,7 +752,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8625237574518804553">{0,plural, =1{Chrome перезапуститься через 1 хвилину}one{Chrome перезапуститься через # хвилину}few{Chrome перезапуститься через # хвилини}many{Chrome перезапуститься через # хвилин}other{Chrome перезапуститься через # хвилини}}</translation>
 <translation id="8637932705841171563">Щоб показувати своє вікно, у системних параметрах дозвольте Chrome записувати відео з екрана</translation>
 <translation id="8641606876632989680">Chrome сповістить, коли ви ввійдете в обліковий запис за допомогою зламаного пароля</translation>
-<translation id="8647930742055103497">Зберігайте все в Chrome</translation>
 <translation id="8656634243791296665">Відкрити Gemini у Chrome для розробників</translation>
 <translation id="8669527147644353129">Помічник Google Chrome</translation>
 <translation id="8679801911857917785">Розширення також змінило сторінку, яка відкривається під час запуску Chrome.</translation>

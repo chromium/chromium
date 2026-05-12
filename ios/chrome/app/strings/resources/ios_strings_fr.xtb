@@ -142,7 +142,6 @@
 <translation id="147982357559798527">Modifié</translation>
 <translation id="1486096554574027028">Rechercher des mots de passe</translation>
 <translation id="1491277525950327607">Appuyer deux fois pour activer/désactiver le paramètre</translation>
-<translation id="1491965206608166851">Connectez-vous avec vos mots de passe et clés d'accès enregistrés depuis n'importe quelle appli</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1497590942294823549">Menu → Gestionnaire de mots depasse</translation>
 <translation id="1498283581832036924">Votre compte <ph name="WEBSITE" /> ne sera pas supprimé.</translation>
@@ -358,12 +357,10 @@
 <translation id="2199562093267256223">Le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Aucun compte messag.</translation>
 <translation id="2214453882118345682">Achetez, traduisez et identifiez ce que vous voyez avec votre appareil photo.</translation>
-<translation id="2215819824168709130">Masquer la carte de suivi du prix</translation>
 <translation id="2216366330550244277">Accédez à la page d'un produit</translation>
 <translation id="2219935992754556187">Chrome protège vos données sensibles avec Face ID</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2223461067862937305">Créer un QR code</translation>
-<translation id="2225701818156393674">Produit ajouté à votre liste de produits suivis.</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2236949375853147973">Mon activité</translation>
 <translation id="2237869114829007407">Obtenez une vue d'ensemble et des informations clés pour n'importe quelle page ou n'importe quel thème</translation>
@@ -554,7 +551,6 @@
 <translation id="2902312830803030883">Autres actions</translation>
 <translation id="2904788871580817212">Baisse de prix dans votre onglet ouvert, de <ph name="PREVIOUS_PRICE" /> à <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe réutilisés qui peuvent compromettre votre sécurité.</translation>
-<translation id="29153882450867370">Masquer "Suivre le prix"</translation>
 <translation id="291754862089661335">Positionnez le QR code ou le code-barres dans ce cadre</translation>
 <translation id="2918688092312652908">Marquer comme non lu</translation>
 <translation id="2922210239002704889">Accédez à la page d'accueil ou au clavier</translation>
@@ -566,6 +562,7 @@
 <translation id="2969979262385602596">Échec de la connexion. Veuillez réessayer plus tard.</translation>
 <translation id="2975761176769946178">Veuillez saisir une URL</translation>
 <translation id="297667759942911166">Collaborez dans des groupes d'onglets</translation>
+<translation id="298696743524648170">Pour utiliser Gemini dans Chrome, connectez-vous à Chrome avec votre compte Google</translation>
 <translation id="2987670534697681860">Confirmez votre identité pour accéder à tous vos mots de passe sur cet appareil.</translation>
 <translation id="2989523299700148168">Consultations récentes</translation>
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
@@ -620,6 +617,7 @@
 <translation id="31652791196570636">Fermer</translation>
 <translation id="3167868116600277716">Flux Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini n'est pas disponible sur cette page</translation>
 <translation id="3174662312949010067">Vous pouvez aussi utiliser des mots de passe enregistrés sur vos autres appareils.</translation>
 <translation id="3177338796769255211">Connectez-vous pour accéder à vos favoris et plus sur tous vos appareils</translation>
 <translation id="3181954750937456830">Navigation sécurisée (assure votre protection et celle de votre appareil contre les sites dangereux)</translation>
@@ -995,6 +993,7 @@
 <translation id="4552042254369397518">Copie…</translation>
 <translation id="4553044860350038560">Plus de clés d'accès</translation>
 <translation id="4564893319561643483">Masquer "<ph name="TITLE" />"</translation>
+<translation id="456502772933839252">Partage de <ph name="PAGE_TITLE" />…</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4568230126482344545">Masquer "Onglets récents"</translation>
 <translation id="4578835633387306383">Activer…</translation>
@@ -1134,7 +1133,6 @@
 <translation id="4992255726304765516">Couleur du groupe d'onglets <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5009127379503001909">Poursuivre la navigation</translation>
-<translation id="5012914568031465281">Impossible de suivre le prix.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Envoyer à <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 dernières minutes</translation>
@@ -1404,6 +1402,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5936065461722368675">Traduire toute la page</translation>
 <translation id="5937560539988385583">Page traduite</translation>
 <translation id="5938160824633642847">Votre appareil est presque saturé. Libérez de l'espace et réessayez.</translation>
+<translation id="5941711191222866238">Réduire</translation>
 <translation id="5944869793365969636">Scanner le QR code</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer des photos dans votre bibliothèque.</translation>
 <translation id="5948605885471592910">Voir et gérer tout ce qui est ouvert</translation>
@@ -2168,6 +2167,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8515534223594179607">Exporter les données de navigation</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} mot de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}one{{count} mot de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}other{{count} mots de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}}</translation>
 <translation id="8524799873541103884">Onglets <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> à <ph name="LAST_VISIBLE_TAB" /> sur <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8525306231823319788">Plein écran</translation>
 <translation id="8528009254289981965">Ouvrir les liens d'autres applis en navigation privée</translation>
 <translation id="8529767659511976195">Nouveau</translation>
 <translation id="8531572740963685410">PDF</translation>
@@ -2289,7 +2289,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8879952635974818770">Contenu personnalisé</translation>
 <translation id="8887595428614802520">Fermer tous les onglets et groupes</translation>
 <translation id="8888595487174963247">Supprimer le rappel</translation>
-<translation id="8891031436559779793">Vous recevrez une notification si le prix baisse sur un site.</translation>
 <translation id="8893208530912252670">Vidéos</translation>
 <translation id="8898822736010347272">Les URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages sont envoyées à Google, à la fois pour identifier les nouvelles menaces et pour protéger tous les utilisateurs sur le Web.</translation>
 <translation id="8900845556227858314">App du navigateur</translation>

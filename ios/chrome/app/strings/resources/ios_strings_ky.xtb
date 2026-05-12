@@ -142,7 +142,6 @@
 <translation id="147982357559798527">Өзгөрдү</translation>
 <translation id="1486096554574027028">Сырсөздөрдү издөө</translation>
 <translation id="1491277525950327607">Жөндөөнү которуштуруу үчүн, эки жолу таптаңыз</translation>
-<translation id="1491965206608166851">Сырсөздөр менен киргизүүчү ачкычтарыңыз менен каалаган колдонмодон кириңиз</translation>
 <translation id="1492417797159476138">Бул сайт үчүн ушул колдонуучунун атын сактап койгонсуз</translation>
 <translation id="1497590942294823549">Меню → Сырсөздөрдү башкаргыч</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> аккаунтуңуз өчүрүлбөйт.</translation>
@@ -202,6 +201,7 @@
 <translation id="1657011748321897393">Тармакка туташпай тургандыктан, бөлүшө албай калдыңыз.</translation>
 <translation id="1668001730617725852">Жаңы өтмөктөр тобунда ачуу</translation>
 <translation id="1670861525135254448">Унааны сактаңыз</translation>
+<translation id="1671568970992212376">Сүрөттөрдү Google Фотого сактап, каалаган убакта колдонуңуз.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> тилинен <ph name="TARGET_LANGUAGE" /> тилине</translation>
 <translation id="1678855624321223424">Уюмуңуздун эрежелерине ылайык бул файлда купуя маалымат болушу мүмкүн</translation>
 <translation id="168389590065701766">Эми Google Lens'ти дарек тилкесинен ачып, көрүп турган нерсени издей аласыз</translation>
@@ -358,12 +358,10 @@
 <translation id="2199562093267256223">Ушуну менен топ <ph name="USER_EMAIL" /> аккаунтуна кирип турган бардык түзмөктөрдөн өчүрүлөт.</translation>
 <translation id="2202084845446535117">Электрондук почта аккаунттары жок</translation>
 <translation id="2214453882118345682">Камера аркылуу соода кылыңыз, тексттерди которуңуз жана көргөн нерсеңизди аныктаңыз.</translation>
-<translation id="2215819824168709130">Баага көз салуу картасын жашыруу</translation>
 <translation id="2216366330550244277">Товардын барагына өтүңүз</translation>
 <translation id="2219935992754556187">Chrome Face ID'нин жардамы менен купуя маалыматтарыңызды коопсуз сактайт</translation>
 <translation id="2220529011494928058">Маселе жөнүндө кабар берүү</translation>
 <translation id="2223461067862937305">QR кодун түзүү</translation>
-<translation id="2225701818156393674">Товар көз салынган көзөмөлдөнгөн продукт тизмесине кошулду.</translation>
 <translation id="2230173723195178503">Веб баракча жүктөлдү</translation>
 <translation id="2236949375853147973">Менин аракеттерим</translation>
 <translation id="2237869114829007407">Каалаган бет же тема боюнча жалпы маалымат жана негизги статистиканы алыңыз</translation>
@@ -554,7 +552,6 @@
 <translation id="2902312830803030883">Көбүрөөк аракеттер</translation>
 <translation id="2904788871580817212">Ачылган өтмөктө баа арзандады. <ph name="PRODUCT_NAME" /> баасы <ph name="PREVIOUS_PRICE" /> ордуна <ph name="PRICE" /> болуп калды, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Коопсуздугуңузду тобокелге салуучу <ph name="NUMBER_OF_PASSWORDS" /> кайра колдонулган сырсөзүңүз бар.</translation>
-<translation id="29153882450867370">"Баага көз салуу" картасын жашыруу</translation>
 <translation id="291754862089661335">QR кодду же штрих кодду бул алкакка жайгаштырыңыз</translation>
 <translation id="2918688092312652908">Окула элек деп белгилөө</translation>
 <translation id="2922210239002704889">Башкы бетке же баскычтопко өтүңүз</translation>
@@ -1137,7 +1134,6 @@
 <translation id="4992255726304765516">Өтмөктөр тобунун түсү: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Сырсөздү көчүрүү</translation>
 <translation id="5009127379503001909">Карай берүү</translation>
-<translation id="5012914568031465281">Баага көз салуу мүмкүн болгон жок.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Кимге: <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Акыркы 15 мүнөттө</translation>
@@ -1407,6 +1403,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5936065461722368675">Толук баракты которуу</translation>
 <translation id="5937560539988385583">Барак которулду</translation>
 <translation id="5938160824633642847">Түзмөгүңүздө орун аз калды. Орун бошотуп, кайталап көрүңүз.</translation>
+<translation id="5941711191222866238">Кичирейтүү</translation>
 <translation id="5944869793365969636">QR кодду скандоо</translation>
 <translation id="5948291296578561264">Ушуну менен сүрөттөрдү галереяңызга сактоого мүмкүндүк берилет.</translation>
 <translation id="5948605885471592910">Ачкан нерселериңиздин баарын көрүп, тескеңиз</translation>
@@ -2171,6 +2168,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8515534223594179607">Серептөө дайындарын экспорттоо</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} сырсөз жана башка нерселер ушул түзмөктө гана сакталат. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда ({email}) сактаңыз.}other{{count} сырсөз жана башка нерселер ушул түзмөктө гана сакталат. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда ({email}) сактаңыз.}}</translation>
 <translation id="8524799873541103884"><ph name="FIRST_VISIBLE_TAB" /> аркылуу <ph name="NUMBER_OF_OPEN_TABS" /> ичинен <ph name="LAST_VISIBLE_TAB" /> <ph name="INCOGNITO" /> өтмөк</translation>
+<translation id="8525306231823319788">Толук экран</translation>
 <translation id="8528009254289981965">Башка колдонмолордун шилтемелерин Жашыруун режимде ачуу</translation>
 <translation id="8529767659511976195">Жаңы</translation>
 <translation id="8531572740963685410">PDF файлдары</translation>
@@ -2292,7 +2290,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8879952635974818770">Жекелештирилген контент</translation>
 <translation id="8887595428614802520">Бардык өтмөктөрдү жана топторду жабуу</translation>
 <translation id="8888595487174963247">Эстеткичти өчүрүү</translation>
-<translation id="8891031436559779793">Кандайдыр бир сайтта баасы төмөндөсө, билдирме аласыз.</translation>
 <translation id="8893208530912252670">Видеолор</translation>
 <translation id="8898822736010347272">Сиз баш баккан айрым барактардын URL даректерин, чектелген тутум маалыматын жана айрым барактардын мазмунун бардык колдонуучулар үчүн мүмкүн болгон коркунучтарды аныктап, бөгөттөө үчүн Google'га жөнөтөт.</translation>
 <translation id="8900845556227858314">Серепчи колдонмосу</translation>

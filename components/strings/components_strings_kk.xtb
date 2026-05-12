@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">Дебеттік және чектік қызметтер</translation>
 <translation id="1719434663396780149">Бағаның төмендегенін хабарлайтын хабарландырулар қосулы. Мұны <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлімінен өзгертуге болады.</translation>
 <translation id="1719838434204287058">24 x 30 дюйм</translation>
+<translation id="1720318856472900922">TLS WWW сервер аутентификациясы</translation>
 <translation id="1720941539803966190">Оқулықты жабу</translation>
 <translation id="1721424275792716183">* Өріс толтырылуы қажет</translation>
 <translation id="1723636263173393300">Бұл саясаттағы жылдам пәрмендердің максималды саны: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -754,6 +755,7 @@
 <translation id="2168151236314517198">Әкімші саясаты бұл контентті басып шығару процесін бөгеді.</translation>
 <translation id="2171244127100824330"><ph name="ACCOUNT" /> аккаунтына арналған <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> қызметінде</translation>
 <translation id="2172089022819052306">Көлік жөндеу және техникалық күтім жасау</translation>
+<translation id="217231402430591139">Аккаунтты байланыстырыңыз</translation>
 <translation id="2173302385160625112">Интернет байланысын тексеріңіз</translation>
 <translation id="2174875517416416684">Транзакцияңыз өтпеді. Шотыңыздан қаражат алынбады.</translation>
 <translation id="2175630235841878061">100 МБ-тан үлкен файлдарды жүктеп алу мүмкін емес</translation>
@@ -2473,6 +2475,7 @@
 <translation id="4855395119669662878">Әкімшіңіз файлдарыңызды <ph name="CLOUD_PROVIDER" /> қызметіне жүктеп салуды <ph name="DATE_TIME" /> уақытында бастайды. Файл жүктеп салынғанша құрылғыны қосулы күйінде қалдырыңыз. Жүктеп салу кезінде жергілікті файлдарды тек оқи аласыз.</translation>
 <translation id="485902285759009870">Код тексерілуде…</translation>
 <translation id="4860260582253463350">YouTube-ке өтуіңіз үшін, алдымен жеке басыңызды растаңыз. Ата-анаңыз немесе қамқоршыңыз орнатқан параметрлерді Family Link-тен аласыз.</translation>
+<translation id="4862642413395066333">OCSP жауаптарына қол қою</translation>
 <translation id="4864406669374375262">Нұсқа жолы буферге көшірілді</translation>
 <translation id="486459320933704969">Ата-ана немесе қамқоршы бұл веб-сайтқа кіре алатыныңызды хабарлауы керек.</translation>
 <translation id="4864801646102013152">Үй жөндеу</translation>
@@ -3216,6 +3219,7 @@
 <translation id="6006365096047131769">3 x 5 дюйм</translation>
 <translation id="6008122969617370890">N бастап 1 дейінгі ретпен</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Google шифрлауы ақпаратыңызды қорғайды</translation>
 <translation id="6014801569448771146">Құпия сөздеріңізді тексеріңіз</translation>
 <translation id="6014851866995737824">"Қосу" немесе "өшіру" тізімі жоқ болғандықтан еленбеді.</translation>
 <translation id="6015796118275082299">Жыл</translation>
@@ -4492,6 +4496,7 @@
 <translation id="7947285636476623132">Жарамдылық мерзімі бітетін жылды тексеріп, әрекетті қайталаңыз</translation>
 <translation id="7947310711271925113">Поп-музыка</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome функциялары туралы білу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
+<translation id="7948579849190819732">Қазіргі қойынды</translation>
 <translation id="7949135979217012031">Антивирус және зиянды бағдарламалар</translation>
 <translation id="7950027195171824198">Chrome параметрлері арқылы cookie файлдарын басқару</translation>
 <translation id="7951415247503192394">(32 биттік)</translation>
@@ -4899,6 +4904,7 @@
 <translation id="8597726363542221027">Айдалған көліктер</translation>
 <translation id="8600271352425265729">Тек осы жолы</translation>
 <translation id="860043288473659153">Карта иесінің аты-жөні</translation>
+<translation id="8601206103050338563">TLS WWW клиент аутентификациясы</translation>
 <translation id="8601456038554914806">Су спортының жабдығы</translation>
 <translation id="8601782593888534566">Ғылыми фантастика және фэнтези</translation>
 <translation id="8604103095921958091">Бөліп төлеудің Қызмет көрсету шарттарының экраны толық ашылды.</translation>

@@ -142,7 +142,6 @@
 <translation id="147982357559798527">Geändert</translation>
 <translation id="1486096554574027028">Passwörter suchen</translation>
 <translation id="1491277525950327607">Zum Aktivieren bzw. Deaktivieren doppeltippen</translation>
-<translation id="1491965206608166851">In jeder App mit deinen gespeicherten Passwörtern und Passkeys anmelden</translation>
 <translation id="1492417797159476138">Du hast diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1497590942294823549">Menü → Passwortmanager</translation>
 <translation id="1498283581832036924">Dein <ph name="WEBSITE" />-Konto wird nicht gelöscht.</translation>
@@ -358,12 +357,10 @@
 <translation id="2199562093267256223">Dadurch wird die Gruppe von allen Geräten gelöscht, die im Konto <ph name="USER_EMAIL" /> angemeldet sind.</translation>
 <translation id="2202084845446535117">Keine E‑Mail-Konten</translation>
 <translation id="2214453882118345682">Nutze deine Kamera zum Einkaufen, Übersetzen und um mehr über Dinge zu erfahren, die du siehst.</translation>
-<translation id="2215819824168709130">Karte „Preis beobachten“ ausblenden</translation>
 <translation id="2216366330550244277">Zur Produktseite</translation>
 <translation id="2219935992754556187">Chrome trägt mit Face ID dazu bei, deine sensiblen Daten zu schützen</translation>
 <translation id="2220529011494928058">Problem melden</translation>
 <translation id="2223461067862937305">QR‑Code erstellen</translation>
-<translation id="2225701818156393674">Das Produkt wurde deiner Liste mit beobachteten Produkten hinzugefügt.</translation>
 <translation id="2230173723195178503">Webseite geladen</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
 <translation id="2237869114829007407">Du erhältst eine Übersicht und wichtige Informationen zu jeder Seite und jedem Thema</translation>
@@ -554,7 +551,6 @@
 <translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2904788871580817212">Preissenkung auf dem geöffneten Tab von <ph name="PREVIOUS_PRICE" /> auf <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Du nutzt <ph name="NUMBER_OF_PASSWORDS" /> wiederverwendete Passwörter, die deine Sicherheit gefährden könnten.</translation>
-<translation id="29153882450867370">„Preis beobachten“ ausblenden</translation>
 <translation id="291754862089661335">Positioniere den QR-Code oder Barcode in diesem Bereich</translation>
 <translation id="2918688092312652908">Als ungelesen markieren</translation>
 <translation id="2922210239002704889">Rufe die Startseite oder Tastatur auf</translation>
@@ -566,6 +562,7 @@
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
 <translation id="2975761176769946178">Es ist eine URL erforderlich</translation>
 <translation id="297667759942911166">In Tabgruppen gemeinsam arbeiten</translation>
+<translation id="298696743524648170">Wenn du Gemini in Chrome verwenden möchtest, melde dich mit deinem Google-Konto in Chrome an</translation>
 <translation id="2987670534697681860">Bestätige deine Identität, damit du auf alle deine Passwörter auf diesem Gerät zugreifen kannst.</translation>
 <translation id="2989523299700148168">Kürzlich besucht</translation>
 <translation id="2989805286512600854">In neuem Tab öffnen</translation>
@@ -620,6 +617,7 @@
 <translation id="31652791196570636">Schließen</translation>
 <translation id="3167868116600277716">Discover-Feed</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini ist auf dieser Seite nicht verfügbar</translation>
 <translation id="3174662312949010067">Du kannst gespeicherte Passwörter auch auf deinen anderen Geräten verwenden.</translation>
 <translation id="3177338796769255211">Melde dich an, damit du deine Lesezeichen und andere Daten auf allen deinen Geräten abrufen kannst</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
@@ -995,6 +993,7 @@
 <translation id="4552042254369397518">Wird kopiert…</translation>
 <translation id="4553044860350038560">Weitere Passkeys</translation>
 <translation id="4564893319561643483">„<ph name="TITLE" />“ ausblenden</translation>
+<translation id="456502772933839252">„<ph name="PAGE_TITLE" />“ wird geteilt</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4568230126482344545">„Letzte Tabs“ ausblenden</translation>
 <translation id="4578835633387306383">Aktivieren…</translation>
@@ -1134,7 +1133,6 @@
 <translation id="4992255726304765516">Farbe der Tabgruppe: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
 <translation id="5009127379503001909">Weiter surfen</translation>
-<translation id="5012914568031465281">Preis konnte nicht beobachtet werden.</translation>
 <translation id="5016205925109358554">Serifenschrift</translation>
 <translation id="5016420433031926653">An <ph name="USER_EMAIL" /> senden</translation>
 <translation id="5017529052065664584">Letzte 15 Minuten</translation>
@@ -1404,6 +1402,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5936065461722368675">Ganze Seite übersetzen</translation>
 <translation id="5937560539988385583">Seite übersetzt</translation>
 <translation id="5938160824633642847">Der Speicher deines Geräts ist fast voll. Gib Speicherplatz frei und versuche es dann noch einmal.</translation>
+<translation id="5941711191222866238">Minimieren</translation>
 <translation id="5944869793365969636">QR-Code scannen</translation>
 <translation id="5948291296578561264">Dadurch kannst du Fotos in der Fotogalerie speichern.</translation>
 <translation id="5948605885471592910">Alle geöffneten Inhalte ansehen und verwalten</translation>
@@ -2168,6 +2167,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8515534223594179607">Browserdaten exportieren</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} Passwort und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}other{{count} Passwörter und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-Tabs <ph name="FIRST_VISIBLE_TAB" /> bis <ph name="LAST_VISIBLE_TAB" /> von <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8525306231823319788">Vollbildmodus</translation>
 <translation id="8528009254289981965">Links aus anderen Apps inkognito öffnen</translation>
 <translation id="8529767659511976195">Neu</translation>
 <translation id="8531572740963685410">PDFs</translation>
@@ -2289,7 +2289,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8879952635974818770">Personalisierter Inhalt</translation>
 <translation id="8887595428614802520">Alle Tabs und Gruppen schließen</translation>
 <translation id="8888595487174963247">Erinnerung entfernen</translation>
-<translation id="8891031436559779793">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt.</translation>
 <translation id="8893208530912252670">Videos</translation>
 <translation id="8898822736010347272">URLs einiger von dir besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte werden an Google gesendet, um die Erkennung neuer Bedrohungen zu verbessern und Nutzer im Internet zu schützen.</translation>
 <translation id="8900845556227858314">Browser-App</translation>

@@ -470,6 +470,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1717688554309417925">Servizi per conti correnti e carte di debito</translation>
 <translation id="1719434663396780149">Gli avvisi relativi ai cali di prezzo sono attivi. Puoi modificare questa opzione nelle <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
+<translation id="1720318856472900922">Autenticazione TLS server WWW</translation>
 <translation id="1720941539803966190">Chiudi il tutorial</translation>
 <translation id="1721424275792716183">* Campo obbligatorio</translation>
 <translation id="1723636263173393300">Questa policy non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> scorciatoie.</translation>
@@ -754,6 +755,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2168151236314517198">La stampa di questi contenuti è stata bloccata dalla policy dell'amministratore</translation>
 <translation id="2171244127100824330">In <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Riparazione e manutenzione veicoli</translation>
+<translation id="217231402430591139">Collega il tuo account</translation>
 <translation id="2173302385160625112">Controlla la connessione a internet</translation>
 <translation id="2174875517416416684">La transazione non è andata a buon fine. Nessun fondo è stato prelevato dal tuo conto.</translation>
 <translation id="2175630235841878061">I file di dimensioni superiori a 100 MB non sono disponibili per il download</translation>
@@ -2471,6 +2473,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4855395119669662878">L'amministratore inizierà a caricare i tuoi file su <ph name="CLOUD_PROVIDER" /> il giorno <ph name="DATE_TIME" />. Mantieni il dispositivo connesso finché il caricamento del file non è completo. Durante il caricamento, potrai leggere solo i file locali.</translation>
 <translation id="485902285759009870">Verifica del codice in corso…</translation>
 <translation id="4860260582253463350">Per continuare su YouTube, dobbiamo verificare la tua identità. Avrai le impostazioni configurate da un genitore o tutore in Family Link.</translation>
+<translation id="4862642413395066333">Firma risposte OCSP</translation>
 <translation id="4864406669374375262">Stringa di versione copiata negli appunti</translation>
 <translation id="486459320933704969">Un genitore o tutore deve autorizzarti a visitare questo sito web</translation>
 <translation id="4864801646102013152">Ristrutturazione della casa</translation>
@@ -3214,6 +3217,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6006365096047131769">3 x 5 in</translation>
 <translation id="6008122969617370890">Ordine da N a 1</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">La crittografia di Google protegge le tue informazioni</translation>
 <translation id="6014801569448771146">Controlla le tue password</translation>
 <translation id="6014851866995737824">Ignorato perché manca l'elenco "enable" o "disable".</translation>
 <translation id="6015796118275082299">Anno</translation>
@@ -4490,6 +4494,7 @@ Ulteriori dettagli:
 <translation id="7947285636476623132">Controlla l'anno di scadenza e riprova</translation>
 <translation id="7947310711271925113">Musica pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per scoprire di più sulle funzionalità di Chrome</translation>
+<translation id="7948579849190819732">Scheda corrente</translation>
 <translation id="7949135979217012031">Antivirus e malware</translation>
 <translation id="7950027195171824198">Gestisci le preferenze relative ai cookie nelle impostazioni di Chrome</translation>
 <translation id="7951415247503192394">(a 32 bit)</translation>
@@ -4897,6 +4902,7 @@ Ulteriori dettagli:
 <translation id="8597726363542221027">Veicoli usati</translation>
 <translation id="8600271352425265729">Solo questa volta</translation>
 <translation id="860043288473659153">Nome del titolare della carta</translation>
+<translation id="8601206103050338563">Autenticazione TLS client WWW</translation>
 <translation id="8601456038554914806">Attrezzature e articoli per sport acquatici</translation>
 <translation id="8601782593888534566">Fantascienza e fantasy</translation>
 <translation id="8604103095921958091">Schermata dei Termini di servizio di Buy now, pay later aperta a schermo intero.</translation>

@@ -98,7 +98,6 @@
 <translation id="2018528049276128029">প্রতিটি প্রোফাইলে বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও আরও অনেক কিছুর মতো তার নিজস্ব Chrome তথ্য আছে</translation>
 <translation id="2018879682492276940">ইনস্টল করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="2024959665595762054">আপনার Google অ্যাকাউন্টে Chrome ডেটা ব্যবহার এবং সেভ করতে, নিজের পরিচয় যাচাই করুন</translation>
-<translation id="2026377840141807639">Chrome প্রোফাইল আপনাকে ব্যক্তিগত ব্রাউজিং ও অফিস আলাদা রাখতে দেয়। এখনই নতুন প্রোফাইল যোগ করুন।</translation>
 <translation id="2034233344106846793">যখনই সম্ভব Chrome, HTTPS-এ অসুরক্ষিত কানেকশন অটোমেটিক আপগ্রেড করে</translation>
 <translation id="2039417478970545937">সেটিংস।</translation>
 <translation id="2066690553719545730">সবসময় AI মোড দেখা যাবে</translation>
@@ -147,6 +146,9 @@
 <translation id="2569974318947988067">Chrome নেভিগেশনকে HTTPS-তে আপগ্রেড করার চেষ্টা করবে</translation>
 <translation id="2571392474191184472">আপনার সংস্থা Chrome ম্যানেজ করে</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> আগে থেকেই এই Chrome প্রোফাইলে সাইন-ইন করে আছেন। আপনার ব্রাউজিং আলাদা করতে, Chrome আপনার জন্য প্রোফাইল তৈরি করে দিতে পারে।</translation>
+<translation id="2575799939951057838">নিরাপত্তার জন্য, আপনি কোনও সাইট প্রথমবার ভিজিট করলে Chrome জাভাস্ক্রিপ্ট অপ্টিমাইজেশন বন্ধ করে দেয়।
+
+এই পৃষ্ঠা প্রত্যাশা অনুযায়ী কাজ না করলে, অপ্টিমাইজেশনের অনুমতি দিয়ে দেখুন।</translation>
 <translation id="2580411288591421699">বর্তমানে Google Chrome-এর যে ভার্সনটি চলছে সেটি ইনস্টল করা যায় না৷ অনুগ্রহ করে Google Chrome বন্ধ করুন এবং আবার চেষ্টা করুন৷</translation>
 <translation id="2586406160782125153">এটি এই ডিভাইস থেকে আপনার ব্রাউজিং ডেটা মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="259935314519650377">ডাউনলোড করা ইনস্টলার ক্যাশে করা যায়নি। সমস্যা হয়েছে: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
@@ -451,7 +453,6 @@
 <translation id="5736850870166430177">যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Chrome, পৃষ্ঠার কিছু কন্টেন্ট সহ URL ও হয়ত Safe Browsing-এ পাঠাতে পারে</translation>
 <translation id="5756509061973259733">এই ডিভাইসে এই অ্যাকাউন্টের সাথে Chrome প্রোফাইল আগে থেকেই আছে</translation>
 <translation id="5759947850379142561">Google Lens ব্যবহার করে সার্চ করতে যেকোনও টেক্সট বা ছবি বেছে নিন অথবা Escape বোতাম প্রেস করে Google Lens থেকে বেরিয়ে আসুন</translation>
-<translation id="5762867845020858790">বুকমার্ক, পাসওয়ার্ড ও সেটিংস আলাদা রাখতে নতুন Chrome প্রোফাইল যোগ করুন।</translation>
 <translation id="5779427581965287859">Chrome-কে ডিফল্ট হিসেবে সেট করুন এবং টাস্কবারে পিন করুন</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome লঞ্চ করা যায়নি। আবার চেষ্টা করুন।</translation>
@@ -565,7 +566,6 @@
 <translation id="6800285125190089494">iOS-এ Chrome-এর জন্য সেভ করা পাসওয়ার্ড ব্যবহার করে সাইটে আরও দ্রুত সাইন-ইন করুন</translation>
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="683440813066116847">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome Canary এর জন্য ইনবাউন্ড নিয়ম।</translation>
-<translation id="6841242485723266823">Chrome প্রোফাইল আপনার জীবনের বিভিন্ন অংশকে আলাদা করতে সাহায্য করে। এখনই নতুন প্রোফাইল যোগ করুন।</translation>
 <translation id="684888714667046800">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। আপনি ফায়ারওয়াল ব্যবহার করলে, <ph name="PRODUCT_EXE_NAME" /> সাদাতালিকায় আছে কিনা দেখে নিন।</translation>
 <translation id="6859580922007887573">চালিয়ে যেতে ট্যাব করুন</translation>
 <translation id="6877155553248388166">সার্চের নিচে ডানদিকের কোণা: ডানদিক থেকে <ph name="RIGHT" />%, নিচের দিকে <ph name="BOTTOM" />%</translation>
@@ -755,7 +755,6 @@
 <translation id="8625237574518804553">{0,plural, =1{Chrome ১ মিনিটের মধ্যে আবার লঞ্চ হবে}one{Chrome # মিনিটের মধ্যে আবার লঞ্চ হবে}other{Chrome # মিনিটের মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="8637932705841171563">আপনার উইন্ডো শেয়ার করতে, সিস্টেম সেটিংস থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>
 <translation id="8641606876632989680">কোনও চুরি যাওয়া পাসওয়ার্ড দিয়ে সাইন-ইন করলে Chrome আপনাকে তা জানাবে</translation>
-<translation id="8647930742055103497">সবকিছু Chrome-এ রাখুন</translation>
 <translation id="8656634243791296665">Chrome Dev-এ Gemini খুলুন</translation>
 <translation id="8669527147644353129">Google Chrome সহায়তাকারী</translation>
 <translation id="8679801911857917785">আপনি Chrome শুরু করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>

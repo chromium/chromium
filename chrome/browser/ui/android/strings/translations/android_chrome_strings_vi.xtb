@@ -271,6 +271,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2226826835915474236">Lối tắt không hoạt động</translation>
 <translation id="2227179592712503583">Xóa đề xuất</translation>
 <translation id="2227444325776770048">Tiếp tục bằng tài khoản của <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Xem tất cả thông tin bạn đã lưu</translation>
 <translation id="2230777942707397948">Cửa sổ trống</translation>
 <translation id="223356358902285214">Hoạt động trên web và ứng dụng</translation>
 <translation id="2233735624724508540">Chọn một khung thời gian rồi nhấn vào Xoá dữ liệu</translation>
@@ -483,6 +484,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3057938290530993634">Nhấn và giữ để ghim những trang web bạn truy cập nhiều nhất, giúp dễ dàng truy cập vào lần tới</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
 <translation id="3062802207422175757">Các bài viết về chủ đề mà bạn quan tâm trên Chrome</translation>
+<translation id="3066107845790462226">Tải khung video xuống</translation>
 <translation id="3066573403916685335">Di chuyển xuống</translation>
 <translation id="3067505415088964188">Giá thấp</translation>
 <translation id="3070005020161560471">Tự động dịch</translation>
@@ -1216,6 +1218,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6264485186158353794">Quay lại trang an toàn</translation>
 <translation id="6267106249090587268">Thông báo <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này do nội dung rác hoặc nội dung lừa đảo</translation>
 <translation id="6276708887952587684">Xem nguồn trang</translation>
+<translation id="62768169905160414">Sao chép khung video</translation>
 <translation id="6277522088822131679">Đã xảy ra sự cố khi in trang này. Vui lòng thử lại.</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6291294824436685757">Xoá dữ liệu duyệt web; chọn dữ liệu cần xoá</translation>

@@ -470,6 +470,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1717688554309417925">Servicios de débito y cheques</translation>
 <translation id="1719434663396780149">Las alertas de bajadas de precio están activadas. Puedes cambiar esta opción en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24x30 pulgadas</translation>
+<translation id="1720318856472900922">Autenticación de servidor WWW TLS</translation>
 <translation id="1720941539803966190">Cerrar tutorial</translation>
 <translation id="1721424275792716183">* El campo es obligatorio</translation>
 <translation id="1723636263173393300">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> accesos directos.</translation>
@@ -754,6 +755,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2168151236314517198">La política del administrador ha bloqueado la opción de imprimir este contenido</translation>
 <translation id="2171244127100824330">En <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Mantenimiento y reparación de vehículos</translation>
+<translation id="217231402430591139">Vincular tu cuenta</translation>
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2174875517416416684">La transacción no se ha podido completar. No se han retirado fondos de tu cuenta.</translation>
 <translation id="2175630235841878061">No se pueden descargar archivos de más de 100 MB</translation>
@@ -2474,6 +2476,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4855395119669662878">Tu administrador empezará a subir los archivos a <ph name="CLOUD_PROVIDER" /> el <ph name="DATE_TIME" />. Mantén el dispositivo conectado hasta que se complete la subida. Durante el proceso, solo podrás leer los archivos locales.</translation>
 <translation id="485902285759009870">Verificando código...</translation>
 <translation id="4860260582253463350">Para continuar en YouTube, tenemos que asegurarnos de que eres tú. Tendrás los ajustes que tu padre, madre o tutor/a haya configurado en Family Link.</translation>
+<translation id="4862642413395066333">Firma de respuestas de OCSP</translation>
 <translation id="4864406669374375262">Cadena de versión copiada en el portapapeles</translation>
 <translation id="486459320933704969">Tu padre, madre o tutor/a debe darte permiso para visitar este sitio web</translation>
 <translation id="4864801646102013152">Reformas del hogar</translation>
@@ -3217,6 +3220,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6006365096047131769">3x5 pulgadas</translation>
 <translation id="6008122969617370890">Orden de N a 1</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">El cifrado de Google protege tu información</translation>
 <translation id="6014801569448771146">Comprueba tus contraseñas</translation>
 <translation id="6014851866995737824">Se ignora porque falta la lista habilitada o la lista inhabilitada.</translation>
 <translation id="6015796118275082299">Año</translation>
@@ -4494,6 +4498,7 @@ Más información:
 <translation id="7947285636476623132">Consulta el año de vencimiento y vuelve a intentarlo</translation>
 <translation id="7947310711271925113">Música pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para ver información sobre las funciones de Chrome</translation>
+<translation id="7948579849190819732">Pestaña actual</translation>
 <translation id="7949135979217012031">Antivirus y malware</translation>
 <translation id="7950027195171824198">Gestiona tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
@@ -4901,6 +4906,7 @@ Más información:
 <translation id="8597726363542221027">Vehículos de segunda mano</translation>
 <translation id="8600271352425265729">Solo esta vez</translation>
 <translation id="860043288473659153">Titular de la tarjeta</translation>
+<translation id="8601206103050338563">Autenticación de cliente WWW TLS</translation>
 <translation id="8601456038554914806">Equipamiento de deportes náuticos</translation>
 <translation id="8601782593888534566">Ciencia ficción y fantasía</translation>
 <translation id="8604103095921958091">Pantalla de Términos del Servicio del pago aplazado abierta a altura completa.</translation>

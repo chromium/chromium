@@ -470,6 +470,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1717688554309417925">Perkhidmatan Debit &amp; Cek</translation>
 <translation id="1719434663396780149">Makluman penurunan harga dihidupkan. Anda boleh menukar tetapan ini dalam <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
+<translation id="1720318856472900922">Pengesahan Pelayan TLS WWW</translation>
 <translation id="1720941539803966190">Tutup tutorial</translation>
 <translation id="1721424275792716183">* Medan perlu diisi</translation>
 <translation id="1723636263173393300">Dasar ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> pintasan.</translation>
@@ -2476,6 +2477,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4855395119669662878">Pentadbir anda akan mula memuat naik fail anda kepada <ph name="CLOUD_PROVIDER" /> pada <ph name="DATE_TIME" />. Pastikan peranti anda disambungkan sehingga fail anda selesai dimuat naik. Semasa proses muat naik, anda akan dapat membaca fail setempat sahaja.</translation>
 <translation id="485902285759009870">Mengesahkan kod...</translation>
 <translation id="4860260582253463350">Untuk meneruskan akses kepada YouTube, kami perlu mengesahkan identiti anda. Anda akan menggunakan tetapan yang telah disediakan oleh ibu/bapa atau penjaga anda dalam Family Link.</translation>
+<translation id="4862642413395066333">Menandatangan Respons OCSP</translation>
 <translation id="4864406669374375262">Versi rentetan disalin kepada papan keratan</translation>
 <translation id="486459320933704969">Ibu/bapa atau penjaga perlu menyatakan bahawa anda boleh melawati laman web ini</translation>
 <translation id="4864801646102013152">Penambahbaikan Kediaman</translation>
@@ -3445,6 +3447,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="634500758737709758">Arah</translation>
 <translation id="6348220984832452017">Variasi Aktif</translation>
 <translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Bayar tanpa menyalin dan menampal kod Pix. <ph name="BEGIN_LINK1" />Lihat cara ciri ini berfungsi<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Padamkan Data Semakan Imbas</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tiada}=1{1 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}=2{2 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}other{# kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}}</translation>
 <translation id="6354918092619878358">Lengkung eliptik SECG secp256r1 (alias ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3661,6 +3664,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="668132230070712111">Video disimpan pada Google Drive</translation>
 <translation id="6681790815630918386">CVC disimpan</translation>
 <translation id="6683022854667115063">Fon kepala</translation>
+<translation id="6686570026048064255">Untuk mematikan pengesanan kod Pix, akses <ph name="BEGIN_LINK1" />Tetapan Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Sampul (Kosong)</translation>
 <translation id="6687335167692595844">Saiz fon diminta</translation>
 <translation id="6688743156324860098">Kemas kini…</translation>
@@ -4497,6 +4501,7 @@ Butiran tambahan:
 <translation id="7947285636476623132">Semak tahun tamat tempoh anda dan cuba lagi</translation>
 <translation id="7947310711271925113">Muzik Pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk mengetahui tentang ciri Chrome</translation>
+<translation id="7948579849190819732">Tab semasa</translation>
 <translation id="7949135979217012031">Antivirus &amp; Perisian Hasad</translation>
 <translation id="7950027195171824198">Urus pilihan kuki anda dalam tetapan Chrome</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
@@ -4905,6 +4910,7 @@ Butiran tambahan:
 <translation id="8597726363542221027">Kenderaan Terpakai</translation>
 <translation id="8600271352425265729">Kali ini sahaja</translation>
 <translation id="860043288473659153">Nama pemegang kad</translation>
+<translation id="8601206103050338563">Pengesahan Klien TLS WWW</translation>
 <translation id="8601456038554914806">Peralatan Sukan Air</translation>
 <translation id="8601782593888534566">Cereka Sains &amp; Fantasi</translation>
 <translation id="8604103095921958091">Skrin syarat perkhidmatan Beli Sekarang, Bayar Kemudian dibuka pada ketinggian penuh.</translation>

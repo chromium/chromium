@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">শর্টকাট অ্যাক্টিভ নয়</translation>
 <translation id="2227179592712503583">সাজেশন সরিয়ে দিন</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিসেবে চালিয়ে যান</translation>
+<translation id="2230411774874187555">আপনার সেভ করা সব তথ্য পান</translation>
 <translation id="2230777942707397948">ফাঁকা উইন্ডো</translation>
 <translation id="223356358902285214">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
 <translation id="2233735624724508540">টাইমফ্রেম বেছে নিন এবং তারপর 'ডেটা মুছে দিন' বিকল্পে ট্যাপ করুন</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">পরেরবার সহজে অ্যাক্সেস করার জন্য আপনার সবচেয়ে বেশি দেখা ওয়েবসাইট পিন করতে, ট্যাপ করে ধরে থাকুন</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টি বুকমার্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টি বুকমার্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টি বুকমার্ক}}</translation>
 <translation id="3062802207422175757">Chrome-এ আপনি যেসব নিবন্ধগুলি পড়তে পছন্দ করেন</translation>
+<translation id="3066107845790462226">ভিডিও ফ্রেম ডাউনলোড করুন</translation>
 <translation id="3066573403916685335">নিচে যান</translation>
 <translation id="3067505415088964188">দাম কম</translation>
 <translation id="3070005020161560471">অটোমেটিক অনুবাদ</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">সুরক্ষাতে ফিরুন</translation>
 <translation id="6267106249090587268">বিজ্ঞপ্তি <ph name="SEPARATOR" /> স্প্যাম বা প্রতারণামূলক কন্টেন্ট থাকায়, Chrome এইসব অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="6276708887952587684">পৃষ্ঠার সূত্র দেখুন</translation>
+<translation id="62768169905160414">ভিডিও ফ্রেম কপি করুন</translation>
 <translation id="6277522088822131679">পৃষ্ঠাটি প্রিন্ট করার সময় একটি সমস্যা হয়েছিল৷ দয়া করে আবার চেষ্টা করুন৷</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6291294824436685757">ব্রাউজ করা ডেটা মুছে দিন, মুছে ফেলার জন্য ডেটা বেছে নিন</translation>

@@ -470,6 +470,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1717688554309417925">Pankki- ja talletuspalvelut</translation>
 <translation id="1719434663396780149">Hinnanlaskuilmoitukset ovat päällä. Voit muuttaa tätä asetusta valitsemalla <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 tuumaa</translation>
+<translation id="1720318856472900922">TLS WWW -palvelimen todennus</translation>
 <translation id="1720941539803966190">Sulje ohje</translation>
 <translation id="1721424275792716183">* Kenttä on pakollinen.</translation>
 <translation id="1723636263173393300">Käytännössä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> pikakuvaketta.</translation>
@@ -2476,6 +2477,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4855395119669662878"><ph name="DATE_TIME" /> järjestelmänvalvojasi aloittaa tiedostojen lataamisen tänne: <ph name="CLOUD_PROVIDER" />. Pidä laite yhteydessä, kunnes tiedostojen lataus on valmis. Latauksen aikana voit vain lukea paikallisia tiedostoja.</translation>
 <translation id="485902285759009870">Vahvistetaan koodia…</translation>
 <translation id="4860260582253463350">Meidän on vahvistettava henkilöllisyytesi, jotta voit jatkaa YouTubeen. Saat käyttöösi asetukset, jotka vanhempasi tai huoltajasi on määrittänyt Family Linkissä.</translation>
+<translation id="4862642413395066333">OCSP-vastauksien allekirjoittaminen</translation>
 <translation id="4864406669374375262">Versiomerkkijono kopioitu leikepöydälle</translation>
 <translation id="486459320933704969">Vanhemman tai huoltajan on hyväksyttävä käyntisi tällä sivustolla</translation>
 <translation id="4864801646102013152">Kodin remontointi</translation>
@@ -4497,6 +4499,7 @@ Lisätietoja:
 <translation id="7947285636476623132">Tarkista vanhentumisvuosi ja yritä uudelleen.</translation>
 <translation id="7947310711271925113">Popmusiikki</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, katso lisätietoja Chromen ominaisuuksista painamalla sarkainta ja sitten Enter</translation>
+<translation id="7948579849190819732">Nykyinen välilehti</translation>
 <translation id="7949135979217012031">Virustorjunta ja haittaohjelmat</translation>
 <translation id="7950027195171824198">Muuta evästevalintojasi Chromen asetuksista</translation>
 <translation id="7951415247503192394">(32-bittinen)</translation>
@@ -4905,6 +4908,7 @@ Lisätietoja:
 <translation id="8597726363542221027">Käytetyt ajoneuvot</translation>
 <translation id="8600271352425265729">Vain tämän kerran</translation>
 <translation id="860043288473659153">Kortinhaltijan nimi</translation>
+<translation id="8601206103050338563">TLS WWW -palvelimen todennus</translation>
 <translation id="8601456038554914806">Vesiurheilulajien välineet</translation>
 <translation id="8601782593888534566">Scifi ja fantasia</translation>
 <translation id="8604103095921958091">Osta nyt, maksa myöhemmin ‑käyttöehtojen näyttö kokonaan avattuna.</translation>

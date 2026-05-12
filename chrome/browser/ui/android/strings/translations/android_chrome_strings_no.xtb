@@ -271,6 +271,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2226826835915474236">Inaktive snarveier</translation>
 <translation id="2227179592712503583">Fjern forslaget</translation>
 <translation id="2227444325776770048">Fortsett som <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Få all lagret informasjon</translation>
 <translation id="2230777942707397948">Tomt vindu</translation>
 <translation id="223356358902285214">Nett- og appaktivitet</translation>
 <translation id="2233735624724508540">Velg en tidsramme, og trykk på Slett data</translation>
@@ -483,6 +484,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3057938290530993634">Trykk og hold for å feste de mest besøkte nettstedene dine, slik at du enkelt kan finne dem neste gang</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmerke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmerker}}</translation>
 <translation id="3062802207422175757">Artikler om interessene dine i Chrome</translation>
+<translation id="3066107845790462226">Last ned videorammen</translation>
 <translation id="3066573403916685335">Flytt ned</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3070005020161560471">Oversett automatisk</translation>
@@ -1216,6 +1218,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6264485186158353794">Tilbake til trygg grunn</translation>
 <translation id="6267106249090587268">Varsler <ph name="SEPARATOR" /> Chrome har fjernet disse tillatelsene på grunn av søppelpost eller villedende innhold</translation>
 <translation id="6276708887952587684">Se sidekilden</translation>
+<translation id="62768169905160414">Kopier videorammen</translation>
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Slett nettlesingsdata – velg dataene du vil slette</translation>

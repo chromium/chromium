@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">Küpsised</translation>
 <translation id="6452138246455930388">Hinnalangus avatud vahelehel, hinnalt <ph name="OLD_PRICE" /> hinnale <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kui aken on kitsas, taotlege mobiilivaadet</translation>
+<translation id="6514791408445720076">Kohandage lehte</translation>
 <translation id="6527303717912515753">Jaga</translation>
 <translation id="6530703012083415527">Kui see on sisse lülitatud, saavad saidid kasutada hüpikaknaid ja ümbersuunamisi. Kui see on välja lülitatud, ei saa saidid kasutada hüpikaknaid ega ümbersuunamisi.</translation>
 <translation id="6540488083026747005">Lubasite sellel saidil kolmanda osapoole küpsisefailid</translation>
@@ -706,6 +707,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="83792324527827022">Sait kasutab teie kaamerat ja mikrofoni</translation>
 <translation id="8380167699614421159">Sait kuvab sekkuvaid või eksitavaid reklaame.</translation>
 <translation id="8394832520002899662">Puudutage saidile naasmiseks</translation>
+<translation id="8404500559369898929">Muutke Chrome omanäoliseks, valides kohandatud taustateema.</translation>
 <translation id="8409345997656833551">Saate märguande, kui artiklit saab kuvada lihtsustatud vaates</translation>
 <translation id="8416874502399604126">Mikrofon seekord lubatud</translation>
 <translation id="8423565414844018592">Teksti suuruseks on määratud <ph name="TEXT_SCALING" /></translation>

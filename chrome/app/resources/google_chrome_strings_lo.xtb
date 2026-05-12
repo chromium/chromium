@@ -100,7 +100,6 @@
 <translation id="2018528049276128029">ແຕ່ລະໂປຣໄຟລ໌ມີຂໍ້ມູນ Chrome ຂອງມັນເອງ ເຊັ່ນ: ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ອື່ນໆອີກ</translation>
 <translation id="2018879682492276940">ການຕິດຕັ້ງບໍ່ສຳເລັດ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="2024959665595762054">ເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
-<translation id="2026377840141807639">ໂປຣໄຟລ໌ Chrome ຊ່ວຍໃຫ້ທ່ານແຍກການທ່ອງເວັບສ່ວນຕົວ ແລະ ການທ່ອງເວັບສຳລັບວຽກອອກຈາກກັນໄດ້. ເພີ່ມໂປຣໄຟລ໌ໃໝ່ຕອນນີ້ເລີຍ.</translation>
 <translation id="2034233344106846793">Chrome ອັບເກຣດການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພເປັນ HTTPS ໂດຍອັດຕະໂນມັດຫາກເປັນໄປໄດ້</translation>
 <translation id="2039417478970545937">ການຕັ້ງຄ່າ.</translation>
 <translation id="2066690553719545730">ສະແດງໂໝດ AI ສະເໝີ</translation>
@@ -458,7 +457,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5736850870166430177">ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chrome ອາດຈະສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Safe Browsing ນຳ</translation>
 <translation id="5756509061973259733">ມີໂປຣໄຟລ໌ Chrome ກັບບັນຊີນີ້ຢູ່ອຸປະກອນນີ້ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="5759947850379142561">ເລືອກຂໍ້ຄວາມ ຫຼື ຮູບເພື່ອຊອກຫາດ້ວຍ Google Lens ຫຼື ກົດ Escape ເພື່ອອອກຈາກ Google Lens</translation>
-<translation id="5762867845020858790">ເພີ່ມໂປຣໄຟລ໌ Chrome ໃໝ່ເພື່ອແຍກບຸກມາກ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອອກຈາກກັນ.</translation>
 <translation id="5779427581965287859">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນ ແລະ ປັກໝຸດໄວ້ຢູ່ແຖບໜ້າວຽກ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">ບໍ່ສາມາດເປີດໃຊ້ Chrome. ກະລຸນາລອງອີກຄັ້ງ.</translation>
@@ -572,7 +570,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6800285125190089494">ເຂົ້າສູ່ລະບົບເວັບໄຊໄວຂຶ້ນໂດຍໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ Chrome ຢູ່ iOS</translation>
 <translation id="6831043979455480757">ແປພາສາ</translation>
 <translation id="683440813066116847">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome Canary ເພື່ອອະນຸຍາດໃຫ້ການຈາລະຈອນ mDNS.</translation>
-<translation id="6841242485723266823">ໂປຣໄຟລ໌ Chrome ຊ່ວຍໃຫ້ທ່ານແຍກພາກສ່ວນຕ່າງໆໃນຊີວິດຂອງທ່ານອອກຈາກກັນໄດ້. ເພີ່ມໂປຣໄຟລ໌ໃໝ່ຕອນນີ້ເລີຍ.</translation>
 <translation id="684888714667046800">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. ຫາກທ່ານໃຊ້ firewall, ກະລຸນາກວດສອບໃຫ້ໝັ້ນໃຈວ່າ <ph name="PRODUCT_EXE_NAME" /> ຢູ່ໃນລາຍຊື່ອະນຸຍາດ.</translation>
 <translation id="6859580922007887573">ແຕະເພື່ອສືບຕໍ່</translation>
 <translation id="6877155553248388166">ມຸມຂວາລຸ່ມຂອງພື້ນທີ່ຊອກຫາ: ຂວາ <ph name="RIGHT" />%, ລຸ່ມ <ph name="BOTTOM" />%</translation>
@@ -763,7 +760,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8625237574518804553">{0,plural, =1{Chrome ຈະເປີດຄືນໃໝ່ໃນ 1 ນາທີ}other{Chrome ຈະເປີດຄືນໃໝ່ໃນ # ນາທີ}}</translation>
 <translation id="8637932705841171563">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chrome ໃນການຕັ້ງຄ່າລະບົບ</translation>
 <translation id="8641606876632989680">Chrome ຈະແຈ້ງບອກທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍລະຫັດຜ່ານທີ່ຖືກລະເມີດ</translation>
-<translation id="8647930742055103497">ເກັບທຸກຢ່າງໄວ້ໃນ Chrome</translation>
 <translation id="8656634243791296665">ເປີດ Gemini ໃນ Chrome Dev</translation>
 <translation id="8669527147644353129">ຕົວຊ່ວຍ Google Chrome</translation>
 <translation id="8679801911857917785">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chrome.</translation>

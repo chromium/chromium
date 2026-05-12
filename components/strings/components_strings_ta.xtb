@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">டெபிட் &amp; சரிபார்ப்புச் சேவைகள்</translation>
 <translation id="1719434663396780149">விலை குறைவது தொடர்பான விழிப்பூட்டல்கள் இயக்கப்பட்டுள்ளன. இதை <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> என்பதில் மாற்றலாம்.</translation>
 <translation id="1719838434204287058">24 x 30 இன்ச்</translation>
+<translation id="1720318856472900922">TLS WWW சேவையக அங்கீகரிப்பு</translation>
 <translation id="1720941539803966190">பயிற்சியை மூடும்</translation>
 <translation id="1721424275792716183">* அவசியமான புலம்</translation>
 <translation id="1723636263173393300">இந்தக் கொள்கையில் <ph name="MAX_ITEMS_LIMIT" /> ஷார்ட்கட்களுக்கு மேல் இருக்கக்கூடாது.</translation>
@@ -2471,6 +2472,7 @@
 <translation id="4855395119669662878">உங்கள் நிர்வாகி <ph name="DATE_TIME" /> மணிக்கு ஃபைல்களை <ph name="CLOUD_PROVIDER" />க்குப் பதிவேற்றத் தொடங்குவார். உங்கள் ஃபைல் பதிவேற்றப்படும் வரை சாதனத்தை இணைப்பிலேயே வைத்திருக்கவும். பதிவேற்றத்தின்போது, உங்கள் சாதனத்தில் உள்ள ஃபைல்களைத் திறந்து பார்க்க மட்டுமே முடியும்.</translation>
 <translation id="485902285759009870">குறியீட்டைச் சரிபார்க்கிறது...</translation>
 <translation id="4860260582253463350">YouTubeல் தொடர, இது நீங்கள்தான் என்பதை நாங்கள் உறுதிசெய்ய வேண்டும். Family Linkகில் உங்கள் பெற்றோரோ காப்பாளரோ தேர்வுசெய்த அமைப்புகள் உங்களுக்குப் பயன்படுத்தப்படும்.</translation>
+<translation id="4862642413395066333">OCSP மறுமொழிகளை கையொப்பமிடல்</translation>
 <translation id="4864406669374375262">பதிப்பு வார்த்தை கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="486459320933704969">இந்த இணையதளத்தை நீங்கள் பார்க்கலாம் எனப் பெற்றோரோ காப்பாளரோ சொல்ல வேண்டும்</translation>
 <translation id="4864801646102013152">வீட்டு மேம்பாடு</translation>
@@ -3439,6 +3441,7 @@
 <translation id="634500758737709758">வழிகள்</translation>
 <translation id="6348220984832452017">செயலில் உள்ள பதிப்புகள்</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ஆப்ஸை நிறுவுக</translation>
+<translation id="6350739641326887427">Pix குறியீட்டை நகலெடுத்து ஒட்டாமலேயே பணம் செலுத்தலாம். <ph name="BEGIN_LINK1" />இது செயல்படும் விதம்<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">உலாவிய தரவை நீக்கு</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{எதுவுமில்லை}=1{1 கடவுச்சொல் (டொமைன்கள்: <ph name="DOMAIN_LIST" />, ஒத்திசைக்கப்பட்டது)}=2{2 கடவுச்சொற்கள் (டொமைன்கள்: <ph name="DOMAIN_LIST" />, ஒத்திசைக்கப்பட்டன)}other{# கடவுச்சொற்கள் (டொமைன்கள்: <ph name="DOMAIN_LIST" />, ஒத்திசைக்கப்பட்டன)}}</translation>
 <translation id="6354918092619878358">SECG நீள்வட்ட வளைவான secp256r1 (ANSI X9.62 prime256v1 எனவும் அறியப்படும், NIST P-256)</translation>
@@ -3655,6 +3658,7 @@
 <translation id="668132230070712111">வீடியோ Google Driveவில் சேமிக்கப்பட்டது</translation>
 <translation id="6681790815630918386">CVC சேமிக்கப்பட்டது</translation>
 <translation id="6683022854667115063">ஹெட்ஃபோன்கள்</translation>
+<translation id="6686570026048064255">Pix குறியீடு கண்டறிதலை ஆஃப் செய்ய, <ph name="BEGIN_LINK1" />Chrome அமைப்புகளுக்குச்<ph name="END_LINK1" /> செல்லவும்</translation>
 <translation id="6687230248707087982">பிளெய்ன் என்வெலப்</translation>
 <translation id="6687335167692595844">கோரப்பட்ட எழுத்து வடிவ அளவு</translation>
 <translation id="6688743156324860098">மாற்று…</translation>
@@ -4491,6 +4495,7 @@
 <translation id="7947285636476623132">காலாவதி ஆண்டைச் சரிபார்த்து, மீண்டும் முயலவும்</translation>
 <translation id="7947310711271925113">பாப் இசை</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அம்சங்கள் குறித்து அறிய Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
+<translation id="7948579849190819732">தற்போதைய பக்கம்</translation>
 <translation id="7949135979217012031">ஆன்டி வைரஸ் மற்றும் மால்வேர்</translation>
 <translation id="7950027195171824198">Chrome அமைப்புகளில் குக்கீ விருப்பத்தேர்வுகளை நிர்வகியுங்கள்</translation>
 <translation id="7951415247503192394">(32-பிட்)</translation>
@@ -4898,6 +4903,7 @@
 <translation id="8597726363542221027">பயன்படுத்திய வாகனங்கள்</translation>
 <translation id="8600271352425265729">இப்போது மட்டும்</translation>
 <translation id="860043288473659153">கார்டு உரிமையாளரின் பெயர்</translation>
+<translation id="8601206103050338563">TLS WWW கிளையன்ட் அங்கீகரிப்பு</translation>
 <translation id="8601456038554914806">நீர் விளையாட்டு உபகரணங்கள்</translation>
 <translation id="8601782593888534566">அறிவியல் புனைவு மற்றும் கற்பனை</translation>
 <translation id="8604103095921958091">‘இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்’ சேவை விதிமுறைகள் திரை முழு அளவிற்குத் திறந்துள்ளது.</translation>

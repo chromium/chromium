@@ -470,6 +470,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1717688554309417925">Serviços de débito e conta-corrente</translation>
 <translation id="1719434663396780149">Os alertas de descida do preço estão ativados. Pode alterar esta definição nas <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 pol.</translation>
+<translation id="1720318856472900922">Autenticação de servidor TLS WWW</translation>
 <translation id="1720941539803966190">Fechar tutorial</translation>
 <translation id="1721424275792716183">* Campo de preenchimento obrigatório</translation>
 <translation id="1723636263173393300">Esta política não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> atalhos.</translation>
@@ -2475,6 +2476,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4855395119669662878">O seu administrador vai começar a carregar os seus ficheiros para o <ph name="CLOUD_PROVIDER" /> à(s) <ph name="DATE_TIME" />. Mantenha o dispositivo ligado até o carregamento de ficheiros estar concluído. Durante o carregamento, só vai poder ler os ficheiros locais.</translation>
 <translation id="485902285759009870">A validar o código…</translation>
 <translation id="4860260582253463350">Para continuares a aceder ao YouTube, temos de validar a tua identidade. Vais ter as definições que os teus pais ou tutor configuraram no Family Link.</translation>
+<translation id="4862642413395066333">Respostas OCSP de assinatura</translation>
 <translation id="4864406669374375262">String da versão copiada para a área de transferência</translation>
 <translation id="486459320933704969">O teu adulto responsável ou tutor tem de indicar que podes visitar este Website.</translation>
 <translation id="4864801646102013152">Bricolage</translation>
@@ -4495,6 +4497,7 @@ Detalhes adicionais:
 <translation id="7947285636476623132">Verifique o ano de validade e tente novamente</translation>
 <translation id="7947310711271925113">Música pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para saber mais acerca das funcionalidades do Chrome</translation>
+<translation id="7948579849190819732">Separador atual</translation>
 <translation id="7949135979217012031">Antivírus e software malicioso</translation>
 <translation id="7950027195171824198">Faça a gestão das suas preferências de cookies nas Definições do Chrome.</translation>
 <translation id="7951415247503192394">32 bits</translation>
@@ -4903,6 +4906,7 @@ Detalhes adicionais:
 <translation id="8597726363542221027">Veículos usados</translation>
 <translation id="8600271352425265729">Apenas desta vez</translation>
 <translation id="860043288473659153">Nome do titular do cartão</translation>
+<translation id="8601206103050338563">Autenticação de cliente TLS WWW</translation>
 <translation id="8601456038554914806">Equipamento de desportos aquáticos</translation>
 <translation id="8601782593888534566">Ficção científica e fantasia</translation>
 <translation id="8604103095921958091">Ecrã dos Termos de Utilização do método Comprar agora e pagar depois aberto à altura total.</translation>

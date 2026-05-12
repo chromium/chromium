@@ -100,7 +100,6 @@
 <translation id="2018528049276128029">Сваки профил задржава сопствене Chrome податке, попут обележивача, историје, лозинки и другог садржаја</translation>
 <translation id="2018879682492276940">Инсталација није успела. Пробајте поново.</translation>
 <translation id="2024959665595762054">Да бисте користили и чували Chrome податке на Google налогу, потврдите свој идентитет</translation>
-<translation id="2026377840141807639">Chrome профили вам омогућавају да раздвојите лично и пословно прегледање. Додајте нов профил.</translation>
 <translation id="2034233344106846793">Chrome аутоматски надограђује небезбедне везе на HTTPS када је то могуће</translation>
 <translation id="2039417478970545937">Подешавања.</translation>
 <translation id="2066690553719545730">Увек приказуј AI режим</translation>
@@ -458,7 +457,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="5736850870166430177">Ако неки сајт покуша да украде вашу лозинку или пробате да преузмете штетни фајл, Chrome може да пошаље URL-ове, укључујући делове садржаја странице, у Безбедно прегледање</translation>
 <translation id="5756509061973259733">Chrome профил са овим налогом већ постоји на овом уређају</translation>
 <translation id="5759947850379142561">Изаберите било који текст или слику за претрагу помоћу Google објектива или притисните Escape да бисте изашли из Google објектива</translation>
-<translation id="5762867845020858790">Додајте нов Chrome профил да бисте раздвојили обележиваче, лозинке и подешавања.</translation>
 <translation id="5779427581965287859">Подесите Chrome као подразумевани прегледач и закачите га на траку задатака</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Није могуће покренути Chrome. Покушајте поново.</translation>
@@ -572,7 +570,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6800285125190089494">Брже се пријављујте на сајтове помоћу сачуваних лозинки за Chrome на iOS-у</translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="683440813066116847">Правило за долазни саобраћај за Google Chrome Canary да бисте омогућили mDNS саобраћај.</translation>
-<translation id="6841242485723266823">Chrome профили вам помажу да раздвојите различите делове живота. Додајте нов профил.</translation>
 <translation id="684888714667046800">Повезивање са интернетом није успело. Ако користите заштитни зид, проверите да ли се <ph name="PRODUCT_EXE_NAME" /> налази на листи дозвољених.</translation>
 <translation id="6859580922007887573">Притисните Tab да бисте наставили</translation>
 <translation id="6877155553248388166">доњи десни угао области претраге: удесно <ph name="RIGHT" />%, надоле <ph name="BOTTOM" />%</translation>
@@ -763,7 +760,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Поново ћемо покренути Chrome за 1 минут}one{Поново ћемо покренути Chrome за # минут}few{Поново ћемо покренути Chrome за # минута}other{Поново ћемо покренути Chrome за # минута}}</translation>
 <translation id="8637932705841171563">Да бисте делили прозор, дозволите снимање екрана за Chrome у подешавањима система</translation>
 <translation id="8641606876632989680">Chrome ће вас обавестити када се пријавите помоћу угрожене лозинке</translation>
-<translation id="8647930742055103497">Чувајте све у Chrome-у</translation>
 <translation id="8656634243791296665">Отворите Gemini у Chrome Dev-у</translation>
 <translation id="8669527147644353129">Google Chrome помоћник</translation>
 <translation id="8679801911857917785">Контролише и страницу која се приказује када покренете Chrome.</translation>

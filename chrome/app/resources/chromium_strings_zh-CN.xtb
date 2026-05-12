@@ -181,7 +181,6 @@
 <translation id="2933336679234709858">数据已使用口令加密。请输入该口令，以便使用 Chromium 数据并将其保存在您的 Google 账号中。</translation>
 <translation id="2945997411976714835">安装时出错：安装程序进程未能启动。</translation>
 <translation id="2948852018303413228">在 iOS 版 Chromium 中使用保存的密码更快地登录网站</translation>
-<translation id="2966959524256557996">添加新的 Chromium 资料，将书签、密码和设置分开。</translation>
 <translation id="2970426615109535079">您的组织负责管理 Chromium</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2977506796191543575">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
@@ -259,7 +258,6 @@
 <translation id="3788675262216168505">管理 Chromium 个人资料</translation>
 <translation id="3790262771324122253">了解 Chromium 为何会拦截部分下载内容</translation>
 <translation id="379589255253486813">如有任何事项需要您审核，Chromium 会通知您</translation>
-<translation id="3798048725356732506">您可以根据不同的用途设置不同的 Chromium 资料。立即添加新的资料。</translation>
 <translation id="3802055581630249637">Chromium 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3823384748599722168">如需使用已保存的密码，请扫描二维码、下载 iOS 版 Chromium 应用，并登录您的 Google 账号</translation>
@@ -408,6 +406,9 @@
 <translation id="5524890928877629608">搜索区域的左上角：左侧 <ph name="LEFT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">在 Chromium 中打开 PDF 文件</translation>
 <translation id="5536164441519929134">询问<ph name="LINE_BREAK" />关于此标签页的问题</translation>
+<translation id="555970465369471303">出于安全考虑，当您首次访问某个网站时，Chromium 会关闭 JavaScript 优化功能。
+
+如果此网页无法按预期运行，请尝试允许优化。</translation>
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5580770360767802657">默认使用 Chromium 并将其固定</translation>
 <translation id="5596627076506792578">更多选项</translation>
@@ -419,7 +420,6 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">以这种语言显示 Chromium</translation>
 <translation id="569897634095159764">无法连接到互联网。代理服务器要求进行身份验证。</translation>
-<translation id="5713518899297503106">借助 Chromium 资料，您可以将个人浏览内容和工作内容分开。立即添加新的资料。</translation>
 <translation id="5768371961535086509">Chromium 会释放闲置标签页占用的内存。这可让活跃标签页和其他应用获得更多计算机资源，并让 Chromium 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活跃状态。<ph name="BEGIN_LINK" />详细了解省内存模式<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">如果您忘记了口令或想更改此设置，请<ph name="SETTINGS_LINK" />您账号中的 Chromium 数据</translation>
 <translation id="5800158606660203929">自定义和控制 Chromium。将 Chromium 设为默认浏览器。</translation>
@@ -713,7 +713,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8704119203788522458">这是您的专属Chromium</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8719993436687031146">登录 Chromium？</translation>
-<translation id="8745263398357414606">在 Chromium 中集中管理一切内容</translation>
 <translation id="8747073452963259673">搜索区域的左下角：左侧 <ph name="LEFT" />%，底部 <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">安装时出错：您的网络管理员所应用的一项群组政策阻止了安装进程：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium 需要获得相应权限，才能允许此网站使用您的摄像头和麦克风</translation>

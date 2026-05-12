@@ -1027,7 +1027,6 @@
 <translation id="169341880170235617">您的标签页分组现在会自动保存</translation>
 <translation id="1695487653372841667">您可以控制与 Google 分享哪些数据。您随时可在“设置”中更改此设置。</translation>
 <translation id="1695510246756136088">无法连接到互联网。请重试。</translation>
-<translation id="1696214930320482113">创建不同的资料，无需切换浏览器，就能轻松区分工作、个人和娱乐内容。立即添加新的资料。</translation>
 <translation id="1696555181932908973">您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="1696685050160038195">为了确保设备的安全，您应仅运行和安装来自可信来源和开发者的软件。</translation>
 <translation id="169675691788639886">设备已配置了 SSH 服务器。请勿使用敏感账号登录。</translation>
@@ -1068,7 +1067,6 @@
 <translation id="1718835860248848330">过去 1 小时</translation>
 <translation id="1719312230114180055">请注意：指纹识别的安全性可能不及安全系数高的密码或 PIN 码。</translation>
 <translation id="1720244237656138008">印象派</translation>
-<translation id="1720318856472900922">TLS WWW 服务器身份验证</translation>
 <translation id="172123215662733643">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="1722460139690167654">您的<ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" />由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">打开新的窗口(&amp;N)</translation>
@@ -3261,7 +3259,6 @@
 <translation id="3229254977651514276">请检查日期</translation>
 <translation id="3230539834943294477">查看帮助文章或查找设备支持</translation>
 <translation id="3232168089952388105">要分享设备相关信息吗？</translation>
-<translation id="3232368113895801406">您的安全偏好设置不允许安装独立式应用。<ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="323251815203765852">创意</translation>
 <translation id="3232558119926886907">右对齐</translation>
 <translation id="323262942975422760">更多修改或删除<ph name="ENTITY_INSTANCE_LABEL" />和<ph name="ENTITY_INSTANCE_SUBLABEL" />的选项</translation>
@@ -3788,7 +3785,6 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 个账号在使用同一密码}other{{COUNT} 个账号在使用同一密码}}</translation>
 <translation id="3605515937536882518">表单值已更新</translation>
 <translation id="3605780360466892872">男性商务人士</translation>
-<translation id="3607338234983711865">与他人共用一台电脑？</translation>
 <translation id="3607671391978830431">儿童使用</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> 想验证您的身份</translation>
 <translation id="3608460311600621471">请输入打印此数据的原因：</translation>
@@ -4673,7 +4669,6 @@
 <translation id="4203065553461038553">文件名或路径太长</translation>
 <translation id="4203769790323223880">已拒绝授予摄像头使用权限</translation>
 <translation id="4204415812590935863">目前无法创建主题。</translation>
-<translation id="4205119019752232845">密码长度必须至少为 6 个字符，且需至少包含 1 个字母或符号</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">反馈报告</translation>
 <translation id="4206585797409671301">可以显示请求</translation>
@@ -5612,7 +5607,6 @@
 <translation id="485806788160414322">播放或暂停媒体</translation>
 <translation id="4858913220355269194">足球</translation>
 <translation id="486213875233855629">已被管理员静音</translation>
-<translation id="4862642413395066333">签名 OCSP 响应</translation>
 <translation id="4863702650881330715">扩展兼容性</translation>
 <translation id="4863769717153320198">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（默认）</translation>
 <translation id="4864334716800138793">您的组织已停用工作资料设置</translation>
@@ -6216,7 +6210,6 @@
 <translation id="528208740344463258">要下载并使用 Android 应用，请先安装这项必不可少的更新。在您的<ph name="DEVICE_TYPE" />进行更新期间，您将无法使用此设备。待安装完毕后，您的<ph name="DEVICE_TYPE" />将会重启。</translation>
 <translation id="5283677936944177147">糟糕！系统未能确定设备型号或序列号。</translation>
 <translation id="5284445933715251131">继续下载</translation>
-<translation id="5284883268399745283">密码必须至少包含 1 个字符</translation>
 <translation id="5285635972691565180">显示屏 <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">正在扫描</translation>
 <translation id="5287425679749926365">您的账号</translation>
@@ -6809,6 +6802,7 @@
 <translation id="5712153969432126546">网站有时会发布 PDF 文件，例如文档、合同和表单</translation>
 <translation id="571222594670061844">网站可以显示来自身份服务的登录提示</translation>
 <translation id="5713158217420111469">已连接到“<ph name="DEVICE" />”</translation>
+<translation id="5713988532993992900">反色</translation>
 <translation id="5714100381896040477">限制在屏幕上的移动</translation>
 <translation id="5719854774000914513">网站可以请求连接到 HID 设备</translation>
 <translation id="5720729194423017301">网站和搜索引擎的快捷字词</translation>
@@ -7208,7 +7202,6 @@
 <translation id="5989497858237037960">当您浏览网站时，网页内容会加密并保存到您的设备上。这可能会影响 Chrome 的性能</translation>
 <translation id="5990266201903445068">仅限 WLAN</translation>
 <translation id="5990386583461751448">已翻译</translation>
-<translation id="5990557145969487183">将工作与生活分开</translation>
 <translation id="5992225669837656567">所有鼠标均已断开连接</translation>
 <translation id="5992652489368666106">无边框</translation>
 <translation id="5996490984199062729">您的工作资料尚未设置完毕</translation>
@@ -8722,6 +8715,7 @@
 <translation id="7044606776288350625">同步数据</translation>
 <translation id="7050037487872780845">热点配置无效</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{密码已保存到您的 Google 账号 <ph name="USER_EMAIL" />}other{密码已保存到您的 Google 账号 <ph name="USER_EMAIL" />}}</translation>
+<translation id="7051728324516005763">Chrome 中的 AI</translation>
 <translation id="7052762602787632571">删除浏览数据(&amp;D)…</translation>
 <translation id="705352103640172578">瀑布</translation>
 <translation id="7053983685419859001">屏蔽</translation>
@@ -8821,7 +8815,6 @@
 <translation id="7125932261198019860">请确保您的打印机与 Chromebook 连接到同一 Wi-Fi 网络，或者使用 USB 线。<ph name="LINK_BEGIN" />详细了解兼容性<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">下载记录</translation>
 <translation id="7128151990937044829">当通知处于屏蔽状态时在地址栏中显示“已屏蔽”图标</translation>
-<translation id="7128842673552234514">有其他 Google 账号？</translation>
 <translation id="7130438335435247835">接入点名称 (APN)</translation>
 <translation id="7130680050151101667">不显示此卡片</translation>
 <translation id="7131040479572660648">读取您在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上的数据</translation>
@@ -10116,6 +10109,7 @@
 <translation id="8017004049696748317">开始或停止语音输入</translation>
 <translation id="8017176852978888182">Linux 共享目录</translation>
 <translation id="8017679124341497925">已修改快捷方式</translation>
+<translation id="8018192911041116887">分享标签页</translation>
 <translation id="8018298733481692628">删除这份个人资料？</translation>
 <translation id="8018313076035239964">控制网站可使用的信息以及可向您显示的内容</translation>
 <translation id="802154636333426148">下载失败</translation>
@@ -10945,7 +10939,6 @@
 <translation id="8599681327221583254">有一项或多项政策未正确配置。请与您的管理员联系</translation>
 <translation id="8599864823732014237">跳过企业注册？</translation>
 <translation id="8600362954032151088">在 <ph name="GOOGLE_PASSWORD_MANAGER" />中管理您的密码和通行密钥</translation>
-<translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8602674530529411098">应用（Beta 版）</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>
 <translation id="8602867356511778172">Google 采用更多数据（例如网址、网页内容样本、系统信息），以便更快、更准确地检测威胁</translation>
@@ -11143,7 +11136,6 @@
 <translation id="8719472795285728850">正在监听扩展程序活动…</translation>
 <translation id="8719665168401479425">使用面部动作执行操作</translation>
 <translation id="8720200012906404956">正在查找移动网络。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="8720285645560721666">将书签、密码和设置分开保存。立即添加新的资料。</translation>
 <translation id="8720816553731218127">安装时间属性的初始化已超时。</translation>
 <translation id="8721093493695533465">此操作会删除由显示的网站和安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="8724405322205516354">当您看见此图标时，请使用您的指纹进行身份验证或批准购买交易。</translation>
@@ -11757,7 +11749,6 @@
 <translation id="9116366756388192417">选择主题</translation>
 <translation id="9116799625073598554">记事应用</translation>
 <translation id="9117030152748022724">管理应用</translation>
-<translation id="9120362425083889527">无法完成安装。请重试或关闭此窗口</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />为获得最佳体验，请将 <ph name="DEVICE_OS" /> 安装到您的内部磁盘。您也可等到需要时再从登录屏幕安装它。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果尚未做好安装前的准备工作，您可从 USB 运行它来试用一下。这样做不会更改您的现有操作系统和数据，但可能会在存储和性能方面受到限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">自定义工具栏</translation>
@@ -11903,7 +11894,6 @@
 <translation id="934691243060106451">在 <ph name="DEVICE_TYPE" /> 上接收价格跟踪提醒</translation>
 <translation id="93480724622239549">问题或错误</translation>
 <translation id="9354763467503131">可以请求在设备上安装 Web 应用</translation>
-<translation id="935514554385170926">将学业、副业和其他任务分开</translation>
 <translation id="936646668635477464">摄像头和麦克风</translation>
 <translation id="936801553271523408">系统诊断数据</translation>
 <translation id="93766956588638423">修复扩展程序</translation>

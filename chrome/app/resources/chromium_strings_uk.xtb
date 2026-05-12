@@ -182,7 +182,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2933336679234709858">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chromium в обліковому записі Google.</translation>
 <translation id="2945997411976714835">Сталася помилка. Не вдалося розпочати встановлення.</translation>
 <translation id="2948852018303413228">Швидше входьте на сайти завдяки збереженим паролям у Chromium для iOS</translation>
-<translation id="2966959524256557996">Додайте новий профіль Chromium, щоб окремо зберігати закладки, паролі й налаштування.</translation>
 <translation id="2970426615109535079">Вебпереглядачем Chromium керує ваша організація</translation>
 <translation id="2977470724722393594">У вас остання версія Chromium</translation>
 <translation id="2977506796191543575">Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chromium також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки</translation>
@@ -260,7 +259,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3788675262216168505">Керувати профілями Chromium</translation>
 <translation id="3790262771324122253">Дізнайтеся, чому Chromium блокує деякі завантаження</translation>
 <translation id="379589255253486813">Chromium повідомить вас, якщо потрібно буде вжити заходів</translation>
-<translation id="3798048725356732506">Профілі Chromium допомагають розділити різні сфери вашого життя. Додайте новий профіль просто зараз.</translation>
 <translation id="3802055581630249637">Chromium попередньо завантажує сторінки, які ви, імовірно, відвідаєте, щоб вони завантажувалися швидше</translation>
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="3823384748599722168">Щоб користуватися збереженими паролями, відскануйте QR-код, завантажте Chromium для iOS і ввійдіть у свій обліковий запис Google</translation>
@@ -409,6 +407,9 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5524890928877629608">лівий верхній кут області пошуку: <ph name="LEFT" />% ліворуч, <ph name="TOP" />% згори</translation>
 <translation id="5527463683072221100">Відкривати файли PDF у Chromium</translation>
 <translation id="5536164441519929134">Поставте<ph name="LINE_BREAK" />будь-які запитання про цю вкладку</translation>
+<translation id="555970465369471303">З міркувань безпеки Chromium вимикає оптимізацію JavaScript, коли ви вперше відвідуєте сайт.
+
+Якщо ця сторінка не працює належним чином, дозвольте оптимізацію.</translation>
 <translation id="5579324208890605088">Помилка: запустіть програму встановлення як звичайний користувач, а не з правами адміністратора.</translation>
 <translation id="5580770360767802657">Використовуйте вебпереглядач Chromium за умовчанням і закріпіть його</translation>
 <translation id="5596627076506792578">Інші опції</translation>
@@ -420,7 +421,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Вибрати цю мову для Chromium</translation>
 <translation id="569897634095159764">Не вдалося підключитися до Інтернету. Потрібна автентифікація на проксі-сервері.</translation>
-<translation id="5713518899297503106">Профілі Chromium допомагають розділити вебперегляд для робочих і особистих цілей. Додайте новий профіль просто зараз.</translation>
 <translation id="5768371961535086509">Chromium звільняє оперативну пам’ять, яку займають неактивні вкладки. Завдяки цьому активні вкладки й інші додатки мають більше ресурсів на комп’ютері, а Chromium працює швидше. Неактивні вкладки автоматично стануть активними, коли ви знову відкриєте їх. <ph name="BEGIN_LINK" />Докладніше про режим заощадження пам’яті.<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="SETTINGS_LINK" /> дані Chromium у своєму обліковому записі</translation>
 <translation id="5800158606660203929">Керуйте налаштуваннями Chromium. Зробіть Chromium вебпереглядачем за умовчанням.</translation>
@@ -714,7 +714,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8704119203788522458">Це ваш Chromium</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8719993436687031146">Увійти в Chromium?</translation>
-<translation id="8745263398357414606">Зберігайте все в Chromium</translation>
 <translation id="8747073452963259673">лівий нижній кут області пошуку: <ph name="LEFT" />% ліворуч, <ph name="BOTTOM" />% знизу</translation>
 <translation id="878572486461146056">Сталася помилка. Адміністратор мережі застосував правило для груп, яке забороняє встановлення: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796602469536043152">Chromium потрібен дозвіл на використання камери й мікрофона, щоб надати цьому сайту доступ до них</translation>

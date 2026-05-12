@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">Galetes</translation>
 <translation id="6452138246455930388">Baixada de preu a la pestanya oberta (abans <ph name="OLD_PRICE" />, ara <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
 <translation id="6500423977866688905">Si la finestra és estreta, sol·licita la vista per a mòbils</translation>
+<translation id="6514791408445720076">Personalitza la pàgina</translation>
 <translation id="6527303717912515753">Comparteix</translation>
 <translation id="6530703012083415527">Quan aquesta opció està activada, els llocs web poden utilitzar finestres emergents i redireccions. Quan aquesta opció està desactivada, els llocs web no poden utilitzar finestres emergents ni redireccions.</translation>
 <translation id="6540488083026747005">Has permès les galetes de tercers en aquest lloc web</translation>
@@ -706,6 +707,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="83792324527827022">Un lloc web està utilitzant la càmera i el micròfon</translation>
 <translation id="8380167699614421159">Aquest lloc web mostra anuncis intrusius o enganyosos</translation>
 <translation id="8394832520002899662">Toca per tornar al lloc web</translation>
+<translation id="8404500559369898929">Fes que Chrome s'adapti al teu gust triant un tema de fons personalitzat</translation>
 <translation id="8409345997656833551">Rep una notificació quan un article es pugui mostrar amb la visualització simplificada</translation>
 <translation id="8416874502399604126">S'ha permès l'ús del micròfon aquesta vegada</translation>
 <translation id="8423565414844018592">L'ajust del text s'ha definit en <ph name="TEXT_SCALING" /></translation>

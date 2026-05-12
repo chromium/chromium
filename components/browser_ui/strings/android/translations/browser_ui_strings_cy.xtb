@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">Cwcis</translation>
 <translation id="6452138246455930388">Gostyngiad pris ar eich tab agored, o <ph name="OLD_PRICE" /> i <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Pan fo'r ffenestr yn gul, gofynnwch am wedd dyfais symudol</translation>
+<translation id="6514791408445720076">Addasu eich tudalen</translation>
 <translation id="6527303717912515753">Rhannu</translation>
 <translation id="6530703012083415527">Pan fydd wedi'i droi ymlaen, gall gwefannau ddefnyddio ffenestri naid ac ailgyfeiriadau. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio ffenestri naid ac ailgyfeiriadau.</translation>
 <translation id="6540488083026747005">Rydych wedi caniatáu cwcis trydydd parti ar y wefan hon</translation>
@@ -706,6 +707,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:</translation>
 <translation id="83792324527827022">Mae gwefan yn defnyddio'ch camera a'ch meicroffon</translation>
 <translation id="8380167699614421159">Mae'r wefan hon yn dangos hysbysebion ymwthiol neu gamarweiniol</translation>
 <translation id="8394832520002899662">Tapiwch i ddychwelyd i'r wefan</translation>
+<translation id="8404500559369898929">Gwnewch Chrome yn unigryw i chi trwy ddewis thema cefndir personol</translation>
 <translation id="8409345997656833551">Cael hysbysiadau pan fydd erthygl yn gallu cael ei dangos yn y wedd syml</translation>
 <translation id="8416874502399604126">Caniateir y meicroffon y tro hwn</translation>
 <translation id="8423565414844018592">Graddio testun wedi'i osod i <ph name="TEXT_SCALING" /></translation>

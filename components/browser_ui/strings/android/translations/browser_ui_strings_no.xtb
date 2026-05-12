@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">Informasjonskapsler</translation>
 <translation id="6452138246455930388">Avslag på den åpne fanen din, fra <ph name="OLD_PRICE" /> til <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Når vinduet er smalt, kan du be om mobilvisning</translation>
+<translation id="6514791408445720076">Tilpass siden din</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6530703012083415527">Når dette er på, kan nettsteder bruke forgrunnsvinduer og viderekoblinger. Når dette er av, kan ikke nettsteder bruke forgrunnsvinduer eller viderekoblinger.</translation>
 <translation id="6540488083026747005">Du har tillatt informasjonskapsler fra tredjeparter for dette nettstedet</translation>
@@ -706,6 +707,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="83792324527827022">Et nettsted bruker kameraet ditt og mikrofonen din</translation>
 <translation id="8380167699614421159">Dette nettstedet viser forstyrrende eller villedende annonser</translation>
 <translation id="8394832520002899662">Trykk for å gå tilbake til nettstedet</translation>
+<translation id="8404500559369898929">Gjør Chrome til din egen ved å velge et egendefinert bakgrunnstema</translation>
 <translation id="8409345997656833551">Bli varslet når artikler kan vises i forenklet visning</translation>
 <translation id="8416874502399604126">Mikrofon er tillatt denne gangen</translation>
 <translation id="8423565414844018592">Tekstskaleringen er satt til <ph name="TEXT_SCALING" /></translation>

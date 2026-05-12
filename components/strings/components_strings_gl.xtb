@@ -470,6 +470,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1717688554309417925">Servizos de débito e cheques</translation>
 <translation id="1719434663396780149">As alertas de baixada de prezos están activadas. Podes cambiar esta opción en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 polgadas</translation>
+<translation id="1720318856472900922">Autenticación do servidor TLS WWW</translation>
 <translation id="1720941539803966190">Pechar titorial</translation>
 <translation id="1721424275792716183">* O campo é obrigatorio</translation>
 <translation id="1723636263173393300">Esta política non pode ter máis de <ph name="MAX_ITEMS_LIMIT" /> atallos.</translation>
@@ -2475,6 +2476,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4855395119669662878">A persoa administradora comezará a cargar ficheiros en <ph name="CLOUD_PROVIDER" /> á/s <ph name="DATE_TIME" />. Mantén o dispositivo conectado ata que acabe o proceso. Durante a carga, só poderás ler os ficheiros locais.</translation>
 <translation id="485902285759009870">Verificando código…</translation>
 <translation id="4860260582253463350">Para poderes usar YouTube, debemos verificar a túa identidade. Aplicaranse as opcións de configuración que a persoa responsable (pai, nai, titor ou titora) definise en Family Link.</translation>
+<translation id="4862642413395066333">Sinatura de respostas de OCSP</translation>
 <translation id="4864406669374375262">Copiouse a cadea de versión no portapapeis</translation>
 <translation id="486459320933704969">Para poderes visitar este sitio web, ten que darche permiso o teu pai, nai, titor ou titora</translation>
 <translation id="4864801646102013152">Reforma de vivendas</translation>
@@ -3444,6 +3446,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="634500758737709758">Indicacións</translation>
 <translation id="6348220984832452017">Variacións activas</translation>
 <translation id="6349101878882523185">Instalar a aplicación <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Paga sen copiar nin pegar o código de Pix. <ph name="BEGIN_LINK1" />Ver como funciona<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Eliminar datos navegación</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ningún}=1{1 contrasinal (para <ph name="DOMAIN_LIST" />, sincronizado)}=2{2 contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}other{# contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}}</translation>
 <translation id="6354918092619878358">SECG Elliptic Curve secp256r1 (tamén se denomina ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3660,6 +3663,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="668132230070712111">Gardouse o vídeo en Google Drive</translation>
 <translation id="6681790815630918386">CVC gardado</translation>
 <translation id="6683022854667115063">Auriculares</translation>
+<translation id="6686570026048064255">Para desactivar a detección de código de Pix, vai á <ph name="BEGIN_LINK1" />configuración de Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Sobre (normal)</translation>
 <translation id="6687335167692595844">Tamaño do tipo de letra solicitado</translation>
 <translation id="6688743156324860098">Actualizar…</translation>
@@ -4495,6 +4499,7 @@ Detalles adicionais:
 <translation id="7947285636476623132">Comproba o ano de caducidade e téntao de novo</translation>
 <translation id="7947310711271925113">Música pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para obter máis información sobre as funcións de Chrome</translation>
+<translation id="7948579849190819732">Pestana actual</translation>
 <translation id="7949135979217012031">Antivirus e software malicioso</translation>
 <translation id="7950027195171824198">Xestionar as túas preferencias relativas ás cookies na configuración de Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
@@ -4902,6 +4907,7 @@ Detalles adicionais:
 <translation id="8597726363542221027">Vehículos usados</translation>
 <translation id="8600271352425265729">Só esta vez</translation>
 <translation id="860043288473659153">Nome do titular da tarxeta</translation>
+<translation id="8601206103050338563">Autenticación do cliente TLS WWW</translation>
 <translation id="8601456038554914806">Equipamento de deportes acuáticos</translation>
 <translation id="8601782593888534566">Ciencia ficción e fantasía</translation>
 <translation id="8604103095921958091">Pantalla das condicións de servizo do pago aprazado aberta a altura completa.</translation>

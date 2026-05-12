@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">Cookie-k</translation>
 <translation id="6452138246455930388">Árcsökkenés a megnyitott lapon: <ph name="OLD_PRICE" /> helyett <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Ha az ablak keskeny, kérjen mobilnézetet</translation>
+<translation id="6514791408445720076">Az oldal személyre szabása</translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="6530703012083415527">Ha be van kapcsolva, a webhelyek használhatnak előugró ablakokat és átirányításokat. Ha ki van kapcsolva, a webhelyek nem használhatnak előugró ablakokat és átirányításokat.</translation>
 <translation id="6540488083026747005">Engedélyezte a harmadik féltől származó cookie-kat ezen a webhelyen</translation>
@@ -706,6 +707,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="83792324527827022">Egy webhely használja az Ön kameráját és mikrofonját</translation>
 <translation id="8380167699614421159">Ez a webhely tolakodó vagy félrevezető hirdetéseket jelenít meg</translation>
 <translation id="8394832520002899662">Koppintson a webhelyre való visszatéréshez</translation>
+<translation id="8404500559369898929">Személyre szabhatja a Chrome-ot egyéni háttértéma kiválasztásával.</translation>
 <translation id="8409345997656833551">Értesítés megjelenítése, ha az adott cikk megjeleníthető egyszerűsített négyzetben</translation>
 <translation id="8416874502399604126">A mikrofon erre az alkalomra engedélyezve van</translation>
 <translation id="8423565414844018592">Szöveg mérete beállítva a következőre: <ph name="TEXT_SCALING" /></translation>

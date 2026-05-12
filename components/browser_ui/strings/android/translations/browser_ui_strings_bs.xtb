@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6452138246455930388">Pad cijene na otvorenoj kartici, sa <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kada je prozor uzak, zatražite prikaz na mobilnom uređaju</translation>
+<translation id="6514791408445720076">Prilagodite stranicu</translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="6530703012083415527">Kada je postavka uključena, web lokacije mogu koristiti skočne prozore i preusmjeravanja. Kada je postavka isključena, web lokacije ne mogu koristiti skočne prozore i preusmjeravanja.</translation>
 <translation id="6540488083026747005">Dozvolili ste kolačiće treće strane na ovoj web lokaciji</translation>
@@ -706,6 +707,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="83792324527827022">Web lokacija koristi vašu kameru i mikrofon</translation>
 <translation id="8380167699614421159">Ova web lokacija prikazuje ometajuće ili obmanjujuće oglase</translation>
 <translation id="8394832520002899662">Dodirnite da se vratite na web lokaciju</translation>
+<translation id="8404500559369898929">Personalizirajte Chrome odabirom prilagođene pozadinske teme</translation>
 <translation id="8409345997656833551">Primajte obavještenja kada se članak može prikazati u pojednostavljenom prikazu</translation>
 <translation id="8416874502399604126">Mikrofon je dozvoljen ovaj put</translation>
 <translation id="8423565414844018592">Skaliranje teksta je postavljeno na <ph name="TEXT_SCALING" /></translation>

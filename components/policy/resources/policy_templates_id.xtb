@@ -1279,6 +1279,14 @@ Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 <translation id="1858775210076906272">Konfigurasi Kerberos yang diisi otomatis</translation>
 <translation id="1861206724856734193">Menyetel daftar aturan pencegahan kebocoran data.</translation>
 <translation id="1862267110714201519">Nonaktifkan fitur jendela bayangan.</translation>
+<translation id="1862749749551522146">Pengacakan ukuran pool soket adalah mekanisme keamanan yang mencegah penyerang mengeksploitasi batas kapasitas deterministik untuk mempelajari informasi lintas situs.
+Jika kapasitas normal sebuah pool adalah 128 soket, mekanisme ini akan membatasi kapasitas pool tersebut secara acak di rentang antara 128 hingga 256.
+Hal ini memungkinkan jumlah koneksi ke proxy hingga 2x lipat lebih banyak, meski pada praktiknya nilai yang dihasilkan biasanya berkisar di angka 1,2x.
+
+Hal ini memengaruhi setelan dari <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" /> dan <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+Alih-alih menjadi penentu batas atas, batas atas yang sebenarnya adalah 2x dari nilai tersebut (meskipun nilai yang diharapkan pada praktiknya berkisar di angka 1,2x).
+
+Fitur ini diaktifkan secara default untuk semua pool, tetapi kebijakan ini memungkinkan fitur tersebut dinonaktifkan khusus untuk pool proxy.</translation>
 <translation id="1865417998205858223">Izin Kunci</translation>
 <translation id="1865867000796030567">Jika kebijakan disetel ke Aktif, nilai kunci manifes <ph name="REQUIRED_PLATFORM_VERSION" /> pada aplikasi kios yang diluncurkan otomatis tanpa penundaan akan digunakan sebagai prefiks versi target update otomatis.
 
@@ -2431,6 +2439,24 @@ Kebijakan ini hanya berlaku untuk upaya koneksi baru dan tidak membatalkan konek
 <translation id="252742292004421898">Mengizinkan Direct Sockets API di situs ini</translation>
 <translation id="2528762900096510743">Aktifkan Layanan Logout Otomatis</translation>
 <translation id="2529880111512635313">Mengonfigurasi daftar aplikasi dan ekstensi yang diinstal otomatis</translation>
+<translation id="2530090617700835618">Jika kebijakan ini disetel, jumlah maksimal koneksi simultan per server proxy untuk permintaan WebSocket akan ditentukan.
+
+Untuk mengubah batas permintaan non-WebSocket, lihat <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Jika kebijakan ini tidak disetel, nilai default 128 akan digunakan.
+
+Beberapa aplikasi web diketahui memakai banyak koneksi dengan GET yang macet. Jadi, jika Anda menetapkan nilai lebih rendah dari 128, jaringan browser akan macet ketika ada terlalu banyak aplikasi web yang terbuka dengan jaringan macet.
+Beberapa server proxy tidak dapat menangani koneksi serentak per klien dalam jumlah besar. Masalah ini dapat diselesaikan dengan menyetel kebijakan ini ke nilai lebih rendah.
+
+Nilai ini harus sama dengan atau lebih tinggi dari 6.
+Jika nilai yang ditetapkan di bawah batas tersebut, nilai 6 akan digunakan.
+Jika menurunkan nilai di bawah nilai default (128), Anda harus menanggung sendiri risikonya.
+
+Nilai ini harus sama dengan atau lebih rendah dari 256.
+Jika nilai yang ditetapkan melebihi batas tersebut, nilai yang akan digunakan adalah 256.
+Jika menaikkan nilai di atas nilai default (128), Anda harus menanggung sendiri risikonya.
+
+Perlu diperhatikan bahwa batas yang diterapkan dipengaruhi oleh <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="253135976343875019">Menunda peringatan waktu menganggur saat menggunakan daya AC</translation>
 <translation id="2532480434098051405">Izinkan Gambar Inline dan tingkatkan kualitas model AI.</translation>
 <translation id="2535370400681639351">Jika kebijakan disetel ke Aktif, permintaan autentikasi gnubby akan diteruskan lewat proxy di seluruh koneksi host jarak jauh.
@@ -4900,15 +4926,6 @@ Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang t
 
           Jika kebijakan ini tidak ditetapkan, respons lisan mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="4173974507809462880">Tampilkan layar arah scroll touchpad selama login</translation>
-<translation id="4175770453187201981">Kebijakan ini mengontrol integrasi Mode AI Google di kolom URL dan kotak penelusuran halaman Tab Baru.
-
-Untuk mengakses fitur ini, Google harus disetel sebagai mesin telusur default pengguna.
-
-Nilai 0/tidak disetel = Fitur akan tersedia bagi pengguna.
-
-Nilai 1 = Fitur tidak akan tersedia bagi pengguna.
-
-Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="417956245902013347">Mengaktifkan fitur aksesibilitas sorotan kursor teks di layar login.
 
           Jika kebijakan ini ditetapkan ke true, sorotan kursor teks akan selalu diaktifkan di layar login.
@@ -5441,6 +5458,24 @@ Untuk mengetahui informasi selengkapnya tentang <ph name="IP_PROTECTION_NAME" />
 
 <ph name="IP_PROTECTION_NAME" /> akan diluncurkan mulai M139.</translation>
 <translation id="4525328580251166229">Mengontrol kebijakan yang terkait dengan subsistem Bruschetta.</translation>
+<translation id="452801090660038046">Jika kebijakan ini disetel, jumlah maksimal koneksi simultan per server proxy untuk permintaan non-WebSocket akan ditentukan.
+
+Untuk mengubah batas permintaan WebSocket, lihat <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Jika kebijakan ini tidak disetel, nilai default 128 akan digunakan.
+
+Beberapa aplikasi web diketahui memakai banyak koneksi dengan GET yang macet. Jadi, jika Anda menetapkan nilai lebih rendah dari 128, jaringan browser akan macet ketika ada terlalu banyak aplikasi web yang terbuka dengan jaringan macet.
+Beberapa server proxy tidak dapat menangani koneksi serentak per klien dalam jumlah besar. Masalah ini dapat diselesaikan dengan menyetel kebijakan ini ke nilai lebih rendah.
+
+Nilai ini harus sama dengan atau lebih tinggi dari 6.
+Jika nilai yang ditetapkan di bawah batas tersebut, nilai 6 akan digunakan.
+Jika menurunkan nilai di bawah nilai default (128), Anda harus menanggung sendiri risikonya.
+
+Nilai ini harus sama dengan atau lebih rendah dari 256 (99 di <ph name="PRODUCT_NAME" /> 147 dan versi sebelumnya).
+Jika nilai yang ditetapkan di atas batas tersebut, nilai yang akan digunakan adalah 256 (99 di <ph name="PRODUCT_NAME" /> 147 dan versi sebelumnya).
+Jika menaikkan nilai di atas nilai default (128), Anda harus menanggung sendiri risikonya.
+
+Perlu diperhatikan bahwa batas yang diterapkan dipengaruhi oleh <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Nonaktifkan fitur <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Kebijakan ini tidak digunakan lagi.</translation>
 <translation id="4531706050939927436">Aplikasi Android dapat diinstal otomatis dari konsol Google Admin menggunakan Google Play. Aplikasi Android tidak menggunakan kebijakan ini.</translation>
@@ -5890,23 +5925,6 @@ Jika kebijakan disetel ke Nonaktif, promo Ekstensi Penyedia Kredensial tidak aka
       Jika disetel ke aktif, layar pengantar Gemini akan ditampilkan.
 
       Jika tidak disetel, layar pengantar Gemini akan dilewati untuk pengguna yang dikelola perusahaan dan ditampilkan untuk pengguna yang tidak dikelola.</translation>
-<translation id="4781685421378746692">Kebijakan ini mengontrol berbagi konten halaman dan file dengan <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> dan <ph name="GOOGLE_LENS_PRODUCT_NAME" /> melalui panel samping atau tab <ph name="PRODUCT_NAME" />.
-
-Perhatikan bahwa kebijakan ini tidak memengaruhi <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> di web. Kebijakan ini hanya mengontrol kemampuan pengguna untuk berbagi informasi dengannya saat menggunakan <ph name="PRODUCT_NAME" />.
-
-0/tidak disetel = pengguna dapat membagikan konten halaman atau file ke <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
-
-1 = pengguna tidak dapat membagikan konten halaman atau file ke <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Titik entri untuk berbagi konteks dan panel samping akan dinonaktifkan atau disembunyikan.
-
-Kebijakan ini akan diabaikan jika <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> bukan mesin telusur default pengguna karena fitur ini dinonaktifkan.
-
-Kebijakan ini terpisah dari kebijakan <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. Kebijakan <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> hanya mengontrol titik entri di kotak penelusuran omnibox atau NTP, sedangkan kebijakan ini mengontrol berbagi konteks melalui panel samping atau tab.
-
-Kebijakan ini juga tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> yang dapat dinonaktifkan oleh <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4783415902268741066">Mengizinkan halaman hasil penelusuran mesin telusur default terbaru ditampilkan di panel samping Browser</translation>
 <translation id="4786784434769279324">Tindakan yang akan dijalankan saat komputer sedang tidak ada aktivitas</translation>
 <translation id="4787763197941188108">Mengganti ukuran halaman pencetakan default.
@@ -7098,15 +7116,6 @@ pintasan berbasis penelusuran akan bertindak sebagai default.</translation>
 <translation id="5481873128882951841">Nonaktifkan peredam bising Krisp</translation>
 <translation id="5483012943408894695">Origin atau pola nama host yang semestinya tidak dikenai pembatasan untuk origin yang tidak aman</translation>
 <translation id="5483065054530244863">Mengizinkan sertifikat bertanda tangan SHA-1 yang dikeluarkan oleh trust anchor lokal</translation>
-<translation id="5485491014653571963">Setelan ini mengizinkan integrasi aplikasi Gemini.
-
-Nilai 0/tidak disetel = Integrasi Gemini akan tersedia untuk pengguna.
-
-Nilai 1 = Integrasi Gemini tidak akan tersedia untuk pengguna.
-
-Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Untuk mengetahui informasi selengkapnya, buka artikel Pusat Bantuan https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
 <translation id="5486917900445838803">Jika kebijakan disetel ke Aktif atau tidak disetel, akselerasi grafis akan diaktifkan jika tersedia.
 
       Jika kebijakan disetel ke Nonaktif, akselerasi grafis akan dinonaktifkan.</translation>
@@ -7365,29 +7374,6 @@ Jika disetel untuk <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini akan menga
 <translation id="5622924058222112599">Aktifkan proses peluncuran CECPQ2 default</translation>
 <translation id="5623304306796942802">Tampilkan dialog saat ada beberapa sertifikat yang cocok</translation>
 <translation id="5624310713789233422">Mengontrol visibilitas badge profil perusahaan di toolbar</translation>
-<translation id="5624334866248253262">Mengonfigurasi daftar aturan Kontrol Data untuk mencegah kebocoran data.
-
-      Setiap aturan terdiri dari hal berikut:
-      - Kolom kondisi untuk memicu aturan tersebut. Aturan hanya akan dipicu jika tindakan pengguna cocok dengan semua kolom yang diisi di kolom <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" />, dan <ph name="DATA_CONTROLS_NOT" />. Untuk sub-kolom daftar, hanya satu entri yang harus dicocokkan, misalnya hanya satu pola URL yang harus cocok untuk memicu aturan.
-      - Daftar batasan yang akan diterapkan. Bergantung pada batasannya, hanya kondisi <ph name="DATA_CONTROLS_SOURCES" /> atau <ph name="DATA_CONTROLS_DESTINATIONS" /> yang mungkin tersedia.
-
-      Aturan dapat ditambahkan untuk:
-      - Mengontrol data papan klip yang dibagikan antara sumber dan tujuan.
-      - Mengontrol screenshot pemblokiran berdasarkan tab sumber.
-
-      Jika kebijakan <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> disetel ke Benar (True), aturan yang dipicu akan dilaporkan ke admin.
-      Level batasan dapat disetel ke BLOCK, WARN, atau REPORT.
-      - Jika level batasan disetel ke BLOCK, tindakan tidak akan diizinkan.
-      - Jika level batasan disetel ke WARN, pengguna akan diberi peringatan dan dapat memilih untuk melanjutkan atau membatalkan tindakan.
-      - Jika level batasan disetel ke REPORT, tindakan pengguna tidak akan terganggu, tetapi laporan akan dikirim jika kebijakan <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> diaktifkan.
-
-      Catatan:
-      - Format pola URL sesuai dengan format ini ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-      - Untuk aturan pencegahan kebocoran data khusus <ph name="PRODUCT_OS_NAME" />, lihat juga kebijakan <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Jika kebijakan ini tidak disetel, tidak ada batasan yang akan diterapkan.
-
-      Kebijakan ini hanya tersedia untuk pengguna yang memiliki lisensi Chrome Enterprise Premium yang ditetapkan.</translation>
 <translation id="5625771176514429288">Aplikasi Chrome akan diizinkan berjalan di platform berikut.</translation>
 <translation id="5627270992026554674">Cegah guru menggunakan daftar nama siswa di kelas Google Classroom.</translation>
 <translation id="5630352020869108293">Mengembalikan sesi terakhir</translation>
@@ -11170,6 +11156,7 @@ Nonaktifkan kebijakan ini hanya jika Anda menggunakan solusi keamanan endpoint y
 <translation id="7941975817681987555">Jangan memprediksi tindakan jaringan di koneksi jaringan apa pun</translation>
 <translation id="794447754389837404">Memblokir akses jaringan pribadi di Direct Sockets API di situs ini</translation>
 <translation id="7945445169067895719">Mengaktifkan kunci saat perangkat ditangguhkan atau penutupnya ditutup</translation>
+<translation id="7945744599423774764">Izinkan pengacakan ukuran pool soket untuk proxy</translation>
 <translation id="7946350455013548764">Jika kebijakan disetel ke 3, situs akan diizinkan meminta akses ke perangkat HID. Jika kebijakan disetel ke 2, situs akan dilarang meminta akses ke perangkat HID.
 
       Jika tidak disetel, situs akan dapat meminta akses tetapi pengguna dapat mengubah setelan ini.
@@ -11771,6 +11758,7 @@ Jika kebijakan ini tidak disetel, fitur kontrol dengan wajah mula-mula akan dino
 <translation id="8337114537412769126">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> akan menentukan parameter ketika melakukan penelusuran saran dengan POST. Kebijakan terdiri dari pasangan nama kunci yang dipisahkan koma. Jika nilai adalah parameter template seperti <ph name="SEARCH_TERM_MARKER" />, data istilah penelusuran nyata akan menggantikannya.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran saran dikirimkan menggunakan metode GET.</translation>
+<translation id="8337200442224446773">Cegah pengacakan pool soket untuk proxy</translation>
 <translation id="8337961007759352651">Skrip untuk pekerja (Pekerja Web, Pekerja Layanan, dll.) memerlukan jenis MIME JavaScript, seperti <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Skrip pekerja dengan jenis MIME lama, seperti <ph name="MIMETYPE_TEXT_ASCII" />, akan ditolak.</translation>
 <translation id="8339089771335211509">WebRTC hanya akan menggunakan antarmuka yang terhubung ke internet publik, tetapi tidak dapat terhubung menggunakan alamat IP pribadi.</translation>
 <translation id="8339420913453596618">Faktor kedua dinonaktifkan</translation>
@@ -12204,6 +12192,7 @@ Jika kebijakan ini disetel ke Salah (False), data kebijakan dan waktu pengambila
 Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
 Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8619748440665904084">Nonaktifkan impor data formulir isi otomatis saat browser pertama kali dijalankan</translation>
+<translation id="8621146428060651659">Izinkan pengacakan pool soket untuk proxy</translation>
 <translation id="862621549134406761">Aktifkan pemeriksaan penggunaan kunci RSA</translation>
 <translation id="8626826495474944836">Memerlukan Isolasi Situs untuk setiap situs</translation>
 <translation id="8630797597241896082">Izinkan Latar Belakang Konferensi Video AI Generatif dan tingkatkan kualitas model AI</translation>

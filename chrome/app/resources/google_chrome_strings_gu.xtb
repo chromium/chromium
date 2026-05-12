@@ -99,7 +99,6 @@
 <translation id="2018528049276128029">દરેક પ્રોફાઇલ બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજી ઘણી બાબતો જેવી તેની પોતાની Chrome માહિતી ધરાવે છે</translation>
 <translation id="2018879682492276940">ઇન્સ્ટૉલ કરવામાં નિષ્ફળ રહ્યાં. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="2024959665595762054">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
-<translation id="2026377840141807639">Chrome પ્રોફાઇલ તમને વ્યક્તિગત બ્રાઉઝિંગ અને ઑફિસ માટેનું બ્રાઉઝિંગ અલગ-અલગ રાખવા દે છે. હમણાં જ નવી પ્રોફાઇલ ઉમેરો.</translation>
 <translation id="2034233344106846793">જ્યારે શક્ય હોય ત્યારે Chrome અસુરક્ષિત કનેક્શનને ઑટોમૅટિક રીતે HTTPS પર અપગ્રેડ કરે છે</translation>
 <translation id="2039417478970545937">સેટિંગ.</translation>
 <translation id="2066690553719545730">હંમેશાં AI મોડ બતાવો</translation>
@@ -457,7 +456,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5736850870166430177">જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટ સહિત URLs પણ Safe Browsingને મોકલી શકે છે</translation>
 <translation id="5756509061973259733">આ એકાઉન્ટ સાથેની Chrome પ્રોફાઇલ પહેલેથી જ આ ડિવાઇસ પર અસ્તિત્વમાં છે</translation>
 <translation id="5759947850379142561">Google Lens વડે શોધવા માટે કોઈપણ ટેક્સ્ટ અથવા છબી પસંદ કરો અથવા Google Lensમાંથી બહાર નીકળવા માટે Escape દબાવો</translation>
-<translation id="5762867845020858790">બુકમાર્ક, પાસવર્ડ અને સેટિંગ અલગ-અલગ રાખવા માટે નવી Chrome પ્રોફાઇલ ઉમેરો.</translation>
 <translation id="5779427581965287859">Chromeને ડિફૉલ્ટ તરીકે સેટ કરો અને તેને ટાસ્કબાર પર પિન કરો</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome લૉન્ચ કરી શકાયું નથી. ફરી પ્રયાસ કરો.</translation>
@@ -571,7 +569,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6800285125190089494">iOS પર Chrome માટે સાચવેલા પાસવર્ડનો ઉપયોગ કરીને સાઇટ પર વધુ ઝડપથી સાઇન ઇન કરો</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
 <translation id="683440813066116847">mDNS ટ્રાફિકને મંજૂરી આપવા માટે Google Chrome કૅનેરી માટે ઇનબાઉન્ડ નિયમ.</translation>
-<translation id="6841242485723266823">Chrome પ્રોફાઇલ તમને તમારા જીવનના વિવિધ ભાગોને અલગ-અલગ રાખવામાં મદદ કરે છે. હમણાં જ નવી પ્રોફાઇલ ઉમેરો.</translation>
 <translation id="684888714667046800">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. જો તમે કોઈ ફાયરવૉલનો ઉપયોગ કરતા હો, તો કૃપા કરીને ખાતરી કરો કે <ph name="PRODUCT_EXE_NAME" /> વ્હાઇટલિસ્ટમાં છે.</translation>
 <translation id="6859580922007887573">ચાલુ રાખવા માટે Tab કી દબાવો</translation>
 <translation id="6877155553248388166">શોધ વિસ્તારના સૌથી નીચે જમણા ખૂણે: જમણી બાજુ <ph name="RIGHT" />%, સૌથી નીચે <ph name="BOTTOM" />%</translation>
@@ -762,7 +759,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 મિનિટમાં ફરીથી લૉન્ચ થશે}one{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}other{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="8637932705841171563">તમારી વિન્ડો શેર કરવા માટે, સિસ્ટમના સેટિંગમાં Chrome માટે સ્ક્રીન રેકોર્ડિંગની મંજૂરી આપો</translation>
 <translation id="8641606876632989680">જ્યારે તમે ચેડાં થયેલા પાસવર્ડ વડે સાઇન ઇન કરશો ત્યારે Chrome તમને સૂચિત કરશે</translation>
-<translation id="8647930742055103497">Chromeમાં બધું જ રાખો</translation>
 <translation id="8656634243791296665">Chrome Devમાં Gemini ખોલો</translation>
 <translation id="8669527147644353129">Google Chrome સહાયક</translation>
 <translation id="8679801911857917785">જ્યારે તમે Chrome શરૂ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>

@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">අක්‍රිය කෙටි මං</translation>
 <translation id="2227179592712503583">යෝජනාව ඉවත් කරන්න</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
+<translation id="2230411774874187555">ඔබේ සුරකින ලද සියලු තතු ලබා ගන්න</translation>
 <translation id="2230777942707397948">හිස් කවුළුව</translation>
 <translation id="223356358902285214">වෙබ් සහ යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="2233735624724508540">කාල රාමුවක් තෝරා ඉන්පසු දත්ත මකන්න තට්ටු කරන්න</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">මීළඟ වතාවේ පහසු ප්‍රවේශය සඳහා ඔබ නිතරම පිවිසෙන වෙබ් අඩවි ඇමිණීමට තට්ටු කර අල්ලාගෙන සිටින්න</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> පිටුසනක්}one{පිටුසන් <ph name="BOOKMARKS_COUNT_MANY" />ක්}other{පිටුසන් <ph name="BOOKMARKS_COUNT_MANY" />ක්}}</translation>
 <translation id="3062802207422175757">Chrome හි ඔබේ රුචිකත්ව ගැන ලිපි</translation>
+<translation id="3066107845790462226">වීඩියෝ රාමුව බාගන්න</translation>
 <translation id="3066573403916685335">පහළට ගෙන යන්න</translation>
 <translation id="3067505415088964188">මිල අඩුයි</translation>
 <translation id="3070005020161560471">ස්වයංක්‍රියව පරිවර්තනය කරන්න</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">ආරක්ෂාව වෙත ආපසු</translation>
 <translation id="6267106249090587268">දැනුම්දීම් <ph name="SEPARATOR" /> අයාචිත හෝ රැවටිලිකාර අන්තර්ගත නිසා Chrome මෙම අවසර ඉවත් කර ඇත</translation>
 <translation id="6276708887952587684">පිටු මූලාශ්‍රය බලන්න</translation>
+<translation id="62768169905160414">වීඩියෝ රාමුව පිටපත් කරන්න</translation>
 <translation id="6277522088822131679">මෙම පිටුව මුද්‍රණය කිරීමේ ගැටලුවක් විය. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6278428485366576908">තේමාව</translation>
 <translation id="6291294824436685757">බ්‍රවුස් කිරීමේ දත්ත මකන්න; මැකීමට දත්ත තෝරන්න</translation>

@@ -142,7 +142,6 @@
 <translation id="147982357559798527">Berubah</translation>
 <translation id="1486096554574027028">Telusuri sandi</translation>
 <translation id="1491277525950327607">Ketuk dua kali untuk beralih setelan</translation>
-<translation id="1491965206608166851">Login dengan sandi &amp; kunci sandi tersimpan dari aplikasi apa pun</translation>
 <translation id="1492417797159476138">Anda telah menyimpan nama pengguna ini untuk situs ini</translation>
 <translation id="1497590942294823549">Menu → Pengelola Sandi</translation>
 <translation id="1498283581832036924">Akun <ph name="WEBSITE" /> Anda tidak akan dihapus.</translation>
@@ -358,12 +357,10 @@
 <translation id="2199562093267256223">Tindakan ini akan menghapus grup dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
 <translation id="2202084845446535117">Tidak ada akun email</translation>
 <translation id="2214453882118345682">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat dengan kamera.</translation>
-<translation id="2215819824168709130">Sembunyikan kartu pantau harga</translation>
 <translation id="2216366330550244277">Buka halaman produk</translation>
 <translation id="2219935992754556187">Chrome menjaga keamanan data sensitif Anda dengan Face ID</translation>
 <translation id="2220529011494928058">Laporkan masalah</translation>
 <translation id="2223461067862937305">Buat Kode QR</translation>
-<translation id="2225701818156393674">Produk ditambahkan ke daftar produk yang dipantau.</translation>
 <translation id="2230173723195178503">Halaman web dimuat</translation>
 <translation id="2236949375853147973">Aktivitas Saya</translation>
 <translation id="2237869114829007407">Dapatkan ringkasan dan insight utama untuk halaman atau topik apa pun</translation>
@@ -554,7 +551,6 @@
 <translation id="2902312830803030883">Tindakan lainnya</translation>
 <translation id="2904788871580817212">Penurunan harga di tab yang terbuka, dari <ph name="PREVIOUS_PRICE" /> menjadi <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Anda memiliki <ph name="NUMBER_OF_PASSWORDS" /> sandi yang digunakan ulang yang dapat membahayakan keamanan Anda.</translation>
-<translation id="29153882450867370">Sembunyikan "Pantau Harga"</translation>
 <translation id="291754862089661335">Letakkan kode QR atau kode batang dalam bingkai ini</translation>
 <translation id="2918688092312652908">Tandai Belum Dibaca</translation>
 <translation id="2922210239002704889">Buka halaman beranda atau keyboard Anda</translation>
@@ -566,6 +562,7 @@
 <translation id="2969979262385602596">Gagal masuk. Coba lagi nanti.</translation>
 <translation id="2975761176769946178">URL wajib diisi</translation>
 <translation id="297667759942911166">Berkolaborasi dalam grup tab</translation>
+<translation id="298696743524648170">Untuk menggunakan Gemini di Chrome, login ke Chrome dengan Akun Google Anda</translation>
 <translation id="2987670534697681860">Verifikasi diri Anda untuk mengakses semua sandi di perangkat ini.</translation>
 <translation id="2989523299700148168">Baru saja dikunjungi</translation>
 <translation id="2989805286512600854">Buka di Tab Baru</translation>
@@ -620,6 +617,7 @@
 <translation id="31652791196570636">Tutup</translation>
 <translation id="3167868116600277716">Feed Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini tidak tersedia di halaman ini</translation>
 <translation id="3174662312949010067">Anda juga dapat menggunakan sandi tersimpan di perangkat Anda yang lain.</translation>
 <translation id="3177338796769255211">Login untuk mendapatkan bookmark dan lainnya di semua perangkat Anda</translation>
 <translation id="3181954750937456830">Safe Browsing (melindungi Anda dan perangkat dari situs berbahaya)</translation>
@@ -995,6 +993,7 @@
 <translation id="4552042254369397518">Menyalin…</translation>
 <translation id="4553044860350038560">Kunci sandi lainnya</translation>
 <translation id="4564893319561643483">Sembunyikan "<ph name="TITLE" />"</translation>
+<translation id="456502772933839252">Membagikan <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4568230126482344545">Sembunyikan Tab terbaru</translation>
 <translation id="4578835633387306383">Aktifkan…</translation>
@@ -1134,7 +1133,6 @@
 <translation id="4992255726304765516">Warna grup tab <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Salin sandi</translation>
 <translation id="5009127379503001909">Terus jelajahi</translation>
-<translation id="5012914568031465281">Tidak dapat memantau harga.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Kirim ke <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 menit terakhir</translation>
@@ -1404,6 +1402,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5936065461722368675">Terjemahkan seluruh halaman</translation>
 <translation id="5937560539988385583">Halaman diterjemahkan</translation>
 <translation id="5938160824633642847">Perangkat Anda hampir penuh. Kosongkan ruang penyimpanan dan coba lagi.</translation>
+<translation id="5941711191222866238">Perkecil</translation>
 <translation id="5944869793365969636">Pindai kode QR</translation>
 <translation id="5948291296578561264">Tindakan ini memungkinkan Anda menyimpan foto ke koleksi foto.</translation>
 <translation id="5948605885471592910">Lihat dan kelola semua tab dan grup yang terbuka</translation>
@@ -2168,6 +2167,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8515534223594179607">Ekspor Data Penjelajahan</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi dan item lainnya di Akun Google Anda, {email}.}other{{count} sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi dan item lainnya di Akun Google Anda, {email}.}}</translation>
 <translation id="8524799873541103884">Tab <ph name="FIRST_VISIBLE_TAB" /> hingga <ph name="LAST_VISIBLE_TAB" /> dari <ph name="NUMBER_OF_OPEN_TABS" /> dalam mode <ph name="INCOGNITO" /></translation>
+<translation id="8525306231823319788">Layar penuh</translation>
 <translation id="8528009254289981965">Buka link dari aplikasi lain dalam mode Samaran</translation>
 <translation id="8529767659511976195">Baru</translation>
 <translation id="8531572740963685410">PDF</translation>
@@ -2289,7 +2289,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8879952635974818770">Konten yang dipersonalisasi</translation>
 <translation id="8887595428614802520">Tutup Semua Tab dan Grup</translation>
 <translation id="8888595487174963247">Hapus Pengingat</translation>
-<translation id="8891031436559779793">Anda akan diberi tahu jika ada penurunan harga di situs mana pun.</translation>
 <translation id="8893208530912252670">Video</translation>
 <translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>
 <translation id="8900845556227858314">Aplikasi Browser</translation>

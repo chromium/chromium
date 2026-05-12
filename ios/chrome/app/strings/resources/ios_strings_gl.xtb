@@ -142,7 +142,6 @@
 <translation id="147982357559798527">Cambiada</translation>
 <translation id="1486096554574027028">Buscar contrasinais</translation>
 <translation id="1491277525950327607">Toca dúas veces para activar ou desactivar a configuración</translation>
-<translation id="1491965206608166851">Inicia sesión en calquera aplicación cos contrasinais e claves de acceso gardadas</translation>
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
 <translation id="1497590942294823549">Menú → Xestor de contrasinais</translation>
 <translation id="1498283581832036924">Non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
@@ -202,6 +201,7 @@
 <translation id="1657011748321897393">Non se puido compartir porque non tes conexión á rede.</translation>
 <translation id="1668001730617725852">Abrir nun grupo de pestanas novo</translation>
 <translation id="1670861525135254448">Garda o vehículo</translation>
+<translation id="1671568970992212376">Garda fotos en Google Fotos e accede a elas cando queiras.</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Segundo as políticas da túa organización, este ficheiro pode conter información confidencial</translation>
 <translation id="168389590065701766">Agora podes abrir Google Lens desde a barra de enderezos e buscar calquera cousa que vexas</translation>
@@ -358,12 +358,10 @@
 <translation id="2199562093267256223">Eliminarase o grupo de todos os dispositivos nos que teñas a sesión iniciada en <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Sen contas de correo</translation>
 <translation id="2214453882118345682">Compra, traduce e identifica o que vexas mediante a cámara.</translation>
-<translation id="2215819824168709130">Ocultar a tarxeta Facer seguimento do prezo</translation>
 <translation id="2216366330550244277">Vai á páxina dun produto</translation>
 <translation id="2219935992754556187">Chrome protexe os teus datos confidenciais con Face ID</translation>
 <translation id="2220529011494928058">Informar dun problema</translation>
 <translation id="2223461067862937305">Crear código QR</translation>
-<translation id="2225701818156393674">Engadiuse o artigo á lista de produtos seguidos.</translation>
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
 <translation id="2236949375853147973">A miña actividade</translation>
 <translation id="2237869114829007407">Obtén un resumo e estatísticas clave de calquera páxina ou tema</translation>
@@ -554,7 +552,6 @@
 <translation id="2902312830803030883">Máis accións</translation>
 <translation id="2904788871580817212">Baixada de prezo na pestana aberta, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Tes <ph name="NUMBER_OF_PASSWORDS" /> contrasinais reutilizados que poderían poñer en perigo a túa seguranza.</translation>
-<translation id="29153882450867370">Ocultar Facer seguimento do prezo</translation>
 <translation id="291754862089661335">Coloca o código QR ou o código de barras neste marco</translation>
 <translation id="2918688092312652908">Marcar como elemento non lido</translation>
 <translation id="2922210239002704889">Vai á páxina de inicio ou ao teclado</translation>
@@ -1137,7 +1134,6 @@
 <translation id="4992255726304765516">Tocar a cor do grupo <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5009127379503001909">Seguir explorando</translation>
-<translation id="5012914568031465281">Non se puido facer un seguimento do prezo.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Enviaranse a <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
@@ -1407,6 +1403,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5936065461722368675">Traducir páxina completa</translation>
 <translation id="5937560539988385583">Traduciuse a páxina</translation>
 <translation id="5938160824633642847">O teu dispositivo case está cheo. Libera espazo e téntao de novo.</translation>
+<translation id="5941711191222866238">Minimizar</translation>
 <translation id="5944869793365969636">Escanear o código QR</translation>
 <translation id="5948291296578561264">Permíteche gardar fotos na túa fototeca.</translation>
 <translation id="5948605885471592910">Consulta e xestiona todo o que teñas aberto</translation>
@@ -2171,6 +2168,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8515534223594179607">Export Browsing Data (Exportar os datos de navegación)</translation>
 <translation id="8522147671363140027">{count,plural, =1{Hai {count} contrasinal e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}other{Hai {count} contrasinais e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}}</translation>
 <translation id="8524799873541103884">Etiquetas de <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8528009254289981965">Abre ligazóns desde outras aplicacións no modo de incógnito</translation>
 <translation id="8529767659511976195">Novidade</translation>
 <translation id="8531572740963685410">PDF</translation>
@@ -2292,7 +2290,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8879952635974818770">Contido personalizado</translation>
 <translation id="8887595428614802520">Pechar todas as pestanas e grupos</translation>
 <translation id="8888595487174963247">Quitar recordatorio</translation>
-<translation id="8891031436559779793">Recibirás unha notificación se baixa o prezo en calquera sitio.</translation>
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="8900845556227858314">Aplicación do navegador</translation>

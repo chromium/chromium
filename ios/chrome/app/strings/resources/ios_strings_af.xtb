@@ -142,7 +142,6 @@
 <translation id="147982357559798527">Het verander</translation>
 <translation id="1486096554574027028">Deursoek wagwoorde</translation>
 <translation id="1491277525950327607">Dubbeltik om instelling te wissel</translation>
-<translation id="1491965206608166851">Meld vanaf enige app aan met jou gestoorde wagwoorde en toegangsleutels</translation>
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
 <translation id="1497590942294823549">Kieslys → Wagwoordbestuuder</translation>
 <translation id="1498283581832036924">Jou <ph name="WEBSITE" />-rekening sal nie uitgevee word nie.</translation>
@@ -358,12 +357,10 @@
 <translation id="2199562093267256223">Dit sal die groep uitvee op alle toestelle wat by <ph name="USER_EMAIL" /> aangemeld is.</translation>
 <translation id="2202084845446535117">Geen e-posrekeninge nie</translation>
 <translation id="2214453882118345682">Koop, vertaal en identifiseer wat jy sien met jou kamera.</translation>
-<translation id="2215819824168709130">Versteek “Spoor prys na”-kaart</translation>
 <translation id="2216366330550244277">Gaan na die bladsy van ’n produk</translation>
 <translation id="2219935992754556187">Chrome hou jou sensitiewe data met Gesig-ID veilig</translation>
 <translation id="2220529011494928058">Gee 'n kwessie aan</translation>
 <translation id="2223461067862937305">Skep ’n QR-kode</translation>
-<translation id="2225701818156393674">Produk is by jou lys van naspoorprodukte gevoeg.</translation>
 <translation id="2230173723195178503">Webblad is gelaai</translation>
 <translation id="2236949375853147973">My aktiwiteit</translation>
 <translation id="2237869114829007407">Kry ’n oorsig en sleutelinsigte vir enige bladsy of onderwerp</translation>
@@ -554,7 +551,6 @@
 <translation id="2902312830803030883">Nog handelinge</translation>
 <translation id="2904788871580817212">Prysdaling op jou oop oortjie, van <ph name="PREVIOUS_PRICE" /> tot <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Jy het <ph name="NUMBER_OF_PASSWORDS" /> hergebruikte wagwoorde wat jou sekuriteit in gevaar kan stel.</translation>
-<translation id="29153882450867370">Versteek “Spoor prys na”</translation>
 <translation id="291754862089661335">Plaas QR- of strepieskode in hierdie raam</translation>
 <translation id="2918688092312652908">Merk as ongelees</translation>
 <translation id="2922210239002704889">Gaan na jou tuisblad of sleutelbord</translation>
@@ -566,6 +562,7 @@
 <translation id="2969979262385602596">Kon nie aanmeld nie. Probeer asseblief later weer.</translation>
 <translation id="2975761176769946178">’n URL word vereis</translation>
 <translation id="297667759942911166">Werk saam in oortjiegroepe</translation>
+<translation id="298696743524648170">Meld aan by Chrome met jou Google-rekening om Gemini in Chrome te gebruik</translation>
 <translation id="2987670534697681860">Verifieer dat dit jy is om toegang tot al jou wagwoorde op hierdie toestel te kry.</translation>
 <translation id="2989523299700148168">Onlangs besoek</translation>
 <translation id="2989805286512600854">Maak in 'n nuwe oortjie oop</translation>
@@ -620,6 +617,7 @@
 <translation id="31652791196570636">Maak toe</translation>
 <translation id="3167868116600277716">Ontdek-stroom</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini is nie op hierdie bladsy beskikbaar nie</translation>
 <translation id="3174662312949010067">Jy kan gestoorde wagwoorde ook op jou ander toestelle gebruik.</translation>
 <translation id="3177338796769255211">Meld aan om jou boekmerke en meer op al jou toestelle te kry</translation>
 <translation id="3181954750937456830">Veiligblaai (beskerm jou en jou toestel teen gevaarlike werwe)</translation>
@@ -995,6 +993,7 @@
 <translation id="4552042254369397518">Kopieer tans …</translation>
 <translation id="4553044860350038560">Meer toegangsleutels</translation>
 <translation id="4564893319561643483">Versteek “<ph name="TITLE" />”</translation>
+<translation id="456502772933839252">Deel tans <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4568230126482344545">Versteek Onlangs-oortjies</translation>
 <translation id="4578835633387306383">Skakel aan …</translation>
@@ -1134,7 +1133,6 @@
 <translation id="4992255726304765516">Kleur van oortjiegroep is <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopieer wagwoord</translation>
 <translation id="5009127379503001909">Hou aan blaai</translation>
-<translation id="5012914568031465281">Kon nie prys naspoor nie.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Stuur na <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Afgelope 15 minute</translation>
@@ -1404,6 +1402,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5936065461722368675">Vertaal hele bladsy</translation>
 <translation id="5937560539988385583">Bladsy is vertaal</translation>
 <translation id="5938160824633642847">Jou toestel is amper vol. Maak spasie beskikbaar en probeer weer.</translation>
+<translation id="5941711191222866238">Maak kleiner</translation>
 <translation id="5944869793365969636">Skandeer QR-kode</translation>
 <translation id="5948291296578561264">Hiermee kan jy foto's in jou fotobiblioteek stoor.</translation>
 <translation id="5948605885471592910">Sien en bestuur alles wat jy oop het</translation>
@@ -2168,6 +2167,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8515534223594179607">Voer blaaierdata uit</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} wagwoord en ander items word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening, {email}, om hulle op jou ander toestelle te gebruik.}other{{count} wagwoorde en ander items word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening, {email}, om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Oortjies <ph name="FIRST_VISIBLE_TAB" /> tot <ph name="LAST_VISIBLE_TAB" /> van <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8525306231823319788">Volskerm</translation>
 <translation id="8528009254289981965">Maak skakels van ander apps af in Incognito oop.</translation>
 <translation id="8529767659511976195">Nuut</translation>
 <translation id="8531572740963685410">PDF's</translation>
@@ -2289,7 +2289,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8879952635974818770">Gepersonaliseerde inhoud</translation>
 <translation id="8887595428614802520">Maak alle oortjies en groepe toe</translation>
 <translation id="8888595487174963247">Verwyder onthounota</translation>
-<translation id="8891031436559779793">Jy sal in kennis gestel word as die prys op enige werf daal.</translation>
 <translation id="8893208530912252670">Video's</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
 <translation id="8900845556227858314">Blaaierapp</translation>

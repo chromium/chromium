@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">Дебетові й розрахункові послуги</translation>
 <translation id="1719434663396780149">Сповіщення про зниження цін увімкнено. Щоб вимкнути їх, перейдіть у <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 дюйм.</translation>
+<translation id="1720318856472900922">Автентифікація сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрити навчальний посібник</translation>
 <translation id="1721424275792716183">* Обов’язкове поле</translation>
 <translation id="1723636263173393300">Максимальна кількість ярликів у цьому правилі: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -754,6 +755,7 @@
 <translation id="2168151236314517198">Адміністратор заборонив друкувати цей контент</translation>
 <translation id="2171244127100824330">У сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> для облікового запису <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Ремонт і обслуговування транспортних засобів</translation>
+<translation id="217231402430591139">Зв’язати обліковий запис</translation>
 <translation id="2173302385160625112">Перевірте інтернет-з’єднання</translation>
 <translation id="2174875517416416684">Не вдалося здійснити трансакцію. З вашого рахунку не стягнено кошти.</translation>
 <translation id="2175630235841878061">Файли розміром понад 100 МБ не можна завантажувати</translation>
@@ -2474,6 +2476,7 @@
 <translation id="4855395119669662878">Адміністратор почне завантажувати ваші файли в сервіс <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Не відключайте пристрій, поки не завершиться завантаження файлів. Під час завантаження ви зможете лише переглядати локальні файли.</translation>
 <translation id="485902285759009870">Перевірка коду…</translation>
 <translation id="4860260582253463350">Перш ніж ти зможеш користуватися YouTube, ми маємо підтвердити твою особу. Це потрібно, щоб застосувати налаштування, які твої батьки або опікун вибрали у Family Link.</translation>
+<translation id="4862642413395066333">Підписування відповідей OCSP</translation>
 <translation id="4864406669374375262">Рядок версії скопійовано в буфер обміну</translation>
 <translation id="486459320933704969">Батько, мати чи опікун мають дозволити тобі відвідати цей веб-сайт</translation>
 <translation id="4864801646102013152">Облаштування житла</translation>
@@ -3217,6 +3220,7 @@
 <translation id="6006365096047131769">3 x 5 дюйм.</translation>
 <translation id="6008122969617370890">Порядок від N до 1</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Шифрування Google захищає вашу інформацію</translation>
 <translation id="6014801569448771146">Перевірте свої паролі</translation>
 <translation id="6014851866995737824">Ігнорується, оскільки немає списку активації або деактивації.</translation>
 <translation id="6015796118275082299">Рік</translation>
@@ -4494,6 +4498,7 @@
 <translation id="7947285636476623132">Перевірте рік закінчення терміну дії та повторіть спробу</translation>
 <translation id="7947310711271925113">Попмузика</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб дізнатися про функції Chrome</translation>
+<translation id="7948579849190819732">Поточна вкладка</translation>
 <translation id="7949135979217012031">Антивіруси й зловмисне програмне забезпечення</translation>
 <translation id="7950027195171824198">Керуйте параметрами файлів cookie в налаштуваннях Chrome</translation>
 <translation id="7951415247503192394">(32-розрядна версія)</translation>
@@ -4902,6 +4907,7 @@
 <translation id="8597726363542221027">Уживані автомобілі</translation>
 <translation id="8600271352425265729">Лише цього разу</translation>
 <translation id="860043288473659153">Ім’я і прізвище власника картки</translation>
+<translation id="8601206103050338563">Автентифікація клієнта TLS WWW</translation>
 <translation id="8601456038554914806">Обладнання для водних видів спорту</translation>
 <translation id="8601782593888534566">Наукова фантастика й фентезі</translation>
 <translation id="8604103095921958091">Екран умов використання способу оплати "Купуйте зараз, платіть пізніше" відкрито на всю висоту.</translation>

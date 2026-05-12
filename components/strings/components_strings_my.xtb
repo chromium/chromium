@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">ဒက်ဘစ်နှင့် ချက်လုပ်သည့် ဝန်ဆောင်မှု</translation>
 <translation id="1719434663396780149">ကျစျေး သတိပေးချက် ဖွင့်ထားသည်။ ၎င်းကို <ph name="BEGIN_LINK" /> <ph name="NOTIFICATION_SETTINGS" /> <ph name="END_LINK" />တွင် ပြောင်းနိုင်သည်။</translation>
 <translation id="1719838434204287058">၂၄ x ၃၀ လက်မ</translation>
+<translation id="1720318856472900922">TLS WWW ဆာဗာ စစ်မှန်ကြောင်း အတည်ပြုခြင်း</translation>
 <translation id="1720941539803966190">ရှင်းလင်းပို့ချချက်ကို ပိတ်ရန်</translation>
 <translation id="1721424275792716183">* ပြထားသော အကွက်ကို ဖြည့်ရန်လိုသည်</translation>
 <translation id="1723636263173393300">ဤမူဝါဒတွင် ဖြတ်လမ်းလင့်ခ် <ph name="MAX_ITEMS_LIMIT" /> ခုထက် မပိုရပါ။</translation>
@@ -755,6 +756,7 @@
 <translation id="2168151236314517198">ဤအကြောင်းအရာ ပုံနှိပ်ထုတ်ယူခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="2171244127100824330"><ph name="ACCOUNT" /> အတွက် <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> တွင်</translation>
 <translation id="2172089022819052306">ယာဉ်ပြင်ဆင်ထိန်းသိမ်းရေး</translation>
+<translation id="217231402430591139">သင့်အကောင့်ကို လင့်ခ်ချိတ်ရန်</translation>
 <translation id="2173302385160625112">သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="2174875517416416684">ငွေလွှဲပြောင်းမှု မအောင်မြင်ပါ။ သင့်အကောင့်မှ ငွေထုတ်ယူမထားပါ။</translation>
 <translation id="2175630235841878061">100MB ကျော်သော ဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
@@ -2475,6 +2477,7 @@
 <translation id="4855395119669662878"><ph name="DATE_TIME" /> တွင် သင်၏ကြီးကြပ်သူသည် သင့်ဖိုင်များကို <ph name="CLOUD_PROVIDER" /> သို့ စတင်အပ်လုဒ်လုပ်ပါမည်။ သင်၏ ဖိုင်ကို အပ်လုဒ်လုပ်ပြီးသည်အထိ စက်ကို ချိတ်ဆက်ထားပါ။ အပ်လုဒ်လုပ်နေစဉ် စက်တွင်းဖိုင်များကိုသာ ဖတ်နိုင်ပါမည်။</translation>
 <translation id="485902285759009870">ကုဒ်ကို စိစစ်နေသည်...</translation>
 <translation id="4860260582253463350">YouTube သို့ ရှေ့ဆက်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုရပါမည်။ Family Link တွင် သင့်မိဘ (သို့) အုပ်ထိန်းသူက သတ်မှတ်ပေးထားသော ဆက်တင်များကို ရရှိပါမည်။</translation>
+<translation id="4862642413395066333">OCSP တုံ့ပြန်မှုများကို လက်မှတ်ထိုးနေ</translation>
 <translation id="4864406669374375262">ဗားရှင်းအက္ခရာတွဲကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပြီ</translation>
 <translation id="486459320933704969">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် မိဘ (သို့) အုပ်ထိန်းသူက OK ဟု ပြောရန်လိုအပ်သည်</translation>
 <translation id="4864801646102013152">အိမ်ပြုပြင်ရေး</translation>
@@ -3218,6 +3221,7 @@
 <translation id="6006365096047131769">၃ x ၅ လက်မ</translation>
 <translation id="6008122969617370890">N မှ ၁ သို့ အစီအစဉ်</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Google ၏ အသွင်ဝှက်စနစ်က သင့်အချက်အလက်များကို ကာကွယ်ပေးသည်</translation>
 <translation id="6014801569448771146">သင့်စကားဝှက်များ စစ်ဆေးခြင်း</translation>
 <translation id="6014851866995737824">“ဖွင့်ရန်” (သို့) “ပိတ်ရန်” စာရင်းတစ်ခုမျှ မပါဝင်သဖြင့် လျစ်လျူရှုထားသည်။</translation>
 <translation id="6015796118275082299">နှစ်</translation>
@@ -4494,6 +4498,7 @@
 <translation id="7947285636476623132">သင့်ကုန်ဆုံးမည့်နှစ်ကို ကြည့်ပြီး ပြန်စမ်းကြည့်ပါ</translation>
 <translation id="7947310711271925113">ပေါ့ပ်တေးဂီတ</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဝန်ဆောင်မှုများအကြောင်း လေ့လာရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
+<translation id="7948579849190819732">လက်ရှိတဘ်</translation>
 <translation id="7949135979217012031">ဗိုင်းရပ်အကာအကွယ်၊ မဲလ်ဝဲ</translation>
 <translation id="7950027195171824198">Chrome ဆက်တင်များတွင် သင်၏ကွတ်ကီး သတ်မှတ်ချက်များကို စီမံရန်</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
@@ -4902,6 +4907,7 @@
 <translation id="8597726363542221027">တစ်ပတ်ရစ်ယာဉ်</translation>
 <translation id="8600271352425265729">ဤတစ်ကြိမ်သာ</translation>
 <translation id="860043288473659153">ကတ်ကိုင်ဆောင်သူအမည်</translation>
+<translation id="8601206103050338563">TLS WWW သုံးစွဲသူကို စိစစ်ခြင်း</translation>
 <translation id="8601456038554914806">ရေအားကစား ကိရိယာ</translation>
 <translation id="8601782593888534566">စိတ်ကူးယဉ်သိပ္ပံ၊ စိတ်ကူးယဉ်</translation>
 <translation id="8604103095921958091">‘အခုဝယ်-နောက်မှပေး’ ဝန်ဆောင်မှုစည်းမျဉ်းများ စခရင်ကို မြင်ကွင်းအပြည့် ဖွင့်လိုက်သည်။</translation>

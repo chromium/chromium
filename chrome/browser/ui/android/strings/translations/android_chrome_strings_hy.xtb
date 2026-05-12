@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">Ոչ ակտիվ դյուրանցումներ</translation>
 <translation id="2227179592712503583">Հեռացնել հուշումը</translation>
 <translation id="2227444325776770048">Շարունակել որպես <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Ստացեք ձեր բոլոր պահված տեղեկությունները</translation>
 <translation id="2230777942707397948">Դատարկ պատուհան</translation>
 <translation id="223356358902285214">Ակտիվությունը համացանցում և հավելվածներում</translation>
 <translation id="2233735624724508540">Ընտրեք ժամանակահատված և հպեք «Ջնջել տվյալները»</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">Հպեք և պահեք՝ ձեր ամենաշատ այցելած կայքերն ամրացնելու համար, որպեսզի հաջորդ անգամ հեշտությամբ բացեք դրանք</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> էջանիշ}one{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}other{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}}</translation>
 <translation id="3062802207422175757">Ձեր հետաքրքրությունների հիման վրա ընտրված հոդվածներ՝ Chrome-ում</translation>
+<translation id="3066107845790462226">Ներբեռնել տեսանյութի կադրը</translation>
 <translation id="3066573403916685335">Տեղափոխել վար</translation>
 <translation id="3067505415088964188">Գինը ցածր է</translation>
 <translation id="3070005020161560471">Ավտոմատ թարգմանել</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">Վերադառնալ անվտանգության</translation>
 <translation id="6267106249090587268">Ծանուցումներ <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները սպամի կամ մոլորեցնող բովանդակության պատճառով</translation>
 <translation id="6276708887952587684">Դիտել էջի կոդը</translation>
+<translation id="62768169905160414">Պատճենել տեսանյութի կադրը</translation>
 <translation id="6277522088822131679">Այս էջը տպելիս խնդիր առաջացավ: Նորից փորձեք:</translation>
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6291294824436685757">Ջնջել այցելությունների պատմությունը․ ընտրել՝ ինչ տվյալներ ջնջել</translation>

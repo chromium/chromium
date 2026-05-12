@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">デビット、小切手</translation>
 <translation id="1719434663396780149">値下げアラートはオンになっています。[<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />] で変更できます。</translation>
 <translation id="1719838434204287058">24x30 インチ</translation>
+<translation id="1720318856472900922">TLS WWW サーバー認証</translation>
 <translation id="1720941539803966190">チュートリアルを閉じる</translation>
 <translation id="1721424275792716183">* 必須欄です</translation>
 <translation id="1723636263173393300">このポリシーで指定できるショートカットは <ph name="MAX_ITEMS_LIMIT" /> 件までです。</translation>
@@ -754,6 +755,7 @@
 <translation id="2168151236314517198">このコンテンツの印刷は管理者が設定したポリシーによってブロックされています</translation>
 <translation id="2171244127100824330">情報は <ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> に保存されています</translation>
 <translation id="2172089022819052306">自動車修理、メンテナンス</translation>
+<translation id="217231402430591139">アカウントをリンク</translation>
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2174875517416416684">取引が完了しませんでした。口座からの引き落としは行われていません。</translation>
 <translation id="2175630235841878061">100 MB を超えるファイルはダウンロードできません</translation>
@@ -2474,6 +2476,7 @@
 <translation id="4855395119669662878">管理者は <ph name="DATE_TIME" /> に <ph name="CLOUD_PROVIDER" /> へのファイルのアップロードを開始します。ファイルのアップロードが完了するまでデバイスを接続したままにしてください。アップロード中は、ローカル ファイルの読み取りのみが可能です。</translation>
 <translation id="485902285759009870">コードを確認しています...</translation>
 <translation id="4860260582253463350">YouTube にアクセスするには本人確認が必要です。保護者の方がファミリー リンクで設定した内容が反映されます。</translation>
+<translation id="4862642413395066333">OCSP 応答の署名</translation>
 <translation id="4864406669374375262">バージョン文字列をクリップボードにコピーしました</translation>
 <translation id="486459320933704969">保護者の方から、このウェブサイトを開いてもよいという承認をもらう必要があります</translation>
 <translation id="4864801646102013152">リフォーム</translation>
@@ -3217,6 +3220,7 @@
 <translation id="6006365096047131769">3x5 インチ</translation>
 <translation id="6008122969617370890">N～1 の順</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Google の暗号化により情報が保護されます</translation>
 <translation id="6014801569448771146">パスワードの確認</translation>
 <translation id="6014851866995737824">「有効」リストまたは「無効」リストがないため、無視されました。</translation>
 <translation id="6015796118275082299">年</translation>
@@ -4494,6 +4498,7 @@
 <translation id="7947285636476623132">有効期限の「年」を確認してもう一度お試しください</translation>
 <translation id="7947310711271925113">ポップ ミュージック</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の機能を確認します</translation>
+<translation id="7948579849190819732">現在のタブ</translation>
 <translation id="7949135979217012031">ウイルス対策、マルウェア</translation>
 <translation id="7950027195171824198">Chrome の設定で Cookie の設定を管理する</translation>
 <translation id="7951415247503192394">（32 ビット）</translation>
@@ -4902,6 +4907,7 @@
 <translation id="8597726363542221027">中古車</translation>
 <translation id="8600271352425265729">今回のみ</translation>
 <translation id="860043288473659153">カード名義人</translation>
+<translation id="8601206103050338563">TLS WWW クライアント認証</translation>
 <translation id="8601456038554914806">ウォーター スポーツ用品</translation>
 <translation id="8601782593888534566">SF、ファンタジー</translation>
 <translation id="8604103095921958091">後払い決済の利用規約画面が画面全体に表示されています。</translation>

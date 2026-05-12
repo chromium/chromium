@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">未使用的快捷字词</translation>
 <translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身份继续</translation>
+<translation id="2230411774874187555">获取所有已保存的信息</translation>
 <translation id="2230777942707397948">空白窗口</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
 <translation id="2233735624724508540">选择时间范围，然后点按“删除数据”</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">按住即可固定最常用的网站，方便以后访问</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
 <translation id="3062802207422175757">Chrome 可提供您感兴趣的报道</translation>
+<translation id="3066107845790462226">下载视频帧</translation>
 <translation id="3066573403916685335">下移</translation>
 <translation id="3067505415088964188">价格低</translation>
 <translation id="3070005020161560471">自动翻译</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">返回安全连接</translation>
 <translation id="6267106249090587268">通知 <ph name="SEPARATOR" /> Chrome 撤销了这些权限，因为此网站包含网络垃圾或欺骗性内容</translation>
 <translation id="6276708887952587684">查看网页源代码</translation>
+<translation id="62768169905160414">复制视频帧</translation>
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
 <translation id="6278428485366576908">主题</translation>
 <translation id="6291294824436685757">删除浏览数据；选择要删除的数据</translation>

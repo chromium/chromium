@@ -470,6 +470,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1717688554309417925">Servicios de débitos y cheques</translation>
 <translation id="1719434663396780149">Las alertas de descuentos están activadas. Puedes desactivarlas en la <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">61 × 76.2 cm (24 × 30 in)</translation>
+<translation id="1720318856472900922">Autenticación de servidor TLS WWW</translation>
 <translation id="1720941539803966190">Cerrar el instructivo</translation>
 <translation id="1721424275792716183">* El campo es obligatorio</translation>
 <translation id="1723636263173393300">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> accesos directos.</translation>
@@ -754,6 +755,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2168151236314517198">La política del administrador no permite imprimir este contenido.</translation>
 <translation id="2171244127100824330">En <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Mantenimiento y reparación de vehículos</translation>
+<translation id="217231402430591139">Vincular tu cuenta</translation>
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2174875517416416684">No se pudo realizar la transacción. No se retiraron fondos de tu cuenta.</translation>
 <translation id="2175630235841878061">No se pueden descargar archivos de más de 100 MB</translation>
@@ -2475,6 +2477,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4855395119669662878">El administrador comenzará a subir tus archivos a <ph name="CLOUD_PROVIDER" /> el <ph name="DATE_TIME" />. Mantén el dispositivo conectado hasta que se complete la carga del archivo. Durante la carga, solo podrás leer archivos locales.</translation>
 <translation id="485902285759009870">Verificando código…</translation>
 <translation id="4860260582253463350">Para continuar a YouTube, debemos confirmar tu identidad. Obtendrás los parámetros de configuración que tu madre, padre o tutor estableció en Family Link.</translation>
+<translation id="4862642413395066333">Firma de respuestas de OCSP</translation>
 <translation id="4864406669374375262">Se copió la cadena de versión en el portapapeles</translation>
 <translation id="486459320933704969">Para poder visitar este sitio web, tu padre, madre o tutor debe aprobar tu solicitud.</translation>
 <translation id="4864801646102013152">Mejoras del hogar</translation>
@@ -3218,6 +3221,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6006365096047131769">7.62 × 12.7 cm (3 × 5 in)</translation>
 <translation id="6008122969617370890">Orden de N a 1</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">La encriptación de Google protege tu información</translation>
 <translation id="6014801569448771146">Revisa tus contraseñas</translation>
 <translation id="6014851866995737824">Se ignoró porque faltaba la lista de habilitaciones o la de inhabilitaciones.</translation>
 <translation id="6015796118275082299">Año</translation>
@@ -4495,6 +4499,7 @@ Detalles adicionales:
 <translation id="7947285636476623132">Comprueba el año de vencimiento y vuelve a intentarlo</translation>
 <translation id="7947310711271925113">Música pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para conocer las funciones de Chrome</translation>
+<translation id="7948579849190819732">Pestaña actual</translation>
 <translation id="7949135979217012031">Antivirus y software malicioso</translation>
 <translation id="7950027195171824198">Administra tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
@@ -4903,6 +4908,7 @@ Detalles adicionales:
 <translation id="8597726363542221027">Vehículos usados</translation>
 <translation id="8600271352425265729">Solo esta vez</translation>
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
+<translation id="8601206103050338563">Autenticación de cliente TLS WWW</translation>
 <translation id="8601456038554914806">Equipo para deportes náuticos</translation>
 <translation id="8601782593888534566">Ciencia ficción y fantasía</translation>
 <translation id="8604103095921958091">La pantalla de las condiciones del servicio de Compra ahora y paga después está totalmente abierta.</translation>

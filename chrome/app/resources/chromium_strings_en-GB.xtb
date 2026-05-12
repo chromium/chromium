@@ -184,7 +184,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2933336679234709858">Your data is encrypted with your passphrase. Enter it to use and save Chromium data in your Google Account.</translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
 <translation id="2948852018303413228">Sign in faster to sites using saved passwords for Chromium on iOS</translation>
-<translation id="2966959524256557996">Add a new Chromium profile to keep bookmarks, passwords and settings apart.</translation>
 <translation id="2970426615109535079">Your organisation manages Chromium</translation>
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="2977506796191543575">If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing</translation>
@@ -262,7 +261,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3788675262216168505">Manage Chromium profiles</translation>
 <translation id="3790262771324122253">Learn why Chromium blocks some downloads</translation>
 <translation id="379589255253486813">Chromium will let you know if anything needs your review</translation>
-<translation id="3798048725356732506">Chromium profiles help you separate different parts of your life. Add a new profile now.</translation>
 <translation id="3802055581630249637">Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them</translation>
 <translation id="3810973564298564668">Manage</translation>
 <translation id="3823384748599722168">To use your saved passwords, follow the QR code, download Chromium for iOS and sign in to your Google Account</translation>
@@ -425,7 +423,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
 <translation id="569897634095159764">Unable to connect to the Internet. Proxy server requires authentication.</translation>
-<translation id="5713518899297503106">Chromium profiles let you keep personal browsing and work apart. Add a new profile now.</translation>
 <translation id="5768371961535086509">Chromium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chromium fast. Your inactive tabs automatically become active again when you go back to them. <ph name="BEGIN_LINK" />Learn more about Memory Saver<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">If you forgot your passphrase or want to change this setting, <ph name="SETTINGS_LINK" /> the Chromium data in your account</translation>
 <translation id="5800158606660203929">Customise and control Chromium. Set Chromium as your default.</translation>
@@ -719,7 +716,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8704119203788522458">This is your Chromium</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8719993436687031146">Sign in to Chromium?</translation>
-<translation id="8745263398357414606">Keep everything in Chromium</translation>
 <translation id="8747073452963259673">bottom-left corner of search area: left <ph name="LEFT" />%, bottom <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Install error: Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium needs permission to access your camera and microphone for this site</translation>

@@ -271,6 +271,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2226826835915474236">Aktiv olmayan qısayollar</translation>
 <translation id="2227179592712503583">Təklifi silin</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> kimi davam edin</translation>
+<translation id="2230411774874187555">Yadda saxlanılmış bütün məlumatlarınızı əldə edin</translation>
 <translation id="2230777942707397948">Boş pəncərə</translation>
 <translation id="223356358902285214">Veb və Tətbiq Fəaliyyəti</translation>
 <translation id="2233735624724508540">Vaxt aralığı seçin və sonra Datanı silin seçiminə toxunun</translation>
@@ -483,6 +484,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3057938290530993634">Növbəti dəfə asan giriş üçün ən çox daxil olduğunuz veb-saytları bərkitmək məqsədilə basıb saxlayın</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> əlfəcin}other{<ph name="BOOKMARKS_COUNT_MANY" /> əlfəcin}}</translation>
 <translation id="3062802207422175757">Chrome'da maraqlarınıza dair məqalələr</translation>
+<translation id="3066107845790462226">Video kadrını endirin</translation>
 <translation id="3066573403916685335">Aşağıya</translation>
 <translation id="3067505415088964188">Qiymət aşağıdır</translation>
 <translation id="3070005020161560471">Avtomatik tərcümə edin</translation>
@@ -1214,6 +1216,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6264485186158353794">Güvənliyə qayıdın</translation>
 <translation id="6267106249090587268">Bildirişlər <ph name="SEPARATOR" /> Spam və ya aldadıcı kontent səbəbilə Chrome bu icazələri sildi</translation>
 <translation id="6276708887952587684">Səhifə qaynağına baxın</translation>
+<translation id="62768169905160414">Video kadrını kopiyalayın</translation>
 <translation id="6277522088822131679">Səhifə çap olunarkən problem oldu. Yenidən cəhd edin.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Axtarış datasını silin; silinəcək datanı seçin</translation>

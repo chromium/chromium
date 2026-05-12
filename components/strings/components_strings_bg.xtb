@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">Услуги за дебитни карти и чекове</translation>
 <translation id="1719434663396780149">Сигналите за понижение на цената са включени. Можете да промените това от <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 инча</translation>
+<translation id="1720318856472900922">Удостоверяване на TLS WWW сървър</translation>
 <translation id="1720941539803966190">Затваряне на урока</translation>
 <translation id="1721424275792716183">* Полето е задължително</translation>
 <translation id="1723636263173393300">Това правило не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> преки пътя.</translation>
@@ -2475,6 +2476,7 @@
 <translation id="4855395119669662878">Администраторът ще започне да качва файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> на <ph name="DATE_TIME" />. Не прекратявайте връзката на устройството си, докато качването на файловете не завърши. По време процеса ще можете да четете само локалните файлове.</translation>
 <translation id="485902285759009870">Кодът се потвърждава...</translation>
 <translation id="4860260582253463350">За да продължите към YouTube, трябва да се уверим, че това сте вие. Ще получите настройките, зададени във Family Link от родителя или настойника ви.</translation>
+<translation id="4862642413395066333">Подписване на OCSP отговори</translation>
 <translation id="4864406669374375262">Низът на версията е копиран в буферната памет</translation>
 <translation id="486459320933704969">Родител или настойник трябва да разреши да посетите този уебсайт</translation>
 <translation id="4864801646102013152">Подобрение на дома</translation>
@@ -4496,6 +4498,7 @@
 <translation id="7947285636476623132">Проверете годината на валидност и опитайте отново</translation>
 <translation id="7947310711271925113">Поп музика</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да научите повече за функциите на Chrome</translation>
+<translation id="7948579849190819732">Текущ раздел</translation>
 <translation id="7949135979217012031">Антивирусни програми и злонамерен софтуер</translation>
 <translation id="7950027195171824198">Управление на предпочитанията ви за „бисквитките“ от настройките на Chrome</translation>
 <translation id="7951415247503192394">(32 бита)</translation>
@@ -4903,6 +4906,7 @@
 <translation id="8597726363542221027">Употребявани превозни средства</translation>
 <translation id="8600271352425265729">Само този път</translation>
 <translation id="860043288473659153">Име на титуляря на картата</translation>
+<translation id="8601206103050338563">Удостоверяване на TLS WWW клиент</translation>
 <translation id="8601456038554914806">Оборудване за водни спортове</translation>
 <translation id="8601782593888534566">Научна фантастика и фентъзи</translation>
 <translation id="8604103095921958091">Екранът с Общите условия на „Купете сега, платете по-късно“ е отворен на пълната височина.</translation>

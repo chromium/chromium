@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">Debet və çek xidmətləri</translation>
 <translation id="1719434663396780149">Qiymət endirimi xəbərdarlıqları aktivdir. Bunu <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> bölməsində dəyişə bilərsiniz.</translation>
 <translation id="1719838434204287058">24 x 30 düym</translation>
+<translation id="1720318856472900922">TLS WWW Server Doğrulaması</translation>
 <translation id="1720941539803966190">Dərsliyi bağlayın</translation>
 <translation id="1721424275792716183">* Sahə tələb olunur</translation>
 <translation id="1723636263173393300">Bu siyahıda maksimum <ph name="MAX_ITEMS_LIMIT" /> qısayol ola bilər.</translation>
@@ -754,6 +755,7 @@
 <translation id="2168151236314517198">Bu məzmunun çap edilməsi administrator siyasəti əsasında bloklanıb</translation>
 <translation id="2171244127100824330"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> tətbiqində <ph name="ACCOUNT" /> üçün</translation>
 <translation id="2172089022819052306">Avto Təmir və Texniki Qulluq</translation>
+<translation id="217231402430591139">Hesabınızı əlaqələndirin</translation>
 <translation id="2173302385160625112">İnternet bağlantısını yoxlayın</translation>
 <translation id="2174875517416416684">Tranzaksiya alınmadı. Hesabınızdan heç bir vəsait çıxarılmadı.</translation>
 <translation id="2175630235841878061">100 MB-dən böyük fayllar endirilə bilməz</translation>
@@ -2470,6 +2472,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4855395119669662878">Administrator faylları <ph name="DATE_TIME" /> tarixində <ph name="CLOUD_PROVIDER" /> buluduna yükləməyə başlayacaq. Faylın yüklənməsi tamamlanana qədər cihazı qoşulu saxlayın. Yüklənmə zamanı yalnız yerli faylları oxuya biləcəksiniz.</translation>
 <translation id="485902285759009870">Kod doğrulanır...</translation>
 <translation id="4860260582253463350">YouTube-a keçmək üçün kimliyinizi təsdiq etməliyik. Valideyn və ya qəyyumunuzun Family Link-də təyin etdiyi ayarları əldə edəcəksiniz.</translation>
+<translation id="4862642413395066333">OCSP Cavabları imzalanır</translation>
 <translation id="4864406669374375262">Versiya sətri mübadilə buferinə kopyalandı</translation>
 <translation id="486459320933704969">Valideyn və ya qəyyum bu vebsaytı ziyarət etmənizə icazə verməlidir</translation>
 <translation id="4864801646102013152">Ev Təmiri</translation>
@@ -3213,6 +3216,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6006365096047131769">3 x 5 düym</translation>
 <translation id="6008122969617370890">N-1 sırası</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Google şifrələməsi məlumatlarınızı qoruyur</translation>
 <translation id="6014801569448771146">Parolları yoxlayın</translation>
 <translation id="6014851866995737824">"Aktiv" və ya "Deaktiv" siyahısı olmadığı üçün nəzərə alınmayıb.</translation>
 <translation id="6015796118275082299">İl</translation>
@@ -4489,6 +4493,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7947285636476623132">Bitmə ilini yoxlayın və yenidən cəhd edin</translation>
 <translation id="7947310711271925113">Pop Musiqisi</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome funksiyaları haqqında ətraflı məlumat əldə edin</translation>
+<translation id="7948579849190819732">Cari tab</translation>
 <translation id="7949135979217012031">Antivirus və Zərərli Proqramlar</translation>
 <translation id="7950027195171824198">Chrome ayarlarında kuki tərcihlərinizi idarə edin</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
@@ -4896,6 +4901,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8597726363542221027">İkinci Əl Avtomobillər</translation>
 <translation id="8600271352425265729">Yalnız bu dəfə</translation>
 <translation id="860043288473659153">Kart sahibinin adı</translation>
+<translation id="8601206103050338563">TLS WWW Klient Doğrulaması</translation>
 <translation id="8601456038554914806">Su idmanı avadanlıqları</translation>
 <translation id="8601782593888534566">Elmi-Fantastika və Fantaziya</translation>
 <translation id="8604103095921958091">"İndi al, sonra ödə" xidmət şərtləri ekranı tam hündürlükdə açıldı.</translation>

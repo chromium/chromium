@@ -142,7 +142,6 @@
 <translation id="147982357559798527">Փոխվել է</translation>
 <translation id="1486096554574027028">Գաղտնաբառերի որոնում</translation>
 <translation id="1491277525950327607">Կրկնակի հպեք՝ կարգավորումը միացնելու/անջատելու համար</translation>
-<translation id="1491965206608166851">Մուտք գործեք ձեր պահված գաղտնաբառերով և մուտքի բանալիներով ցանկացած հավելվածից</translation>
 <translation id="1492417797159476138">Օգտանունն արդեն պահված է այս կայքի համար</translation>
 <translation id="1497590942294823549">Ընտրացանկ → Գաղտնաբառերի կառավարիչ</translation>
 <translation id="1498283581832036924">Ձեր <ph name="WEBSITE" /> հաշիվը չի ջնջվի։</translation>
@@ -358,12 +357,10 @@
 <translation id="2199562093267256223">Խումբը կջնջվի բոլոր սարքերում, որոնցում մուտք եք գործել <ph name="USER_EMAIL" />։</translation>
 <translation id="2202084845446535117">Էլփոստի հաշիվներ չկան</translation>
 <translation id="2214453882118345682">Գտեք ապրանքներ, թարգմանեք տեքստեր և ստացեք տեղեկություններ ձեզ շրջապատող օբյեկտների մասին՝ օգտագործելով տեսախցիկը։</translation>
-<translation id="2215819824168709130">Թաքցնել գների հետագծման քարտը</translation>
 <translation id="2216366330550244277">Անցեք ապրանքի էջ</translation>
 <translation id="2219935992754556187">Chrome-ը պաշտպանում է ձեր զգայուն տվյալները Face ID-ի միջոցով</translation>
 <translation id="2220529011494928058">Հաղորդել խնդրի մասին</translation>
 <translation id="2223461067862937305">Ստեղծել QR կոդ</translation>
-<translation id="2225701818156393674">Ապրանք, որն ավելացվել է հետագծվող ապրանքների ձեր ցուցակում։</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
 <translation id="2236949375853147973">Իմ գործողությունները</translation>
 <translation id="2237869114829007407">Ստացեք ցանկացած էջի կամ թեմայի մասին ընդհանուր տեղեկություններ և հիմնական վիճակագրական տվյալներ</translation>
@@ -554,7 +551,6 @@
 <translation id="2902312830803030883">Այլ գործողություններ</translation>
 <translation id="2904788871580817212">Գնի իջեցում բացված ներդիրում, գինը <ph name="PREVIOUS_PRICE" />-ից դարձել է <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Դուք ունեք <ph name="NUMBER_OF_PASSWORDS" /> կրկնվող գաղտնաբառ, որոնք վտանգում են ձեր անվտանգությունը։</translation>
-<translation id="29153882450867370">Թաքցնել «Հետևել գներին» քարտը</translation>
 <translation id="291754862089661335">Դիրքավորեք QR-կոդը կամ գծակոդը այս շրջանակի մեջ</translation>
 <translation id="2918688092312652908">Նշել որպես չկարդացված</translation>
 <translation id="2922210239002704889">Անցեք գլխավոր էջ կամ օգտագործեք ստեղնաշարը</translation>
@@ -566,6 +562,7 @@
 <translation id="2969979262385602596">Չհաջողվեց մուտք գործել: Փորձեք մի փոքր ուշ:</translation>
 <translation id="2975761176769946178">Պահանջվում է նշել URL</translation>
 <translation id="297667759942911166">Համագործակցեք ներդիրների խմբերում</translation>
+<translation id="298696743524648170">Gemini-ը Chrome-ում օգտագործելու համար մուտք գործեք Chrome ձեր Google հաշվի միջոցով</translation>
 <translation id="2987670534697681860">Ձեր բոլոր գաղտնաբառերն այս սարքում օգտագործելու համար հաստատեք ձեր ինքնությունը։</translation>
 <translation id="2989523299700148168">Վերջերս այցելած</translation>
 <translation id="2989805286512600854">Բացել նոր ներդիրում</translation>
@@ -620,6 +617,7 @@
 <translation id="31652791196570636">Փակել</translation>
 <translation id="3167868116600277716">Discover ֆիդ</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini-ը հասանելի չէ այս էջում</translation>
 <translation id="3174662312949010067">Պահված գաղտնաբառերը կարող եք նաև օգտագործել ձեր մյուս սարքերում։</translation>
 <translation id="3177338796769255211">Մուտք գործեք՝ ձեր էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
@@ -995,6 +993,7 @@
 <translation id="4552042254369397518">Պատճենում…</translation>
 <translation id="4553044860350038560">Այլ մուտքի բանալիներ</translation>
 <translation id="4564893319561643483">Թաքցնել «<ph name="TITLE" />» մոդուլը</translation>
+<translation id="456502772933839252">Ցուցադրվում է <ph name="PAGE_TITLE" /> էջը</translation>
 <translation id="4565377596337484307">Թաքցնել գաղտնաբառը</translation>
 <translation id="4568230126482344545">Թաքցնել «Վերջին ներդիրները» կետը</translation>
 <translation id="4578835633387306383">Միացնել…</translation>
@@ -1134,7 +1133,6 @@
 <translation id="4992255726304765516">Ներդիրների խմբի գույնը՝ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5009127379503001909">Շարունակել դիտարկումը</translation>
-<translation id="5012914568031465281">Չհաջողվեց հետագծել գինը։</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Ուղարկվում են <ph name="USER_EMAIL" /> հասցեին</translation>
 <translation id="5017529052065664584">Վերջին 15 րոպեն</translation>
@@ -1404,6 +1402,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5936065461722368675">Թարգմանել ամբողջ էջը</translation>
 <translation id="5937560539988385583">Էջը թարգմանված է</translation>
 <translation id="5938160824633642847">Ձեր սարքի հիշողությունը գրեթե լիքն է։ Ազատեք տարածք և նորից փորձեք:</translation>
+<translation id="5941711191222866238">Նվազեցնել</translation>
 <translation id="5944869793365969636">Սկանավորեք QR կոդը</translation>
 <translation id="5948291296578561264">Սրա շնորհիվ կկարողանաք լուսանկարներ պահել ձեր ֆոտոդարանում:</translation>
 <translation id="5948605885471592910">Դիտեք և կառավարեք ձեր բոլոր բացված ներդիրները և խմբերը</translation>
@@ -2168,6 +2167,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8515534223594179607">Արտահանել այցելությունների պատմությունը</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}one{{count} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}other{{count} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Ներդիրներ <ph name="FIRST_VISIBLE_TAB" /> – <ph name="LAST_VISIBLE_TAB" />՝ <ph name="NUMBER_OF_OPEN_TABS" />-ից</translation>
+<translation id="8525306231823319788">Լիաէկրան</translation>
 <translation id="8528009254289981965">Այլ հավելվածներից հղումներ բացեք ինկոգնիտո ռեժիմում</translation>
 <translation id="8529767659511976195">Նոր</translation>
 <translation id="8531572740963685410">PDF ֆայլեր</translation>
@@ -2289,7 +2289,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8879952635974818770">Անհատականացված բովանդակություն</translation>
 <translation id="8887595428614802520">Փակել բոլոր ներդիրներն ու խմբերը</translation>
 <translation id="8888595487174963247">Հեռացնել հիշեցումը</translation>
-<translation id="8891031436559779793">Մենք կտեղեկացնենք ձեզ, երբ որևէ կայքում գները նվազեն։</translation>
 <translation id="8893208530912252670">Տեսանյութեր</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
 <translation id="8900845556227858314">Դիտարկիչի հավելված</translation>

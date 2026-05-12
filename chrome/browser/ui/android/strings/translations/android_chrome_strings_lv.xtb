@@ -271,6 +271,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2226826835915474236">Neaktīvas saīsnes</translation>
 <translation id="2227179592712503583">Noņemt ieteikumu</translation>
 <translation id="2227444325776770048">Turpināt kā: <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Iegūstiet visu savu saglabāto informāciju</translation>
 <translation id="2230777942707397948">Tukšs logs</translation>
 <translation id="223356358902285214">Darbības tīmeklī un lietotnēs</translation>
 <translation id="2233735624724508540">Izvēlieties laika periodu un pēc tam pieskarieties vienumam Dzēst datus.</translation>
@@ -483,6 +484,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3057938290530993634">Pieskarieties un turiet, lai piespraustu visbiežāk apmeklētās vietnes un nākamreiz varētu tām ērti piekļūt.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> grāmatzīme}zero{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīmju}one{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīme}other{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīmes}}</translation>
 <translation id="3062802207422175757">Ar jūsu interesēm saistīti raksti pārlūkā Chrome</translation>
+<translation id="3066107845790462226">Lejupielādēt video kadru</translation>
 <translation id="3066573403916685335">Pārvietot lejup</translation>
 <translation id="3067505415088964188">Cena ir zema</translation>
 <translation id="3070005020161560471">Automātiski tulkot</translation>
@@ -1216,6 +1218,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6264485186158353794">Atpakaļ drošībā</translation>
 <translation id="6267106249090587268">Paziņojumi <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo vietnē ir nevēlams vai maldinošs saturs</translation>
 <translation id="6276708887952587684">Skatīt lapas avotu</translation>
+<translation id="62768169905160414">Kopēt video kadru</translation>
 <translation id="6277522088822131679">Drukājot lapu, radās problēma. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="6278428485366576908">Motīvs</translation>
 <translation id="6291294824436685757">Dzēst pārlūkošanas datus; atlasiet dzēšamos datus</translation>

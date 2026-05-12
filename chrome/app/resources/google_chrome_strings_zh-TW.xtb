@@ -96,7 +96,6 @@
 <translation id="2018528049276128029">每個設定檔都有獨立專屬的 Chrome 資訊，例如書籤、歷史記錄和密碼等等</translation>
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="2024959665595762054">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請驗證身分</translation>
-<translation id="2026377840141807639">你可以使用 Chrome 設定檔，區分個人瀏覽內容和工作資料。立即新增設定檔！</translation>
 <translation id="2034233344106846793">Chrome 會盡可能自動將不安全的連線升級為 HTTPS</translation>
 <translation id="2039417478970545937">設定。</translation>
 <translation id="2066690553719545730">一律顯示 AI 模式</translation>
@@ -449,7 +448,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5736850870166430177">如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能</translation>
 <translation id="5756509061973259733">這部裝置已有與此帳戶相關聯的 Chrome 設定檔</translation>
 <translation id="5759947850379142561">選取要使用 Google 智慧鏡頭搜尋的文字或圖片，或按下 Escape 鍵退出 Google 智慧鏡頭</translation>
-<translation id="5762867845020858790">新增 Chrome 設定檔，區分不同使用者的書籤、密碼和設定。</translation>
 <translation id="5779427581965287859">將 Chrome 設為預設瀏覽器，並釘選到工作列</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary 版</translation>
 <translation id="5804318322022881572">無法啟動 Chrome，請再試一次。</translation>
@@ -563,7 +561,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6800285125190089494">在 iOS 版 Chrome 上使用儲存的密碼，加快登入網站的速度</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
-<translation id="6841242485723266823">你可以根據不同的生活用途建立 Chrome 設定檔。立即新增設定檔！</translation>
 <translation id="684888714667046800">無法連上網際網路。如果你使用防火牆，請確認 <ph name="PRODUCT_EXE_NAME" /> 已加入許可清單。</translation>
 <translation id="6859580922007887573">按下 Tab 鍵即可繼續</translation>
 <translation id="6877155553248388166">搜尋區域的右下角：右側 <ph name="RIGHT" />%，底部 <ph name="BOTTOM" />%</translation>
@@ -754,7 +751,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將在 1 分鐘後重新啟動}other{Chrome 將在 # 分鐘後重新啟動}}</translation>
 <translation id="8637932705841171563">如要分享視窗內容，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
 <translation id="8641606876632989680">如果你使用遭外洩的密碼登入帳戶，Chrome 會通知你</translation>
-<translation id="8647930742055103497">用 Chrome 集中管理所有內容</translation>
 <translation id="8656634243791296665">開啟 Chrome 內建 Gemini (開發人員版)</translation>
 <translation id="8669527147644353129">Google Chrome 小幫手</translation>
 <translation id="8679801911857917785">這個擴充功能也會控管 Chrome 啟動時所顯示的網頁。</translation>

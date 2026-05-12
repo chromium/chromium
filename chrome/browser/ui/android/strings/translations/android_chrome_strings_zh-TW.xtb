@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">已停用的搜尋捷徑</translation>
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="2227444325776770048">以「<ph name="USER_FULL_NAME" />」的身分繼續</translation>
+<translation id="2230411774874187555">取得所有儲存的資訊</translation>
 <translation id="2230777942707397948">空白視窗</translation>
 <translation id="223356358902285214">網路和應用程式活動</translation>
 <translation id="2233735624724508540">選擇時間範圍，然後輕觸「刪除資料」</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">按住即可釘選最常造訪的網站，方便下次存取</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">在 Chrome 上閱讀你有興趣的文章</translation>
+<translation id="3066107845790462226">下載影片影格</translation>
 <translation id="3066573403916685335">下移</translation>
 <translation id="3067505415088964188">價格較低</translation>
 <translation id="3070005020161560471">自動翻譯</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">返回安全網頁</translation>
 <translation id="6267106249090587268">通知 <ph name="SEPARATOR" /> 這個網站含有垃圾或欺詐內容，因此 Chrome 已移除這些權限</translation>
 <translation id="6276708887952587684">查看網頁原始碼</translation>
+<translation id="62768169905160414">複製影片影格</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題</translation>
 <translation id="6291294824436685757">刪除瀏覽資料；選取要刪除的資料</translation>

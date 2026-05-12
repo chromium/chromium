@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6452138246455930388">열려 있는 탭의 가격 인하(<ph name="OLD_PRICE" />~<ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
 <translation id="6500423977866688905">창이 좁은 경우 모바일 뷰 요청</translation>
+<translation id="6514791408445720076">페이지 맞춤설정하기</translation>
 <translation id="6527303717912515753">공유</translation>
 <translation id="6530703012083415527">사용 설정하면 사이트에서 팝업 및 리디렉션을 사용할 수 있습니다. 사용 중지하면 사이트에서 팝업 및 리디렉션을 사용할 수 없습니다.</translation>
 <translation id="6540488083026747005">이 사이트에서 서드 파티 쿠키를 허용했습니다</translation>
@@ -706,6 +707,7 @@
 <translation id="83792324527827022">사이트에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="8380167699614421159">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다.</translation>
 <translation id="8394832520002899662">탭하여 사이트로 돌아가기</translation>
+<translation id="8404500559369898929">맞춤형 배경 테마를 선택하여 나만의 Chrome을 만들어 보세요.</translation>
 <translation id="8409345997656833551">기사를 간단히 보기로 표시할 수 있을 때 알림 받기</translation>
 <translation id="8416874502399604126">현재 마이크 허용됨</translation>
 <translation id="8423565414844018592">텍스트 크기 조정이 <ph name="TEXT_SCALING" />로 설정됩니다</translation>

@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">Дэбетовыя і разліковыя паслугі</translation>
 <translation id="1719434663396780149">Абвесткі пра зніжэнне цэн уключаны. Каб выключыць іх, перайдзіце ў <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 цаляў</translation>
+<translation id="1720318856472900922">Аўтэнтыфікацыя сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрыць дапаможнік</translation>
 <translation id="1721424275792716183">* Абавязковае поле</translation>
 <translation id="1723636263173393300">Максімальная колькасць ярлыкоў для гэтага правіла: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -754,6 +755,7 @@
 <translation id="2168151236314517198">Палітыка, зададзеная адміністратарам, блакіруе магчымасць друкавання гэтага змесціва</translation>
 <translation id="2171244127100824330">У сэрвісе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для ўліковага запісу <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Рамонт і абслугоўванне аўтамабіляў</translation>
+<translation id="217231402430591139">Звязаць уліковы запіс</translation>
 <translation id="2173302385160625112">Праверце падключэнне да інтэрнэту</translation>
 <translation id="2174875517416416684">Трансакцыя не выканана. Сродкі не спісаны з вашага рахунку.</translation>
 <translation id="2175630235841878061">Файлы памерам больш за 100 МБ спампоўваць нельга</translation>
@@ -2474,6 +2476,7 @@
 <translation id="4855395119669662878">Адміністратар пачне запампоўванне вашых файлаў у <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Да заканчэння гэтай аперацыі прылада павінна быць падключана да інтэрнэту. Падчас запампоўвання вы зможаце праглядаць лакальныя файлы толькі ў рэжыме чытання.</translation>
 <translation id="485902285759009870">Ідзе спраўджанне кода…</translation>
 <translation id="4860260582253463350">Каб адкрыць YouTube, мы павінны ўпэўніцца, што гэта ты. Ты будзеш карыстацца параметрамі, якія адзін з бацькоў або законны прадстаўнік наладзіў у Family Link.</translation>
+<translation id="4862642413395066333">Падпісванне адказаў OCSP</translation>
 <translation id="4864406669374375262">Радок з версіяй скапіраваны ў буфер абмену</translation>
 <translation id="486459320933704969">Адзін з бацькоў або законны прадстаўнік павінен даць дазвол на наведванне гэтага сайта</translation>
 <translation id="4864801646102013152">Добраўпарадкаванне дома</translation>
@@ -3216,6 +3219,7 @@
 <translation id="6006365096047131769">3 x 5 цаляў</translation>
 <translation id="6008122969617370890">Парадак "ад N да 1"</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Вашу інфармацыю абараняе шыфраванне Google</translation>
 <translation id="6014801569448771146">Праверце свае паролі</translation>
 <translation id="6014851866995737824">Ігнаруецца, бо адсутнічае спіс "Уключана" або спіс "Уключана".</translation>
 <translation id="6015796118275082299">Год</translation>
@@ -4493,6 +4497,7 @@
 <translation id="7947285636476623132">Праверце год тэрміну дзеяння і паўтарыце спробу</translation>
 <translation id="7947310711271925113">Поп-музыка</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб даведацца пра функцыі браўзера Chrome, націсніце Tab, затым Enter</translation>
+<translation id="7948579849190819732">Бягучая ўкладка</translation>
 <translation id="7949135979217012031">Антывірусы і інструменты барацьбы са шкоднымі праграмамі</translation>
 <translation id="7950027195171824198">Кіруйце параметрамі файлаў cookie праз налады Chrome</translation>
 <translation id="7951415247503192394">(32-бітная версія)</translation>
@@ -4900,6 +4905,7 @@
 <translation id="8597726363542221027">Ужываныя аўтамабілі</translation>
 <translation id="8600271352425265729">Толькі ў гэты раз</translation>
 <translation id="860043288473659153">Імя ўладальніка карткі</translation>
+<translation id="8601206103050338563">Аўтэнтыфікацыя кліента TLS WWW</translation>
 <translation id="8601456038554914806">Рыштунак для водных відаў спорту</translation>
 <translation id="8601782593888534566">Навуковая фантастыка і фэнтэзі</translation>
 <translation id="8604103095921958091">Экран з умовамі выкарыстання куплі ў растэрміноўку адкрыты на ўсю вышыню.</translation>

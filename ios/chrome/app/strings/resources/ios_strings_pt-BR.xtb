@@ -142,7 +142,6 @@
 <translation id="147982357559798527">Alterada</translation>
 <translation id="1486096554574027028">Pesquise senhas</translation>
 <translation id="1491277525950327607">Toque duas vezes para alternar a configuração</translation>
-<translation id="1491965206608166851">Faça login com suas senhas e chaves de acesso salvas em qualquer app</translation>
 <translation id="1492417797159476138">Você já salvou este nome de usuário para este site</translation>
 <translation id="1497590942294823549">Menu → Gerenciador de senhas</translation>
 <translation id="1498283581832036924">Sua conta de <ph name="WEBSITE" /> não será excluída.</translation>
@@ -359,12 +358,10 @@
 <translation id="2199562093267256223">Essa ação vai excluir o grupo de todos os dispositivos conectados à conta <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Sem contas de e-mail</translation>
 <translation id="2214453882118345682">Compre, traduza e identifique o que você quiser usando a câmera.</translation>
-<translation id="2215819824168709130">Ocultar o card "Monitorar preço"</translation>
 <translation id="2216366330550244277">Acessar a página de um produto</translation>
 <translation id="2219935992754556187">O Chrome protege seus dados sensíveis com o Face ID.</translation>
 <translation id="2220529011494928058">Informar um problema</translation>
 <translation id="2223461067862937305">Criar um QR code</translation>
-<translation id="2225701818156393674">O item foi adicionado à sua lista de produtos monitorados.</translation>
 <translation id="2230173723195178503">Página da Web carregada</translation>
 <translation id="2236949375853147973">Minha atividade</translation>
 <translation id="2237869114829007407">Tenha uma visão geral e insights importantes sobre qualquer página ou tema</translation>
@@ -555,7 +552,6 @@
 <translation id="2902312830803030883">Mais ações</translation>
 <translation id="2904788871580817212">Redução no preço na sua guia aberta: <ph name="PRODUCT_NAME" /> de <ph name="PREVIOUS_PRICE" /> por <ph name="PRICE" /> em <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Você tem <ph name="NUMBER_OF_PASSWORDS" /> senhas reutilizadas que podem colocar sua segurança em risco.</translation>
-<translation id="29153882450867370">Ocultar "Monitorar preço"</translation>
 <translation id="291754862089661335">Posicione o QR code ou o código de barras neste quadro</translation>
 <translation id="2918688092312652908">Marcar como não lido</translation>
 <translation id="2922210239002704889">Vá para a página inicial ou para o teclado</translation>
@@ -1138,7 +1134,6 @@
 <translation id="4992255726304765516">Cor do grupo de guias <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copiar senha</translation>
 <translation id="5009127379503001909">Continuar navegando</translation>
-<translation id="5012914568031465281">Não foi possível monitorar o preço.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Enviar para <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
@@ -1408,6 +1403,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5936065461722368675">Traduzir a página toda</translation>
 <translation id="5937560539988385583">Página traduzida</translation>
 <translation id="5938160824633642847">Seu dispositivo está quase cheio. Libere espaço e tente novamente.</translation>
+<translation id="5941711191222866238">Minimizar</translation>
 <translation id="5944869793365969636">Ler QR code</translation>
 <translation id="5948291296578561264">Isso permite que você salve fotos na sua biblioteca de fotos.</translation>
 <translation id="5948605885471592910">Ver e gerenciar tudo o que você tem aberto</translation>
@@ -2172,6 +2168,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8515534223594179607">Exportar dados de navegação</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} senhas e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Guias <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8525306231823319788">Tela cheia</translation>
 <translation id="8528009254289981965">Abrir links de outros apps na navegação anônima</translation>
 <translation id="8529767659511976195">Novo</translation>
 <translation id="8531572740963685410">PDFs</translation>
@@ -2293,7 +2290,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8879952635974818770">Conteúdo personalizado</translation>
 <translation id="8887595428614802520">Fechar todos os grupos e guias</translation>
 <translation id="8888595487174963247">Remover lembrete</translation>
-<translation id="8891031436559779793">Você vai receber notificações se houver uma redução no preço em algum site.</translation>
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
 <translation id="8900845556227858314">App de navegador</translation>

@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">სადებეტო მომსახურება და საბანკო ოპერაციები ჩეკებით</translation>
 <translation id="1719434663396780149">ფასების კლების შესახებ გაფრთხილებები ჩართულია. ამის შეცვლა შეგიძლიათ სექციიდან „<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />“.</translation>
 <translation id="1719838434204287058">24 x 30 დუიმი</translation>
+<translation id="1720318856472900922">TLS WWW სერვერის ავთენტიფიკაცია</translation>
 <translation id="1720941539803966190">სახელმძღვანელოს დახურვა</translation>
 <translation id="1721424275792716183">* ველი აუცილებელია</translation>
 <translation id="1723636263173393300">ამ წესებში <ph name="MAX_ITEMS_LIMIT" />-ზე მეტი მალსახმობი არ უნდა იყოს.</translation>
@@ -2475,6 +2476,7 @@
 <translation id="4855395119669662878">თქვენი ადმინისტრატორის მიერ <ph name="CLOUD_PROVIDER" />-ზე ფაილების ატვირთვის პროცესის დაწყების დროა <ph name="DATE_TIME" />. განახლების დასრულებამდე დაკავშირებული გქონდეთ თქვენი მოწყობილობა. ატვირთვის პროცესში მხოლოდ ადგილობრივი ფაილების წაკითხვის საშუალება გექნებათ.</translation>
 <translation id="485902285759009870">მიმდინარეობს კოდის დადასტურება...</translation>
 <translation id="4860260582253463350">YouTube-ზე გადასვლამდე უნდა დავრწმუნდეთ თქვენს ვინაობაში. თქვენ მიიღებთ პარამეტრებს, რომლებიც თქვენმა მშობელმა ან მეურვემ დააყენა Family Link-ში.</translation>
+<translation id="4862642413395066333">ხელმოწერის OCSP პასუხები</translation>
 <translation id="4864406669374375262">ვერსიის სტრიქონი დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="486459320933704969">მშობელმა ან მეურვემ უნდა დაადასტუროს, რომ ამ ვებსაიტის მონახულება შეგიძლიათ</translation>
 <translation id="4864801646102013152">რემონტი</translation>
@@ -4497,6 +4499,7 @@
 <translation id="7947285636476623132">შეამოწმეთ ვადის გასვლის წელი და ხელახლა ცადეთ</translation>
 <translation id="7947310711271925113">პოპ-მუსიკა</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის ფუნქციების შესახებ ინფორმაციისთვის დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
+<translation id="7948579849190819732">მიმდინარე ჩანართი</translation>
 <translation id="7949135979217012031">ანტივირუსები და მავნე პროგრამები</translation>
 <translation id="7950027195171824198">ქუქი-ჩანაწერების პარამეტრების მართვა Chrome-ის პარამეტრებიდან</translation>
 <translation id="7951415247503192394">(32-ბიტი)</translation>
@@ -4904,6 +4907,7 @@
 <translation id="8597726363542221027">მეორადი ავტომობილები</translation>
 <translation id="8600271352425265729">მხოლოდ ამჯერად</translation>
 <translation id="860043288473659153">ბარათის მფლობელის სახელი</translation>
+<translation id="8601206103050338563">TLS WWW კლიენტის ავთენტიფიკაცია</translation>
 <translation id="8601456038554914806">საწყლოსნო სპორტის სახეობების აღჭურვილობა</translation>
 <translation id="8601782593888534566">სამეცნიერო ფანტასტიკა და ფენტეზი</translation>
 <translation id="8604103095921958091">„იყიდეთ ახლა, გადაიხადეთ მოგვიანებით“ მომსახურების პირობების ეკრანი გახსნილია სრულ სიმაღლეზე.</translation>

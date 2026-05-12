@@ -271,6 +271,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2226826835915474236">Raccourcis inactifs</translation>
 <translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="2227444325776770048">Continuer en tant que <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Accédez à toutes vos informations enregistrées</translation>
 <translation id="2230777942707397948">Fenêtre vide</translation>
 <translation id="223356358902285214">Activité sur le Web et les applications</translation>
 <translation id="2233735624724508540">Choisissez une période, puis appuyez sur "Supprimer les données"</translation>
@@ -483,6 +484,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3057938290530993634">Appuyez de manière prolongée pour épingler les sites Web que vous consultez le plus et y accéder facilement la prochaine fois</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favori}one{<ph name="BOOKMARKS_COUNT_MANY" /> favori}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoris}}</translation>
 <translation id="3062802207422175757">Articles sur vos centres d'intérêt dans Chrome</translation>
+<translation id="3066107845790462226">Télécharger l'image vidéo</translation>
 <translation id="3066573403916685335">Déplacer vers le bas</translation>
 <translation id="3067505415088964188">Prix bas</translation>
 <translation id="3070005020161560471">Traduire automatiquement</translation>
@@ -1216,6 +1218,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6264485186158353794">Revenir en lieu sûr</translation>
 <translation id="6267106249090587268">Notifications <ph name="SEPARATOR" /> Chrome a supprimé ces autorisations en raison de spam ou de contenus trompeurs</translation>
 <translation id="6276708887952587684">Afficher le code source de la page</translation>
+<translation id="62768169905160414">Copier l'image vidéo</translation>
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6291294824436685757">Supprimer les données de navigation : sélectionner les données à supprimer</translation>

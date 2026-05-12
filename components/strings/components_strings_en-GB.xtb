@@ -470,6 +470,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1717688554309417925">Debit and Cheque Services</translation>
 <translation id="1719434663396780149">Price drop alerts are on. You can change this in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 in x 30 in</translation>
+<translation id="1720318856472900922">TLS WWW Server Authentication</translation>
 <translation id="1720941539803966190">Close tutorial</translation>
 <translation id="1721424275792716183">* Field is required</translation>
 <translation id="1723636263173393300">This policy should not have more than <ph name="MAX_ITEMS_LIMIT" /> shortcuts.</translation>
@@ -2475,6 +2476,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4855395119669662878">Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER" /> at <ph name="DATE_TIME" />. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.</translation>
 <translation id="485902285759009870">Verifying code…</translation>
 <translation id="4860260582253463350">To continue to YouTube, we need to make sure that it's you. You'll get the settings that your parent or guardian set up in Family Link.</translation>
+<translation id="4862642413395066333">Signing OCSP Responses</translation>
 <translation id="4864406669374375262">Copied version string to clipboard</translation>
 <translation id="486459320933704969">A parent or guardian has to say that it's OK for you to visit this website</translation>
 <translation id="4864801646102013152">Home improvement</translation>
@@ -3444,6 +3446,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="634500758737709758">Directions</translation>
 <translation id="6348220984832452017">Active variations</translation>
 <translation id="6349101878882523185">Install <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Pay without copying and pasting Pix code. <ph name="BEGIN_LINK1" />See how it works<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Delete browsing data</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{None}=1{1 password (for <ph name="DOMAIN_LIST" />, synced)}=2{2 passwords (for <ph name="DOMAIN_LIST" />, synced)}other{# passwords (for <ph name="DOMAIN_LIST" />, synced)}}</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3660,6 +3663,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="668132230070712111">Video saved to Google Drive</translation>
 <translation id="6681790815630918386">CVC saved</translation>
 <translation id="6683022854667115063">Headphones</translation>
+<translation id="6686570026048064255">To turn off Pix code detection, go to <ph name="BEGIN_LINK1" />Chrome settings<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Envelope (plain)</translation>
 <translation id="6687335167692595844">Font size requested</translation>
 <translation id="6688743156324860098">Update…</translation>
@@ -4496,6 +4500,7 @@ Additional details:
 <translation id="7947285636476623132">Check your expiry year and try again</translation>
 <translation id="7947310711271925113">Pop music</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to learn about Chrome features</translation>
+<translation id="7948579849190819732">Current tab</translation>
 <translation id="7949135979217012031">Antivirus and malware</translation>
 <translation id="7950027195171824198">Manage your cookie preferences in Chrome settings</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
@@ -4903,6 +4908,7 @@ Additional details:
 <translation id="8597726363542221027">Used vehicles</translation>
 <translation id="8600271352425265729">Only this time</translation>
 <translation id="860043288473659153">Cardholder name</translation>
+<translation id="8601206103050338563">TLS WWW Client Authentication</translation>
 <translation id="8601456038554914806">Water Sports Equipment</translation>
 <translation id="8601782593888534566">Science fiction and fantasy</translation>
 <translation id="8604103095921958091">Buy now, pay later Terms of Service screen opened at full height.</translation>

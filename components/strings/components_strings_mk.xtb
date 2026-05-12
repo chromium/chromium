@@ -470,6 +470,7 @@
 <translation id="1717688554309417925">Услуги за дебитни картички и тековни сметки</translation>
 <translation id="1719434663396780149">Известувањата за намалени цени се вклучени. Ова може да го промените во <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 инчи</translation>
+<translation id="1720318856472900922">Автентикација на сервер за TLS WWW</translation>
 <translation id="1720941539803966190">Затвори го упатството</translation>
 <translation id="1721424275792716183">* Полето е задолжително</translation>
 <translation id="1723636263173393300">Правилово не треба да има повеќе од <ph name="MAX_ITEMS_LIMIT" /> кратенки.</translation>
@@ -754,6 +755,7 @@
 <translation id="2168151236314517198">Администраторското правило го блокира печатењето на содржиниве</translation>
 <translation id="2171244127100824330">Во <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Поправка и одржување возила</translation>
+<translation id="217231402430591139">Поврзете ја сметката</translation>
 <translation id="2173302385160625112">Проверете ја вашата интернет-врска</translation>
 <translation id="2174875517416416684">Вашата трансакција не се изврши. Не се повлечени средства од вашата сметка.</translation>
 <translation id="2175630235841878061">Датотеките поголеми од 100 MB не се достапни за преземање</translation>
@@ -2474,6 +2476,7 @@
 <translation id="4855395119669662878">Администраторот ќе започне да ги прикачува вашите датотеки во <ph name="CLOUD_PROVIDER" /> во <ph name="DATE_TIME" />. Уредот нека остане поврзан додека да заврши прикачувањето на датотеката. Додека трае прикачувањето, ќе може само да читате локални датотеки.</translation>
 <translation id="485902285759009870">Се потврдува кодот…</translation>
 <translation id="4860260582253463350">За да продолжиш на YouTube, мора да потврдиме дека ова си навистина ти. Ќе ги добиеш поставките што ги поставил твојот родител или старател во Family Link.</translation>
+<translation id="4862642413395066333">Најавување на одговори на OCSP</translation>
 <translation id="4864406669374375262">Низа на верзијата е копирана во привремената меморија</translation>
 <translation id="486459320933704969">Родител или старател мора да одобри за да го посетиш веб-сајтов</translation>
 <translation id="4864801646102013152">Подобрување на домот</translation>
@@ -3217,6 +3220,7 @@
 <translation id="6006365096047131769">3 x 5 инчи</translation>
 <translation id="6008122969617370890">Редослед N-до-1</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Шифрирањето на Google ги штити вашите податоци</translation>
 <translation id="6014801569448771146">Проверете ги лозинките</translation>
 <translation id="6014851866995737824">Игнорирано бидејќи недостасува списокот на „овозможени“ или „оневозможени“.</translation>
 <translation id="6015796118275082299">Година</translation>
@@ -4493,6 +4497,7 @@
 <translation id="7947285636476623132">Проверете ја годината на истекување и обидете се повторно</translation>
 <translation id="7947310711271925113">Поп-музика</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да дознаете за функциите на Chrome</translation>
+<translation id="7948579849190819732">Тековна картичка</translation>
 <translation id="7949135979217012031">Антивирус и злонамерен софтвер</translation>
 <translation id="7950027195171824198">Управувајте со поставките за колачиња во поставките на Chrome</translation>
 <translation id="7951415247503192394">(32-бита)</translation>
@@ -4900,6 +4905,7 @@
 <translation id="8597726363542221027">Користени возила</translation>
 <translation id="8600271352425265729">Само овојпат</translation>
 <translation id="860043288473659153">Име на сопственикот на картичката</translation>
+<translation id="8601206103050338563">Автентикација на клиент за TLS WWW</translation>
 <translation id="8601456038554914806">Опрема за спортови на вода</translation>
 <translation id="8601782593888534566">Научна фантастика и фантазија</translation>
 <translation id="8604103095921958091">Екранот со условите за користење на „Купете сега, платете подоцна“ е отворен на целосна висина.</translation>
