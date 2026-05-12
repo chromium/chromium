@@ -1,8 +1,8 @@
 Name: libpng
 URL: https://github.com/pnggroup/libpng
-Version: 1.6.55
+Version: 1.6.58
 Update Mechanism: Manual
-CPEPrefix: cpe:/a:libpng:libpng:1.6.55
+CPEPrefix: cpe:/a:libpng:libpng:1.6.58
 Security Critical: no
 Shipped: no
 License: Libpng-2.0, Libpng

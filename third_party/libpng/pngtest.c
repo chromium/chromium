@@ -1,6 +1,6 @@
 /* pngtest.c - a test program for libpng
  *
- * Copyright (c) 2018-2025 Cosmin Truta
+ * Copyright (c) 2018-2026 Cosmin Truta
  * Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson
  * Copyright (c) 1996-1997 Andreas Dilger
  * Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
@@ -48,9 +48,6 @@
  * still keeping it in libpng-1.6.x for compatibility reasons.
  */
 #define STDERR stdout
-
-/* Generate a compiler error if there is an old png.h in the search path. */
-typedef png_libpng_version_1_6_55 Your_png_h_is_not_version_1_6_55;
 
 /* Ensure that all version numbers in png.h are consistent with one another. */
 #if (PNG_LIBPNG_VER != PNG_LIBPNG_VER_MAJOR * 10000 + \
@@ -858,7 +855,8 @@ test_one_file(const char *inname, const char *outname)
    static FILE *fpout;  /* "static" prevents setjmp corruption */
    pngtest_error_parameters error_parameters;
    png_structp read_ptr;
-   png_infop read_info_ptr, end_info_ptr;
+   png_infop read_info_ptr;
+   png_infop end_info_ptr;
 #ifdef PNG_WRITE_SUPPORTED
    png_structp write_ptr;
    png_infop write_info_ptr;
@@ -1299,7 +1297,8 @@ test_one_file(const char *inname, const char *outname)
 #endif
 #ifdef PNG_pCAL_SUPPORTED
    {
-      png_charp purpose, units;
+      png_charp purpose;
+      png_charp units;
       png_charpp params;
       png_int_32 X0, X1;
       int type, nparams;
