@@ -363,8 +363,10 @@ DOMMatrix* OffscreenCanvas::getElementTransform(
                                         "The ElementImage has been closed.");
       return nullptr;
     }
-    return MakeGarbageCollected<DOMMatrix>(GetElementTransform(
-        paint_record->paint_state, Size(), draw_transform->Matrix()));
+    gfx::Transform transform = GetElementTransform(
+        paint_record->paint_state, Size(), draw_transform->Matrix());
+    return MakeGarbageCollected<DOMMatrix>(transform,
+                                           transform.Is2dTransform());
   }
 
   return DOMMatrix::Create();

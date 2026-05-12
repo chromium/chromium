@@ -175,5 +175,18 @@
     let expected = new DOMMatrix();
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
   }, 'getElementTransform should throw when called prior to paint.');
+
+  promise_test(async t => {
+    await waitForCanvasPaint(canvas);
+    let draw_transform_2d = new DOMMatrix();
+    assert_true(draw_transform_2d.is2D);
+    let element_transform_2d = canvas.getElementTransform(element, draw_transform_2d);
+    assert_true(element_transform_2d.is2D);
+
+    let draw_transform_3d = new DOMMatrix().scale3d(2);
+    assert_false(draw_transform_3d.is2D);
+    let element_transform_3d = canvas.getElementTransform(element, draw_transform_3d);
+    assert_false(element_transform_3d.is2D);
+  }, 'getElementTransform should preserve is2D.');
 </script>
 </html>

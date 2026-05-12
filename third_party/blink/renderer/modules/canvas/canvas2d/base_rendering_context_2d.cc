@@ -1530,7 +1530,8 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
   gfx::Transform result_transform = blink::GetElementTransform(
       child_paint_record->paint_state, Host()->Size(), draw_transform);
 
-  return MakeGarbageCollected<DOMMatrix>(result_transform);
+  return MakeGarbageCollected<DOMMatrix>(result_transform,
+                                         result_transform.Is2dTransform());
 }
 
 }  // namespace blink

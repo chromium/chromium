@@ -46,7 +46,7 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
 
   DOMMatrixReadOnly() = default;
   DOMMatrixReadOnly(const String&, ExceptionState&);
-  explicit DOMMatrixReadOnly(const gfx::Transform&, bool is2d = true);
+  explicit DOMMatrixReadOnly(const gfx::Transform&, bool is2d);
 
   template <typename T, size_t N>
   explicit DOMMatrixReadOnly(base::span<T, N> sequence) {

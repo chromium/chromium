@@ -947,8 +947,9 @@ DOMMatrix* HTMLCanvasElement::getElementTransform(
     return nullptr;
   }
 
-  return MakeGarbageCollected<DOMMatrix>(
-      GetElementTransform(*paint_state, Size(), draw_transform->Matrix()));
+  gfx::Transform transform =
+      GetElementTransform(*paint_state, Size(), draw_transform->Matrix());
+  return MakeGarbageCollected<DOMMatrix>(transform, transform.Is2dTransform());
 }
 
 bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
