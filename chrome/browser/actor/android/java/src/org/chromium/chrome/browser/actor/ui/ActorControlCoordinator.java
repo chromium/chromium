@@ -165,10 +165,12 @@ public class ActorControlCoordinator
 
     private void setPeekViewContent(String title, PeekViewUiState state) {
         mMediator.setContent(title, state);
+        updateBottomSheetSuppression(state);
     }
 
     private void clearPeekViewContent() {
         mMediator.setContent("", PeekViewUiState.DEFAULT);
+        updateBottomSheetSuppression(PeekViewUiState.DEFAULT);
     }
 
     private boolean isTaskCompleted(@ActorTaskState int newState) {
@@ -220,6 +222,10 @@ public class ActorControlCoordinator
             mActiveTaskTitle = "";
             mTaskGlicConversationId = "";
         }
+    }
+
+    private void updateBottomSheetSuppression(PeekViewUiState state) {
+        mTabBottomSheetManager.setCanNotBeSuppressed(PeekViewUiState.ACTING.equals(state));
     }
 
     /** Called when the GLIC instance changes. */

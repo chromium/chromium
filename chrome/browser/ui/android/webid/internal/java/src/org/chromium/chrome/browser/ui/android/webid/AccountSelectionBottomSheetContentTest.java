@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import android.view.View;
 
@@ -38,8 +37,8 @@ public class AccountSelectionBottomSheetContentTest {
 
     @Test
     public void testCanBeSuppressed() {
-        BottomSheetContent higherPriorityContent = Mockito.mock(BottomSheetContent.class);
-        Mockito.when(higherPriorityContent.getPriority())
+        BottomSheetContent lowestPriorityContent = Mockito.mock(BottomSheetContent.class);
+        Mockito.when(lowestPriorityContent.getPriority())
                 .thenReturn(BottomSheetContent.ContentPriority.COBROWSE);
 
         BottomSheetContent lowerPriorityContent = Mockito.mock(BottomSheetContent.class);
@@ -50,11 +49,10 @@ public class AccountSelectionBottomSheetContentTest {
         Mockito.when(samePriorityContent.getPriority())
                 .thenReturn(BottomSheetContent.ContentPriority.HIGH);
 
-        // High priority content (COBROWSE = 0) can suppress this content (HIGH = 1)
-        assertTrue(mContent.canBeSuppressed(higherPriorityContent));
-
-        // Same (HIGH = 1) or lower priority (LOW = 2) content cannot suppress this content
+        // Same (HIGH = 0) or lower priority (LOW = 1) or lowest priority (COBROWSE = 2) content
+        // cannot suppress this content
         assertFalse(mContent.canBeSuppressed(samePriorityContent));
         assertFalse(mContent.canBeSuppressed(lowerPriorityContent));
+        assertFalse(mContent.canBeSuppressed(lowestPriorityContent));
     }
 }

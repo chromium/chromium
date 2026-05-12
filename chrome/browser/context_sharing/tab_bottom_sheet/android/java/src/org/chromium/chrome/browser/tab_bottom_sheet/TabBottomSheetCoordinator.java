@@ -51,10 +51,10 @@ public class TabBottomSheetCoordinator {
     // Interface used by the manager to monitor events related to the state of the
     // bottom sheet.
     interface SheetEventsCallback {
-        // Called when the bottom sheet is closed or suppressed.
+        /** Called when the bottom sheet is closed or suppressed. */
         void onBottomSheetClosed();
 
-        // Called when the bottom sheet is opened or when the bottom sheet state changes.
+        /** Called when the bottom sheet is opened or when the bottom sheet state changes. */
         void onBottomSheetOpened(boolean isExpanded);
     }
 
@@ -146,6 +146,7 @@ public class TabBottomSheetCoordinator {
     private boolean mIsShowingTabBottomSheet;
     private boolean mExpectingLayoutChange;
     private boolean mInitialContainerSizeChanged;
+    private boolean mCanNotBeSuppressed;
     private @Nullable KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     /**
@@ -202,7 +203,8 @@ public class TabBottomSheetCoordinator {
                         mContentView,
                         FULL_HEIGHT_RATIO,
                         mCoBrowseViews.getBackgroundColor(),
-                        mCoBrowseViews.getClientType());
+                        mCoBrowseViews.getClientType(),
+                        () -> mCanNotBeSuppressed);
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
@@ -295,6 +297,10 @@ public class TabBottomSheetCoordinator {
         } else {
             mBottomSheetController.collapseSheet(/* animate= */ true);
         }
+    }
+
+    void setCanNotBeSuppressed(boolean canNotBeSuppressed) {
+        mCanNotBeSuppressed = canNotBeSuppressed;
     }
 
     void closeBottomSheet(boolean animate) {

@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -341,5 +342,55 @@ public class BottomSheetControllerImplUnitTest {
 
         assertFalse("Request should return false as sheet is suppressed", result);
         verify(mBottomSheet).showContent(null);
+    }
+
+    @Test
+    public void testCobrowseSuppressionAndReturn() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+        when(mBottomSheet.getOpeningState()).thenReturn(BottomSheetController.SheetState.PEEK);
+
+        BottomSheetContent cobrowseContent = mock(BottomSheetContent.class);
+        when(cobrowseContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.COBROWSE);
+        when(cobrowseContent.canBeSuppressed(any())).thenReturn(true);
+        when(cobrowseContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        BottomSheetContent highContent = mock(BottomSheetContent.class);
+        when(highContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+        when(highContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        // 1. Show COBROWSE content.
+        mController.requestShowContent(cobrowseContent, /* animate= */ true);
+        verify(mBottomSheet).showContent(cobrowseContent);
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(cobrowseContent);
+
+        // 2. Request to show HIGH content.
+        mController.requestShowContent(highContent, /* animate= */ true);
+
+        // Verify it tries to hide the current sheet (COBROWSE) to swap.
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, true);
+
+        // Simulate sheet going to HIDDEN state.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+
+        // 3. Verify HIGH content is shown.
+        verify(mBottomSheet).showContent(highContent);
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(highContent);
+
+        // 4. Dismiss HIGH content.
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.BACK_PRESS);
+
+        // Simulate sheet going to HIDDEN state again after dismissal.
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+
+        // 5. Verify COBROWSE content returns.
+        verify(mBottomSheet, times(2)).showContent(cobrowseContent);
     }
 }

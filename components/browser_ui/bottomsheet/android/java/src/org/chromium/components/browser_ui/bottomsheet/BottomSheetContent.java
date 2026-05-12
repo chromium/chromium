@@ -65,13 +65,13 @@ public interface BottomSheetContent {
     }
 
     /** The different priorities that the sheet's content can have. */
-    @IntDef({ContentPriority.COBROWSE, ContentPriority.HIGH, ContentPriority.LOW})
+    @IntDef({ContentPriority.HIGH, ContentPriority.LOW, ContentPriority.COBROWSE})
     @Retention(RetentionPolicy.SOURCE)
     @interface ContentPriority {
+        int HIGH = 0;
+        int LOW = 1;
         // This priority level is for cobrowse only and should not be used outside of that feature.
-        int COBROWSE = 0;
-        int HIGH = 1;
-        int LOW = 2;
+        int COBROWSE = 2;
     }
 
     /** Carrier class for background glow specifications. */

@@ -205,6 +205,13 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     }
 
     @Override
+    public void setCanNotBeSuppressed(boolean canNotBeSuppressed) {
+        if (mTabBottomSheetCoordinator != null) {
+            mTabBottomSheetCoordinator.setCanNotBeSuppressed(canNotBeSuppressed);
+        }
+    }
+
+    @Override
     public void setPeekView(View peekView) {
         assert mPeekView == null : "Peek view is already set.";
         mPeekView = peekView;
