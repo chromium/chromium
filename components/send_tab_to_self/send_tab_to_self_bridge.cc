@@ -151,8 +151,7 @@ SendTabToSelfBridge::SendTabToSelfBridge(
       history_service_(history_service),
       device_info_tracker_(device_info_tracker),
       session_sync_service_(session_sync_service),
-      pref_service_(pref_service),
-      mru_entry_(nullptr) {
+      pref_service_(pref_service) {
   DCHECK(clock_);
   DCHECK(device_info_tracker_);
   if (history_service) {
@@ -362,7 +361,7 @@ void SendTabToSelfBridge::ApplyDisableSyncChanges(
   std::vector<std::string> all_guids = GetAllGuids();
 
   entries_.clear();
-  mru_entry_ = nullptr;
+  mru_entry_guid_.clear();
 
   for (auto& [hash, pending] : pending_commits_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -473,12 +472,13 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
   // still has the first sent tab in progress, and so we will not attempt to
   // resend.
   base::Time shared_time = clock_->Now();
-  if (mru_entry_ && url == mru_entry_->GetURL() &&
-      target_device_cache_guid == mru_entry_->GetTargetDeviceSyncCacheGuid() &&
-      shared_time - mru_entry_->GetSharedTime() < kDedupeTime) {
+  const SendTabToSelfEntry* mru_entry = GetEntryByGUID(mru_entry_guid_);
+  if (mru_entry && url == mru_entry->GetURL() &&
+      target_device_cache_guid == mru_entry->GetTargetDeviceSyncCacheGuid() &&
+      shared_time - mru_entry->GetSharedTime() < kDedupeTime) {
     send_tab_to_self::RecordNotificationThrottled();
     std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccessThrottled);
-    return mru_entry_;
+    return mru_entry;
   }
 
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -532,7 +532,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
   batch->WriteData(guid, result->AsLocalProto().SerializeAsString());
 
   Commit(std::move(batch));
-  mru_entry_ = result;
+  mru_entry_guid_ = guid;
 
   return result;
 }
@@ -918,7 +918,7 @@ void SendTabToSelfBridge::DeleteAllEntries() {
   }
   entries_.clear();
   unknown_opened_entries_.clear();
-  mru_entry_ = nullptr;
+  mru_entry_guid_.clear();
 
   for (auto& [hash, pending] : pending_commits_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -934,8 +934,8 @@ void SendTabToSelfBridge::DeleteAllEntries() {
 
 void SendTabToSelfBridge::EraseEntryInBatch(const std::string& guid,
                                             DataTypeStore::WriteBatch* batch) {
-  if (mru_entry_ && mru_entry_->GetGUID() == guid) {
-    mru_entry_ = nullptr;
+  if (mru_entry_guid_ == guid) {
+    mru_entry_guid_.clear();
   }
   entries_.erase(guid);
   unknown_opened_entries_.erase(guid);

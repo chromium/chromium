@@ -230,8 +230,9 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // In charge of actually persisting changes to disk, or loading previous data.
   std::unique_ptr<syncer::DataTypeStore> store_;
 
-  // A pointer to the most recently used entry used for deduplication.
-  raw_ptr<const SendTabToSelfEntry, DanglingUntriaged> mru_entry_;
+  // The string identifier of the most recently used entry used for
+  // deduplication.
+  std::string mru_entry_guid_;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
