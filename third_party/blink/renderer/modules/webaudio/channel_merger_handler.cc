@@ -38,7 +38,8 @@ ChannelMergerHandler::ChannelMergerHandler(AudioNode& node,
   // Until something is connected, we're not actively processing, so disable
   // outputs so that we produce a single channel of silence.  The graph lock is
   // needed to be able to disable outputs.
-  DeferredTaskHandler::GraphAutoLocker context_locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   DisableOutputs();
 }
@@ -84,7 +85,8 @@ void ChannelMergerHandler::Process(uint32_t frames_to_process) {
 void ChannelMergerHandler::SetChannelCount(unsigned channel_count,
                                            ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   // channelCount must be 1.
   if (channel_count != 1) {
@@ -98,7 +100,8 @@ void ChannelMergerHandler::SetChannelCountMode(
     V8ChannelCountMode::Enum mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   // channcelCountMode must be 'explicit'.
   if (mode != V8ChannelCountMode::Enum::kExplicit) {

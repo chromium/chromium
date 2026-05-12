@@ -94,7 +94,8 @@ void WaveShaperNode::SetCurveImpl(base::span<const float> curve,
   // This is to synchronize with the changes made in
   // AudioBasicProcessorNode::CheckNumberOfChannelsForInput() where we can
   // Initialize() and Uninitialize(), changing the number of kernels.
-  DeferredTaskHandler::GraphAutoLocker context_locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   GetWaveShaperHandler().SetCurve(curve);
 }
@@ -135,7 +136,8 @@ void WaveShaperNode::setOversample(const V8OverSampleType& type) {
   // This is to synchronize with the changes made in
   // AudioBasicProcessorNode::checkNumberOfChannelsForInput() where we can
   // initialize() and uninitialize().
-  DeferredTaskHandler::GraphAutoLocker context_locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
   GetWaveShaperHandler().SetOversample(type.AsEnum());
 }
 

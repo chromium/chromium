@@ -336,7 +336,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
   {
     // Wait until the suspend map is available for the insertion. Here we should
     // use GraphAutoLocker because it locks the graph from the main thread.
-    DeferredTaskHandler::GraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
 
     // If there is a duplicate suspension at the same quantized frame,
     // reject the promise.
@@ -458,7 +458,7 @@ bool OfflineAudioContext::HandlePreRenderTasks(
 
   {
     // OfflineGraphAutoLocker here locks the audio graph for this scope.
-    DeferredTaskHandler::OfflineGraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
     listener()->Handler().UpdateState();
     GetDeferredTaskHandler().HandleDeferredTasks();
     HandleStoppableSourceNodes();
@@ -473,7 +473,7 @@ void OfflineAudioContext::HandlePostRenderTasks() {
   // OfflineGraphAutoLocker here locks the audio graph for the same reason
   // above in `HandlePreRenderTasks()`.
   {
-    DeferredTaskHandler::OfflineGraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
 
     GetDeferredTaskHandler().BreakConnections();
     GetDeferredTaskHandler().HandleDeferredTasks();
@@ -500,7 +500,7 @@ void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
 
   {
     // Wait until the suspend map is available for the removal.
-    DeferredTaskHandler::GraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
 
     // If the context is going away, m_scheduledSuspends could have had all its
     // entries removed.  Check for that here.
@@ -526,7 +526,7 @@ void OfflineAudioContext::RejectPendingResolvers() {
 
   {
     // Wait until the suspend map is available for removal.
-    DeferredTaskHandler::GraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
 
     // Offline context is going away so reject any promises that are still
     // pending.

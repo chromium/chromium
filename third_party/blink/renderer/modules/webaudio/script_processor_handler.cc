@@ -289,7 +289,8 @@ double ScriptProcessorHandler::LatencyTime() const {
 void ScriptProcessorHandler::SetChannelCount(uint32_t channel_count,
                                              ExceptionState& exception_state) {
   CHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   if (channel_count != channel_count_) {
     exception_state.ThrowDOMException(
@@ -304,7 +305,8 @@ void ScriptProcessorHandler::SetChannelCountMode(
     V8ChannelCountMode::Enum mode,
     ExceptionState& exception_state) {
   CHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   if ((mode == V8ChannelCountMode::Enum::kMax) ||
       (mode == V8ChannelCountMode::Enum::kClampedMax)) {

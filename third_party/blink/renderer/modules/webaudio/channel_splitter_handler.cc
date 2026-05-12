@@ -71,7 +71,8 @@ void ChannelSplitterHandler::Process(uint32_t frames_to_process) {
 void ChannelSplitterHandler::SetChannelCount(unsigned channel_count,
                                              ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   // channelCount cannot be changed from the number of outputs.
   if (channel_count != NumberOfOutputs()) {
@@ -86,7 +87,8 @@ void ChannelSplitterHandler::SetChannelCountMode(
     V8ChannelCountMode::Enum mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   // channcelCountMode must be 'explicit'.
   if (mode != V8ChannelCountMode::Enum::kExplicit) {
@@ -100,7 +102,8 @@ void ChannelSplitterHandler::SetChannelInterpretation(
     V8ChannelInterpretation::Enum mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   // channelInterpretation must be "discrete"
   if (mode != V8ChannelInterpretation::Enum::kDiscrete) {

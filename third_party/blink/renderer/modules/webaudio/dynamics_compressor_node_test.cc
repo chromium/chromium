@@ -25,7 +25,8 @@ TEST(DynamicsCompressorNodeTest, ProcessorLifetime) {
       context->createDynamicsCompressor(ASSERT_NO_EXCEPTION);
   DynamicsCompressorHandler& handler = node->GetDynamicsCompressorHandler();
   EXPECT_TRUE(handler.dynamics_compressor_);
-  DeferredTaskHandler::GraphAutoLocker locker(context);
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context->GetDeferredTaskHandler());
   handler.Dispose();
   // m_dynamicsCompressor should live after dispose() because an audio thread
   // is using it.

@@ -269,16 +269,6 @@ class MODULES_EXPORT BaseAudioContext
   bool IsAudioThread() const {
     return GetDeferredTaskHandler().IsAudioThread();
   }
-  // NO_THREAD_SAFETY_ANALYSIS_FIXME: Stopping here, since the callers (and
-  // derived classes are not annotated).
-  void lock() NO_THREAD_SAFETY_ANALYSIS_FIXME {
-    GetDeferredTaskHandler().lock();
-  }
-  bool TryLock() { return GetDeferredTaskHandler().TryLock(); }
-  void unlock() {
-    GetDeferredTaskHandler().AssertGraphOwner();
-    GetDeferredTaskHandler().unlock();
-  }
 
   // In DCHECK builds, fails if this thread does not own the context's lock.
   void AssertGraphOwner() const { GetDeferredTaskHandler().AssertGraphOwner(); }

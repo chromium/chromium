@@ -210,7 +210,8 @@ void AudioHandler::SetInternalChannelInterpretation(
 void AudioHandler::SetChannelCount(unsigned channel_count,
                                    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   if (channel_count > 0 &&
       channel_count <= BaseAudioContext::MaxNumberOfChannels()) {
@@ -241,7 +242,8 @@ V8ChannelCountMode::Enum AudioHandler::GetChannelCountMode() const {
 void AudioHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
                                        ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   new_channel_count_mode_ = mode;
   if (new_channel_count_mode_ != channel_count_mode_) {
@@ -266,7 +268,8 @@ void AudioHandler::SetChannelInterpretation(
     V8ChannelInterpretation::Enum interpretation,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   AudioBus::ChannelInterpretation old_mode = channel_interpretation_;
 

@@ -57,9 +57,11 @@ TEST(AudioParamHandlerTest, UAFOnGCDerivedFromSummingBus) {
              base::WaitableEvent* event) {
             context->GetDeferredTaskHandler()
                 .SetAudioThreadToCurrentThread();
-            context->GetDeferredTaskHandler().OfflineLock();
-            context->GetDeferredTaskHandler().HandleDeferredTasks();
-            context->GetDeferredTaskHandler().unlock();
+            {
+              DeferredTaskHandler::GraphAutoLocker locker(
+                  context->GetDeferredTaskHandler());
+              context->GetDeferredTaskHandler().HandleDeferredTasks();
+            }
             param->Handler().FinalValue();
             event->Signal();
           },

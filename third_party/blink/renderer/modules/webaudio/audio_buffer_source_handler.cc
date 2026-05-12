@@ -441,7 +441,8 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
 
   // The context must be locked since changing the buffer can re-configure the
   // number of channels that are output.
-  DeferredTaskHandler::GraphAutoLocker context_locker(Context());
+  DeferredTaskHandler::GraphAutoLocker context_locker(
+      Context()->GetDeferredTaskHandler());
 
   // This synchronizes with process().
   base::AutoLock process_locker(process_lock_);

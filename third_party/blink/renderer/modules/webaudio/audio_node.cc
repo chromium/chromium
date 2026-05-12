@@ -70,7 +70,8 @@ void AudioNode::Dispose() {
           this, Handler().GetNodeType(), handler_.get(),
           context()->currentTime());
 #endif
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
   Handler().Dispose();
 
   // Add the handler to the orphan list.  This keeps the handler alive until it
@@ -152,7 +153,8 @@ AudioNode* AudioNode::connect(AudioNode* destination,
                               unsigned input_index,
                               ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   context()->WarnForConnectionIfContextClosed();
 
@@ -231,7 +233,8 @@ void AudioNode::connect(AudioParam* param,
                         unsigned output_index,
                         ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   context()->WarnForConnectionIfContextClosed();
 
@@ -304,7 +307,8 @@ bool AudioNode::DisconnectFromOutputIfConnected(unsigned output_index,
 
 void AudioNode::disconnect() {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   // Disconnect all outgoing connections.
   for (unsigned i = 0; i < numberOfOutputs(); ++i) {
@@ -319,7 +323,8 @@ void AudioNode::disconnect() {
 void AudioNode::disconnect(unsigned output_index,
                            ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   // Sanity check on the output index.
   if (output_index >= numberOfOutputs()) {
@@ -351,7 +356,8 @@ void AudioNode::disconnect(AudioNode* destination,
     return;
   }
 
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   unsigned number_of_disconnections = 0;
 
@@ -394,7 +400,8 @@ void AudioNode::disconnect(AudioNode* destination,
     return;
   }
 
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   if (output_index >= numberOfOutputs()) {
     // The output index is out of range. Throw an exception.
@@ -445,7 +452,8 @@ void AudioNode::disconnect(AudioNode* destination,
     return;
   }
 
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   if (output_index >= numberOfOutputs()) {
     exception_state.ThrowDOMException(
@@ -496,7 +504,8 @@ void AudioNode::disconnect(AudioParam* destination_param,
     return;
   }
 
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   // The number of disconnection made.
   unsigned number_of_disconnections = 0;
@@ -526,7 +535,8 @@ void AudioNode::disconnect(AudioParam* destination_param,
                            unsigned output_index,
                            ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      context()->GetDeferredTaskHandler());
 
   if (context() != destination_param->Context()) {
     exception_state.ThrowDOMException(

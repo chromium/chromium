@@ -45,7 +45,6 @@ class SingleThreadTaskRunner;
 namespace blink {
 
 class BaseAudioContext;
-class OfflineAudioContext;
 class AudioHandler;
 class AudioNodeOutput;
 class AudioSummingJunction;
@@ -63,7 +62,7 @@ class AudioSummingJunction;
 // - It posts a task of deleteHandlersOnMainThread(), and
 // - GC happens and it collects the BaseAudioContext before the task execution.
 //
-class MODULES_EXPORT DeferredTaskHandler final
+class MODULES_EXPORT LOCKABLE DeferredTaskHandler final
     : public ThreadSafeRefCounted<DeferredTaskHandler> {
  public:
   static scoped_refptr<DeferredTaskHandler> Create(
@@ -71,7 +70,52 @@ class MODULES_EXPORT DeferredTaskHandler final
       uint32_t render_quantum_frames);
   ~DeferredTaskHandler();
 
-  void HandleDeferredTasks();
+  class MODULES_EXPORT SCOPED_LOCKABLE GraphAutoLocker {
+    STACK_ALLOCATED();
+
+   public:
+    explicit GraphAutoLocker(DeferredTaskHandler& handler)
+        EXCLUSIVE_LOCK_FUNCTION(handler)
+        : handler_(handler) {
+      handler_.Lock();
+    }
+
+    GraphAutoLocker(const GraphAutoLocker&) = delete;
+    GraphAutoLocker& operator=(const GraphAutoLocker&) = delete;
+
+    ~GraphAutoLocker() UNLOCK_FUNCTION() { handler_.Unlock(); }
+
+   private:
+    DeferredTaskHandler& handler_;
+  };
+
+  class MODULES_EXPORT SCOPED_LOCKABLE GraphAutoTryLocker {
+    STACK_ALLOCATED();
+
+   public:
+    explicit GraphAutoTryLocker(DeferredTaskHandler& handler)
+        LOCKS_EXCLUDED(handler)
+        : handler_(handler), is_acquired_(handler_.TryLock()) {}
+
+    GraphAutoTryLocker(const GraphAutoTryLocker&) = delete;
+    GraphAutoTryLocker& operator=(const GraphAutoTryLocker&) = delete;
+
+    ~GraphAutoTryLocker() UNLOCK_FUNCTION() {
+      if (is_acquired_) {
+        handler_.Unlock();
+      }
+    }
+
+    bool IsAcquired() const EXCLUSIVE_TRYLOCK_FUNCTION(true) {
+      return is_acquired_;
+    }
+
+   private:
+    DeferredTaskHandler& handler_;
+    const bool is_acquired_;
+  };
+
+  void HandleDeferredTasks() EXCLUSIVE_LOCKS_REQUIRED(*this);
   void ContextWillBeDestroyed();
 
   // BaseAudioContext can pull node(s) at the end of each render quantum even
@@ -109,20 +153,24 @@ class MODULES_EXPORT DeferredTaskHandler final
   void RemoveChangedChannelInterpretation(AudioHandler*);
 
   // Only accessed when the graph lock is held.
-  void MarkSummingJunctionDirty(AudioSummingJunction*);
+  void MarkSummingJunctionDirty(AudioSummingJunction*)
+      EXCLUSIVE_LOCKS_REQUIRED(*this);
   // Only accessed when the graph lock is held. Must be called on the main
   // thread.
-  void RemoveMarkedSummingJunction(AudioSummingJunction*);
+  void RemoveMarkedSummingJunction(AudioSummingJunction*)
+      EXCLUSIVE_LOCKS_REQUIRED(*this);
 
-  void MarkAudioNodeOutputDirty(AudioNodeOutput*);
+  void MarkAudioNodeOutputDirty(AudioNodeOutput*)
+      EXCLUSIVE_LOCKS_REQUIRED(*this);
   void RemoveMarkedAudioNodeOutput(AudioNodeOutput*);
 
   // Break connections between nodes.  This is done on the audio thread with the
   // graph lock.
-  void BreakConnections();
+  void BreakConnections() EXCLUSIVE_LOCKS_REQUIRED(*this);
 
-  void AddRenderingOrphanHandler(scoped_refptr<AudioHandler>);
-  void RequestToDeleteHandlersOnMainThread();
+  void AddRenderingOrphanHandler(scoped_refptr<AudioHandler>)
+      EXCLUSIVE_LOCKS_REQUIRED(*this);
+  void RequestToDeleteHandlersOnMainThread() EXCLUSIVE_LOCKS_REQUIRED(*this);
   void ClearHandlersToBeDeleted();
 
   // Clear the context from the rendering and deletable orphan handlers.
@@ -147,7 +195,7 @@ class MODULES_EXPORT DeferredTaskHandler final
 
   // For handlers that have finished processing their tail and require disabling
   // the ouputs of the handler, we do that here.
-  void DisableOutputsForTailProcessing();
+  void DisableOutputsForTailProcessing() EXCLUSIVE_LOCKS_REQUIRED(*this);
 
   //
   // Thread Safety and Graph Locking:
@@ -161,49 +209,8 @@ class MODULES_EXPORT DeferredTaskHandler final
     return CurrentThread() == audio_thread_.load(std::memory_order_relaxed);
   }
 
-  void lock() EXCLUSIVE_LOCK_FUNCTION(context_graph_mutex_);
-  bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true, context_graph_mutex_);
-  void unlock() UNLOCK_FUNCTION(context_graph_mutex_);
-
-  // This locks the audio render thread for OfflineAudioContext rendering.
-  // MUST NOT be used in the real-time audio context.
-  void OfflineLock() EXCLUSIVE_LOCK_FUNCTION(context_graph_mutex_);
-
   // In DCHECK builds, fails if this thread does not own the context's lock.
-  void AssertGraphOwner() const ASSERT_EXCLUSIVE_LOCK(context_graph_mutex_) {
-    context_graph_mutex_.AssertAcquired();
-  }
-
-  class MODULES_EXPORT GraphAutoLocker {
-    STACK_ALLOCATED();
-
-   public:
-    explicit GraphAutoLocker(DeferredTaskHandler& handler) : handler_(handler) {
-      handler_.lock();
-    }
-    explicit GraphAutoLocker(const BaseAudioContext*);
-
-    ~GraphAutoLocker() { handler_.unlock(); }
-
-   private:
-    DeferredTaskHandler& handler_;
-  };
-
-  // This is for locking offline render thread (which is considered as the
-  // audio thread) with unlocking on self-destruction at the end of the scope.
-  // Also note that it uses lock() rather than tryLock() because the timing
-  // MUST be accurate on offline rendering.
-  class MODULES_EXPORT OfflineGraphAutoLocker {
-    STACK_ALLOCATED();
-
-   public:
-    explicit OfflineGraphAutoLocker(OfflineAudioContext*);
-
-    ~OfflineGraphAutoLocker() { handler_.unlock(); }
-
-   private:
-    DeferredTaskHandler& handler_;
-  };
+  void AssertGraphOwner() const ASSERT_EXCLUSIVE_LOCK();
 
   HashSet<scoped_refptr<AudioHandler>>* GetActiveSourceHandlers() {
     return &active_source_handlers_;
@@ -221,6 +228,11 @@ class MODULES_EXPORT DeferredTaskHandler final
  private:
   explicit DeferredTaskHandler(scoped_refptr<base::SingleThreadTaskRunner>,
                                uint32_t render_quantum_frames);
+
+  void Lock() EXCLUSIVE_LOCK_FUNCTION();
+  bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true);
+  void Unlock() UNLOCK_FUNCTION();
+
   void UpdateAutomaticPullNodes();
   void UpdateChangedChannelCountMode();
   void UpdateChangedChannelInterpretation();
@@ -233,7 +245,7 @@ class MODULES_EXPORT DeferredTaskHandler final
 
   // Check tail processing handlers and remove any handler if the tail
   // has been processed.
-  void UpdateTailProcessingHandlers();
+  void UpdateTailProcessingHandlers() EXCLUSIVE_LOCKS_REQUIRED(*this);
 
   // For the sake of thread safety, we maintain a seperate Vector of
   // AudioHandlers for "automatic-pull nodes":
@@ -260,25 +272,30 @@ class MODULES_EXPORT DeferredTaskHandler final
   // Collection of nodes where the channel count mode has changed. We want the
   // channel count mode to change in the pre- or post-rendering phase so as
   // not to disturb the running audio thread.
-  HashSet<AudioHandler*> deferred_count_mode_change_;
+  HashSet<AudioHandler*> deferred_count_mode_change_ GUARDED_BY(*this);
 
-  HashSet<AudioHandler*> deferred_channel_interpretation_change_;
+  HashSet<AudioHandler*> deferred_channel_interpretation_change_
+      GUARDED_BY(*this);
 
   // These two HashSet must be accessed only when the graph lock is held.
   // These raw pointers are safe because their destructors unregister them.
-  HashSet<AudioSummingJunction*> dirty_summing_junctions_;
-  HashSet<AudioNodeOutput*> dirty_audio_node_outputs_;
+  HashSet<AudioSummingJunction*> dirty_summing_junctions_ GUARDED_BY(*this);
+  HashSet<AudioNodeOutput*> dirty_audio_node_outputs_ GUARDED_BY(*this);
 
-  Vector<scoped_refptr<AudioHandler>> rendering_orphan_handlers_;
-  Vector<scoped_refptr<AudioHandler>> deletable_orphan_handlers_;
+  Vector<scoped_refptr<AudioHandler>> rendering_orphan_handlers_
+      GUARDED_BY(*this);
+  Vector<scoped_refptr<AudioHandler>> deletable_orphan_handlers_
+      GUARDED_BY(*this);
 
   // Nodes that are processing its tail.
-  Vector<scoped_refptr<AudioHandler>> tail_processing_handlers_;
+  Vector<scoped_refptr<AudioHandler>> tail_processing_handlers_
+      GUARDED_BY(*this);
 
   // Tail processing nodes that are now finished and want the output to be
   // disabled.  This is updated in the audio thread (with the graph lock).  The
   // main thread will disable the outputs.
-  Vector<scoped_refptr<AudioHandler>> finished_tail_processing_handlers_;
+  Vector<scoped_refptr<AudioHandler>> finished_tail_processing_handlers_
+      GUARDED_BY(*this);
 
   // Once the associated context closes, new tail processing handlers are not
   // accepted.
@@ -291,7 +308,8 @@ class MODULES_EXPORT DeferredTaskHandler final
   //
   // This can be accessed from either the main thread or the audio thread, so it
   // must be protected by the graph lock.
-  HashSet<scoped_refptr<AudioHandler>> active_source_handlers_;
+  HashSet<scoped_refptr<AudioHandler>> active_source_handlers_
+      GUARDED_BY(*this);
 
   // When source nodes are finished, the handler is placed here to make a note
   // of it.  At a render quantum boundary, these are used to break the
@@ -302,8 +320,10 @@ class MODULES_EXPORT DeferredTaskHandler final
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  // Graph locking.
-  RecursiveMutex context_graph_mutex_;
+  // The mutex for exclusive graph manipulation. It can be held from either the
+  // main or the audio thread when the graph is changed. (e.g. connection or
+  // disconnection of AudioNodes)
+  mutable RecursiveMutex context_graph_mutex_;
 
   // Protects `rendering_automatic_pull_handlers_` when updating, processing,
   // and clearing. (See crbug.com/1061018)

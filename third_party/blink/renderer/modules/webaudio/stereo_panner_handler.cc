@@ -110,7 +110,8 @@ void StereoPannerHandler::Initialize() {
 void StereoPannerHandler::SetChannelCount(unsigned channel_count,
                                           ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   if (channel_count >= kMinimumOutputChannels &&
       channel_count <= kMaximumOutputChannels) {
@@ -133,7 +134,8 @@ void StereoPannerHandler::SetChannelCount(unsigned channel_count,
 void StereoPannerHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
                                               ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   V8ChannelCountMode::Enum old_mode = InternalChannelCountMode();
 

@@ -69,7 +69,8 @@ class ConvolverHandlerTest : public testing::Test {
           // thread as the audio thread so that `IsAudioThread()` checks and
           // `DCHECK`s pass correctly.
           context->GetDeferredTaskHandler().SetAudioThreadToCurrentThread();
-          DeferredTaskHandler::OfflineGraphAutoLocker locker(context);
+          DeferredTaskHandler::GraphAutoLocker locker(
+              context->GetDeferredTaskHandler());
           handler->CheckNumberOfChannelsForInput(&handler->Input(0));
         },
         WrapCrossThreadPersistent(context_.Get()),
@@ -80,7 +81,8 @@ class ConvolverHandlerTest : public testing::Test {
     RunOnAudioThread(CrossThreadBindOnce(
         [](OfflineAudioContext* context, ConvolverHandler* handler,
            unsigned channels) {
-          DeferredTaskHandler::OfflineGraphAutoLocker locker(context);
+          DeferredTaskHandler::GraphAutoLocker locker(
+              context->GetDeferredTaskHandler());
           handler->Output(0).SetNumberOfChannels(channels);
         },
         WrapCrossThreadPersistent(context_.Get()),
@@ -131,7 +133,8 @@ TEST_F(ConvolverHandlerTest, CheckNumberOfChannelsForInputWithLockContention) {
                  base::WaitableEvent* finished) {
                 context->GetDeferredTaskHandler()
                     .SetAudioThreadToCurrentThread();
-                DeferredTaskHandler::OfflineGraphAutoLocker locker(context);
+                DeferredTaskHandler::GraphAutoLocker locker(
+                    context->GetDeferredTaskHandler());
                 handler->CheckNumberOfChannelsForInput(&handler->Input(0));
                 finished->Signal();
               },

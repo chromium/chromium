@@ -30,7 +30,8 @@ TEST(ScriptProcessorNodeTest, BufferLifetime) {
     EXPECT_EQ(2u, handler.shared_input_buffers_.size());
     EXPECT_EQ(2u, handler.shared_input_buffers_.size());
   }
-  DeferredTaskHandler::GraphAutoLocker graph_locker(context);
+  DeferredTaskHandler::GraphAutoLocker graph_locker(
+      context->GetDeferredTaskHandler());
   handler.Dispose();
   // Buffers should live after dispose() because an audio thread is using
   // them.

@@ -390,7 +390,8 @@ bool PannerHandler::SetPanningModel(Panner::PanningModel model) {
     // We need the graph lock to secure the panner backend because
     // BaseAudioContext::Handle{Pre,Post}RenderTasks() from the audio thread
     // can touch it.
-    DeferredTaskHandler::GraphAutoLocker context_locker(Context());
+    DeferredTaskHandler::GraphAutoLocker context_locker(
+        Context()->GetDeferredTaskHandler());
 
     // This synchronizes with process().
     base::AutoLock process_locker(process_lock_);
@@ -679,7 +680,8 @@ void PannerHandler::MarkPannerAsDirty(unsigned dirty) {
 void PannerHandler::SetChannelCount(unsigned channel_count,
                                     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   if (channel_count >= kMinimumOutputChannels &&
       channel_count <= kMaximumOutputChannels) {
@@ -702,7 +704,8 @@ void PannerHandler::SetChannelCount(unsigned channel_count,
 void PannerHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
                                         ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  DeferredTaskHandler::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(
+      Context()->GetDeferredTaskHandler());
 
   V8ChannelCountMode::Enum old_mode = InternalChannelCountMode();
 
