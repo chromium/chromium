@@ -2641,6 +2641,9 @@ group("blink_platform_unittests_data") {
     "//third_party/blink/web_tests/images/bmp-suite/",
     "//third_party/blink/web_tests/images/jpeg-suite/",
 
+    # Required by dark mode image classifier tests.
+    "//third_party/blink/web_tests/dark-mode/images/resources/",
+
     # Required by some font tests.
     "//third_party/blink/web_tests/external/wpt/fonts/",
     "//third_party/blink/web_tests/external/wpt/css/css-fonts/resources",
