@@ -362,12 +362,13 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
     @Override
     public ContextMenuDialog createAndShowFlyoutPopup(
-            ListItem item, View view, Runnable dismissRunnable) {
+            List<ListItem> items, View view, Runnable dismissRunnable) {
         assert view != null;
         assert mUsePopupWindow;
 
         final View menu = LayoutInflater.from(mActivity).inflate(R.layout.context_menu, null);
-        ModelList listItems = ListMenuUtils.getModelListSubtree(item);
+        ModelList listItems = new ModelList();
+        listItems.addAll(items);
         ModelListAdapter adapter = createAdapter(listItems);
 
         ContextMenuListView listView = menu.findViewById(R.id.context_menu_list_view);

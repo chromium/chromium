@@ -801,22 +801,16 @@ class AppMenuHandlerImpl
 
     @Override
     public AppMenuPopup createAndShowFlyoutPopup(
-            ListItem item, View view, Runnable dismissRunnable) {
-        AppMenuAdapter adapter = new AppMenuAdapter(getModelListSubtree(item));
+            List<ListItem> items, View view, Runnable dismissRunnable) {
+        ModelList modelList = new ModelList();
+        modelList.addAll(items);
+
+        AppMenuAdapter adapter = new AppMenuAdapter(modelList);
         SparseArray<BiFunction<Context, PropertyModel, Integer>> customSizingProviders =
                 new SparseArray<>();
         registerViewBinders(adapter, customSizingProviders, mDelegate.shouldShowIconBeforeItem());
 
         assert mAppMenu != null;
-        return mAppMenu.createAndShowFlyoutPopup(adapter, view, item, dismissRunnable);
-    }
-
-    private static ModelList getModelListSubtree(ListItem item) {
-        ModelList modelList = new ModelList();
-        for (ListItem listItem :
-                item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get()) {
-            modelList.add(listItem);
-        }
-        return modelList;
+        return mAppMenu.createAndShowFlyoutPopup(adapter, view, dismissRunnable);
     }
 }

@@ -170,7 +170,9 @@ public class FlyoutControllerUnitTest {
         waitForUiDelay();
 
         // Verify that the call to create a new popup (level 1) is called.
-        verify(mFlyoutHandler).createAndShowFlyoutPopup(eq(mSubmenuLevel0), eq(mListView), any());
+        verify(mFlyoutHandler)
+                .createAndShowFlyoutPopup(
+                        eq(List.of(mSubmenuLevel1, mSubmenu0Child1)), eq(mListView), any());
         Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getNumberOfPopups());
 
         // Hover on an item inside the level 1 popup for long enough.
@@ -178,7 +180,9 @@ public class FlyoutControllerUnitTest {
         waitForUiDelay();
 
         // Verify that the call to create another popup (level 2) is called.
-        verify(mFlyoutHandler).createAndShowFlyoutPopup(eq(mSubmenuLevel1), eq(mListView), any());
+        verify(mFlyoutHandler)
+                .createAndShowFlyoutPopup(
+                        eq(List.of(mListItemWithModelClickCallback)), eq(mListView), any());
         Assert.assertEquals("There should be 3 popups.", 3, mFlyoutController.getNumberOfPopups());
     }
 

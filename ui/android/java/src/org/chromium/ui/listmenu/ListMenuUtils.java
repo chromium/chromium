@@ -123,20 +123,6 @@ public class ListMenuUtils {
     }
 
     /**
-     * Constructs a {@link ModelList} containing the submenu items of a given parent item.
-     *
-     * @param item The parent {@link ListItem} that contains the submenu.
-     * @return A new {@link ModelList} populated with the children of the given item.
-     */
-    public static ModelList getModelListSubtree(ListItem item) {
-        ModelList modelList = new ModelList();
-        for (ListItem listItem : item.model.get(SUBMENU_PROVIDER).get()) {
-            modelList.add(listItem);
-        }
-        return modelList;
-    }
-
-    /**
      * Calculates the Rect of a given View in the coordinate space of a root View. This is useful
      * when you need to position a UI element (like a popup) relative to a specific view, but need
      * the coordinates to be based on the root view's visible area, which accounts for when the

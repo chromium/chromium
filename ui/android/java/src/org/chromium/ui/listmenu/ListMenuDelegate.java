@@ -12,6 +12,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
+import java.util.List;
+
 /** A delegate used to populate the menu. */
 @NullMarked
 public interface ListMenuDelegate {
@@ -34,7 +36,7 @@ public interface ListMenuDelegate {
      * @param The parent {@ListItem} that contains submenu items.
      * @return The {@link ListMenu} with the contents of the submenu.
      */
-    default @Nullable ListMenu getListMenuFromParentListItem(ListItem item) {
+    default @Nullable ListMenu getListMenuFromItems(List<ListItem> items) {
         return null;
     }
 }

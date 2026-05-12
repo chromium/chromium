@@ -18,11 +18,12 @@ import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuHost;
-import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RectProvider;
+
+import java.util.List;
 
 /** Utility class for showing extension context menus. */
 @NullMarked
@@ -93,9 +94,11 @@ public final class ExtensionActionContextMenuUtils {
                     }
 
                     @Override
-                    public ListMenu getListMenuFromParentListItem(ListItem item) {
+                    public ListMenu getListMenuFromItems(List<ListItem> items) {
+                        ModelList modelList = new ModelList();
+                        modelList.addAll(items);
                         return BrowserUiListMenuUtils.getBasicListMenu(
-                                context, ListMenuUtils.getModelListSubtree(item), buttonDelegate);
+                                context, modelList, buttonDelegate);
                     }
 
                     @Override

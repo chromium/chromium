@@ -425,13 +425,12 @@ public class HierarchicalMenuTest {
 
         @Override
         public AnchoredPopupWindow createAndShowFlyoutPopup(
-                ListItem item, View anchorView, Runnable dismissRunnable) {
+                List<ListItem> items, View anchorView, Runnable dismissRunnable) {
             Rect anchorRect = FlyoutController.calculateFlyoutAnchorRect(anchorView, mRootView);
             anchorRect.offset(0, (int) topContentOffset(mActivity));
 
-            ModelList modelList =
-                    createModelList(
-                            item.model.get(HierarchicalMenuTestUtils.SUBMENU_PROVIDER).get());
+            ModelList modelList = new ModelList();
+            modelList.addAll(items);
 
             AnchoredPopupWindow window =
                     new AnchoredPopupWindow.Builder(

@@ -92,12 +92,12 @@ public class FlyoutController<T> implements Destroyable {
         /**
          * Creates and shows a flyout popup.
          *
-         * @param item The ListItem that got the hover.
+         * @param modelList The {@link ModelList} to show.
          * @param view The View that got the hover.
          * @param dismissRunnable Runnable to run when the window is dismissed.
          * @return The created popup of type {@link T}.
          */
-        T createAndShowFlyoutPopup(ListItem item, View view, Runnable dismissRunnable);
+        T createAndShowFlyoutPopup(List<ListItem> modelList, View view, Runnable dismissRunnable);
 
         /**
          * Callback triggered after one or more flyout popups are removed.
@@ -289,17 +289,15 @@ public class FlyoutController<T> implements Destroyable {
             return;
         }
 
-        mMenuController.getLoadedSubmenuItems(
-                /* headerModelList= */ null,
-                new ModelList(),
-                item,
-                dismissRunnable,
-                levelOfHoveredItem,
-                highlightPath);
-
         T popup =
                 mFlyoutHandler.createAndShowFlyoutPopup(
-                        item,
+                        mMenuController.getLoadedSubmenuItems(
+                                /* headerModelList= */ null,
+                                new ModelList(),
+                                item,
+                                dismissRunnable,
+                                levelOfHoveredItem,
+                                highlightPath),
                         view,
                         () -> {
                             removeFlyoutWindows(levelOfHoveredItem + 1);

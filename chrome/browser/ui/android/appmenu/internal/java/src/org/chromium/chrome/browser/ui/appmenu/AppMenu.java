@@ -56,7 +56,6 @@ import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
@@ -544,12 +543,10 @@ class AppMenu implements OnKeyListener {
      *
      * @param adapter The {@link ListAdapter} containing the items to display in the new flyout.
      * @param view The menu item {@link View} that is triggering this flyout (used as the anchor).
-     * @param item The {@link ListItem} model associated with the anchor {@code view}, used for
-     *     tracking.
      * @param dismissRunnable The runnable to run after the window is dismissed.
      */
     public AppMenuPopup createAndShowFlyoutPopup(
-            ListAdapter adapter, View view, ListItem item, Runnable dismissRunnable) {
+            ListAdapter adapter, View view, Runnable dismissRunnable) {
         assert mContext != null;
         View contentView =
                 createAppMenuContentView(mContext, /* addTopPaddingBeforeFirstRow= */ true);

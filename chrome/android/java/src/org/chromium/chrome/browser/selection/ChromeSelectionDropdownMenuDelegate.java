@@ -28,10 +28,13 @@ import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
+
+import java.util.List;
 
 /**
  * Chrome implementation of dropdown context menu which leverages {@link BasicListMenu} and {@link
@@ -132,13 +135,15 @@ public class ChromeSelectionDropdownMenuDelegate
 
     @Override
     public AnchoredPopupWindow createAndShowFlyoutPopup(
-            ListItem item, View view, Runnable dismissRunnable) {
+            List<ListItem> items, View view, Runnable dismissRunnable) {
         Context context = view.getContext();
+        ModelList modelList = new ModelList();
+        modelList.addAll(items);
 
         BasicListMenu menu =
                 BrowserUiListMenuUtils.getBasicListMenu(
                         context,
-                        ListMenuUtils.getModelListSubtree(item),
+                        modelList,
                         (model, unusedView) -> {
                             assert mClickListener != null;
                             mClickListener.onItemClick(model);
