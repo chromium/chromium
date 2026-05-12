@@ -8,7 +8,10 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/animation/path_interpolation_functions.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -22,33 +25,43 @@ namespace blink {
 
 namespace {
 
-// Returns the property's path() value.
-// If the property's value is not a path(), returns nullptr.
-const StylePath* GetPath(const CSSProperty& property,
-                         const ComputedStyle& style) {
+struct PathAndCssBox {
+  STACK_ALLOCATED();
+
+ public:
+  const StylePath* path = nullptr;
+  // Only set for shape-outside with an explicit <shape-box>.
+  std::optional<CSSBoxType> css_box;
+};
+
+// Returns the property's path() value (and shape-outside's <shape-box> if any).
+// If the property's value is not a path(), `path` is nullptr.
+PathAndCssBox GetPathAndCssBox(const CSSProperty& property,
+                               const ComputedStyle& style) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kD:
-      return style.D();
+      return {style.D()};
     case CSSPropertyID::kOffsetPath: {
       auto* shape = DynamicTo<ShapeOffsetPathOperation>(style.OffsetPath());
       if (!shape) {
-        return nullptr;
+        return {};
       }
-      return DynamicTo<StylePath>(shape->GetBasicShape());
+      return {DynamicTo<StylePath>(shape->GetBasicShape())};
     }
     case CSSPropertyID::kClipPath: {
       auto* shape = DynamicTo<ShapeClipPathOperation>(style.ClipPath());
-      if (!shape)
-        return nullptr;
-      return DynamicTo<StylePath>(shape->GetBasicShape());
+      if (!shape) {
+        return {};
+      }
+      return {DynamicTo<StylePath>(shape->GetBasicShape())};
     }
     case CSSPropertyID::kShapeOutside: {
       const ShapeValue* shape_value = style.ShapeOutside();
-      if (!shape_value || shape_value->GetType() != ShapeValue::kShape ||
-          shape_value->CssBox() != CSSBoxType::kMissing) {
-        return nullptr;
+      if (!shape_value || shape_value->GetType() != ShapeValue::kShape) {
+        return {};
       }
-      return DynamicTo<StylePath>(shape_value->Shape());
+      return {DynamicTo<StylePath>(shape_value->Shape()),
+              shape_value->CssBox()};
     }
     default:
       NOTREACHED();
@@ -58,7 +71,9 @@ const StylePath* GetPath(const CSSProperty& property,
 // Set the property to the given path() value.
 void SetPath(const CSSProperty& property,
              ComputedStyleBuilder& builder,
-             blink::StylePath* path) {
+             blink::StylePath* path,
+             std::optional<CSSBoxType> shape_outside_css_box) {
+  CHECK(path);
   switch (property.PropertyID()) {
     case CSSPropertyID::kD:
       builder.SetD(path);
@@ -74,9 +89,8 @@ void SetPath(const CSSProperty& property,
           path, GeometryBox::kBorderBox));
       return;
     case CSSPropertyID::kShapeOutside:
-      CHECK(path);
-      builder.SetShapeOutside(
-          MakeGarbageCollected<ShapeValue>(path, CSSBoxType::kMissing));
+      builder.SetShapeOutside(MakeGarbageCollected<ShapeValue>(
+          path, shape_outside_css_box.value_or(CSSBoxType::kMissing)));
       return;
     default:
       NOTREACHED();
@@ -89,9 +103,11 @@ void CSSPathInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
+  CHECK(non_interpolable_value);
   SetPath(CssProperty(), state.StyleBuilder(),
           PathInterpolationFunctions::AppliedValue(interpolable_value,
-                                                   non_interpolable_value));
+                                                   non_interpolable_value),
+          PathInterpolationFunctions::GetCssBox(*non_interpolable_value));
 }
 
 void CSSPathInterpolationType::Composite(
@@ -119,8 +135,12 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInitial(
 
 class InheritedPathChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
-  InheritedPathChecker(const CSSProperty& property, const StylePath* style_path)
-      : property_(property), style_path_(style_path) {}
+  InheritedPathChecker(const CSSProperty& property,
+                       const StylePath* style_path,
+                       std::optional<CSSBoxType> shape_outside_css_box)
+      : property_(property),
+        style_path_(style_path),
+        shape_outside_css_box_(shape_outside_css_box) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(style_path_);
@@ -130,11 +150,14 @@ class InheritedPathChecker : public CSSInterpolationType::CSSConversionChecker {
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
-    return GetPath(property_, *state.ParentStyle()) == style_path_.Get();
+    auto parent_info = GetPathAndCssBox(property_, *state.ParentStyle());
+    return parent_info.path == style_path_.Get() &&
+           parent_info.css_box == shape_outside_css_box_;
   }
 
   const CSSProperty& property_;
   const Member<const StylePath> style_path_;
+  const std::optional<CSSBoxType> shape_outside_css_box_;
 };
 
 InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(
@@ -143,11 +166,12 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
 
+  auto parent_info = GetPathAndCssBox(CssProperty(), *state.ParentStyle());
   conversion_checkers.push_back(MakeGarbageCollected<InheritedPathChecker>(
-      CssProperty(), GetPath(CssProperty(), *state.ParentStyle())));
+      CssProperty(), parent_info.path, parent_info.css_box));
   return PathInterpolationFunctions::ConvertValue(
-      GetPath(CssProperty(), *state.ParentStyle()),
-      PathInterpolationFunctions::kForceAbsolute);
+      parent_info.path, PathInterpolationFunctions::kForceAbsolute,
+      parent_info.css_box);
 }
 
 InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
@@ -155,8 +179,18 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
     const StyleResolverState&,
     ConversionCheckers&) const {
   const cssvalue::CSSPathValue* path_value = nullptr;
+  std::optional<CSSBoxType> css_box;
+  if (CssProperty().PropertyID() == CSSPropertyID::kShapeOutside) {
+    css_box = CSSBoxType::kMissing;
+  }
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     path_value = DynamicTo<cssvalue::CSSPathValue>(list->First());
+    if (CssProperty().PropertyID() == CSSPropertyID::kShapeOutside &&
+        list->length() == 2) {
+      if (const auto* ident = DynamicTo<CSSIdentifierValue>(list->Last())) {
+        css_box = ident->ConvertTo<CSSBoxType>();
+      }
+    }
   } else {
     path_value = DynamicTo<cssvalue::CSSPathValue>(value);
   }
@@ -164,15 +198,16 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
     return nullptr;
   }
   return PathInterpolationFunctions::ConvertValue(
-      path_value->GetStylePath(), PathInterpolationFunctions::kForceAbsolute);
+      path_value->GetStylePath(), PathInterpolationFunctions::kForceAbsolute,
+      css_box);
 }
 
 InterpolationValue
 CSSPathInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
+  auto info = GetPathAndCssBox(CssProperty(), style);
   return PathInterpolationFunctions::ConvertValue(
-      GetPath(CssProperty(), style),
-      PathInterpolationFunctions::kForceAbsolute);
+      info.path, PathInterpolationFunctions::kForceAbsolute, info.css_box);
 }
 
 PairwiseInterpolationValue CSSPathInterpolationType::MaybeMergeSingles(

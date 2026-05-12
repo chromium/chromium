@@ -35,7 +35,8 @@ class CSSShapeInterpolationType : public CSSInterpolationType {
       const CSSValue& value,
       const CSSProperty& property,
       std::optional<GeometryBox> geometry_box,
-      std::optional<CoordBox> coord_box);
+      std::optional<CoordBox> coord_box,
+      std::optional<CSSBoxType> css_box = std::nullopt);
   static InterpolationValue MaybeConvertBasicShape(const BasicShape* shape,
                                                    const CSSProperty& property,
                                                    double zoom,
