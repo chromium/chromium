@@ -17,7 +17,6 @@ import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
-import androidx.core.content.ContextCompat;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,16 +61,12 @@ public class BottomUiThemeColorProviderTest {
         mPrimaryBackgroundColorWithTopToolbar = SemanticColorUtils.getColorSurface(mContext);
         mIncognitoBackgroundColorWithTopToolbar = mContext.getColor(R.color.tab_strip_bg_incognito);
         mPrimaryTintWithTopToolbar =
-                ContextCompat.getColorStateList(mContext, R.color.default_icon_color_tint_list);
+                mContext.getColorStateList(R.color.default_icon_color_tint_list);
         mIncognitoTintWithTopToolbar =
-                ContextCompat.getColorStateList(
-                        mContext, R.color.default_icon_color_light_tint_list);
-        mToolbarTintList =
-                ContextCompat.getColorStateList(
-                        mContext, R.color.default_text_color_link_tint_list);
+                mContext.getColorStateList(R.color.default_icon_color_light_tint_list);
+        mToolbarTintList = mContext.getColorStateList(R.color.default_text_color_link_tint_list);
         mToolbarTintOtherList =
-                ContextCompat.getColorStateList(
-                        mContext, R.color.default_icon_color_white_tint_list);
+                mContext.getColorStateList(R.color.default_icon_color_white_tint_list);
 
         doReturn(Color.RED).when(mToolbarThemeColorProvider).getThemeColor();
         doReturn(mToolbarTintList).when(mToolbarThemeColorProvider).getTint();

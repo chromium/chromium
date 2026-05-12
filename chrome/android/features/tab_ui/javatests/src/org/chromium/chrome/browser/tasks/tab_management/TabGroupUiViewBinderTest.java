@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.annotation.UiThreadTest;
@@ -87,12 +86,9 @@ public class TabGroupUiViewBinderTest {
                     mMainContent = toolbarView.findViewById(R.id.main_content);
                     mImageTilesContainer =
                             toolbarView.findViewById(R.id.toolbar_image_tiles_container);
-                    mTint1 =
-                            ContextCompat.getColorStateList(
-                                    sActivity, R.color.default_text_color_link_tint_list);
+                    mTint1 = sActivity.getColorStateList(R.color.default_text_color_link_tint_list);
                     mTint2 =
-                            ContextCompat.getColorStateList(
-                                    sActivity, R.color.default_icon_color_white_tint_list);
+                            sActivity.getColorStateList(R.color.default_icon_color_white_tint_list);
                     RecyclerView recyclerView =
                             (TabListRecyclerView)
                                     LayoutInflater.from(sActivity)

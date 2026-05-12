@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
-import androidx.core.content.ContextCompat;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,7 +53,7 @@ public class ToolbarThemeColorProviderTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
         ColorStateList defaultTintList =
-                ContextCompat.getColorStateList(mContext, R.color.default_icon_color_tint_list);
+                mContext.getColorStateList(R.color.default_icon_color_tint_list);
 
         when(mTopUiThemeColorProvider.getThemeColor()).thenReturn(TOP_COLOR);
         when(mTopUiThemeColorProvider.getTint()).thenReturn(defaultTintList);
@@ -132,8 +131,7 @@ public class ToolbarThemeColorProviderTest {
         assertEquals(Color.GREEN, mToolbarThemeColorProvider.getThemeColor());
 
         ColorStateList newTint =
-                ContextCompat.getColorStateList(
-                        mContext, R.color.default_icon_color_light_tint_list);
+                mContext.getColorStateList(R.color.default_icon_color_light_tint_list);
         mToolbarThemeColorProvider.onTintChanged(newTint, newTint, BrandedColorScheme.INCOGNITO);
         assertEquals(newTint, mToolbarThemeColorProvider.getTint());
         assertEquals(newTint, mToolbarThemeColorProvider.getActivityFocusTint());

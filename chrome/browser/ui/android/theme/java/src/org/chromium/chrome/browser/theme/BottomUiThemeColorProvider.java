@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
-import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -83,17 +82,10 @@ public class BottomUiThemeColorProvider extends ThemeColorProvider
         mControlsPosition = browserControlsStateProvider.getControlsPosition();
         mPrimaryBackgroundColorWithTopToolbar = SemanticColorUtils.getColorSurface(context);
         mIncognitoBackgroundColorWithTopToolbar = context.getColor(R.color.tab_strip_bg_incognito);
-
-        ColorStateList primaryTintWithTopToolbar =
-                ContextCompat.getColorStateList(mContext, R.color.default_icon_color_tint_list);
-        assert primaryTintWithTopToolbar != null;
-        mPrimaryTintWithTopToolbar = primaryTintWithTopToolbar;
-
-        ColorStateList incognitoTintWithTopToolbar =
-                ContextCompat.getColorStateList(
-                        mContext, R.color.default_icon_color_light_tint_list);
-        assert incognitoTintWithTopToolbar != null;
-        mIncognitoTintWithTopToolbar = incognitoTintWithTopToolbar;
+        mPrimaryTintWithTopToolbar =
+                mContext.getColorStateList(R.color.default_icon_color_tint_list);
+        mIncognitoTintWithTopToolbar =
+                mContext.getColorStateList(R.color.default_icon_color_light_tint_list);
 
         mToolbarThemeColorProvider.addThemeColorObserver(this);
         mToolbarThemeColorProvider.addTintObserver(this);
