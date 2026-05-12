@@ -27,7 +27,6 @@ DEFINE_USER_DATA(InitialWebUIWindowMetricsManager);
 InitialWebUIWindowMetricsManager::InitialWebUIWindowMetricsManager(
     BrowserWindowInterface* browser)
     : waap_service_(WaapUIMetricsService::Get(browser->GetProfile())),
-      browser_(browser),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this),
       was_created_with_existing_windows_(
           ProfileBrowserCollection::GetForProfile(browser->GetProfile())
@@ -51,11 +50,6 @@ void InitialWebUIWindowMetricsManager::SetWindowCreationInfo(
 
 void InitialWebUIWindowMetricsManager::OnBrowserWindowShowRequested(
     base::TimeTicks time) {
-  if (browser_ && browser_->GetWindow() &&
-      browser_->GetWindow()->IsMinimized()) {
-    should_skip_latency_metrics_ = true;
-    return;
-  }
   if (!window_show_first_requested_time_.has_value()) {
     window_show_first_requested_time_ = time;
   }
@@ -63,9 +57,6 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowShowRequested(
 
 void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
     base::TimeTicks timestamp) {
-  if (should_skip_latency_metrics_) {
-    return;
-  }
   // Ensures only one startup window is recorded per browser process.
   bool& is_startup_first_paint_recorded = g_is_startup_first_paint_recorded;
   if (!waap_service_) {
@@ -119,9 +110,6 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonCreated() {
 
 void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
     base::TimeTicks timestamp) {
-  if (should_skip_latency_metrics_) {
-    return;
-  }
   // Ensures only one startup reload button is recorded per browser process.
   bool& is_startup_first_paint_recorded =
       g_is_startup_reload_first_paint_recorded;
@@ -148,9 +136,6 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
 
 void InitialWebUIWindowMetricsManager::OnReloadButtonFirstContentfulPaint(
     base::TimeTicks timestamp) {
-  if (should_skip_latency_metrics_) {
-    return;
-  }
   // Ensures only one startup reload button is recorded per browser process.
   bool& is_startup_first_contentful_paint_recorded =
       g_is_startup_reload_first_contentful_paint_recorded;
@@ -176,9 +161,6 @@ void InitialWebUIWindowMetricsManager::
     OnReloadButtonRendererProcessCreatedAndLaunched(
         base::TimeTicks created_timestamp,
         base::TimeTicks launched_timestamp) {
-  if (should_skip_latency_metrics_) {
-    return;
-  }
   // Ensures only one startup process launch is recorded per browser process.
   bool& is_startup_process_recorded = g_is_startup_process_recorded;
   if (!waap_service_) {

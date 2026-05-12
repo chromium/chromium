@@ -91,8 +91,6 @@ class InitialWebUIWindowMetricsManager {
   // The service used to record metrics. May be null if the feature is disabled.
   const raw_ptr<WaapUIMetricsService> waap_service_;
 
-  const raw_ptr<BrowserWindowInterface> browser_;
-
   ui::ScopedUnownedUserData<InitialWebUIWindowMetricsManager>
       scoped_data_holder_;
 
@@ -123,7 +121,6 @@ class InitialWebUIWindowMetricsManager {
 
   bool skip_startup_metrics_for_testing_ = false;
   bool was_created_with_existing_windows_ = false;
-  bool should_skip_latency_metrics_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_WAAP_INITIAL_WEBUI_WINDOW_METRICS_MANAGER_H_
