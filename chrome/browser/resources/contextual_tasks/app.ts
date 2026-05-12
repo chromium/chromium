@@ -789,7 +789,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   }
 
   private setStyleVariable(variable: string, value: string) {
-    this.composebox_?.style.setProperty(variable, `${value}px`);
+    this.composebox_?.style.setProperty(variable, value);
   }
 
   private onThreadFrameLoadStart(e: Event) {
