@@ -3248,33 +3248,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   <token key="UserType" variants="UserType"/>
 </histogram>
 
-<histogram name="Extensions.ListenersContainerSize.{Container}"
-    units="listeners" expires_after="2024-11-30">
-  <owner>spvm@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The size of the {Container} EventListener vector over which we search for a
-    listener to which to dispatch an event. Emitted once per event dispatch.
-  </summary>
-  <token key="Container">
-    <variant name="Active"
-        summary="Active listeners for the browser context for which this
-                 metric is emitted."/>
-    <variant name="CrossActive"
-        summary="Cross Active listeners for the browser context for which
-                 this metric is emitted."/>
-    <variant name="CrossInactive"
-        summary="Cross Inactive listeners for the browser context for which
-                 this metric is emitted."/>
-    <variant name="Global"
-        summary="Global listeners for the browser context for which this
-                 metric is emitted."/>
-    <variant name="Inactive"
-        summary="Inactive listeners for the browser context for which this
-                 metric is emitted."/>
-  </token>
-</histogram>
-
 <histogram name="Extensions.LoadAll2" units="units" expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->
 

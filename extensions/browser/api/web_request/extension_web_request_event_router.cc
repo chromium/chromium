@@ -1744,19 +1744,6 @@ void WebRequestEventRouter::DispatchEventToListeners(
     cross_inactive_listeners = &cross_data.inactive_listeners[event_name];
   }
 
-  UMA_HISTOGRAM_COUNTS_10000("Extensions.ListenersContainerSize.Global",
-                             listener_ids ? listener_ids->size() : 0);
-  UMA_HISTOGRAM_COUNTS_10000("Extensions.ListenersContainerSize.Active",
-                             active_listeners.size());
-  UMA_HISTOGRAM_COUNTS_10000("Extensions.ListenersContainerSize.Inactive",
-                             inactive_listeners.size());
-  UMA_HISTOGRAM_COUNTS_10000(
-      "Extensions.ListenersContainerSize.CrossActive",
-      cross_active_listeners ? cross_active_listeners->size() : 0);
-  UMA_HISTOGRAM_COUNTS_10000(
-      "Extensions.ListenersContainerSize.CrossInactive",
-      cross_inactive_listeners ? cross_inactive_listeners->size() : 0);
-
   for (const EventListener::ID& id : *listener_ids) {
     // Look for the event listener in the different listener sources.
     bool is_active = !id.render_process_id.is_null();
