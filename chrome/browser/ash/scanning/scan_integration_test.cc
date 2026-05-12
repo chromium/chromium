@@ -60,9 +60,10 @@ lorgnette::ScannerCapabilities CreateLorgnetteScannerCapabilities() {
 std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
     content::BrowserContext* context) {
   auto manager = std::make_unique<FakeLorgnetteScannerManager>();
-  manager->SetGetScannerNamesResponse({kFirstTestScannerName});
-  manager->SetGetScannerCapabilitiesResponse(
-      CreateLorgnetteScannerCapabilities());
+  lorgnette::ScannerInfo info;
+  info.set_name(kFirstTestScannerName);
+  manager->AddScanner(std::move(info), lorgnette::ScannerConfig(),
+                      CreateLorgnetteScannerCapabilities());
   return manager;
 }
 

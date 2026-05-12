@@ -9,9 +9,11 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -167,6 +169,17 @@ constexpr char kEpsonNoFlipModels[] =
     "|WF-M21000c"
     ")\\b";
 
+lorgnette::ScannerCapabilities CreateDefaultCapabilities() {
+  lorgnette::ScannerCapabilities caps;
+  lorgnette::DocumentSource* source = caps.add_sources();
+  source->set_type(lorgnette::SOURCE_PLATEN);
+  source->set_name("Flatbed");
+  source->add_color_modes(lorgnette::MODE_COLOR);
+  source->add_resolutions(75);
+  source->add_resolutions(300);
+  return caps;
+}
+
 }  // namespace
 
 FakeLorgnetteScannerManager::FakeLorgnetteScannerManager() = default;
@@ -182,10 +195,12 @@ FakeLorgnetteScannerManager::ScannerSession::operator=(
 FakeLorgnetteScannerManager::ScannerSession::~ScannerSession() = default;
 
 FakeLorgnetteScannerManager::ScannerState::ScannerState(
-    std::string scanner_id,
-    lorgnette::ScannerConfig template_config)
-    : scanner_id(std::move(scanner_id)),
-      template_config(std::move(template_config)) {}
+    lorgnette::ScannerInfo info,
+    lorgnette::ScannerConfig template_config,
+    lorgnette::ScannerCapabilities capabilities)
+    : info(std::move(info)),
+      template_config(std::move(template_config)),
+      capabilities(std::move(capabilities)) {}
 
 FakeLorgnetteScannerManager::ScannerState::ScannerState(
     ScannerState&& other) noexcept = default;
@@ -196,8 +211,10 @@ FakeLorgnetteScannerManager::ScannerState::~ScannerState() = default;
 
 void FakeLorgnetteScannerManager::GetScannerNames(
     GetScannerNamesCallback callback) {
+  std::vector<std::string> names = base::ToVector(
+      scanners_, [](const ScannerState& state) { return state.info.name(); });
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), scanner_names_));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(names)));
 }
 
 void FakeLorgnetteScannerManager::GetScannerInfoList(
@@ -205,15 +222,35 @@ void FakeLorgnetteScannerManager::GetScannerInfoList(
     LocalScannerFilter local_only,
     SecureScannerFilter secure_only,
     GetScannerInfoListCallback callback) {
+  lorgnette::ListScannersResponse response;
+  for (const ScannerState& state : scanners_) {
+    *response.add_scanners() = state.info;
+  }
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), list_scanners_response_));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
 
 void FakeLorgnetteScannerManager::GetScannerCapabilities(
     const std::string& scanner_name,
     GetScannerCapabilitiesCallback callback) {
+  if (simulate_dbus_failure_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
+
+  auto it = std::ranges::find_if(scanners_, [&scanner_name](const auto& state) {
+    return state.info.name() == scanner_name;
+  });
+
+  std::optional<lorgnette::ScannerCapabilities> caps;
+  if (it != scanners_.end()) {
+    caps = it->capabilities;
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), scanner_capabilities_));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(caps)));
 }
 
 void FakeLorgnetteScannerManager::OpenScanner(
@@ -230,7 +267,7 @@ void FakeLorgnetteScannerManager::OpenScanner(
 
   const std::string& scanner_id = request.scanner_id().connection_string();
   auto it = std::ranges::find_if(scanners_, [&scanner_id](const auto& state) {
-    return state.scanner_id == scanner_id;
+    return state.info.name() == scanner_id;
   });
 
   if (it == scanners_.end()) {
@@ -518,24 +555,16 @@ void FakeLorgnetteScannerManager::SimulateDBusFailure(bool simulate) {
 }
 
 void FakeLorgnetteScannerManager::AddScanner(
-    const lorgnette::ScannerInfo& scanner_info,
-    const lorgnette::ScannerConfig& config_template) {
-  scanners_.emplace_back(scanner_info.name(), config_template);
-}
-
-void FakeLorgnetteScannerManager::SetGetScannerNamesResponse(
-    const std::vector<std::string>& scanner_names) {
-  scanner_names_ = scanner_names;
-}
-
-void FakeLorgnetteScannerManager::SetGetScannerInfoListResponse(
-    const std::optional<lorgnette::ListScannersResponse>& response) {
-  list_scanners_response_ = response;
-}
-
-void FakeLorgnetteScannerManager::SetGetScannerCapabilitiesResponse(
-    const std::optional<lorgnette::ScannerCapabilities>& scanner_capabilities) {
-  scanner_capabilities_ = scanner_capabilities;
+    lorgnette::ScannerInfo scanner_info,
+    lorgnette::ScannerConfig config_template,
+    std::optional<lorgnette::ScannerCapabilities> capabilities) {
+  CHECK(std::ranges::none_of(scanners_, [&scanner_info](const auto& state) {
+    return state.info.name() == scanner_info.name();
+  }));
+  scanners_.emplace_back(std::move(scanner_info), std::move(config_template),
+                         capabilities.has_value()
+                             ? std::move(*capabilities)
+                             : CreateDefaultCapabilities());
 }
 
 void FakeLorgnetteScannerManager::SetCloseScannerResult(

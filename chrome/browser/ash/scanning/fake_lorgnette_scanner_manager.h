@@ -73,21 +73,12 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   // request with the scanner id from `scanner_info` will succeed and return a
   // copy of `config_template` with a unique session handle populated in the
   // scanner token, unless overridden via SimulateDBusFailure.
-  void AddScanner(const lorgnette::ScannerInfo& scanner_info,
-                  const lorgnette::ScannerConfig& config_template);
-
-  // Sets the response returned by GetScannerNames().
-  void SetGetScannerNamesResponse(
-      const std::vector<std::string>& scanner_names);
-
-  // Sets the response returned by GetScannerInfoList().
-  void SetGetScannerInfoListResponse(
-      const std::optional<lorgnette::ListScannersResponse>& response);
-
-  // Sets the response returned by GetScannerCapabilities().
-  void SetGetScannerCapabilitiesResponse(
-      const std::optional<lorgnette::ScannerCapabilities>&
-          scanner_capabilities);
+  // TODO(crbug.com/479031241): Update this and other comments once the class
+  // rewrite is complete.
+  void AddScanner(lorgnette::ScannerInfo scanner_info,
+                  lorgnette::ScannerConfig config_template,
+                  std::optional<lorgnette::ScannerCapabilities> capabilities =
+                      std::nullopt);
 
   // Sets the result field of the response returned by CloseScanner(). If this
   // is std::nullopt, the callback is passed std::nullopt. The default is
@@ -149,22 +140,21 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   };
 
   struct ScannerState {
-    ScannerState(std::string scanner_id,
-                 lorgnette::ScannerConfig template_config);
+    ScannerState(lorgnette::ScannerInfo info,
+                 lorgnette::ScannerConfig template_config,
+                 lorgnette::ScannerCapabilities capabilities);
     ScannerState(ScannerState&& other) noexcept;
     ScannerState& operator=(ScannerState&& other) noexcept;
     ~ScannerState();
 
-    std::string scanner_id;
+    lorgnette::ScannerInfo info;
     lorgnette::ScannerConfig template_config;
+    lorgnette::ScannerCapabilities capabilities;
     std::optional<ScannerSession> active_session;
   };
 
   std::string CreateFreshHandle();
 
-  std::vector<std::string> scanner_names_;
-  std::optional<lorgnette::ListScannersResponse> list_scanners_response_;
-  std::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
   bool simulate_dbus_failure_ = false;
   std::vector<ScannerState> scanners_;
   std::optional<lorgnette::OperationResult> close_scanner_result_ =

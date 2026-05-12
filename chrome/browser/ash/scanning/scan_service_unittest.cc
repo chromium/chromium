@@ -76,6 +76,9 @@ constexpr char kDocumentSourceName[] = "Flatbed";
 constexpr char kAdfSourceName[] = "ADF Duplex";
 
 // Resolutions used for tests.
+// TODO(crbug.com/479031241): Some tests here rely on these being the default
+// resolutions used by FakeLorgnetteScanManager and moreover on the hardcoded
+// settings map in FakeLorgnetteScan. Get rid of these dependencies.
 constexpr uint32_t kFirstResolution = 75;
 constexpr uint32_t kSecondResolution = 300;
 
@@ -88,30 +91,12 @@ const std::map<mojo_ipc::FileType, std::string> kFileTypes = {
     {mojo_ipc::FileType::kPdf, "pdf"},
     {mojo_ipc::FileType::kPng, "png"}};
 
-// Returns a DocumentSource object.
-lorgnette::DocumentSource CreateLorgnetteDocumentSource() {
-  lorgnette::DocumentSource source;
-  source.set_type(lorgnette::SOURCE_PLATEN);
-  source.set_name(kDocumentSourceName);
-  source.add_color_modes(lorgnette::MODE_COLOR);
-  source.add_resolutions(kFirstResolution);
-  source.add_resolutions(kSecondResolution);
-  return source;
-}
-
 // Returns an ADF Duplex DocumentSource object.
 lorgnette::DocumentSource CreateAdfDuplexDocumentSource() {
   lorgnette::DocumentSource source;
   source.set_type(lorgnette::SOURCE_ADF_DUPLEX);
   source.set_name(kAdfSourceName);
   return source;
-}
-
-// Returns a ScannerCapabilities object.
-lorgnette::ScannerCapabilities CreateLorgnetteScannerCapabilities() {
-  lorgnette::ScannerCapabilities caps;
-  *caps.add_sources() = CreateLorgnetteDocumentSource();
-  return caps;
 }
 
 // Returns a ScannerCapabilities object used for testing a scanner
@@ -316,6 +301,15 @@ class ScanServiceTest : public testing::Test {
         scan_service_remote_.BindNewPipeAndPassReceiver());
   }
 
+  void AddScanner(const std::string& name,
+                  std::optional<lorgnette::ScannerCapabilities> capabilities =
+                      std::nullopt) {
+    lorgnette::ScannerInfo info;
+    info.set_name(name);
+    fake_lorgnette_scanner_manager_.AddScanner(
+        std::move(info), lorgnette::ScannerConfig(), std::move(capabilities));
+  }
+
   // Gets scanners by calling ScanService::GetScanners() via the mojo::Remote.
   std::vector<mojo_ipc::ScannerPtr> GetScanners() {
     base::test::TestFuture<std::vector<mojo_ipc::ScannerPtr>> future;
@@ -430,15 +424,13 @@ class ScanServiceTest : public testing::Test {
 
 // Test that no scanners are returned when there are no scanner names.
 TEST_F(ScanServiceTest, NoScannerNames) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse({});
   auto scanners = GetScanners();
   EXPECT_TRUE(scanners.empty());
 }
 
 // Test that a scanner is returned with the correct display name.
 TEST_F(ScanServiceTest, GetScanners) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
   EXPECT_EQ(scanners[0]->display_name, kFirstTestScannerName16);
@@ -446,8 +438,8 @@ TEST_F(ScanServiceTest, GetScanners) {
 
 // Test that two returned scanners have unique IDs.
 TEST_F(ScanServiceTest, UniqueScannerIds) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName, kSecondTestScannerName});
+  AddScanner(kFirstTestScannerName);
+  AddScanner(kSecondTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 2u);
   EXPECT_EQ(scanners[0]->display_name, kFirstTestScannerName16);
@@ -459,8 +451,8 @@ TEST_F(ScanServiceTest, UniqueScannerIds) {
 TEST_F(ScanServiceTest, RecordNumDetectedScanners) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("Scanning.NumDetectedScanners", 0);
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName, kSecondTestScannerName});
+  AddScanner(kFirstTestScannerName);
+  AddScanner(kSecondTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 2u);
   histogram_tester.ExpectUniqueSample("Scanning.NumDetectedScanners", 2, 1);
@@ -476,10 +468,8 @@ TEST_F(ScanServiceTest, BadScannerId) {
 // Test that failing to obtain capabilities from the LorgnetteScannerManager
 // results in obtaining no capabilities.
 TEST_F(ScanServiceTest, NoCapabilities) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
-  fake_lorgnette_scanner_manager_.SetGetScannerCapabilitiesResponse(
-      std::nullopt);
+  AddScanner(kFirstTestScannerName);
+  fake_lorgnette_scanner_manager_.SimulateDBusFailure(true);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
   auto caps = GetScannerCapabilities(scanners[0]->id);
@@ -488,10 +478,8 @@ TEST_F(ScanServiceTest, NoCapabilities) {
 
 // Test that scanner capabilities can be obtained successfully.
 TEST_F(ScanServiceTest, GetScannerCapabilities) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
-  fake_lorgnette_scanner_manager_.SetGetScannerCapabilitiesResponse(
-      CreateLorgnetteScannerCapabilities());
+  AddScanner(kFirstTestScannerName);
+
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
   auto caps = GetScannerCapabilities(scanners[0]->id);
@@ -519,8 +507,7 @@ TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
   const base::FilePath my_files_path(kMyFilesPath);
   SetupScanService(my_files_path, base::FilePath("/google/drive"));
 
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   const std::vector<std::string> scan_data = {"TestData"};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
@@ -533,8 +520,7 @@ TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
 
 // Test that a scan can be performed successfully.
 TEST_F(ScanServiceTest, Scan) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   const std::vector<std::string> scan_data = {CreateJpeg(), CreateJpeg(),
                                               CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
@@ -581,9 +567,7 @@ TEST_F(ScanServiceTest, Scan) {
 // Test that an Epson ADF Duplex scan, which produces flipped pages, completes
 // successfully.
 TEST_F(ScanServiceTest, RotateEpsonADF) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse({kEpsonTestName});
-  fake_lorgnette_scanner_manager_.SetGetScannerCapabilitiesResponse(
-      CreateEpsonScannerCapabilities());
+  AddScanner(kEpsonTestName, CreateEpsonScannerCapabilities());
   const std::vector<std::string> scan_data = {CreateJpeg(), CreateJpeg(),
                                               CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
@@ -610,8 +594,7 @@ TEST_F(ScanServiceTest, RotateEpsonADF) {
 TEST_F(ScanServiceTest, ScanFails) {
   // Skip setting the scan data in FakeLorgnetteScannerManager so the scan will
   // fail.
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
@@ -629,8 +612,7 @@ TEST_F(ScanServiceTest, ScanFails) {
 TEST_F(ScanServiceTest, ScanAfterFailedScan) {
   // Skip setting the scan data in FakeLorgnetteScannerManager so the scan will
   // fail.
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
@@ -668,8 +650,7 @@ TEST_F(ScanServiceTest, ScanAfterFailedScan) {
 // Tests that a failed scan does not retain values from the previous successful
 // scan.
 TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   const std::vector<std::string> scan_data = {"TestData1", "TestData2",
                                               "TestData3"};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
@@ -707,8 +688,7 @@ TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
 
 // Test that canceling sends an update to the observer OnCancelComplete().
 TEST_F(ScanServiceTest, CancelScanBeforeScanCompletes) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   const std::vector<std::string> scan_data = {"TestData"};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
@@ -724,8 +704,7 @@ TEST_F(ScanServiceTest, CancelScanBeforeScanCompletes) {
 
 // Test that a multi-page image scan creates a holding space item.
 TEST_F(ScanServiceTest, HoldingSpaceScan) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   const std::vector<std::string> scan_data = {CreateJpeg(), CreateJpeg(),
                                               CreateJpeg()};
   auto scanners = GetScanners();
@@ -791,8 +770,7 @@ TEST_F(ScanServiceTest, HoldingSpaceScan) {
 TEST_F(ScanServiceTest, MultiPageScan) {
   base::HistogramTester histogram_tester;
 
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   const std::vector<std::string> scan_data = {CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
@@ -843,8 +821,7 @@ TEST_F(ScanServiceTest, MultiPageScan) {
 TEST_F(ScanServiceTest, MultiPageScanFails) {
   base::HistogramTester histogram_tester;
 
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   const std::vector<std::string> scan_data = {CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
@@ -881,8 +858,7 @@ TEST_F(ScanServiceTest, MultiPageScanFails) {
 // Test that attempting to start a second multi-page scan while another
 // multi-page scan session is going will fail.
 TEST_F(ScanServiceTest, StartingAnotherMultiPageScan) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   const std::vector<std::string> scan_data = {CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
@@ -908,8 +884,7 @@ TEST_F(ScanServiceTest, StartingAnotherMultiPageScan) {
 TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
   base::HistogramTester histogram_tester;
 
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
@@ -953,8 +928,7 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
 TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
   base::HistogramTester histogram_tester;
 
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
@@ -1005,8 +979,7 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
 TEST_F(ScanServiceTest, MultiPageScanRemoveLastPage) {
   base::HistogramTester histogram_tester;
 
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   const std::vector<std::string> scan_data = {CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
@@ -1048,8 +1021,7 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveLastPage) {
 TEST_F(ScanServiceTest, MultiPageScanRescanWithOnePage) {
   base::HistogramTester histogram_tester;
 
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
@@ -1092,8 +1064,7 @@ TEST_F(ScanServiceTest, MultiPageScanRescanWithOnePage) {
 TEST_F(ScanServiceTest, MultiPageScanRescanWithThreePages) {
   base::HistogramTester histogram_tester;
 
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
@@ -1162,8 +1133,7 @@ TEST_F(ScanServiceTest, ResetReceiverOnBindInterface) {
 // TODO(b:307385730): Parameterize this test once more settings combinations
 // are added.
 TEST_F(ScanServiceTest, ScanDataSettings) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
+  AddScanner(kFirstTestScannerName);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
