@@ -6250,7 +6250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch"
-    enum="BooleanMatched" expires_after="2026-06-19">
+    enum="BooleanMatched" expires_after="2027-06-19">
   <owner>danieltwhite@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
