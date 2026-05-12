@@ -49,4 +49,10 @@
   <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST_ANDROID" desc = "Text for a toast indicating that the tab was successfully sent to another device." formatter_data="android_java">
     Sent to Chrome on your <ph name="DEVICE_NAME">%1$s<ex>iPhone</ex></ph>.
   </message>
+  <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST" desc = "Text for a toast indicating that the tab was already sent to another device recently.">
+    Already sent to Chrome on your <ph name="DEVICE_NAME">$1<ex>iPhone</ex></ph>
+  </message>
+  <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST_ANDROID" desc = "Text for a toast indicating that the tab was already sent to another device recently." formatter_data="android_java">
+    Already sent to Chrome on your <ph name="DEVICE_NAME">%1$s<ex>iPhone</ex></ph>
+  </message>
 </grit-part>

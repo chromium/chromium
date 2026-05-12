@@ -73,7 +73,7 @@ const SendTabToSelfEntry* FakeSendTabToSelfModel::SendEntry(
   }
 
   if (commit_confirmation) {
-    std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccess);
+    std::move(commit_confirmation).Run(send_result_);
   }
 
   return result;
@@ -133,6 +133,10 @@ void FakeSendTabToSelfModel::AddTargetDevice(const TargetDeviceInfo& device) {
 
 void FakeSendTabToSelfModel::SetLocalDeviceName(std::string_view device_name) {
   local_device_name_ = std::string(device_name);
+}
+
+void FakeSendTabToSelfModel::SetSendResult(SendTabToSelfResult result) {
+  send_result_ = result;
 }
 
 void FakeSendTabToSelfModel::SetSendEntryCallback(SendEntryCallback callback) {

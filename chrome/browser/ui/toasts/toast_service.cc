@@ -513,7 +513,14 @@ void ToastService::RegisterToasts(
       ToastId::kSendTabToSelfSuccess,
       ToastSpecification::Builder(vector_icons::kDevicesIcon,
                                   IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST)
-          .AddGlobalScoped()
+          .AddCloseButton()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kSendTabToSelfSuccessThrottled,
+      ToastSpecification::Builder(
+          vector_icons::kDevicesIcon,
+          IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST)
           .AddCloseButton()
           .Build());
 
@@ -523,7 +530,6 @@ void ToastService::RegisterToasts(
       ToastSpecification::Builder(
           vector_icons::kWarningIcon,
           IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE)
-          .AddGlobalScoped()
           .AddCloseButton()
           .Build());
   // Report a scam confirmation toast.

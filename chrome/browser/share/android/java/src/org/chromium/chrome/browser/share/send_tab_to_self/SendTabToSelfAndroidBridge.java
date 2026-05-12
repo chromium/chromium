@@ -86,12 +86,18 @@ public class SendTabToSelfAndroidBridge {
         Context appContext = ContextUtils.getApplicationContext();
         switch (result) {
             case SendTabToSelfResult.SUCCESS:
-            case SendTabToSelfResult.SUCCESS_THROTTLED:
                 String successMessage =
                         appContext.getString(
                                 R.string.send_tab_to_self_post_send_success_toast_android,
                                 targetDeviceName);
                 Toast.makeText(appContext, successMessage, Toast.LENGTH_SHORT).show();
+                break;
+            case SendTabToSelfResult.SUCCESS_THROTTLED:
+                String throttledMessage =
+                        appContext.getString(
+                                R.string.send_tab_to_self_post_send_throttled_toast_android,
+                                targetDeviceName);
+                Toast.makeText(appContext, throttledMessage, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

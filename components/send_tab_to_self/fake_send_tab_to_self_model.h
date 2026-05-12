@@ -53,6 +53,7 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
       const std::vector<TargetDeviceInfo>& devices);
   void AddTargetDevice(const TargetDeviceInfo& device);
   void SetLocalDeviceName(std::string_view device_name);
+  void SetSendResult(SendTabToSelfResult result);
 
   using SendEntryCallback =
       base::RepeatingCallback<void(const SendTabToSelfEntry*)>;
@@ -80,6 +81,7 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   std::string last_opened_guid_;
   std::string last_dismissed_guid_;
   SendEntryCallback send_entry_callback_;
+  SendTabToSelfResult send_result_ = SendTabToSelfResult::kSuccess;
 };
 
 }  // namespace send_tab_to_self

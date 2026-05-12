@@ -83,6 +83,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "SendTabToSelfSuccess";
     case ToastId::kSendTabToSelfFailure:
       return "SendTabToSelfFailure";
+    case ToastId::kSendTabToSelfSuccessThrottled:
+      return "SendTabToSelfSuccessThrottled";
     case ToastId::kReportUnsafeSiteConfirmation:
       return "ReportUnsafeSiteConfirmation";
   }

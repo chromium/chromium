@@ -41,6 +41,11 @@ base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
 void ShowTabSentSuccessToast(content::WebContents* web_contents,
                              std::string_view device_name);
 
+// Shows a toast confirming that the tab was already sent to the device
+// recently, if `kSendTabToSelfPostSendToast` is enabled.
+void ShowTabSentThrottledToast(content::WebContents* web_contents,
+                               std::string_view device_name);
+
 // Shows a failure toast (or notification if the feature flag is disabled)
 // when the tab failed to send.
 void ShowTabSentFailure(content::WebContents* web_contents,

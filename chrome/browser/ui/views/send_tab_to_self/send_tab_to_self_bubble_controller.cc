@@ -234,9 +234,13 @@ void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
     SendTabToSelfResult result) {
   switch (result) {
     case SendTabToSelfResult::kSuccess:
-    case SendTabToSelfResult::kSuccessThrottled:
       if (base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
         ShowTabSentSuccessToast(&GetWebContents(), device_name);
+      }
+      break;
+    case SendTabToSelfResult::kSuccessThrottled:
+      if (base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
+        ShowTabSentThrottledToast(&GetWebContents(), device_name);
       }
       break;
     case SendTabToSelfResult::kFailureInvalidUrl:

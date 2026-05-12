@@ -114,6 +114,24 @@ void DisplaySendToSelfSuccessSnackbar(id<SnackbarCommands> snackbar_handler,
   [snackbar_handler showSnackbarMessage:message];
 }
 
+void DisplaySendToSelfThrottledSnackbar(id<SnackbarCommands> snackbar_handler,
+                                        std::string_view device_name) {
+  CHECK(base::FeatureList::IsEnabled(
+      send_tab_to_self::kSendTabToSelfPostSendToast));
+  // `snackbar_handler` can be nil if the command dispatcher was already
+  // destroyed or if no handler was registered for SnackbarCommands.
+  if (!snackbar_handler) {
+    return;
+  }
+
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  NSString* text =
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST,
+                              base::UTF8ToUTF16(device_name));
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
+  [snackbar_handler showSnackbarMessage:message];
+}
+
 void SendTabToDeviceComplete(id<SnackbarCommands> snackbar_handler,
                              std::string_view device_name,
                              send_tab_to_self::SendTabToSelfResult result) {
@@ -123,13 +141,19 @@ void SendTabToDeviceComplete(id<SnackbarCommands> snackbar_handler,
   }
 
   switch (result) {
-    case send_tab_to_self::SendTabToSelfResult::kSuccess:
-    case send_tab_to_self::SendTabToSelfResult::kSuccessThrottled: {
+    case send_tab_to_self::SendTabToSelfResult::kSuccess: {
       // Post to the main thread to safely present the snackbar and allow the
       // current call stack to unwind.
       web::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(&DisplaySendToSelfSuccessSnackbar, snackbar_handler,
+                         std::string(device_name)));
+      break;
+    }
+    case send_tab_to_self::SendTabToSelfResult::kSuccessThrottled: {
+      web::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&DisplaySendToSelfThrottledSnackbar, snackbar_handler,
                          std::string(device_name)));
       break;
     }

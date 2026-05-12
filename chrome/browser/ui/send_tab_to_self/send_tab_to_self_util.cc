@@ -28,6 +28,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -111,6 +112,17 @@ void ShowTabSentSuccessToast(content::WebContents* web_contents,
     // not a custom name or hostname. Check with UX if we should use manufacturer
     // + form factor to construct the device name where available, and how to
     // handle edge cases like custom-made PCs.
+    params.body_string_replacement_params = {base::UTF8ToUTF16(device_name)};
+    toast_controller->MaybeShowToast(std::move(params));
+  }
+}
+
+void ShowTabSentThrottledToast(content::WebContents* web_contents,
+                               std::string_view device_name) {
+  ToastController* toast_controller =
+      ToastController::MaybeGetForWebContents(web_contents);
+  if (toast_controller) {
+    ToastParams params(ToastId::kSendTabToSelfSuccessThrottled);
     params.body_string_replacement_params = {base::UTF8ToUTF16(device_name)};
     toast_controller->MaybeShowToast(std::move(params));
   }

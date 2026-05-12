@@ -191,6 +191,40 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+                       BubbleShowsThrottledToast) {
+  GURL test_url("about:blank");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+
+  StubSendTabToSelfSyncService* sync_service =
+      static_cast<StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+  ASSERT_TRUE(sync_service);
+
+  SendTabToSelfBubbleController* controller =
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+
+  TestSendTabToSelfModelObserver observer(
+      sync_service->GetSendTabToSelfModel());
+
+  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
+      {TargetDeviceInfo("device_name_1", "device_1",
+                        syncer::DeviceInfo::FormFactor::kDesktop,
+                        base::Time::Now())});
+  sync_service->GetFakeSendTabToSelfModel()->SetSendResult(
+      SendTabToSelfResult::kSuccessThrottled);
+
+  controller->OnDeviceSelected("device_1", "device_name_1");
+  observer.WaitForEntryAdded();
+
+  ExpectToastShown(ToastId::kSendTabToSelfSuccessThrottled,
+                   IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST,
+                   u"device_name_1");
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        ContextMenuShowsToast) {
   GURL test_url(
       "data:text/html;charset=utf-8,<html><body><p>Test</p></body></html>");

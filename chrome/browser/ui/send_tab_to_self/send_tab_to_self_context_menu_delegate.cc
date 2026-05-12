@@ -42,13 +42,17 @@ static_assert(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST -
 void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
                                std::string_view device_name,
                                SendTabToSelfResult result) {
+  if (!web_contents ||
+      !base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
+    return;
+  }
+
   switch (result) {
     case SendTabToSelfResult::kSuccess:
+      ShowTabSentSuccessToast(web_contents.get(), device_name);
+      break;
     case SendTabToSelfResult::kSuccessThrottled:
-      if (web_contents &&
-          base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
-        ShowTabSentSuccessToast(web_contents.get(), device_name);
-      }
+      ShowTabSentThrottledToast(web_contents.get(), device_name);
       break;
     case SendTabToSelfResult::kFailureInvalidUrl:
     case SendTabToSelfResult::kFailureNotTrackingMetadata:
