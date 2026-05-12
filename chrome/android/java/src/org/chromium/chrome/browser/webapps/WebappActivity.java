@@ -9,6 +9,7 @@ import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_WEBAPK_PACKAG
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -71,7 +72,10 @@ public class WebappActivity extends BaseCustomTabActivity {
 
     @Override
     public boolean onMenuOrKeyboardAction(
-            int id, boolean fromMenu, @Nullable MotionEventInfo triggeringMotion) {
+            int id,
+            boolean fromMenu,
+            @Nullable Bundle menuItemData,
+            @Nullable MotionEventInfo triggeringMotion) {
         // Disable creating bookmark.
         if (id == R.id.bookmark_this_page_id) {
             return true;
@@ -85,7 +89,7 @@ public class WebappActivity extends BaseCustomTabActivity {
             }
             return true;
         }
-        return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
+        return super.onMenuOrKeyboardAction(id, fromMenu, menuItemData, triggeringMotion);
     }
 
     @Override

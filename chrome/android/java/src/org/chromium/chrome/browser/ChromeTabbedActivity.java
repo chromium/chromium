@@ -4096,7 +4096,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     @Override
     public boolean onMenuOrKeyboardAction(
-            final int id, boolean fromMenu, @Nullable MotionEventInfo triggeringMotion) {
+            final int id,
+            boolean fromMenu,
+            @Nullable Bundle menuItemData,
+            @Nullable MotionEventInfo triggeringMotion) {
         final Tab currentTab = getActivityTab();
         boolean currentTabIsNtp = isTabNtp(currentTab);
         if (id == R.id.new_tab_menu_id) {
@@ -4366,7 +4369,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             .build());
             RecordUserAction.record("MobileMenuTabSearch");
         } else {
-            return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
+            return super.onMenuOrKeyboardAction(id, fromMenu, menuItemData, triggeringMotion);
         }
         return true;
     }
