@@ -1164,6 +1164,66 @@ public class OptionalButtonViewTest {
     }
 
     @Test
+    public void testOnDetachedFromWindow_cancelsPendingActionChipCollapse() {
+        ButtonDataImpl actionChipButtonData = getDataForReaderModeActionChip();
+        int collapseDelay =
+                actionChipButtonData.getButtonSpec().getActionChipCollapseDelayMs();
+
+        Callback<Integer> transitionStartedCallback = MockitoHelper.mockCallback();
+        mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
+
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        mOptionalButtonView.onDetachedFromWindow();
+
+        mShadowLooper.idleFor(collapseDelay + 1, TimeUnit.MILLISECONDS);
+        verify(transitionStartedCallback, never())
+                .onResult(TransitionType.COLLAPSING_ACTION_CHIP);
+    }
+
+    @Test
+    public void testCancelTransition_cancelsPendingActionChipCollapse() {
+        ButtonDataImpl actionChipButtonData = getDataForReaderModeActionChip();
+        int collapseDelay =
+                actionChipButtonData.getButtonSpec().getActionChipCollapseDelayMs();
+
+        Callback<Integer> transitionStartedCallback = MockitoHelper.mockCallback();
+        mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
+
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        mOptionalButtonView.cancelTransition();
+
+        mShadowLooper.idleFor(collapseDelay + 1, TimeUnit.MILLISECONDS);
+        verify(transitionStartedCallback, never())
+                .onResult(TransitionType.COLLAPSING_ACTION_CHIP);
+    }
+
+    @Test
+    public void testHide_cancelsPendingActionChipCollapse() {
+        ButtonDataImpl actionChipButtonData = getDataForReaderModeActionChip();
+        int collapseDelay =
+                actionChipButtonData.getButtonSpec().getActionChipCollapseDelayMs();
+
+        Callback<Integer> transitionStartedCallback = MockitoHelper.mockCallback();
+        mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
+
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        mOptionalButtonView.updateButtonWithAnimation(null);
+
+        mShadowLooper.idleFor(collapseDelay + 1, TimeUnit.MILLISECONDS);
+        verify(transitionStartedCallback, never())
+                .onResult(TransitionType.COLLAPSING_ACTION_CHIP);
+    }
+
+    @Test
     public void testSetSuppressBackground() {
         mOptionalButtonView.setSuppressBackground(true);
 

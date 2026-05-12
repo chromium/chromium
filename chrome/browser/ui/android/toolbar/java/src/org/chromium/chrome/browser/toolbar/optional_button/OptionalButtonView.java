@@ -134,6 +134,11 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                 }
             };
 
+    private @StringRes int mPendingBubbleTextId = Resources.ID_NULL;
+
+    private final Runnable mShowTextBubbleRunnable =
+            () -> showTextBubble(mPendingBubbleTextId);
+
     @IntDef({
         State.HIDDEN,
         State.SHOWING_ICON,
@@ -234,9 +239,23 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     public void cancelTransition() {
+        removePendingDelayedRunnables();
         if (isRunningTransition()) {
             TransitionManager.endTransitions(mTransitionRoot);
         }
+    }
+
+    private void removePendingDelayedRunnables() {
+        Handler handler = getHandler();
+        if (handler == null) return;
+        handler.removeCallbacks(mCollapseActionChipRunnable);
+        handler.removeCallbacks(mShowTextBubbleRunnable);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        removePendingDelayedRunnables();
+        super.onDetachedFromWindow();
     }
 
     /**
@@ -280,7 +299,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         if (mState == State.SHOWING_ACTION_CHIP) {
             // If the action chip is expanded then deschedule the collapse task and collapse
             // immediately.
-            getHandler().removeCallbacks(mCollapseActionChipRunnable);
+            removePendingDelayedRunnables();
             showIcon(false);
             mState = getNextState();
         }
@@ -403,9 +422,10 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         } else if (canAnimate && mActionChipLabelString != null) {
             if (showTextBubble) {
                 showIcon(/* animate= */ true);
+                mPendingBubbleTextId = bubbleTextId;
                 getHandler()
                         .postDelayed(
-                                () -> showTextBubble(bubbleTextId),
+                                mShowTextBubbleRunnable,
                                 TEXT_BUBBLE_FOR_ANIMATION_START_DELAY_MS);
             } else {
                 animateActionChipExpansion();
@@ -903,6 +923,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     private void hide(boolean animate) {
+        removePendingDelayedRunnables();
         Transition transition = createShowHideTransition();
         if (!animate) {
             transition.setDuration(0);
