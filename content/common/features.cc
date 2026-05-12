@@ -679,13 +679,13 @@ BASE_FEATURE(kServiceWorkerStaticRouterRaceRequestFix2,
 
 // Enforce CORP check for Service Worker Static Router's cache source.
 BASE_FEATURE(kServiceWorkerStaticRouterCORPCheck,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // crbug.com/495999481: When this is enabled, the navigation request should be
 // blocked when it receives an opaque response from the service worker static
 // router.
 BASE_FEATURE(kServiceWorkerStaticRouterOpaqueCheck,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // (crbug.com/497302265): When enabled, the main script response fetching is
 // consolidated into ServiceWorkerVersion.
