@@ -16,6 +16,12 @@
 // Clears all download protection rules.
 + (void)clearDownloadProtectionRules;
 
+// Set the browser DM Token.
++ (void)setBrowserDMToken;
+
+// Clear the browser DM Token.
++ (void)clearBrowserDMToken;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_TEST_ANALYSIS_CONNECTORS_APP_INTERFACE_H_

@@ -9,9 +9,14 @@ source_set("eg_app_support+eg2") {
     "analysis_connectors_app_interface.mm",
   ]
   deps = [
+    "//components/enterprise",
+    "//components/enterprise:test_support",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:cloud_content_scanning",
     "//components/enterprise/connectors/core:test_support",
     "//components/prefs",
+    "//ios/chrome/browser/enterprise/cloud_content_scanning/model",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
   ]

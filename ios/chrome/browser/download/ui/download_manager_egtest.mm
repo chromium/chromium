@@ -5,10 +5,13 @@
 #import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/upload_request_test_server.h"
+#import "components/safe_browsing/core/common/safebrowsing_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/download/model/download_app_interface.h"
 #import "ios/chrome/browser/download/ui/download_egtest_util.h"
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
+#import "ios/chrome/browser/enterprise/connectors/analysis/test/analysis_connectors_app_interface.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -18,6 +21,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/components/enterprise/analysis/features.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
@@ -28,6 +32,7 @@
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using base::test::ios::kWaitForDownloadTimeout;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::WebViewMatcher;
@@ -47,9 +52,24 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
 @interface DownloadManagerTestCase : ChromeTestCase
 @end
 
-@implementation DownloadManagerTestCase
+@implementation DownloadManagerTestCase {
+  std::unique_ptr<enterprise_connectors::test::UploadRequestTestServer>
+      _uploadServer;
+}
 
 - (void)setUp {
+  if ([self isEnterpriseDownloadTest]) {
+    _uploadServer = std::make_unique<
+        enterprise_connectors::test::UploadRequestTestServer>();
+    // Start must be called before setUp as the server URL is passed in the
+    // APPLaunchConfiguration.
+    if (!_uploadServer->Start()) {
+      // Use NOTREACHED() instead of GREYAssertTrue because GREYAssertTrue can
+      // only be used after calling the -setUp method of the super class.
+      NOTREACHED();
+    }
+  }
+
   [super setUp];
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&net::test_server::HandlePrefixedRequest, "/",
@@ -74,6 +94,12 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
+- (void)tearDownHelper {
+  [AnalysisConnectorsAppInterface clearBrowserDMToken];
+  [AnalysisConnectorsAppInterface clearDownloadProtectionRules];
+  [super tearDownHelper];
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration configuration;
   // TODO(crbug.com/6602213): Fix the test suite for when Auto-deletion is
@@ -81,7 +107,53 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
   configuration.features_disabled.push_back(
       kDownloadAutoDeletionFeatureEnabled);
   configuration.features_disabled.push_back(kIOSSaveToDriveSignedOut);
+
+  if ([self isEnterpriseDownloadTest]) {
+    configuration.features_enabled.push_back(
+        enterprise_connectors::kEnableFileDownloadConnectorIOS);
+    configuration.additional_args.push_back(base::StrCat(
+        {"--", safe_browsing::switches::kCloudBinaryUploadServiceUrlFlag, "=",
+         _uploadServer->GetServiceURL().spec()}));
+    if ([self isEnterpriseDownloadAllowTest]) {
+      _uploadServer->SetScanResultSuccess();
+    } else if ([self isEnterpriseDownloadWarnTest]) {
+      _uploadServer->SetScanResultWarn();
+    } else if ([self isEnterpriseDownloadBlockTest]) {
+      _uploadServer->SetScanResultBlock();
+    }
+  }
+
   return configuration;
+}
+
+- (bool)isEnterpriseDownloadTest {
+  return [self isRunningTest:@selector
+               (testSuccessfulDownloadWhenDownloadProtectionEnabled)] ||
+         [self isRunningTest:@selector
+               (testSuccessfulDownloadScanWhenDownloadProtectionEnabled)] ||
+         [self isRunningTest:@selector
+               (testDownloadBlockWhenDownloadProtectionEnabled)] ||
+         [self isRunningTest:@selector
+               (testDownloadWarnCancelWhenDownloadProtectionEnabled)] ||
+         [self isRunningTest:@selector
+               (testDownloadWarnProceedWhenDownloadProtectionEnabled)];
+}
+
+- (bool)isEnterpriseDownloadAllowTest {
+  return [self isRunningTest:@selector
+               (testSuccessfulDownloadScanWhenDownloadProtectionEnabled)];
+}
+
+- (bool)isEnterpriseDownloadWarnTest {
+  return [self isRunningTest:@selector
+               (testDownloadWarnCancelWhenDownloadProtectionEnabled)] ||
+         [self isRunningTest:@selector
+               (testDownloadWarnProceedWhenDownloadProtectionEnabled)];
+}
+
+- (bool)isEnterpriseDownloadBlockTest {
+  return [self
+      isRunningTest:@selector(testDownloadBlockWhenDownloadProtectionEnabled)];
 }
 
 // Tests successful download up to the point where "Open in..." button is
@@ -466,6 +538,147 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
       performAction:grey_tap()];
 
   GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+}
+
+// Tests download can proceed normally for non-enterprise user when Enterprise
+// download protection feature is enabled.
+- (void)testSuccessfulDownloadWhenDownloadProtectionEnabled {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"DataURL"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"data"];
+
+  GREYAssert(WaitForDownloadButton(/*loading*/ true),
+             @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+  GREYAssertEqual(_uploadServer->GetRequestCount(), 0,
+                  @"Expected no scan request was made");
+}
+
+// Tests download can proceed normally if the scan result is success.
+- (void)testSuccessfulDownloadScanWhenDownloadProtectionEnabled {
+  [AnalysisConnectorsAppInterface setDownloadProtectionRules];
+  [AnalysisConnectorsAppInterface setBrowserDMToken];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"DataURL"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"data"];
+
+  GREYAssert(WaitForDownloadButton(/*loading*/ true),
+             @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+  GREYAssertEqual(_uploadServer->GetRequestCount(), 1,
+                  @"Expected 1 scan request but received %d request(s)",
+                  _uploadServer->GetRequestCount());
+}
+
+// Tests download will be blocked if the scan result is failure, and a snackbar
+// message will show.
+- (void)testDownloadBlockWhenDownloadProtectionEnabled {
+  [AnalysisConnectorsAppInterface setDownloadProtectionRules];
+  [AnalysisConnectorsAppInterface setBrowserDMToken];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"DataURL"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"data"];
+
+  GREYAssert(WaitForDownloadButton(/*loading*/ true),
+             @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  // Wait for download to finish and check that the snackbar is shown.
+  id<GREYMatcher> snackbarMessage = grey_text(l10n_util::GetNSString(
+      IDS_IOS_ENTERPRISE_FILE_SAVE_BLOCKED_SNACKBAR_TEXT));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:snackbarMessage
+                                              timeout:kWaitForDownloadTimeout];
+
+  // Test that the open in and download buttons do not show up.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      assertWithMatcher:grey_nil()];
+
+  GREYAssertEqual(_uploadServer->GetRequestCount(), 1,
+                  @"Expected 1 scan request but received %d request(s)",
+                  _uploadServer->GetRequestCount());
+}
+
+// Tests that a warning dialog will show up if the scan result is warn, download
+// will be blocked if the user decides to cancel.
+- (void)testDownloadWarnCancelWhenDownloadProtectionEnabled {
+  [AnalysisConnectorsAppInterface setDownloadProtectionRules];
+  [AnalysisConnectorsAppInterface setBrowserDMToken];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"DataURL"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"data"];
+
+  GREYAssert(WaitForDownloadButton(/*loading*/ true),
+             @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  // Wait for download to finish and the dialog to show up.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          chrome_test_util::AlertItemWithAccessibilityLabelId(IDS_CANCEL)
+                                  timeout:kWaitForDownloadTimeout];
+
+  // Tap the "Cancel" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
+
+  // Test that the open in and download buttons do not show up.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      assertWithMatcher:grey_nil()];
+
+  GREYAssertEqual(_uploadServer->GetRequestCount(), 1,
+                  @"Expected 1 scan request but received %d request(s)",
+                  _uploadServer->GetRequestCount());
+}
+
+// Tests that a warning dialog will show up if the scan result is warn, download
+// will proceed if the user decides to continue.
+- (void)testDownloadWarnProceedWhenDownloadProtectionEnabled {
+  [AnalysisConnectorsAppInterface setDownloadProtectionRules];
+  [AnalysisConnectorsAppInterface setBrowserDMToken];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"DataURL"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"data"];
+
+  GREYAssert(WaitForDownloadButton(/*loading*/ true),
+             @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  // Wait for download to finish and the dialog to show up.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::AlertItemWithAccessibilityLabelId(
+                          IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_CONTINUE_BUTTON)
+                                              timeout:kWaitForDownloadTimeout];
+
+  // Tap the "Continue" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_CONTINUE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Make sure the open in button show up.
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+
+  GREYAssertEqual(_uploadServer->GetRequestCount(), 1,
+                  @"Expected 1 scan request but received %d request(s)",
+                  _uploadServer->GetRequestCount());
 }
 
 @end

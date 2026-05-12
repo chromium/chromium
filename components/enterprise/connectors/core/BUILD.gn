@@ -165,6 +165,20 @@ if (enterprise_cloud_content_analysis || is_android) {
       deps += [ "//components/safe_browsing/content/browser/web_ui" ]
     }
   }
+
+  source_set("cloud_content_scanning_test_support") {
+    testonly = true
+    sources = [
+      "cloud_content_scanning/upload_request_test_server.cc",
+      "cloud_content_scanning/upload_request_test_server.h",
+    ]
+    deps = [
+      "//base/test:test_support",
+      "//components/enterprise/common/proto:connectors_proto",
+      "//net",
+      "//net:test_support",
+    ]
+  }
 }
 
 source_set("constants") {
