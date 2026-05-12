@@ -2,9 +2,10 @@ Name: web-platform-tests - Test Suites for Web Platform specifications
 Short Name: wpt
 URL: https://github.com/web-platform-tests/wpt/
 Version: N/A
-Revision: c0591d1ae5a1bb052af6026cea6b09d82ac2d531
+Revision: 6a2f32237615d7ea9c1eb1e30453066b5555c603
 Update Mechanism: Manual (https://crbug.com/492538741)
 License: BSD-3-Clause
+License File: wpt/LICENSE.md
 Security Critical: no
 Shipped: no
 Description: This includes code for the manifest tool, lint tool, and wptserve.

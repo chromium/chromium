@@ -688,7 +688,11 @@ external/wpt/video-rvfc/request-video-frame-callback-during-xr-session.https.htm
 external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html
 external/wpt/visual-viewport/page-and-offset-in-iframe.html
 external/wpt/visual-viewport/resize-event-order.html
+external/wpt/wai-aria/accessibility_properties_basic.tentative.html
+external/wpt/wai-aria/checked/checked.tentative.html
+external/wpt/wai-aria/pressed/pressed.tentative.html
 external/wpt/wai-aria/role/invalid-roles.html
+external/wpt/wai-aria/subtree/tablist.tentative.html
 external/wpt/web-animations/interfaces/Animation/finished.html
 external/wpt/web-animations/interfaces/Animation/onremove.html
 external/wpt/web-animations/timing-model/timelines/timelines.html

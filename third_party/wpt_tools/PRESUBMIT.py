@@ -43,13 +43,17 @@ def _TestWPTManifest(input_api, output_api):
     f.write(input_api.ReadFile(base_manifest))
     f.close()
 
-    wpt_exec_path = input_api.os_path.join(
-        input_api.change.RepositoryRoot(), 'third_party', 'wpt_tools', 'wpt', 'wpt')
+    wpt_tools_dir = input_api.os_path.join(
+        input_api.change.RepositoryRoot(), 'third_party', 'wpt_tools', 'wpt')
+    wpt_exec_path = input_api.os_path.join(wpt_tools_dir, 'wpt')
+    wpt_venv = input_api.os_path.join(wpt_tools_dir, '_venv3')
     external_wpt = input_api.os_path.join(
         blink_path, 'web_tests', 'external', 'wpt')
     try:
       input_api.subprocess.check_output(
-          ['python3', wpt_exec_path, 'manifest', '--no-download',
+          ['python3', wpt_exec_path,
+           f'--venv={wpt_venv}', '--skip-venv-setup',
+           'manifest', '--no-download',
            '--path', f.name, '--tests-root', external_wpt])
     except input_api.subprocess.CalledProcessError as exc:
       return [output_api.PresubmitError('wpt manifest failed:', long_text=exc.output)]

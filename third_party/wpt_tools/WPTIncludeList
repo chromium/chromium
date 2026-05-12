@@ -57,7 +57,9 @@
 ./tools/manifest/mputil.py
 ./tools/manifest/requirements.txt
 ./tools/manifest/sourcefile.py
+./tools/manifest/test262.py
 ./tools/manifest/testpaths.py
+./tools/manifest/tests/test_test262.py
 ./tools/manifest/typedata.py
 ./tools/manifest/update.py
 ./tools/manifest/utils.py
@@ -277,6 +279,7 @@
 ./tools/third_party_modified/mozlog/mozlog/handlers/base.py
 ./tools/third_party_modified/mozlog/mozlog/handlers/bufferhandler.py
 ./tools/third_party_modified/mozlog/mozlog/handlers/messagehandler.py
+./tools/third_party_modified/mozlog/mozlog/handlers/resourcehandler.py
 ./tools/third_party_modified/mozlog/mozlog/handlers/statushandler.py
 ./tools/third_party_modified/mozlog/mozlog/handlers/summaryhandler.py
 ./tools/third_party_modified/mozlog/mozlog/handlers/valgrindhandler.py
@@ -297,6 +300,16 @@
 ./tools/third_party_modified/mozlog/mozlog/unstructured/loglistener.py
 ./tools/third_party_modified/mozlog/setup.cfg
 ./tools/third_party_modified/mozlog/setup.py
+./tools/wave/ecmascript/README.MD
+./tools/wave/ecmascript/generate-tests.js
+./tools/wave/ecmascript/test-template.html
+./tools/wave/ecmascript/test-template.iframe.html
+./tools/wave/ecmascript/webplatform-adapter.js
+./tools/wave/wave-cli.py
+./tools/wave/webgl/prepare-tests.js
+./tools/wave/webgl/resources/js-test-pre.js
+./tools/wave/webgl/resources/list_all_tests
+./tools/wave/webgl/resources/unit.js
 ./tools/web_features/MANIFEST_SCHEMA.json
 ./tools/web_features/__init__.py
 ./tools/web_features/commands.json
@@ -351,6 +364,7 @@
 ./tools/wpt/wpt.py
 ./tools/wptrunner/MANIFEST.in
 ./tools/wptrunner/README.rst
+./tools/wptrunner/docs/plugins.rst
 ./tools/wptrunner/requirements.txt
 ./tools/wptrunner/requirements_android_webview.txt
 ./tools/wptrunner/requirements_chrome.txt
@@ -370,6 +384,7 @@
 ./tools/wptrunner/tox.ini
 ./tools/wptrunner/wptrunner.default.ini
 ./tools/wptrunner/wptrunner/__init__.py
+./tools/wptrunner/wptrunner/_default_if_sentinel.py
 ./tools/wptrunner/wptrunner/browsers/__init__.py
 ./tools/wptrunner/wptrunner/browsers/android_weblayer.py
 ./tools/wptrunner/wptrunner/browsers/android_webview.py
@@ -451,6 +466,7 @@
 ./tools/wptrunner/wptrunner/testharnessreport.js
 ./tools/wptrunner/wptrunner/testloader.py
 ./tools/wptrunner/wptrunner/testrunner.py
+./tools/wptrunner/wptrunner/tests/test_default_if_sentinel.py
 ./tools/wptrunner/wptrunner/update/__init__.py
 ./tools/wptrunner/wptrunner/update/base.py
 ./tools/wptrunner/wptrunner/update/metadata.py

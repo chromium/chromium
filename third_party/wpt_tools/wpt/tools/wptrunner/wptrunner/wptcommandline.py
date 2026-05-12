@@ -41,7 +41,7 @@ def create_parser(product_choices=None):
     from mozlog import commandline
 
     if product_choices is None:
-        product_choices = products.product_list
+        product_choices = list(products.get_all_products())
 
     parser = argparse.ArgumentParser(description="""Runner for web-platform-tests tests.""",
                                      usage="""%(prog)s [OPTION]... [TEST]...
@@ -445,6 +445,16 @@ scheme host and port.""")
     commandline.log_formatters["wptscreenshot"] = (wptscreenshot.WptscreenshotFormatter, "wpt.fyi screenshots")
 
     commandline.add_logging_group(parser)
+
+    for product_name in products.get_all_products():
+        try:
+            product = products.Product.from_product_name(product_name)
+        except Exception as e:
+            print(f"Warning: could not load product {product_name!r} for argument registration: {e}",
+                  file=sys.stderr)
+        else:
+            product.add_arguments(parser)
+
     return parser
 
 
@@ -741,7 +751,7 @@ def create_parser_metadata_update(product_choices=None):
     from . import products
 
     if product_choices is None:
-        product_choices = products.product_list
+        product_choices = list(products.get_all_products())
 
     parser = argparse.ArgumentParser("web-platform-tests-update",
                                      description="Update script for web-platform-tests tests.")

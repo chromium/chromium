@@ -151,6 +151,7 @@ class WPTAdapter:
         parser.set_defaults(
             prompt=False,
             install_browser=False,
+            install_browser_url=False,
             install_webdriver=False,
             channel='nightly',
             affected=None,

@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
 [FAIL] button with missing aria-pressed
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
 [FAIL] button with aria-pressed true
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
 [FAIL] button with aria-pressed false
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
 [FAIL] button with aria-pressed mixed
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
 Harness: the test ran to completion.
 

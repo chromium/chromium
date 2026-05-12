@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
 [FAIL] checkbox with missing aria-checked
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
 [FAIL] checkbox with aria-checked true
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
 [FAIL] checkbox with aria-checked false
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
 [FAIL] checkbox with aria-checked mixed
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_accessibility_properties_for_element is not a function"
+  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
 Harness: the test ran to completion.
 
