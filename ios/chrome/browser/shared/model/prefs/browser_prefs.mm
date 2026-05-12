@@ -644,6 +644,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kNTPContentSuggestionsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kIosImageFetcherShouldClearCache, true);
   registry->RegisterBooleanPref(
       prefs::kArticlesForYouEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

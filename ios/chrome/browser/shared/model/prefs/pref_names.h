@@ -482,6 +482,12 @@ inline constexpr char kLensOverlayConditionsAccepted[] =
 inline constexpr char kNTPContentSuggestionsEnabled[] =
     "ios.ntp.content_suggestions_enabled";
 
+// Added in M149 to resolve an issue where images were stored too large on disk
+// after being upscaled and transcoded. This will be removed after M153 when the
+// migration is complete.
+inline constexpr char kIosImageFetcherShouldClearCache[] =
+    "ios.image_fetcher_should_clear_cache";
+
 // Preference that holds a boolean indicating whether suggestions for supervised
 // users on the NTP are enabled.
 inline constexpr char kNTPContentSuggestionsForSupervisedUserEnabled[] =
