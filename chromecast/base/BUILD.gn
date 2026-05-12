@@ -37,8 +37,6 @@ if (is_android_arc) {
 
 cast_source_set("base") {
   sources = [
-    "alarm_manager.cc",
-    "alarm_manager.h",
     "bind_to_task_runner.h",
     "bitstream_audio_codecs.cc",
     "bitstream_audio_codecs.h",
@@ -147,7 +145,6 @@ cast_source_set("test_support") {
 
 test("cast_base_unittests") {
   sources = [
-    "alarm_manager_unittest.cc",
     "cast_features_unittest.cc",
     "device_capabilities_impl_unittest.cc",
     "error_codes_unittest.cc",
