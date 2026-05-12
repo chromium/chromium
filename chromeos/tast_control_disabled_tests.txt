@@ -139,4 +139,8 @@ tast.crash.ValidateFirmwareDumpGeneration.policy_all@brya
 tast.crash.ValidateFirmwareDumpGeneration.policy_none@brya
 tast.crash.ValidateFirmwareDumpGeneration.policy_wifi@brya
 
+# b/512571805
+tast.a11y.LiveCaption.fieldtrial_testing_config_off@brya
+tast.a11y.LiveCaption.fieldtrial_testing_config_on@brya
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
