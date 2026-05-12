@@ -12,7 +12,7 @@
 
 @implementation AnalysisConnectorsAppInterface
 
-+ (void)setBlockDownloadRule {
++ (void)setDownloadProtectionRules {
   PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   enterprise_connectors::test::SetAnalysisConnectorsPrefs(
       prefs, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, {R"({

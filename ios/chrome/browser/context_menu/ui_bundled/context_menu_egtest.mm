@@ -1393,7 +1393,7 @@ void RelaunchApp() {
 // Tests that save image to native photo album is blocked if Download Protection
 // Rule is set to do so.
 - (void)testSaveImageBlockByDownloadProtection {
-  [AnalysisConnectorsAppInterface setBlockDownloadRule];
+  [AnalysisConnectorsAppInterface setDownloadProtectionRules];
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
@@ -1443,7 +1443,7 @@ void RelaunchApp() {
   config.relaunch_policy = RelaunchPolicy::ForceRelaunchByKilling;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  [AnalysisConnectorsAppInterface setBlockDownloadRule];
+  [AnalysisConnectorsAppInterface setDownloadProtectionRules];
   // Sign in so that the "Save image in..." sub menu is available.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
