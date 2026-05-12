@@ -67,10 +67,10 @@ const base::FeatureParam<GlicOpenNewTabDisposition>::Option
          kGlicOpenNewTabDispositionForegroundIfNotConsented}};
 
 const base::FeatureParam<GlicOpenNewTabDisposition>
-    kGlicOpenNewTabDispositionParam{&kApiGlicAccessFromGoogleWebpage,
-                                    "glic_open_new_tab_disposition",
-                                    GlicOpenNewTabDisposition::kForeground,
-                                    &kGlicOpenNewTabDispositionOptions};
+    kGlicOpenNewTabDispositionParam{
+        &kApiGlicAccessFromGoogleWebpage, "glic_open_new_tab_disposition",
+        GlicOpenNewTabDisposition::kForegroundIfNotConsented,
+        &kGlicOpenNewTabDispositionOptions};
 
 BASE_FEATURE(kApiProxyOverrideRulesPrivate, base::FEATURE_ENABLED_BY_DEFAULT);
 
