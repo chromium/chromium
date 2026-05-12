@@ -6959,17 +6959,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.AwBrowserContext.ProfileDataMigrationHappened"
-    enum="Boolean" expires_after="2026-07-21">
-  <owner>wbjacksonjr@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records whether or not the default profile migration step runs during its
-    constructor. The primary purpose of this metric is to observe when it is
-    safe to remove the profile migration step.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.AwContentsConstructorTime{IsFirst}" units="ms"
     expires_after="2026-04-07">
   <owner>cduvall@chromium.org</owner>

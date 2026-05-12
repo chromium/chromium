@@ -119,70 +119,7 @@ bool IgnoreOriginSecurityCheck(const GURL& url) {
   return true;
 }
 
-void MigrateProfileData(base::FilePath cache_path,
-                        base::FilePath context_storage_path) {
-  TRACE_EVENT0("startup", "MigrateProfileData");
-  bool migration_happened = false;
-  FilePath old_cache_path;
-  base::PathService::Get(base::DIR_CACHE, &old_cache_path);
-  old_cache_path = old_cache_path.DirName().Append(
-      FILE_PATH_LITERAL("org.chromium.android_webview"));
 
-  if (base::PathExists(old_cache_path)) {
-    migration_happened = true;
-    bool success = base::CreateDirectory(cache_path);
-    if (success)
-      success &= base::Move(old_cache_path, cache_path);
-    DCHECK(success);
-  }
-
-  base::FilePath old_context_storage_path;
-  base::PathService::Get(base::DIR_ANDROID_APP_DATA, &old_context_storage_path);
-
-  if (!base::PathExists(context_storage_path)) {
-    base::CreateDirectory(context_storage_path);
-  }
-
-  auto migrate_context_storage_data = [&old_context_storage_path,
-                                       &context_storage_path,
-                                       &migration_happened](auto& suffix) {
-    FilePath old_file = old_context_storage_path.Append(suffix);
-    if (base::PathExists(old_file)) {
-      migration_happened = true;
-      FilePath new_file = context_storage_path.Append(suffix);
-
-      if (base::PathExists(new_file)) {
-        bool success =
-            base::Move(new_file, new_file.AddExtension(".partial-migration"));
-        DCHECK(success);
-      }
-      bool success = base::Move(old_file, new_file);
-      DCHECK(success);
-    }
-  };
-
-  // These were handled in the initial migration
-  migrate_context_storage_data("Web Data");
-  migrate_context_storage_data("Web Data-journal");
-  migrate_context_storage_data("GPUCache");
-  migrate_context_storage_data("blob_storage");
-  migrate_context_storage_data("Session Storage");
-
-  // These were missed in the initial migration
-  migrate_context_storage_data("File System");
-  migrate_context_storage_data("IndexedDB");
-  migrate_context_storage_data("Local Storage");
-  migrate_context_storage_data("QuotaManager");
-  migrate_context_storage_data("QuotaManager-journal");
-  migrate_context_storage_data("Service Worker");
-  migrate_context_storage_data("VideoDecodeStats");
-  migrate_context_storage_data("shared_proto_db");
-  migrate_context_storage_data("webrtc_event_logs");
-
-  base::UmaHistogramBoolean(
-      "Android.WebView.AwBrowserContext.ProfileDataMigrationHappened",
-      migration_happened);
-}
 
 base::FilePath BuildCachePath(const base::FilePath& relative_path) {
   FilePath cache_path;
@@ -213,9 +150,7 @@ AwBrowserContext::AwBrowserContext(std::string name,
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
 
-  if (IsDefaultBrowserContext()) {
-    MigrateProfileData(GetHttpCachePath(), GetPath());
-  } else {
+  if (!IsDefaultBrowserContext()) {
     cookie_manager_ = std::make_unique<CookieManager>(this);
   }
 
@@ -903,7 +838,7 @@ void AwBrowserContext::PrepareNewContext(const base::FilePath& relative_path) {
 
 // static
 void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
-  // The default profile handles its own directory creation in migration code
+  // The default profile handles its own directory creation explicitly
   // and (as of writing) should never be deleted.
   CHECK_NE(relative_path.value(), AwBrowserContextStore::kDefaultContextPath);
 

@@ -58,8 +58,8 @@ AwBrowserContextStore::AwBrowserContextStore(PrefService* pref_service)
   TRACE_EVENT0("startup", "AwBrowserContextStore::AwBrowserContextStore");
 
   // The pref store tracks the profile and directory names of all non-default
-  // profiles. The default profile (which could need migrations or on-disk
-  // initialization) exists implicitly and is not tracked in the pref store.
+  // profiles. The default profile exists implicitly and is not tracked in the
+  // pref store.
   ScopedListPrefUpdate update(&*prefs_, prefs::kProfileListPref);
   base::ListValue& profiles = update.Get();
   for (const auto& profile : profiles) {
@@ -231,7 +231,9 @@ AwBrowserContextStore::Entry* AwBrowserContextStore::CreateNewContext(
   base::ListValue& profiles = update.Get();
   if (name == kDefaultContextName) {
     entry->path = base::FilePath(AwBrowserContextStore::kDefaultContextPath);
+    AwBrowserContext::PrepareNewContext(entry->path);
     // Do not store the default profile in prefs - it is implicit.
+
   } else {
     int number = AssignNewProfileNumber();
     entry->path = base::FilePath(

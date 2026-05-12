@@ -21,11 +21,9 @@
 #include "base/android/apk_info.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
-#include "base/android/path_utils.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -33,7 +31,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -191,16 +188,6 @@ CookieManager* CookieManager::GetDefaultInstance() {
   return instance.get();
 }
 
-namespace {
-base::FilePath GetPathInAppDirectory(std::string path) {
-  base::FilePath result;
-  if (!base::PathService::Get(base::DIR_ANDROID_APP_DATA, &result)) {
-    NOTREACHED() << "Failed to get app data directory for Android WebView";
-  }
-  result = result.Append(FILE_PATH_LITERAL(path));
-  return result;
-}
-}  // namespace
 
 CookieManager::CookieManager(AwBrowserContext* const parent_context)
     : parent_context_(parent_context),
@@ -219,27 +206,10 @@ CookieManager::CookieManager(AwBrowserContext* const parent_context)
   cookie_store_backend_thread_.Start();
   cookie_store_task_runner_ = cookie_store_client_thread_.task_runner();
   cookie_store_path_ = GetContextPath().Append(FILE_PATH_LITERAL("Cookies"));
-  if (!parent_context_) {
-    // Default profile
-    MigrateCookieStorePath();
-  }
 }
 
 CookieManager::~CookieManager() = default;
 
-void CookieManager::MigrateCookieStorePath() {
-  base::FilePath old_cookie_store_path = GetPathInAppDirectory("Cookies");
-  base::FilePath old_cookie_journal_path =
-      GetPathInAppDirectory("Cookies-journal");
-  base::FilePath new_cookie_journal_path =
-      GetPathInAppDirectory("Default/Cookies-journal");
-
-  if (base::PathExists(old_cookie_store_path)) {
-    base::CreateDirectory(cookie_store_path_.DirName());
-    base::Move(old_cookie_store_path, cookie_store_path_);
-    base::Move(old_cookie_journal_path, new_cookie_journal_path);
-  }
-}
 
 // Executes the |task| on |cookie_store_task_runner_| and waits for it to
 // complete before returning.

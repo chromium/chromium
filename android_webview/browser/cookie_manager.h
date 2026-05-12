@@ -263,7 +263,6 @@ class CookieManager {
   void SetAllowFileSchemeCookiesCompleted(base::OnceClosure complete,
                                           bool allow,
                                           bool can_change_schemes);
-  void MigrateCookieStorePath();
 
   // The client hint cache should be cleared if cookies are cleared, but if
   // cookies are cleared before the browser starts we need a way flag the
