@@ -576,8 +576,10 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
 
   // Date detection is not part of the above loop because dates can span
   // multiple fields.
-  FindAndSetPossibleDateFieldTypesAndFormatStrings(entities, app_locale, fields,
-                                                   possible_types);
+  if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
+    FindAndSetPossibleDateFieldTypesAndFormatStrings(entities, app_locale,
+                                                     fields, possible_types);
+  }
 
   // As CVCs are not stored, run special heuristics to detect CVC-like values.
   FindAndSetPossibleCvcFieldTypes(last_unlocked_credit_card_cvc, fields,
