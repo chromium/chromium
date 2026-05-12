@@ -30,12 +30,15 @@ import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RectProvider;
 
 import java.lang.annotation.Retention;
@@ -295,8 +298,23 @@ public class TabSwitcherActionMenuCoordinator {
                         .build();
             case MenuItemType.DIVIDER:
             default:
-                return BasicListMenu.buildMenuDivider(mProfile.isIncognitoBranded());
+                return buildMenuDivider();
         }
+    }
+
+    private ListItem buildMenuDivider() {
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS);
+        if (mProfile.isIncognitoBranded()) {
+            builder.with(ListSectionDividerProperties.COLOR_ID, R.color.divider_color_light);
+        }
+        builder.with(
+                ListSectionDividerProperties.LEFT_PADDING_DIMEN_ID,
+                R.dimen.list_menu_item_horizontal_padding);
+        builder.with(
+                ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID,
+                R.dimen.list_menu_item_horizontal_padding);
+        return new ListItem(ListItemType.DIVIDER, builder.build());
     }
 
     private boolean doTabGroupsExist() {
