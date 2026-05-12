@@ -480,14 +480,14 @@ void NotificationHeaderView::UpdateColors() {
 
   if (expand_button_) {
     expand_button_->SetImage(ui::ImageModel::FromVectorIcon(
-        is_expanded_ ? kNotificationExpandLessIcon
-                     : kNotificationExpandMoreIcon,
+        is_expanded_ ? kNotificationExpandLessOldIcon
+                     : kNotificationExpandMoreOldIcon,
         actual_color, kExpandIconSize));
   }
 
   if (using_default_app_icon_ && app_icon_view_) {
     app_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        kProductIcon, actual_color, kSmallImageSizeMD));
+        kProductOldIcon, actual_color, kSmallImageSizeMD));
   }
 }
 

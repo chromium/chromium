@@ -67,7 +67,8 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
   bool MatchesAppIconColor(SkColor color) {
     SkBitmap expected =
-        *gfx::CreateVectorIcon(kProductIcon, kSmallImageSizeMD, color).bitmap();
+        *gfx::CreateVectorIcon(kProductOldIcon, kSmallImageSizeMD, color)
+             .bitmap();
     SkBitmap actual =
         *notification_header_view_->app_icon_for_testing().bitmap();
     return gfx::test::AreBitmapsEqual(expected, actual);
@@ -75,7 +76,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
   bool MatchesExpandIconColor(SkColor color) {
     constexpr int kExpandIconSize = 8;
-    SkBitmap expected = *gfx::CreateVectorIcon(kNotificationExpandMoreIcon,
+    SkBitmap expected = *gfx::CreateVectorIcon(kNotificationExpandMoreOldIcon,
                                                kExpandIconSize, color)
                              .bitmap();
     SkBitmap actual =

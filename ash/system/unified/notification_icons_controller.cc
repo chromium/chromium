@@ -180,7 +180,7 @@ void NotificationIconTrayItemView::UpdateImageViewColor() {
     image_view()->SetImage(ui::ImageModel::FromImage(masked_small_icon));
   } else {
     image_view()->SetImage(ui::ImageModel::FromVectorIcon(
-        message_center::kProductIcon, color_id, kUnifiedTrayIconSize));
+        message_center::kProductOldIcon, color_id, kUnifiedTrayIconSize));
   }
 }
 

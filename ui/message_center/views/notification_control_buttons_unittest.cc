@@ -90,11 +90,11 @@ class NotificationControlButtonsTest : public views::ViewsTestBase {
 
   void ExpectIconColor(SkColor color) {
     EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(),
-                            kNotificationCloseButtonIcon, color));
+                            kNotificationCloseButtonOldIcon, color));
     EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(),
-                            kNotificationSettingsButtonIcon, color));
+                            kNotificationSettingsButtonOldIcon, color));
     EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(),
-                            kNotificationSnoozeButtonIcon, color));
+                            kNotificationSnoozeButtonOldIcon, color));
   }
 
  private:
@@ -181,7 +181,7 @@ TEST_F(NotificationControlButtonsTest, SetIcons) {
   buttons_view()->ShowCloseButton(false);
   buttons_view()->ShowSettingsButton(false);
   buttons_view()->ShowSnoozeButton(false);
-  const gfx::VectorIcon& test_icon = kProductIcon;
+  const gfx::VectorIcon& test_icon = kProductOldIcon;
   buttons_view()->SetCloseButtonIcon(test_icon);
   buttons_view()->SetSettingsButtonIcon(test_icon);
   buttons_view()->SetSnoozeButtonIcon(test_icon);

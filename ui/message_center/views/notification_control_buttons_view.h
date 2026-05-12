@@ -39,11 +39,11 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
 
   // Default control button icons.
   inline static const gfx::VectorIcon& kDefaultCloseIcon =
-      kNotificationCloseButtonIcon;
+      kNotificationCloseButtonOldIcon;
   inline static const gfx::VectorIcon& kDefaultSettingsIcon =
-      kNotificationSettingsButtonIcon;
+      kNotificationSettingsButtonOldIcon;
   inline static const gfx::VectorIcon& kDefaultSnoozeIcon =
-      kNotificationSnoozeButtonIcon;
+      kNotificationSnoozeButtonOldIcon;
 
   // Default horizontal spacing between control buttons.
   constexpr static int kDefaultBetweenButtonSpacing = 0;

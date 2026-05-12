@@ -97,7 +97,7 @@ OngoingProcessView::OngoingProcessView(
                   .SetID(VIEW_ID_ONGOING_PROCESS_ICON)
                   .SetImage(ui::ImageModel::FromVectorIcon(
                       notification.vector_small_image().is_empty()
-                          ? message_center::kProductIcon
+                          ? message_center::kProductOldIcon
                           : notification.vector_small_image(),
                       cros_tokens::kCrosSysOnSurface, kIconSize)),
               views::Builder<views::BoxLayoutView>()

@@ -244,7 +244,7 @@ void NotificationInputContainer::UpdateButtonImage() {
   button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
-          kNotificationInlineReplyIcon,
+          kNotificationInlineReplyOldIcon,
           GetColorProvider()->GetColor(icon_color_id), kInputReplyButtonSize));
 }
 

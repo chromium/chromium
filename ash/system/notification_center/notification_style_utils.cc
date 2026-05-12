@@ -50,7 +50,7 @@ gfx::ImageSkia CreateNotificationAppIcon(
 
   gfx::ImageSkia app_icon =
       masked_small_icon.IsEmpty()
-          ? gfx::CreateVectorIcon(message_center::kProductIcon,
+          ? gfx::CreateVectorIcon(message_center::kProductOldIcon,
                                   kNotificationAppIconImageSize, icon_color)
           : masked_small_icon.AsImageSkia();
 
@@ -72,7 +72,7 @@ gfx::ImageSkia CreateNotificationItemIcon(
   // hardcoded chrome icon as a default icon.
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       kNotificationAppIconViewSize / 2, SK_ColorRED,
-      gfx::CreateVectorIcon(message_center::kProductIcon,
+      gfx::CreateVectorIcon(message_center::kProductOldIcon,
                             kNotificationAppIconImageSize, SK_ColorBLACK));
 }
 

@@ -611,7 +611,7 @@ void NotifierSettingsView::NotifierButton::UpdateIconImage(
     const gfx::ImageSkia& icon) {
   if (icon.isNull()) {
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        message_center::kProductIcon, cros_tokens::kIconColorPrimary,
+        message_center::kProductOldIcon, cros_tokens::kIconColorPrimary,
         kEntryIconSize));
   } else {
     icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));

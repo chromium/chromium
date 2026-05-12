@@ -11,13 +11,13 @@ aggregate_vector_icons("message_center_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [
-    "notification_close_button.icon",
-    "notification_expand_less.icon",
-    "notification_expand_more.icon",
-    "notification_inline_reply.icon",
-    "notification_settings_button.icon",
-    "notification_snooze_button.icon",
-    "product.icon",
+    "notification_close_button_old.icon",
+    "notification_expand_less_old.icon",
+    "notification_expand_more_old.icon",
+    "notification_inline_reply_old.icon",
+    "notification_settings_button_old.icon",
+    "notification_snooze_button_old.icon",
+    "product_old.icon",
   ]
 }
 
