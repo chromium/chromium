@@ -1943,8 +1943,11 @@ source_set("platform_browser_tests") {
     sources += [
       "../browser/devtools/devtools_browsertest.cc",
       "../browser/devtools/protocol/devtools_protocol_browsertest.cc",
+      "../browser/devtools/protocol/webmcp_browsertest.cc",
     ]
     deps += [
+      "//chrome/browser/actor:test_support",
+      "//chrome/browser/actor:tools_test_support",
       "//chrome/browser/custom_handlers",
       "//chrome/browser/data_saver",
       "//chrome/browser/devtools",
