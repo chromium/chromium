@@ -247,6 +247,7 @@ _BENCHMARKS = [
             '#include "chrome/browser/android/compositor/compositor_view.h"\n'
             '// random_comment<sub>'),
         change_file='chrome/browser/android/compositor/compositor_view.cc',
+        can_install=True,
     ),
 ]
 
