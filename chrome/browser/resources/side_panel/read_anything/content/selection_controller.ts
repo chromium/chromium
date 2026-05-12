@@ -248,9 +248,13 @@ export class SelectionController {
       focusOffset: chrome.readingMode.endOffset,
     };
 
-    return isDistilledByReadability() ?
-        this.getNewSelectionWithoutAxIds_(container, selectionIds) :
-        this.getNewSelectionWithAxIds_(selectionIds);
+    if (isDistilledByReadability()) {
+      return chrome.readingMode.isReadabilitySelectTextEnabled ?
+          this.getNewSelectionWithAxIds_(selectionIds) :
+          this.getNewSelectionWithoutAxIds_(container, selectionIds);
+    }
+
+    return this.getNewSelectionWithAxIds_(selectionIds);
   }
 
   private getNewSelectionWithoutAxIds_(

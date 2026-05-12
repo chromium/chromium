@@ -1534,7 +1534,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnSpeechEngineStalled)
       .SetMethod("onRenderedTextBlocksAvailable",
                  &ReadAnythingAppController::OnRenderedTextBlocksAvailable)
-      .SetMethod("getAXMapping", &ReadAnythingAppController::GetAXMapping);
+      .SetMethod("getAxMapping", &ReadAnythingAppController::GetAXMapping);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {

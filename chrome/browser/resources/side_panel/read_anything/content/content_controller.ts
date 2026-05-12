@@ -394,7 +394,61 @@ export class ContentController {
   }
 
   onRenderedTextMappingReady() {
-    // TODO(crbug.com/507450504): Create nodestore for readability
+    if (!isDistilledByReadability() ||
+        !chrome.readingMode.isReadabilitySelectTextEnabled) {
+      return;
+    }
+
+    // Iterate through the rendered text nodes by their index.
+    for (let i = 0; i < this.renderedTextNodes_.length; i++) {
+      const node = this.renderedTextNodes_[i];
+      if (!(node instanceof Text) || !node.parentNode) {
+        continue;
+      }
+
+      // Retrieve the mapping segments for this specific block index.
+      const segments = chrome.readingMode.getAxMapping(i);
+      if (segments && segments.length > 0) {
+        this.mapBlockToAxNodes_(node, segments);
+      }
+    }
+
+    // After populating the NodeStore, trigger a selection update to synchronize
+    // any existing selection state.
+    chrome.readingMode.updateSelection();
+  }
+
+  private mapBlockToAxNodes_(
+      node: Text,
+      segments: Array<{axNodeId: number, start: number, end: number}>) {
+    // Link the block (rendered text node) to it's equivalent segment in the
+    // AXnode. For multiple segments, mapping to a single block, we split the
+    // block to create a 1:1 mapping between rendered text and an AXNode.
+    let currentNode: Text = node;
+    let lastOffset = 0;
+
+    for (const segment of segments) {
+      if (segment.start > lastOffset) {
+        const gapLength = segment.start - lastOffset;
+        currentNode = currentNode.splitText(gapLength);
+        lastOffset = segment.start;
+      }
+
+      const nodeLength = currentNode.textContent?.length || 0;
+      const segmentLength = Math.min(segment.end - lastOffset, nodeLength);
+
+      // Only split if there is text remaining in the node to avoid creating
+      // empty trailing nodes.
+      if (segmentLength < nodeLength) {
+        const remainingNode = currentNode.splitText(segmentLength);
+        this.nodeStore_.setDomNode(currentNode, segment.axNodeId);
+        currentNode = remainingNode;
+      } else {
+        this.nodeStore_.setDomNode(currentNode, segment.axNodeId);
+      }
+
+      lastOffset = segment.end;
+    }
   }
 
   updateReadAloudState(rootNode: Node): void {
