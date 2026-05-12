@@ -194,6 +194,11 @@ BASE_DECLARE_FEATURE(kWebAuthnWinPrfOnCreate);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnSocketMaxPriorityMode);
 
+// Enables appending Google account session index (authuser=[index]) to the
+// GPM PIN reset URL.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnGpmPinResetUsesAccountIndex);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_

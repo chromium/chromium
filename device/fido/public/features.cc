@@ -222,6 +222,11 @@ COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_FEATURE(kWebAuthnCreatePinWhenSystemUvDisabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled by default in M150. Remove in or after M153.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_FEATURE(kWebAuthnGpmPinResetUsesAccountIndex,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Enabled by default in M147. Remove in or after M150.
 BASE_FEATURE(kWebAuthnWinPrfOnCreate, base::FEATURE_ENABLED_BY_DEFAULT);

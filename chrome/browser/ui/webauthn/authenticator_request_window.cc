@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker_impl.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/fido/enclave/metrics.h"
+#include "device/fido/public/features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -227,16 +229,16 @@ class AuthenticatorRequestWindow
         content::WebContents::Create(webcontents_params);
     WebContentsObserver::Observe(web_contents.get());
 
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    // Default to the first account if the account is not present in the cookie
+    // jar. This can happen in tests, or if account state changed right before
+    // this code.
+    size_t account_index =
+        identity_manager->GetSessionIndexForPrimaryAccount().value_or(0u);
     GURL url;
     switch (step_) {
-      case AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain: {
-        signin::IdentityManager* identity_manager =
-            IdentityManagerFactory::GetForProfile(profile);
-        // Default to the first account if the account is not present in the
-        // cookie jar. This can happen in tests, or if account state changed
-        // right before this code.
-        size_t account_index =
-            identity_manager->GetSessionIndexForPrimaryAccount().value_or(0u);
+      case AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain:
         url = GaiaUrls::GetInstance()->SigninChromePasskeyUnlockUrl(
             account_index);
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
@@ -247,9 +249,14 @@ class AuthenticatorRequestWindow
                 base::BindOnce(&AuthenticatorRequestWindow::OnPasskeysReset,
                                weak_ptr_factory_.GetWeakPtr()));
         break;
-      }
+
       case AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset:
         url = GetGpmMagicArchUrl().Resolve(kGpmPasskeyPinResetPath);
+        if (base::FeatureList::IsEnabled(
+                device::kWebAuthnGpmPinResetUsesAccountIndex)) {
+          url = net::AppendQueryParameter(url, "authuser",
+                                          base::NumberToString(account_index));
+        }
         reauth_observer_ = std::make_unique<ReauthWebContentsObserver>(
             web_contents.get(),
             base::BindOnce(&AuthenticatorRequestWindow::OnHaveToken,

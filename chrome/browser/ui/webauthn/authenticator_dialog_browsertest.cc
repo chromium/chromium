@@ -1081,6 +1081,7 @@ class AuthenticatorWindowTest : public SigninBrowserTestBase {
           break;
       }
     } else if (path == "/encryption/pin/reset") {
+      net::GetValueForKeyInQuery(url, "authuser", &last_authuser_parameter_);
       response->set_code(net::HTTP_OK);
       response->set_content(kTestReauthHtml);
     } else if (path.starts_with("/embedded/passkeys/reset")) {
@@ -1289,8 +1290,9 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, UINavigatesAway) {
 }
 
 // Regression test for crbug.com/505059790.
-// Make sure the correct authuser index is set when invoking MagicArch.
-IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, MultiAccountIndex) {
+// Make sure the correct authuser index is set when invoking MagicArch for
+// account recovery.
+IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, MultiAccountRecovery) {
   set_magic_arch_response(kRecoverySuccess);
   std::vector<AccountInfo> accounts = SetAccountsCookiesAndTokens(
       {"another@example.com", "primary@example.com"});
@@ -1303,6 +1305,25 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, MultiAccountIndex) {
   navigation_observer.StartWatchingNewWebContents();
   model_->SetStep(
       AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
+  navigation_observer.Wait();
+  EXPECT_EQ(last_authuser_parameter_, "1");
+}
+
+// Regression test for crbug.com/505059790.
+// Make sure the correct authuser index is set when invoking MagicArch for PIN
+// reset.
+IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, MultiAccountPinReset) {
+  std::vector<AccountInfo> accounts = SetAccountsCookiesAndTokens(
+      {"another@example.com", "primary@example.com"});
+
+  identity_test_env()->SetPrimaryAccount("primary@example.com",
+                                         signin::ConsentLevel::kSignin);
+
+  GURL expected_url = https_server_.base_url().Resolve("/encryption/pin/reset");
+  expected_url = net::AppendQueryParameter(expected_url, "authuser", "1");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
   navigation_observer.Wait();
   EXPECT_EQ(last_authuser_parameter_, "1");
 }
