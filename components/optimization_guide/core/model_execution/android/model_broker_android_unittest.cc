@@ -381,6 +381,23 @@ TEST_F(ModelBrokerAndroidTest, DownloadProgressObserver) {
   observer2.ExpectReceivedUpdate(0, kNormalizedDownloadProgressMax);
 }
 
+// Verify that an observer added after the model download has completed receives
+// 0% and 100% progress updates, matching desktop behavior.
+TEST_F(ModelBrokerAndroidTest, DownloadProgressObserverAfterDownloadComplete) {
+  InstallTestFeatureConfig();
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
+
+  auto session =
+      DownloadModelAndCreateSession(client, mojom::OnDeviceFeature::kTest);
+  ASSERT_TRUE(session);
+
+  MockDownloadProgressObserver observer;
+  client.AddModelDownloadProgressObserver(observer.BindNewPipeAndPassRemote());
+  observer.ExpectReceivedUpdate(0, kNormalizedDownloadProgressMax);
+  observer.ExpectReceivedUpdate(kNormalizedDownloadProgressMax,
+                                kNormalizedDownloadProgressMax);
+}
+
 // Test fixture for verifying model status check behavior with specific
 // statuses set per test.
 class ModelBrokerAndroidStatusCheckTest : public ModelBrokerAndroidTest {

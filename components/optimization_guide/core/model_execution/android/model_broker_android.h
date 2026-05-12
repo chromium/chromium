@@ -125,6 +125,10 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
   // whether to send an initial zero-progress event to late-joining observers.
   bool has_active_download_progress_ = false;
 
+  // Whether the model was already downloaded. Used to send 0% and 100% progress
+  // to observers added after the model became available.
+  bool model_already_downloaded_ = false;
+
   base::WeakPtrFactory<ModelBrokerAndroid> weak_ptr_factory_{this};
 };
 

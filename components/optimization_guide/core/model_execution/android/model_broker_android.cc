@@ -399,6 +399,8 @@ void ModelBrokerAndroid::SolutionFactory::OnAICoreModelUpdated(
   // The download has completed, so the downloader can be removed.
   model_downloaders_.erase(aicore_feature);
   if (result.has_value()) {
+    parent_->model_already_downloaded_ = true;
+    parent_->has_active_download_progress_ = false;
     // Performance hint is not supported on Android.
     OnDeviceBaseModelSpec spec{
         result->name, result->version,
@@ -679,11 +681,20 @@ void ModelBrokerAndroid::AddModelDownloadProgressObserver(
   auto id = download_observers_.Add(std::move(observer));
   // Blink's CreateMonitor CHECKs that the first progress update has
   // downloaded_bytes == 0 (see create_monitor.cc). When an observer joins
-  // mid-download (e.g. from a second web page while a fresh download is in
-  // progress), we send an initial (0, max) event to satisfy this requirement.
+  // mid-download, we send an initial (0, max) event to satisfy this.
   if (has_active_download_progress_) {
     download_observers_.Get(id)->OnDownloadProgressUpdate(
         0, kNormalizedDownloadProgressMax);
+    return;
+  }
+
+  // The model was already downloaded when this observer joined. Send 0% and
+  // 100% to match desktop behavior.
+  if (model_already_downloaded_) {
+    download_observers_.Get(id)->OnDownloadProgressUpdate(
+        0, kNormalizedDownloadProgressMax);
+    download_observers_.Get(id)->OnDownloadProgressUpdate(
+        kNormalizedDownloadProgressMax, kNormalizedDownloadProgressMax);
   }
 }
 
