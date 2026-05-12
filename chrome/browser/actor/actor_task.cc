@@ -596,6 +596,15 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle,
       GURL(), id(), "ActorTask::AddTab",
       JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
 
+  if (CheckCrossProfileAndLog(tab_handle.Get(), tab_handle,
+                              "ActorTask::AddTab")) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       MakeResult(mojom::ActionResultCode::kTaskWentAway)));
+    return;
+  }
+
   auto emplace_result = controlled_tabs_.emplace(
       tab_handle,
       std::make_unique<ActorControlledTabState>(this, stop_task_on_detach));
@@ -675,6 +684,10 @@ void ActorTask::ObserveTabOnce(tabs::TabHandle tab_handle) {
                       .Add("tab_id", tab_handle.raw_value())
                       .AddError("Tab is gone")
                       .Build());
+    return;
+  }
+
+  if (CheckCrossProfileAndLog(tab, tab_handle, "ObserveTabOnce")) {
     return;
   }
 
@@ -896,6 +909,21 @@ void ActorTask::DidContentsExitActorControl(
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   state->reenable_external_popups = {};
 #endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+}
+
+bool ActorTask::CheckCrossProfileAndLog(tabs::TabInterface* tab,
+                                        tabs::TabHandle tab_handle,
+                                        std::string_view method_name) {
+  if (tab && tab->GetContents() &&
+      tab->GetContents()->GetBrowserContext() != GetProfile()) {
+    journal_->Log(GURL(), id(), method_name,
+                  JournalDetailsBuilder()
+                      .Add("tab_id", tab_handle.raw_value())
+                      .AddError("Cross-profile access denied")
+                      .Build());
+    return true;
+  }
+  return false;
 }
 
 void ActorTask::AddAdditionalTabObservations(

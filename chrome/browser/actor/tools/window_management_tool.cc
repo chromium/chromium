@@ -46,6 +46,11 @@ void WindowManagementTool::Validate(ToolCallback callback) {
                        "The target window could not be found."));
         return;
       }
+      mojom::ActionResultPtr result = CheckCrossProfile(browser);
+      if (!IsOk(*result)) {
+        std::move(callback).Run(std::move(result));
+        return;
+      }
       browser_did_close_subscription_ = browser->RegisterBrowserDidClose(
           base::BindRepeating(&WindowManagementTool::OnBrowserDidClose,
                               base::Unretained(this)));
@@ -96,6 +101,11 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
                                     "The target window could not be found."));
         return;
       }
+      mojom::ActionResultPtr result = CheckCrossProfile(browser);
+      if (!IsOk(*result)) {
+        OnInvokeFinished(std::move(result));
+        return;
+      }
       browser_did_become_active_subscription_ =
           browser->RegisterDidBecomeActive(base::BindRepeating(
               &WindowManagementTool::OnBrowserDidBecomeActive,
@@ -110,6 +120,11 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
         OnInvokeFinished(MakeResult(mojom::ActionResultCode::kWindowWentAway,
                                     /*requires_page_stabilization=*/false,
                                     "The target window could not be found."));
+        return;
+      }
+      mojom::ActionResultPtr result = CheckCrossProfile(browser);
+      if (!IsOk(*result)) {
+        OnInvokeFinished(std::move(result));
         return;
       }
 
@@ -195,6 +210,16 @@ void WindowManagementTool::OnInvokeFinished(mojom::ActionResultPtr result) {
   }
   browser_did_close_subscription_ = {};
   browser_did_become_active_subscription_ = {};
+}
+
+mojom::ActionResultPtr WindowManagementTool::CheckCrossProfile(
+    BrowserWindowInterface* browser) {
+  if (browser && browser->GetProfile() != &tool_delegate().GetProfile()) {
+    return MakeResult(mojom::ActionResultCode::kWindowWentAway,
+                      /*requires_page_stabilization=*/false,
+                      "Cross-profile access denied.");
+  }
+  return MakeOkResult();
 }
 
 }  // namespace actor

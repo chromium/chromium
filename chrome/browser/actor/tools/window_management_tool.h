@@ -52,6 +52,8 @@ class WindowManagementTool : public Tool {
   void OnBrowserDidBecomeActive(BrowserWindowInterface* Browser);
   void OnInvokeFinished(mojom::ActionResultPtr result);
 
+  mojom::ActionResultPtr CheckCrossProfile(BrowserWindowInterface* browser);
+
   Action action_;
   std::optional<int32_t> window_id_;
 

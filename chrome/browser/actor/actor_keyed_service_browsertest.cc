@@ -35,8 +35,20 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#else
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #endif
 
 using ::base::test::TestFuture;
@@ -67,6 +79,10 @@ class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PlatformBrowserTest::SetUpCommandLine(command_line);
     SetUpBlocklist(command_line, "blocked.example.com");
+#if BUILDFLAG(IS_CHROMEOS)
+    command_line->AppendSwitch(
+        ash::switches::kIgnoreUserProfileMappingForTests);
+#endif
   }
 
   void SetUpOnMainThread() override {
@@ -323,6 +339,61 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest, StopPausedTask) {
   // The task should be destroyed.
   EXPECT_FALSE(actor_keyed_service()->GetTask(task_id));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       AddsTabBlockedByCrossProfileCheck) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, profile_path);
+
+  Browser* browser2 = Browser::Create(Browser::CreateParams(&profile2, true));
+  chrome::NewTab(browser2);
+  tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
+
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+
+  base::test::TestFuture<mojom::ActionResultPtr> future;
+  task->AddTab(tab2->GetHandle(), /*stop_task_on_detach=*/true,
+               future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kTaskWentAway);
+
+  browser2->window()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       ObserveTabBlockedByCrossProfileCheck) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, profile_path);
+
+  Browser* browser2 = Browser::Create(Browser::CreateParams(&profile2, true));
+  chrome::NewTab(browser2);
+  tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
+
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  task->SetState(ActorTask::State::kActing);
+
+  task->ObserveTabOnce(tab2->GetHandle());
+
+  EXPECT_FALSE(task->GetLastActedTabs().contains(tab2->GetHandle()));
+
+  browser2->window()->Close();
+}
+#endif
 
 }  // namespace
 }  // namespace actor

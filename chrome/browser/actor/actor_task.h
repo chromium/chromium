@@ -311,6 +311,12 @@ class ActorTask : public base::SupportsUserData {
   void DidContentsExitActorControl(ActorControlledTabState* state,
                                    content::WebContents* contents);
 
+  // Returns true if the tab belongs to a different profile than the task,
+  // and logs an error to the journal.
+  bool CheckCrossProfileAndLog(tabs::TabInterface* tab,
+                               tabs::TabHandle tab_handle,
+                               std::string_view method_name);
+
   // Callback from TabInterface for when the WebContents change.
   void HandleDiscardContents(tabs::TabInterface* tab,
                              content::WebContents* old_contents,

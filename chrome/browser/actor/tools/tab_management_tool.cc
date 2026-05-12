@@ -69,6 +69,14 @@ void TabManagementTool::Invoke(ToolCallback callback) {
     return;
   }
 
+  if (browser_window_interface->GetProfile() != &tool_delegate().GetProfile()) {
+    PostResponseTask(std::move(callback_),
+                     MakeResult(mojom::ActionResultCode::kWindowWentAway,
+                                /*requires_page_stabilization=*/false,
+                                "Cross-profile access denied."));
+    return;
+  }
+
   // The observer is removed in the TabStripModelObserver's destructor.
   browser_window_interface->GetTabStripModel()->AddObserver(this);
 
