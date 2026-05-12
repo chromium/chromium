@@ -532,7 +532,12 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
       window_state->CreateDragDetails(point_in_parent, window_component,
                                       source);
       MaybeRecordResizeHandleUsage(window, point_in_parent);
-      return std::make_unique<PipWindowResizer>(window_state, for_pinch);
+      auto pip_resizer =
+          std::make_unique<PipWindowResizer>(window_state, for_pinch);
+      // Wrap PipWindowResizer with DragWindowResizer to allow it to cross
+      // display boundaries.
+      return std::make_unique<DragWindowResizer>(std::move(pip_resizer),
+                                                 window_state);
     } else {
       return nullptr;
     }

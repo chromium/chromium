@@ -75,6 +75,10 @@ void DragWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
   next_window_resizer_->FlingOrSwipe(event);
 }
 
+void DragWindowResizer::Pinch(const gfx::PointF& location, float scale) {
+  next_window_resizer_->Pinch(location, scale);
+}
+
 DragWindowResizer::DragWindowResizer(
     std::unique_ptr<WindowResizer> next_window_resizer,
     WindowState* window_state)

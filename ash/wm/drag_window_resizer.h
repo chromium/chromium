@@ -37,6 +37,7 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
   void CompleteDrag() override;
   void RevertDrag() override;
   void FlingOrSwipe(ui::GestureEvent* event) override;
+  void Pinch(const gfx::PointF& location, float scale) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DragWindowResizerTest, DragWindowController);

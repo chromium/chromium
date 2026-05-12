@@ -16,6 +16,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/pip/pip_test_utils.h"
@@ -108,6 +109,13 @@ class PipWindowResizerTest : public AshTestBase,
     widget->Init(std::move(params));
     widget->Show();
     return widget;
+  }
+
+  bool IsMultiDisplayTest() const {
+    // For test simplicity, we will only test the case for starting in first
+    // display. If the param is for the second display, we skip.
+    return display::Screen::Get()->GetNumDisplays() > 1 &&
+           std::get<1>(GetParam()) == 0u;
   }
 
   PipWindowResizer* CreateResizerForTest(int window_component,
@@ -274,26 +282,30 @@ TEST_P(PipWindowResizerTest, PipWindowDragIsRestrictedToWorkArea) {
   int right_x = landscape ? 392 : 292;
   int bottom_y = landscape ? 292 : 392;
 
+  // For multi-display case, we drag for 200px to avoid landing in different
+  // display.
+  int delta_x = display::Screen::Get()->GetNumDisplays() < 2 ? 250 : 200;
+
   std::unique_ptr<PipWindowResizer> resizer(
       CreateResizerForTest(HTCAPTION, gfx::Point(250, 250)));
   ASSERT_TRUE(resizer.get());
 
   // Drag to the right.
-  resizer->Drag(CalculateDragPoint(*resizer, 250, 0), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, delta_x, 0), 0);
   EXPECT_EQ(gfx::Rect(right_x, 200, 100, 100),
             test_state()->last_requested_bounds());
 
   // Drag down.
-  resizer->Drag(CalculateDragPoint(*resizer, 0, 250), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, 0, delta_x), 0);
   EXPECT_EQ(gfx::Rect(200, bottom_y, 100, 100),
             test_state()->last_requested_bounds());
 
   // Drag to the left.
-  resizer->Drag(CalculateDragPoint(*resizer, -250, 0), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, -delta_x, 0), 0);
   EXPECT_EQ(gfx::Rect(8, 200, 100, 100), test_state()->last_requested_bounds());
 
   // Drag up.
-  resizer->Drag(CalculateDragPoint(*resizer, 0, -250), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -delta_x), 0);
   EXPECT_EQ(gfx::Rect(200, 8, 100, 100), test_state()->last_requested_bounds());
 }
 
@@ -646,6 +658,108 @@ TEST_P(PipWindowResizerTest, PipWindowDoesNotChangeDisplayOnDrag) {
   rect_in_screen = window()->bounds();
   ::wm::ConvertRectToScreen(window()->parent(), &rect_in_screen);
   EXPECT_TRUE(display.bounds().Contains(rect_in_screen));
+}
+
+TEST_P(PipWindowResizerTest, PipWindowCanChangeDisplayOnDrag) {
+  // This test is for multi display situation only, and for test simplicity, we
+  // only test it for root window index 0.
+  if (!IsMultiDisplayTest()) {
+    return;
+  }
+
+  PreparePipWindow(gfx::Rect(200, 200, 100, 100));
+
+  const display::Display primary_display =
+      display::Screen::Get()->GetPrimaryDisplay();
+  const display::Display secondary_display =
+      display::Screen::Get()->GetAllDisplays()[1];
+
+  EXPECT_EQ(primary_display.id(),
+            WindowState::Get(window())->GetDisplay().id());
+
+  std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
+  ASSERT_TRUE(resizer.get());
+
+  resizer->Drag(CalculateDragPoint(*resizer, 400, 0), 0);
+  resizer->CompleteDrag();
+
+  EXPECT_EQ(secondary_display.id(),
+            WindowState::Get(window())->GetDisplay().id());
+}
+
+TEST_P(PipWindowResizerTest, PipWindowCanDragToAnotherDisplayAndBack) {
+  // This test is for multi display situation only, and for test simplicity, we
+  // only test it for root window index 0.
+  if (!IsMultiDisplayTest()) {
+    return;
+  }
+
+  PreparePipWindow(gfx::Rect(200, 200, 100, 100));
+
+  const display::Display primary_display =
+      display::Screen::Get()->GetPrimaryDisplay();
+  const display::Display secondary_display =
+      display::Screen::Get()->GetAllDisplays()[1];
+
+  EXPECT_EQ(primary_display.id(),
+            WindowState::Get(window())->GetDisplay().id());
+
+  // Create PipWindowResizer and wrap it in DragWindowResizer.
+  std::unique_ptr<PipWindowResizer> pip_resizer(
+      CreateResizerForTest(HTCAPTION));
+  auto resizer = std::make_unique<DragWindowResizer>(
+      std::move(pip_resizer), WindowState::Get(window()));
+  ASSERT_TRUE(resizer.get());
+
+  // Drag to the secondary display.
+  Shell::Get()->cursor_manager()->SetDisplay(secondary_display);
+  resizer->Drag(CalculateDragPoint(*resizer, 400, 0), 0);
+
+  // Manually apply requested bounds to window because FakeWindowState doesn't
+  // do it.
+  window()->SetBounds(test_state()->last_requested_bounds());
+  // Call Drag again to trigger phantom window creation with updated bounds!
+  resizer->Drag(CalculateDragPoint(*resizer, 400, 0), 0);
+
+  // Verify requested bounds are in secondary display.
+  gfx::Rect requested_bounds = test_state()->last_requested_bounds();
+  ::wm::ConvertRectToScreen(window()->parent(), &requested_bounds);
+  EXPECT_TRUE(secondary_display.bounds().Contains(requested_bounds));
+
+  // Check if phantom window is created on secondary display.
+  aura::Window* secondary_root = Shell::GetAllRootWindows()[1];
+  aura::Window* phantom_window =
+      secondary_root->GetChildById(kShellWindowId_PhantomWindow);
+  EXPECT_TRUE(phantom_window);
+  if (phantom_window) {
+    EXPECT_FALSE(phantom_window->bounds().IsEmpty());
+  }
+
+  // Drag back to primary display.
+  Shell::Get()->cursor_manager()->SetDisplay(primary_display);
+  resizer->Drag(CalculateDragPoint(*resizer, -100, 0), 0);
+  // Manually apply requested bounds again.
+  window()->SetBounds(test_state()->last_requested_bounds());
+  // Call Drag again to update phantom window (it should be deleted now).
+  resizer->Drag(CalculateDragPoint(*resizer, -100, 0), 0);
+
+  // Verify requested bounds are in primary display.
+  requested_bounds = test_state()->last_requested_bounds();
+  ::wm::ConvertRectToScreen(window()->parent(), &requested_bounds);
+  EXPECT_TRUE(primary_display.bounds().Contains(requested_bounds));
+
+  // Phantom window should be deleted or hidden when dragged back to primary.
+  phantom_window = secondary_root->GetChildById(kShellWindowId_PhantomWindow);
+  EXPECT_FALSE(phantom_window);
+
+  resizer->CompleteDrag();
+
+  EXPECT_EQ(primary_display.id(),
+            WindowState::Get(window())->GetDisplay().id());
+
+  // Verify phantom window is deleted at the end.
+  phantom_window = secondary_root->GetChildById(kShellWindowId_PhantomWindow);
+  EXPECT_FALSE(phantom_window);
 }
 
 TEST_P(PipWindowResizerTest, PipRestoreBoundsSetOnFling) {

@@ -20,6 +20,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -112,7 +113,6 @@ PipWindowResizer::~PipWindowResizer() {
     window_state()->DeleteDragDetails();
 }
 
-// TODO(edcourtney): Implement swipe-to-dismiss on fling.
 void PipWindowResizer::Drag(const gfx::PointF& location_in_parent,
                             int event_flags) {
   last_location_in_screen_ = location_in_parent;
@@ -134,7 +134,11 @@ void PipWindowResizer::Drag(const gfx::PointF& location_in_parent,
   // We do everything in Screen coordinates, so convert here.
   ::wm::ConvertRectToScreen(GetTarget()->parent(), &new_bounds);
 
-  display::Display display = window_state()->GetDisplay();
+  display::Display display =
+      (details().source == wm::WINDOW_MOVE_SOURCE_MOUSE)
+          ? display::Screen::Get()->GetDisplayNearestPoint(
+                gfx::ToRoundedPoint(last_location_in_screen_.value()))
+          : window_state()->GetDisplay();
   gfx::Rect area = CollisionDetectionUtils::GetMovementArea(display);
 
   // If the PIP window is at a corner, lock swipe to dismiss to the axis
@@ -344,9 +348,21 @@ void PipWindowResizer::CompleteDrag() {
     }
 
     // Compute resting position even if it was a fling to avoid obstacles.
+    display::Display target_display =
+        (details().source == wm::WINDOW_MOVE_SOURCE_MOUSE)
+            ? display::Screen::Get()->GetDisplayMatching(intended_bounds)
+            : window_state()->GetDisplay();
     gfx::Rect resting_bounds = CollisionDetectionUtils::GetRestingPosition(
-        window_state()->GetDisplay(), intended_bounds,
+        target_display, intended_bounds,
         CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+
+    // It is possible the drag left the window on a different display than
+    // intended, if so move the window.
+    if (details().source == wm::WINDOW_MOVE_SOURCE_MOUSE &&
+        target_display.id() != window_state()->GetDisplay().id()) {
+      GetTarget()->SetBoundsInScreen(intended_bounds, target_display);
+    }
+
     ::wm::ConvertRectFromScreen(GetTarget()->parent(), &resting_bounds);
 
     base::TimeDelta duration =
