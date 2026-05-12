@@ -1109,7 +1109,11 @@ def _CreateStructuredTestDict(test_instance, test_result):
     # The proto requires a list.
     struct_test_dict['caseNameComponents'] = [re_match.group(3)]
   elif test_instance.TestType() == 'gtest':
-    found_match = False
+    suite = None
+    name = None
+    instantiation = None
+    case_id = None
+
     # Attempt to parse gtests based on:
     #     infra/go/src/infra/tools/result_adapter/gtest.go
     # Type-parameterised test (e.g. MyInstantiation/FooTest/MyType.DoesBar)
@@ -1119,24 +1123,41 @@ def _CreateStructuredTestDict(test_instance, test_result):
       name = re_match.group(5)
       instantiation = re_match.group(2)
       case_id = re_match.group(4)
-      found_match = True
 
     # Value-parameterised test (e.g. MyInstantiation/FooTest.DoesBar/TestValue)
-    re_match = re.search(r'^((\w+)/)?(\w+)\.(\w+)/(\w+)$', test_id)
-    if not found_match and re_match:
-      suite = re_match.group(3)
-      name = re_match.group(4)
-      instantiation = re_match.group(2)
-      case_id = re_match.group(5)
-      found_match = True
+    if not suite:
+      re_match = re.search(r'^((\w+)/)?(\w+)\.(\w+)/(\w+)$', test_id)
+      if re_match:
+        suite = re_match.group(3)
+        name = re_match.group(4)
+        instantiation = re_match.group(2)
+        case_id = re_match.group(5)
 
     # Neither type nor value-parameterised (e.g. FooTest.DoesBar)
-    re_match = re.search(r'^(\w+)\.(\w+)$', test_id)
-    if not found_match and re_match:
-      suite = re_match.group(1)
-      name = re_match.group(2)
-      instantiation = ""
-      case_id = ""
+    if not suite:
+      re_match = re.search(r'^(\w+)\.(\w+)$', test_id)
+      if re_match:
+        suite = re_match.group(1)
+        name = re_match.group(2)
+        instantiation = ''
+        case_id = ''
+
+    # Synthetic tests
+    # (e.g. GoogleTestVerification.UninstantiatedParameterizedTestSuite<Foo>)
+    if not suite:
+      re_match = re.search(
+          r'^GoogleTestVerification\.'
+          r'Uninstantiated(?:Type)?ParameterizedTestSuite<(\w+)>$', test_id)
+      if re_match:
+        suite = 'GoogleTestVerification'
+        name = test_id[len('GoogleTestVerification.'):]
+        instantiation = ''
+        case_id = ''
+
+    # Fail loudly so unparsable tests can be caught
+    if not suite:
+      raise ValueError(f'Test id {test_id} did not match known format, '
+                       'so could not be parsed.')
 
     # Some android gtests are incompatible with the upload scheme on other
     # test runners.

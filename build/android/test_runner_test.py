@@ -130,6 +130,25 @@ class TestRunnerHelperTest(unittest.TestCase):
     self.assertIsNone(test_dict['coarseName'])
     self.assertEqual(test_dict['fineName'], 'FooTest')
     self.assertTrue('DoesBar' in test_dict['caseNameComponents'])
+
+    # gtest synthetic test
+    test_id = ('GoogleTestVerification.'
+               'UninstantiatedParameterizedTestSuite'
+               '<ReportingEventRouterFileEventTest>')
+    t_result_mock.GetNameForResultSink.return_value = test_id
+    test_dict = test_runner._CreateStructuredTestDict(t_instance_mock,
+                                                      t_result_mock)
+    self.assertIsNone(test_dict['coarseName'])
+    self.assertEqual(test_dict['fineName'], 'GoogleTestVerification')
+    self.assertTrue('UninstantiatedParameterizedTestSuite'
+                    '<ReportingEventRouterFileEventTest>' in
+                    test_dict['caseNameComponents'])
+
+    # gtest unparsable
+    test_id = 'SomeUnknownFormat'
+    t_result_mock.GetNameForResultSink.return_value = test_id
+    with self.assertRaises(ValueError):
+      test_runner._CreateStructuredTestDict(t_instance_mock, t_result_mock)
     # pylint: disable=protected-access
 
 
