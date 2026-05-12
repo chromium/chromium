@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "content/public/browser/browser_context.h"
@@ -18,10 +19,18 @@
 #include "content/public/common/content_client.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 
 namespace content {
+
+namespace {
+constexpr char kWebSpeechTinyGemmaDuration[] =
+    "Accessibility.WebSpeech.TinyGemma.Duration";
+constexpr char kWebSpeechGeminiNanoDuration[] =
+    "Accessibility.WebSpeech.GeminiNano.Duration";
+}  // namespace
 
 OnDeviceSpeechRecognitionEngine::Core::Core() = default;
 OnDeviceSpeechRecognitionEngine::Core::~Core() = default;
@@ -50,10 +59,23 @@ OnDeviceSpeechRecognitionEngine::OnDeviceSpeechRecognitionEngine(
 
 OnDeviceSpeechRecognitionEngine::~OnDeviceSpeechRecognitionEngine() = default;
 
-void OnDeviceSpeechRecognitionEngine::StartRecognition() {}
+void OnDeviceSpeechRecognitionEngine::StartRecognition() {
+  audio_duration_ = base::TimeDelta();
+}
 
 void OnDeviceSpeechRecognitionEngine::EndRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  const bool use_gemini_nano =
+      base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano) &&
+      config_.quality == media::mojom::SpeechRecognitionQuality::kConversation;
+  if (use_gemini_nano) {
+    base::UmaHistogramLongTimes100(kWebSpeechGeminiNanoDuration,
+                                   audio_duration_);
+  } else {
+    base::UmaHistogramLongTimes100(kWebSpeechTinyGemmaDuration,
+                                   audio_duration_);
+  }
+
   core_.reset();
   asr_stream_.reset();
   asr_stream_responder_.reset();
@@ -71,6 +93,10 @@ void OnDeviceSpeechRecognitionEngine::SetAudioParameters(
 
 void OnDeviceSpeechRecognitionEngine::TakeAudioChunk(const AudioChunk& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  audio_duration_ += media::AudioTimestampHelper::FramesToTime(
+      data.NumSamples(), audio_parameters_.sample_rate());
+
   const size_t num_samples = data.NumSamples() * audio_parameters_.channels();
   std::vector<int16_t> pcm_data_vector(num_samples);
   auto source_bytes = data.data();

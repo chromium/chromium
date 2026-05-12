@@ -179,6 +179,10 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
                                   bool ask_user,
                                   bool is_allowed);
 
+  void LogBackendSpecificErrorOccurred(
+      const SpeechRecognitionSessionConfig& config,
+      media::mojom::SpeechRecognitionErrorCode error_code);
+
   // Callback to get back the result of a media request. |devices| is an array
   // of devices approved to be used for the request, |devices| is empty if the
   // users deny the request.

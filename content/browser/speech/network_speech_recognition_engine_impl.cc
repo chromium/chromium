@@ -40,7 +40,8 @@ const char kWebServiceBaseUrl[] =
 const char kDownstreamUrl[] = "/down?";
 const char kUpstreamUrl[] = "/up?";
 
-constexpr char kWebSpeechAudioDuration[] = "Accessibility.WebSpeech.Duration";
+constexpr char kWebSpeechCloudDuration[] =
+    "Accessibility.WebSpeech.Cloud.Duration";
 
 // Used to override |kWebServiceBaseUrl| when non-null, only set in tests.
 const char* web_service_base_url_for_tests = nullptr;
@@ -134,9 +135,8 @@ void NetworkSpeechRecognitionEngineImpl::UpdateRecognitionContext(
 }
 
 void NetworkSpeechRecognitionEngineImpl::EndRecognition() {
-  base::UmaHistogramLongTimes100(kWebSpeechAudioDuration,
+  base::UmaHistogramLongTimes100(kWebSpeechCloudDuration,
                                  upstream_audio_duration_);
-
   FSMEventArgs event_args(EVENT_END_RECOGNITION);
   DispatchEvent(event_args);
 }

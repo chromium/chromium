@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -15,6 +16,7 @@
 #include "content/browser/speech/speech_recognition_manager_impl.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/browser/speech_recognition_session_config.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
@@ -27,6 +29,9 @@ namespace {
 // Duration of each audio packet.
 constexpr int kAudioPacketIntervalMs = 100;
 constexpr float kSpeechRecognitionConfidence = 1.0f;
+
+constexpr char kWebSpeechSodaDuration[] =
+    "Accessibility.WebSpeech.SODA.Duration";
 
 // Substitute the real instances in browser and unit tests.
 SpeechRecognitionManagerDelegate* speech_recognition_mgr_delegate_for_tests =
@@ -105,6 +110,7 @@ void SodaSpeechRecognitionEngineImpl::StartRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   is_start_recognition_ = true;
+  audio_duration_ = base::TimeDelta();
 }
 
 void SodaSpeechRecognitionEngineImpl::UpdateRecognitionContext(
@@ -118,6 +124,7 @@ void SodaSpeechRecognitionEngineImpl::UpdateRecognitionContext(
 void SodaSpeechRecognitionEngineImpl::EndRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   is_start_recognition_ = false;
+  base::UmaHistogramLongTimes100(kWebSpeechSodaDuration, audio_duration_);
 }
 
 void SodaSpeechRecognitionEngineImpl::TakeAudioChunk(const AudioChunk& data) {
@@ -126,6 +133,9 @@ void SodaSpeechRecognitionEngineImpl::TakeAudioChunk(const AudioChunk& data) {
     Abort(media::mojom::SpeechRecognitionErrorCode::kNotAllowed);
     return;
   }
+
+  audio_duration_ += media::AudioTimestampHelper::FramesToTime(
+      data.NumSamples(), audio_parameters_.sample_rate());
 
   send_audio_callback_.Run(ConvertToAudioDataS16(data));
 }

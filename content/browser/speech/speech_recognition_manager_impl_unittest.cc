@@ -4,6 +4,7 @@
 #include "content/browser/speech/speech_recognition_manager_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/soda/mock_soda_installer.h"
@@ -187,6 +188,7 @@ TEST_F(SpeechRecognitionManagerImplTest, LanguageNotSupportedError) {
   EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kUnavailable);
 
+  base::HistogramTester histogram_tester;
   manager_->CreateSession(config, mojo::NullReceiver(),
                           receiver_.BindNewPipeAndPassRemote(), std::nullopt,
                           true);
@@ -196,6 +198,9 @@ TEST_F(SpeechRecognitionManagerImplTest, LanguageNotSupportedError) {
                          kLanguageNotSupported &&
            ended_;
   }));
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.WebSpeech.SODA.ErrorOccurred",
+      media::mojom::SpeechRecognitionErrorCode::kLanguageNotSupported, 1);
 }
 
 TEST_F(SpeechRecognitionManagerImplTest, AudioForwarderSampleRateTooHigh) {
@@ -279,6 +284,7 @@ TEST_F(SpeechRecognitionManagerImplTest, PhrasesNotSupportedError) {
   config.language = "en-US";
   config.recognition_context = media::SpeechRecognitionRecognitionContext();
 
+  base::HistogramTester histogram_tester;
   manager_->CreateSession(config, mojo::NullReceiver(),
                           receiver_.BindNewPipeAndPassRemote(), std::nullopt);
 
@@ -287,6 +293,9 @@ TEST_F(SpeechRecognitionManagerImplTest, PhrasesNotSupportedError) {
                media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported &&
            ended_;
   }));
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.WebSpeech.Cloud.ErrorOccurred",
+      media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported, 1);
 }
 
 TEST_F(SpeechRecognitionManagerImplTest, ConfigEventListenerThrowsError) {

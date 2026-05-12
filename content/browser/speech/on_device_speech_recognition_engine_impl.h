@@ -106,6 +106,8 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
 
   bool session_created_ = false;
 
+  base::TimeDelta audio_duration_;
+
   SEQUENCE_CHECKER(main_sequence_checker_);
 
   base::WeakPtrFactory<OnDeviceSpeechRecognitionEngine> weak_factory_{this};

@@ -78,8 +78,31 @@ constexpr char kWebSpeechCanRenderFrameUseOnDeviceHistogram[] =
     "Accessibility.WebSpeech.CanRenderFrameUseOnDevice";
 constexpr char kWebSpeechIsOnDeviceSpeechRecognitionInstalledHistogram[] =
     "Accessibility.WebSpeech.IsOnDeviceSpeechRecognitionInstalled";
+constexpr char kWebSpeechIsGeminiNanoModelAvailableHistogram[] =
+    "Accessibility.WebSpeech.IsGeminiNanoModelAvailable";
+constexpr char kWebSpeechIsTinyGemmaModelAvailableHistogram[] =
+    "Accessibility.WebSpeech.IsTinyGemmaModelAvailable";
 
 }  // namespace
+
+void SpeechRecognitionManagerImpl::LogBackendSpecificErrorOccurred(
+    const SpeechRecognitionSessionConfig& config,
+    media::mojom::SpeechRecognitionErrorCode error_code) {
+  std::string backend_name = "Cloud";
+  if (UseOnDeviceSpeechRecognition(config)) {
+    if (IsOptimizationGuideSpeechModel(config)) {
+      const bool use_gemini_nano =
+          base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano) &&
+          config.quality ==
+              media::mojom::SpeechRecognitionQuality::kConversation;
+      backend_name = use_gemini_nano ? "GeminiNano" : "TinyGemma";
+    } else {
+      backend_name = "SODA";
+    }
+  }
+  base::UmaHistogramEnumeration(
+      "Accessibility.WebSpeech." + backend_name + ".ErrorOccurred", error_code);
+}
 
 int SpeechRecognitionManagerImpl::next_requester_id_ = 0;
 
@@ -510,6 +533,9 @@ void SpeechRecognitionManagerImpl::OnRecognitionError(
   if (!SessionExists(session_id))
     return;
 
+  Session* session = GetSession(session_id);
+  LogBackendSpecificErrorOccurred(session->config, error.code);
+
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnRecognitionError(session_id, error);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
@@ -562,6 +588,21 @@ int SpeechRecognitionManagerImpl::CreateSession(
     base::UmaHistogramBoolean(
         kWebSpeechIsOnDeviceSpeechRecognitionInstalledHistogram,
         is_on_device_speech_recognition_installed);
+
+    if (IsOptimizationGuideSpeechModel(config)) {
+      const bool use_gemini_nano =
+          base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano) &&
+          config.quality ==
+              media::mojom::SpeechRecognitionQuality::kConversation;
+      if (use_gemini_nano) {
+        base::UmaHistogramBoolean(kWebSpeechIsGeminiNanoModelAvailableHistogram,
+                                  is_on_device_speech_recognition_installed);
+      } else {
+        base::UmaHistogramBoolean(kWebSpeechIsTinyGemmaModelAvailableHistogram,
+                                  is_on_device_speech_recognition_installed);
+      }
+    }
+
     // Set the error if on-device speech recognition must be used but is not
     // available.
     if (!is_on_device_speech_recognition_installed) {
@@ -588,6 +629,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
   // Throw the error and do not create the session if error is found.
   if (error != media::mojom::SpeechRecognitionErrorCode::kNone) {
+    LogBackendSpecificErrorOccurred(config, error);
     mojo::Remote<media::mojom::SpeechRecognitionSessionClient> client(
         std::move(client_remote));
     if (client.is_bound()) {

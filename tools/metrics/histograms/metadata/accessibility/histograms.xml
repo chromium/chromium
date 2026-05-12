@@ -3917,16 +3917,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.WebSpeech.Duration" units="ms"
-    expires_after="2027-04-20">
-  <owner>evliu@google.com</owner>
-  <owner>chrome-media-ux@google.com</owner>
-  <summary>
-    Measures the duration of a call to the WebSpeech API. Recorded once per call
-    to the Open Speech API that powers the WebSpeech API.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.WebSpeech.ErrorOccurred"
     enum="SpeechRecognitionErrorCode" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
@@ -3934,6 +3924,17 @@ even if they fit the naming pattern. -->
   <summary>
     Logged errors fired by the Web Speech API. Logged each time the
     ErrorOccurred event of the Web Speech API is fired.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.IsGeminiNanoModelAvailable"
+    enum="Boolean" expires_after="2027-04-20">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Records whether the Gemini Nano model is available for Web Speech API.
+    Recorded each time a speech recognition session is started and Gemini Nano
+    is requested.
   </summary>
 </histogram>
 
@@ -3956,6 +3957,17 @@ even if they fit the naming pattern. -->
     Records whether on-device speech recognition is supported on the device.
     Recorded each time the SodaInstaller is initialized during post profile
     init.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.IsTinyGemmaModelAvailable"
+    enum="Boolean" expires_after="2027-04-20">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Records whether the TinyGemma model is available for Web Speech API.
+    Recorded each time a speech recognition session is started and TinyGemma is
+    requested.
   </summary>
 </histogram>
 
@@ -3997,6 +4009,38 @@ even if they fit the naming pattern. -->
     Whether on-device speech recognition is used for the Web Speech API. Logged
     when the speech recognition session is created.
   </summary>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.{SpeechBackend}.Duration" units="ms"
+    expires_after="2027-04-20">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Measures the duration of a call to the WebSpeech API. Recorded once per call
+    to the Open Speech API that powers the WebSpeech API.
+  </summary>
+  <token key="SpeechBackend">
+    <variant name="Cloud" summary="Cloud speech recognition backend"/>
+    <variant name="GeminiNano" summary="Gemini Nano on-device backend"/>
+    <variant name="SODA" summary="SODA on-device backend"/>
+    <variant name="TinyGemma" summary="TinyGemma on-device backend"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.{SpeechBackend}.ErrorOccurred"
+    enum="SpeechRecognitionErrorCode" expires_after="2027-04-20">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Logged errors fired by the Web Speech API. Logged each time the
+    ErrorOccurred event of the Web Speech API is fired.
+  </summary>
+  <token key="SpeechBackend">
+    <variant name="Cloud" summary="Cloud speech recognition backend"/>
+    <variant name="GeminiNano" summary="Gemini Nano on-device backend"/>
+    <variant name="SODA" summary="SODA on-device backend"/>
+    <variant name="TinyGemma" summary="TinyGemma on-device backend"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.Win.ActiveClientApis" enum="ActiveClientApi"

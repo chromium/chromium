@@ -109,6 +109,8 @@ class CONTENT_EXPORT SodaSpeechRecognitionEngineImpl
   // A flag indicating the recognition state.
   bool is_start_recognition_ = false;
 
+  base::TimeDelta audio_duration_;
+
   base::WeakPtrFactory<SodaSpeechRecognitionEngineImpl> weak_factory_{this};
 };
 
