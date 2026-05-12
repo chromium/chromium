@@ -1961,6 +1961,17 @@ chromium-metrics-reviews@google.com.
   <summary>Whether the given launch url is in the web app's scope.</summary>
 </histogram>
 
+<histogram name="WebApp.ManifestIcon.ForOpaqueOrigin" enum="Boolean"
+    expires_after="2027-05-11">
+  <owner>japhet@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records when the browser process receives a non-empty manifest from the
+    renderer, but the browser believes the current document origin in the
+    renderer is opaque (and therefore should never have a manifest).
+  </summary>
+</histogram>
+
 <histogram name="WebApp.ManifestIconDownloader.ChromeUrl.Result"
     enum="ManifestIconDownloaderResult" expires_after="2027-04-05">
   <owner>dibyapal@chromium.org</owner>

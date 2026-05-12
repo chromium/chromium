@@ -8,6 +8,7 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -245,10 +246,20 @@ blink::mojom::ManifestPtr ManifestManagerHost::ValidateAndMaybeOverrideManifest(
     blink::mojom::ManifestPtr manifest) {
   // Mojo bindings guarantee that `manifest` isn't null.
   CHECK(manifest);
+
+  auto& document_origin = page().GetMainDocument().GetLastCommittedOrigin();
+  if (!blink::IsEmptyManifest(manifest) && document_origin.opaque()) {
+    // We should never get a manifest for an opaque origin, unless perhaps due
+    // to a race condition. Override to empty and log.
+    base::UmaHistogramBoolean("WebApp.Manifest.ForOpaqueOrigin", true);
+    DVLOG(1) << "Manifest received for opaque origin with start_url"
+             << manifest->start_url.spec();
+    return blink::mojom::Manifest::New();
+  }
+
   if (std::optional<std::string> bad_message_error =
-          MaybeGetBadMessageStringForManifest(
-              result, *manifest,
-              page().GetMainDocument().GetLastCommittedOrigin());
+          MaybeGetBadMessageStringForManifest(result, *manifest,
+                                              document_origin);
       bad_message_error.has_value()) {
     mojo::ReportBadMessage(*bad_message_error);
     return blink::mojom::Manifest::New();
