@@ -12,8 +12,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.actor.ActorKeyedService;
-import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -185,14 +183,6 @@ public class AdaptiveToolbarFeatures {
      */
     public static boolean isGlicEnabledForProfile(Profile profile) {
         return GlicEnabling.isEnabledForProfile(profile) && !AndroidSidePanelEnabledFn.isEnabled();
-    }
-
-    public static boolean shouldForciblyShowGlicButton(Context context, Profile profile) {
-        if (!isGlicEnabledForProfile(profile) || BottomBarConfigUtils.isBottomBarEnabled(context)) {
-            return false;
-        }
-        ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(profile);
-        return service != null && service.getCurrentActiveTask() != null;
     }
 
     static void setDefaultSegmentForTesting(String defaultSegment) {

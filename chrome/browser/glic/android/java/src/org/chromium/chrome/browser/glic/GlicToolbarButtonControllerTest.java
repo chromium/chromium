@@ -467,4 +467,53 @@ public class GlicToolbarButtonControllerTest {
         verify(showHook, never()).run();
         verify(mToggleGlicCallback).onClick(false);
     }
+
+    @Test
+    public void testShouldForciblyShowGlicButton_FeatureDisabled() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        Assert.assertFalse(mController.shouldForciblyShowGlicButton(mProfile));
+    }
+
+    @Test
+    public void testShouldForciblyShowGlicButton_NoActiveTask() {
+        when(mActorService.getActiveTasks()).thenReturn(null);
+        Assert.assertFalse(mController.shouldForciblyShowGlicButton(mProfile));
+    }
+
+    @Test
+    public void testShouldForciblyShowGlicButton_WithActiveTask() {
+        when(mActorService.getActiveTasks())
+                .thenReturn(Collections.singletonList(mock(ActorTask.class)));
+        Assert.assertTrue(mController.shouldForciblyShowGlicButton(mProfile));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testShouldForciblyShowGlicButton_BottomBarEnabled() {
+        when(mActorService.getActiveTasks())
+                .thenReturn(Collections.singletonList(mock(ActorTask.class)));
+        Assert.assertFalse(mController.shouldForciblyShowGlicButton(mProfile));
+    }
+
+    @Test
+    public void testShouldForciblyShowGlicButton_PanelOpen() {
+        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
+        when(task.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
+        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
+
+        GlicToolbarButtonController controller =
+                new GlicToolbarButtonController(
+                        mActivity,
+                        () -> mTab,
+                        mToggleGlicCallback,
+                        () -> mTracker,
+                        () -> task,
+                        mBrowserControlsVisibilityManager,
+                        () -> mTabModelSelector);
+
+        when(mActorService.getActiveTasks()).thenReturn(null);
+        Assert.assertTrue(controller.shouldForciblyShowGlicButton(mProfile));
+        verify(mActorService).addObserver(any());
+        verify(mGlicKeyedService).addGlobalShowHideObserver(any());
+    }
 }

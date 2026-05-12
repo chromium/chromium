@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.glic.GlicButtonStateController.ButtonState;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -132,6 +134,21 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
                 .setDrawable(layerDrawable)
                 .setShouldSuppressCpa(true)
                 .build();
+    }
+
+    /**
+     * Returns whether the Glic button should be forcibly shown on the toolbar.
+     *
+     * @param profile The current profile.
+     */
+    public boolean shouldForciblyShowGlicButton(Profile profile) {
+        if (!AdaptiveToolbarFeatures.isGlicEnabledForProfile(profile)
+                || BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
+            return false;
+        }
+        mStateController.updateObservations(profile);
+        List<ActorTask> activeTasks = mStateController.getActiveTasks();
+        return mStateController.isPanelOpen() || (activeTasks != null && !activeTasks.isEmpty());
     }
 
     @Override

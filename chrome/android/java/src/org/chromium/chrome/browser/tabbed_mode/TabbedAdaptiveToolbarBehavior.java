@@ -59,6 +59,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable ChromeAndroidTask> mChromeAndroidTaskSupplier;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private @Nullable GlicToolbarButtonController mGlicButtonController;
 
     /**
      * @param activity The Android activity.
@@ -142,8 +143,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
 
         if (!BottomBarConfigUtils.isBottomBarEnabled(mActivity)
                 && AdaptiveToolbarFeatures.isGlicActionEnabled()) {
-            controller.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.GLIC,
+            mGlicButtonController =
                     new GlicToolbarButtonController(
                             mActivity,
                             mActivityTabProvider,
@@ -151,7 +151,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                             trackerSupplier,
                             mChromeAndroidTaskSupplier,
                             mBrowserControlsVisibilityManager,
-                            mTabModelSelectorSupplier));
+                            mTabModelSelectorSupplier);
+            controller.addButtonVariant(AdaptiveToolbarButtonVariant.GLIC, mGlicButtonController);
         }
 
         mRegisterVoiceSearchRunnable.run();
@@ -163,7 +164,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
         if (selector != null) {
             Profile profile = selector.getCurrentModel().getProfile();
             if (profile != null
-                    && AdaptiveToolbarFeatures.shouldForciblyShowGlicButton(mActivity, profile)) {
+                    && mGlicButtonController != null
+                    && mGlicButtonController.shouldForciblyShowGlicButton(profile)) {
                 return AdaptiveToolbarButtonVariant.GLIC;
             }
         }
