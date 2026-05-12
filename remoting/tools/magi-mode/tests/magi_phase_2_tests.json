@@ -1,0 +1,47 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Detailed Design",
+    "description": "Verify detailed design phase.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 2,
+            "name": "Detailed Design - Success",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "architecture": "# Architecture\nSupport new platform X."
+                }
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/design.md"
+                ],
+                "valid_json": false,
+                "content_patterns": {
+                    "testdata/design.md": "# Detailed Design"
+                }
+            }
+        },
+        {
+            "phase": 2,
+            "name": "Detailed Design - Missing Architecture",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "architecture": ""
+                }
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/errors.md"
+                ],
+                "valid_json": false,
+                "content_patterns": {
+                    "testdata/errors.md": "missing architecture"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,44 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Parallel Implementation",
+    "description": "Verify parallel implementation phase.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 3,
+            "name": "Parallel Implementation - Success",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "tasks": [
+                        "Implement feature X"
+                    ]
+                }
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/feature_x.cc"
+                ],
+                "valid_json": false,
+                "content_patterns": {
+                    "testdata/feature_x.cc": "void FeatureX()"
+                }
+            }
+        },
+        {
+            "phase": 3,
+            "name": "Parallel Implementation - Empty Tasks",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "tasks": []
+                }
+            },
+            "expected_outputs": {
+                "files_created": [],
+                "content_patterns": {}
+            }
+        }
+    ]
+}
