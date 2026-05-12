@@ -29,6 +29,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/handle_hooks_win.h"
 #include "base/file_version_info.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -36,6 +37,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_storage.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -136,6 +138,22 @@ namespace {
 constexpr wchar_t kSystemPrincipalSid[] = L"S-1-5-18";
 constexpr wchar_t kDisplayVersion[] = L"DisplayVersion";
 constexpr wchar_t kEstimatedSize[] = L"EstimatedSize";
+
+base::ByteSize ComputeInstallationSize(const base::FilePath& src_path,
+                                       const base::FilePath& setup_exe,
+                                       bool requires_active_install) {
+  // The total installation size is the size of the `src_path` for the version
+  // being installed plus setup.exe. Installs that require integration with
+  // Active Setup have a second copy of setup.exe saved as chrmstp.exe.
+  base::ClampedNumeric<uint64_t> setup_size =
+      base::GetFileSize(setup_exe).value_or(0);
+  if (requires_active_install) {
+    setup_size *= 2;
+  }
+
+  return base::ByteSize(
+      (setup_size + base::ComputeDirectorySize(src_path)).RawValue());
+}
 
 // Overwrite an existing DisplayVersion as written by the MSI installer
 // with the real version number of Chrome.
@@ -1326,8 +1344,8 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
       const base::Version current_version(
           installer_state.GetCurrentVersion(original_state));
       src_size_kb = base::saturated_cast<uint32_t>(
-          base::ByteSize(
-              static_cast<uint64_t>(base::ComputeDirectorySize(src_path)))
+          ComputeInstallationSize(src_path, setup_exe,
+                                  installer_state.RequiresActiveSetup())
               .InKiB());
       InstallParams install_params = {installer_state,    original_state,
                                       setup_exe,          current_version,
