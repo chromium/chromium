@@ -22,7 +22,7 @@ public final class AndroidProxyOptions {
             return;
         }
 
-        List<android.net.http.Proxy> proxies = new ArrayList<android.net.http.Proxy>();
+        List<android.net.http.Proxy> proxies = new ArrayList<>();
         int allProxiesFailedBehavior =
                 android.net.http.ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT;
         for (org.chromium.net.Proxy proxy : proxyOptions.getProxyList()) {
