@@ -72,7 +72,7 @@
 }
 
 #icon {
-  background-image: url(text_layer_entry_icon.svg);
+  background-image: url(text_layer_entry_icon.png);
   background-size: contain;
   height: var(--indigo-entry-icon-base-size);
   width: var(--indigo-entry-icon-base-size);
