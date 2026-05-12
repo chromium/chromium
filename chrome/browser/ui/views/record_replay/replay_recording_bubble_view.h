@@ -16,7 +16,6 @@ class WebContents;
 }
 
 namespace views {
-class View;
 class Widget;
 }  // namespace views
 
@@ -33,12 +32,12 @@ class ReplayRecordingBubbleView : public LocationBarBubbleDelegateView {
   // `recording_name` is the name of the recording to show.
   // `on_replay_started` is called when the user confirms replay.
   static std::unique_ptr<views::Widget> Show(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       content::WebContents* web_contents,
       const std::u16string& recording_name,
       base::OnceClosure on_replay_started);
 
-  ReplayRecordingBubbleView(views::View* anchor_view,
+  ReplayRecordingBubbleView(views::BubbleAnchor anchor,
                             content::WebContents* web_contents,
                             const std::u16string& recording_name,
                             base::OnceClosure on_replay_started);

@@ -270,6 +270,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetAnchorView(View* view);
   View* GetAnchorView() const;
 
+  // `main_image` must be empty or a `gfx::Image`, not a `VectorIconModel`.
   void SetMainImage(ui::ImageModel main_image);
   const ui::ImageModel& GetMainImage() const { return main_image_; }
 

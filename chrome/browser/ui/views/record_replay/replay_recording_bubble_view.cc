@@ -33,17 +33,17 @@ namespace record_replay {
 
 // static
 std::unique_ptr<views::Widget> ReplayRecordingBubbleView::Show(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     const std::u16string& recording_name,
     base::OnceClosure on_replay_started) {
   auto bubble = std::make_unique<ReplayRecordingBubbleView>(
-      anchor_view, web_contents, recording_name, std::move(on_replay_started));
+      anchor, web_contents, recording_name, std::move(on_replay_started));
   auto* bubble_ptr = bubble.get();
   bubble_ptr->SetMainImage(
       ui::ImageModel::FromImage(gfx::Image(gfx::CreateVectorIcon(
           vector_icons::kPlayArrowIcon, /*dip_size=*/100,
-          anchor_view->GetColorProvider()->GetColor(ui::kColorIcon)))));
+          web_contents->GetColorProvider().GetColor(ui::kColorIcon)))));
   auto widget = base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
       std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   bubble_ptr->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
@@ -51,11 +51,11 @@ std::unique_ptr<views::Widget> ReplayRecordingBubbleView::Show(
 }
 
 ReplayRecordingBubbleView::ReplayRecordingBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     const std::u16string& recording_name,
     base::OnceClosure on_replay_started)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor, web_contents),
       recording_name_(recording_name),
       on_replay_started_(std::move(on_replay_started)) {
   SetShowTitle(true);

@@ -36,18 +36,18 @@ DEFINE_USER_DATA(RecordReplayPageActionController);
 
 namespace {
 
-views::View* GetAnchorViewForBubble(tabs::TabInterface& tab) {
+views::BubbleAnchor GetAnchorForBubble(tabs::TabInterface& tab) {
   BrowserWindowInterface* bwi = tab.GetBrowserWindowInterface();
   if (!bwi) {
-    return nullptr;
+    return views::BubbleAnchor();
   }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
   if (!browser_view) {
-    return nullptr;
+    return views::BubbleAnchor();
   }
-  return browser_view->GetLocationBarView()
-      ->page_action_container()
-      ->GetPageActionView(kActionRecordReplay);
+  return views::BubbleAnchor(browser_view->GetLocationBarView()
+                                 ->page_action_container()
+                                 ->GetPageActionView(kActionRecordReplay));
 }
 
 }  // namespace
@@ -76,15 +76,15 @@ void RecordReplayPageActionController::ExecuteAction(
   switch (manager.state()) {
     case State::kIdle:
       if (has_recording_) {
-        views::View* anchor_view = GetAnchorViewForBubble(*tab_);
-        if (!anchor_view) {
+        views::BubbleAnchor anchor = GetAnchorForBubble(*tab_);
+        if (anchor.IsNull()) {
           break;
         }
 
         // TODO(crbug.com/507035858): Remove (UT) when strings are
         // internationalized.
         bubble_widget_ = record_replay::ReplayRecordingBubbleView::Show(
-            anchor_view, tab_->GetContents(),
+            anchor, tab_->GetContents(),
             recording_name_.empty() ? u"Unnamed Recording (UT)"
                                     : recording_name_,
             base::BindOnce(&record_replay::RecordReplayManager::StartReplay,
@@ -100,10 +100,10 @@ void RecordReplayPageActionController::ExecuteAction(
         break;
       }
 
-      views::View* anchor_view = GetAnchorViewForBubble(*tab_);
+      views::BubbleAnchor anchor = GetAnchorForBubble(*tab_);
 
-      // anchor_view can be null if the page action is not visible.
-      if (!anchor_view) {
+      // anchor can be null if the page action is not visible.
+      if (anchor.IsNull()) {
         break;
       }
 
@@ -113,7 +113,7 @@ void RecordReplayPageActionController::ExecuteAction(
       }
 
       record_replay::SaveRecordingBubbleView::Show(
-          anchor_view, tab_->GetContents(),
+          anchor, tab_->GetContents(),
           std::make_unique<record_replay::SaveRecordingBubbleControllerImpl>(
               std::move(*recording), rdm,
               base::BindOnce(&record_replay::RecordReplayManager::ReportToUser,

@@ -46,13 +46,13 @@ class SaveRecordingBubbleViewTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    views::View* anchor_view = browser_view->toolbar();
+    views::BubbleAnchor anchor(browser_view->toolbar());
 
     auto controller = std::make_unique<FakeSaveRecordingBubbleController>(
         "https://example.com");
 
     widget_ = SaveRecordingBubbleView::Show(
-        anchor_view, browser()->tab_strip_model()->GetActiveWebContents(),
+        anchor, browser()->tab_strip_model()->GetActiveWebContents(),
         std::move(controller));
   }
 

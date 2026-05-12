@@ -31,9 +31,9 @@ class ReplayRecordingBubbleViewTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    views::View* anchor_view = browser_view->toolbar();
+    views::BubbleAnchor anchor(browser_view->toolbar());
     widget_ = ReplayRecordingBubbleView::Show(
-        anchor_view, browser()->tab_strip_model()->GetActiveWebContents(),
+        anchor, browser()->tab_strip_model()->GetActiveWebContents(),
         u"Test Recording", on_replay_.Get());
     bubble_tracker_.SetView(
         static_cast<ReplayRecordingBubbleView*>(widget_->widget_delegate()));
