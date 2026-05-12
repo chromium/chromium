@@ -17,11 +17,6 @@
 
 namespace webnn::tflite {
 
-// Returns true if the request described by `options` should be served by the
-// renderer-process TFLite backend instead of any GPU-process backend.
-COMPONENT_EXPORT(WEBNN_SERVICE)
-bool ShouldUseInProcessTflite(const mojom::CreateContextOptions& options);
-
 // A lightweight WebNNContextProvider implementation for TFLite that runs
 // without GPU dependencies (e.g., in the renderer process).
 class COMPONENT_EXPORT(WEBNN_SERVICE) ContextProviderTflite

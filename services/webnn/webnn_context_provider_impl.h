@@ -126,7 +126,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
-  static bool HasBackendForTesting();
 
  private:
   WebNNContextProviderImpl(
