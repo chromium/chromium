@@ -3260,18 +3260,18 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
       return;
     code = """
 TEST_F(%(prefix)sImplementationTest, %(name)s) {
-  %(type)s data[%(count)d] = {};
+  std::array<%(type)s, %(count)d> data = {};
   struct Cmds {
     cmds::%(name)sImmediate cmd;
-    %(type)s data[%(count)d];
+    std::array<%(type)s, %(count)d> data;
   };
 
   for (int jj = 0; jj < %(count)d; ++jj) {
-    UNSAFE_TODO(data[jj] = static_cast<%(type)s>(jj));
+    data[jj] = static_cast<%(type)s>(jj);
   }
   Cmds expected;
-  expected.cmd.Init(%(cmd_args)s, &data[0]);
-  gl_->%(name)s(%(args)s, &data[0]);
+  expected.cmd.Init(%(cmd_args)s, data.data());
+  gl_->%(name)s(%(args)s, data.data());
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
 }
 """
@@ -3560,16 +3560,16 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
 
     code = """
 TEST_F(%(prefix)sImplementationTest, %(name)s) {
-  %(type)s data[%(count_param)d][%(count)d] = {};
+  std::array<std::array<%(type)s, %(count)d>, %(count_param)d> data = {};
   struct Cmds {
     cmds::%(name)sImmediate cmd;
-    %(type)s data[%(count_param)d][%(count)d];
+    std::array<std::array<%(type)s, %(count)d>, %(count_param)d> data;
   };
 
   Cmds expected;
   for (int ii = 0; ii < %(count_param)d; ++ii) {
     for (int jj = 0; jj < %(count)d; ++jj) {
-      UNSAFE_TODO(data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj));
+      data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj);
     }
   }
   expected.cmd.Init(%(cmd_args)s);
@@ -3580,7 +3580,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
     cmd_arg_strings = []
     for arg in func.GetCmdArgs():
       if arg.name.endswith("_shm_id"):
-        cmd_arg_strings.append("&data[0][0]")
+        cmd_arg_strings.append("data[0].data()")
       elif arg.name.endswith("_shm_offset"):
         continue
       else:
@@ -3589,7 +3589,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
     count_param = 0
     for arg in func.GetOriginalArgs():
       if arg.IsPointer():
-        valid_value = "&data[0][0]"
+        valid_value = "data[0].data()"
       else:
         valid_value = arg.GetValidClientSideArg(func)
       gl_arg_strings.append(valid_value)
@@ -3619,7 +3619,7 @@ TEST_F(%(prefix)sImplementationTest,
   %(type)s data[%(count_param)d][%(count)d] = {};
   for (int ii = 0; ii < %(count_param)d; ++ii) {
     for (int jj = 0; jj < %(count)d; ++jj) {
-      UNSAFE_TODO(data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj));
+      data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj);
     }
   }
   gl_->%(name)s(%(args)s);
@@ -3634,7 +3634,7 @@ TEST_F(%(prefix)sImplementationTest,
         if arg is invalid_arg:
           gl_arg_strings.append(invalid[0])
         elif arg.IsPointer():
-          gl_arg_strings.append("&data[0][0]")
+          gl_arg_strings.append("data[0].data()")
         else:
           valid_value = arg.GetValidClientSideArg(func)
           gl_arg_strings.append(valid_value)
