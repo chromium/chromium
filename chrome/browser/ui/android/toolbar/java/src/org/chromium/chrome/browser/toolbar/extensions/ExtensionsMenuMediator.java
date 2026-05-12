@@ -392,8 +392,12 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                                 (view) -> mMenuBridge.executeAction(entry.id))
                         .with(
                                 ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_ON_CLICK,
-                                (buttonView, isOn) ->
-                                        mMenuBridge.onExtensionToggleSelected(entry.id, isOn))
+                                (buttonView, isOn) -> {
+                                    mMenuBridge.onExtensionToggleSelected(entry.id, isOn);
+                                    if (!isOn) {
+                                        mOnDismissMenu.run();
+                                    }
+                                })
                         .with(
                                 ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ON_CLICK,
                                 (view) -> onSitePermissionsButtonClicked(entry.id))
