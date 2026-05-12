@@ -462,14 +462,14 @@ UText* TextOpenLatin1(UTextWithBuffer* ut_with_buffer,
   return text;
 }
 
-inline TextContext TextUTF16GetCurrentContext(const UText* text) {
+inline TextContext TextUtf16GetCurrentContext(const UText* text) {
   if (!text->chunkContents) {
     return kNoContext;
   }
   return text->chunkContents == text->p ? kPrimaryContext : kPriorContext;
 }
 
-void TextUTF16MoveInPrimaryContext(UText* text,
+void TextUtf16MoveInPrimaryContext(UText* text,
                                    int64_t native_index,
                                    int64_t native_length,
                                    UBool forward) {
@@ -497,16 +497,16 @@ void TextUTF16MoveInPrimaryContext(UText* text,
                                text->chunkLength);
 }
 
-void TextUTF16SwitchToPrimaryContext(UText* text,
+void TextUtf16SwitchToPrimaryContext(UText* text,
                                      int64_t native_index,
                                      int64_t native_length,
                                      UBool forward) {
   DCHECK(!text->chunkContents || text->chunkContents == text->q);
   text->chunkContents = static_cast<const UChar*>(text->p);
-  TextUTF16MoveInPrimaryContext(text, native_index, native_length, forward);
+  TextUtf16MoveInPrimaryContext(text, native_index, native_length, forward);
 }
 
-void TextUTF16MoveInPriorContext(UText* text,
+void TextUtf16MoveInPriorContext(UText* text,
                                  int64_t native_index,
                                  int64_t native_length,
                                  UBool forward) {
@@ -530,16 +530,16 @@ void TextUTF16MoveInPriorContext(UText* text,
                                text->chunkLength);
 }
 
-void TextUTF16SwitchToPriorContext(UText* text,
+void TextUtf16SwitchToPriorContext(UText* text,
                                    int64_t native_index,
                                    int64_t native_length,
                                    UBool forward) {
   DCHECK(!text->chunkContents || text->chunkContents == text->p);
   text->chunkContents = static_cast<const UChar*>(text->q);
-  TextUTF16MoveInPriorContext(text, native_index, native_length, forward);
+  TextUtf16MoveInPriorContext(text, native_index, native_length, forward);
 }
 
-UBool TextUTF16Access(UText* text, int64_t native_index, UBool forward) {
+UBool TextUtf16Access(UText* text, int64_t native_index, UBool forward) {
   if (!text->context) {
     return false;
   }
@@ -550,32 +550,32 @@ UBool TextUTF16Access(UText* text, int64_t native_index, UBool forward) {
     return is_accessible;
   }
   native_index = TextPinIndex(native_index, native_length - 1);
-  TextContext current_context = TextUTF16GetCurrentContext(text);
+  TextContext current_context = TextUtf16GetCurrentContext(text);
   TextContext new_context = TextGetContext(text, native_index, forward);
   DCHECK_NE(new_context, kNoContext);
   if (new_context == current_context) {
     if (current_context == kPrimaryContext) {
-      TextUTF16MoveInPrimaryContext(text, native_index, native_length, forward);
+      TextUtf16MoveInPrimaryContext(text, native_index, native_length, forward);
     } else {
-      TextUTF16MoveInPriorContext(text, native_index, native_length, forward);
+      TextUtf16MoveInPriorContext(text, native_index, native_length, forward);
     }
   } else if (new_context == kPrimaryContext) {
-    TextUTF16SwitchToPrimaryContext(text, native_index, native_length, forward);
+    TextUtf16SwitchToPrimaryContext(text, native_index, native_length, forward);
   } else {
     DCHECK_EQ(new_context, kPriorContext);
-    TextUTF16SwitchToPriorContext(text, native_index, native_length, forward);
+    TextUtf16SwitchToPriorContext(text, native_index, native_length, forward);
   }
   return true;
 }
 
-constexpr struct UTextFuncs kTextUTF16Funcs = {
+constexpr struct UTextFuncs kTextUtf16Funcs = {
     sizeof(UTextFuncs),
     0,
     0,
     0,
     TextClone,
     TextNativeLength,
-    TextUTF16Access,
+    TextUtf16Access,
     TextExtract,
     nullptr,
     nullptr,
@@ -587,7 +587,7 @@ constexpr struct UTextFuncs kTextUTF16Funcs = {
     nullptr,
 };
 
-UText* TextOpenUTF16(UText* text,
+UText* TextOpenUtf16(UText* text,
                      base::span<const UChar> string,
                      const UChar* prior_context,
                      int prior_context_length,
@@ -608,7 +608,7 @@ UText* TextOpenUTF16(UText* text,
     DCHECK(!text);
     return nullptr;
   }
-  TextInit(text, &kTextUTF16Funcs, string.data(),
+  TextInit(text, &kTextUtf16Funcs, string.data(),
            base::checked_cast<unsigned>(string.size()), prior_context,
            prior_context_length);
   return text;
@@ -786,10 +786,10 @@ PooledBreakIterator AcquireLineBreakIterator(
   UText text_local = UTEXT_INITIALIZER;
 
   UErrorCode open_status = U_ZERO_ERROR;
-  UText* text = TextOpenUTF16(&text_local, string, prior_context,
+  UText* text = TextOpenUtf16(&text_local, string, prior_context,
                               prior_context_length, &open_status);
   if (U_FAILURE(open_status)) {
-    DLOG(ERROR) << "textOpenUTF16 failed with status " << open_status;
+    DLOG(ERROR) << "textOpenUtf16 failed with status " << open_status;
     return nullptr;
   }
 

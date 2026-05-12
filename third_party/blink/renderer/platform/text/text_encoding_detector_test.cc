@@ -96,7 +96,7 @@ TEST(TextEncodingDetectorTest, LanguageHintHelpsEUCJP) {
       << "Language hint works for file resource. Should be detected as EUC-JP";
 }
 
-TEST(TextEncodingDetectorTest, UTF8DetectionShouldFail) {
+TEST(TextEncodingDetectorTest, Utf8DetectionShouldFail) {
   std::string utf8_bytes =
       "tnegirjji gosa gii beare s\xC3\xA1htt\xC3\xA1 \xC4\x8D\xC3"
       "\xA1llit artihkkaliid. Maid don s\xC3\xA1ht\xC3\xA1t dievasmah";
@@ -106,7 +106,7 @@ TEST(TextEncodingDetectorTest, UTF8DetectionShouldFail) {
   EXPECT_FALSE(result);
 }
 
-TEST(TextEncodingDetectorTest, RespectUTF8DetectionForFileResource) {
+TEST(TextEncodingDetectorTest, RespectUtf8DetectionForFileResource) {
   std::string utf8_bytes =
       "tnegirjji gosa gii beare s\xC3\xA1htt\xC3\xA1 \xC4\x8D\xC3"
       "\xA1llit artihkkaliid. Maid don s\xC3\xA1ht\xC3\xA1t dievasmah";
