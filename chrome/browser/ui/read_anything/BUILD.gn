@@ -112,6 +112,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/pdf:pdf_extension_test_utils",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui",

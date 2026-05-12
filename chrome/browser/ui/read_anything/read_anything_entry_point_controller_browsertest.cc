@@ -6,18 +6,21 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_base.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
@@ -36,6 +39,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -44,6 +48,30 @@
 #include "url/url_constants.h"
 
 using read_anything::ReadAnythingEntryPointController;
+
+class TabRemovedWaiter : public TabStripModelObserver {
+ public:
+  explicit TabRemovedWaiter(TabStripModel* tab_strip_model)
+      : tab_strip_model_(tab_strip_model) {
+    tab_strip_model_->AddObserver(this);
+  }
+  ~TabRemovedWaiter() override { tab_strip_model_->RemoveObserver(this); }
+
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() == TabStripModelChange::kRemoved) {
+      run_loop_.Quit();
+    }
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+  raw_ptr<TabStripModel> tab_strip_model_;
+};
 
 class ReadAnythingEntryPointControllerTestBase
     : public InProcessBrowserTest,
@@ -665,6 +693,112 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 
   VerifyChipIsShowing(false);
 }
+
+// This test needs to be in a separate test suite because it requires a mock
+// OptimizationGuideKeyedService to delay the callback until after WebContents
+// destruction, which must be registered before the profile is created.
+class ReadAnythingEntryPointControllerTabCloseBrowserTest
+    : public ReadAnythingEntryPointControllerTestBase {
+ public:
+  ReadAnythingEntryPointControllerTabCloseBrowserTest() {
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                RegisterMockOptimizationGuideKeyedServiceFactory));
+
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kReadAnythingOmniboxChip};
+    if (IsImmersiveEnabled()) {
+      enabled_features.push_back(features::kImmersiveReadAnything);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+  }
+
+  void SetUpOnMainThread() override {
+    ReadAnythingEntryPointControllerTestBase::SetUpOnMainThread();
+    mock_optimization_guide_keyed_service_ =
+        static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
+            OptimizationGuideKeyedServiceFactory::GetForProfile(
+                browser()->profile()));
+    ASSERT_TRUE(mock_optimization_guide_keyed_service_);
+  }
+
+  void TearDownOnMainThread() override {
+    mock_optimization_guide_keyed_service_ = nullptr;
+    ReadAnythingEntryPointControllerTestBase::TearDownOnMainThread();
+  }
+
+  MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
+    return *mock_optimization_guide_keyed_service_;
+  }
+
+ private:
+  static void RegisterMockOptimizationGuideKeyedServiceFactory(
+      content::BrowserContext* context) {
+    OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              testing::NiceMock<MockOptimizationGuideKeyedService>>();
+        }));
+  }
+
+  raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>
+      mock_optimization_guide_keyed_service_;
+  base::CallbackListSubscription subscription_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingEntryPointControllerTabCloseBrowserTest,
+    CheckIfShouldSuggestReadingMode_TabClosedBeforeCallback) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Add a tab so we don't close the browser.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+
+  GURL url = embedded_test_server()->GetURL("/long_text_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  optimization_guide::OptimizationGuideDecisionCallback callback;
+
+  EXPECT_CALL(
+      mock_optimization_guide_keyed_service(),
+      CanApplyOptimization(
+          url, optimization_guide::proto::READER_MODE_ELIGIBLE,
+          testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(
+          [&](const GURL& url,
+              optimization_guide::proto::OptimizationType optimization_type,
+              optimization_guide::OptimizationGuideDecisionCallback cb) {
+            callback = std::move(cb);
+          });
+
+  base::test::TestFuture<bool> future;
+
+  ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+      browser(), future.GetCallback());
+
+  ASSERT_TRUE(callback);
+
+  TabRemovedWaiter waiter(browser()->tab_strip_model());
+
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->active_index(),
+      TabCloseTypes::CLOSE_USER_GESTURE);
+
+  waiter.Wait();
+
+  std::move(callback).Run(optimization_guide::OptimizationGuideDecision::kTrue,
+                          optimization_guide::OptimizationMetadata());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ReadAnythingEntryPointControllerTabCloseBrowserTest,
+    testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ReadAnythingEntryPointControllerOmniboxBrowserTest,
