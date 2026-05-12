@@ -659,6 +659,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(R.id.bookmark_this_page_menu_id),
                                         item(R.id.toggle_bookmarks_bar_menu_id),
                                         item(R.id.divider_line_id),
+                                        item(
+                                                R.id.reading_list_parent_menu_id,
+                                                item(R.id.add_to_reading_list_menu_id),
+                                                item(R.id.show_reading_list_menu_id)),
+                                        item(R.id.divider_line_id),
                                         item(R.id.bookmark_menu_id),
                                         item(R.id.bookmark_menu_id),
                                         item(
@@ -722,6 +727,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(R.id.all_bookmarks_menu_id),
                                         item(R.id.bookmark_this_page_menu_id),
                                         item(R.id.toggle_bookmarks_bar_menu_id),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.reading_list_parent_menu_id,
+                                                item(R.id.add_to_reading_list_menu_id),
+                                                item(R.id.show_reading_list_menu_id)),
                                         item(R.id.divider_line_id),
                                         item(R.id.bookmark_menu_id),
                                         item(R.id.bookmark_menu_id),
@@ -815,6 +825,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.bookmark_this_page_menu_id),
                         item(R.id.toggle_bookmarks_bar_menu_id),
                         item(R.id.divider_line_id),
+                        item(
+                                R.id.reading_list_parent_menu_id,
+                                item(R.id.add_to_reading_list_menu_id),
+                                item(R.id.show_reading_list_menu_id)),
+                        item(R.id.divider_line_id),
                         item(R.id.bookmark_menu_id),
                         item(R.id.bookmark_menu_id),
                         item(
@@ -827,6 +842,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.string.menu_bookmarks),
                         item(R.string.menu_bookmark_this_page),
                         item(R.string.menu_show_bookmarks_bar),
+                        item(0),
+                        item(
+                                R.string.menu_reading_list,
+                                item(R.string.menu_add_to_reading_list),
+                                item(R.string.menu_show_reading_list)),
                         item(0),
                         item("Bookmark 1"),
                         item("Bookmark 2"),
@@ -970,6 +990,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.bookmark_this_page_menu_id),
                         item(R.id.toggle_bookmarks_bar_menu_id),
                         item(R.id.divider_line_id),
+                        item(
+                                R.id.reading_list_parent_menu_id,
+                                item(R.id.add_to_reading_list_menu_id),
+                                item(R.id.show_reading_list_menu_id)),
+                        item(R.id.divider_line_id),
                         item(R.id.bookmark_menu_id),
                         item(R.id.bookmark_menu_id),
                         item(
@@ -982,6 +1007,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.string.menu_bookmarks),
                         item(R.string.menu_bookmark_this_page),
                         item(R.string.menu_show_bookmarks_bar),
+                        item(0),
+                        item(
+                                R.string.menu_reading_list,
+                                item(R.string.menu_add_to_reading_list),
+                                item(R.string.menu_show_reading_list)),
                         item(0),
                         item("Bookmark 1"),
                         item("Bookmark 2"),
@@ -1129,6 +1159,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.bookmark_this_page_menu_id),
                         item(R.id.toggle_bookmarks_bar_menu_id),
                         item(R.id.divider_line_id),
+                        item(
+                                R.id.reading_list_parent_menu_id,
+                                item(R.id.add_to_reading_list_menu_id),
+                                item(R.id.show_reading_list_menu_id)),
+                        item(R.id.divider_line_id),
                         item(R.id.bookmark_menu_id),
                         item(R.id.bookmark_menu_id),
                         item(
@@ -1141,6 +1176,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.string.menu_bookmarks),
                         item(R.string.menu_bookmark_this_page),
                         item(R.string.menu_show_bookmarks_bar),
+                        item(0),
+                        item(
+                                R.string.menu_reading_list,
+                                item(R.string.menu_add_to_reading_list),
+                                item(R.string.menu_show_reading_list)),
                         item(0),
                         item("Bookmark 1"),
                         item("Bookmark 2"),
@@ -1256,6 +1296,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(R.id.bookmark_this_page_menu_id),
                                         item(R.id.toggle_bookmarks_bar_menu_id),
                                         item(R.id.divider_line_id),
+                                        item(
+                                                R.id.reading_list_parent_menu_id,
+                                                item(R.id.add_to_reading_list_menu_id),
+                                                item(R.id.show_reading_list_menu_id)),
+                                        item(R.id.divider_line_id),
                                         item(R.id.bookmark_menu_id),
                                         item(R.id.bookmark_menu_id),
                                         item(
@@ -1326,6 +1371,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(R.id.all_bookmarks_menu_id),
                                         item(R.id.bookmark_this_page_menu_id),
                                         item(R.id.toggle_bookmarks_bar_menu_id),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.reading_list_parent_menu_id,
+                                                item(R.id.add_to_reading_list_menu_id),
+                                                item(R.id.show_reading_list_menu_id)),
                                         item(R.id.divider_line_id),
                                         item(R.id.bookmark_menu_id),
                                         item(R.id.bookmark_menu_id),
@@ -1644,6 +1694,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(R.id.bookmark_this_page_menu_id),
                                         item(R.id.toggle_bookmarks_bar_menu_id),
                                         item(R.id.divider_line_id),
+                                        item(
+                                                R.id.reading_list_parent_menu_id,
+                                                item(R.id.add_to_reading_list_menu_id),
+                                                item(R.id.show_reading_list_menu_id)),
+                                        item(R.id.divider_line_id),
                                         item(R.id.bookmark_menu_id),
                                         item(R.id.bookmark_menu_id),
                                         item(
@@ -1748,6 +1803,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(R.id.bookmark_this_page_menu_id),
                                         item(R.id.toggle_bookmarks_bar_menu_id),
                                         item(R.id.divider_line_id),
+                                        item(
+                                                R.id.reading_list_parent_menu_id,
+                                                item(R.id.add_to_reading_list_menu_id),
+                                                item(R.id.show_reading_list_menu_id)),
+                                        item(R.id.divider_line_id),
                                         item(R.id.bookmark_menu_id),
                                         item(R.id.bookmark_menu_id),
                                         item(
@@ -1825,6 +1885,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(R.id.all_bookmarks_menu_id),
                                         item(R.id.bookmark_this_page_menu_id),
                                         item(R.id.toggle_bookmarks_bar_menu_id),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.reading_list_parent_menu_id,
+                                                item(R.id.add_to_reading_list_menu_id),
+                                                item(R.id.show_reading_list_menu_id)),
                                         item(R.id.divider_line_id),
                                         item(R.id.bookmark_menu_id),
                                         item(R.id.bookmark_menu_id),
@@ -3308,7 +3373,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 Arrays.asList(
                         item(R.id.all_bookmarks_menu_id),
                         item(R.id.bookmark_this_page_menu_id),
-                        item(R.id.toggle_bookmarks_bar_menu_id));
+                        item(R.id.toggle_bookmarks_bar_menu_id),
+                        item(R.id.divider_line_id),
+                        item(
+                                R.id.reading_list_parent_menu_id,
+                                item(R.id.add_to_reading_list_menu_id),
+                                item(R.id.show_reading_list_menu_id)));
 
         assertMenuItemsAreEqual(subItems, expectedSubItems);
     }
@@ -3338,6 +3408,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.bookmark_this_page_menu_id),
                         item(R.id.toggle_bookmarks_bar_menu_id),
                         item(R.id.divider_line_id),
+                        item(
+                                R.id.reading_list_parent_menu_id,
+                                item(R.id.add_to_reading_list_menu_id),
+                                item(R.id.show_reading_list_menu_id)),
+                        item(R.id.divider_line_id),
                         item(R.id.bookmark_menu_id),
                         item(R.id.bookmark_menu_id),
                         item(
@@ -3356,6 +3431,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.string.menu_bookmarks),
                         item(R.string.menu_bookmark_this_page),
                         item(R.string.menu_show_bookmarks_bar),
+                        item(0),
+                        item(
+                                R.string.menu_reading_list,
+                                item(R.string.menu_add_to_reading_list),
+                                item(R.string.menu_show_reading_list)),
                         item(0),
                         item("Bookmark 1"),
                         item("Bookmark 2"),
@@ -3390,6 +3470,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.all_bookmarks_menu_id),
                         item(R.id.bookmark_this_page_menu_id),
                         item(R.id.toggle_bookmarks_bar_menu_id),
+                        item(R.id.divider_line_id),
+                        item(
+                                R.id.reading_list_parent_menu_id,
+                                item(R.id.add_to_reading_list_menu_id),
+                                item(R.id.show_reading_list_menu_id)),
                         item(R.id.divider_line_id),
                         item(R.id.bookmark_menu_id),
                         item(R.id.bookmark_menu_id),

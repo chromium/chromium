@@ -4169,6 +4169,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_HIDE_BOOKMARKS_BAR" desc="Menu item for hiding the bookmarks bar. [CHAR_LIMIT=27]">
         Hide bookmarks bar
       </message>
+      <message name="IDS_MENU_READING_LIST" desc="Menu item for showing items related to reading list. [CHAR_LIMIT=27]">
+        Reading list
+      </message>
+      <message name="IDS_MENU_ADD_TO_READING_LIST" desc="Menu item for adding the current tab to the reading list. [CHAR_LIMIT=27]">
+        Add tab to reading list
+      </message>
+      <message name="IDS_MENU_SHOW_READING_LIST" desc="Menu item for showing the reading list. [CHAR_LIMIT=27]">
+        Show reading list
+      </message>
       <message name="IDS_MENU_RECENT_TABS" desc="Menu item for opening the 'Recent tabs' page that shows recently closed tabs and pages the user has opened on his/her other devices. [CHAR_LIMIT=27]">
         Recent tabs
       </message>

@@ -29048,6 +29048,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuShowReadingList">
+  <owner>massan@google.com</owner>
+  <description>User pressed 'Show reading list' in the app menu.</description>
+</action>
+
 <action name="MobileMenuSiteInformation">
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Site Information' in the app menu.</description>

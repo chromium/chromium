@@ -167,6 +167,9 @@ found in the LICENSE file.
     <item type="id" name="all_bookmarks_menu_id" />
     <item type="id" name="toggle_bookmarks_bar_menu_id" />
     <item type="id" name="bookmarks_parent_menu_id" />
+    <item type="id" name="reading_list_parent_menu_id" />
+    <item type="id" name="add_to_reading_list_menu_id" />
+    <item type="id" name="show_reading_list_menu_id" />
     <item type="id" name="bookmark_this_page_menu_id" />
     <item type="id" name="recent_tabs_menu_id" />
     <item type="id" name="extensions_parent_menu_id" />

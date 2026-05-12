@@ -784,6 +784,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     submenuItems.add(buildBookmarkThisPageItem());
                     submenuItems.add(buildToggleBookmarksBarItem());
 
+                    submenuItems.add(
+                            new ListItem(
+                                    AppMenuHandler.AppMenuItemType.DIVIDER,
+                                    buildModelForDivider(R.id.divider_line_id)));
+
+                    submenuItems.add(buildReadingListItem());
+
                     BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
                     if (bookmarkModel != null && bookmarkModel.isBookmarkModelLoaded()) {
                         List<ListItem> bookmarksBarItems =
@@ -811,6 +818,34 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 ? R.drawable.ic_star_filled_24dp
                                 : Resources.ID_NULL,
                         submenuItemsSupplier));
+    }
+
+    private ListItem buildReadingListItem() {
+        List<ListItem> submenuItems = new ArrayList<>();
+
+        submenuItems.add(
+                new ListItem(
+                        AppMenuHandler.AppMenuItemType.STANDARD,
+                        buildModelForStandardMenuItem(
+                                R.id.add_to_reading_list_menu_id,
+                                R.string.menu_add_to_reading_list,
+                                shouldShowIconBeforeItem() ? R.drawable.ic_list_add_24dp : 0)));
+
+        submenuItems.add(
+                new ListItem(
+                        AppMenuHandler.AppMenuItemType.STANDARD,
+                        buildModelForStandardMenuItem(
+                                R.id.show_reading_list_menu_id,
+                                R.string.menu_show_reading_list,
+                                shouldShowIconBeforeItem() ? R.drawable.ic_list_24dp : 0)));
+
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.reading_list_parent_menu_id,
+                        R.string.menu_reading_list,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_list_24dp : Resources.ID_NULL,
+                        () -> submenuItems));
     }
 
     private ListItem buildToggleBookmarksBarItem() {
