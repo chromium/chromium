@@ -170,7 +170,7 @@ class ExpiredHistogramsTest(unittest.TestCase):
     This is a summary.
   </summary>
     </histogram>
-  <histogram name="ThirdHistogram" expires_after="M60" units="units">
+  <histogram name="ThirdHistogram" expires_after="M59" units="units">
     <owner>me@chromium.org</owner>
     <summary>
       This is a summary.
