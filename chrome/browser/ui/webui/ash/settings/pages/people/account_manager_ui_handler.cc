@@ -12,8 +12,8 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -23,13 +23,16 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_dialog.h"
-#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/account_upsertion_result.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -49,6 +52,8 @@ namespace {
 constexpr char kFamilyLink[] = "Family Link";
 constexpr char kAccountRemovedToastId[] =
     "settings_account_manager_account_removed";
+constexpr char kAccountUpsertionResultStatus[] =
+    "AccountManager.AccountUpsertionResultStatus";
 
 ::account_manager::AccountKey GetAccountKeyFromJsCallback(
     const base::DictValue& dictionary) {
@@ -87,6 +92,38 @@ void ShowToast(const std::string& id,
                ToastCatalogName catalog_name,
                const std::u16string& message) {
   ToastManager::Get()->Show(ToastData(id, catalog_name, message));
+}
+
+void RecordAccountUpsertionResultStatus(
+    crosapi::mojom::AccountUpsertionResultPtr mojo_result) {
+  const auto result =
+      account_manager::FromMojoAccountUpsertionResult(mojo_result);
+  base::UmaHistogramEnumeration(
+      kAccountUpsertionResultStatus,
+      result.has_value()
+          ? result->status()
+          : account_manager::AccountUpsertionResult::Status::
+                kUnexpectedResponse);
+}
+
+void ShowSettingsAccountReauthDialog(content::BrowserContext* browser_context,
+                                     const std::string& email) {
+  CHECK(browser_context);
+
+  base::UmaHistogramEnumeration(
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsReauthAccountButton);
+
+  // TODO(b/365741912, b/365902693): Route Settings reauth through the
+  // replacement Account Manager dialog path once it exists.
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
+      AccountManagerFactory::Get()->GetAccountManagerMojoService(
+          browser_context->GetPath().value());
+  CHECK(account_manager_mojo_service);
+
+  account_manager_mojo_service->ShowReauthAccountDialog(
+      email, base::BindOnce(&RecordAccountUpsertionResultStatus));
 }
 
 class AccountBuilder {
@@ -373,12 +410,7 @@ void AccountManagerUIHandler::HandleReauthenticateAccount(
   CHECK(!args.empty());
   const std::string& account_email = args[0].GetString();
 
-  AccountManagerFactory::Get()
-      ->GetAccountManagerFacade(profile_->GetPath().value())
-      ->ShowReauthAccountDialog(
-          account_manager::AccountManagerFacade::AccountAdditionSource::
-              kSettingsReauthAccountButton,
-          account_email, base::DoNothing());
+  ShowSettingsAccountReauthDialog(profile_, account_email);
 }
 
 void AccountManagerUIHandler::HandleMigrateAccount(

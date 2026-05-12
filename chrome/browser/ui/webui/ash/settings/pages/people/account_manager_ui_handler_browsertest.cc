@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
@@ -23,7 +24,10 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -41,6 +45,8 @@ namespace {
 
 using testing::Contains;
 using testing::Not;
+using testing::Optional;
+using testing::StrEq;
 
 using ::account_manager::AccountManager;
 
@@ -48,6 +54,10 @@ constexpr char kSecondaryAccount1Email[] = "secondary1@example.com";
 constexpr char kSecondaryAccount2Email[] = "secondary2@example.com";
 constexpr char kGetAccountsMessage[] = "getAccounts";
 constexpr char kHandleFunctionName[] = "handleFunctionName";
+constexpr char kAccountUpsertionResultStatus[] =
+    "AccountManager.AccountUpsertionResultStatus";
+constexpr char kReauthAccountEmail[] = "settings-reauth@example.com";
+constexpr char kReauthenticateAccountMessage[] = "reauthenticateAccount";
 
 struct DeviceAccountInfo {
   std::string id;
@@ -387,6 +397,46 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
             expected_account_info.GetAccountId()),
         account.FindBool("isSignedIn").value());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
+                       ReauthenticateAccountOpensReauthDialog) {
+  base::HistogramTester histogram_tester;
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
+      AccountManagerFactory::Get()->GetAccountManagerMojoService(
+          profile()->GetPath().value());
+  ASSERT_TRUE(account_manager_mojo_service);
+
+  auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
+  FakeAccountManagerUI* fake_account_manager_ui_ptr =
+      fake_account_manager_ui.get();
+  account_manager_mojo_service->SetAccountManagerUI(
+      std::move(fake_account_manager_ui));
+
+  base::ListValue args;
+  args.Append(kReauthAccountEmail);
+  web_ui()->HandleReceivedMessage(kReauthenticateAccountMessage, args);
+
+  EXPECT_EQ(1, fake_account_manager_ui_ptr
+                   ->show_account_reauthentication_dialog_calls());
+  EXPECT_THAT(fake_account_manager_ui_ptr->last_reauth_email(),
+              Optional(StrEq(kReauthAccountEmail)));
+  EXPECT_EQ(0,
+            fake_account_manager_ui_ptr->show_account_addition_dialog_calls());
+  EXPECT_EQ(0,
+            fake_account_manager_ui_ptr->show_manage_accounts_settings_calls());
+  histogram_tester.ExpectUniqueSample(
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsReauthAccountButton,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(kAccountUpsertionResultStatus, 0);
+
+  fake_account_manager_ui_ptr->CloseDialog();
+  histogram_tester.ExpectUniqueSample(
+      kAccountUpsertionResultStatus,
+      account_manager::AccountUpsertionResult::Status::kCancelledByUser,
+      /*expected_count=*/1);
 }
 
 INSTANTIATE_TEST_SUITE_P(AccountManagerUIHandlerTestSuite,
