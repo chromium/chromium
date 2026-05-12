@@ -33,7 +33,7 @@ namespace {
 base::FilePath GetSrcTestFilePath(const char* file_name) {
   base::FilePath test_data_root;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_root));
-  return test_data_root.Append(FILE_PATH_LITERAL("components"))
+  return test_data_root
       .Append(FILE_PATH_LITERAL(
           "components/test/data/update_client/puffin_patch_test"))
       .AppendASCII(file_name);
