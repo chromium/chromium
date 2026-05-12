@@ -264,6 +264,11 @@ class InstallerDialogView : public views::BoxLayoutView {
             gfx::Range(offset, offset + subtitle_param->get().length()),
             views::StyledLabel::RangeStyleInfo::CreateForLink(
                 *subtitle_link_callback));
+        // Fix for crbug.com/505281659: ChromeVox doesn't announce links in
+        // StyledLabel when role is the default kStaticText.
+        // TODO(crbug.com/510791136): Can be removed when the todo bug is fixed.
+        subtitle_label_->GetViewAccessibility().SetRole(
+            ax::mojom::Role::kParagraph);
       }
     } else {
       subtitle_label_->SetText(l10n_util::GetStringUTF16(subtitle_id));
