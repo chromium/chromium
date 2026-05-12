@@ -62,6 +62,7 @@ public class FakeBookmarkModel extends BookmarkModel {
     private BookmarkId mLocalOrSyncableReadingListFolderId;
     private BookmarkId mAccountReadingListFolderId;
     private boolean mAreAccountBookmarkFoldersActive;
+    private boolean mEditBookmarksEnabled;
 
     private FakeBookmarkModel() {
         // The native bookmark bridge pointer will be ignored because the JNI is mocked by
@@ -109,6 +110,10 @@ public class FakeBookmarkModel extends BookmarkModel {
 
     public void setAreAccountBookmarkFoldersActive(boolean active) {
         mAreAccountBookmarkFoldersActive = active;
+    }
+
+    public void setEditBookmarksEnabled(boolean enabled) {
+        mEditBookmarksEnabled = enabled;
     }
 
     // Private functions used internally.
@@ -777,8 +782,7 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public boolean isEditBookmarksEnabled(long nativeBookmarkBridge) {
-            assert false : "Not implemented!";
-            return false;
+            return mEditBookmarksEnabled;
         }
 
         @Override

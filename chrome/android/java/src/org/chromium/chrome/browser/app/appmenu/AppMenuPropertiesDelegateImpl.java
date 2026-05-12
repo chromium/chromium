@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateUtils;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuBookmarkItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
@@ -103,6 +105,9 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public abstract class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
+
+    public static final String BOOKMARK_ID_BUNDLE_KEY = "BookmarkId";
+
     private static @Nullable Boolean sItemBookmarkedForTesting;
 
     protected final Context mContext;
@@ -115,7 +120,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected final MonotonicObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
 
     private CallbackController mCallbackController = new CallbackController();
-    private final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    protected final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private @Nullable ModelList mModelList;
     private int mReadAloudPos;
     protected @Nullable Runnable mReadAloudAppMenuResetter;
@@ -452,10 +457,19 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             @StringRes int titleId,
             @DrawableRes int iconResId,
             Supplier<List<ListItem>> submenuItemProvider) {
+        return buildModelForMenuItemWithSubmenu(
+                id, mContext.getString(titleId), iconResId, submenuItemProvider);
+    }
+
+    public PropertyModel buildModelForMenuItemWithSubmenu(
+            @IdRes int id,
+            String title,
+            @DrawableRes int iconResId,
+            Supplier<List<ListItem>> submenuItemProvider) {
         PropertyModel model =
                 new PropertyModel.Builder(AppMenuItemWithSubmenuProperties.ALL_KEYS)
                         .with(AppMenuItemProperties.MENU_ITEM_ID, id)
-                        .with(AppMenuItemProperties.TITLE, mContext.getString(titleId))
+                        .with(AppMenuItemProperties.TITLE, title)
                         .with(AppMenuItemProperties.ENABLED, true)
                         .with(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(id))
                         .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
@@ -863,6 +877,16 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
     @Override
     public @Nullable Bundle getBundleForMenuItem(PropertyModel model) {
+        if (model.containsKey(AppMenuBookmarkItemProperties.BOOKMARK_ID)) {
+            BookmarkId bookmarkId = model.get(AppMenuBookmarkItemProperties.BOOKMARK_ID);
+            if (bookmarkId != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString(
+                        AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY,
+                        bookmarkId.toString());
+                return bundle;
+            }
+        }
         return null;
     }
 

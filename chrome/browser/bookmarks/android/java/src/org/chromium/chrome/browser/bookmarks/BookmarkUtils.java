@@ -733,6 +733,30 @@ public class BookmarkUtils {
         return UrlUtilities.isHttpOrHttps(url);
     }
 
+    /**
+     * Gets the full list of top-level desktop BookmarkIds. This combines all account desktop
+     * bookmarks followed by the local desktop bookmarks, as both should be surfaced together in
+     * desktop-aligned UI surfaces.
+     *
+     * @param bookmarkModel The bookmark model to query.
+     * @return A list of BookmarkIds combining account and local desktop folders.
+     */
+    public static List<BookmarkId> getDesktopBookmarkIds(BookmarkModel bookmarkModel) {
+        List<BookmarkId> bookmarkIds = new ArrayList<>();
+
+        BookmarkId accountDesktopFolderId = bookmarkModel.getAccountDesktopFolderId();
+        if (accountDesktopFolderId != null) {
+            bookmarkIds.addAll(bookmarkModel.getChildIds(accountDesktopFolderId));
+        }
+
+        BookmarkId localFolderId = bookmarkModel.getDesktopFolderId();
+        if (localFolderId != null) {
+            bookmarkIds.addAll(bookmarkModel.getChildIds(localFolderId));
+        }
+
+        return bookmarkIds;
+    }
+
     private static Locale getLocale(Activity activity) {
         LocaleList locales = activity.getResources().getConfiguration().getLocales();
         if (locales.size() > 0) {

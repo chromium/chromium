@@ -32,6 +32,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuBookmarkItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -68,6 +70,8 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.lens.LensOverlayTabHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomMenuItemCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomProperties;
@@ -95,6 +99,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 /** An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity. */
 @NullMarked
@@ -753,10 +758,31 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildBookmarksParentItem() {
         assert shouldShowBookmarksParentItem();
 
-        List<ListItem> submenuItems = new ArrayList<>();
-        submenuItems.add(buildBookmarksItem());
-        submenuItems.add(buildBookmarkThisPageItem());
-        submenuItems.add(buildToggleBookmarksBarItem());
+        Supplier<List<ListItem>> submenuItemsSupplier =
+                () -> {
+                    List<ListItem> submenuItems = new ArrayList<>();
+
+                    submenuItems.add(buildBookmarksItem());
+                    submenuItems.add(buildBookmarkThisPageItem());
+                    submenuItems.add(buildToggleBookmarksBarItem());
+
+                    BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
+                    if (bookmarkModel != null && bookmarkModel.isBookmarkModelLoaded()) {
+                        List<ListItem> bookmarksBarItems =
+                                getBookmarkItemList(
+                                        BookmarkUtils.getDesktopBookmarkIds(bookmarkModel),
+                                        bookmarkModel);
+                        if (bookmarksBarItems.size() > 0) {
+                            submenuItems.add(
+                                    new ListItem(
+                                            AppMenuHandler.AppMenuItemType.DIVIDER,
+                                            buildModelForDivider(R.id.divider_line_id)));
+                            submenuItems.addAll(bookmarksBarItems);
+                        }
+                    }
+
+                    return submenuItems;
+                };
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
@@ -766,7 +792,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_star_filled_24dp
                                 : Resources.ID_NULL,
-                        () -> submenuItems));
+                        submenuItemsSupplier));
     }
 
     private ListItem buildToggleBookmarksBarItem() {
@@ -779,6 +805,51 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 ? R.string.menu_hide_bookmarks_bar
                                 : R.string.menu_show_bookmarks_bar,
                         shouldShowIconBeforeItem() ? R.drawable.ic_toolbar_24dp : 0));
+    }
+
+    private List<ListItem> getBookmarkItemList(List<BookmarkId> ids, BookmarkModel bookmarkModel) {
+        List<ListItem> submenuItems = new ArrayList<>();
+        for (BookmarkId id : ids) {
+            BookmarkItem item = bookmarkModel.getBookmarkById(id);
+            if (item != null) {
+                submenuItems.add(buildBookmarkListItem(item, bookmarkModel));
+            }
+        }
+        return submenuItems;
+    }
+
+    private ListItem buildBookmarkListItem(BookmarkItem item, BookmarkModel bookmarkModel) {
+        if (item.isFolder()) {
+            return new ListItem(
+                    AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                    buildModelForMenuItemWithSubmenu(
+                            R.id.bookmark_folder_menu_id,
+                            item.getTitle(),
+                            shouldShowIconBeforeItem()
+                                    ? R.drawable.ic_folder_outline_24dp
+                                    : Resources.ID_NULL,
+                            () ->
+                                    getBookmarkItemList(
+                                            bookmarkModel.getChildIds(item.getId()),
+                                            bookmarkModel)));
+        } else {
+            PropertyModel model =
+                    populateBaseModelForTextItem(
+                                    new PropertyModel.Builder(
+                                            AppMenuBookmarkItemProperties.ALL_KEYS),
+                                    R.id.bookmark_menu_id)
+                            .with(AppMenuItemProperties.TITLE, item.getTitle())
+                            .with(AppMenuBookmarkItemProperties.BOOKMARK_ID, item.getId())
+                            .with(
+                                    AppMenuItemProperties.ICON,
+                                    AppCompatResources.getDrawable(
+                                            mContext,
+                                            shouldShowIconBeforeItem()
+                                                    ? R.drawable.ic_star_24dp
+                                                    : Resources.ID_NULL))
+                            .build();
+            return new ListItem(AppMenuHandler.AppMenuItemType.BOOKMARK, model);
+        }
     }
 
     private ListItem buildBookmarksItem() {

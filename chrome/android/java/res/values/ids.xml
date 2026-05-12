@@ -158,6 +158,8 @@ found in the LICENSE file.
     <item type="id" name="divider_line_id" />
     <item type="id" name="open_history_menu_id" />
     <item type="id" name="history_parent_menu_id" />
+    <item type="id" name="bookmark_menu_id" />
+    <item type="id" name="bookmark_folder_menu_id" />
     <item type="id" name="quick_delete_menu_id" />
     <item type="id" name="quick_delete_divider_line_id" />
     <item type="id" name="page_info_divider_line_id" />
