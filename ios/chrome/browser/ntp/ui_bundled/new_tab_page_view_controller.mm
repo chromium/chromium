@@ -308,6 +308,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
+  [self updateHeightAboveFeed];
+
   // `-feedLayoutDidEndUpdates` handles the need to either scroll to the top of
   // go back to a previous scroll state when the feed is enabled. This handles
   // the instance when the feed is not enabled.
@@ -333,8 +335,6 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   if (self.feedVisible) {
     [self updateFeedInsetsForMinimumHeight];
-  } else {
-    [self setMinimumHeight];
   }
 
   if (self.feedVisible &&
