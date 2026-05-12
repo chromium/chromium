@@ -1584,11 +1584,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "cct-toolbar-refactor",
-    "owners": ["sinansahin@google.com", "chrome-connective-tissue@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "cellular-bypass-esim-installation-connectivity-check",
     "owners": [ "khorimoto@chromium.org", "jiajunz@chromium.org", "cros-device-enablement@google.com" ],
     // This flag does not expire because it allows some test cases that host a local SM-DP+ server

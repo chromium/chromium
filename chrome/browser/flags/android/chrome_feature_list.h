@@ -130,7 +130,6 @@ BASE_DECLARE_FEATURE(kCCTResetTimeoutEnabled);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
 BASE_DECLARE_FEATURE(kCCTTabModalDialog);
-BASE_DECLARE_FEATURE(kCCTToolbarRefactor);
 BASE_DECLARE_FEATURE(kCacheActivityTaskID);
 BASE_DECLARE_FEATURE(kCacheDeprecatedSystemLocationSetting);
 BASE_DECLARE_FEATURE(kCacheIsMultiInstanceApi31Enabled);

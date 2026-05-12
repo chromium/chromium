@@ -5514,9 +5514,6 @@ inline constexpr char kCCTResizableForThirdPartiesName[] =
 inline constexpr char kCCTResizableForThirdPartiesDescription[] =
     "Enable bottom sheet Custom Tabs for third party apps.";
 
-inline constexpr char kCCTToolbarRefactorName[] = "CCT Toolbar Refactor";
-inline constexpr char kCCTToolbarRefactorDescription[] = "CCT Toolbar Refactor";
-
 inline constexpr char kChangeUnfocusedPriorityName[] =
     "Change Unfocused Priority";
 inline constexpr char kChangeUnfocusedPriorityDescription[] =

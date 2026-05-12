@@ -357,7 +357,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_RESET_TIMEOUT_ENABLED = "CCTResetTimeoutEnabled";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
-    public static final String CCT_TOOLBAR_REFACTOR = "CCTToolbarRefactor";
     public static final String CHANGE_UNFOCUSED_PRIORITY = "ChangeUnfocusedPriority";
     public static final String CHROME_FINDS = "ChromeFinds";
     public static final String CHROME_ITEM_PICKER_UI = "ChromeItemPickerUi";
@@ -892,7 +891,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
-    public static final CachedFlag sCctToolbarRefactor = newCachedFlag(CCT_TOOLBAR_REFACTOR, true);
     public static final CachedFlag sChromeItemPickerUi =
             newCachedFlag(CHROME_ITEM_PICKER_UI, /* defaultValue= */ false);
     public static final CachedFlag sChromeNativeUrlOverriding =
@@ -1295,7 +1293,6 @@ public abstract class ChromeFeatureList {
                     sCctResetTimeoutEnabled,
                     sCctResizableForThirdParties,
                     sCctTabModalDialog,
-                    sCctToolbarRefactor,
                     sChromeItemPickerUi,
                     sChromeNativeUrlOverriding,
                     sClampAutomotiveScaling,
