@@ -47,13 +47,9 @@ BlobGenerationResult GenerateAttestationBlob(std::string_view flow_name,
     ScopedJavaLocalRef<jobject> generation_result =
         Java_AttestationBlobGenerator_generate(
             env, base::android::ConvertUTF8ToJavaString(env, flow_name),
-            base::android::ConvertUTF8ToJavaString(
-                env, GetHashString(base::StringPrintf(
-                         kReportRequestHashKey, hashes.request_hash,
-                         hashes.timestamp_hash, hashes.nonce_hash))),
-            base::android::ConvertUTF8ToJavaString(env,
-                                                   GetHashString(timestamp)),
-            base::android::ConvertUTF8ToJavaString(env, GetHashString(nonce)));
+            base::android::ConvertUTF8ToJavaString(env, hashes.request_hash),
+            base::android::ConvertUTF8ToJavaString(env, hashes.timestamp_hash),
+            base::android::ConvertUTF8ToJavaString(env, hashes.nonce_hash));
 
     return {base::android::ConvertJavaStringToUTF8(
                 env, Java_BlobGenerationResult_getAttestationBlob(
