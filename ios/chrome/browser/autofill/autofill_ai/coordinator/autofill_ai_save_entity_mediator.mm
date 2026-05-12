@@ -63,7 +63,8 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
 
   if (_params && !_params->callback.is_null()) {
     std::move(_params->callback)
-        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown, {});
+        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown,
+             std::nullopt, {});
   }
   _params = std::nullopt;
   _consumer = nil;
@@ -94,7 +95,8 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
 - (void)cancelSaving {
   if (_params && !_params->callback.is_null()) {
     std::move(_params->callback)
-        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kCancelled, {});
+        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kCancelled,
+             std::nullopt, {});
   }
   [self.autofillHandler dismissSaveEntityDialog];
 }
@@ -139,11 +141,13 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
   if ([self isSaveToWallet]) {
     std::move(_params->callback)
         .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted,
+             std::nullopt,
              {autofill::GetSaveToWalletSubtitleStringId(),
               autofill::GetSaveEntityAcceptButtonStringId()});
   } else {
     std::move(_params->callback)
-        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted, {});
+        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted,
+             std::nullopt, {});
   }
 }
 

@@ -263,8 +263,13 @@ class AutofillClient {
     // accepted the bubble.
     std::optional<int> accept_button_string_id;
   };
+  // Callback to run when the user makes a decision on whether to save the
+  // entity. If the user edits the entity and then accepts edits, the edited
+  // version of the entity should be passed as the second parameter. No entity
+  // is passed otherwise.
   using EntityImportPromptResultCallback =
       base::OnceCallback<void(AutofillAiBubbleResult result,
+                              base::optional_ref<const EntityInstance> entity,
                               const EntityImportUIContext& ui_context)>;
 
   // The types of prompts that AutofillAi can show to the user after a form

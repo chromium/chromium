@@ -166,9 +166,10 @@ void AutofillAiSaveUpdateEntityPromptController::RunPromptClosedCallback(
     AutofillClient::AutofillAiBubbleResult result) {
   if (prompt_result_callback_) {
     std::move(prompt_result_callback_)
-        .Run(result, result == AutofillClient::AutofillAiBubbleResult::kAccepted
-                         ? ui_context_
-                         : AutofillClient::EntityImportUIContext{});
+        .Run(result, std::nullopt,
+             result == AutofillClient::AutofillAiBubbleResult::kAccepted
+                 ? ui_context_
+                 : AutofillClient::EntityImportUIContext{});
   }
 }
 

@@ -103,7 +103,8 @@ void AutofillAiImportDataControllerImpl::ShowPrompt(
   if (bubble_view() || !MaySetUpBubble()) {
     if (!prompt_result_callback.is_null()) {
       std::move(prompt_result_callback)
-          .Run(AutofillClient::AutofillAiBubbleResult::kUnknown, {});
+          .Run(AutofillClient::AutofillAiBubbleResult::kUnknown, std::nullopt,
+               {});
     }
     return;
   }
@@ -129,7 +130,7 @@ void AutofillAiImportDataControllerImpl::OnSaveButtonClicked() {
     OnBubbleClosed(AutofillClient::AutofillAiBubbleResult::kAccepted);
   } else if (!GetSaveUpdateState().prompt_result_callback.is_null()) {
     std::move(GetSaveUpdateState().prompt_result_callback)
-        .Run(AutofillClient::AutofillAiBubbleResult::kAccepted,
+        .Run(AutofillClient::AutofillAiBubbleResult::kAccepted, std::nullopt,
              {GetNoticeStringId(), GetPrimaryButtonTextId(IsSavePrompt())});
   }
 }
@@ -308,7 +309,8 @@ void AutofillAiImportDataControllerImpl::MaybeRunSaveUpdateCallback(
     AutofillClient::AutofillAiBubbleResult result) {
   if (IsSaveUpdatePrompt() &&
       !GetSaveUpdateState().prompt_result_callback.is_null()) {
-    std::move(GetSaveUpdateState().prompt_result_callback).Run(result, {});
+    std::move(GetSaveUpdateState().prompt_result_callback)
+        .Run(result, std::nullopt, {});
   }
 }
 

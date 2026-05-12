@@ -390,7 +390,11 @@ void AutofillAiManager::HandlePromptResult(
     ukm::SourceId ukm_source_id,
     AutofillClient::AutofillAiImportPromptType prompt_type,
     AutofillClient::AutofillAiBubbleResult result,
+    base::optional_ref<const EntityInstance> edited_entity,
     const AutofillClient::EntityImportUIContext& ui_context) {
+  if (edited_entity) {
+    entity = *edited_entity;
+  }
   logger_.OnImportPromptResult(form, prompt_type, entity.type(),
                                entity.record_type(), result, ukm_source_id);
   EntityDataManager& entity_manager =

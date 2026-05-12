@@ -8,6 +8,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -191,6 +192,7 @@ class AutofillAiManager {
       ukm::SourceId ukm_source_id,
       AutofillClient::AutofillAiImportPromptType prompt_type,
       AutofillClient::AutofillAiBubbleResult result,
+      base::optional_ref<const EntityInstance> edited_entity,
       const AutofillClient::EntityImportUIContext& ui_context);
 
   // Handles the fallback UI and storage logic when a Wallet save is

@@ -615,7 +615,8 @@ void ChromeAutofillClientIOS::ShowEntityImportBubble(
   // Enhanced Autofill is only available to signed-in users.
   std::optional<std::u16string> user_email = GetUserEmail();
   if (!user_email.has_value()) {
-    std::move(prompt_result_callback).Run(AutofillAiBubbleResult::kUnknown, {});
+    std::move(prompt_result_callback)
+        .Run(AutofillAiBubbleResult::kUnknown, std::nullopt, {});
     return;
   }
 
