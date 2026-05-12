@@ -894,9 +894,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("ServiceWorkerAvoidMainThreadForInitialization"),
         Flag.baseFeature("DirectCompositorThreadIpc"),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_WEBAUTHN,
-                "Enable WebAuthn setWebAuthenticationSupport / getWebAuthenticationSupport APIs."),
-        Flag.baseFeature(
                 BlinkFeatures.BF_CACHE_OPEN_BROADCAST_CHANNEL,
                 "Start putting pages with broadcast channel into bfcache."),
         Flag.baseFeature(

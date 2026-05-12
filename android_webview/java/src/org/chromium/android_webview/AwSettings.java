@@ -2396,7 +2396,7 @@ public class AwSettings {
 
     public void setWebauthnSupport(@WebauthnMode int support) {
         synchronized (mAwSettingsLock) {
-            if (mWebauthnMode != support && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_WEBAUTHN)) {
+            if (mWebauthnMode != support) {
                 mWebauthnMode = support;
                 mEventHandler.updateWebkitPreferencesLocked();
                 WebauthnModeProvider.getInstance()
@@ -2409,9 +2409,7 @@ public class AwSettings {
     public @WebauthnMode int getWebauthnSupportLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         // TODO(crbug.com/40210253): Consider supporting a NOT_SUPPORTED case.
-        return AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_WEBAUTHN)
-                ? mWebauthnMode
-                : WebauthnMode.NONE;
+        return mWebauthnMode;
     }
 
     public int getWebauthnSupport() {

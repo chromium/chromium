@@ -141,8 +141,6 @@ BASE_FEATURE(kWebViewHyperlinkContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCreateSpareRendererOnBrowserContextCreation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch for WebAuthn usage in WebViews.
-BASE_FEATURE(kWebViewWebauthn, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This enables RenderDocument in WebView. Note that this will only take effect
 // iff both this feature flag and the content/public kRenderDocument flag is
