@@ -4,6 +4,8 @@
 
 #include "services/audio/public/cpp/sounds/test_data.h"
 
+#include <atomic>
+
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_bus.h"
 
@@ -26,13 +28,13 @@ void TestObserver::Initialize(
 
 void TestObserver::OnPlay() {
   ++num_play_requests_;
-  is_playing = true;
+  is_playing_.store(true);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TestObserver::Render, base::Unretained(this)));
 }
 
 void TestObserver::Render() {
-  if (!is_playing) {
+  if (!is_playing_.load()) {
     return;
   }
   if (callback_->Render(base::Seconds(0), base::TimeTicks::Now(), {},
@@ -44,7 +46,7 @@ void TestObserver::Render() {
 
 void TestObserver::OnStop() {
   ++num_stop_requests_;
-  is_playing = false;
+  is_playing_.store(false);
   task_runner_->PostTask(FROM_HERE, quit_);
 }
 

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <atomic>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -52,7 +53,9 @@ class TestObserver : public AudioStreamHandler::TestObserver {
 
   int num_play_requests_;
   int num_stop_requests_;
-  int is_playing;
+  // Whether the audio stream is playing. This can be set and read from
+  // different threads.
+  std::atomic<bool> is_playing_;
   raw_ptr<media::AudioRendererSink::RenderCallback> callback_;
   std::unique_ptr<media::AudioBus> bus_;
 };
