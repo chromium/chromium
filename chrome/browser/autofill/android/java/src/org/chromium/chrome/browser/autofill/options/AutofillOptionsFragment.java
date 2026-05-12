@@ -34,7 +34,6 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Set;
 
 /** Autofill options fragment, which allows the user to configure autofill. */
 @NullMarked
@@ -262,12 +261,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                                     getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
                         }
                     }
-                }
-
-                @Override
-                public Set<String> getIgnoredKeys() {
-                    return Set.of(
-                            PREF_AUTOFILL_AI_CATEGORY, PREF_AUTOFILL_SERVICE_PROVIDER_CETEGORY);
                 }
             };
 }

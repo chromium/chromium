@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.settings;
 
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -14,14 +13,10 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.search.ChromeSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.browser_ui.settings.search.SearchIndexValidator;
-
-import java.util.HashMap;
 
 /**
  * Base class for settings in Chrome.
@@ -89,30 +84,6 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
      */
     public SettingsCustomTabLauncher getCustomTabLauncher() {
         return mCustomTabLauncher;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (!BuildConfig.ENABLE_ASSERTS) return;
-
-        // Skip validation if the profile is not yet initialized (common in some unit tests).
-        if (mProfile == null) return;
-
-        SearchIndexValidator.validateSearchIndex(
-                this,
-                (provider, indexData) -> {
-                    if (provider instanceof ChromeSearchIndexProvider) {
-                        ChromeSearchIndexProvider chromeProvider =
-                                (ChromeSearchIndexProvider) provider;
-                        chromeProvider.initPreferenceXml(
-                                getContext(), mProfile, indexData, new HashMap<>());
-                        chromeProvider.updateDynamicPreferences(getContext(), indexData, mProfile);
-                    } else {
-                        provider.initPreferenceXml(getContext(), indexData, new HashMap<>());
-                        provider.updateDynamicPreferences(getContext(), indexData);
-                    }
-                });
     }
 
     /** Notifies the observer that the preferences have been updated. */

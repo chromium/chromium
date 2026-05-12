@@ -31,7 +31,6 @@ import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.search.PreferenceParser;
-import org.chromium.components.browser_ui.settings.search.SearchIndexValidator;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -96,12 +95,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        SearchIndexValidator.validateSearchIndex(this);
-    }
 
     @EnsuresNonNull("mDelegate")
     public void setDelegate(AccessibilitySettingsDelegate delegate) {

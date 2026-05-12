@@ -13,7 +13,6 @@ import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.search.SearchIndexValidator;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 
 /** Preference fragment for showing the Site Settings UI. */
@@ -43,12 +42,6 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
     /** @return Whether a SiteSettingsDelegate instance has been assigned to this Fragment. */
     public boolean hasSiteSettingsDelegate() {
         return mSiteSettingsDelegate != null;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        SearchIndexValidator.validateSearchIndex(this);
     }
 
     @Override
