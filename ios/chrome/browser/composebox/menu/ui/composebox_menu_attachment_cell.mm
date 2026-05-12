@@ -30,7 +30,7 @@
 
 - (void)configureWithItem:(ComposeboxMenuItem*)item {
   _attachmentView.title = item.title;
-  _attachmentView.accessibilityLabel = item.title;
+  self.accessibilityLabel = item.title;
 
   self.accessibilityIdentifier =
       AccessibilityIdentifierForMenuItemType(item.type);

@@ -18,6 +18,7 @@ const CGFloat kHeaderLabelFontSize = 16.0f;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    self.accessibilityTraits |= UIAccessibilityTraitHeader;
     _label = [[UILabel alloc] init];
     _label.font = [UIFont systemFontOfSize:kHeaderLabelFontSize
                                     weight:UIFontWeightBold];

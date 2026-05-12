@@ -612,6 +612,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
       [cell defaultContentConfiguration];
   configuration.text = item.title;
   configuration.image = item.image;
+  cell.accessibilityLabel = item.title;
 
   if (item.disabled) {
     configuration.textProperties.color =
@@ -651,8 +652,10 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     UICellAccessoryCheckmark* checkmark =
         [[UICellAccessoryCheckmark alloc] init];
     cell.accessories = @[ checkmark ];
+    cell.accessibilityTraits |= UIAccessibilityTraitSelected;
   } else {
     cell.accessories = @[];
+    cell.accessibilityTraits &= ~UIAccessibilityTraitSelected;
   }
   cell.accessibilityIdentifier =
       AccessibilityIdentifierForMenuItemType(item.type);
