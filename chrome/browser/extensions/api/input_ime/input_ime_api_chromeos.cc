@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -152,7 +153,7 @@ input_ime::AssistiveWindowType ConvertAssistiveWindowType(
 }
 
 std::string GetKeyFromEvent(const ui::KeyEvent& event) {
-  const std::string code = event.GetCodeString();
+  std::string code = event.GetCodeString();
   if (base::StartsWith(code, "Control", base::CompareCase::SENSITIVE)) {
     return "Ctrl";
   }
@@ -163,7 +164,8 @@ std::string GetKeyFromEvent(const ui::KeyEvent& event) {
     return "Alt";
   }
   if (base::StartsWith(code, "Arrow", base::CompareCase::SENSITIVE)) {
-    return code.substr(5);
+    code.erase(0, 5);
+    return code;
   }
   if (code == "Escape") {
     return "Esc";
@@ -206,7 +208,7 @@ std::string GetKeyFromEvent(const ui::KeyEvent& event) {
     default:
       break;
   }
-  uint16_t ch = 0;
+  char16_t ch;
   // Ctrl+? cases, gets key value for Ctrl is not down.
   if (event.flags() & ui::EF_CONTROL_DOWN) {
     ui::KeyEvent event_no_ctrl(event.type(), event.key_code(),
@@ -215,7 +217,7 @@ std::string GetKeyFromEvent(const ui::KeyEvent& event) {
   } else {
     ch = event.GetCharacter();
   }
-  return base::UTF16ToUTF8(std::u16string(1, ch));
+  return base::UTF16ToUTF8(std::u16string_view(&ch, 1));
 }
 // TODO(b/247441188): Change the input extension JS API to use
 // PersonalizationMode instead of a bool.
@@ -725,9 +727,9 @@ class ImeObserverChromeOS
            mode != ash::SpellcheckMode::kDisabled;
   }
 
-  std::string ConvertInputContextMode(
+  std::string_view ConvertInputContextMode(
       TextInputMethod::InputContext input_context) {
-    std::string input_mode_type = "none";  // default to nothing
+    std::string_view input_mode_type = "none";  // default to nothing
     switch (input_context.mode) {
       case ui::TEXT_INPUT_MODE_SEARCH:
         input_mode_type = "search";
@@ -760,9 +762,9 @@ class ImeObserverChromeOS
     return input_mode_type;
   }
 
-  std::string ConvertInputContextType(
+  std::string_view ConvertInputContextType(
       TextInputMethod::InputContext input_context) {
-    std::string input_context_type = "text";
+    std::string_view input_context_type = "text";
     switch (input_context.type) {
       case ui::TEXT_INPUT_TYPE_SEARCH:
         input_context_type = "search";
@@ -873,8 +875,8 @@ bool InputImeEventRouter::RegisterImeExtension(
       const std::string& layout =
           component.layouts.empty() ? "us" : *component.layouts.begin();
 
-      std::vector<std::string> languages;
-      languages.assign(component.languages.begin(), component.languages.end());
+      std::vector<std::string> languages = {component.languages.begin(),
+                                            component.languages.end()};
 
       const std::string& input_method_id =
           ash::extension_ime_util::GetInputMethodID(extension_id, component.id);
