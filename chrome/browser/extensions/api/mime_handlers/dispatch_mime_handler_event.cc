@@ -17,6 +17,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/generic_mime_handler_stream_delegate.h"
+#include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/constants.h"
@@ -39,7 +40,8 @@ void SendExecuteMimeTypeHandlerEvent(
     blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
     const GURL& original_url,
     const std::string& internal_id,
-    const std::string& mime_type) {
+    const std::string& mime_type,
+    scoped_refptr<MimeHandlerBodyCache> body_cache) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* web_contents =
@@ -85,6 +87,9 @@ void SendExecuteMimeTypeHandlerEvent(
   std::unique_ptr<StreamContainer> stream_container(
       new StreamContainer(tab_id, embedded, handler_url, extension_id,
                           std::move(transferrable_loader), original_url));
+  if (body_cache) {
+    stream_container->SetBodyCache(std::move(body_cache));
+  }
 
 #if BUILDFLAG(ENABLE_PDF)
   if (chrome_pdf::features::IsOopifPdfEnabled() &&

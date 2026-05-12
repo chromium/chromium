@@ -97,6 +97,7 @@ source_set("impl") {
       "//extensions/browser/mime_handler",
       "//extensions/browser/mime_handler:mime_handler_page",
       "//extensions/browser/mime_handler:mime_handler_registry",
+      "//extensions/browser/mime_handler:stream_container",
       "//extensions/common",
       "//mojo/public/cpp/bindings",
       "//pdf:features",

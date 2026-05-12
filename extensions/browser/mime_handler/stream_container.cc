@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 #include "net/http/http_response_headers.h"
 
 namespace extensions {
@@ -36,6 +37,17 @@ base::WeakPtr<StreamContainer> StreamContainer::GetWeakPtr() {
 blink::mojom::TransferrableURLLoaderPtr
 StreamContainer::TakeTransferrableURLLoader() {
   return std::move(transferrable_loader_);
+}
+
+void StreamContainer::SetBodyCache(scoped_refptr<MimeHandlerBodyCache> cache) {
+  body_cache_ = std::move(cache);
+}
+
+mojo::ScopedDataPipeConsumerHandle StreamContainer::GetFallbackDataPipe() {
+  if (body_cache_ && body_cache_->is_complete()) {
+    return body_cache_->CreatePipe();
+  }
+  return mojo::ScopedDataPipeConsumerHandle();
 }
 
 }  // namespace extensions

@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "mime_handler_registry_unittest.cc",
     "mime_handler_stream_delegate_unittest.cc",
     "mime_handler_stream_manager_unittest.cc",
+    "stream_container_unittest.cc",
   ]
   deps = [
     ":mime_handler",
@@ -94,6 +95,7 @@ source_set("unit_tests") {
     "//extensions/browser",
     "//extensions/common",
     "//mojo/public/cpp/system",
+    "//services/network/public/mojom:url_loader_base",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/mojom:mojom_platform_headers",
