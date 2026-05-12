@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   if (IsImmersiveEnabled()) {
     auto* controller =
         ReadAnythingController::From(browser()->GetActiveTabInterface());
-    controller->TogglePresentation();
+    controller->TogglePresentation(/*is_user_initiated=*/true);
   }
   ReadAnythingEntryPointController::ResetCheckCountForTesting();
 

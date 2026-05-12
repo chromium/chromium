@@ -1099,7 +1099,7 @@ void ReadAnythingUntrustedPageHandler::SendPinStateRequest() {
 void ReadAnythingUntrustedPageHandler::TogglePresentation() {
   if (features::IsImmersiveReadAnythingEnabled()) {
     CHECK(read_anything_controller_);
-    read_anything_controller_->TogglePresentation();
+    read_anything_controller_->TogglePresentation(/*is_user_initiated=*/true);
   }
 }
 

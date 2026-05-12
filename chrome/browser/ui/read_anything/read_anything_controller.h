@@ -145,7 +145,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   void ToggleUI(ReadAnythingOpenTrigger trigger);
 
   // Toggles between the Immersive Reading Mode UI and the Side Panel UI.
-  void TogglePresentation(bool is_user_initiated = true);
+  void TogglePresentation(bool is_user_initiated);
 
   // Returns the current presentation_state_ of the Reading Mode feature. This
   // refers to the current host of the WebUI, but does not guarantee that the

@@ -1470,7 +1470,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kInImmersiveOverlay);
 
   // Toggle Presentation
-  controller->TogglePresentation();
+  controller->TogglePresentation(/*is_user_initiated=*/true);
 
   // Verify Immersive UI is closed and Side Panel is open
   AssertOverlayVisibility(/*visible=*/false);
@@ -1500,7 +1500,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kInSidePanel);
 
   // Toggle Presentation
-  controller->TogglePresentation();
+  controller->TogglePresentation(/*is_user_initiated=*/true);
 
   // Verify Side Panel is closed and Immersive UI is open
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1530,7 +1530,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kInSidePanel);
 
   // Toggle Presentation
-  controller->TogglePresentation();
+  controller->TogglePresentation(/*is_user_initiated=*/true);
 
   // Verify still closed
   AssertOverlayVisibility(/*visible=*/false);
@@ -2541,7 +2541,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
 
   // 3. Toggle to Side Panel.
-  controller->TogglePresentation();
+  controller->TogglePresentation(/*is_user_initiated= */ true);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
@@ -2575,7 +2575,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
   // 8. Toggle back to Immersive.
-  controller->TogglePresentation();
+  controller->TogglePresentation(/*is_user_initiated=*/true);
   AwaitAndAssertOverlayVisibility(/*visible=*/true);
   EXPECT_EQ(
       controller->GetPresentationState(),
