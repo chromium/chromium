@@ -6235,11 +6235,6 @@ inline constexpr char kEnableMediaLinkHelpersName[] = "Media Link Helpers";
 inline constexpr char kEnableMediaLinkHelpersDescription[] =
     "Enable customized per-site media link processing.";
 
-inline constexpr char kEnableCrOSSodaConchLanguagesName[] =
-    "SODA Conch Languages.";
-inline constexpr char kEnableCrOSSodaConchLanguagesDescription[] =
-    "Enable Conch specific SODA language models.";
-
 inline constexpr char kEnableShouldShowPromotionName[] =
     "Enable Chrome Web Store Promotion Banner";
 inline constexpr char kEnableShouldShowPromotionDescription[] =

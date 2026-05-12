@@ -140,8 +140,7 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
   available_languages.insert({"nl-NL", {"", LanguageCode::kNlNl}});
   available_languages.insert({"sv-SE", {"", LanguageCode::kSvSe}});
 
-  if (base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages) &&
-      base::FeatureList::IsEnabled(kCrosSodaConchLanguages)) {
+  if (base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages)) {
     available_languages["da-DK"] = {"libsoda-model-da-dk-cnch24d3",
                                     LanguageCode::kDaDk};
     available_languages["de-AT"] = {"libsoda-model-de-at-cnch24d3",
@@ -193,7 +192,6 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
     available_languages["sv-SE"] = {"libsoda-model-sv-se-cnch24d3",
                                     LanguageCode::kSvSe};
   }
-
 
   // Remove empty.
   base::EraseIf(available_languages,
@@ -336,8 +334,7 @@ std::vector<std::string>
 SodaInstallerImplChromeOS::GetLiveCaptionEnabledLanguages() const {
   auto enabled_languages = SodaInstaller::GetLiveCaptionEnabledLanguages();
   // extra CrOS languages.
-  if (base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages) &&
-      base::FeatureList::IsEnabled(kCrosSodaConchLanguages)) {
+  if (base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages)) {
     for (const char* const enabled_language : kDefaultCrOSEnabledLanguages) {
       enabled_languages.push_back(enabled_language);
     }

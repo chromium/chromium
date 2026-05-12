@@ -7480,13 +7480,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHeadlessCaptionEarlyStartDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kHeadlessCaptionEarlyStart)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"enable-chromeos-soda-conch",
-     flag_descriptions::kEnableCrOSSodaConchLanguagesName,
-     flag_descriptions::kEnableCrOSSodaConchLanguagesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(speech::kCrosSodaConchLanguages)},
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
     {"enable-input-protection", flag_descriptions::kEnableInputProtectionName,

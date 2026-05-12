@@ -213,9 +213,7 @@ TEST_F(SodaInstallerImplChromeOSTest, SubSetCorrect) {
 TEST_F(SodaInstallerImplChromeOSTest, ConchAddOns) {
   base::test::ScopedFeatureList scoped_feature_list_internal;
   scoped_feature_list_internal.InitWithFeatures(
-      {::speech::kCrosSodaConchLanguages,
-       ::speech::kFeatureManagementCrosSodaConchLanguages},
-      {});
+      {::speech::kFeatureManagementCrosSodaConchLanguages}, {});
   auto expected_livecaption_langs =
       GetInstance()->GetLiveCaptionEnabledLanguages();
   EXPECT_THAT(expected_livecaption_langs,
@@ -225,9 +223,7 @@ TEST_F(SodaInstallerImplChromeOSTest, ConchAddOns) {
 TEST_F(SodaInstallerImplChromeOSTest, ConchInLiveCaptionFullList) {
   base::test::ScopedFeatureList scoped_feature_list_internal;
   scoped_feature_list_internal.InitWithFeatures(
-      {::speech::kCrosSodaConchLanguages,
-       ::speech::kFeatureManagementCrosSodaConchLanguages},
-      {});
+      {::speech::kFeatureManagementCrosSodaConchLanguages}, {});
   soda_installer_impl_.reset();
   soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
   std::vector<std::string> enabled_and_available_languages;

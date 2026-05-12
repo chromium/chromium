@@ -3080,11 +3080,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "enable-chromeos-soda-conch",
-    "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
-    "expiry_milestone": 149
-  },
-  {
     "name": "enable-client-certificate-provisioning-on-android",
     "owners": [ "eliashomsi@google.com", "cbe-cep-eng@google.com" ],
     "expiry_milestone": 145
