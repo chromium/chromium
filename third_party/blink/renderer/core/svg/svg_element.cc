@@ -493,7 +493,7 @@ bool SVGElement::InUseShadowTree() const {
 }
 
 void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
-  // SVGElement and HTMLElement are handling "nonce" the same way.
+  // SVGElement, HTMLElement and MathMLElement handle "nonce" the same way.
   if (params.name == html_names::kNonceAttr) {
     if (params.new_value != g_empty_atom)
       setNonce(params.new_value);

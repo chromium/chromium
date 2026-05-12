@@ -25,6 +25,13 @@ MathMLElement::MathMLElement(const QualifiedName& tagName,
 
 MathMLElement::~MathMLElement() {}
 
+Node::InsertionNotificationRequest MathMLElement::InsertedInto(
+    ContainerNode& root_parent) {
+  Element::InsertedInto(root_parent);
+  HideNonce();
+  return kInsertionDone;
+}
+
 static inline bool IsValidDirAttribute(const AtomicString& value) {
   return EqualIgnoringAsciiCase(value, "ltr") ||
          EqualIgnoringAsciiCase(value, "rtl");
@@ -120,6 +127,13 @@ void MathMLElement::CollectStyleForPresentationAttribute(
 }
 
 void MathMLElement::ParseAttribute(const AttributeModificationParams& param) {
+  // MathMLElement, HTMLElement and SVGElement handle "nonce" the same way.
+  if (param.name == html_names::kNonceAttr) {
+    if (param.new_value != g_empty_atom) {
+      setNonce(param.new_value);
+    }
+  }
+
   const AtomicString& event_name =
       HTMLElement::EventNameForAttributeName(param.name);
   if (!event_name.IsNull()) {

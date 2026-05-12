@@ -41,6 +41,8 @@ class CORE_EXPORT MathMLElement : public Element {
   virtual bool IsGroupingElement() const { return false; }
 
  protected:
+  InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
