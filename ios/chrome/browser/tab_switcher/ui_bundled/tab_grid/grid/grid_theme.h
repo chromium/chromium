@@ -9,7 +9,9 @@
 // mode.
 enum class GridTheme {
   // Matches the device's light/dark mode.
-  kDynamic,
+  // Explicitly set to 1 to avoid colliding with zero-initialized Objective-C
+  // ivars (`_theme`), preventing "unset" states from appearing as `kDynamic`.
+  kDynamic = 1,
   // Always uses the dark appearance.
   kDark,
 };
