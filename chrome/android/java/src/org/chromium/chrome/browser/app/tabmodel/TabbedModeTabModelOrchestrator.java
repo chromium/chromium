@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -227,7 +229,12 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             // For multi-instance on Android S, this is a restart after the upgrade or fresh
             // installation. Allow merging tabs from CTA/CTA2 used by the previous version
             // if present.
-            return MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY) == 0;
+            return MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY) == 0
+                    && !ChromeSharedPreferences.getInstance()
+                            .readBoolean(
+                                    ChromePreferenceKeys
+                                            .TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION,
+                                    false);
         }
 
         // Merge tabs if this TabModelSelector is for a ChromeTabbedActivity created in
