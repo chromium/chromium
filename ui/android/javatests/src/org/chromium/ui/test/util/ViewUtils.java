@@ -26,7 +26,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -261,9 +260,7 @@ public class ViewUtils {
                 this.mContext = imageView.getContext();
                 Drawable background = imageView.getBackground();
                 if (!(background instanceof ColorDrawable)) return false;
-                int expectedColor =
-                        AppCompatResources.getColorStateList(mContext, colorResId)
-                                .getDefaultColor();
+                int expectedColor = mContext.getColorStateList(colorResId).getDefaultColor();
                 return ((ColorDrawable) background).getColor() == expectedColor;
             }
 

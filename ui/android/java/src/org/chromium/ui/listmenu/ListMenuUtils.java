@@ -27,7 +27,6 @@ import android.widget.ListView;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.CompoundButtonCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -274,7 +273,7 @@ public class ListMenuUtils {
     public static void applyTintToAllIcons(View view, @ColorRes int colorResId) {
         ColorStateList tintList =
                 colorResId != Resources.ID_NULL
-                        ? AppCompatResources.getColorStateList(view.getContext(), colorResId)
+                        ? view.getContext().getColorStateList(colorResId)
                         : null;
         applyTintToAllIcons(view, tintList);
     }

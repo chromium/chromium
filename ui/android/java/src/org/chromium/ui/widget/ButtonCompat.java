@@ -13,7 +13,6 @@ import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.StyleRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatButton;
 
 import org.chromium.build.annotations.NullMarked;
@@ -121,7 +120,7 @@ public class ButtonCompat extends AppCompatButton {
                 a.getResourceId(R.styleable.ButtonCompat_buttonTextColor, -1);
 
         if (textColorRes != -1) {
-            setTextColor(AppCompatResources.getColorStateList(getContext(), textColorRes));
+            setTextColor(getContext().getColorStateList(textColorRes));
         }
 
         float[] radii;

@@ -19,7 +19,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
 
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -174,8 +173,7 @@ public class RippleBackgroundHelper {
                 borderColorResId,
                 borderSizeDimenId,
                 verticalInset);
-        setStateLayerColor(
-                AppCompatResources.getColorStateList(view.getContext(), stateLayerColorResId));
+        setStateLayerColor(view.getContext().getColorStateList(stateLayerColorResId));
     }
 
     /**
@@ -198,17 +196,16 @@ public class RippleBackgroundHelper {
             @DimenRes int borderSizeDimenId,
             @Px int verticalInset) {
         mView = view;
-        mBorderColor = AppCompatResources.getColorStateList(view.getContext(), borderColorResId);
+        mBorderColor = view.getContext().getColorStateList(borderColorResId);
         mBorderWidth = view.getResources().getDimensionPixelSize(borderSizeDimenId);
         mView.setBackground(
                 createBackgroundDrawable(
-                        AppCompatResources.getColorStateList(view.getContext(), rippleColorResId),
+                        view.getContext().getColorStateList(rippleColorResId),
                         mBorderColor,
                         mBorderWidth,
                         cornerRadii,
                         verticalInset));
-        setBackgroundColor(
-                AppCompatResources.getColorStateList(view.getContext(), backgroundColorResId));
+        setBackgroundColor(view.getContext().getColorStateList(backgroundColorResId));
     }
 
     /**
