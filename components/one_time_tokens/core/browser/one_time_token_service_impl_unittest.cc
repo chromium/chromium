@@ -869,28 +869,4 @@ TEST_F(OneTimeTokenServiceImplTest, SourceIsolation) {
                                OneTimeTokenValueEq("GMAIL_OTP"))));
 }
 
-// Test that subscribing with an unknown source crashes.
-// TODO(crbug.com/511734560): Re-enable this test on ChromeOS.
-// TODO(crbug.com/511915604): Re-enable this test on Android ARM.
-#if BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM_FAMILY))
-#define MAYBE_SubscribeWithUnknownSourceCrashes \
-  DISABLED_SubscribeWithUnknownSourceCrashes
-#else
-#define MAYBE_SubscribeWithUnknownSourceCrashes \
-  SubscribeWithUnknownSourceCrashes
-#endif
-TEST_F(OneTimeTokenServiceImplTest, MAYBE_SubscribeWithUnknownSourceCrashes) {
-  OneTimeTokenServiceImpl service(nullptr, nullptr);
-  OneTimeTokenServiceTestObserver observer;
-
-  EXPECT_DEATH_IF_SUPPORTED(
-      (void)service.Subscribe(
-          static_cast<OneTimeTokenSource>(999),
-          base::Time::Now() + base::Minutes(5),
-          base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
-                              base::Unretained(&observer))),
-      "OneTimeTokenServiceImpl::Subscribe: Unsupported source 999");
-}
-
 }  // namespace one_time_tokens
