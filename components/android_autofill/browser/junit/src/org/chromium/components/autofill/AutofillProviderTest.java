@@ -61,7 +61,6 @@ import java.util.Collections;
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({
     AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME,
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN_NAME,
     AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME
 })
 public class AutofillProviderTest {

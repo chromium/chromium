@@ -27,10 +27,7 @@ import java.util.Arrays;
 /** Unit test for {@link AutofillRequest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({
-    "AndroidAutofillForwardIframeOrigin",
-    "AndroidAutofillImprovedVisibilityDetection"
-})
+@EnableFeatures({"AndroidAutofillImprovedVisibilityDetection"})
 public class AutofillRequestTest {
     private static final int FORM_SESSION_ID = 123;
     private static final String FORM_DOMAIN = "https://example.com";
