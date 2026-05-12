@@ -26,20 +26,15 @@ enum GeolocationPermissionLevel {
 
 interface GeolocationContext {
   // Creates a Geolocation instance bound to `receiver`.
-  // `requesting_url` is the URL of the top-level frame that made the request.
-  // `has_precise_permission` indicates whether the client is permitted to
-  // access precise location data. If false, approximate location will be
-  // returned even if precise location is requested. Implementations that do not
-  // support finer-grained permission control may return a precise location
-  // regardless of this flag. This method should not be called if geolocation
-  // access is entirely denied.
-  // TODO(crbug.com/453708846): The permission infrastructure is URL-based,
-  // which can be problematic for cases like `about:blank` URLs with different
-  // origins. Once the permission API supports origin-based checks, this method
-  // should be updated to take `url.mojom.Origin` instead of `url.mojom.Url`
-  // for permission check.
+  // `requesting_origin` is the Origin of the top-level frame that made the
+  // request. `has_precise_permission` indicates whether the client is
+  // permitted to access precise location data. If false, approximate location
+  // will be returned even if precise location is requested. Implementations
+  // that do not support finer-grained permission control may return a precise
+  // location regardless of this flag. This method should not be called if
+  // geolocation access is entirely denied.
   BindGeolocation(pending_receiver<Geolocation> receiver,
-                  url.mojom.Url requesting_url,
+                  url.mojom.Origin requesting_origin,
                   GeolocationClientId client_id,
                   bool has_precise_permission);
 

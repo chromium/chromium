@@ -11,7 +11,7 @@
 #include "services/device/public/mojom/geolocation.mojom.h"
 #include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace device {
 
@@ -23,7 +23,7 @@ class GeolocationImpl : public mojom::Geolocation {
  public:
   // |context| must outlive this object.
   GeolocationImpl(mojo::PendingReceiver<mojom::Geolocation> receiver,
-                  const GURL& requesting_url,
+                  const url::Origin& requesting_origin,
                   mojom::GeolocationClientId client_id,
                   GeolocationContext* context,
                   bool has_precise_permission);
@@ -47,7 +47,7 @@ class GeolocationImpl : public mojom::Geolocation {
   // Called by GeolocationContext when the permission has changed.
   void OnPermissionUpdated(mojom::GeolocationPermissionLevel permission_level);
 
-  const GURL& url() { return url_; }
+  const url::Origin& origin() const { return origin_; }
 
  private:
   // mojom::Geolocation:
@@ -63,8 +63,8 @@ class GeolocationImpl : public mojom::Geolocation {
   // The binding between this object and the other end of the pipe.
   mojo::Receiver<mojom::Geolocation> receiver_;
 
-  // The requesting URL.
-  const GURL url_;
+  // The requesting Origin.
+  const url::Origin origin_;
 
   const mojom::GeolocationClientId client_id_;
 

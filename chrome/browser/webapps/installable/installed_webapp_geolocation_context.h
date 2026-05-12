@@ -35,7 +35,7 @@ class InstalledWebappGeolocationContext
   // permission control), so the `has_precise_permission` parameter is ignored.
   void BindGeolocation(
       mojo::PendingReceiver<device::mojom::Geolocation> receiver,
-      const GURL& requesting_url,
+      const url::Origin& requesting_origin,
       device::mojom::GeolocationClientId client_id,
       bool has_precise_permission) override;
   void OnPermissionUpdated(

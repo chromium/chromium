@@ -288,7 +288,8 @@ bool GeolocationHeaderService::EnsureGeolocationServiceConnection(
   // location prompt can attribute the location request to the correct origin.
   bool has_precise = HasPrecisePermission(requesting_url);
   geolocation_context_->BindGeolocation(
-      geolocation_.BindNewPipeAndPassReceiver(), requesting_url,
+      geolocation_.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(requesting_url),
       device::mojom::GeolocationClientId::kOmnibox, has_precise);
 
   if (!use_cache_only) {

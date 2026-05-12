@@ -36,7 +36,7 @@ class GeolocationContext : public mojom::GeolocationContext {
 
   // mojom::GeolocationContext implementation:
   void BindGeolocation(mojo::PendingReceiver<mojom::Geolocation> receiver,
-                       const GURL& requesting_url,
+                       const url::Origin& requesting_origin,
                        mojom::GeolocationClientId client_id,
                        bool has_precise_permission) override;
   void OnPermissionUpdated(

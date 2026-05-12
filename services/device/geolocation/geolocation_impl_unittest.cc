@@ -15,6 +15,8 @@
 #include "services/device/geolocation/geolocation_provider.h"
 #include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace device {
 
@@ -87,7 +89,8 @@ class GeolocationImplTest : public testing::Test {
   void BindGeolocation(bool has_precise_permission) {
     geolocation_.reset();
     geolocation_context_.BindGeolocation(
-        geolocation_.BindNewPipeAndPassReceiver(), GURL("https://test.com"),
+        geolocation_.BindNewPipeAndPassReceiver(),
+        url::Origin::Create(GURL("https://test.com")),
         mojom::GeolocationClientId::kForTesting,
         /*has_precise_permission=*/true);
   }

@@ -21,10 +21,10 @@
 
 InstalledWebappGeolocationBridge::InstalledWebappGeolocationBridge(
     mojo::PendingReceiver<Geolocation> receiver,
-    const GURL& url,
+    const url::Origin& origin,
     InstalledWebappGeolocationContext* context)
     : context_(context),
-      url_(url),
+      origin_(origin),
       high_accuracy_(false),
       receiver_(this, std::move(receiver)) {
   DCHECK(context_);
@@ -42,7 +42,7 @@ void InstalledWebappGeolocationBridge::StartListeningForUpdates() {
   if (java_ref_.is_null()) {
     java_ref_.Reset(InstalledWebappGeolocationBridgeJni::create(
         env, reinterpret_cast<intptr_t>(this),
-        url::GURLAndroid::FromNativeGURL(env, url_)));
+        url::GURLAndroid::FromNativeGURL(env, origin_.GetURL())));
   }
   java_ref_->start(env, high_accuracy_);
 }

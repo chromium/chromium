@@ -27,12 +27,12 @@ void GeolocationContext::Create(
 
 void GeolocationContext::BindGeolocation(
     mojo::PendingReceiver<mojom::Geolocation> receiver,
-    const GURL& requesting_url,
+    const url::Origin& requesting_origin,
     mojom::GeolocationClientId client_id,
     bool has_precise_permission) {
   GeolocationImpl* impl =
-      new GeolocationImpl(std::move(receiver), requesting_url, client_id, this,
-                          has_precise_permission);
+      new GeolocationImpl(std::move(receiver), requesting_origin, client_id,
+                          this, has_precise_permission);
   impls_.push_back(base::WrapUnique<GeolocationImpl>(impl));
   if (geoposition_override_) {
     impl->SetOverride(*geoposition_override_);
@@ -45,7 +45,7 @@ void GeolocationContext::OnPermissionUpdated(
     const url::Origin& origin,
     mojom::GeolocationPermissionLevel permission_level) {
   std::erase_if(impls_, [&origin, &permission_level](const auto& impl) {
-    if (!origin.IsSameOriginWith(impl->url())) {
+    if (origin != impl->origin()) {
       return false;
     }
     // Pass the permission update to the GeolocationImpl, and erase the impl if
