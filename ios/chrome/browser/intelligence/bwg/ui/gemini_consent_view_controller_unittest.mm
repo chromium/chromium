@@ -9,6 +9,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 namespace {
@@ -87,34 +88,37 @@ TEST_F(GeminiConsentViewControllerTest, InitializationWithNonManagedAccount) {
   EXPECT_TRUE(view_controller.navigationItem.hidesBackButton);
 }
 
-// Tests footnote links for non-managed accounts.
-TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForNonManagedAccount) {
-  GeminiConsentViewController* view_controller =
+// Tests footnote links.
+TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinks) {
+  // Non-managed account
+  GeminiConsentViewController* non_managed_view_controller =
       CreateViewController(NO, @"us");
 
-  UITextView* footnoteView =
+  UITextView* non_managed_footnote_view =
       static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
-          view_controller.view,
+          non_managed_view_controller.view,
           kGeminiFootNoteTextViewAccessibilityIdentifier));
-  ASSERT_NE(nil, footnoteView);
+  ASSERT_NE(nil, non_managed_footnote_view);
 
-  EXPECT_TRUE(HasLinkWithURL(footnoteView, kGeminiFirstFootnoteLinkAction));
-  EXPECT_TRUE(HasLinkWithURL(footnoteView, kGeminiSecondFootnoteLinkAction));
-}
+  EXPECT_TRUE(HasLinkWithURL(non_managed_footnote_view,
+                             kGeminiFirstFootnoteLinkAction));
+  EXPECT_TRUE(HasLinkWithURL(non_managed_footnote_view,
+                             kGeminiSecondFootnoteLinkAction));
 
-// Tests footnote links for managed accounts.
-TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForManagedAccount) {
-  GeminiConsentViewController* view_controller =
+  // Managed account
+  GeminiConsentViewController* managed_view_controller =
       CreateViewController(YES, @"us");
 
-  UITextView* footnoteView =
+  UITextView* managed_footnote_view =
       static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
-          view_controller.view,
+          managed_view_controller.view,
           kGeminiFootNoteTextViewAccessibilityIdentifier));
-  ASSERT_NE(nil, footnoteView);
+  ASSERT_NE(nil, managed_footnote_view);
 
   EXPECT_TRUE(
-      HasLinkWithURL(footnoteView, kGeminiFootnoteLinkActionManagedAccount));
+      HasLinkWithURL(managed_footnote_view, kGeminiFirstFootnoteLinkAction));
+  EXPECT_TRUE(
+      HasLinkWithURL(managed_footnote_view, kGeminiSecondFootnoteLinkAction));
 }
 
 // Tests footnote links for South Korea.
@@ -131,4 +135,66 @@ TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForSouthKorea) {
   EXPECT_TRUE(HasLinkWithURL(footnoteView, kGeminiFirstFootnoteLinkAction));
   EXPECT_TRUE(HasLinkWithURL(footnoteView, kGeminiKoreanTermsLinkAction));
   EXPECT_TRUE(HasLinkWithURL(footnoteView, kGeminiSecondFootnoteLinkAction));
+}
+
+// Tests that the footnote contains the US-only addition when country is "us".
+TEST_F(GeminiConsentViewControllerTest, TestFootnoteUSOnlyMessageForUS) {
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us");
+
+  UITextView* footnoteView =
+      static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
+          view_controller.view,
+          kGeminiFootNoteTextViewAccessibilityIdentifier));
+  ASSERT_NE(nil, footnoteView);
+
+  NSString* us_only_text =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_US_ONLY_ADDITION);
+  EXPECT_TRUE([footnoteView.text containsString:us_only_text]);
+}
+
+// Tests that the footnote does NOT contain the US-only addition when country is
+// not "us".
+TEST_F(GeminiConsentViewControllerTest, TestFootnoteUSOnlyMessageForNonUS) {
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"kr");
+
+  UITextView* footnoteView =
+      static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
+          view_controller.view,
+          kGeminiFootNoteTextViewAccessibilityIdentifier));
+  ASSERT_NE(nil, footnoteView);
+
+  NSString* us_only_text =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_US_ONLY_ADDITION);
+  EXPECT_FALSE([footnoteView.text containsString:us_only_text]);
+}
+
+// Tests that the watch link is shown when strict consent is used.
+TEST_F(GeminiConsentViewControllerTest, TestFootnoteWatchLinkForStrictConsent) {
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us", YES);
+
+  UITextView* footnoteView =
+      static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
+          view_controller.view,
+          kGeminiFootNoteTextViewAccessibilityIdentifier));
+  ASSERT_NE(nil, footnoteView);
+
+  EXPECT_TRUE(HasLinkWithURL(footnoteView, kGeminiWatchLinkAction));
+}
+
+// Tests that the watch link is NOT shown when strict consent is not used.
+TEST_F(GeminiConsentViewControllerTest,
+       TestFootnoteWatchLinkForStandardConsent) {
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us", NO);
+
+  UITextView* footnoteView =
+      static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
+          view_controller.view,
+          kGeminiFootNoteTextViewAccessibilityIdentifier));
+  ASSERT_NE(nil, footnoteView);
+
+  EXPECT_FALSE(HasLinkWithURL(footnoteView, kGeminiWatchLinkAction));
 }

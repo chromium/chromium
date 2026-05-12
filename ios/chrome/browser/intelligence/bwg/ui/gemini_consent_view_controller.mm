@@ -45,11 +45,38 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 // ISO alpha-2 country code for South Korea.
 NSString* const kSouthKoreaCountryCode = @"kr";
 
+// ISO alpha-2 country code for United States.
+NSString* const kUSCountryCode = @"us";
+
 // Returns the default text attributes for consent body text.
 NSDictionary* GetDefaultTextAttributes() {
   return @{
     NSFontAttributeName : PreferredFontForTextStyle(UIFontTextStyleBody),
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+  };
+}
+
+// Returns the default text attributes for consent body text.
+NSDictionary* GetFootnoteTextAttributes() {
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.alignment = NSTextAlignmentCenter;
+  return @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSParagraphStyleAttributeName : paragraphStyle,
+  };
+}
+
+// Returns the text attributes for interactive links.
+NSDictionary* GetLinkAttributes(NSString* action, UIFontTextStyle fontStyle) {
+  return @{
+    NSLinkAttributeName : action,
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
+    NSFontAttributeName :
+        PreferredFontForTextStyle(fontStyle, UIFontWeightSemibold)
   };
 }
 
@@ -105,165 +132,110 @@ NSDictionary* GetDefaultTextAttributes() {
 
 #pragma mark - Private
 
-// Creates an attributed string with links for a given text.
-- (NSAttributedString*)createAttributedString:(NSString*)text
-                              withLinkActions:(NSArray<NSString*>*)linkActions
-                                     inRanges:(NSArray<NSValue*>*)linkRanges
+// Creates an attributed string by resolving placeholders in a format string,
+// and automatically matching ranges for the provided link actions.
+- (NSAttributedString*)createAttributedString:(NSString*)format
+                                        links:(NSArray<NSString*>*)links
+                                      actions:(NSArray<NSString*>*)actions
                                textAttributes:(NSDictionary*)textAttributes
                                     fontStyle:(UIFontTextStyle)fontStyle {
+  std::vector<std::u16string> substitutions;
+  for (NSString* linkText in links) {
+    substitutions.push_back(base::SysNSStringToUTF16(linkText));
+  }
+
+  std::u16string fullTextUTF16 = base::ReplaceStringPlaceholders(
+      base::SysNSStringToUTF16(format), substitutions, nullptr);
+  NSString* fullText = base::SysUTF16ToNSString(fullTextUTF16);
+
   NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:text
+      [[NSMutableAttributedString alloc] initWithString:fullText
                                              attributes:textAttributes];
 
-  [linkRanges enumerateObjectsUsingBlock:^(NSValue* rangeValue, NSUInteger i,
-                                           BOOL* stop) {
-    NSRange range = rangeValue.rangeValue;
-
-    NSString* linkAction = linkActions[i];
-
-    NSDictionary* linkAttributes = @{
-      NSLinkAttributeName : linkAction,
-      NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color],
-      NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
-      NSFontAttributeName :
-          PreferredFontForTextStyle(fontStyle, UIFontWeightSemibold)
-    };
-
-    [attributedText addAttributes:linkAttributes range:range];
-  }];
+  auto styleLinks = ^(NSString* link, NSUInteger idx, BOOL* stop) {
+    NSRange range = [fullText rangeOfString:link];
+    if (range.location != NSNotFound) {
+      NSDictionary* attrs = GetLinkAttributes(actions[idx], fontStyle);
+      [attributedText addAttributes:attrs range:range];
+    }
+  };
+  [links enumerateObjectsUsingBlock:styleLinks];
 
   return [attributedText copy];
 }
 
 // Creates an attributed string for the footnote with hyperlinks.
 - (NSAttributedString*)createFootnoteAttributedText {
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  paragraphStyle.alignment = NSTextAlignmentCenter;
+  BOOL isKorea = [_country isEqualToString:kSouthKoreaCountryCode];
+  NSString* baseText = l10n_util::GetNSString(
+      isKorea ? IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA
+              : IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT);
 
-  NSDictionary* textAttributes = @{
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSParagraphStyleAttributeName : paragraphStyle,
-  };
+  NSArray<NSString*>* links = isKorea ? @[
+    l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_1),
+    l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_2),
+    l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_3),
+  ] : @[
+    l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_LINK_1),
+    l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_LINK_2),
+  ];
 
-  UIFontTextStyle fontStyle = UIFontTextStyleFootnote;
+  NSArray<NSString*>* actions = isKorea ? @[
+    kGeminiFirstFootnoteLinkAction,
+    kGeminiKoreanTermsLinkAction,
+    kGeminiSecondFootnoteLinkAction,
+  ] : @[
+    kGeminiFirstFootnoteLinkAction,
+    kGeminiSecondFootnoteLinkAction,
+  ];
 
-  // Consent footnote for South Korea. Managed and non-managed accounts are the
-  // same.
-  if ([_country isEqualToString:kSouthKoreaCountryCode]) {
-    NSString* link1NSString = l10n_util::GetNSString(
-        IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_1);
-    NSString* link2NSString = l10n_util::GetNSString(
-        IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_2);
-    NSString* link3NSString = l10n_util::GetNSString(
-        IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_3);
+  NSMutableAttributedString* footnote =
+      [[self createFooterAttributedText:baseText links:links
+                                actions:actions] mutableCopy];
 
-    std::vector<std::u16string> substitutions;
-    substitutions.push_back(base::SysNSStringToUTF16(link1NSString));
-    substitutions.push_back(base::SysNSStringToUTF16(link2NSString));
-    substitutions.push_back(base::SysNSStringToUTF16(link3NSString));
-
-    std::u16string fullTextUTF16 = base::ReplaceStringPlaceholders(
-        l10n_util::GetStringUTF16(
-            IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA),
-        substitutions, nullptr);
-
-    NSString* fullText = base::SysUTF16ToNSString(fullTextUTF16);
-
-    NSRange link1Range = [fullText rangeOfString:link1NSString];
-    NSRange link2Range = [fullText rangeOfString:link2NSString];
-    NSRange link3Range = [fullText rangeOfString:link3NSString];
-
-    NSArray<NSString*>* linkActions = @[
-      kGeminiFirstFootnoteLinkAction, kGeminiKoreanTermsLinkAction,
-      kGeminiSecondFootnoteLinkAction
-    ];
-    NSArray<NSValue*>* linkRanges = @[
-      [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range],
-      [NSValue valueWithRange:link3Range]
-    ];
-
-    return [self createAttributedString:fullText
-                        withLinkActions:linkActions
-                               inRanges:linkRanges
-                         textAttributes:textAttributes
-                              fontStyle:fontStyle];
-  } else if (_isAccountManaged) {
-    // Consent footnote for managed accounts.
-    NSString* linkText =
-        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_MANAGED_LINK);
-    std::u16string formatStringUTF16 =
-        l10n_util::GetStringUTF16(IDS_IOS_BWG_CONSENT_FOOTNOTE_MANAGED_TEXT);
-
-    std::vector<std::u16string> substitutions;
-    substitutions.push_back(base::SysNSStringToUTF16(linkText));
-    std::u16string fullTextUTF16 = base::ReplaceStringPlaceholders(
-        formatStringUTF16, substitutions, nullptr);
-    NSString* fullText = base::SysUTF16ToNSString(fullTextUTF16);
-
-    NSRange linkRange = [fullText rangeOfString:linkText];
-
-    return [self
-        createAttributedString:fullText
-               withLinkActions:@[ kGeminiFootnoteLinkActionManagedAccount ]
-                      inRanges:@[ [NSValue valueWithRange:linkRange] ]
-                textAttributes:textAttributes
-                     fontStyle:fontStyle];
-  } else {
-    NSString* link1NSString =
-        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_1);
-    NSString* link2NSString =
-        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_2);
-
-    std::vector<std::u16string> substitutions;
-    substitutions.push_back(base::SysNSStringToUTF16(link1NSString));
-    substitutions.push_back(base::SysNSStringToUTF16(link2NSString));
-
-    std::u16string fullTextUTF16 = base::ReplaceStringPlaceholders(
-        l10n_util::GetStringUTF16(
-            IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_TEXT),
-        substitutions, nullptr);
-
-    NSString* fullText = base::SysUTF16ToNSString(fullTextUTF16);
-
-    NSRange link1Range = [fullText rangeOfString:link1NSString];
-    NSRange link2Range = [fullText rangeOfString:link2NSString];
-
-    NSArray<NSString*>* linkActions =
-        @[ kGeminiFirstFootnoteLinkAction, kGeminiSecondFootnoteLinkAction ];
-    NSArray<NSValue*>* linkRanges = @[
-      [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range]
-    ];
-
-    return [self createAttributedString:fullText
-                        withLinkActions:linkActions
-                               inRanges:linkRanges
-                         textAttributes:textAttributes
-                              fontStyle:fontStyle];
+  if ([_country isEqualToString:kUSCountryCode]) {
+    NSString* addition =
+        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_US_ONLY_ADDITION);
+    [[footnote mutableString] appendString:@" "];
+    [[footnote mutableString] appendString:addition];
   }
+
+  if (_useStrictLegalConsent) {
+    NSString* watchLink =
+        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_WATCH_LINK);
+    NSMutableAttributedString* strictFootnote = [[self
+        createFooterAttributedText:l10n_util::GetNSString(
+                                       IDS_IOS_BWG_CONSENT_FOOTNOTE_WATCH_LABEL)
+                             links:@[ watchLink ]
+                           actions:@[ kGeminiWatchLinkAction ]] mutableCopy];
+    [[strictFootnote mutableString] appendString:@"\n\n"];
+    [strictFootnote appendAttributedString:footnote];
+    footnote = strictFootnote;
+  }
+
+  return [footnote copy];
 }
 
 // Helper to construct attributed text with standard styles and specified links.
-- (NSAttributedString*)createConsentBodyWithFullText:(NSString*)fullText
-                                               links:(NSArray<NSString*>*)links
-                                             actions:
-                                                 (NSArray<NSString*>*)actions {
-
-  NSMutableArray<NSValue*>* linkRanges = [[NSMutableArray alloc] init];
-  for (NSString* link in links) {
-    NSRange range = [fullText rangeOfString:link];
-    if (range.location != NSNotFound) {
-      [linkRanges addObject:[NSValue valueWithRange:range]];
-    }
-  }
-
-  return [self createAttributedString:fullText
-                      withLinkActions:actions
-                             inRanges:linkRanges
+- (NSAttributedString*)createBodyAttributedText:(NSString*)text
+                                          links:(NSArray<NSString*>*)links
+                                        actions:(NSArray<NSString*>*)actions {
+  return [self createAttributedString:text
+                                links:links
+                              actions:actions
                        textAttributes:GetDefaultTextAttributes()
                             fontStyle:UIFontTextStyleBody];
+}
+
+// Helper to construct attributed text with footer styles and specified links.
+- (NSAttributedString*)createFooterAttributedText:(NSString*)text
+                                            links:(NSArray<NSString*>*)links
+                                          actions:(NSArray<NSString*>*)actions {
+  return [self createAttributedString:text
+                                links:links
+                              actions:actions
+                       textAttributes:GetFootnoteTextAttributes()
+                            fontStyle:UIFontTextStyleFootnote];
 }
 
 // Creates an attributed string for the standard FRE second box body with a
@@ -272,46 +244,27 @@ NSDictionary* GetDefaultTextAttributes() {
   if (_isAccountManaged) {
     NSString* linkText = l10n_util::GetNSString(
         IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY_LINK);
-    std::u16string formatStringUTF16 =
-        l10n_util::GetStringUTF16(IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY);
-
-    std::vector<std::u16string> substitutions;
-    substitutions.push_back(base::SysNSStringToUTF16(linkText));
-    std::u16string fullTextUTF16 = base::ReplaceStringPlaceholders(
-        formatStringUTF16, substitutions, nullptr);
-    NSString* fullText = base::SysUTF16ToNSString(fullTextUTF16);
-
-    return
-        [self createConsentBodyWithFullText:fullText
-                                      links:@[ linkText ]
-                                    actions:@[
-                                      kGeminiSecondBoxLinkActionManagedAccount
-                                    ]];
+    NSString* text =
+        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY);
+    return [self
+        createBodyAttributedText:text
+                           links:@[ linkText ]
+                         actions:@[ kGeminiSecondBoxLinkActionManagedAccount ]];
   }
 
   NSString* link1NSString = l10n_util::GetNSString(
       IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY_LINK_1);
   NSString* link2NSString = l10n_util::GetNSString(
       IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY_LINK_2);
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY);
 
-  std::vector<std::u16string> substitutions;
-  substitutions.push_back(base::SysNSStringToUTF16(link1NSString));
-  substitutions.push_back(base::SysNSStringToUTF16(link2NSString));
-
-  std::u16string fullTextUTF16 = base::ReplaceStringPlaceholders(
-      l10n_util::GetStringUTF16(
-          IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY),
-      substitutions, nullptr);
-
-  NSString* fullText = base::SysUTF16ToNSString(fullTextUTF16);
-
-  return [self
-      createConsentBodyWithFullText:fullText
-                              links:@[ link1NSString, link2NSString ]
-                            actions:@[
-                              kGeminiSecondBoxLink1ActionNonManagedAccount,
-                              kGeminiSecondBoxLink2ActionNonManagedAccount
-                            ]];
+  return [self createBodyAttributedText:text
+                                  links:@[ link1NSString, link2NSString ]
+                                actions:@[
+                                  kGeminiSecondBoxLink1ActionNonManagedAccount,
+                                  kGeminiSecondBoxLink2ActionNonManagedAccount
+                                ]];
 }
 
 // Creates an attributed string for the Live second box body with links.
@@ -322,15 +275,15 @@ NSDictionary* GetDefaultTextAttributes() {
       @"eiusmod tempor incididunt ut labore et dolore magna aliqua. "
       @"Gemini Apps Privacy Notice, Learn more.";
 
-  return [self
-      createConsentBodyWithFullText:fullText
-                              links:@[
-                                @"Gemini Apps Privacy Notice", @"Learn more"
-                              ]
-                            actions:@[
-                              kGeminiLivePrivacyNoticeLinkAction,
-                              kGeminiLiveLearnMoreLinkAction
-                            ]];
+  return [self createBodyAttributedText:fullText
+                                  links:@[
+                                    @"Gemini Apps Privacy Notice",
+                                    @"Learn more",
+                                  ]
+                                actions:@[
+                                  kGeminiLivePrivacyNoticeLinkAction,
+                                  kGeminiLiveLearnMoreLinkAction
+                                ]];
 }
 
 // Creates an attributed string for the Live third box body with a link.
@@ -340,10 +293,10 @@ NSDictionary* GetDefaultTextAttributes() {
       @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
       @"Respect other's privacy ipsum dolor sit amet.";
 
-  return [self
-      createConsentBodyWithFullText:fullText
-                              links:@[ @"Respect other's privacy" ]
-                            actions:@[ kGeminiLivePrivacyPolicyLinkAction ]];
+  return
+      [self createBodyAttributedText:fullText
+                               links:@[ @"Respect other's privacy" ]
+                             actions:@[ kGeminiLivePrivacyPolicyLinkAction ]];
 }
 
 // Configures the main stack view and contains all the content including the
@@ -600,9 +553,6 @@ NSDictionary* GetDefaultTextAttributes() {
   } else if ([actionString isEqualToString:kGeminiSecondFootnoteLinkAction]) {
     [self.mutator openNewTabWithURL:GURL(kSecondFootnoteLinkURL)];
   } else if ([actionString
-                 isEqualToString:kGeminiFootnoteLinkActionManagedAccount]) {
-    [self.mutator openNewTabWithURL:GURL(kFootnoteLinkURLManagedAccount)];
-  } else if ([actionString
                  isEqualToString:kGeminiSecondBoxLinkActionManagedAccount]) {
     [self.mutator openNewTabWithURL:GURL(kSecondBoxLinkURLManagedAccount)];
   } else if ([actionString isEqualToString:
@@ -621,6 +571,8 @@ NSDictionary* GetDefaultTextAttributes() {
     [self.mutator openNewTabWithURL:GURL(kLivePrivacyPolicyLinkURL)];
   } else if ([actionString isEqualToString:kGeminiKoreanTermsLinkAction]) {
     [self.mutator openNewTabWithURL:GURL(kKoreanTermsFootnoteLinkURL)];
+  } else if ([actionString isEqualToString:kGeminiWatchLinkAction]) {
+    [self.mutator openNewTabWithURL:GURL(kWatchLinkURL)];
   }
 }
 

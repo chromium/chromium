@@ -1424,20 +1424,14 @@
       <message name="IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE" desc="First box title text for the Gemini Consent page for managed accounts.">
           Get more relevant answers by sharing your tabs
       </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_MANAGED_LINK">
-          Your privacy &amp; Gemini.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_MANAGED_TEXT" desc="Footnote text for the Gemini Consent page for managed accounts.">
-          Your organization's chats aren't used to improve our models. Gemini may display inaccurate info, including about people, so double-check it. <ph name="YOUR_PRIVACY_GEMINI">$1<ex>Your privacy &amp; Gemini</ex></ph>
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_1" desc="Text for the first link in the BWG consent footnote.">
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_LINK_1" desc="Text for the first link in the BWG consent footnote.">
           Google Terms
       </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_2" desc="Text for the second link in the BWG consent footnote.">
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_LINK_2" desc="Text for the second link in the BWG consent footnote.">
           Gemini Apps Privacy Notice
       </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_TEXT" desc="Format string for the Gemini consent footnote for non-managed accounts.">
-          <ph name="GOOGLE_TERMS">$1<ex>Google Terms</ex></ph> and the <ph name="GEMINI_APPS_PRIVACY">$2<ex>Gemini Apps Privacy Notice</ex></ph> apply. Gemini can make mistakes, so double-check it.
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT" desc="Format string for the Gemini consent footnote.">
+          <ph name="GOOGLE_TERMS">$1<ex>Google Terms</ex></ph> and the <ph name="GEMINI_APPS_PRIVACY">$2<ex>Gemini Apps Privacy Notice</ex></ph> apply. Gemini is AI and can make mistakes, including about people.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA" desc="Format string for the Gemini consent footnote for accounts in South Korea.">
           Our <ph name="TERMS">$1<ex>Terms</ex></ph>, <ph name="KOREAN_LOCATION_TERMS">$2<ex>Korean Location Terms</ex></ph>, and <ph name="PRIVACY_NOTICE">$3<ex>Privacy Notice</ex></ph> apply. Gemini is AI and can make mistakes, including about people.
@@ -1450,6 +1444,15 @@
       </message>
       <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_3" desc="Text for the third link in the Gemini consent footnote for South Korea.">
           Privacy Notice
+      </message>
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_US_ONLY_ADDITION" desc="US-only footer addition message.">
+          Some content may not be suitable for everyone.
+      </message>
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_WATCH_LABEL" desc="Footer label for watch video.">
+          Watch: <ph name="WATCH_LINK">$1<ex>5 must-knows for generative AI</ex></ph>
+      </message>
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_WATCH_LINK" desc="Footer link text for watch video.">
+          5 must-knows for generative AI
       </message>
       <message name="IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for managed accounts.">
           By default, your current tab is shared when you start a new chat. When tabs are shared, their contents and URLs are sent to Google but won’t be used to improve generative AI models. You can change this setting anytime.

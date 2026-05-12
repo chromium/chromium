@@ -18,8 +18,6 @@ const char kSecondFootnoteLinkURL[] =
     "https://support.google.com/gemini/answer/13594961";
 const char kKoreanTermsFootnoteLinkURL[] =
     "https://www.google.com/intl/ko/policies/terms/location";
-const char kFootnoteLinkURLManagedAccount[] =
-    "https://support.google.com/a/answer/15706919";
 const char kSecondBoxLinkURLManagedAccount[] =
     "https://support.google.com/a/answer/15706919";
 const char kSecondBoxLink1URLNonManagedAccount[] =
@@ -35,6 +33,7 @@ const char kLivePrivacyNoticeLinkURL[] =
 const char kLiveLearnMoreLinkURL[] =
     "https://support.google.com/gemini/answer/13594961";
 const char kLivePrivacyPolicyLinkURL[] = "https://policies.google.com/privacy";
+const char kWatchLinkURL[] = "https://support.google.com/gemini?p=about_ai";
 
 // Accessibility identifiers for Gemini consent view.
 NSString* const kGeminiFootNoteTextViewAccessibilityIdentifier =
@@ -47,8 +46,6 @@ NSString* const kGeminiFirstFootnoteLinkAction =
 NSString* const kGeminiSecondFootnoteLinkAction =
     @"GeminiSecondFootnoteLinkAction";
 NSString* const kGeminiKoreanTermsLinkAction = @"GeminiKoreanTermsLinkAction";
-NSString* const kGeminiFootnoteLinkActionManagedAccount =
-    @"GeminiFootnoteLinkActionManagedAccount";
 NSString* const kGeminiSecondBoxLinkActionManagedAccount =
     @"GeminiSecondBoxLinkActionManagedAccount";
 NSString* const kGeminiSecondBoxLink1ActionNonManagedAccount =
@@ -61,6 +58,7 @@ NSString* const kGeminiLiveLearnMoreLinkAction =
     @"GeminiLiveLearnMoreLinkAction";
 NSString* const kGeminiLivePrivacyPolicyLinkAction =
     @"GeminiLivePrivacyPolicyLinkAction";
+NSString* const kGeminiWatchLinkAction = @"GeminiWatchLinkAction";
 
 const int kGeminiContextualCueChipSlidingWindow = 2;
 
