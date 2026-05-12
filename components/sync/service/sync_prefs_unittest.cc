@@ -476,7 +476,7 @@ TEST_F(SyncPrefsTest,
 
   // All except history-guarded types should be enabled.
   // Other types disabled:
-  // - `kCookies` because it isn't supported in transport mode.
+  // - `kCookies` on non-ChromeOS, where it is not supported.
   // - On Dice platforms, `kBookmarks`, `kReadingList` and `kExtensions` are
   // also listed as they are not enabled by default but require new sign.
   const UserSelectableTypeSet expected_types = Difference(
@@ -492,7 +492,9 @@ TEST_F(SyncPrefsTest,
                                         UserSelectableType::kHistory,
                                         UserSelectableType::kSavedTabGroups,
                                         UserSelectableType::kTabs,
+#if !BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kCookies,
+#endif  // BUILDFLAG(IS_CHROMEOS)
                                     });
 
   EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
@@ -514,7 +516,9 @@ TEST_F(SyncPrefsTest,
                                         UserSelectableType::kHistory,
                                         UserSelectableType::kSavedTabGroups,
                                         UserSelectableType::kTabs,
+#if !BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kCookies,
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
                                         // kThemes is not supported on mobile.
                                         UserSelectableType::kThemes,

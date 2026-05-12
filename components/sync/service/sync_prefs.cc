@@ -773,8 +773,12 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kApps:
       return IsReplaceSyncPromosWithSignInPromosEnabled();
     case UserSelectableType::kCookies:
-      // `kCookies` is not supported in transport mode (ChromeOS-only type).
+#if BUILDFLAG(IS_CHROMEOS)
+      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+#else
+      // ChromeOS-only type.
       return false;
+#endif
   }
   NOTREACHED();
 }

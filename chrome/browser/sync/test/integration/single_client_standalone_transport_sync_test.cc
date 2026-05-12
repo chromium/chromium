@@ -48,6 +48,10 @@ syncer::DataTypeSet GetTypesGatedBehindHistoryOptIn() {
                                syncer::SESSIONS,
                                syncer::USER_EVENTS};
   if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    types.Put(syncer::WORKSPACE_DESK);
+  }
+  if (base::FeatureList::IsEnabled(
           syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
     types.Put(syncer::DICTIONARY);
   }

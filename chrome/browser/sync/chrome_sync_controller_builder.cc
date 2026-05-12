@@ -337,15 +337,22 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
                 kTransportModeWithSingleModel));
 
     CHECK(synced_printer_manager_.value());
+    syncer::DataTypeControllerDelegate* printers_delegate =
+        synced_printer_manager_.value()
+            ->GetSyncBridge()
+            ->change_processor()
+            ->GetControllerDelegate()
+            .get();
     controllers.push_back(std::make_unique<syncer::DataTypeController>(
         syncer::PRINTERS,
+        /*delegate_for_full_sync_mode=*/
         std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            synced_printer_manager_.value()
-                ->GetSyncBridge()
-                ->change_processor()
-                ->GetControllerDelegate()
-                .get()),
-        /*delegate_for_transport_mode=*/nullptr));
+            printers_delegate),
+        /*delegate_for_transport_mode=*/
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                  printers_delegate)
+            : nullptr));
 
     // Some profile types (e.g. sign-in screen) don't support app list.
     // Temporarily Disable AppListSyncableService for tablet form factor
@@ -375,17 +382,28 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
               .get();
       controllers.push_back(std::make_unique<syncer::DataTypeController>(
           syncer::WIFI_CONFIGURATIONS,
+          /*delegate_for_full_sync_mode=*/
           std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
               wifi_configurations_delegate),
-          /*delegate_for_transport_mode=*/nullptr));
+          /*delegate_for_transport_mode=*/
+          base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)
+              ? std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                    wifi_configurations_delegate)
+              : nullptr));
     }
 
     CHECK(desk_sync_service_.value());
     controllers.push_back(std::make_unique<syncer::DataTypeController>(
         syncer::WORKSPACE_DESK,
+        /*delegate_for_full_sync_mode=*/
         std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             desk_sync_service_.value()->GetControllerDelegate().get()),
-        /*delegate_for_transport_mode=*/nullptr));
+        /*delegate_for_transport_mode=*/
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                  desk_sync_service_.value()->GetControllerDelegate().get())
+            : nullptr));
 
     if (authorization_zones_manager_.value()) {
       syncer::DataTypeControllerDelegate*
@@ -397,17 +415,31 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
                   .get();
       controllers.push_back(std::make_unique<syncer::DataTypeController>(
           syncer::PRINTERS_AUTHORIZATION_SERVERS,
+          /*delegate_for_full_sync_mode=*/
           std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
               printers_authorization_servers_delegate),
-          /*delegate_for_transport_mode=*/nullptr));
+          /*delegate_for_transport_mode=*/
+          base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)
+              ? std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                    printers_authorization_servers_delegate)
+              : nullptr));
     }
 
     if (floating_sso_service_.value()) {
+      syncer::DataTypeControllerDelegate* delegate =
+          floating_sso_service_.value()->GetControllerDelegate().get();
       controllers.push_back(
           std::make_unique<ash::floating_sso::CookieSyncDataTypeController>(
               /*delegate_for_full_sync_mode=*/
               std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                  floating_sso_service_.value()->GetControllerDelegate().get()),
+                  delegate),
+              /*delegate_for_transport_mode=*/
+              base::FeatureList::IsEnabled(
+                  syncer::kReplaceSyncPromosWithSignInPromos)
+                  ? std::make_unique<
+                        syncer::ForwardingDataTypeControllerDelegate>(delegate)
+                  : nullptr,
               sync_service, pref_service_.value()));
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)

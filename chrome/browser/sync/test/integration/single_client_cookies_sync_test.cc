@@ -71,10 +71,17 @@ class CookiePresenceChecker : public SingleClientStatusChangeChecker {
   base::WeakPtrFactory<CookiePresenceChecker> weak_factory_{this};
 };
 
-class SingleClientCookiesSyncTest : public SyncTest {
+class SingleClientCookiesSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientCookiesSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitAndEnableFeature(ash::features::kFloatingSso);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        ash::features::kFloatingSso};
+    if (GetParam() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    features_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
   }
 
   SingleClientCookiesSyncTest(const SingleClientCookiesSyncTest&) = delete;
@@ -96,9 +103,8 @@ class SingleClientCookiesSyncTest : public SyncTest {
     SyncTest::SetUpInProcessBrowserTestFixture();
   }
 
-  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return SetupSyncMode::kSyncTheFeature;
+    return GetParam();
   }
 
   void SetFloatingSsoEnabledPolicy(bool policy_value) {
@@ -156,7 +162,16 @@ class SingleClientCookiesSyncTest : public SyncTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadAndDelete) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientCookiesSyncTest,
+    // TODO(crbug.com/509847617): Use GetSyncTestModes() when the sync
+    // integration tests get parameterized on ChromeOS.
+    testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly,
+                    SyncTest::SetupSyncMode::kSyncTheFeature),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientCookiesSyncTest, DownloadAndDelete) {
   sync_pb::CookieSpecifics remote_cookie =
       CreatePredefinedCookieSpecificsForTest(
           0, /*creation_time=*/base::Time::Now(), /*persistent=*/true);
@@ -177,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadAndDelete) {
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 0).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientCookiesSyncTest,
                        PRE_DownloadOnExistingClient) {
   // Enable Sync in the browser under test - this allows the next test to check
   // the behavior of a client which already used Sync in the past.
@@ -186,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest,
 }
 
 // Test that the client which used Sync in the past receives an update.
-IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadOnExistingClient) {
+IN_PROC_BROWSER_TEST_P(SingleClientCookiesSyncTest, DownloadOnExistingClient) {
   sync_pb::CookieSpecifics remote_cookie =
       CreatePredefinedCookieSpecificsForTest(
           0, /*creation_time=*/base::Time::Now(), /*persistent=*/true);
@@ -200,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadOnExistingClient) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, Upload) {
+IN_PROC_BROWSER_TEST_P(SingleClientCookiesSyncTest, Upload) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 
@@ -217,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, Upload) {
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 1).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, FloatingSsoPolicyDisabled) {
+IN_PROC_BROWSER_TEST_P(SingleClientCookiesSyncTest, FloatingSsoPolicyDisabled) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 

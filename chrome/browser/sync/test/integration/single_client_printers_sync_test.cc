@@ -9,6 +9,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
 using printers_helper::AddPrinter;
@@ -23,9 +24,16 @@ using printers_helper::RemovePrinter;
 
 namespace {
 
-class SingleClientPrintersSyncTest : public SyncTest {
+class SingleClientPrintersSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientPrintersSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientPrintersSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      features_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
   ~SingleClientPrintersSyncTest() override = default;
 
   bool SetupClients() override {
@@ -44,21 +52,32 @@ class SingleClientPrintersSyncTest : public SyncTest {
     return true;
   }
 
-  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return SetupSyncMode::kSyncTheFeature;
+    return GetParam();
   }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientPrintersSyncTest,
+    // TODO(crbug.com/509847617): Use GetSyncTestModes() when the sync
+    // integration tests get parameterized on ChromeOS.
+    testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly,
+                    SyncTest::SetupSyncMode::kSyncTheFeature),
+    testing::PrintToStringParamName());
+
 // Verify that printers aren't added with a sync call.
-IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, NoPrinters) {
+IN_PROC_BROWSER_TEST_P(SingleClientPrintersSyncTest, NoPrinters) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   EXPECT_TRUE(ProfileContainsSamePrintersAsVerifier(0));
 }
 
 // Verify syncing doesn't randomly remove a printer.
-IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, SingleNewPrinter) {
+IN_PROC_BROWSER_TEST_P(SingleClientPrintersSyncTest, SingleNewPrinter) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_EQ(0, GetVerifierPrinterCount());
@@ -74,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, SingleNewPrinter) {
 }
 
 // Verify editing a printer doesn't add it.
-IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, EditPrinter) {
+IN_PROC_BROWSER_TEST_P(SingleClientPrintersSyncTest, EditPrinter) {
   ASSERT_TRUE(SetupSync());
 
   AddPrinter(GetPrinterStore(0), printers_helper::CreateTestPrinter(0));
@@ -89,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, EditPrinter) {
 }
 
 // Verify that removing a printer works.
-IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, RemovePrinter) {
+IN_PROC_BROWSER_TEST_P(SingleClientPrintersSyncTest, RemovePrinter) {
   ASSERT_TRUE(SetupSync());
 
   AddPrinter(GetPrinterStore(0), printers_helper::CreateTestPrinter(0));
@@ -100,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, RemovePrinter) {
 }
 
 // Verify that merging data added before sync works.
-IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddBeforeSetup) {
+IN_PROC_BROWSER_TEST_P(SingleClientPrintersSyncTest, AddBeforeSetup) {
   ASSERT_TRUE(SetupClients());
 
   AddPrinter(GetPrinterStore(0), printers_helper::CreateTestPrinter(0));
@@ -110,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddBeforeSetup) {
 }
 
 // Verify that adding a print server printer retains the print server URI.
-IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddPrintServerPrinter) {
+IN_PROC_BROWSER_TEST_P(SingleClientPrintersSyncTest, AddPrintServerPrinter) {
   ASSERT_TRUE(SetupClients());
   const char kServerAddress[] = "ipp://192.168.1.1:631";
 

@@ -13,11 +13,13 @@ namespace ash::floating_sso {
 CookieSyncDataTypeController::CookieSyncDataTypeController(
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_full_sync_mode,
+    std::unique_ptr<syncer::DataTypeControllerDelegate>
+        delegate_for_transport_mode,
     syncer::SyncService* sync_service,
     PrefService* prefs)
     : syncer::DataTypeController(syncer::COOKIES,
                                  std::move(delegate_for_full_sync_mode),
-                                 /*delegate_for_transport_mode=*/nullptr),
+                                 std::move(delegate_for_transport_mode)),
       sync_service_(sync_service),
       prefs_(prefs) {
   pref_change_registrar_.Init(prefs_);

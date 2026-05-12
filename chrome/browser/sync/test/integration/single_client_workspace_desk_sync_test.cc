@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
@@ -59,11 +60,18 @@ class DownloadStatusChecker : public SingleClientStatusChangeChecker {
   }
 };
 
-class SingleClientWorkspaceDeskSyncTest : public SyncTest {
+class SingleClientWorkspaceDeskSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientWorkspaceDeskSyncTest() : SyncTest(SINGLE_CLIENT) {
     kTestUuid1_ =
         base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 1));
+
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      features_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
   }
 
   SingleClientWorkspaceDeskSyncTest(const SingleClientWorkspaceDeskSyncTest&) =
@@ -72,9 +80,8 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
       const SingleClientWorkspaceDeskSyncTest&) = delete;
   ~SingleClientWorkspaceDeskSyncTest() override = default;
 
-  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return SetupSyncMode::kSyncTheFeature;
+    return GetParam();
   }
 
   base::Time AdvanceAndGetTime(base::TimeDelta delta = base::Milliseconds(10)) {
@@ -99,10 +106,20 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
   base::Uuid kTestUuid1_;
 
  private:
+  base::test::ScopedFeatureList features_;
   base::SimpleTestClock clock_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientWorkspaceDeskSyncTest,
+    // TODO(crbug.com/509847617): Use GetSyncTestModes() when the sync
+    // integration tests get parameterized on ChromeOS.
+    testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly,
+                    SyncTest::SetupSyncMode::kSyncTheFeature),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
                        DownloadDeskTemplateWhenSyncEnabled) {
   // Inject a test desk template to Sync.
   sync_pb::EntitySpecifics specifics;
@@ -127,12 +144,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
                        PRE_DownloadDeskTemplateWhenUpToDate) {
   ASSERT_TRUE(SetupSync());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
                        DownloadDeskTemplateWhenUpToDate) {
   // Inject a test desk template to Sync.
   sync_pb::EntitySpecifics specifics;
@@ -154,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
   EXPECT_THAT(desk_model->GetAllEntryUuids(), Contains(kTestUuid1_));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, IsReady) {
+IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest, IsReady) {
   ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(workspace_desk_helper::DeskModelReadyChecker(
@@ -162,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, IsReady) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, DeleteDeskTemplate) {
+IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest, DeleteDeskTemplate) {
   sync_pb::EntitySpecifics specifics;
   WorkspaceDeskSpecifics* desk = specifics.mutable_workspace_desk();
   desk->CopyFrom(CreateWorkspaceDeskSpecifics(1, AdvanceAndGetTime()));
@@ -199,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, DeleteDeskTemplate) {
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
                        ShouldAllowAddTemplateLocallyWhenSyncIsDisabled) {
   ASSERT_TRUE(SetupSync());
 

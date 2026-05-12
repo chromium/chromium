@@ -1343,6 +1343,11 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::SAVED_TAB_GROUP);
     allowed_types.Put(syncer::SESSIONS);
     allowed_types.Put(syncer::USER_EVENTS);
+#if BUILDFLAG(IS_CHROMEOS)
+    allowed_types.Put(syncer::PRINTERS);
+    allowed_types.Put(syncer::WIFI_CONFIGURATIONS);
+    allowed_types.Put(syncer::WORKSPACE_DESK);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
     allowed_types.Put(syncer::WEB_APPS);

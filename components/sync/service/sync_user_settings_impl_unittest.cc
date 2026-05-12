@@ -272,15 +272,18 @@ TEST_F(SyncUserSettingsImplTest,
   // History and Tabs require a separate opt-in.
   // SavedTabGroups also requires a separate opt-in, either the same one as
   // history and tabs (on mobile), or a dedicated opt-in.
-  // Cookies are not supported in transport mode.
   UserSelectableTypeSet expected_disabled_types = {
       UserSelectableType::kHistory, UserSelectableType::kTabs,
-      UserSelectableType::kSavedTabGroups, UserSelectableType::kCookies};
+      UserSelectableType::kSavedTabGroups};
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Themes is not supported on mobile.
   expected_disabled_types.Put(UserSelectableType::kThemes);
 #endif
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Cookies is only supported on ChromeOS.
+  expected_disabled_types.Put(UserSelectableType::kCookies);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_THAT(
       sync_user_settings->GetSelectedTypes(),
