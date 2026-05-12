@@ -164,7 +164,6 @@ TEST_F(FeatureTilePixelTest, PrimaryTileWithoutDiveInButton) {
 TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
   // Turn on RTL mode.
   base::i18n::SetRTLForTesting(true);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(base::i18n::IsRTL());
 
   auto* tile = CreateQSFeatureTileBase(widget_.get());
