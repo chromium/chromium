@@ -238,6 +238,10 @@ BASE_DECLARE_FEATURE(kSyncInvalidationsBypassScheduler);
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, search engines and site search will be synced on Android LFF.
 BASE_DECLARE_FEATURE(kSyncSearchEnginesAndroidLFF);
+
+// If enabled, ignores the value set in sessions_invalidations_enabled_ and
+// always registers for sessions invalidations.
+BASE_DECLARE_FEATURE(kAlwaysRegisterSessionsInvalidationsAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

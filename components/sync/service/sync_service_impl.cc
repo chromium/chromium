@@ -1805,7 +1805,16 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   // No need to register invalidations for non-protocol or commit-only types.
   DataTypeSet types = Intersection(GetPreferredDataTypes(), ProtocolTypes());
   types.RemoveAll(CommitOnlyTypes());
-  if (!sessions_invalidations_enabled_) {
+
+  bool should_register_sessions = sessions_invalidations_enabled_;
+#if BUILDFLAG(IS_ANDROID)
+  if (!should_register_sessions &&
+      base::FeatureList::IsEnabled(
+          kAlwaysRegisterSessionsInvalidationsAndroid)) {
+    should_register_sessions = true;
+  }
+#endif
+  if (!should_register_sessions) {
     types.Remove(SESSIONS);
   }
 
@@ -2142,6 +2151,12 @@ void SyncServiceImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sessions_invalidations_enabled_ = enabled;
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          kAlwaysRegisterSessionsInvalidationsAndroid)) {
+    return;
+  }
+#endif
   UpdateDataTypesForInvalidations();
 }
 

@@ -1836,6 +1836,45 @@ TEST_F(SyncServiceImplTest, ShouldEnableAndDisableInvalidationsForSessions) {
   service()->SetInvalidationsForSessionsEnabled(false);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SyncServiceImplTest,
+       ShouldAlwaysSubscribeToSessionsListingsIfFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kAlwaysRegisterSessionsInvalidationsAndroid);
+
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kTestUser, signin::ConsentLevel::kSignin);
+  SyncPrefs(prefs()).SetSelectedTypeForAccount(UserSelectableType::kTabs, true,
+                                               account_info.gaia);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
+  params.emplace_back(SESSIONS, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
+
+  // SESSIONS should be included regardless of
+  // SetInvalidationsForSessionsEnabled.
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(ContainsDataType(SESSIONS)));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return service()->GetTransportState() ==
+           SyncService::TransportState::ACTIVE;
+  }));
+
+  // Calling with false should not trigger an update or remove SESSIONS.
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(Not(ContainsDataType(SESSIONS))))
+      .Times(0);
+
+  service()->SetInvalidationsForSessionsEnabled(false);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return service()->GetTransportState() ==
+           SyncService::TransportState::ACTIVE;
+  }));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 TEST_F(SyncServiceImplTest, ShouldNotSubscribeToProxyTypes) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
