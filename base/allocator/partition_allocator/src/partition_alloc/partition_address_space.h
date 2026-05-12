@@ -208,6 +208,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
            kUninitializedPoolBaseAddress;
   }
 
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+  PA_ALWAYS_INLINE static bool IsCorePoolSizeReduced() {
+    return is_core_pool_size_reduced_;
+  }
+#endif
+
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   PA_ALWAYS_INLINE static bool IsThreadIsolatedPoolInitialized() {
     return setup_.thread_isolated_pool_base_address_ !=
@@ -366,10 +372,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
  private:
   static bool IsIOSTestProcess();
+  static bool is_core_pool_size_reduced_;
 
  public:
   PA_ALWAYS_INLINE static size_t CorePoolSize() {
-    return IsIOSTestProcess() ? kCorePoolSizeForIOSTestProcess : kCorePoolSize;
+    if (IsIOSTestProcess()) {
+      return kCorePoolSizeForIOSTestProcess;
+    }
+    if (is_core_pool_size_reduced_) {
+      return kCorePoolSizeForIOSReducedPoolSize;
+    }
+    return kCorePoolSize;
   }
 #else
   // The pool sizes should be as large as maximum whenever possible.
@@ -431,14 +444,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #error iOS is only supported with a dynamically sized GigaCase.
 #endif
-
   // We can't afford pool sizes as large as kPoolMaxSize in iOS EarlGrey tests,
   // since the test process cannot use an extended virtual address space (see
   // crbug.com/1250788).
   static constexpr size_t kCorePoolSizeForIOSTestProcess = kGiB / 4;
   static_assert(kCorePoolSizeForIOSTestProcess < kCorePoolSize);
   static_assert(base::bits::HasSingleBit(kCorePoolSizeForIOSTestProcess));
-#endif  // PA_BUILDFLAG(IOS_IOS)
+  static constexpr size_t kCorePoolSizeForIOSReducedPoolSize =
+      kCorePoolSize / 2;
+  static_assert(kCorePoolSizeForIOSReducedPoolSize < kCorePoolSize);
+  static_assert(base::bits::HasSingleBit(kCorePoolSizeForIOSReducedPoolSize));
+#endif  // PA_BUILDFLAG(IS_IOS)
 
 #if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   // Masks used to easy determine belonging to a pool.

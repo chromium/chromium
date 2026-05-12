@@ -2687,6 +2687,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.PartitionAlloc.CorePoolSizeReduced" enum="Boolean"
+    expires_after="2026-07-07">
+  <owner>nuskos@chromium.org</owner>
+  <owner>chrome-cpp-runtime-safety@google.com</owner>
+  <summary>
+    Whether PartitionAlloc's core pool size was reduced on iOS due to initial
+    allocation failure. This can happen on devices or in processes that lack the
+    extended virtual address space entitlement. Recorded once during allocator
+    shim configuration.
+  </summary>
+</histogram>
+
 <histogram name="Memory.PartitionAlloc.PartitionRoot.ExtrasSize" units="bytes"
     expires_after="2025-10-12">
   <owner>keishi@chromium.org</owner>

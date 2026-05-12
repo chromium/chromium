@@ -1304,6 +1304,17 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   UmaHistogramCounts100("Memory.PartitionAlloc.PartitionRoot.ExtrasSize",
                         int(extras_size));
 
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+  // We don't care about the normal case... That is just daily sessions, we
+  // don't want to record this if it isn't interesting to reduce impact on data
+  // volume and sampling.
+  if (partition_alloc::internal::PartitionAddressSpace::
+          IsCorePoolSizeReduced()) {
+    base::UmaHistogramBoolean("Memory.PartitionAlloc.CorePoolSizeReduced",
+                              true);
+  }
+#endif
+
   partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated(
       partition_alloc::internal::GetStackTop());
 
