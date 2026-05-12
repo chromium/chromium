@@ -527,7 +527,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
     if (colorID == tab_groups::TabGroupColorId::kYellow) {
       // In the tab group color update, the yellow is better described
       // as lime.
-      if (IsSyncedGroupColorEnabled()) {
+      if (IsUpdateTabGroupColorsEnabled()) {
         colorButton.accessibilityLabel = l10n_util::GetNSStringF(
             IDS_IOS_TAB_GROUP_CREATION_ACCESSIBILITY_COLOR_SELECTION,
             l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_LIME));

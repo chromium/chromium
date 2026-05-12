@@ -194,7 +194,7 @@ static constexpr auto kColorGroupMap =
     });
 
 // An updated map associating each `TabGroupColorId` with its ColorGroup tones,
-// this one is used when SyncedGroupColor is enabled.
+// this one is used when UpdateTabGroupColors is enabled.
 static constexpr auto kSyncedColorGroupMap =
     base::MakeFixedFlatMap<tab_groups::TabGroupColorId, ColorGroup>({
 
@@ -352,7 +352,7 @@ static_assert(kSyncedColorGroupMap.size() ==
 
 // Returns the `ColorGroup` corresponding to the tabGroupColorId.
 const ColorGroup& GetColorGroupForId(TabGroupColorId tab_group_color_id) {
-  if (IsSyncedGroupColorEnabled()) {
+  if (IsUpdateTabGroupColorsEnabled()) {
     return kSyncedColorGroupMap.at(tab_group_color_id);
   }
 

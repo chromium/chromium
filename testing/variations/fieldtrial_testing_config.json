@@ -14044,21 +14044,6 @@
             ]
         }
     ],
-    "IOSSyncedGroupColor": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncedGroupColor"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSyncedSetUp": [
         {
             "platforms": [
@@ -23979,6 +23964,21 @@
                     "enable_features": [
                         "UpdateScrollPredictorInputMapping",
                         "WaitForLateScrollEvents"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UpdateTabGroupColors": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UpdateTabGroupColors"
                     ]
                 }
             ]

@@ -8930,11 +8930,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "synced-group-color",
-    "owners": [ "achara@google.com", "meridian@google.com" ],
-    "expiry_milestone": 154
-  },
-  {
     "name": "system-keyboard-lock",
     "owners": [ "joedow@chromium.org", "garykac@chromium.org", "jamiewalch@chromium.org" ],
     // This flag allows users to prevent the keyboard-lock API from capturing

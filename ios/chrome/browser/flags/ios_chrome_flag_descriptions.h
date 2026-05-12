@@ -1853,10 +1853,6 @@ inline constexpr char kSyncWalletVehicleRegistrationsName[] =
 inline constexpr char kSyncWalletVehicleRegistrationsDescription[] =
     "Enables syncing vehicle registrations in the wallet to the server.";
 
-inline constexpr char kSyncedGroupColorName[] = "SyncedGroupColor";
-inline constexpr char kSyncedGroupColorDescription[] =
-    "Enables the SyncedGroupColor feature.";
-
 inline constexpr char kTabGridNewTransitionsName[] =
     "Enable new TabGrid transitions";
 inline constexpr char kTabGridNewTransitionsDescription[] =
@@ -1901,6 +1897,10 @@ inline constexpr char kTabSwitcherOverflowMenuDescription[] =
 inline constexpr char kTaiyakiAllSurfacesName[] = "Taiyaki (all surfaces)";
 inline constexpr char kTaiyakiAllSurfacesDescription[] =
     "Enables Taiyaki for all surfaces (including post-FRE).";
+
+inline constexpr char kUpdateTabGroupColorsName[] = "UpdateTabGroupColors";
+inline constexpr char kUpdateTabGroupColorsDescription[] =
+    "Enables the UpdateTabGroupColors feature.";
 
 inline constexpr char kUpdatedFRESequenceName[] =
     "Update the sequence of the First Run screens";

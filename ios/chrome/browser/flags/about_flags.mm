@@ -85,6 +85,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync_preferences/features.h"
+#import "components/tab_groups/features.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/common/translate_util.h"
 #import "components/variations/net/variations_command_line.h"
@@ -1960,6 +1961,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kLensSingleTapTextSelectionDisabledName,
      flag_descriptions::kLensSingleTapTextSelectionDisabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensSingleTapTextSelectionDisabled)},
+    {"update-tab-group-colors", flag_descriptions::kUpdateTabGroupColorsName,
+     flag_descriptions::kUpdateTabGroupColorsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(tab_groups::kUpdateTabGroupColors)},
     {"updated-fre-screens-sequence", flag_descriptions::kUpdatedFRESequenceName,
      flag_descriptions::kUpdatedFRESequenceDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(first_run::kUpdatedFirstRunSequence,
@@ -2868,9 +2872,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSCobaltDeveloperModeName,
      flag_descriptions::kIOSCobaltDeveloperModeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kIOSCobaltDeveloperMode)},
-    {"synced-group-color", flag_descriptions::kSyncedGroupColorName,
-     flag_descriptions::kSyncedGroupColorDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kSyncedGroupColor)},
     {"cobrowse-aim-history", flag_descriptions::kCobrowseAimHistoryName,
      flag_descriptions::kCobrowseAimHistoryDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kCobrowseAimHistory)},

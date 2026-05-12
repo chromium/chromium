@@ -13,6 +13,7 @@ source_set("features") {
     "//components/segmentation_platform/public",
     "//components/sync/base:features",
     "//components/sync_preferences:features",
+    "//components/tab_groups",
     "//components/variations/service",
     "//components/version_info:channel",
     "//crypto",
