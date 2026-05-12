@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="author" content="github.com/vmpstr">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+    background-color: rgb(255, 0, 0); /* Red initially */
+  }
+  #menu:overscroll-open {
+    background-color: rgb(0, 128, 0); /* Green when open */
+  }
+  #content {
+    height: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu"></div>
+  <div id="content"></div>
+</div>
+<button id=button command="toggle-overscroll" commandfor="menu"></button>
+
+<script>
+function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+promise_test(async () => {
+  // Initially the menu is closed.
+  assert_equals(getComputedStyle(menu).backgroundColor, "rgb(255, 0, 0)", "menu initially red (closed)");
+
+  let event_promises = [
+    new Promise(resolve => container.addEventListener("overscrollchanging", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollend", resolve, { once: true }))
+  ];
+
+  // Click the button to open the menu.
+  await click(button);
+  await Promise.all(event_promises);
+
+  // The menu should now match :overscroll-open.
+  assert_equals(getComputedStyle(menu).backgroundColor, "rgb(0, 128, 0)", "menu is green (open)");
+
+  let event_promises2 = [
+    new Promise(resolve => container.addEventListener("overscrollchanging", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollend", resolve, { once: true }))
+  ];
+
+  // Click the button again to close the menu.
+  await click(button);
+  await Promise.all(event_promises2);
+
+  // The menu should no longer match :overscroll-open.
+  assert_equals(getComputedStyle(menu).backgroundColor, "rgb(255, 0, 0)", "menu is red again (closed)");
+}, ":overscroll-open pseudo class matches correctly based on overscroll state");
+</script>

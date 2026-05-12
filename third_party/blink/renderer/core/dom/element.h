@@ -1573,6 +1573,7 @@ class CORE_EXPORT Element : public ContainerNode {
   virtual bool MatchesReadOnlyPseudoClass() const { return false; }
   virtual bool MatchesReadWritePseudoClass() const { return false; }
   virtual bool MatchesValidityPseudoClasses() const { return false; }
+  bool MatchesOverscrollOpen() const;
 
   virtual bool MayTriggerVirtualKeyboard() const;
 

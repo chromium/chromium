@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/css/snapped_query_scroll_snapshot.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -3661,6 +3662,7 @@ void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded() {
                                     ->UltimateOriginatingElement();
   Element* overscroll_container = overscroll_element.GetOverscrollContainer();
 
+  bool was_overscrolling = RareData()->is_currently_overscrolling_;
   // We should update the overscrolling value now, so that this and the "end"
   // event get the new value. This will also remain updated for the next
   // "start" event.
@@ -3677,6 +3679,12 @@ void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded() {
     return target_snap_areas.x != first_target.element_id ||
            target_snap_areas.y != first_target.element_id;
   }();
+
+  if (was_overscrolling != RareData()->is_currently_overscrolling_) {
+    overscroll_element.SetNeedsStyleRecalc(
+        kLocalStyleChange,
+        StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
+  }
 
   GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(
       event_type_names::kOverscrollchanging, overscroll_container,

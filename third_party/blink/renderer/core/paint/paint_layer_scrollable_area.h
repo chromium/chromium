@@ -657,6 +657,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return FreezeScrollbarsScope::ScrollbarsAreFrozen();
   }
 
+  bool IsCurrentlyOverscrolling() const {
+    return RareData() && RareData()->is_currently_overscrolling_;
+  }
+
   // Force scrollbars off for reconstruction.
   void RemoveScrollbarsForReconstruction();
 
