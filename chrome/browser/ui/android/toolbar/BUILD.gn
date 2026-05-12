@@ -75,6 +75,7 @@ android_library("optional_button_java") {
   deps = [
     ":adaptive_features_java",
     ":java_resources",
+    ":variation_utils_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/actor/android:java",

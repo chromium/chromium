@@ -32,6 +32,7 @@ found in the LICENSE file.
     <!-- Width of optional toolbar button when not expanded into an action chip -->
     <dimen name="toolbar_phone_optional_button_collapsed_state_width">52dp</dimen>
     <dimen name="toolbar_phone_optional_button_expanded_state_extra_width">12dp</dimen>
+    <dimen name="toolbar_phone_optional_button_background_vertical_margin">4dp</dimen>
 
     <dimen name="mini_origin_bar_height">28dp</dimen>
 

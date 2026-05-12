@@ -109,11 +109,11 @@ public class OptionalButtonCoordinator {
     }
 
     /**
-     * Suppresses the background of the optional button. This is useful for cases where the optional
-     * button is placed on a background that is not the toolbar.
+     * Suppresses the collapsed background of the optional button. This is useful for cases where
+     * the optional button is placed on a background that is not the toolbar.
      */
-    public void setSuppressBackground(boolean suppressBackground) {
-        mView.setSuppressBackground(suppressBackground);
+    public void setSuppressCollapsedBackground(boolean suppressCollapsedBackground) {
+        mView.setSuppressCollapsedBackground(suppressCollapsedBackground);
     }
 
     public void setPaddingStart(int paddingStart) {

@@ -47,6 +47,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
@@ -73,6 +74,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private static final int TEXT_BUBBLE_FOR_ANIMATION_START_DELAY_MS = 500;
 
     private final int mExpandedStatePaddingPx;
+    private final int mOptionalBackgroundMarginPx;
 
     private int mCollapsedStateWidthPx;
     private TextView mActionChipLabel;
@@ -91,7 +93,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private @AttrRes int mActionChipTextColorResId = Resources.ID_NULL;
     private boolean mCurrentButtonSupportsTinting;
     private boolean mIsIncognitoBranded;
-    private boolean mSuppressBackground;
+    private boolean mSuppressCollapsedBackground;
     private boolean mIsCpaCheckedState;
     private @Nullable ColorStateList mForegroundColorTint;
     private int mBackgroundColorFilter;
@@ -205,9 +207,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         // Logic for setting the background resource is in #updateButtonWithAnimation.
     }
 
-    void setSuppressBackground(boolean suppressBackground) {
-        mSuppressBackground = suppressBackground;
-        if (mSuppressBackground) {
+    void setSuppressCollapsedBackground(boolean suppressCollapsedBackground) {
+        mSuppressCollapsedBackground = suppressCollapsedBackground;
+        if (mSuppressCollapsedBackground) {
             mButton.setBackground(null);
             mBackground.setVisibility(GONE);
         } else {
@@ -217,7 +219,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     private void setBackgroundResourceHelper(boolean isCpaCheckedState) {
-        if (mSuppressBackground) {
+        if (mSuppressCollapsedBackground) {
             mButton.setBackground(null);
             return;
         }
@@ -232,6 +234,19 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             backgroundDrawableRes = R.drawable.optional_button_background_baseline;
         }
         mButton.setBackgroundResource(backgroundDrawableRes);
+    }
+
+    private void maybeUpdateBackgroundMargins() {
+        FrameLayout.LayoutParams backgroundLayoutParams =
+                (FrameLayout.LayoutParams) mBackground.getLayoutParams();
+        if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(getContext())) {
+            backgroundLayoutParams.topMargin = mOptionalBackgroundMarginPx;
+            backgroundLayoutParams.bottomMargin = mOptionalBackgroundMarginPx;
+        } else {
+            backgroundLayoutParams.topMargin = 0;
+            backgroundLayoutParams.bottomMargin = 0;
+        }
+        mBackground.setLayoutParams(backgroundLayoutParams);
     }
 
     void setCollapsedStateWidth(int width) {
@@ -348,6 +363,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         mBackground.setImageDrawable(AppCompatResources.getDrawable(getContext(), resId));
         setBackgroundResourceHelper(isCpaCheckedState);
+
+        maybeUpdateBackgroundMargins();
 
         mNextButtonType = buttonSpec.isDynamicAction() ? ButtonType.DYNAMIC : ButtonType.STATIC;
         @StringRes int chipLabelResId = buttonSpec.getActionChipLabelResId();
@@ -494,6 +511,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mExpandedStatePaddingPx =
                 getDimensionPixelSize(
                         R.dimen.toolbar_phone_optional_button_expanded_state_extra_width);
+        mOptionalBackgroundMarginPx =
+                getDimensionPixelSize(
+                        R.dimen.toolbar_phone_optional_button_background_vertical_margin);
     }
 
     @Override
@@ -808,7 +828,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         // Background shows/hides with a fade animation.
         mBackground.setVisibility(
-                (mNextButtonType == ButtonType.DYNAMIC && !mSuppressBackground) ? VISIBLE : GONE);
+                (mNextButtonType == ButtonType.DYNAMIC && !mSuppressCollapsedBackground)
+                        ? VISIBLE
+                        : GONE);
 
         mState = State.RUNNING_SWAP_TRANSITION;
     }
@@ -867,9 +889,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mButton.setVisibility(VISIBLE);
         mAnimationImage.setVisibility(GONE);
         mActionChipLabel.setVisibility(VISIBLE);
-        if (!mSuppressBackground) {
-            mBackground.setVisibility(VISIBLE);
-        }
+        // Always show background when expanded, even if background is suppressed for collapsed
+        // state.
+        mBackground.setVisibility(VISIBLE);
 
         float actionChipLabelTextWidth =
                 mActionChipLabel.getPaint().measureText(mActionChipLabelString);
@@ -900,6 +922,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         beginDelayedTransition(createActionChipTransition());
 
         mBackground.setColorFilter(mBackgroundColorFilter);
+        if (mSuppressCollapsedBackground) {
+            mBackground.setVisibility(GONE);
+        }
         mActionChipLabel.setVisibility(GONE);
         int widthDelta = mCollapsedStateWidthPx - getLayoutParams().width;
 
@@ -986,7 +1011,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         mBackground.setColorFilter(mBackgroundColorFilter);
         mBackground.setVisibility(
-                (mNextButtonType == ButtonType.DYNAMIC && !mSuppressBackground) ? VISIBLE : GONE);
+                (mNextButtonType == ButtonType.DYNAMIC && !mSuppressCollapsedBackground)
+                        ? VISIBLE
+                        : GONE);
         mOnBeforeShowTransitionCallback.run();
 
         mState = State.RUNNING_SHOW_TRANSITION;
