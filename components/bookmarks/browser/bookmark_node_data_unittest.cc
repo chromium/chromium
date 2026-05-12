@@ -141,13 +141,7 @@ TEST_F(BookmarkNodeDataTest, BogusRead) {
 
 // Writes a URL to the clipboard and make sure BookmarkNodeData can correctly
 // read it.
-// Test is flaky on Mac: crbug.com/1236362
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_JustURL DISABLED_JustURL
-#else
-#define MAYBE_JustURL JustURL
-#endif
-TEST_F(BookmarkNodeDataTest, MAYBE_JustURL) {
+TEST_F(BookmarkNodeDataTest, JustURL) {
   const GURL url("http://google.com");
   const std::u16string title(u"google.com");
 
@@ -166,13 +160,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_JustURL) {
   EXPECT_EQ(0u, drag_data.elements[0].children.size());
 }
 
-// Test is flaky on Mac: crbug.com/1236362
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_URL DISABLED_URL
-#else
-#define MAYBE_URL URL
-#endif
-TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
+TEST_F(BookmarkNodeDataTest, URL) {
   // Write a single node representing a URL to the clipboard.
   const BookmarkNode* root = model()->bookmark_bar_node();
   GURL url(GURL("http://foo.com"));
@@ -218,13 +206,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
 }
 
 // Tests writing a folder to the clipboard.
-// Test is flaky on Mac: crbug.com/1236362
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Folder DISABLED_Folder
-#else
-#define MAYBE_Folder Folder
-#endif
-TEST_F(BookmarkNodeDataTest, MAYBE_Folder) {
+TEST_F(BookmarkNodeDataTest, Folder) {
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* g1 = model()->AddFolder(root, 0, u"g1");
   model()->AddFolder(g1, 0, u"g11");
@@ -265,13 +247,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_Folder) {
 }
 
 // Tests reading/writing a folder with children.
-// Test is flaky on Mac: crbug.com/1236362
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_FolderWithChild DISABLED_FolderWithChild
-#else
-#define MAYBE_FolderWithChild FolderWithChild
-#endif
-TEST_F(BookmarkNodeDataTest, MAYBE_FolderWithChild) {
+TEST_F(BookmarkNodeDataTest, FolderWithChild) {
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
 
@@ -308,13 +284,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_FolderWithChild) {
 }
 
 // Tests reading/writing of multiple nodes.
-// Test is flaky on Mac: crbug.com/1236362
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MultipleNodes DISABLED_MultipleNodes
-#else
-#define MAYBE_MultipleNodes MultipleNodes
-#endif
-TEST_F(BookmarkNodeDataTest, MAYBE_MultipleNodes) {
+TEST_F(BookmarkNodeDataTest, MultipleNodes) {
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
 
@@ -500,13 +470,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderAndURL) {
 }
 
 // Tests reading/writing of meta info.
-// Test is flaky on Mac: crbug.com/1236362
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MetaInfo DISABLED_MetaInfo
-#else
-#define MAYBE_MetaInfo MetaInfo
-#endif
-TEST_F(BookmarkNodeDataTest, MAYBE_MetaInfo) {
+TEST_F(BookmarkNodeDataTest, MetaInfo) {
   // Create a node containing meta info.
   const BookmarkNode* node = model()->AddURL(
       model()->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
