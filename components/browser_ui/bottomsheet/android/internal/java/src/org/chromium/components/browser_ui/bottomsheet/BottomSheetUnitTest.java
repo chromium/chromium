@@ -585,4 +585,19 @@ public class BottomSheetUnitTest {
         listener.onEnd(null);
         verify(mBottomSheetObserver).onInsetAnimationEnd();
     }
+
+    @Test
+    public void testUpdateA11yPaneTitle() {
+        int stringId = android.R.string.ok;
+        doReturn(stringId).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
+
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        CharSequence expectedTitle = mActivity.getResources().getString(stringId);
+        assertEquals(
+                "Accessibility pane title should be set on the BottomSheet itself",
+                expectedTitle,
+                androidx.core.view.ViewCompat.getAccessibilityPaneTitle(mBottomSheet));
+    }
 }

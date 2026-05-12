@@ -1788,9 +1788,7 @@ class BottomSheet extends FrameLayout
     }
 
     private void updateA11yPaneTitle(CharSequence msg) {
-        // Set the pane title for the container. The bottom sheet view is not always accessible
-        // e.g. when sheet is dismissed.
-        ViewCompat.setAccessibilityPaneTitle(mSheetContainer, msg);
+        ViewCompat.setAccessibilityPaneTitle(this, msg);
     }
 
     private void resetCachedKeyboardState() {
