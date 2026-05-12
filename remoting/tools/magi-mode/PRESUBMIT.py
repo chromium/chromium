@@ -735,6 +735,100 @@ def CheckJsonFiles(input_api, output_api):
   return results
 
 
+def CheckTestJsonFiles(input_api, output_api):
+  import json
+
+  results = []
+  magi_dir = input_api.PresubmitLocalPath()
+
+  def FileFilter(affected_file):
+    return input_api.FilterSourceFile(
+        affected_file,
+        files_to_check=(r".*remoting/tools/magi-mode/tests/.*\.json$", ),
+    )
+
+  for f in input_api.AffectedFiles(
+      file_filter=FileFilter, include_deletes=False):
+    filename = input_api.os_path.basename(f.LocalPath())
+    if filename == "magi_test_schemas.json":
+      continue
+
+    content_str = input_api.ReadFile(f)
+    if not content_str.strip():
+      continue
+
+    try:
+      content = json.loads(content_str)
+    except ValueError as e:
+      results.append(
+          output_api.PresubmitError(
+              f"File {f.LocalPath()} is not valid JSON: {e}"))
+      continue
+
+    if not isinstance(content, dict):
+      results.append(
+          output_api.PresubmitError(
+              f"File {f.LocalPath()} must be a JSON object."))
+      continue
+
+    required_scenario_keys = ["name", "base_inputs", "cases"]
+    for key in required_scenario_keys:
+      if key not in content:
+        results.append(
+            output_api.PresubmitError(
+                f"File {f.LocalPath()} is missing required key: {key}"))
+
+    cases = content.get("cases", [])
+    if not isinstance(cases, list):
+      results.append(
+          output_api.PresubmitError(
+              f"File {f.LocalPath()} key 'cases' must be an array."))
+      continue
+
+    for idx, case in enumerate(cases):
+      if not isinstance(case, dict):
+        results.append(
+            output_api.PresubmitError(
+                f"File {f.LocalPath()} case at index {idx} must be an object."
+            ))
+        continue
+
+      required_case_keys = ["name", "expected_outputs"]
+      for key in required_case_keys:
+        if key not in case:
+          results.append(
+              output_api.PresubmitError(
+                  f"File {f.LocalPath()} case '{case.get('name', idx)}' "
+                  f"is missing required key: {key}"
+              ))
+
+      override_inputs = case.get("override_inputs", {})
+      if not isinstance(override_inputs, dict):
+        results.append(
+            output_api.PresubmitError(
+                f"File {f.LocalPath()} case '{case.get('name', idx)}' "
+                f"key 'override_inputs' must be an object."
+            ))
+        continue
+
+      allowed_overrides = [
+          "project_spec_overrides",
+          "state_block_overrides",
+          "draft_files_overrides",
+          "mock_reviews",
+      ]
+      for key in override_inputs.keys():
+        if key not in allowed_overrides:
+          results.append(
+              output_api.PresubmitError(
+                  f"File {f.LocalPath()} case '{case.get('name', idx)}' "
+                  f"key 'override_inputs' contains invalid property: {key}. "
+                  f"Allowed properties are: {', '.join(allowed_overrides)}"
+              ))
+
+  return results
+
+
 def CheckLogsDirectory(input_api, output_api):
   results = []
   for f in input_api.AffectedFiles(include_deletes=False):
@@ -752,6 +846,7 @@ def CheckChangeOnUpload(input_api, output_api):
   results = []
   results.extend(CheckMarkdownFiles(input_api, output_api))
   results.extend(CheckJsonFiles(input_api, output_api))
+  results.extend(CheckTestJsonFiles(input_api, output_api))
   results.extend(CheckLogsDirectory(input_api, output_api))
   return results
 
@@ -760,5 +855,6 @@ def CheckChangeOnCommit(input_api, output_api):
   results = []
   results.extend(CheckMarkdownFiles(input_api, output_api))
   results.extend(CheckJsonFiles(input_api, output_api))
+  results.extend(CheckTestJsonFiles(input_api, output_api))
   results.extend(CheckLogsDirectory(input_api, output_api))
   return results

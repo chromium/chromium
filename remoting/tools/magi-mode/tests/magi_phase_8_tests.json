@@ -16,7 +16,9 @@
                         "testdata/synthesized_file.cc"
                     ]
                 },
-                "build_log": "BUILD FAILED: undefined reference to FeatureX"
+                "draft_files_overrides": {
+                    "testdata/build_log.txt": "BUILD FAILED: undefined reference to FeatureX"
+                }
             },
             "expected_outputs": {
                 "files_created": [
@@ -37,7 +39,9 @@
                         "testdata/synthesized_file.cc"
                     ]
                 },
-                "build_log": "BUILD SUCCESS"
+                "draft_files_overrides": {
+                    "testdata/build_log.txt": "BUILD SUCCESS"
+                }
             },
             "expected_outputs": {
                 "files_created": [],

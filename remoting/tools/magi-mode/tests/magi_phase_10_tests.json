@@ -11,7 +11,9 @@
             "phase": 10,
             "name": "Retrospective - Success",
             "override_inputs": {
-                "trace": "All phases completed successfully."
+                "draft_files_overrides": {
+                    "testdata/trace.txt": "All phases completed successfully."
+                }
             },
             "expected_outputs": {
                 "files_created": [

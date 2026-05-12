@@ -32,7 +32,9 @@
                 "state_block_overrides": {
                     "status": "VERIFIED"
                 },
-                "user_feedback": "Needs more tests"
+                "draft_files_overrides": {
+                    "testdata/user_feedback.txt": "Needs more tests"
+                }
             },
             "expected_outputs": {
                 "files_created": [
