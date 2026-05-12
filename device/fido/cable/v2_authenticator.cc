@@ -378,13 +378,16 @@ class TunnelTransport : public Transport {
   void StartWebSocket() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    uint32_t options = network::mojom::kWebSocketOptionBlockAllCookies;
+    if (base::FeatureList::IsEnabled(kWebAuthnSocketMaxPriorityMode)) {
+      options |= network::mojom::kWebSocketOptionMaximumPriority;
+    }
     network_context_factory_.Run()->CreateWebSocket(
         target_, {device::kCableWebSocketProtocol},
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::OriginatingProcessId::browser(),
         url::Origin::Create(target_),
-        network::mojom::ClientSecurityState::New(),
-        network::mojom::kWebSocketOptionBlockAllCookies,
+        network::mojom::ClientSecurityState::New(), options,
         net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
         websocket_client_->BindNewHandshakeClientPipe(),
         /*url_loader_network_observer=*/mojo::NullRemote(),

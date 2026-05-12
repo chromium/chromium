@@ -229,7 +229,6 @@ BASE_FEATURE(kWebAuthnWinPrfOnCreate, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled by default in M150. Remove in or after M153.
 COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_FEATURE(kWebAuthnEnclaveSocketMaxPriorityMode,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebAuthnSocketMaxPriorityMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace device

@@ -61,6 +61,14 @@ enum class CableV2TunnelEvent {
   kMaxValue = 9,
 };
 
+uint32_t GetWebSocketOptions() {
+  uint32_t options = network::mojom::kWebSocketOptionBlockAllCookies;
+  if (base::FeatureList::IsEnabled(kWebAuthnSocketMaxPriorityMode)) {
+    options |= network::mojom::kWebSocketOptionMaximumPriority;
+  }
+  return options;
+}
+
 void RecordEvent(CableV2TunnelEvent event, tunnelserver::KnownDomainID domain) {
   // Record an aggregate metric for all tunnel servers.
   base::UmaHistogramEnumeration("WebAuthentication.CableV2.TunnelEvent", event);
@@ -161,7 +169,7 @@ FidoTunnelDevice::FidoTunnelDevice(
       net::IsolationInfo(),
       /*additional_headers=*/{}, network::OriginatingProcessId::browser(),
       url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
-      network::mojom::kWebSocketOptionBlockAllCookies,
+      GetWebSocketOptions(),
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),
@@ -220,8 +228,7 @@ FidoTunnelDevice::FidoTunnelDevice(
       url, {kCableWebSocketProtocol}, net::StorageAccessApiStatus::kNone,
       net::IsolationInfo(), std::move(headers),
       network::OriginatingProcessId::browser(), url::Origin::Create(url),
-      network::mojom::ClientSecurityState::New(),
-      network::mojom::kWebSocketOptionBlockAllCookies,
+      network::mojom::ClientSecurityState::New(), GetWebSocketOptions(),
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),

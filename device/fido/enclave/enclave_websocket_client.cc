@@ -138,7 +138,7 @@ void EnclaveWebSocketClient::Connect() {
   }
 
   uint32_t options = network::mojom::kWebSocketOptionBlockAllCookies;
-  if (base::FeatureList::IsEnabled(kWebAuthnEnclaveSocketMaxPriorityMode)) {
+  if (base::FeatureList::IsEnabled(kWebAuthnSocketMaxPriorityMode)) {
     options |= network::mojom::kWebSocketOptionMaximumPriority;
   }
 

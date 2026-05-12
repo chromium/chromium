@@ -190,9 +190,9 @@ COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnWinPrfOnCreate);
 #endif  // BUILDFLAG(IS_WIN)
 
-// Enable max priority mode in websocket connections to the enclave.
+// Enable max priority mode in WebAuthn websocket connections to cloud services.
 COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnEnclaveSocketMaxPriorityMode);
+BASE_DECLARE_FEATURE(kWebAuthnSocketMaxPriorityMode);
 
 }  // namespace device
 
