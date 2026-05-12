@@ -149,6 +149,13 @@ void EmulationHandler::SetRenderer(int process_host_id,
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
     pressure_overrides_.clear();
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+    if (screen_orientation_lock_emulation_enabled_) {
+      screen_orientation_lock_emulation_enabled_ = false;
+      UpdateScreenOrientationEmulation(false);
+    }
+    if (device_posture_emulation_enabled_) {
+      ClearDevicePostureOverride();
+    }
   }
   host_ = frame_host;
   if (touch_emulation_enabled_)

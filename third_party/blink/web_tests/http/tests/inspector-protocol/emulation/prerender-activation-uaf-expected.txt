@@ -1,0 +1,10 @@
+Tests that prerender activation does not cause UAF or crash in EmulationHandler.
+Attached to page session via tab session
+Navigated to base page
+Set device metrics override with screenOrientationLockEmulation: true
+Triggered prerender via speculation rules
+Waiting for prerender to be ready...
+Prerender is ready
+Navigating to prerendered URL to trigger activation...
+Old page session detached
+
