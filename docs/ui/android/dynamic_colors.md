@@ -104,5 +104,5 @@ Colors and widgets that are shared between WebView and Chrome are typically defi
 
 The method used to retrieve colors or drawables needs to have access to the theme, or Context, to be able to resolve the `?attrs`. These are the commonly used methods in Chrome:
 * `Context#getColor(int)`: Used to get non-dynamic colors or the default color for color state lists.
-* `AppCompatResources#getColorStateList(Context, int)`: Used to get color state lists.
+* `Context#getColorStateList(int)`: Used to get color state lists.
 * `AppCompatResources#getDrawable(Context, int)`: Used to get drawables.
