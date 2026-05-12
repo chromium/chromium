@@ -1,0 +1,21 @@
+{
+  "src": "refs/branch-heads/7836",
+  "src:src/chrome/browser/glic/e2e_test/internal": "refs/heads/chromium/7836",
+  "src:src/clank": "refs/heads/chromium/7836",
+  "src:src/components/optimization_guide/internal": "refs/heads/chromium/7836",
+  "src:src/internal": "refs/heads/chromium/7836",
+  "src:src/ios_internal": "refs/heads/chromium/7836",
+  "src:src/third_party/angle": "refs/heads/chromium/7836",
+  "src:src/third_party/dawn": "refs/heads/chromium/7836",
+  "src:src/third_party/devtools-frontend/src": "refs/heads/chromium/7836",
+  "src:src/third_party/instrumented_libs": "refs/heads/chromium/7836",
+  "src:src/third_party/litert/src": "refs/heads/chromium/7836",
+  "src:src/third_party/openscreen/src": "refs/heads/chromium/7836",
+  "src:src/third_party/pdfium": "refs/heads/chromium/7836",
+  "src:src/third_party/ruy/src": "refs/heads/chromium/7836",
+  "src:src/third_party/tflite/src": "refs/heads/chromium/7836",
+  "src:src/third_party/vulkan-deps": "refs/heads/chromium/7836",
+  "src:src/third_party/webrtc": "refs/branch-heads/7836",
+  "src:src/third_party/xnnpack/src": "refs/heads/chromium/7836",
+  "src:src/v8": "refs/heads/chromium/7836"
+}
