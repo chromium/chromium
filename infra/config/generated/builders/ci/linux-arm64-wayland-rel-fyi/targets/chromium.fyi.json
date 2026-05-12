@@ -33,7 +33,8 @@
         "args": [
           "--no-xvfb",
           "--use-mutter",
-          "--ozone-platform=wayland"
+          "--ozone-platform=wayland",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-wayland-rel-fyi.content_browsertests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

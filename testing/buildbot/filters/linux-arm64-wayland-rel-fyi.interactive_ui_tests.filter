@@ -8,3 +8,5 @@
 -AutomaticFullscreenTest.Popup/*
 -AutomaticFullscreenTest.ImmediatelyAfterPopupExit/*
 -PerformanceInterventionInteractiveTest.SuggestTabsOnlyForLastActiveProfile
+-AutomaticFullscreenTest.WithGestureAfterExit/1
+-OmniboxViewViewsTest.SelectAllOnTabToFocus

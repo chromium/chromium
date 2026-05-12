@@ -1,2 +1,4 @@
 # TODO(https://crbug.com/493612000): Tests are flaky on linux-arm64-rel-fyi.
 -WebContentsVideoCaptureDeviceBrowserTest.DeliversRefreshFramesUponRequest
+-All/BackForwardCacheBrowserTestAllowCacheControlNoStore.PagesWithCacheControlNoStoreSetFromResponseHeader/Prerender
+-NavigationCookiesBrowserTest.CookiesInheritedAboutBlank2

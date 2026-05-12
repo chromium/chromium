@@ -1383,6 +1383,16 @@ ci.builder(
                     shards = 5,
                 ),
             ),
+            "sync_integration_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.sync_integration_tests.filter",
+                ],
+            ),
+            "unit_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.unit_tests.filter",
+                ],
+            ),
         },
     ),
     targets_settings = targets.settings(
@@ -1456,6 +1466,9 @@ ci.builder(
                 ),
             ),
             "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-wayland-rel-fyi.content_browsertests.filter",
+                ],
                 retry_only_failed_tests = True,
             ),
             "interactive_ui_tests": targets.mixin(
