@@ -2471,6 +2471,10 @@ select optgroup optgroup {
   -internal-overscroll-position: auto;
 }
 
+:-internal-overscroll-target:not(:overscroll-open) {
+  interactivity: inert;
+}
+
 @supports blink-feature(CustomizableCombobox) {
   /* This would be set as an inline style in DataListIndicatorElement, but
    * -internal-auto-base() can only be used in the UA stylesheet.

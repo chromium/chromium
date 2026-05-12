@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="author" content="github.com/vmpstr">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+  }
+  #content {
+    height: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu"></div>
+  <div id="content"></div>
+</div>
+<button id=button command="toggle-overscroll" commandfor="menu"></button>
+
+<script>
+function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+promise_test(async () => {
+  // Initially the menu is closed and should be inert.
+  assert_equals(getComputedStyle(menu).interactivity, "inert", "menu initially inert (closed)");
+
+  // Click the button to open the menu.
+  await click(button);
+
+  // The menu should now be interactive (auto).
+  assert_equals(getComputedStyle(menu).interactivity, "auto", "menu is interactive (open)");
+
+  // Click the button again to close the menu.
+  await click(button);
+
+  // The menu should be inert again.
+  assert_equals(getComputedStyle(menu).interactivity, "inert", "menu is inert again (closed)");
+}, "Overscroll elements become inert when closed and interactive when open");
+</script>
