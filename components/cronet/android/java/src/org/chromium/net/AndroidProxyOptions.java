@@ -33,12 +33,6 @@ public final class AndroidProxyOptions {
                         android.net.http.ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_ALLOW_DIRECT;
             }
         }
-        if (proxies.isEmpty()) {
-            // CronetEngine accepts a list of proxies containing only the fallback option.
-            // HttpEngine does not. Until the two converge, translate this to a no-op on the
-            // underlying HttpEngine.
-            return;
-        }
         backend.setProxyOptions(
                 android.net.http.ProxyOptions.fromProxyList(proxies, allProxiesFailedBehavior));
     }
