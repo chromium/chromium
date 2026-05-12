@@ -770,7 +770,7 @@ ci.thin_tester(
                 # crbug.com/1508286
                 # crbug.com/404871436
                 swarming = targets.swarming(
-                    shards = 12,
+                    shards = 13,
                 ),
             ),
             "content_unittests": targets.mixin(
