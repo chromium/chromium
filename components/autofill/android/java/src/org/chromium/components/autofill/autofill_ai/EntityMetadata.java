@@ -18,13 +18,18 @@ public class EntityMetadata {
     // The dates are stored as raw long values to avoid using java.time.*.
     private final long mModifiedTime;
     private final int mUseCount;
+    private final long mUseDateMillis;
 
     @CalledByNative
     public EntityMetadata(
-            @JniType("std::string") String guid, long modifiedTimeMillis, int useCount) {
+            @JniType("std::string") String guid,
+            long modifiedTimeMillis,
+            int useCount,
+            long useDateMillis) {
         mGuid = guid;
         mModifiedTime = modifiedTimeMillis;
         mUseCount = useCount;
+        mUseDateMillis = useDateMillis;
     }
 
     @CalledByNative
@@ -40,5 +45,10 @@ public class EntityMetadata {
     @CalledByNative
     public int getUseCount() {
         return mUseCount;
+    }
+
+    @CalledByNative
+    public long getUseDateMillis() {
+        return mUseDateMillis;
     }
 }

@@ -14,7 +14,7 @@ base::android::ScopedJavaLocalRef<jobject> EntityMetadataAndroid::Create(
     const EntityMetadataAndroid& metadata) {
   return Java_EntityMetadata_Constructor(
       env, metadata.guid, metadata.date_modified.InMillisecondsSinceUnixEpoch(),
-      metadata.use_count);
+      metadata.use_count, metadata.use_date.InMillisecondsSinceUnixEpoch());
 }
 
 EntityMetadataAndroid EntityMetadataAndroid::FromJavaEntityMetadata(
@@ -24,16 +24,21 @@ EntityMetadataAndroid EntityMetadataAndroid::FromJavaEntityMetadata(
   base::Time date_modified = base::Time::FromMillisecondsSinceUnixEpoch(
       Java_EntityMetadata_getModifiedTimeMillis(env, j_metadata));
   int use_count = Java_EntityMetadata_getUseCount(env, j_metadata);
+  base::Time use_date = base::Time::FromMillisecondsSinceUnixEpoch(
+      Java_EntityMetadata_getUseDateMillis(env, j_metadata));
 
-  return EntityMetadataAndroid(std::move(guid), date_modified, use_count);
+  return EntityMetadataAndroid(std::move(guid), date_modified, use_count,
+                               use_date);
 }
 
 EntityMetadataAndroid::EntityMetadataAndroid(std::string guid,
                                              base::Time date_modified,
-                                             int use_count)
+                                             int use_count,
+                                             base::Time use_date)
     : guid(std::move(guid)),
       date_modified(date_modified),
-      use_count(use_count) {}
+      use_count(use_count),
+      use_date(use_date) {}
 
 EntityMetadataAndroid::EntityMetadataAndroid(const EntityMetadataAndroid&) =
     default;

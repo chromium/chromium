@@ -313,10 +313,12 @@ public class AutofillAiDelegate {
         pref.setEnabled(!disabled);
         pref.setOnPreferenceClickListener(
                 preference -> {
+                    long currentDate = TimeUtils.currentTimeMillis();
                     showEntityEditor(
                             new EntityInstance.Builder(entityType)
-                                    .setModifiedDate(TimeUtils.currentTimeMillis())
+                                    .setModifiedDate(currentDate)
                                     .setUseCount(0)
+                                    .setUseDate(currentDate)
                                     .setRecordType(
                                             entityType.isEligibleForWalletStorage()
                                                     ? RecordType.SERVER_WALLET

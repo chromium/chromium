@@ -48,7 +48,7 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
   EntityInstanceAndroid entity_instance_android(
       entity_type_android, EntityInstance::RecordType::kLocal,
       {attribute_instance_android}, kNickname,
-      EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
+      EntityMetadataAndroid(kGuid, base::Time::Now(), 0, base::Time::Now()),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
   EntityInstance entity_instance =
@@ -98,7 +98,7 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_ReuseExistingAttribute) {
   EntityInstanceAndroid entity_instance_android(
       entity_type_android, EntityInstance::RecordType::kLocal,
       {attribute_instance_android}, kNickname,
-      EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
+      EntityMetadataAndroid(kGuid, base::Time::Now(), 0, base::Time::Now()),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
   EntityInstance converted_entity =
@@ -176,7 +176,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
       entity_type_android, EntityInstance::RecordType::kLocal,
       {passport_name_attribute_instance_android,
        passport_number_attribute_instance_android},
-      kNickname, EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
+      kNickname,
+      EntityMetadataAndroid(kGuid, base::Time::Now(), 0, base::Time::Now()),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
   EntityInstance converted_entity =

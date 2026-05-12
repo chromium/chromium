@@ -70,7 +70,8 @@ EntityInstanceAndroid::EntityInstanceAndroid(
       record_type(entity_instance.record_type()),
       metadata(entity_instance.guid().value(),
                entity_instance.date_modified(),
-               static_cast<int>(entity_instance.use_count())),
+               static_cast<int>(entity_instance.use_count()),
+               entity_instance.use_date()),
       requires_reauth_to_see(requires_reauth_to_see),
       is_masked_server_entity(entity_instance.IsMaskedEntity() &&
                               entity_instance.IsServerInstance()) {

@@ -41,6 +41,7 @@ public class EntityInstance {
         private String mNickname = "";
         private long mModifiedDateMillis;
         private @Nullable Integer mUseCount;
+        private long mUseDateMillis;
         private boolean mRequiresReauthToSee;
         private boolean mIsMaskedServerEntity;
 
@@ -78,6 +79,11 @@ public class EntityInstance {
             return this;
         }
 
+        public Builder setUseDate(long useDateMillis) {
+            mUseDateMillis = useDateMillis;
+            return this;
+        }
+
         public Builder setRequiresReauthToSee(boolean requiresReauthToSee) {
             mRequiresReauthToSee = requiresReauthToSee;
             return this;
@@ -89,13 +95,18 @@ public class EntityInstance {
         }
 
         public EntityInstance build() {
+            final long currentDate = TimeUtils.currentTimeMillis();
             if (mModifiedDateMillis == 0) {
-                mModifiedDateMillis = TimeUtils.currentTimeMillis();
+                mModifiedDateMillis = currentDate;
             }
             if (mUseCount == null) {
                 throw new IllegalStateException("mUseCount cannot be null");
             }
-            EntityMetadata metadata = new EntityMetadata(mGuid, mModifiedDateMillis, mUseCount);
+            if (mUseDateMillis == 0) {
+                mUseDateMillis = currentDate;
+            }
+            EntityMetadata metadata =
+                    new EntityMetadata(mGuid, mModifiedDateMillis, mUseCount, mUseDateMillis);
             return new EntityInstance(
                     mRecordType,
                     mEntityType,

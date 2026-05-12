@@ -25,7 +25,8 @@ struct EntityMetadataAndroid {
 
   EntityMetadataAndroid(std::string guid,
                         base::Time date_modified,
-                        int use_count);
+                        int use_count,
+                        base::Time use_date);
   EntityMetadataAndroid(const EntityMetadataAndroid&);
   EntityMetadataAndroid& operator=(const EntityMetadataAndroid&);
   EntityMetadataAndroid(EntityMetadataAndroid&&);
@@ -35,6 +36,7 @@ struct EntityMetadataAndroid {
   std::string guid;
   base::Time date_modified;
   int use_count;
+  base::Time use_date;
 };
 
 }  // namespace autofill
