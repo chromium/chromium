@@ -441,19 +441,33 @@ void FakeLorgnetteScannerManager::StartPreparedScan(
     const lorgnette::StartPreparedScanRequest& request,
     StartPreparedScanCallback callback) {
   CHECK(request.has_scanner());
-  std::optional<lorgnette::StartPreparedScanResponse> response;
-  if (start_prepared_scan_result_.has_value()) {
-    response.emplace();
-    *response->mutable_scanner() = request.scanner();
-    if (request.has_max_read_size() && request.max_read_size() < 32768) {
-      response->set_result(lorgnette::OPERATION_RESULT_INVALID);
-    } else {
-      response->set_result(*start_prepared_scan_result_);
-      if (response->result() == lorgnette::OPERATION_RESULT_SUCCESS) {
-        response->mutable_job_handle()->set_token(CreateFreshHandle());
-      }
-    }
+
+  if (simulate_dbus_failure_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
   }
+
+  lorgnette::StartPreparedScanResponse response;
+  *response.mutable_scanner() = request.scanner();
+
+  const std::string& handle = request.scanner().token();
+  auto it = std::ranges::find_if(scanners_, [&handle](const auto& s) {
+    return s.active_session.has_value() &&
+           s.active_session->config.scanner().token() == handle;
+  });
+
+  if (it == scanners_.end()) {
+    response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+  } else if (request.has_max_read_size() && request.max_read_size() < 32768) {
+    response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+  } else if (simulate_scanner_failure_) {
+    response.set_result(lorgnette::OPERATION_RESULT_IO_ERROR);
+  } else {
+    response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+    response.mutable_job_handle()->set_token(CreateFreshHandle());
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
@@ -575,6 +589,10 @@ void FakeLorgnetteScannerManager::SimulateDBusFailure(bool simulate) {
   simulate_dbus_failure_ = simulate;
 }
 
+void FakeLorgnetteScannerManager::SimulateScannerFailure(bool simulate) {
+  simulate_scanner_failure_ = simulate;
+}
+
 void FakeLorgnetteScannerManager::AddScanner(
     lorgnette::ScannerInfo scanner_info,
     lorgnette::ScannerConfig config_template,
@@ -586,11 +604,6 @@ void FakeLorgnetteScannerManager::AddScanner(
                          capabilities.has_value()
                              ? std::move(*capabilities)
                              : CreateDefaultCapabilities());
-}
-
-void FakeLorgnetteScannerManager::SetStartPreparedScanResult(
-    std::optional<lorgnette::OperationResult> result) {
-  start_prepared_scan_result_ = std::move(result);
 }
 
 void FakeLorgnetteScannerManager::ConfigureReadScanDataResponse(

@@ -69,6 +69,7 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   // make them pass std::nullopt to their response callbacks.
   // TODO(crbug.com/479031241): Make this affect all relevant operations.
   void SimulateDBusFailure(bool simulate);
+  void SimulateScannerFailure(bool simulate);
 
   // Registers a scanner with a template configuration. A subsequent OpenScanner
   // request with the scanner id from `scanner_info` will succeed and return a
@@ -80,16 +81,6 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
                   lorgnette::ScannerConfig config_template,
                   std::optional<lorgnette::ScannerCapabilities> capabilities =
                       std::nullopt);
-
-  // Sets the result field of the response returned by StartPreparedScan().
-  // - If `result` has no value, the response will be nullopt (that's the
-  //   default).
-  // - Otherwise, the response will consist of the given result, the scanner
-  //   from the request, and, in the case of OPERATION_RESULT_SUCCESS, a fresh
-  //   job handle. Exception: if the requested max read size is below the
-  //   minimum of 32k, the result will be OPERATION_RESULT_INVALID.
-  void SetStartPreparedScanResult(
-      std::optional<lorgnette::OperationResult> result);
 
   // Configures the response returned by ReadScanData().
   // - If `result` has no value, the response will be nullopt (that's the
@@ -138,8 +129,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   std::string CreateFreshHandle();
 
   bool simulate_dbus_failure_ = false;
+  bool simulate_scanner_failure_ = false;
   std::vector<ScannerState> scanners_;
-  std::optional<lorgnette::OperationResult> start_prepared_scan_result_;
   std::optional<lorgnette::OperationResult> read_scan_data_result_;
   std::vector<std::string> read_scan_data_chunks_;
   size_t handle_count_ = 0;

@@ -104,17 +104,6 @@ class AutoTruster : public extensions::ExtensionRegistryObserver {
 class DocumentScanApiTest : public ExtensionApiTest,
                             public testing::WithParamInterface<ExtensionType> {
  public:
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
-
-    auto* lorgnette_manager = static_cast<ash::FakeLorgnetteScannerManager*>(
-        ash::LorgnetteScannerManagerFactory::GetForBrowserContext(profile()));
-
-    // Set up Lorgnette's StartPreparedScan response.
-    lorgnette_manager->SetStartPreparedScanResult(
-        lorgnette::OPERATION_RESULT_SUCCESS);
-  }
-
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     ExtensionApiTest::SetUpBrowserContextKeyedServices(context);

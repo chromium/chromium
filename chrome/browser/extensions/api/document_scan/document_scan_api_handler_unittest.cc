@@ -124,8 +124,6 @@ class DocumentScanAPIHandlerTest : public testing::Test {
 
     GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
         lorgnette::OPERATION_RESULT_SUCCESS);
-    GetLorgnetteScannerManager()->SetStartPreparedScanResult(
-        lorgnette::OPERATION_RESULT_SUCCESS);
   }
 
   void TearDown() override {
@@ -342,8 +340,7 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_OpenFails) {
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_StartScanFails) {
   AddScanners({CreateTestScannerInfo()});
-  GetLorgnetteScannerManager()->SetStartPreparedScanResult(
-      lorgnette::OPERATION_RESULT_IO_ERROR);
+  GetLorgnetteScannerManager()->SimulateScannerFailure(true);
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
                                          future.GetCallback());
@@ -1529,7 +1526,7 @@ TEST_F(DocumentScanAPIHandlerTest, StartScan_DBusFailure) {
   std::string scanner_handle = OpenScannerForExtension(extension_);
   EXPECT_FALSE(scanner_handle.empty());
 
-  GetLorgnetteScannerManager()->SetStartPreparedScanResult(std::nullopt);
+  GetLorgnetteScannerManager()->SimulateDBusFailure(true);
 
   base::AutoReset<std::optional<bool>> testing_scope =
       StartScanRunner::SetStartScanConfirmationResultForTesting(true);
