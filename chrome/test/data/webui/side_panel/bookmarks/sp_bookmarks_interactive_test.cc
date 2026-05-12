@@ -65,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, DISABLED_General1) {
       "runMochaSuite('General Part1');");
 }
 
-// TODO(crbug.com/511960512): Flaky test.
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, DISABLED_General2) {
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, General2) {
   SidePanelBookmarksTest::RunTest(
       "side_panel/bookmarks/power_bookmarks_app_test.js",
       "runMochaSuite('General Part2');");
