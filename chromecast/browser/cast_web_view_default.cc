@@ -20,15 +20,19 @@
 #include "chromecast/browser/renderer_prelauncher.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/graphics/cast_screen.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "content/public/browser/media_session.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
@@ -199,7 +203,21 @@ bool CastWebViewDefault::CheckMediaAccessPermission(
     LOG(WARNING) << __func__ << ": media access is disabled.";
     return false;
   }
-  return true;
+  if (!render_frame_host) {
+    return false;
+  }
+
+  auto permission_descriptor = blink::mojom::PermissionDescriptor::New();
+  permission_descriptor->name =
+      type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
+          ? blink::mojom::PermissionName::AUDIO_CAPTURE
+          : blink::mojom::PermissionName::VIDEO_CAPTURE;
+
+  content::PermissionController* permission_controller =
+      web_contents_->GetBrowserContext()->GetPermissionController();
+  return permission_controller->GetPermissionStatusForCurrentDocument(
+             permission_descriptor, render_frame_host) ==
+         blink::mojom::PermissionStatus::GRANTED;
 }
 
 bool CastWebViewDefault::DidAddMessageToConsole(
@@ -238,9 +256,22 @@ void CastWebViewDefault::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  if (!chromecast::IsFeatureEnabled(kAllowUserMediaAccess) &&
-      !params_->allow_media_access) {
-    LOG(WARNING) << __func__ << ": media access is disabled.";
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request.render_process_id, request.render_frame_id);
+  bool audio_allowed =
+      request.audio_type ==
+          blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
+      CheckMediaAccessPermission(rfh,
+                                 url::Origin::Create(request.security_origin),
+                                 request.audio_type);
+  bool video_allowed =
+      request.video_type ==
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
+      CheckMediaAccessPermission(rfh,
+                                 url::Origin::Create(request.security_origin),
+                                 request.video_type);
+  if (!audio_allowed && !video_allowed) {
+    LOG(WARNING) << __func__ << ": media access is denied.";
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
@@ -259,8 +290,7 @@ void CastWebViewDefault::RequestMediaAccessPermission(
   stream_devices_set.stream_devices.emplace_back(
       blink::mojom::StreamDevices::New());
   blink::mojom::StreamDevices& devices = *stream_devices_set.stream_devices[0];
-  if (request.audio_type ==
-      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+  if (audio_allowed) {
     const blink::MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         audio_devices, request.requested_audio_device_ids);
     if (device) {
@@ -270,8 +300,7 @@ void CastWebViewDefault::RequestMediaAccessPermission(
     }
   }
 
-  if (request.video_type ==
-      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+  if (video_allowed) {
     const blink::MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         video_devices, request.requested_video_device_ids);
     if (device) {
