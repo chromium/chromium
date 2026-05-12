@@ -2,6 +2,6 @@ This is a testharness.js-based test.
 [FAIL] All properties (except 'all') can serialize their initial value (computed)
   assert_array_equals: lengths differ, expected array [] length 0, got [["grid", "none / none / none / row / auto / auto"], ["page-margin-safety", ""], ["page-orientation", ""], ["rule", ""], ["rule-width", ""], ["size", ""]] length 6
 [FAIL] All shorthands (except 'all') can serialize their longhands set to their initial value
-  assert_array_equals: lengths differ, expected array [] length 0, got [["rule", ""], ["rule-width", ""]] length 2
+  assert_array_equals: lengths differ, expected array [] length 0, got [["border", ""], ["rule", ""], ["rule-width", ""]] length 3
 Harness: the test ran to completion.
 

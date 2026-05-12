@@ -144,28 +144,21 @@ class CORE_EXPORT StylePropertySerializer {
     explicit PropertyValueForSerializer(const CSSPropertyValue& property)
         : value_(property.Value()),
           name_(property.Name()),
-          is_important_(property.IsImportant()),
-          is_implicit_(property.IsImplicit()) {}
+          is_important_(property.IsImportant()) {}
 
     PropertyValueForSerializer(const CSSPropertyName& name,
                                const CSSValue& value,
-                               bool is_important,
-                               bool is_implicit)
-        : value_(value),
-          name_(name),
-          is_important_(is_important),
-          is_implicit_(is_implicit) {}
+                               bool is_important)
+        : value_(value), name_(name), is_important_(is_important) {}
 
     const CSSPropertyName& Name() const { return name_; }
     const CSSValue& Value() const { return value_; }
     bool IsImportant() const { return is_important_; }
-    bool IsImplicit() const { return is_implicit_; }
 
    private:
     const CSSValue& value_;
     CSSPropertyName name_;
     bool is_important_;
-    bool is_implicit_;
   };
 
   String GetCustomPropertyText(const PropertyValueForSerializer&,

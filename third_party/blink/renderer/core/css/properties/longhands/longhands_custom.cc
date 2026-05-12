@@ -1488,10 +1488,7 @@ const CSSValue* BorderImageRepeat::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* BorderImageRepeat::InitialValue() const {
-  return MakeGarbageCollected<CSSValuePair>(
-      CSSIdentifierValue::Create(CSSValueID::kStretch),
-      CSSIdentifierValue::Create(CSSValueID::kStretch),
-      CSSValuePair::kDropIdenticalValues);
+  return CSSIdentifierValue::Create(CSSValueID::kStretch);
 }
 
 const CSSValue* BorderImageSlice::ParseSingleValue(

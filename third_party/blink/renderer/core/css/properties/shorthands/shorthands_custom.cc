@@ -733,18 +733,10 @@ bool Border::ParseShorthand(
                                                  *style, important, properties);
   css_parsing_utils::AddExpandedPropertyForValue(CSSPropertyID::kBorderColor,
                                                  *color, important, properties);
+  css_parsing_utils::AddExpandedPropertyForValue(CSSPropertyID::kBorderImage,
+                                                 *CSSInitialValue::Create(),
+                                                 important, properties);
 
-  // `border` resets `border-image` to its initial value. `border-image`
-  // is a shorthand, so each of its longhands is reset to its initial value.
-  // https://drafts.csswg.org/css-backgrounds/#propdef-border
-  // https://drafts.csswg.org/css-backgrounds/#border-image
-  const StylePropertyShorthand& border_image_shorthand = borderImageShorthand();
-  for (const CSSProperty* longhand : border_image_shorthand.properties()) {
-    css_parsing_utils::AddProperty(
-        longhand->PropertyID(), border_image_shorthand.id(),
-        *To<Longhand>(*longhand).InitialValue(), important,
-        css_parsing_utils::IsImplicitProperty::kImplicit, properties);
-  }
   return true;
 }
 
