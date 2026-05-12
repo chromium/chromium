@@ -1074,7 +1074,13 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
                          GetMaxTabSuggestions()) {
       auto it =
           input_type_info_.find(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
-      return it != input_type_info_.end() && it->second.enabled;
+      bool tab_context_enabled =
+          it != input_type_info_.end() && it->second.enabled;
+      if (tab_context_enabled) {
+        base::UmaHistogramEnumeration(sliced_prefix,
+                                      CommandIdToEnum(command_id));
+      }
+      return tab_context_enabled;
     }
 
     if (auto it = input_type_for_command_id_.find(command_id);
