@@ -884,11 +884,8 @@ config("skia_avx512_flags") {
     cflags = [ "/arch:AVX512" ]
   } else {
     cflags = [
-      "-mavx512f",
-      "-mavx512dq",
-      "-mavx512cd",
-      "-mavx512bw",
-      "-mavx512vl",
+      "-march=x86-64-v4",
+      "-mprefer-vector-width=512",
     ]
   }
 }
