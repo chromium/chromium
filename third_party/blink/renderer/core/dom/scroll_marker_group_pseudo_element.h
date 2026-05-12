@@ -13,12 +13,17 @@
 
 namespace blink {
 
+class Element;
+
 // Represents ::scroll-marker-group pseudo-element and manages
 // implicit focus group, formed by ::scroll-marker pseudo-elements.
 // This focus group is needed to cycle through its element with
 // arrow keys.
 class ScrollMarkerGroupPseudoElement : public PseudoElement {
  public:
+  static mojom::blink::ScrollIntoViewParamsPtr
+  CreateScrollIntoViewParamsForScrollMarkerTarget(Element* scroll_target);
+
   // pseudo_id is needed, as ::scroll-marker-group can be after or before.
   ScrollMarkerGroupPseudoElement(Element* originating_element,
                                  PseudoId pseudo_id);

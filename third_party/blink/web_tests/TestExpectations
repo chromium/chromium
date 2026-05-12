@@ -5803,12 +5803,6 @@ crbug.com/1000051 media/controls/volume-slider.html [ Failure Pass Timeout ]
 # Sheriff 2019-09-04
 crbug.com/1000396 [ Win ] media/video-remove-insert-repaints.html [ Failure Pass ]
 
-# Sheriff 2019-09-09
-
-# Tests fail because of missing scroll snap for #target and bugs in scrollIntoView
-crbug.com/1003055 external/wpt/css/css-scroll-snap/scroll-target-align-001.html [ Failure ]
-crbug.com/1003055 external/wpt/css/css-scroll-snap/scroll-target-align-002.html [ Failure ]
-
 # Sheriff 2019-09-30
 crbug.com/1003715 [ Win ] http/tests/notifications/serviceworker-notification-properties.html [ Failure Pass Timeout ]
 

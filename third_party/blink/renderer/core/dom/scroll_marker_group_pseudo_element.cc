@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
@@ -12,6 +13,36 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 
 namespace blink {
+
+// static
+mojom::blink::ScrollIntoViewParamsPtr
+ScrollMarkerGroupPseudoElement::CreateScrollIntoViewParamsForScrollMarkerTarget(
+    Element* scroll_target) {
+  const ComputedStyle& computed_style = *scroll_target->GetComputedStyle();
+  ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
+
+  // Per https://www.w3.org/TR/css-overflow-5/#scroll-marker-activation
+  // default to 'start' if scroll-snap-align is 'none'.
+
+  cc::SnapAlignment alignment_block =
+      computed_style.GetScrollSnapAlign().alignment_block;
+  options->setBlock(
+      alignment_block == cc::SnapAlignment::kNone
+          ? V8ScrollLogicalPosition::Enum::kStart
+          : scroll_into_view_util::SnapAlignmentToV8ScrollLogicalPosition(
+                alignment_block));
+
+  cc::SnapAlignment alignment_inline =
+      computed_style.GetScrollSnapAlign().alignment_inline;
+  options->setInlinePosition(
+      alignment_inline == cc::SnapAlignment::kNone
+          ? V8ScrollLogicalPosition::Enum::kStart
+          : scroll_into_view_util::SnapAlignmentToV8ScrollLogicalPosition(
+                alignment_inline));
+
+  return scroll_into_view_util::CreateScrollIntoViewParams(*options,
+                                                           computed_style);
+}
 
 ScrollMarkerGroupPseudoElement::ScrollMarkerGroupPseudoElement(
     Element* originating_element,
@@ -65,8 +96,8 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
   // parentElement is ::column for column scroll marker and
   // ultimate originating element for regular scroll marker.
   mojom::blink::ScrollIntoViewParamsPtr params =
-      scroll_into_view_util::CreateScrollIntoViewParams(
-          *scroll_marker->parentElement()->GetComputedStyle());
+      CreateScrollIntoViewParamsForScrollMarkerTarget(
+          scroll_marker->parentElement());
   scroll_marker->ScrollIntoViewNoVisualUpdate(
       std::move(params), &UltimateOriginatingElement(),
       /* include_self = */ scroll_marker->UltimateOriginatingElement() ==

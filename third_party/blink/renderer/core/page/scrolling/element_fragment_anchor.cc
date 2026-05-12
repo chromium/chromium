@@ -108,10 +108,8 @@ bool ElementFragmentAnchor::Invoke() {
     element_to_scroll = doc.documentElement();
 
   if (element_to_scroll) {
-    ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-    options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
-    options->setInlinePosition(V8ScrollLogicalPosition::Enum::kNearest);
-    ScrollElementIntoViewWithOptions(element_to_scroll, options);
+    ScrollElementIntoViewWithOptions(element_to_scroll,
+                                     ScrollIntoViewOptions::Create());
   }
 
   if (AXObjectCache* cache = doc.ExistingAXObjectCache())

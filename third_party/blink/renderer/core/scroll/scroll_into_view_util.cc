@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -381,6 +382,23 @@ mojom::blink::ScrollAlignment::Behavior CalculateScrollAlignment(
   return alignment.rect_hidden;
 }
 
+V8ScrollLogicalPosition::Enum ResolveAutoAlignment(
+    V8ScrollAxis::Enum axis,
+    cc::SnapAlignment snap_alignment) {
+  CHECK(axis == V8ScrollAxis::Enum::kBlock ||
+        axis == V8ScrollAxis::Enum::kInline);
+
+  if (RuntimeEnabledFeatures::ScrollIntoViewAlignAutoEnabled() &&
+      snap_alignment != cc::SnapAlignment::kNone) {
+    return scroll_into_view_util::SnapAlignmentToV8ScrollLogicalPosition(
+        snap_alignment);
+  }
+
+  return axis == V8ScrollAxis::Enum::kBlock
+             ? V8ScrollLogicalPosition::Enum::kStart
+             : V8ScrollLogicalPosition::Enum::kNearest;
+}
+
 }  // namespace
 
 namespace scroll_into_view_util {
@@ -597,14 +615,20 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
     behavior = mojom::blink::ScrollBehavior::kInstant;
   }
 
-  V8ScrollLogicalPosition::Enum block_align =
-      options.block().AsEnum() == V8ScrollLogicalPosition::Enum::kAuto
-          ? V8ScrollLogicalPosition::Enum::kStart
-          : options.block().AsEnum();
+  V8ScrollLogicalPosition::Enum block_align = options.block().AsEnum();
+  if (block_align == V8ScrollLogicalPosition::Enum::kAuto) {
+    block_align = ResolveAutoAlignment(
+        V8ScrollAxis::Enum::kBlock,
+        computed_style.GetScrollSnapAlign().alignment_block);
+  }
+
   V8ScrollLogicalPosition::Enum inline_align =
-      options.inlinePosition().AsEnum() == V8ScrollLogicalPosition::Enum::kAuto
-          ? V8ScrollLogicalPosition::Enum::kNearest
-          : options.inlinePosition().AsEnum();
+      options.inlinePosition().AsEnum();
+  if (inline_align == V8ScrollLogicalPosition::Enum::kAuto) {
+    inline_align = ResolveAutoAlignment(
+        V8ScrollAxis::Enum::kInline,
+        computed_style.GetScrollSnapAlign().alignment_inline);
+  }
 
   auto align_x = ResolveToPhysicalAlignment(inline_align, block_align,
                                             kHorizontalScroll, computed_style);
@@ -614,35 +638,6 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
   mojom::blink::ScrollIntoViewParamsPtr params =
       CreateScrollIntoViewParams(align_x, align_y);
   params->behavior = behavior;
-  return params;
-}
-
-mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
-    const ComputedStyle& computed_style) {
-  // Per https://www.w3.org/TR/css-overflow-5/#scroll-marker-activation
-  // default to 'start' if scroll-snap-align is 'none'.
-  cc::SnapAlignment alignment_inline =
-      computed_style.GetScrollSnapAlign().alignment_inline;
-  if (alignment_inline == cc::SnapAlignment::kNone) {
-    alignment_inline = cc::SnapAlignment::kStart;
-  }
-  V8ScrollLogicalPosition::Enum inline_alignment =
-      SnapAlignmentToV8ScrollLogicalPosition(alignment_inline);
-  cc::SnapAlignment alignment_block =
-      computed_style.GetScrollSnapAlign().alignment_block;
-  if (alignment_block == cc::SnapAlignment::kNone) {
-    alignment_block = cc::SnapAlignment::kStart;
-  }
-  V8ScrollLogicalPosition::Enum block_alignment =
-      SnapAlignmentToV8ScrollLogicalPosition(alignment_block);
-  auto align_x = ResolveToPhysicalAlignment(inline_alignment, block_alignment,
-                                            kHorizontalScroll, computed_style);
-  auto align_y = ResolveToPhysicalAlignment(inline_alignment, block_alignment,
-                                            kVerticalScroll, computed_style);
-
-  mojom::blink::ScrollIntoViewParamsPtr params =
-      CreateScrollIntoViewParams(align_x, align_y);
-  params->behavior = computed_style.GetScrollBehavior();
   return params;
 }
 
