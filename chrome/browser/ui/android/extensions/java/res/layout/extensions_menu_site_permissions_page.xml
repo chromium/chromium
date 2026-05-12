@@ -22,105 +22,116 @@ found in the LICENSE file.
         android:layout_height="wrap_content" />
 
     <!-- Site permissions section -->
-    <View
-        style="@style/ExtensionsMenuDivider" />
-    <TextView
-        android:id="@+id/extensions_menu_site_permissions_title"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Site Permissions"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-        android:paddingHorizontal="@dimen/extensions_menu_horizontal_padding"
-        android:paddingVertical="@dimen/extensions_menu_toggle_vertical_padding"
-        tools:ignore="HardcodedText" />
+        android:layout_height="wrap_content">
 
-    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
-        android:id="@+id/extensions_menu_site_permissions_radio_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingBottom="10dp">
-
-        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
-            android:id="@+id/extensions_menu_site_permissions_on_click"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:primaryText="Ask on every visit"
-            app:descriptionText="Runs only after you click the extension"
-            app:primaryTextAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
-            app:descriptionTextAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline"
-            tools:ignore="HardcodedText" />
+            android:orientation="vertical">
 
-        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
-            android:id="@+id/extensions_menu_site_permissions_on_site"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:primaryText="Always on"
-            app:descriptionText="Runs automatically every time you visit this site"
-            app:primaryTextAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
-            app:descriptionTextAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline"
-            tools:ignore="HardcodedText" />
+            <View
+                style="@style/ExtensionsMenuDivider" />
+            <TextView
+                android:id="@+id/extensions_menu_site_permissions_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Site Permissions"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                android:paddingHorizontal="@dimen/extensions_menu_horizontal_padding"
+                android:paddingVertical="@dimen/extensions_menu_toggle_vertical_padding"
+                tools:ignore="HardcodedText" />
 
-        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
-            android:id="@+id/extensions_menu_site_permissions_on_all_sites"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:primaryText="Always on all sites"
-            app:descriptionText="Runs automatically on all sites you visit"
-            app:primaryTextAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
-            app:descriptionTextAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline"
-            tools:ignore="HardcodedText" />
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+                android:id="@+id/extensions_menu_site_permissions_radio_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingBottom="10dp">
 
-    </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+                <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                    android:id="@+id/extensions_menu_site_permissions_on_click"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:primaryText="Ask on every visit"
+                    app:descriptionText="Runs only after you click the extension"
+                    app:primaryTextAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
+                    app:descriptionTextAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline"
+                    tools:ignore="HardcodedText" />
 
-    <!-- Show access requests toggle -->
-    <View
-        style="@style/ExtensionsMenuDivider" />
-    <LinearLayout
-        android:id="@+id/extensions_menu_show_requests_toggle_container"
-        style="@style/ExtensionsMenuControlRow"
-        android:paddingVertical="@dimen/extensions_menu_vertical_padding">
+                <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                    android:id="@+id/extensions_menu_site_permissions_on_site"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:primaryText="Always on"
+                    app:descriptionText="Runs automatically every time you visit this site"
+                    app:primaryTextAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
+                    app:descriptionTextAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline"
+                    tools:ignore="HardcodedText" />
 
-        <TextView
-            android:id="@+id/extensions_menu_show_requests_toggle_text"
-            style="@style/ExtensionsMenuControlText"
-            android:text="Allowed to show requests in the toolbar"
-            android:layout_marginStart="8dp"
-            tools:ignore="HardcodedText" />
-            <!-- TODO(crbug.com/471016912): Use string from view model -->
+                <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                    android:id="@+id/extensions_menu_site_permissions_on_all_sites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:primaryText="Always on all sites"
+                    app:descriptionText="Runs automatically on all sites you visit"
+                    app:primaryTextAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
+                    app:descriptionTextAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline"
+                    tools:ignore="HardcodedText" />
 
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/extensions_menu_show_requests_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:focusable="false"
-            android:clickable="false" />
-    </LinearLayout>
+            </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 
-    <!-- Manage this extension button -->
-    <View
-        style="@style/ExtensionsMenuDivider" />
-    <LinearLayout
-        android:id="@+id/extensions_menu_manage_this_extension"
-        style="@style/ExtensionsMenuControlRow"
-        android:paddingVertical="@dimen/extensions_menu_vertical_padding"
-        tools:ignore="UseCompoundDrawables">
+            <!-- Show access requests toggle -->
+            <View
+                style="@style/ExtensionsMenuDivider" />
+            <LinearLayout
+                android:id="@+id/extensions_menu_show_requests_toggle_container"
+                style="@style/ExtensionsMenuControlRow"
+                android:paddingVertical="@dimen/extensions_menu_vertical_padding">
 
-        <TextView
-            android:id="@+id/extensions_menu_manage_this_extension_text"
-            style="@style/ExtensionsMenuControlText"
-            android:text="Manage this extension"
-            android:layout_marginStart="8dp"
-            tools:ignore="HardcodedText" />
-            <!-- TODO(crbug.com/424010795): Use string from view model -->
+                <TextView
+                    android:id="@+id/extensions_menu_show_requests_toggle_text"
+                    style="@style/ExtensionsMenuControlText"
+                    android:text="Allowed to show requests in the toolbar"
+                    android:layout_marginStart="8dp"
+                    tools:ignore="HardcodedText" />
+                    <!-- TODO(crbug.com/471016912): Use string from view model -->
 
-        <ImageView
-            android:id="@+id/extensions_menu_manage_this_extension_chevron"
-            style="@style/ExtensionsMenuControlIcon"
-            android:src="@drawable/outline_chevron_right_24dp"
-            android:importantForAccessibility="no" />
-    </LinearLayout>
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/extensions_menu_show_requests_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:focusable="false"
+                    android:clickable="false" />
+            </LinearLayout>
+
+            <!-- Manage this extension button -->
+            <View
+                style="@style/ExtensionsMenuDivider" />
+            <LinearLayout
+                android:id="@+id/extensions_menu_manage_this_extension"
+                style="@style/ExtensionsMenuControlRow"
+                android:paddingVertical="@dimen/extensions_menu_vertical_padding"
+                tools:ignore="UseCompoundDrawables">
+
+                <TextView
+                    android:id="@+id/extensions_menu_manage_this_extension_text"
+                    style="@style/ExtensionsMenuControlText"
+                    android:text="Manage this extension"
+                    android:layout_marginStart="8dp"
+                    tools:ignore="HardcodedText" />
+                    <!-- TODO(crbug.com/424010795): Use string from view model -->
+
+                <ImageView
+                    android:id="@+id/extensions_menu_manage_this_extension_chevron"
+                    style="@style/ExtensionsMenuControlIcon"
+                    android:src="@drawable/outline_chevron_right_24dp"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
