@@ -89,6 +89,10 @@ void TabsEventRouterPlatformDelegate::OnBrowserCreated(
 
 void TabsEventRouterPlatformDelegate::OnSplitTabChanged(
     const SplitTabChange& change) {
+  // TODO(https://crbug.com/480192698): Move support for this event to the
+  // platform-agnostic TabsEventRouter when split tabs are supported on desktop
+  // android.
+
   if (change.type == SplitTabChange::Type::kAdded &&
       change.GetAddedChange()->reason() !=
           SplitTabChange::SplitTabAddReason::kInsertedFromAnotherTabstrip) {
@@ -116,6 +120,10 @@ void TabsEventRouterPlatformDelegate::OnSplitTabChanged(
 void TabsEventRouterPlatformDelegate::OnLifecycleUnitStateChanged(
     resource_coordinator::LifecycleUnit* lifecycle_unit,
     ::mojom::LifecycleUnitState previous_state) {
+  // TODO(https://crbug.com/505306735): Move support for this event to the
+  // platform-agnostic TabsEventRouter when tab lifecycle states are migrated
+  // to desktop android.
+
   const ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
   auto previous_or_new_state_is = [&](::mojom::LifecycleUnitState state) {
     return previous_state == state || new_state == state;
