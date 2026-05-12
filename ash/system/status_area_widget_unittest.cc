@@ -370,9 +370,6 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
 
     network_handler_test_helper_.InitializePrefs(&profile_prefs_,
                                                  local_state());
-
-    // Networking stubs may have asynchronous initialization.
-    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
