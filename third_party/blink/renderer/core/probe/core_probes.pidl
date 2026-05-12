@@ -82,7 +82,7 @@ interface CoreProbes {
   void DidModifyAdoptedStyleSheets([Keep] Node*);
   void WillChangeStyleElement([Keep] Element*);
   void CharacterDataModified([Keep] CharacterData*);
-  void DidInvalidateStyleAttr([Keep] Node*);
+  void DidInvalidateStyleAttr([Keep] Element*);
   void DidPerformSlotDistribution([Keep] HTMLSlotElement*);
   void DocumentDetached([Keep] Document*);
   void ActiveStyleSheetsUpdated([Keep] Document*);

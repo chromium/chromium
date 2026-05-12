@@ -177,6 +177,7 @@ class CORE_EXPORT InspectorCSSAgent final
   void SetCoverageEnabled(bool);
   void WillChangeStyleElement(Element*);
   void DidMutateStyleSheet(CSSStyleSheet* css_style_sheet);
+  void DidInvalidateStyleAttr(Element* element);
   void GetTextPosition(wtf_size_t offset,
                        const String* text,
                        TextPosition* result);
@@ -552,6 +553,7 @@ class CORE_EXPORT InspectorCSSAgent final
   void DidAddDocument(Document*) override;
   void WillRemoveDOMNode(Node*) override;
   void DidModifyDOMAttr(Element*) override;
+  void InvalidateInlineStyleCacheForElement(Element&);
 
   // InspectorStyleSheet::Listener implementation
   void StyleSheetChanged(InspectorStyleSheetBase*) override;

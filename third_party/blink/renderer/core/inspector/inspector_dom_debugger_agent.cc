@@ -262,9 +262,10 @@ protocol::Response InspectorDOMDebuggerAgent::RemoveBreakpoint(
   return protocol::Response::Success();
 }
 
-void InspectorDOMDebuggerAgent::DidInvalidateStyleAttr(Node* node) {
-  if (HasBreakpoint(node, AttributeModified))
-    BreakProgramOnDOMEvent(node, AttributeModified, false);
+void InspectorDOMDebuggerAgent::DidInvalidateStyleAttr(Element* element) {
+  if (HasBreakpoint(element, AttributeModified)) {
+    BreakProgramOnDOMEvent(element, AttributeModified, false);
+  }
 }
 
 void InspectorDOMDebuggerAgent::DidInsertDOMNode(Node* node) {

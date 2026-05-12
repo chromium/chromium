@@ -302,7 +302,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void DidModifyAdoptedStyleSheets(Node*);
   void AdoptedStyleSheetsInvalidated(Node*);
   void CharacterDataModified(CharacterData*);
-  void DidInvalidateStyleAttr(Node*);
+  void DidInvalidateStyleAttr(Element*);
   void DidPushShadowRoot(Element* host, ShadowRoot*);
   void WillPopShadowRoot(Element* host, ShadowRoot*);
   void DidPerformSlotDistribution(HTMLSlotElement*);

@@ -2815,11 +2815,12 @@ InspectorRevalidateDOMTask* InspectorDOMAgent::RevalidateTask() {
   return revalidate_task_.Get();
 }
 
-void InspectorDOMAgent::DidInvalidateStyleAttr(Node* node) {
-  // If node is not mapped yet -> ignore the event.
-  if (!BoundNodeId(node))
+void InspectorDOMAgent::DidInvalidateStyleAttr(Element* element) {
+  // If element is not mapped yet -> ignore the event.
+  if (!BoundNodeId(element)) {
     return;
-  RevalidateTask()->ScheduleStyleAttrRevalidationFor(To<Element>(node));
+  }
+  RevalidateTask()->ScheduleStyleAttrRevalidationFor(element);
 }
 
 bool InspectorDOMAgent::isNodeScrollable(Node* node) {

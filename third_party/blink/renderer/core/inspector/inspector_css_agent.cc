@@ -28,6 +28,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
@@ -4585,16 +4586,16 @@ void InspectorCSSAgent::WillRemoveDOMNode(Node* node) {
   node_to_inspector_style_sheet_.erase(node);
 }
 
-void InspectorCSSAgent::DidModifyDOMAttr(Element* element) {
-  if (!element)
-    return;
-
-  NodeToInspectorStyleSheet::iterator it =
-      node_to_inspector_style_sheet_.find(element);
+void InspectorCSSAgent::InvalidateInlineStyleCacheForElement(Element& element) {
+  auto it = node_to_inspector_style_sheet_.find(&element);
   if (it == node_to_inspector_style_sheet_.end())
     return;
 
   it->value->DidModifyElementAttribute();
+}
+
+void InspectorCSSAgent::DidModifyDOMAttr(Element* element) {
+  InvalidateInlineStyleCacheForElement(CHECK_DEREF(element));
 }
 
 void InspectorCSSAgent::DidMutateStyleSheet(CSSStyleSheet* css_style_sheet) {
@@ -4604,6 +4605,15 @@ void InspectorCSSAgent::DidMutateStyleSheet(CSSStyleSheet* css_style_sheet) {
   InspectorStyleSheet* style_sheet = it->value;
   style_sheet->MarkForSync();
   StyleSheetChanged(style_sheet);
+}
+
+void InspectorCSSAgent::DidInvalidateStyleAttr(Element* element) {
+  // Inline style mutations via CSSOM (e.g. element.style.X = Y) only fire
+  // DidInvalidateStyleAttr — not DidModifyDOMAttr — so the cached inline
+  // InspectorStyle's source data would otherwise stay stale and its property
+  // ranges could exceed the now re-serialized attribute text on the next
+  // query. Drop the cache so the next query reparses against the current text.
+  InvalidateInlineStyleCacheForElement(CHECK_DEREF(element));
 }
 
 void InspectorCSSAgent::GetTextPosition(wtf_size_t offset,

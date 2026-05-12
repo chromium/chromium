@@ -95,7 +95,7 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
 
   // InspectorInstrumentation API
   void WillInsertDOMNode(Node* parent);
-  void DidInvalidateStyleAttr(Node*);
+  void DidInvalidateStyleAttr(Element*);
   void DidInsertDOMNode(Node*);
   void CharacterDataModified(CharacterData*);
   void DidRemoveDOMNode(Node*);

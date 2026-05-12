@@ -1,0 +1,4 @@
+Inline style cache must be invalidated after a CSSOM mutation
+first properties: color, padding
+second properties: color
+
