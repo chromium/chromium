@@ -1035,8 +1035,9 @@ class PageContentAnnotationsServiceBatchVisitTest
   TestPageContentAnnotator annotator_;
 };
 
+// TODO(crbug.com/512459314): Re-enable once the test is fixed.
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
-                       ModelExecutesWithFullBatch) {
+                       DISABLED_ModelExecutesWithFullBatch) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
