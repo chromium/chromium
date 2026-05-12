@@ -183,6 +183,11 @@ chromium-metrics-reviews@google.com.
   <variant name="OnOpen" summary="the glic panel is opened."/>
 </variants>
 
+<variants name="PressureLevel">
+  <variant name="CriticalPressure" summary="critical memory pressure"/>
+  <variant name="ModeratePressure" summary="moderate memory pressure"/>
+</variants>
+
 <variants name="ProfileEnablementSuffix">
   <variant name="Startup"
       summary="recorded early in startup when the first window is opened."/>
@@ -838,6 +843,39 @@ chromium-metrics-reviews@google.com.
 
 </histogram>
 
+<histogram name="Glic.Instance.AvgClientPrivateMemoryFootprint.{PressureLevel}"
+    units="MB" expires_after="2027-06-01">
+  <owner>bryantchandler@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the average private memory footprint of Client processes across all
+    unhibernated Glic instances when a {PressureLevel} event is received.
+  </summary>
+  <token key="PressureLevel" variants="PressureLevel"/>
+</histogram>
+
+<histogram name="Glic.Instance.AvgTotalPrivateMemoryFootprint.{PressureLevel}"
+    units="MB" expires_after="2027-06-01">
+  <owner>bryantchandler@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the average total private memory footprint of all processes across
+    all unhibernated Glic instances when a {PressureLevel} event is received.
+  </summary>
+  <token key="PressureLevel" variants="PressureLevel"/>
+</histogram>
+
+<histogram name="Glic.Instance.AvgWebUIPrivateMemoryFootprint.{PressureLevel}"
+    units="MB" expires_after="2027-06-01">
+  <owner>bryantchandler@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the average private memory footprint of WebUI processes across all
+    unhibernated Glic instances when a {PressureLevel} event is received.
+  </summary>
+  <token key="PressureLevel" variants="PressureLevel"/>
+</histogram>
+
 <histogram name="Glic.Instance.EventCounts" enum="GlicInstanceEvent"
     expires_after="2026-10-04">
   <owner>birnie@google.com</owner>
@@ -1043,26 +1081,6 @@ chromium-metrics-reviews@google.com.
     panel is shown.
   </summary>
   <token key="EmbedderType" variants="EmbedderType"/>
-</histogram>
-
-<histogram name="Glic.Instance.PrivateMemoryFootprint.CriticalPressure"
-    units="MB" expires_after="2026-12-09">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@google.com</owner>
-  <summary>
-    Records the private memory footprint of each Glic instance (sum of WebUI +
-    WebClient) when a critical memory pressure event is received.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.PrivateMemoryFootprint.ModeratePressure"
-    units="MB" expires_after="2026-12-09">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@google.com</owner>
-  <summary>
-    Records the private memory footprint of each Glic instance (sum of WebUI +
-    WebClient) when a moderate memory pressure event is received.
-  </summary>
 </histogram>
 
 <histogram name="Glic.Instance.Session.CreateTabCount" units="count"
@@ -1352,6 +1370,17 @@ chromium-metrics-reviews@google.com.
     Records the total time a GlicInstance was hidden throughout its lifetime.
     Recorded when the GlicInstance is destroyed.
   </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TotalPrivateMemoryFootprint.{PressureLevel}"
+    units="MB" expires_after="2027-06-01">
+  <owner>bryantchandler@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the absolute total private memory footprint of all processes across
+    all unhibernated Glic instances when a {PressureLevel} event is received.
+  </summary>
+  <token key="PressureLevel" variants="PressureLevel"/>
 </histogram>
 
 <histogram name="Glic.Instance.TotalTabsBoundInLifetime" units="count"

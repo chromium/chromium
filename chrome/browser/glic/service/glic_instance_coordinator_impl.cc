@@ -207,12 +207,24 @@ GlicInstanceCoordinatorImpl::GetInstancesForTesting() {
   return instances;
 }
 
-std::vector<GlicInstance*> GlicInstanceCoordinatorImpl::GetInstances() {
-  std::vector<GlicInstance*> instances;
-  for (auto& entry : instances_) {
-    instances.push_back(entry.second.get());
+int GlicInstanceCoordinatorImpl::GetVisibleInstanceCount() const {
+  int count = 0;
+  for (const auto& entry : instances_) {
+    if (entry.second && entry.second->IsShowing()) {
+      count++;
+    }
   }
-  return instances;
+  return count;
+}
+
+std::vector<Host*> GlicInstanceCoordinatorImpl::GetAllUnhibernatedHosts() {
+  std::vector<Host*> hosts;
+  for (const auto& entry : instances_) {
+    if (entry.second && !entry.second->IsHibernated()) {
+      hosts.push_back(&entry.second->host());
+    }
+  }
+  return hosts;
 }
 
 bool GlicInstanceCoordinatorImpl::IsAnyPanelShowing() const {

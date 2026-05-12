@@ -107,7 +107,7 @@ class GlicInstanceCoordinatorImpl
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // GlicInstanceCoordinatorMetrics::DataProvider implementation
-  std::vector<GlicInstance*> GetInstances() override;
+  int GetVisibleInstanceCount() const override;
 
   bool IsAnyPanelShowing() const override;
   // GlicInstanceCoordinator implementation
@@ -217,6 +217,9 @@ class GlicInstanceCoordinatorImpl
 
   // Helper method to get a list of recently active instances sorted by time.
   std::vector<GlicInstanceImpl*> GetSortedRecentInstances(size_t limit) const;
+
+  // GlicInstanceCoordinatorMetrics::DataProvider implementation
+  std::vector<Host*> GetAllUnhibernatedHosts() override;
 
   void ShowInstanceForTabs(GlicInstanceImpl* instance,
                            const std::vector<tabs::TabInterface*>& tabs,

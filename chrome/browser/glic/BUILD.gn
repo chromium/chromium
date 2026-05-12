@@ -697,6 +697,7 @@ source_set("browser_tests") {
     "host/glic_web_contents_warming_pool_browsertest.cc",
     "host/new_glic_api_browsertest.cc",
     "service/glic_instance_coordinator_browsertest.cc",
+    "service/metrics/glic_instance_coordinator_metrics_browsertest.cc",
   ]
 
   deps = [

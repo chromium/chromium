@@ -11,9 +11,12 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 
 namespace glic {
+
+class Host;
+class GlicInstance;
 
 // LINT.IfChange(GlicSwitchConversationTarget)
 enum class GlicSwitchConversationTarget {
@@ -26,8 +29,6 @@ enum class GlicSwitchConversationTarget {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicSwitchConversationTarget)
 
-class GlicInstance;
-
 class GlicInstanceCoordinatorMetrics {
  public:
   // Interface for components that need read-only access to the list of
@@ -36,8 +37,10 @@ class GlicInstanceCoordinatorMetrics {
    public:
     virtual ~DataProvider() = default;
 
-    // Returns all currently managed instances, including any warmed instance.
-    virtual std::vector<GlicInstance*> GetInstances() = 0;
+    virtual std::vector<Host*> GetAllUnhibernatedHosts() = 0;
+    virtual int GetVisibleInstanceCount() const = 0;
+    virtual std::vector<glic::mojom::ConversationInfoPtr>
+    GetRecentlyActiveConversations(size_t limit) = 0;
   };
 
   explicit GlicInstanceCoordinatorMetrics(DataProvider* data_provider);
@@ -54,8 +57,6 @@ class GlicInstanceCoordinatorMetrics {
       raw_ptr<GlicInstance> active_instance);
 
   void OnMemoryPressure(base::MemoryPressureLevel level);
-
-  void OnHighMemoryUsage(int memory_mb);
 
  private:
   // Helper to calculate currently visible instances using

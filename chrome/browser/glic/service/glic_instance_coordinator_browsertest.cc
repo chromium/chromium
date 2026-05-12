@@ -276,13 +276,13 @@ class GlicInstanceCoordinatorBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, InitialState) {
-  EXPECT_EQ(coordinator().GetInstances().size(), 0u);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        ToggleCreatesInstance) {
   ToggleGlicForActiveTab();
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
 }
 
 // ClearPrimaryAccount is not supported on ChromeOS.
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        MAYBE_SignOutClosesAllInstances) {
   ASSERT_OK(OpenGlicForActiveTab());
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(identity_manager);
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   signin::ClearPrimaryAccount(identity_manager);
 
-  EXPECT_EQ(coordinator().GetInstances().size(), 0u);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 0u);
 }
 
 // Flaky test. crbug.com/492576266
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   ASSERT_OK(WaitForGlicOpen());
   ToggleGlicForActiveTab();
   ASSERT_OK(WaitForGlicClose());
-  for (auto* instance : coordinator().GetInstances()) {
+  for (auto* instance : coordinator().GetInstancesForTesting()) {
     EXPECT_FALSE(instance->IsShowing());
   }
 }
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
   EXPECT_EQ(instance1, instance2);
 
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
   EXPECT_TRUE(instance2->IsShowing());
 
   // Do not submit any input on tab2, close the side panel for the active tab
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
 
   // But because it was bound to tab1 (and kept bound), the instance itself
   // should still exist.
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
   EXPECT_EQ(GetInstanceForTab(tab1), instance1);
 }
 
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
 
   // Because input was submitted, it should NOT unbind from tab2.
   EXPECT_TRUE(GetInstanceForTab(tab2));
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
   EXPECT_FALSE(instance2->IsShowing());
 }
 
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   auto* instance = coordinator().GetInstanceImplForTab(tab2);
   ASSERT_TRUE(instance);
   EXPECT_EQ(GetInstanceForTab(tab1), instance);
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
   EXPECT_TRUE(instance->IsShowing());
 
   // Do not submit any input, close the side panel for the active tab (tab2).
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   // Because it was pinned with kContextMenu (not kInstanceCreation),
   // it should NOT unbind from tab2, even though no input was submitted.
   EXPECT_TRUE(GetInstanceForTab(tab2));
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
   EXPECT_FALSE(instance->IsShowing());
 }
 
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_TRUE(GetInstanceForTab(tab1));
   EXPECT_EQ(GetInstanceForTab(tab1), GetInstanceForTab(tab2));
   EXPECT_TRUE(GetInstanceForTab(tab1)->IsShowing());
-  EXPECT_FALSE(coordinator().GetInstances().empty());
+  EXPECT_FALSE(coordinator().GetInstancesForTesting().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
