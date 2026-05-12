@@ -7046,6 +7046,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "omnibox-dynamic-aim-submit",
+    "owners": ["mfacey@google.com", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-dynamic-max-autocomplete",
     "owners": [ "stkhapugin@chromium.org", "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

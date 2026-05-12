@@ -180,6 +180,13 @@ BASE_FEATURE(kAndroidDesktopAimGate, DISABLED);
 // used on desktop platforms.
 BASE_FEATURE(kAiModeOmniboxEntryPoint, ENABLED);
 
+// Whether the aim button should dynamically change to portray the submission
+// type.
+BASE_FEATURE(kDynamicAimSubmit, DISABLED);
+
+const base::FeatureParam<bool> kShowRhsAimHint{&kDynamicAimSubmit,
+                                               "Omnibox_ShowRhsAimHint", false};
+
 // Hides the AIM entrypoint in the Omnibox when user input is in progress. Only
 // used on desktop platforms.
 BASE_FEATURE(kHideAimEntrypointOnUserInput,

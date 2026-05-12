@@ -2082,6 +2082,18 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
   const bool command = event.IsCommandDown();
   switch (event.key_code()) {
     case ui::VKEY_RETURN: {
+      if (omnibox::kShowRhsAimHint.Get()) {
+#if BUILDFLAG(IS_MAC)
+        const bool ai_mode_modifier = command;
+#else
+        const bool ai_mode_modifier = control;
+#endif
+        if (ai_mode_modifier && !shift) {
+          controller()->edit_model()->OpenAiMode(/*via_keyboard=*/true,
+                                                 /*via_context_menu=*/false);
+          return true;
+        }
+      }
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
       OpenMatchWithKeyboardModifiers metric_value;
       if (alt && !shift) {
