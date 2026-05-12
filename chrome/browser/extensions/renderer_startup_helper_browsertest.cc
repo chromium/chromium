@@ -26,6 +26,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
+// This test exercises support for kInitialWebUIWithoutExtensions, a performance
+// optimization for WebUI "top chrome" which is not supported on Android.
+static_assert(!BUILDFLAG(IS_ANDROID));
+
 namespace extensions {
 
 namespace {
