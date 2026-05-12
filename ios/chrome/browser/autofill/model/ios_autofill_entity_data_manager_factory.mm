@@ -61,6 +61,5 @@ IOSAutofillEntityDataManagerFactory::BuildServiceInstanceFor(
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       autofill::StrikeDatabaseFactory::GetForProfile(profile),
-      /*accessibility_annotator_data_adapter=*/nullptr,
       autofill::GeoIpCountryCode(autofill::GetCountryCodeFromVariations()));
 }

@@ -5,7 +5,6 @@
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/accessibility_annotator/accessibility_annotator_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,7 +60,6 @@ AutofillEntityDataManagerFactory::AutofillEntityDataManagerFactory()
   DependsOn(StrikeDatabaseFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(AccessibilityAnnotatorServiceFactory::GetInstance());
 }
 
 AutofillEntityDataManagerFactory::~AutofillEntityDataManagerFactory() = default;
@@ -90,7 +88,6 @@ AutofillEntityDataManagerFactory::BuildServiceInstanceForBrowserContext(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       StrikeDatabaseFactory::GetForProfile(profile),
-      AccessibilityAnnotatorServiceFactory::GetForProfile(profile),
       GeoIpCountryCode(GetCountryCodeFromVariations()));
   // LINT.ThenChange(//chrome/browser/autofill/android/java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManagerFactory.java:AutofillAiCreateDataManager)
 }

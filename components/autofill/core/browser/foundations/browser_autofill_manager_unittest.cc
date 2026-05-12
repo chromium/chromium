@@ -7614,7 +7614,6 @@ class BrowserAutofillManagerTest_AutofillAi
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr,
-            /*accessibility_annotator_service=*/nullptr,
             /*variation_country_code=*/GeoIpCountryCode("US")));
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
 
@@ -7692,7 +7691,6 @@ class BrowserAutofillManagerTest_MockAutofillAi
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr,
-            /*accessibility_annotator_service=*/nullptr,
             /*variation_country_code=*/GeoIpCountryCode("US")));
     autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(
         test::GetPassportEntityInstance());

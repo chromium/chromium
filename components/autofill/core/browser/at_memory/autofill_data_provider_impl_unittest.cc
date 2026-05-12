@@ -88,7 +88,6 @@ class AutofillDataProviderImplTest : public testing::Test {
         webdata_helper_.autofill_webdata_service(),
         /*history_service=*/nullptr,
         /*strike_database=*/nullptr,
-        /*accessibility_annotator_service=*/nullptr,
         /*variation_country_code=*/GeoIpCountryCode("US"));
     entity_data_manager_ = entity_data_manager.get();
     client_.set_entity_data_manager(std::move(entity_data_manager));

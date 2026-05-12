@@ -14,7 +14,6 @@
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/accessibility/page_colors_controller_factory.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
-#include "chrome/browser/accessibility_annotator/accessibility_annotator_service_factory.h"
 #include "chrome/browser/accessibility_annotator/accessibility_query_service_factory.h"
 #include "chrome/browser/accessibility_annotator/first_run/accessibility_annotator_first_run_service_factory.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
@@ -702,7 +701,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   AcceptLanguagesServiceFactory::GetInstance();
   AccessibilityAnnotatorBackendFactory::GetInstance();
   AccessibilityAnnotatorFirstRunServiceFactory::GetInstance();
-  AccessibilityAnnotatorServiceFactory::GetInstance();
   AccessibilityLabelsServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   AccessibilityQueryServiceFactory::GetInstance();

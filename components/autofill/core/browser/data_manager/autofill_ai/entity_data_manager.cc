@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_service.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
@@ -40,8 +39,6 @@ EntityDataManager::EntityDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     history::HistoryService* history_service,
     strike_database::StrikeDatabaseBase* strike_database,
-    accessibility_annotator::AccessibilityAnnotatorService*
-        accessibility_annotator_service,
     GeoIpCountryCode variation_country_code)
     : webdata_service_(std::move(webdata_service)),
       entity_instance_cleaner_(this, sync_service, pref_service),
@@ -63,26 +60,6 @@ EntityDataManager::EntityDataManager(
       GetAutofillAiOptInStatus(pref_service, identity_manager)
           ? AutofillAiOptInStatus::kOptedIn
           : AutofillAiOptInStatus::kOptedOut);
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAccessibilityAnnotator) &&
-      accessibility_annotator_service &&
-      accessibility_annotator_service->GetEntityDataProvider()) {
-    accessibility_annotator_observation_.Observe(
-        accessibility_annotator_service->GetEntityDataProvider());
-
-    OnEntityDataChanged(
-        *accessibility_annotator_service->GetEntityDataProvider(), [] {
-          // TODO(crbug.com/40790263): Migrate Accessibility Annotator to
-          // DenseSet.
-          accessibility_annotator::EntityTypeEnumSet entity_types;
-          for (accessibility_annotator::EntityType type :
-               kAllEntityTypesSharedWithAccessibilityAnnotator) {
-            entity_types.Put(type);
-          }
-          return entity_types;
-        }());
-  }
 }
 
 EntityDataManager::~EntityDataManager() {
@@ -234,59 +211,6 @@ void EntityDataManager::OnHistoryDeletions(
   }
 }
 
-void EntityDataManager::OnEntityDataChanged(
-    accessibility_annotator::EntityDataProvider& provider,
-    accessibility_annotator::EntityTypeEnumSet src_entity_types) {
-  provider.GetEntities(
-      src_entity_types,
-      base::BindOnce(
-          [](base::WeakPtr<EntityDataManager> self,
-             accessibility_annotator::EntityTypeEnumSet src_entity_types,
-             std::vector<accessibility_annotator::Entity> src_entities) {
-            if (!self) {
-              return;
-            }
-
-            // Convert the Accessibility Annotator entities to Autofill AI
-            // entities.
-            const DenseSet<EntityType> entity_types =
-                FromAccessibilityAnnotator(src_entity_types);
-            std::vector<EntityInstance> entities;
-            entities.reserve(src_entities.size());
-            for (accessibility_annotator::Entity& src_entity : src_entities) {
-              if (std::optional<EntityInstance> entity =
-                      FromAccessibilityAnnotator(src_entity)) {
-                entities.push_back(*std::move(entity));
-              }
-            }
-
-            // `self->entities_` may contain entities stored by Autofill AI and
-            // entities from Accessibility Annotator.
-            //
-            // The contract of EntityDataProvider() is that `src_entities` are
-            // *all* entities known to Accessibility Annotator whose type is in
-            // `src_entity_types`.
-            //
-            // So we need to purge all entities that we had previously received
-            // from Accessibility Annotator and whose type is in `entity_types`.
-            auto is_displaced = [&](const EntityInstance& entity) {
-              switch (entity.record_type()) {
-                case EntityInstance::RecordType::kLocal:
-                case EntityInstance::RecordType::kServerWallet:
-                  return false;
-                case EntityInstance::RecordType::kAccessibilityAnnotator:
-                  return entity_types.contains(entity.type());
-              }
-              NOTREACHED();
-            };
-            DCHECK(std::ranges::all_of(entities, is_displaced));
-            base::EraseIf(self->entities_, is_displaced);
-            self->entities_.insert(std::make_move_iterator(entities.begin()),
-                                   std::make_move_iterator(entities.end()));
-            self->NotifyEntityInstancesChanged();
-          },
-          GetWeakPtr(), src_entity_types));
-}
 
 void EntityDataManager::RecordEntityUsed(const EntityInstance::EntityId& guid,
                                          base::Time use_date) {

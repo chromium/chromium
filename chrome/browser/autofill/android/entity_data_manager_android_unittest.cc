@@ -52,7 +52,6 @@ class EntityDataManagerAndroidTest : public testing::Test {
         &prefs_, identity_test_env_.identity_manager(), &sync_service_,
         webdata_helper_.autofill_webdata_service(),
         /*history_service=*/nullptr, /*strike_database=*/nullptr,
-        /*accessibility_annotator_service=*/nullptr,
         autofill::GeoIpCountryCode("US"));
 
     entity_data_manager_android_ = new EntityDataManagerAndroid(
