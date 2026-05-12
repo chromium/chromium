@@ -1070,9 +1070,9 @@ const RECORDED_REQUEST_IDS = {
   OnActionSubmitted: 93,
   SubscribeToTabFavicon: 94,
   ShowBrowseSkillsUi: 95,
-  OnExperimentalTriggeringUpdate: 96,
-  SubscribeToZoomLevel: 97,
-  UnsubscribeFromZoomLevel: 98,
+  SubscribeToZoomLevel: 96,
+  UnsubscribeFromZoomLevel: 97,
+  OnExperimentalTriggeringUpdate: 98,
   OnOptinImpression: 99,
 } as const satisfies HostRequestEnumNamesType;
 // LINT.ThenChange(

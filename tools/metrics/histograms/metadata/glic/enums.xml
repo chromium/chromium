@@ -364,9 +364,9 @@ chromium-metrics-reviews@google.com.
   <int value="93" label="OnActionSubmitted"/>
   <int value="94" label="SubscribeToTabFavicon"/>
   <int value="95" label="ShowBrowseSkillsUi"/>
-  <int value="96" label="OnExperimentalTriggeringUpdate"/>
-  <int value="97" label="SubscribeToZoomLevel"/>
-  <int value="98" label="UnsubscribeFromZoomLevel"/>
+  <int value="96" label="SubscribeToZoomLevel"/>
+  <int value="97" label="UnsubscribeFromZoomLevel"/>
+  <int value="98" label="OnExperimentalTriggeringUpdate"/>
   <int value="99" label="OnOptinImpression"/>
 </enum>
 
