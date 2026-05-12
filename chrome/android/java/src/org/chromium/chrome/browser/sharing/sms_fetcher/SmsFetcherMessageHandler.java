@@ -45,8 +45,6 @@ public class SmsFetcherMessageHandler {
             final String action = intent.getAction();
             assert action != null;
             boolean nativeIsDestroyed = sSmsFetcherMessageHandlerAndroid == 0;
-            RecordHistogram.recordBooleanHistogram(
-                    "Sharing.SmsFetcherTapWithChromeDestroyed", nativeIsDestroyed);
             SharingNotificationUtil.dismissNotification(
                     NotificationConstants.GROUP_SMS_FETCHER,
                     NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING);

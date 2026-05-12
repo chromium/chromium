@@ -615,18 +615,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SmsFetcherTapWithChromeDestroyed" enum="Boolean"
-    expires_after="2026-06-21">
-  <owner>yigu@chromium.org</owner>
-  <owner>src/content/browser/sms/OWNERS</owner>
-  <summary>
-    Records whether a user taps/dismisses the notification after Chrome is
-    destroyed. This could happen if the user manually swipes away Chrome from
-    the task switcher or the OS decides to destroy Chrome due to lack of memory
-    etc. This is logged once per user action on the notification.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.WebRtc.IceConfigFetched" units="ice_servers"
     expires_after="2022-04-03">
   <owner>peter@chromium.org</owner>
