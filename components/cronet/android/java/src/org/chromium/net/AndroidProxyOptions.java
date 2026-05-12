@@ -5,6 +5,8 @@
 package org.chromium.net;
 
 import android.net.http.HttpEngine;
+import android.os.Build;
+import android.os.ext.SdkExtensions;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +19,12 @@ public final class AndroidProxyOptions {
     public static void apply(
             @NonNull HttpEngine.Builder backend,
             @Nullable org.chromium.net.ProxyOptions proxyOptions) {
+        if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S) >= 22)) {
+            throw new UnsupportedOperationException(
+                    "This Cronet implementation does not support ProxyOptions");
+        }
+
         if (proxyOptions == null) {
             backend.setProxyOptions(null);
             return;
