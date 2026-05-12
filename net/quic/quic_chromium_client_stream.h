@@ -258,12 +258,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
       const NetLogWithSource& net_log,
       const NetworkTrafficAnnotationTag& traffic_annotation,
       std::optional<base::TimeDelta> max_stream_limit_pending_delay);
-  QuicChromiumClientStream(
-      quic::PendingStream* pending,
-      quic::QuicSpdyClientSessionBase* session,
-      quic::QuicServerId server_id,
-      const NetLogWithSource& net_log,
-      const NetworkTrafficAnnotationTag& traffic_annotation);
 
   QuicChromiumClientStream(const QuicChromiumClientStream&) = delete;
   QuicChromiumClientStream& operator=(const QuicChromiumClientStream&) = delete;

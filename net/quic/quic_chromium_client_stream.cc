@@ -566,18 +566,6 @@ QuicChromiumClientStream::QuicChromiumClientStream(
       quic_version_(session->connection()->transport_version()),
       max_stream_limit_pending_delay_(max_stream_limit_pending_delay) {}
 
-QuicChromiumClientStream::QuicChromiumClientStream(
-    quic::PendingStream* pending,
-    quic::QuicSpdyClientSessionBase* session,
-    quic::QuicServerId server_id,
-    const NetLogWithSource& net_log,
-    const NetworkTrafficAnnotationTag& traffic_annotation)
-    : QuicChromiumClientStreamBase(pending, session),
-      net_log_(net_log),
-      session_(session),
-      server_id_(std::move(server_id)),
-      quic_version_(session->connection()->transport_version()) {}
-
 QuicChromiumClientStream::~QuicChromiumClientStream() {
   if (handle_)
     handle_->OnClose();

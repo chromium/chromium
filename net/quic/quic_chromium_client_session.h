@@ -1012,8 +1012,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   QuicChromiumClientStream* CreateIncomingStream(
       quic::QuicStreamId id) override;
-  QuicChromiumClientStream* CreateIncomingStream(
-      quic::PendingStream* pending) override;
 
  private:
   friend class test::QuicChromiumClientSessionPeer;

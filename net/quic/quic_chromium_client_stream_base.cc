@@ -12,11 +12,6 @@ QuicChromiumClientStreamBase::QuicChromiumClientStreamBase(
     quic::StreamType type)
     : quic::QuicSpdyStream(id, session, type) {}
 
-QuicChromiumClientStreamBase::QuicChromiumClientStreamBase(
-    quic::PendingStream* pending,
-    quic::QuicSpdyClientSessionBase* session)
-    : quic::QuicSpdyStream(*pending, session) {}
-
 void QuicChromiumClientStreamBase::OnError(int error) {}
 
 bool QuicChromiumClientStreamBase::CanMigrateToCellularNetwork() const {

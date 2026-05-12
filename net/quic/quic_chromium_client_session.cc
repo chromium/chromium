@@ -1623,34 +1623,6 @@ QuicChromiumClientStream* QuicChromiumClientSession::CreateIncomingStream(
   return CreateIncomingReliableStreamImpl(id, traffic_annotation);
 }
 
-QuicChromiumClientStream* QuicChromiumClientSession::CreateIncomingStream(
-    quic::PendingStream* pending) {
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation(
-          "quic_chromium_incoming_pending_session", R"(
-      semantics {
-        sender: "Quic Chromium Client Session Pending Stream"
-        description:
-          "When a web server needs to push a response to a client, an incoming "
-          "stream is created to reply to the client with pushed message instead "
-          "of a message from the network."
-        trigger:
-          "A request by a server to push a response to the client."
-        data: "This stream is only used to receive data from the server."
-        destination: OTHER
-        destination_other:
-          "The web server pushing the response."
-      }
-      policy {
-        cookies_allowed: NO
-        setting: "This feature cannot be disabled in settings."
-        policy_exception_justification:
-          "Essential for network access."
-      }
-  )");
-  return CreateIncomingReliableStreamImpl(pending, traffic_annotation);
-}
-
 QuicChromiumClientStream*
 QuicChromiumClientSession::CreateIncomingReliableStreamImpl(
     quic::QuicStreamId id,
@@ -1660,19 +1632,6 @@ QuicChromiumClientSession::CreateIncomingReliableStreamImpl(
   QuicChromiumClientStream* stream = new QuicChromiumClientStream(
       id, this, server_id(), quic::READ_UNIDIRECTIONAL, net_log_,
       traffic_annotation, /*max_stream_limit_pending_delay=*/std::nullopt);
-  ActivateStream(base::WrapUnique(stream));
-  ++num_total_streams_;
-  return stream;
-}
-
-QuicChromiumClientStream*
-QuicChromiumClientSession::CreateIncomingReliableStreamImpl(
-    quic::PendingStream* pending,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(connection()->connected());
-
-  QuicChromiumClientStream* stream = new QuicChromiumClientStream(
-      pending, this, server_id(), net_log_, traffic_annotation);
   ActivateStream(base::WrapUnique(stream));
   ++num_total_streams_;
   return stream;

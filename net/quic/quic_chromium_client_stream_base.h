@@ -19,8 +19,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStreamBase
   QuicChromiumClientStreamBase(quic::QuicStreamId id,
                                quic::QuicSpdyClientSessionBase* session,
                                quic::StreamType type);
-  QuicChromiumClientStreamBase(quic::PendingStream* pending,
-                               quic::QuicSpdyClientSessionBase* session);
 
   QuicChromiumClientStreamBase(const QuicChromiumClientStreamBase&) = delete;
   QuicChromiumClientStreamBase& operator=(const QuicChromiumClientStreamBase&) =

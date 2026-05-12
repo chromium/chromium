@@ -181,7 +181,6 @@ after discussions on the right group.
       <annotation id="bidirectional_stream"/>
       <annotation id="proxy_config_system"/>
       <annotation id="quic_chromium_incoming_session"/>
-      <annotation id="quic_chromium_incoming_pending_session"/>
       <annotation id="quic_chromium_packet_writer"/>
       <annotation id="proxy_config_direct"/>
       <annotation id="reporting"/>
