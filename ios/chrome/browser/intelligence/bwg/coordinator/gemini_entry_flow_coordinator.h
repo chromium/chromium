@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_ENTRY_FLOW_COORDINATOR_H_
 
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
@@ -14,7 +15,8 @@
 // Coordinator that manages the full Gemini entry flow: sign-in,
 // eligibility checks, and session start. Reports the outcome
 // to the caller via a completion block.
-@interface GeminiEntryFlowCoordinator : ChromeCoordinator
+@interface GeminiEntryFlowCoordinator
+    : ChromeCoordinator <AccountMenuCoordinatorDelegate>
 
 // Initializes the coordinator with all required parameters.
 // - `baseViewController`: The view controller to present UI from.

@@ -1,5 +1,8 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h",
+  "+ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h",
+  "+ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h",
   "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
