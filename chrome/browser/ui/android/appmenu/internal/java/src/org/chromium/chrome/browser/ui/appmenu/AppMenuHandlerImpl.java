@@ -59,7 +59,6 @@ import org.chromium.ui.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -73,7 +72,8 @@ class AppMenuHandlerImpl
                 AppMenu.AppMenuVisibilityDelegate,
                 StartStopWithNativeObserver,
                 ConfigurationChangedObserver,
-                FlyoutHandler<AppMenuPopup> {
+                FlyoutHandler<AppMenuPopup>,
+                HierarchicalMenuController.SubmenuObserver {
 
     /** An {@link Adapter} for the list of items in the app menu. */
     private static final class AppMenuAdapter extends ModelListAdapter {
@@ -225,6 +225,9 @@ class AppMenuHandlerImpl
 
     /** Called when the containing activity is being destroyed. */
     void destroy() {
+        if (mHierarchicalMenuController != null) {
+            mHierarchicalMenuController.removeObserver(this);
+        }
         // Prevent the menu window from leaking.
         if (mKeyboardVisibilityListener != null) {
             mWindowAndroid
@@ -323,6 +326,7 @@ class AppMenuHandlerImpl
             mHierarchicalMenuController =
                     new HierarchicalMenuController<>(
                             mContext, new AppMenuUtil.AppMenuKeyProvider(), mSubmenuHeaderFactory);
+            mHierarchicalMenuController.addObserver(this);
         }
 
         mHierarchicalMenuController.setupCallbacks(
@@ -630,49 +634,32 @@ class AppMenuHandlerImpl
                 /* withAssertions= */ true);
     }
 
-    private void updateModelForHighlightAndClick(
-            ModelList modelList,
-            @Nullable Integer highlightedId,
-            AppMenuClickHandler appMenuClickHandler,
-            int startIndex,
-            boolean withAssertions) {
-        if (modelList == null) {
-            return;
-        }
-
-        updateModelForHighlightAndClickRecursively(
-                modelList::get,
-                modelList::size,
-                highlightedId,
-                appMenuClickHandler,
-                startIndex,
-                withAssertions);
-    }
-
     /**
-     * Recursively sets the click handler, position, and highlight state for all items in a
-     * list-like structure and its nested sub-lists. This helper is abstracted to work on any
-     * list-like structure (e.g., {@link ModelList} or {@link java.util.List}) by using function
-     * references.
+     * Sets the click handler, position, and highlight state for all items in a list-like structure.
+     * This helper is abstracted to work on any list-like structure (e.g., {@link ModelList} or
+     * {@link java.util.List}) by using function references.
      *
-     * @param itemGetter A function to retrieve a {@link ListItem} by its index (e.g., {@code
-     *     list::get}).
-     * @param sizeGetter A supplier for the list's total size (e.g., {@code list::size}).
+     * @param items A list of {@link ListItem}s.
      * @param highlightedId The menu item ID to mark as highlighted. If null, no item will be
      *     marked.
      * @param appMenuClickHandler The {@link AppMenuClickHandler} to attach to each menu item.
      * @param startIndex The index in the list to start processing from.
      * @param withAssertions Whether to run assertions (e.g., that handlers aren't already set).
      */
-    private void updateModelForHighlightAndClickRecursively(
-            Function<Integer, ListItem> itemGetter,
-            Supplier<Integer> sizeGetter,
+    private void updateModelForHighlightAndClick(
+            Iterable<ListItem> items,
             @Nullable Integer highlightedId,
             AppMenuClickHandler appMenuClickHandler,
             int startIndex,
             boolean withAssertions) {
-        for (int i = startIndex; i < sizeGetter.get(); i++) {
-            PropertyModel model = itemGetter.apply(i).model;
+        int i = 0;
+        for (ListItem item : items) {
+            if (i < startIndex) {
+                i++;
+                continue;
+            }
+
+            PropertyModel model = item.model;
 
             if (withAssertions) {
                 // Not like other keys which is set by AppMenuPropertiesDelegateImpl, CLICK_HANDLER
@@ -699,9 +686,8 @@ class AppMenuHandlerImpl
             if (model.containsKey(AppMenuItemProperties.ADDITIONAL_ICONS)) {
                 ModelList additionalIcons = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
                 if (additionalIcons != null) {
-                    updateModelForHighlightAndClickRecursively(
-                            additionalIcons::get,
-                            additionalIcons::size,
+                    updateModelForHighlightAndClick(
+                            additionalIcons,
                             highlightedId,
                             appMenuClickHandler,
                             /* startIndex= */ 0,
@@ -709,19 +695,7 @@ class AppMenuHandlerImpl
                 }
             }
 
-            if (model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)) {
-                List<ListItem> submenuItems =
-                        model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-                if (submenuItems != null) {
-                    updateModelForHighlightAndClickRecursively(
-                            submenuItems::get,
-                            submenuItems::size,
-                            highlightedId,
-                            appMenuClickHandler,
-                            /* startIndex= */ 0,
-                            withAssertions);
-                }
-            }
+            i++;
         }
     }
 
@@ -797,6 +771,12 @@ class AppMenuHandlerImpl
         if (contentView == null) return;
 
         HierarchicalMenuController.setWindowFocusForFlyoutMenus(contentView, hasFocus);
+    }
+
+    @Override
+    public void onSubmenuLoaded(List<ListItem> items) {
+        updateModelForHighlightAndClick(
+                items, mHighlightMenuId, this, /* startIndex= */ 0, /* withAssertions= */ false);
     }
 
     @Override

@@ -414,6 +414,10 @@ public class AppMenuTest {
                     PropertyModel submenuItemOneModel =
                             AppMenuTestSupport.getMenuItemPropertyModel(
                                     mAppMenuCoordinator, menuItemSubmenuOneId);
+
+                    Assert.assertNull(submenuItemOneModel.get(AppMenuItemProperties.CLICK_HANDLER));
+                    mAppMenuHandler.onSubmenuLoaded(submenuItems);
+
                     Assert.assertNotNull(
                             submenuItemOneModel.get(AppMenuItemProperties.CLICK_HANDLER));
                     Assert.assertEquals(0, submenuItemOneModel.get(AppMenuItemProperties.POSITION));

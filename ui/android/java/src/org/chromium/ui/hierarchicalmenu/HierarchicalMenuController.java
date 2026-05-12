@@ -21,6 +21,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -52,6 +53,16 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class HierarchicalMenuController<T> {
+
+    /** An observer that is notified when a submenu is loaded. */
+    public interface SubmenuObserver {
+        /**
+         * Called when a submenu's items have been loaded.
+         *
+         * @param items The list of items that were loaded.
+         */
+        void onSubmenuLoaded(List<ListItem> items);
+    }
 
     private static @Nullable Boolean sDrillDownOverrideValueForTesting;
 
@@ -90,6 +101,7 @@ public class HierarchicalMenuController<T> {
     }
 
     private final SubmenuHeaderFactory mSubmenuHeaderFactory;
+    private final ObserverList<SubmenuObserver> mObservers = new ObserverList<>();
 
     private @Nullable FlyoutController<T> mFlyoutController;
     private List<ListItem> mLastHighlightedPath = new ArrayList<>();
@@ -98,8 +110,8 @@ public class HierarchicalMenuController<T> {
      * Creates an instance of the controller.
      *
      * @param context The application's {@link Context} to retrieve resources.
-     * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use.
      * @param keyProvider The {@link HierarchicalMenuKeyProvider} for the controller to use.
+     * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use.
      */
     public HierarchicalMenuController(
             Context context,
@@ -112,6 +124,24 @@ public class HierarchicalMenuController<T> {
         // To use flyout, call {@link setupFlyoutController}.
         mFlyoutController = null;
         mDrillDownOverrideValue = true;
+    }
+
+    /**
+     * Adds an observer to be notified of submenu loading events.
+     *
+     * @param observer The {@link SubmenuObserver} to add.
+     */
+    public void addObserver(SubmenuObserver observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes an observer.
+     *
+     * @param observer The {@link SubmenuObserver} to remove.
+     */
+    public void removeObserver(SubmenuObserver observer) {
+        mObservers.removeObserver(observer);
     }
 
     /**
@@ -356,6 +386,10 @@ public class HierarchicalMenuController<T> {
         WritableObjectPropertyKey<Supplier<List<ListItem>>> providerKey =
                 mKeyProvider.getSubmenuProviderKey();
         List<ListItem> submenuItems = item.model.get(providerKey).get();
+
+        for (SubmenuObserver observer : mObservers) {
+            observer.onSubmenuLoaded(submenuItems);
+        }
 
         for (ListItem submenuItem : submenuItems) {
             setupCallbacksForItem(

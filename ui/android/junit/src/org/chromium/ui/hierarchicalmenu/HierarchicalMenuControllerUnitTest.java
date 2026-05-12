@@ -52,6 +52,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link HierarchicalMenuControllerUnitTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -296,6 +297,27 @@ public class HierarchicalMenuControllerUnitTest {
                 "Expected content element to be correct child",
                 mListItemWithModelClickCallback,
                 mModelList.get(0));
+    }
+
+    @Test
+    public void testSubmenuObserver_notifiedOnLoad() {
+        mController.setupCallbacks(mHeaderModelList, mModelList, mDismissDialog);
+
+        AtomicReference<List<ListItem>> loadedItems = new AtomicReference<>();
+        AtomicReference<Integer> callCount = new AtomicReference<>(0);
+        mController.addObserver(
+                items -> {
+                    loadedItems.set(items);
+                    callCount.set(callCount.get() + 1);
+                });
+
+        // Click into submenu 0. This should trigger the load and notify the observer.
+        activateClickListener(mSubmenuLevel0);
+
+        assertEquals("Observer should be notified once", 1, (int) callCount.get());
+        assertEquals("Should be notified with correct items", 2, loadedItems.get().size());
+        assertEquals(SUBMENU_LEVEL_1, getTitle(loadedItems.get().get(0)));
+        assertEquals(SUBMENU_0_CHILD_1, getTitle(loadedItems.get().get(1)));
     }
 
     @Test
