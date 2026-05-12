@@ -1447,8 +1447,7 @@ class ContextualSearchboxHandlerTestTabsTest
     tab_features->SetTabContextualizationControllerForTesting(
         std::move(tab_contextualization_controller));
     ON_CALL(*static_cast<MockTabContextualizationController*>(
-                tab_interface->GetTabFeatures()
-                    ->tab_contextualization_controller()),
+                lens::TabContextualizationController::From(tab_interface)),
             GetInitialPageContextEligibility())
         .WillByDefault(testing::Return(true));
     std::unique_ptr<tabs::TabAlertController> tab_alert_controller =
@@ -1490,10 +1489,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext) {
   tabs::TabInterface* tab = AddTab(sample_url);
   const int sample_tab_id = tab->GetHandle().raw_value();
 
-  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
   MockTabContextualizationController* tab_contextualization_controller =
       static_cast<MockTabContextualizationController*>(
-          tab_features->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab));
   EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
       .Times(1)
       .WillRepeatedly(
@@ -1577,10 +1575,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
 
   contextual_search::ContextUploadStatus status;
 
-  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
   MockTabContextualizationController* tab_contextualization_controller =
       static_cast<MockTabContextualizationController*>(
-          tab_features->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab));
   EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
       .Times(1)
       .WillRepeatedly(
@@ -1633,10 +1630,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
   tabs::TabInterface* tab = AddTab(sample_url);
   const int sample_tab_id = tab->GetHandle().raw_value();
 
-  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
   MockTabContextualizationController* tab_contextualization_controller =
       static_cast<MockTabContextualizationController*>(
-          tab_features->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab));
   EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
       .Times(1)
       .WillRepeatedly(
@@ -1689,7 +1685,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
 
   MockTabContextualizationController* tab_contextualization_controller1 =
       static_cast<MockTabContextualizationController*>(
-          tab1->GetTabFeatures()->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab1));
   EXPECT_CALL(*tab_contextualization_controller1, GetPageContext(testing::_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) {
@@ -1710,7 +1706,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   const int tab_id2 = tab2->GetHandle().raw_value();
   MockTabContextualizationController* tab_contextualization_controller2 =
       static_cast<MockTabContextualizationController*>(
-          tab2->GetTabFeatures()->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab2));
   EXPECT_CALL(*tab_contextualization_controller2, GetPageContext(testing::_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) {
@@ -1745,7 +1741,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
   // Mock the call to AddTabContext.
   MockTabContextualizationController* controller =
       static_cast<MockTabContextualizationController*>(
-          tab->GetTabFeatures()->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab));
   EXPECT_CALL(*controller, GetPageContext(testing::_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) {
@@ -1841,7 +1837,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   // Mock tab upload flow.
   MockTabContextualizationController* controller_a1 =
       static_cast<MockTabContextualizationController*>(
-          tab_a1->GetTabFeatures()->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab_a1));
   EXPECT_CALL(*controller_a1, GetPageContext(testing::_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) {
@@ -1850,7 +1846,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
 
   MockTabContextualizationController* controller_b1 =
       static_cast<MockTabContextualizationController*>(
-          tab_b1->GetTabFeatures()->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab_b1));
   EXPECT_CALL(*controller_b1, GetPageContext(testing::_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) {
@@ -1905,7 +1901,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   // Mock the call to GetPageContext.
   MockTabContextualizationController* controller_a1 =
       static_cast<MockTabContextualizationController*>(
-          tab_a1->GetTabFeatures()->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab_a1));
   EXPECT_CALL(*controller_a1, GetPageContext(testing::_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) {
@@ -1958,7 +1954,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextRecencyRankingMetric) {
   // Mock the call to GetPageContext.
   MockTabContextualizationController* controller_a1 =
       static_cast<MockTabContextualizationController*>(
-          tab_a1->GetTabFeatures()->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab_a1));
   EXPECT_CALL(*controller_a1, GetPageContext(testing::_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) {
@@ -2196,7 +2192,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetTabPreview_CaptureFails) {
 
   MockTabContextualizationController* controller =
       static_cast<MockTabContextualizationController*>(
-          tab->GetTabFeatures()->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab));
   EXPECT_CALL(*controller, CaptureScreenshot(testing::_, testing::_))
       .WillOnce(
           [](std::optional<lens::ImageEncodingOptions> image_options,
@@ -2218,7 +2214,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetTabPreview_Success) {
 
   MockTabContextualizationController* controller =
       static_cast<MockTabContextualizationController*>(
-          tab->GetTabFeatures()->tab_contextualization_controller());
+          lens::TabContextualizationController::From(tab));
   EXPECT_CALL(*controller, CaptureScreenshot(testing::_, testing::_))
       .WillOnce(
           [&bitmap](

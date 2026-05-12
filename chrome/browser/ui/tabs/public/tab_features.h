@@ -290,10 +290,6 @@ class TabFeatures {
   }
 #endif
 
-  lens::TabContextualizationController* tab_contextualization_controller() {
-    return tab_contextualization_controller_.get();
-  }
-
   PwaInstallPageActionController* pwa_install_page_action_controller() {
     return pwa_install_page_action_controller_.get();
   }

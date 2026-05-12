@@ -61,10 +61,6 @@ class TabFeatures {
     return new_tab_page_preload_pipeline_manager_.get();
   }
 
-  lens::TabContextualizationController* tab_contextualization_controller() {
-    return tab_contextualization_controller_.get();
-  }
-
  private:
   // Returns the factory used to create owned components.
   static ui::UserDataFactoryWithOwner<TabInterface>& GetUserDataFactory();
