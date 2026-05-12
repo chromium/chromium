@@ -3784,10 +3784,6 @@ inline constexpr char kLeftHandSideActivityIndicatorsName[] =
 inline constexpr char kLeftHandSideActivityIndicatorsDescription[] =
     "Moves activity indicators to the left-hand side of location bar.";
 
-inline constexpr char kPrivacyPolicyInsightsName[] = "Privacy Policy Insights";
-inline constexpr char kPrivacyPolicyInsightsDescription[] =
-    "Enables the privacy policy insights UI in page info.";
-
 inline constexpr char kPermissionsAIv4Name[] = "PermissionsAIv4";
 inline constexpr char kPermissionsAIv4Description[] =
     "Use the Permission Predictions Service and the AIv4 model to surface "

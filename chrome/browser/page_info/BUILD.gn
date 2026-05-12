@@ -17,7 +17,6 @@ source_set("page_info") {
     "merchant_trust_service_delegate.h",
     "merchant_trust_service_factory.h",
     "page_info_features.h",
-    "privacy_policy_insights_service_factory.h",
   ]
   public_deps = [
     "//base",
@@ -46,7 +45,6 @@ source_set("impl") {
     "merchant_trust_service_delegate.cc",
     "merchant_trust_service_factory.cc",
     "page_info_features.cc",
-    "privacy_policy_insights_service_factory.cc",
   ]
 
   deps = [

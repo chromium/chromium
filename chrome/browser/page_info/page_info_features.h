@@ -12,9 +12,6 @@ namespace page_info {
 // enabled.
 bool IsAboutThisSiteFeatureEnabled();
 
-// Enables the privacy policy insights Learning Experiment UI.
-BASE_DECLARE_FEATURE(kPrivacyPolicyInsights);
-
 bool IsMerchantTrustFeatureEnabled();
 
 }  // namespace page_info

@@ -7811,13 +7811,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "privacy-policy-insights",
-    "owners": [
-      "areimers@chromium.org",
-      "antoniosartori@chromium.org"],
-    "expiry_milestone": 148
-  },
-  {
     "name": "privacy-sandbox-enrollment-overrides",
     "owners": [
       "lbrady@chromium.org",
