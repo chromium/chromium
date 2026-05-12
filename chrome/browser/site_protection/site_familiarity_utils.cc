@@ -9,7 +9,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/content_settings/browser/ui/javascript_optimizer_setting.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -47,11 +46,8 @@ bool CanEnableBlockingJavascriptOptimizersForUnfamiliarSites(Profile* profile) {
     return false;
   }
 
-  if (!(base::FeatureList::IsEnabled(
-            features::kProcessSelectionDeferringConditions) &&
-        base::FeatureList::IsEnabled(
-            content_settings::features::
-                kBlockV8OptimizerOnUnfamiliarSitesSetting))) {
+  if (!base::FeatureList::IsEnabled(
+          features::kProcessSelectionDeferringConditions)) {
     // Blocking js-opt on unfamiliar sites needs to be available to the user.
     return false;
   }

@@ -1167,11 +1167,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "block-v8-optimizer-on-unfamiliar-sites",
-    "owners": [ "jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 148
-  },
-  {
     "name": "blocking-focus-without-user-activation",
     "owners": [ "ffiori@microsoft.com" ],
     "expiry_milestone": 170

@@ -25,19 +25,17 @@
           sub-label="$i18n{siteSettingsJavascriptOptimizerAllowedSubLabel}"
           no-collapse>
       </settings-collapse-radio-button>
-      <template is="dom-if"
-          if="[[enableBlockV8OptimizerOnUnfamiliarSites_]]">
-        <settings-collapse-radio-button
-            id="blockForUnfamiliarSites"
-            class="two-line"
-            name="[[javascriptOptimizerSettingEnum_.BLOCKED_FOR_UNFAMILIAR_SITES]]"
-            pref="[[prefs.generated.javascript_optimizer]]"
-            label="$i18n{siteSettingsJavascriptOptimizerBlockedUnfamiliarSites}"
-            sub-label="[[getBlockForUnfamiliarSitesSubLabel_(
-                prefs.generated.javascript_optimizer.value)]]"
-            no-collapse>
-        </settings-collapse-radio-button>
-      </template>
+      <settings-collapse-radio-button
+          id="blockForUnfamiliarSites"
+          class="two-line"
+          name="[[
+              javascriptOptimizerSettingEnum_.BLOCKED_FOR_UNFAMILIAR_SITES]]"
+          pref="[[prefs.generated.javascript_optimizer]]"
+          label="$i18n{siteSettingsJavascriptOptimizerBlockedUnfamiliarSites}"
+          sub-label="[[getBlockForUnfamiliarSitesSubLabel_(
+              prefs.generated.javascript_optimizer.value)]]"
+          no-collapse>
+      </settings-collapse-radio-button>
       <settings-collapse-radio-button
           id="blockForAllSites"
           class="two-line"

@@ -1689,44 +1689,10 @@ IN_PROC_BROWSER_TEST_F(SettingsGeolocationPageTest, GeolocationPage) {
           "runMochaSuite('GeolocationPage')");
 }
 
-class JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureEnabledTest
-    : public SettingsBrowserTest {
- public:
-  JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureEnabledTest() = default;
-  ~JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureEnabledTest() override =
-      default;
+class JavascriptOptimizerPageTest : public SettingsBrowserTest {};
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      content_settings::features::kBlockV8OptimizerOnUnfamiliarSitesSetting};
-};
-
-IN_PROC_BROWSER_TEST_F(
-    JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureEnabledTest,
-    JavascriptOptimizerPage) {
-  RunTest("settings/v8_page_test.js",
-          "runMochaSuite('V8Page_BlockOnUnfamiliarSitesFeatureEnabled')");
-}
-
-class JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureDisabledTest
-    : public SettingsBrowserTest {
- public:
-  JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        content_settings::features::kBlockV8OptimizerOnUnfamiliarSitesSetting);
-  }
-  ~JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureDisabledTest()
-      override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    JavascriptOptimizerPage_BlockOnUnfamiliarSitesFeatureDisabledTest,
-    JavascriptOptimizerPage) {
-  RunTest("settings/v8_page_test.js",
-          "runMochaSuite('V8Page_BlockOnUnfamiliarSitesFeatureDisabled')");
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerPageTest, JavascriptOptimizerPage) {
+  RunTest("settings/v8_page_test.js", "runMochaSuite('V8Page')");
 }
 
 class SettingsPrivacySandboxPageTest : public SettingsBrowserTest {

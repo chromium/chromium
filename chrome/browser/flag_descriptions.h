@@ -295,12 +295,6 @@ inline constexpr char kCADisplayLinkInBrowserDescription[] =
     "Enable CADisplayLink in the browser process to sync Chrome's rendering "
     "with the display refresh rate.";
 
-inline constexpr char kBlockV8OptimizerOnUnfamiliarSitesSettingName[] =
-    "Automatic JS Optimizer Control";
-inline constexpr char kBlockV8OptimizerOnUnfamiliarSitesSettingDescription[] =
-    "Adds an option to the V8 optimizer content setting that disables the "
-    "JavaScript optimizer on sites that are unfamiliar to the user.";
-
 inline constexpr char kBlockingFocusWithoutUserActivationName[] =
     "Blocking Focus Without User Activation";
 inline constexpr char kBlockingFocusWithoutUserActivationDescription[] =

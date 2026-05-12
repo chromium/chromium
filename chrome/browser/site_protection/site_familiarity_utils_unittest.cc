@@ -12,7 +12,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -61,9 +60,7 @@ class SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest
  public:
   SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest()
       : SiteFamiliarityUtilsJsOptimizerTest(
-            {content_settings::features::
-                 kBlockV8OptimizerOnUnfamiliarSitesSetting,
-             safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites}) {}
+            {safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites}) {}
 };
 
 TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
@@ -95,14 +92,6 @@ TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
       content_settings::JavascriptOptimizerSetting::kAllowed);
 }
 
-TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
-       ReturnsAllowedIfSettingFlagDisabled) {
-  base::test::ScopedFeatureList local_features;
-  local_features.InitAndDisableFeature(
-      content_settings::features::kBlockV8OptimizerOnUnfamiliarSitesSetting);
-  ExpectJsOptimizerSetting(
-      content_settings::JavascriptOptimizerSetting::kAllowed);
-}
 
 TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
        ReturnsAllowedIfProcessSelectionFlagDisabled) {
@@ -114,11 +103,6 @@ TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
 }
 
 TEST_F(SiteFamiliarityUtilsJsOptimizerTest, MigrationFeatureToggle) {
-  // Enable the base setting flag.
-  base::test::ScopedFeatureList base_feature_list;
-  base_feature_list.InitAndEnableFeature(
-      content_settings::features::kBlockV8OptimizerOnUnfamiliarSitesSetting);
-
   {
     base::test::ScopedFeatureList migration_feature_list;
     migration_feature_list.InitAndEnableFeature(
@@ -136,8 +120,7 @@ class SiteFamiliarityUtilsJsOptimizerMigrationDisabledTest
  public:
   SiteFamiliarityUtilsJsOptimizerMigrationDisabledTest()
       : SiteFamiliarityUtilsJsOptimizerTest(
-            {content_settings::features::
-                 kBlockV8OptimizerOnUnfamiliarSitesSetting},
+            {},
             {safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites}) {}
 };
 

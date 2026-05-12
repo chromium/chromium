@@ -95,11 +95,6 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kLeftHandSideActivityIndicators);
 
-// Shows the option to disable the v8 optimizer for unfamiliar sites on the
-// site settings page.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kBlockV8OptimizerOnUnfamiliarSitesSetting);
-
 }  // namespace features
 }  // namespace content_settings
 

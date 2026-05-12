@@ -12012,13 +12012,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAndroidContextMenuNewActions)},
 #endif
 
-    {"block-v8-optimizer-on-unfamiliar-sites",
-     flag_descriptions::kBlockV8OptimizerOnUnfamiliarSitesSettingName,
-     flag_descriptions::kBlockV8OptimizerOnUnfamiliarSitesSettingDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(content_settings::features::
-                            kBlockV8OptimizerOnUnfamiliarSitesSetting)},
-
     {"service-worker-synthetic-response",
      flag_descriptions::kServiceWorkerSyntheticResponseName,
      flag_descriptions::kServiceWorkerSyntheticResponseDescription, kOsAll,

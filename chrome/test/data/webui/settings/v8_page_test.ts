@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import type {SettingsCollapseRadioButtonElement, V8PageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, SafeBrowsingSetting, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 
@@ -42,34 +42,7 @@ function queryBlockOnUnfamiliarSitesRadioButton(page: HTMLElement) {
       '#blockForUnfamiliarSites');
 }
 
-suite('V8Page_BlockOnUnfamiliarSitesFeatureDisabled', function() {
-  let page: V8PageElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    assertFalse(
-        loadTimeData.getBoolean('enableBlockV8OptimizerOnUnfamiliarSites'));
-
-    siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
-    SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-
-    page = createPage(settingsPrefs, SafeBrowsingSetting.STANDARD);
-    return flushTasks();
-  });
-
-  test('CheckRadioButtons', function() {
-    assertFalse(!!queryBlockOnUnfamiliarSitesRadioButton(page));
-  });
-});
-
-suite('V8Page_BlockOnUnfamiliarSitesFeatureEnabled', function() {
+suite('V8Page', function() {
   let page: V8PageElement;
   let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
@@ -83,9 +56,6 @@ suite('V8Page_BlockOnUnfamiliarSitesFeatureEnabled', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
     SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-
-    assertTrue(
-        loadTimeData.getBoolean('enableBlockV8OptimizerOnUnfamiliarSites'));
   });
 
   test('CheckRadioButtons_SafeBrowsingEnabled', async function() {
