@@ -2135,5 +2135,63 @@ TEST_F(AutofillAiManagerTest, LoadedServerPredictionsToSuggestionsShownTiming) {
       2);
 }
 
+TEST_F(AutofillAiManagerTest, LoadedServerPredictionsToFirstInteractionTiming) {
+  base::HistogramTester histogram_tester;
+  test::FormDescription form_description = {
+      .fields = {{.role = PASSPORT_NUMBER}}};
+  FormData form = test::GetFormData(form_description);
+  FormStructure form_structure = FormStructure(form);
+  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
+  form_structure.set_server_predictions_received_timestamp(
+      base::TimeTicks::Now() - base::Seconds(2));
+
+  ukm::SourceId ukm_source_id_1 =
+      ukm::ConvertToSourceId(1, ukm::SourceIdType::NAVIGATION_ID);
+  ukm::SourceId ukm_source_id_2 =
+      ukm::ConvertToSourceId(2, ukm::SourceIdType::NAVIGATION_ID);
+
+  // First interaction on page 1 logs the metric.
+  manager().OnFormInteracted(form_structure, ukm_source_id_1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction",
+      1);
+
+  // Second interaction on page 1 DOES NOT log.
+  manager().OnFormInteracted(form_structure, ukm_source_id_1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction",
+      1);
+
+  // Interaction on page 2 LOGS again.
+  manager().OnFormInteracted(form_structure, ukm_source_id_2);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction",
+      2);
+}
+
+// Tests that the time elapsed between receiving server predictions and the
+// first interaction with an Autofill AI-relevant form is correctly recorded.
+// It also verifies that this metric is logged at most once per page by
+// checking that subsequent interactions on the same UKM source ID do not
+// trigger additional logs, while a new page (source ID) does.
+TEST_F(AutofillAiManagerTest,
+       LoadedServerPredictionsToFirstInteractionTiming_NonAiForm) {
+  base::HistogramTester histogram_tester;
+  test::FormDescription form_description = {.fields = {{.role = COMPANY_NAME}}};
+  FormData form = test::GetFormData(form_description);
+  FormStructure form_structure = FormStructure(form);
+  AddPredictionsToFormStructure(form_structure, {{COMPANY_NAME}});
+  form_structure.set_server_predictions_received_timestamp(
+      base::TimeTicks::Now() - base::Seconds(2));
+
+  ukm::SourceId ukm_source_id_1 =
+      ukm::ConvertToSourceId(1, ukm::SourceIdType::NAVIGATION_ID);
+
+  manager().OnFormInteracted(form_structure, ukm_source_id_1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction",
+      0);
+}
+
 }  // namespace
 }  // namespace autofill

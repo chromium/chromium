@@ -70,6 +70,8 @@ class AutofillAiManager {
       base::span<const Suggestion> shown_suggestions,
       ukm::SourceId ukm_source_id);
   virtual void OnFormSeen(const FormStructure& form);
+  virtual void OnFormInteracted(const FormStructure& form,
+                                ukm::SourceId ukm_source_id);
   virtual void OnDidFillSuggestion(
       const EntityInstance& entity,
       const FormStructure& form,
@@ -233,6 +235,11 @@ class AutofillAiManager {
   // Tracks the UKM source ID for which the suggestions shown timing metric was
   // last logged, ensuring it is logged at most once per page.
   ukm::SourceId last_logged_ukm_source_id_ = ukm::kInvalidSourceId;
+
+  // Tracks the UKM source ID for which the first interaction timing metric was
+  // last logged, ensuring it is logged at most once per page.
+  ukm::SourceId last_logged_ukm_source_id_for_interaction_ =
+      ukm::kInvalidSourceId;
 
   base::WeakPtrFactory<AutofillAiManager> weak_ptr_factory_{this};
 };
