@@ -282,8 +282,6 @@ static_library("browser") {
     "field_types.h",
     "filling/addresses/field_filling_address_util.cc",
     "filling/addresses/field_filling_address_util.h",
-    "filling/autofill_ai/autofill_ai_access_manager.cc",
-    "filling/autofill_ai/autofill_ai_access_manager.h",
     "filling/autofill_ai/field_filling_entity_util.cc",
     "filling/autofill_ai/field_filling_entity_util.h",
     "filling/autofill_ai/select_date_matching.cc",
@@ -1223,7 +1221,6 @@ static_library("test_support") {
     "data_quality/addresses/profile_token_quality_test_api.h",
     "data_quality/addresses/test_address_normalizer.cc",
     "data_quality/addresses/test_address_normalizer.h",
-    "filling/autofill_ai/autofill_ai_access_manager_test_api.h",
     "filling/form_filler_test_api.h",
     "filling/test_form_filler.cc",
     "filling/test_form_filler.h",
@@ -1421,7 +1418,6 @@ static_library("test_support") {
     "//components/autofill/core/common",
     "//components/autofill/core/common:credit_card_number_validation",
     "//components/consent_auditor:test_support",
-    "//components/device_reauth",
     "//components/device_reauth:test_support",
     "//components/feature_engagement",
     "//components/leveldb_proto",
@@ -1853,7 +1849,6 @@ source_set("unit_tests") {
 
   if (!is_fuchsia) {
     sources += [
-      "filling/autofill_ai/autofill_ai_access_manager_unittest.cc",
       "filling/autofill_ai/field_filling_entity_util_unittest.cc",
       "permissions/autofill_ai/autofill_ai_permission_utils_unittest.cc",
     ]

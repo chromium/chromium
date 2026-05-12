@@ -85,7 +85,6 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
-#include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -815,8 +814,6 @@ BrowserAutofillManager::MetricsState::~MetricsState() {
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver),
-      autofill_ai_access_manager_(
-          std::make_unique<AutofillAiAccessManager>(this)),
       otp_manager_(
           new OtpManagerImpl(*this, client().GetOneTimeTokenService())),
       at_memory_manager_(std::make_unique<AtMemoryManager>(this)),
@@ -852,10 +849,6 @@ BrowserAutofillManager::GetCreditCardAccessManager() const {
 
 AtMemoryManager& BrowserAutofillManager::GetAtMemoryManager() {
   return *at_memory_manager_;
-}
-
-AutofillAiAccessManager& BrowserAutofillManager::GetAutofillAiAccessManager() {
-  return *autofill_ai_access_manager_;
 }
 
 void BrowserAutofillManager::TriggerAtMemorySuggestions(
@@ -2693,7 +2686,6 @@ void BrowserAutofillManager::Reset() {
   bnpl_manager_.reset();
 
   credit_card_access_manager_.reset();
-  autofill_ai_access_manager_->Reset();
   // Forget stored data (e.g. active subscriptions and pending callbacks) after
   // a navigation.
   otp_manager_ = std::make_unique<OtpManagerImpl>(
