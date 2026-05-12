@@ -258,23 +258,6 @@ source_set("ui") {
   }
 }
 
-source_set("user_data") {
-  sources = [
-    "contextual_tasks_web_contents_user_data.cc",
-    "contextual_tasks_web_contents_user_data.h",
-  ]
-  deps = [
-    ":ui",
-    "//base",
-    "//chrome/browser/autocomplete:aim_eligibility_service",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/signin",
-    "//components/contextual_search:public",
-    "//components/omnibox/browser",
-    "//content/public/browser",
-  ]
-}
-
 source_set("ui_impl") {
   sources = [
     "contextual_search_session_finder.cc",
@@ -315,7 +298,6 @@ source_set("ui_impl") {
   deps = [
     ":impl",
     ":ui",
-    ":user_data",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
@@ -518,7 +500,6 @@ source_set("unit_tests") {
     sources += [
       "contextual_tasks_composebox_handler_unittest.cc",
       "contextual_tasks_panel_host_desktop_unittest.cc",
-      "contextual_tasks_web_contents_user_data_unittest.cc",
     ]
   }
 
@@ -528,7 +509,6 @@ source_set("unit_tests") {
     ":test_support",
     ":ui",
     ":ui_impl",
-    ":user_data",
     "//base",
     "//base/test:test_support",
     "//chrome/browser:global_features",

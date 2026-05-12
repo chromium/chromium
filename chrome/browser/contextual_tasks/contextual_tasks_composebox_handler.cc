@@ -24,7 +24,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -417,20 +416,7 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
 
     if (current_input_state) {
       ResetInputStateModel();
-
-      content::WebContents* web_contents =
-          web_ui_interface_->GetWebUIWebContents();
-      auto* user_data =
-          contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
-              web_contents);
-      if (!user_data) {
-        contextual_tasks::ContextualTasksWebContentsUserData::
-            CreateForWebContents(web_contents);
-        user_data = contextual_tasks::ContextualTasksWebContentsUserData::
-            FromWebContents(web_contents);
-      }
-      user_data->set_input_state_model(std::move(current_input_state));
-      input_state_model_ = user_data->input_state_model();
+      input_state_model_ = std::move(current_input_state);
 
       input_state_subscription_ =
           input_state_model_->subscribe(base::BindRepeating(

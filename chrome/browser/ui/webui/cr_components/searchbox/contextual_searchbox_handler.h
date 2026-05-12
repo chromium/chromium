@@ -291,12 +291,9 @@ class ContextualSearchboxHandler
 
   virtual void InitializeInputStateModel();
 
-  base::WeakPtr<contextual_search::InputStateModel>
-  GetOrCreateInputStateModel();
-
   void UpdateTabListObservation(TabListInterface* tab_list);
 
-  base::WeakPtr<contextual_search::InputStateModel> input_state_model_;
+  std::unique_ptr<contextual_search::InputStateModel> input_state_model_;
 
   void OnInputStateChanged(const contextual_search::InputState& state);
 

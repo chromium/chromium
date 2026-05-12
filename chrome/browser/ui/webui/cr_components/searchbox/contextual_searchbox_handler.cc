@@ -25,7 +25,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -119,20 +118,6 @@ std::vector<DriveFileData> GetMockDriveFiles() {
   selected_files.push_back(std::move(file3));
 
   return selected_files;
-}
-
-content::WebContents* GetActiveTabWebContents(
-    content::WebContents* web_contents) {
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents);
-  if (browser_window_interface) {
-    if (auto* tab_list = TabListInterface::From(browser_window_interface)) {
-      if (auto* active_tab = tab_list->GetActiveTab()) {
-        return active_tab->GetContents();
-      }
-    }
-  }
-  return web_contents;
 }
 
 }  // namespace
@@ -734,9 +719,6 @@ void ContextualSearchboxHandler::ActivateMetricsFunnel(
 }
 
 void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
-  if (!input_state_model_) {
-    InitializeInputStateModel();
-  }
   if (input_state_model_) {
     std::move(callback).Run(input_state_model_->GetInputState());
   } else {
@@ -749,41 +731,32 @@ void ContextualSearchboxHandler::OnInputStateChanged(
   page_->OnInputStateChanged(state);
 }
 
-base::WeakPtr<contextual_search::InputStateModel>
-ContextualSearchboxHandler::GetOrCreateInputStateModel() {
+void ContextualSearchboxHandler::InitializeInputStateModel() {
+  // This implicitly also initializes the file upload status observer.
   auto* session_handle = GetContextualSessionHandle();
   if (!session_handle) {
-    return nullptr;
-  }
-
-  // In the case of the Omnibox popup, `web_contents_` refers to the popup's own
-  // WebContents, which is shared across multiple tabs. To achieve true per-tab
-  // persistence, we must associate the `InputStateModel` with the active tab's
-  // `WebContents` instead. For other embedders of `ComposeboxHandler` (e.g.,
-  // the Side Panel), `web_contents_` already points to the tab's WebContents,
-  // so this fallback ensures correct behavior across different embedding
-  // contexts.
-  content::WebContents* target_web_contents =
-      GetActiveTabWebContents(web_contents_);
-  auto* user_data =
-      contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
-          target_web_contents);
-  if (!user_data) {
-    contextual_tasks::ContextualTasksWebContentsUserData::CreateForWebContents(
-        target_web_contents);
-    user_data =
-        contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
-            target_web_contents);
-  }
-
-  return user_data->GetOrCreateInputStateModel(*session_handle);
-}
-
-void ContextualSearchboxHandler::InitializeInputStateModel() {
-  input_state_model_ = GetOrCreateInputStateModel();
-  if (!input_state_model_) {
     return;
   }
+
+  auto* service = AimEligibilityServiceFactory::GetForProfile(profile_);
+  const omnibox::SearchboxConfig* config =
+      service ? service->GetSearchboxConfig() : nullptr;
+
+  auto* ui_service = profile_
+                         ? contextual_tasks::ContextualTasksUiServiceFactory::
+                               GetForBrowserContext(profile_)
+                         : nullptr;
+  GURL url = web_contents_ ? web_contents_->GetLastCommittedURL() : GURL();
+  bool browser_identity_matches_aim_identity =
+      ui_service && ui_service->IsSignedInToBrowserWithValidCredentials() &&
+      ui_service->IsUrlForPrimaryAccount(url);
+
+  bool is_off_the_record = profile_ && profile_->IsOffTheRecord();
+
+  // Create the model with clean arguments
+  input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
+      *session_handle, config ? *config : omnibox::SearchboxConfig(), url,
+      is_off_the_record, browser_identity_matches_aim_identity);
 
   if (profile_) {
     input_state_model_->SetPrefService(profile_->GetPrefs());
