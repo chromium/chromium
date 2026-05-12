@@ -361,6 +361,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//components/variations/android:variations_java",
     "//components/variations/proto:proto_java",
     "//components/viz:viz_java",
+    "//components/webauthn/android:java",
     "//content/public/android:content_java",
     "//content/public/common:common_java",
     "//content/public/test/android:content_java_test_support",

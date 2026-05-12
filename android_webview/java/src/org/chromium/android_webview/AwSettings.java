@@ -2398,8 +2398,13 @@ public class AwSettings {
             if (mWebauthnMode != support) {
                 mWebauthnMode = support;
                 mEventHandler.updateWebkitPreferencesLocked();
-                WebauthnModeProvider.getInstance()
-                        .setWebauthnModeForWebContents(mWebContents, support);
+                mEventHandler.runOnUiThreadBlockingAndLocked(
+                        () -> {
+                            if (mWebContents != null) {
+                                WebauthnModeProvider.getInstance()
+                                        .setWebauthnModeForWebContents(mWebContents, support);
+                            }
+                        });
             }
         }
     }
