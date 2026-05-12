@@ -118,8 +118,10 @@ class ProfileWindowBrowserTest : public InProcessBrowserTest {
   ~ProfileWindowBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, CountForNullBrowser) {
-  EXPECT_EQ(0, chrome::GetOffTheRecordBrowsersActiveForProfile(nullptr));
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
+                       OffTheRecordCountWithNoIncognitoBrowsers) {
+  EXPECT_EQ(0u, ProfileBrowserCollection::GetForProfile(browser()->profile())
+                    ->GetOffTheRecordBrowserCount());
 }
 
 class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
@@ -131,9 +133,9 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
 
   int GetWindowCount() {
     return is_incognito()
-               ? static_cast<int>(
-                     chrome::GetOffTheRecordBrowsersActiveForProfile(
-                         browser()->profile()))
+               ? static_cast<int>(ProfileBrowserCollection::GetForProfile(
+                                      browser()->profile())
+                                      ->GetOffTheRecordBrowserCount())
                : static_cast<int>(GlobalBrowserCollection::GetInstance()
                                       ->GetGuestBrowserCount());
   }

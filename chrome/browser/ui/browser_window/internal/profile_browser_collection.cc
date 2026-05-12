@@ -49,6 +49,29 @@ BrowserWindowInterface* ProfileBrowserCollection::FindTabbedBrowser(
   return match;
 }
 
+size_t ProfileBrowserCollection::GetOffTheRecordBrowserCount() {
+  size_t count = 0;
+  auto count_browsers = [&count](BrowserWindowInterface* browser) {
+  // TODO(crbug.com/511561378): Explore removing this exception for
+  // TYPE_DEVTOOLS. Inherited from the prior BrowserList implementation,
+  // but similar simplifications elsewhere suggest this exception is
+  // unnecessary and is an unexpected exception to clients of this API.
+#if !BUILDFLAG(IS_ANDROID)
+    if (browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+      return true;
+    }
+#endif
+    ++count;
+    return true;
+  };
+  for (Profile* otr : profile_->GetAllOffTheRecordProfiles()) {
+    if (ProfileBrowserCollection* otr_collection = GetForProfile(otr)) {
+      otr_collection->ForEach(count_browsers);
+    }
+  }
+  return count;
+}
+
 // static
 ProfileBrowserCollection* ProfileBrowserCollection::GetForProfile(
     Profile* profile) {
