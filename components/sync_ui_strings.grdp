@@ -10,9 +10,6 @@
     <message name="IDS_SYNC_DATATYPE_BOOKMARKS" desc="Bookmarks, one of the data types that we allow syncing.">
       Bookmarks
     </message>
-    <message name="IDS_SYNC_DATATYPE_PASSWORDS" desc="Saved passwords, one of the data types that we allow syncing.">
-      Passwords
-    </message>
     <message name="IDS_SYNC_DATATYPE_PASSWORDS_AND_PASSKEYS" desc="Saved passwords and passkeys, one of the data types that we allow syncing.">
       Passwords and passkeys
     </message>
@@ -22,9 +19,6 @@
     <message name="IDS_SYNC_DATATYPE_TABS" desc="Open Tabs, one of the data types that we allow syncing.">
       Open Tabs
     </message>
-    <message name="IDS_SYNC_DATATYPE_TYPED_URLS" desc="History, one of the data types that we allow syncing.">
-      History
-    </message>
     <message name="IDS_SYNC_DATATYPE_HISTORY_AND_TABS" desc="History and tabs, one of the data types that we allow syncing.">
       History and Tabs
     </message>
@@ -33,9 +27,6 @@
     </message>
     <message name="IDS_SYNC_EMPTY_PASSPHRASE_ERROR" desc="Error message when the passphrase is empty.">
       Empty passphrase is not allowed.
-    </message>
-    <message name="IDS_SYNC_ENCRYPTION_SECTION_TITLE" desc="Title of the section containing sync encryption preferences.">
-      Encryption options
     </message>
     <message name="IDS_SYNC_FULL_ENCRYPTION_DATA" desc="Text of the radio that when selected enables full encryption.">
       Encrypt synced data with your own sync passphrase
