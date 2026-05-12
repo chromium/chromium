@@ -11,7 +11,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/rtl.h"
-#include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -33,7 +32,6 @@ constexpr base::Time::Exploded kTestDateTimeExploded = {.year = 2022,
 void SetAdaptiveChargingPref(bool enabled) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kPowerAdaptiveChargingEnabled, enabled);
-  base::RunLoop().RunUntilIdle();
 }
 
 // Returns the number of (popup or non-popup) notifications that are currently
