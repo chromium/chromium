@@ -108,7 +108,7 @@ class SendTabToSelfModel {
 
  protected:
   // The observers.
-  base::ObserverList<SendTabToSelfModelObserver>::Unchecked observers_;
+  base::ObserverList<SendTabToSelfModelObserver> observers_;
 };
 
 }  // namespace send_tab_to_self

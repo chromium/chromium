@@ -8,13 +8,15 @@
 #include <string>
 #include <vector>
 
+#include "base/observer_list_types.h"
+
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
 
 // Observer for the Send Tab To Self model. In the observer methods care should
 // be taken to not modify the model.
-class SendTabToSelfModelObserver {
+class SendTabToSelfModelObserver : public base::CheckedObserver {
  public:
   SendTabToSelfModelObserver() = default;
 
@@ -22,7 +24,7 @@ class SendTabToSelfModelObserver {
   SendTabToSelfModelObserver& operator=(const SendTabToSelfModelObserver&) =
       delete;
 
-  virtual ~SendTabToSelfModelObserver() = default;
+  ~SendTabToSelfModelObserver() override = default;
 
   // Invoked when the model has finished loading. Until this method is called it
   // is unsafe to use the model.

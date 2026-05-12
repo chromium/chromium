@@ -177,6 +177,12 @@ class SendTabToSelfBridgeTest : public testing::Test {
         prefs::kIOSSendTabToSelfLastReceivedTabURLPref, std::string());
   }
 
+  void TearDown() override {
+    if (bridge_) {
+      ShutdownBridge();
+    }
+  }
+
   void InitializeLocalDeviceIfNeeded() {
     if (local_device_) {
       return;
