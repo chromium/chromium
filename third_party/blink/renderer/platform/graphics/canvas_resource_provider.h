@@ -257,8 +257,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate = nullptr);
 
-  template <class T>
-  static std::unique_ptr<T> CreateSharedImageProviderForSoftwareCompositorBase(
+  static std::unique_ptr<Canvas2DResourceProviderSharedImage>
+  CreateSharedImageProviderForSoftwareCompositorBase(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,

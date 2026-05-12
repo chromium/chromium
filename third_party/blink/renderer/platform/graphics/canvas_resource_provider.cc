@@ -1248,8 +1248,7 @@ Canvas2DResourceProviderBitmap::CreateWithClear(
   return nullptr;
 }
 
-template <class T>
-std::unique_ptr<T>
+std::unique_ptr<Canvas2DResourceProviderSharedImage>
 CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositorBase(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -1267,9 +1266,9 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositorBase(
   CHECK(format == viz::SharedImageFormat::N32Format() ||
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
-  auto provider =
-      std::make_unique<T>(size, format, alpha_type, color_space,
-                          shared_image_interface_provider, delegate);
+  auto provider = std::make_unique<Canvas2DResourceProviderSharedImage>(
+      size, format, alpha_type, color_space, shared_image_interface_provider,
+      delegate);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear) {
@@ -1321,8 +1320,7 @@ Canvas2DResourceProviderSharedImage::CreateWithClearForSoftwareCompositor(
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate) {
-  return CreateSharedImageProviderForSoftwareCompositorBase<
-      Canvas2DResourceProviderSharedImage>(
+  return CreateSharedImageProviderForSoftwareCompositorBase(
       size, format, alpha_type, color_space, ShouldInitialize::kCallClear,
       shared_image_interface_provider, delegate);
 }
