@@ -306,14 +306,6 @@ bool ChromeShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
   return !!render_widget_host_view->GetRenderWidgetHost();
 }
 
-bool ChromeShellDelegate::IsTabDrag(const ui::OSExchangeData& drop_data) {
-  return false;
-}
-
-int ChromeShellDelegate::GetBrowserWebUITabStripHeight() {
-  return 0;
-}
-
 void ChromeShellDelegate::BindFingerprint(
     mojo::PendingReceiver<device::mojom::Fingerprint> receiver) {
   content::GetDeviceService().BindFingerprint(std::move(receiver));

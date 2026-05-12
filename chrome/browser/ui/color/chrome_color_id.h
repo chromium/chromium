@@ -1095,21 +1095,6 @@
   /* Web contents colors. */ \
   E_CPONLY(kColorWebContentsBackground) \
   E_CPONLY(kColorWebContentsBackgroundLetterboxing) \
-  /* WebUI Tab Strip colors. */ \
-  E_CPONLY(kColorWebUiTabStripBackground) \
-  E_CPONLY(kColorWebUiTabStripFocusOutline) \
-  E_CPONLY(kColorWebUiTabStripIndicatorCapturing) \
-  E_CPONLY(kColorWebUiTabStripIndicatorPip) \
-  E_CPONLY(kColorWebUiTabStripIndicatorRecording) \
-  E_CPONLY(kColorWebUiTabStripScrollbarThumb) \
-  E_CPONLY(kColorWebUiTabStripTabActiveTitleBackground) \
-  E_CPONLY(kColorWebUiTabStripTabActiveTitleContent) \
-  E_CPONLY(kColorWebUiTabStripTabBackground) \
-  E_CPONLY(kColorWebUiTabStripTabBlocked) \
-  E_CPONLY(kColorWebUiTabStripTabLoadingSpinning) \
-  E_CPONLY(kColorWebUiTabStripTabSeparator) \
-  E_CPONLY(kColorWebUiTabStripTabText) \
-  E_CPONLY(kColorWebUiTabStripTabWaitingSpinning) \
   /* Window control button background colors. */ \
   E_CPONLY(kColorWindowControlButtonBackgroundActive) \
   E_CPONLY(kColorWindowControlButtonBackgroundInactive) \

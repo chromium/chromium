@@ -14,10 +14,6 @@ bool ShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
   return false;
 }
 
-bool ShellDelegate::IsTabDrag(const ui::OSExchangeData& drop_data) {
-  return false;
-}
-
 media_session::MediaSessionService* ShellDelegate::GetMediaSessionService() {
   return nullptr;
 }

@@ -158,13 +158,6 @@ class ASH_EXPORT ShellDelegate {
   // gesture can be performed.
   virtual bool ShouldWaitForTouchPressAck(gfx::NativeWindow window);
 
-  // Checks whether a drag-drop operation is a tab drag.
-  virtual bool IsTabDrag(const ui::OSExchangeData& drop_data);
-
-  // Return the height of WebUI tab strip used to determine if a tab has
-  // dragged out of it.
-  virtual int GetBrowserWebUITabStripHeight() = 0;
-
   // Binds a fingerprint receiver in the Device Service if possible.
   virtual void BindFingerprint(
       mojo::PendingReceiver<device::mojom::Fingerprint> receiver) {}

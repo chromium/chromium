@@ -149,10 +149,6 @@ bool TestShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
   return should_wait_for_touch_ack_;
 }
 
-int TestShellDelegate::GetBrowserWebUITabStripHeight() {
-  return 0;
-}
-
 void TestShellDelegate::OpenMultitaskingSettings() {
   // Opening the settings page will cause a window activation and end overview.
   // Call `EndOverview()` to simulate opening the settings page.

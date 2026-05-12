@@ -69,8 +69,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void SetTabScrubberEnabled(bool enabled) override;
   bool AllowDefaultTouchActions(gfx::NativeWindow window) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
-  bool IsTabDrag(const ui::OSExchangeData& drop_data) override;
-  int GetBrowserWebUITabStripHeight() override;
   void BindFingerprint(
       mojo::PendingReceiver<device::mojom::Fingerprint> receiver) override;
   void BindMultiDeviceSetup(

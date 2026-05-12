@@ -10,8 +10,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/drag_drop/drag_drop_capture_delegate.h"
-#include "ash/drag_drop/tab_drag_drop_delegate.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -166,7 +166,6 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
                    ui::DropTargetEvent event,
                    std::unique_ptr<ui::OSExchangeData> drag_data,
                    aura::client::DragDropDelegate::DropCallback drop_cb,
-                   std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
                    base::ScopedClosureRunner cancel_drag_callback);
 
   void CancelIfInProgress();
@@ -179,9 +178,6 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   int allowed_operations_ = 0;
   ui::mojom::DragOperation operation_ = ui::mojom::DragOperation::kNone;
   aura::client::DragUpdateInfo current_drag_info_;
-
-  // Used when processing a Chrome tab drag from a WebUI tab strip.
-  std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate_;
 
   // Used when processing a normal drag and drop with touch.
   std::unique_ptr<DragDropCaptureDelegate> touch_drag_drop_delegate_;

@@ -45,8 +45,6 @@ using ::testing::Return;
 
 constexpr char kTextMimeType[] = "text/plain";
 
-constexpr char kWindowDragMimeType[] = "chromium/x-window-drag";
-
 }  // namespace
 
 class DragDropOperationTest : public test::ExoTestBase,
@@ -148,85 +146,7 @@ TEST_F(DragDropOperationTest, DeleteDataSourceDuringDragging) {
 
 namespace {
 
-class MockShellDelegate : public ash::TestShellDelegate {
- public:
-  MockShellDelegate() = default;
-  ~MockShellDelegate() override = default;
-
-  MOCK_METHOD(bool, IsTabDrag, (const ui::OSExchangeData&), (override));
-};
-
 }  // namespace
-
-class DragDropOperationTestWithWebUITabStripTest
-    : public DragDropOperationTest {
- public:
-  DragDropOperationTestWithWebUITabStripTest() = default;
-
-  // DragDropOperationTest:
-  void SetUp() override {
-    auto mock_shell_delegate = std::make_unique<NiceMock<MockShellDelegate>>();
-    mock_shell_delegate_ = mock_shell_delegate.get();
-    set_shell_delegate(std::move(mock_shell_delegate));
-    DragDropOperationTest::SetUp();
-  }
-
-  MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }
-
-  void TearDown() override {
-    mock_shell_delegate_ = nullptr;
-    DragDropOperationTest::TearDown();
-  }
-
- private:
-  raw_ptr<NiceMock<MockShellDelegate>> mock_shell_delegate_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(DragDropOperationTestWithWebUITabStripTest,
-       DeleteSurfaceDuringDragging) {
-  TestDataExchangeDelegate data_exchange_delegate;
-
-  auto delegate = std::make_unique<TestDataSourceDelegate>();
-  auto data_source = std::make_unique<DataSource>(delegate.get());
-  data_source->Offer(kWindowDragMimeType);
-  delegate->SetData(kWindowDragMimeType, std::string());
-
-  ON_CALL(*mock_shell_delegate(), IsTabDrag(_)).WillByDefault(Return(true));
-
-  auto shell_surface =
-      test::ShellSurfaceBuilder({100, 100}).BuildShellSurface();
-  auto* origin_surface = shell_surface->surface_for_testing();
-
-  gfx::Size buffer_size(100, 100);
-  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto icon_surface = std::make_unique<Surface>();
-  icon_surface->Attach(buffer.get());
-
-  auto operation = DragDropOperation::Create(
-      &data_exchange_delegate, data_source.get(), origin_surface,
-      icon_surface.get(), gfx::PointF(), ui::mojom::DragEventSource::kMouse);
-  icon_surface->Commit();
-
-  base::RunLoop run_loop;
-  set_drag_blocked_callback(base::BindOnce(
-      [](std::unique_ptr<DataSource> data_source,
-         std::unique_ptr<ShellSurface> shell_surface,
-         base::WeakPtr<DragDropOperation> operation,
-         base::OnceClosure quit_closure) {
-        // This function runs inside the nested RunLoop in
-        // ash::DragDropController::StartDragAndDrop().
-        EXPECT_TRUE(operation);
-        // Deleting ShellSurface causes DragDropOperation to be deleted as well.
-        shell_surface.reset();
-        EXPECT_FALSE(operation);
-        std::move(quit_closure).Run();
-      },
-      std::move(data_source), std::move(shell_surface), operation,
-      run_loop.QuitClosure()));
-  run_loop.Run();
-  EXPECT_FALSE(operation);
-}
 
 TEST_F(DragDropOperationTest, DragDropFromPopup) {
   static_cast<ash::DragDropController*>(
