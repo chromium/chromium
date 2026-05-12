@@ -2627,6 +2627,7 @@
                         "SyncAutofillValuableMetadata",
                         "SyncWalletFlightReservations",
                         "SyncWalletVehicleRegistrations",
+                        "WalletApiPrivatePassesConsent",
                         "WalletApiPrivatePassesEnabled"
                     ]
                 }
@@ -24982,7 +24983,6 @@
             "platforms": [
                 "android",
                 "chromeos",
-                "ios",
                 "linux",
                 "mac",
                 "windows"
