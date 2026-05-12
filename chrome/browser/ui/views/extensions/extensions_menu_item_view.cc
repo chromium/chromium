@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +28,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/extension_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -78,6 +80,27 @@ std::u16string GetPinButtonPressedAccText(bool is_pinned) {
                                              : IDS_EXTENSION_UNPINNED);
 }
 
+class ExtensionsMenuHoverButton : public HoverButton {
+ public:
+  using HoverButton::HoverButton;
+
+  void StateChanged(views::Button::ButtonState old_state) override {
+    views::LabelButton::StateChanged(old_state);
+
+    if (GetState() == STATE_HOVERED && old_state != STATE_PRESSED) {
+#if BUILDFLAG(IS_WIN)
+      if (ui::AXPlatform::GetInstance().GetMode().has_mode(
+              ui::AXMode::kScreenReader)) {
+        return;
+      }
+#endif
+      RequestFocus();
+    } else if (GetState() == STATE_NORMAL && HasFocus()) {
+      GetFocusManager()->SetFocusedView(nullptr);
+    }
+  }
+};
+
 }  // namespace
 
 ExtensionMenuItemView::ExtensionMenuItemView(
@@ -111,7 +134,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                                    views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded)),
               views::Builder<HoverButton>(
-                  std::make_unique<HoverButton>(
+                  std::make_unique<ExtensionsMenuHoverButton>(
                       views::Button::PressedCallback(), std::u16string()))
                   .CopyAddressTo(&context_menu_button_)
                   .SetID(EXTENSION_CONTEXT_MENU)
@@ -139,7 +162,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
     int index = 1;
     builder.AddChildAt(
         views::Builder<HoverButton>(
-            std::make_unique<HoverButton>(
+            std::make_unique<ExtensionsMenuHoverButton>(
                 base::BindRepeating(&ExtensionMenuItemView::OnPinButtonPressed,
                                     base::Unretained(this)),
                 std::u16string()))
