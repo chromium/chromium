@@ -937,4 +937,42 @@ TEST_F(ResourcePoolTest, NotifyOfViewportSizeChangeEnabledInUse) {
   EXPECT_EQ(0u, resource_pool_->GetTotalResourceCountForTesting());
 }
 
+TEST_F(ResourcePoolTest, PeakMetrics) {
+  // Limits high enough to not be hit by this test.
+  size_t bytes_limit = 10 * 1024 * 1024;
+  size_t count_limit = 100;
+  resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
+
+  gfx::Size size(100, 100);
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+  size_t resource_bytes = format.EstimatedSizeInBytes(size);
+
+  ResourcePool::InUsePoolResource resource1 =
+      resource_pool_->AcquireResource(size, format, color_space);
+  SetBackingOnResource(resource1);
+  EXPECT_EQ(resource_bytes, resource_pool_->GetTotalMemoryUsageForTesting());
+  EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
+
+  ResourcePool::InUsePoolResource resource2 =
+      resource_pool_->AcquireResource(size, format, color_space);
+  SetBackingOnResource(resource2);
+  EXPECT_EQ(2 * resource_bytes,
+            resource_pool_->GetTotalMemoryUsageForTesting());
+  EXPECT_EQ(2u, resource_pool_->GetTotalResourceCountForTesting());
+
+  // Release resources, peak should stay the same.
+  resource_pool_->ReleaseResource(std::move(resource1));
+  resource_pool_->ReleaseResource(std::move(resource2));
+  EXPECT_EQ(2 * resource_bytes,
+            resource_pool_->GetTotalMemoryUsageForTesting());
+  EXPECT_EQ(2u, resource_pool_->GetTotalResourceCountForTesting());
+
+  // Evict resources, peak should still stay the same.
+  resource_pool_->SetResourceUsageLimits(0u, 0u);
+  resource_pool_->ReduceResourceUsage();
+  EXPECT_EQ(0u, resource_pool_->GetTotalMemoryUsageForTesting());
+  EXPECT_EQ(0u, resource_pool_->GetTotalResourceCountForTesting());
+}
+
 }  // namespace cc

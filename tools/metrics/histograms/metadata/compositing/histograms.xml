@@ -551,6 +551,26 @@ chromium-metrics-reviews@google.com.
   <token key="DPI" variants="LCDTextDisallowedReasonDPI"/>
 </histogram>
 
+<histogram name="Compositing.ResourcePool.PeakMemoryUsage" units="MB"
+    expires_after="2027-05-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-memory@google.com</owner>
+  <summary>
+    The maximum memory usage of the ResourcePool during its lifetime. Recorded
+    when the ResourcePool is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.ResourcePool.PeakResourceCount" units="resources"
+    expires_after="2027-05-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-memory@google.com</owner>
+  <summary>
+    The maximum number of resources in the ResourcePool during its lifetime.
+    Recorded when the ResourcePool is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Scheduler.DeadlineMode"
     enum="BeginImplFrameDeadlineMode" expires_after="2026-10-04">
   <owner>lizeb@chromium.org</owner>

@@ -494,6 +494,8 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   size_t unused_memory_usage_bytes_ = 0;
   size_t total_memory_usage_bytes_ = 0;
   size_t total_resource_count_ = 0;
+  size_t peak_total_memory_usage_bytes_ = 0;
+  size_t peak_total_resource_count_ = 0;
   bool evict_expired_resources_pending_ = false;
   bool evict_busy_resources_when_unused_ = false;
 

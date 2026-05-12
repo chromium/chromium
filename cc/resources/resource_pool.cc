@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -210,6 +211,12 @@ ResourcePool::~ResourcePool() {
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 
+  UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
+      "Compositing.ResourcePool.PeakMemoryUsage",
+      peak_total_memory_usage_bytes_ / (1024 * 1024));
+  UMA_HISTOGRAM_COUNTS_10000("Compositing.ResourcePool.PeakResourceCount",
+                             peak_total_resource_count_);
+
   DCHECK_EQ(0u, in_use_resources_.size());
 
   while (!busy_resources_.empty()) {
@@ -301,6 +308,8 @@ ResourcePool::PoolResource* ResourcePool::CreateResource(
   // No backing, the memory_usage() should be 0.
   DCHECK_EQ(pool_resource->memory_usage(), 0u);
   ++total_resource_count_;
+  peak_total_resource_count_ =
+      std::max(peak_total_resource_count_, total_resource_count_);
 
   PoolResource* resource = pool_resource.get();
   in_use_resources_[resource->unique_id()] = std::move(pool_resource);
@@ -419,6 +428,8 @@ ResourcePool::TryAcquireResourceForPartialRaster(
 void ResourcePool::OnBackingAllocated(PoolResource* resource) {
   size_t size = resource->memory_usage();
   total_memory_usage_bytes_ += size;
+  peak_total_memory_usage_bytes_ =
+      std::max(peak_total_memory_usage_bytes_, total_memory_usage_bytes_);
   if (resource->state() == PoolResource::kUnused)
     unused_memory_usage_bytes_ += size;
   UpdateTracingCounters();
