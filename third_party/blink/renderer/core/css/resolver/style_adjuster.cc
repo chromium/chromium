@@ -391,6 +391,7 @@ static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
 static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
     const ComputedStyle& layout_parent_style) {
   return layout_parent_style.IsDisplayFlex() ||
+         layout_parent_style.IsDisplayWebkitBox() ||
          layout_parent_style.IsDisplayGrid() ||
          layout_parent_style.IsDisplayGridLanes();
 }
