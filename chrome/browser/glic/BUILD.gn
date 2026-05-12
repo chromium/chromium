@@ -275,6 +275,7 @@ source_set("impl") {
     "glic_net_log.cc",
     "glic_pref_names.cc",
     "glic_profile_manager.cc",
+    "glic_settings_util.cc",
     "glic_tab_restore_data.cc",
     "glic_tab_restore_helper.cc",
     "glic_user_status_fetcher.cc",
@@ -610,6 +611,7 @@ mojom("mojo_bindings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "glic_settings_util_unittest.cc",
     "host/context/glic_sharing_utils_unittest.cc",
     "service/glic_invoke_task_unittest.cc",
   ]

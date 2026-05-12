@@ -595,39 +595,44 @@ BASE_FEATURE_PARAM(std::string,
                    kGlicShortcutsLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
                    "glic-shortcuts-learn-more-url",
-                   "");
+                   "https://support.google.com/gemini?p=chrome_ks");
 BASE_FEATURE_PARAM(std::string,
                    kGlicLauncherToggleLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
                    "glic-shortcuts-launcher-toggle-learn-more-url",
-                   "");
-BASE_FEATURE_PARAM(std::string,
-                   kGlicLocationToggleLearnMoreURL,
-                   &kGlicLearnMoreURLConfig,
-                   "glic-shortcuts-location-toggle-learn-more-url",
-                   "");
+                   "https://support.google.com/gemini?p=chrome_min");
+BASE_FEATURE_PARAM(
+    std::string,
+    kGlicLocationToggleLearnMoreURL,
+    &kGlicLearnMoreURLConfig,
+    "glic-shortcuts-location-toggle-learn-more-url",
+    "https://support.google.com/gemini/answer/"
+    "13594961?hl=en#location_info&zippy=%2Cwhat-location-information-do-gemini-"
+    "apps-collect-why-and-how-is-it-used");
 BASE_FEATURE_PARAM(std::string,
                    kGlicTabAccessToggleLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
                    "glic-shortcuts-tab-access-toggle-learn-more-url",
-                   "");
+                   "https://support.google.com/gemini?p=chrome_PH");
 BASE_FEATURE_PARAM(
     std::string,
     kGlicTabAccessToggleLearnMoreURLDataProtected,
     &kGlicLearnMoreURLConfig,
     "glic-shortcuts-tab-access-toggle-learn-more-url-data-protected",
-    "");
+    "https://support.google.com/a/answer/15706919");
 BASE_FEATURE_PARAM(std::string,
                    kGlicDefaultTabAccessToggleLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
                    "glic-default-tab-access-toggle-learn-more-url",
-                   "");
+                   "https://support.google.com/gemini/answer/"
+                   "13594961?hl=en#chrome&zippy=%2Cwhat-happens-to-my-data-"
+                   "when-i-use-gemini-in-chrome");
 BASE_FEATURE_PARAM(
     std::string,
     kGlicDefaultTabAccessToggleLearnMoreURLDataProtected,
     &kGlicLearnMoreURLConfig,
     "glic-default-tab-access-toggle-learn-more-url-data-protected",
-    "");
+    "https://support.google.com/a/answer/15706919");
 BASE_FEATURE_PARAM(std::string,
                    kGlicSettingsPageLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
@@ -637,18 +642,19 @@ BASE_FEATURE_PARAM(std::string,
                    kGlicWebActuationToggleLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
                    "glic-actuation-on-web-toggle-learn-more-url",
-                   "");
-BASE_FEATURE_PARAM(std::string,
-                   kGlicWebActuationToggleConsiderSafelyURL,
-                   &kGlicLearnMoreURLConfig,
-                   "glic-actuation-on-web-toggle-things-to-consider-safely-url",
-                   "");
+                   "https://support.google.com/gemini?p=gic_agent");
+BASE_FEATURE_PARAM(
+    std::string,
+    kGlicWebActuationToggleConsiderSafelyURL,
+    &kGlicLearnMoreURLConfig,
+    "glic-actuation-on-web-toggle-things-to-consider-safely-url",
+    "https://policies.google.com/terms/generative-ai/use-policy");
 BASE_FEATURE_PARAM(
     std::string,
     kGlicWebActuationToggleConsiderUnexpectedResultsURL,
     &kGlicLearnMoreURLConfig,
     "glic-actuation-on-web-toggle-things-to-consider-unexpected-results-url",
-    "");
+    "https://support.google.com/gemini?p=gic_unexpected_results");
 BASE_FEATURE_PARAM(std::string,
                    kGlicExtensionsManagementUrl,
                    &kGlicLearnMoreURLConfig,

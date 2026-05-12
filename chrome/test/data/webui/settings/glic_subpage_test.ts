@@ -492,14 +492,6 @@ suite('GlicSubpage', function() {
       });
     });
 
-    test('keyboardShortcutLearnMoreHidden', () => {
-      // No url, so the element should be hidden.
-      page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
-      assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
-      const learnMoreElement = $('shortcutsLearnMoreLabel');
-      assertFalse(isVisible(learnMoreElement));
-    });
-
     test('ActorLoginPermissionsButtonVisibleAndNavigates', async () => {
       loadTimeData.overrideValues({
         actorLoginFederatedLoginSupportEnabled: true,

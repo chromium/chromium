@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 import {AiPageActions} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import type {SettingsGlicPageElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -46,11 +46,6 @@ suite('GlicPage', function() {
       page.$.glicLinkRow.click();
       assertEquals(
           routes.GEMINI.path, Router.getInstance().getCurrentRoute().path);
-    });
-
-    test('settingsPageLearnMoreHidden', () => {
-      // No url, so the element should be hidden.
-      assertFalse(isVisible(page.$.learnMoreLabel));
     });
   });
 

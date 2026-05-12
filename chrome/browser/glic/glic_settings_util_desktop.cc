@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/metrics/user_metrics.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/glic_settings_util.h"
@@ -98,6 +99,20 @@ void OpenPasswordManagerSettingsPage(Profile* profile) {
       profile, settings_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params->disposition = WindowOpenDisposition::SINGLETON_TAB;
   glic::Navigate(std::move(params));
+}
+
+std::string_view GetPlatformHelpSuffix() {
+#if BUILDFLAG(IS_WIN)
+  return "_win";
+#elif BUILDFLAG(IS_MAC)
+  return "_mac";
+#elif BUILDFLAG(IS_CHROMEOS)
+  return "_chromeos";
+#elif BUILDFLAG(IS_LINUX)
+  return "_linux";
+#else
+  return "";
+#endif
 }
 
 }  // namespace glic

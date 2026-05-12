@@ -23,6 +23,7 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -927,9 +928,10 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
 
   auto add_localized_url = [&](std::string_view name,
                                std::string_view url_string) {
-    html_source->AddString(name, google_util::AppendGoogleLocaleParam(
-                                     GURL(url_string), application_locale)
-                                     .spec());
+    html_source->AddString(
+        name, google_util::AppendGoogleLocaleParam(
+                  glic::GetHelpCenterUrl(url_string), application_locale)
+                  .spec());
   };
 
   add_localized_url("glicKeyboardShortcutLearnMoreUrl",
