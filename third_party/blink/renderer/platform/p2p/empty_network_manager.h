@@ -63,6 +63,9 @@ class EmptyNetworkManager : public webrtc::NetworkManagerBase {
   // StartUpdating.
   int start_count_ = 0;
 
+  // Tracks whether SubscribeNetworksChanged has been called.
+  bool subscribe_networks_changed_called_ = false;
+
   // `network_manager_for_signaling_thread_` is owned by the
   // PeerConnectionDependencyFactory, that may be destroyed when the frame is
   // detached.

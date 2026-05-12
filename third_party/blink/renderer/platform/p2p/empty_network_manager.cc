@@ -26,8 +26,6 @@ EmptyNetworkManager::EmptyNetworkManager(
   DCHECK(network_manager);
   DETACH_FROM_THREAD(thread_checker_);
   set_enumeration_permission(ENUMERATION_BLOCKED);
-  network_manager->SubscribeNetworksChanged(this,
-                                            [this]() { OnNetworksChanged(); });
 }
 
 EmptyNetworkManager::~EmptyNetworkManager() {
@@ -40,6 +38,13 @@ EmptyNetworkManager::~EmptyNetworkManager() {
 void EmptyNetworkManager::StartUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(network_manager_for_signaling_thread_);
+
+  if (!subscribe_networks_changed_called_) {
+    subscribe_networks_changed_called_ = true;
+    network_manager_for_signaling_thread_->SubscribeNetworksChanged(
+        this, [this]() { OnNetworksChanged(); });
+  }
+
   ++start_count_;
   network_manager_for_signaling_thread_->StartUpdating();
 }
