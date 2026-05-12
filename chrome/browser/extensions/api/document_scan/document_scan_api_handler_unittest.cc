@@ -121,8 +121,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
 
     document_scan_api_handler_ =
         std::make_unique<DocumentScanAPIHandler>(testing_profile_);
-    GetLorgnetteScannerManager()->SetCloseScannerResult(
-        lorgnette::OPERATION_RESULT_SUCCESS);
+
     GetLorgnetteScannerManager()->SetCancelScanResult(
         lorgnette::OPERATION_RESULT_SUCCESS);
     GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
@@ -896,7 +895,7 @@ TEST_F(DocumentScanAPIHandlerTest, CloseScanner_DBusFailure) {
   ASSERT_TRUE(open_response.scanner_handle.has_value());
   const std::string& handle = open_response.scanner_handle.value();
 
-  GetLorgnetteScannerManager()->SetCloseScannerResult(std::nullopt);
+  GetLorgnetteScannerManager()->SimulateDBusFailure(true);
 
   CloseScannerFuture close_future1;
   document_scan_api_handler_->CloseScanner(extension_, handle,
@@ -932,9 +931,6 @@ TEST_F(DocumentScanAPIHandlerTest, CloseScanner_CloseInvalidHandleFails) {
       open_future.Get();
   ASSERT_TRUE(open_response.scanner_handle.has_value());
   const std::string& handle = open_response.scanner_handle.value();
-
-  GetLorgnetteScannerManager()->SetCloseScannerResult(
-      lorgnette::OPERATION_RESULT_SUCCESS);
 
   // Closing a valid handle from a different extension fails because it isn't
   // valid for the second extension.
@@ -974,9 +970,6 @@ TEST_F(DocumentScanAPIHandlerTest, CloseScanner_DoubleCloseHandleFails) {
       open_future.Get();
   ASSERT_TRUE(open_response.scanner_handle.has_value());
   const std::string& handle = open_response.scanner_handle.value();
-
-  GetLorgnetteScannerManager()->SetCloseScannerResult(
-      lorgnette::OPERATION_RESULT_SUCCESS);
 
   // First call succeeds because the handle is valid.
   CloseScannerFuture close_future1;
