@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace optimization_guide {
 namespace {
@@ -777,6 +778,54 @@ TEST_F(PageContentProtoUtilTest, ConvertIframeData) {
 
   EXPECT_FALSE(page_content.proto.main_frame_data().has_media_data());
   EXPECT_TRUE(proto_iframe_data.frame_data().has_media_data());
+}
+
+TEST_F(PageContentProtoUtilTest, PasswordRedactionInOrphanFrame) {
+  auto main_frame_token = CreateFrameToken();
+  auto root_content = CreatePageContent();
+  // root_content is empty (no children), simulating a compromised main frame
+  // renderer.
+
+  auto oopif_token = CreateFrameToken();
+  auto oopif_content = CreatePageContent();
+  oopif_content->visible_bounding_boxes_for_password_redaction.emplace_back(
+      10, 20, 30, 40);
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[oopif_token] = std::move(oopif_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int child_process_id,
+          blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        RenderFrameInfo render_frame_info;
+        if (token == main_frame_token.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token;
+        } else if (token == oopif_token.frame_token) {
+          render_frame_info.global_frame_token = oopif_token;
+        } else {
+          return std::nullopt;
+        }
+        render_frame_info.source_origin =
+            url::Origin::Create(GURL("https://example.com"));
+        render_frame_info.url = GURL("https://example.com");
+        render_frame_info.serialized_server_token = token.ToString();
+        return render_frame_info;
+      });
+
+  AIPageContentResult page_content_result;
+  FrameTokenSet frame_token_set;
+  auto options = blink::mojom::AIPageContentOptions::New();
+  auto result = ConvertAIPageContentToProto(
+      std::move(options), main_frame_token, page_content_map,
+      get_render_frame_info, frame_token_set, page_content_result);
+
+  ASSERT_TRUE(result.has_value());
+  // This currently PASSES because the browser now walks all frames in the map
+  // to collect password redaction boxes, even if they are omitted from the
+  // main tree.
+  EXPECT_EQ(page_content_result.visible_bounding_boxes_for_redaction.size(),
+            1u);
 }
 
 TEST_F(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Form) {
@@ -2236,12 +2285,8 @@ class PageContentProtoUtilAutofillRedactionTest
     return GetParam().enable_otp_redaction;
   }
 
- protected:
-  AIPageContentResult ConvertFormControlDataWithAutofill(
-      blink::mojom::AIPageContentNodePtr form_control_node,
-      AutofillFieldRedactionReason mock_redaction_reason =
-          AutofillFieldRedactionReason::kShouldRedactForPayments) {
-    base::test::ScopedFeatureList scoped_feature_list;
+  void InitializeFeatureList(
+      base::test::ScopedFeatureList& scoped_feature_list) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     // The test params define which Autofill redaction features are enabled.
@@ -2259,7 +2304,21 @@ class PageContentProtoUtilAutofillRedactionTest
       disabled_features.push_back(
           features::kAnnotatedPageContentAutofillOtpRedactions);
     }
+
+    // This must be enabled for any Autofill signals to be processed.
+    enabled_features.push_back(
+        features::kAnnotatedPageContentWithAutofillAnnotations);
+
     scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ protected:
+  AIPageContentResult ConvertFormControlDataWithAutofill(
+      blink::mojom::AIPageContentNodePtr form_control_node,
+      AutofillFieldRedactionReason mock_redaction_reason =
+          AutofillFieldRedactionReason::kShouldRedactForPayments) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    InitializeFeatureList(scoped_feature_list);
 
     content::RenderViewHostTestEnabler rvh_test_enabler;
 
@@ -2543,6 +2602,98 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
     EXPECT_EQ(form_control_node_proto.children_nodes_size(), 0);
   } else {
     EXPECT_EQ(form_control_node_proto.children_nodes_size(), 1);
+  }
+}
+
+TEST_P(PageContentProtoUtilAutofillRedactionTest,
+       ConvertFormControlDataWithAutofill_RedactsOrphanFrame) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitializeFeatureList(scoped_feature_list);
+
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  auto browser_context = std::make_unique<content::TestBrowserContext>();
+  content::WebContents::CreateParams create_params(browser_context.get());
+  std::unique_ptr<content::TestWebContents> web_contents(
+      content::TestWebContents::Create(create_params));
+  web_contents->NavigateAndCommit(GURL("https://example.com"));
+
+  auto* main_rfh = web_contents->GetPrimaryMainFrame();
+  auto main_frame_token = main_rfh->GetGlobalFrameToken();
+
+  // Create an orphan frame using a real subframe RFH.
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh)->AppendChild("subframe");
+  auto orphan_frame_token = subframe->GetGlobalFrameToken();
+
+  auto provider =
+      std::make_unique<testing::NiceMock<MockAutofillAnnotationsProvider>>();
+  AutofillFieldMetadata metadata;
+  metadata.redaction_reason =
+      AutofillFieldRedactionReason::kShouldRedactForPayments;
+  // We use dom_node_id 123 for the sensitive field in the orphan.
+  EXPECT_CALL(*provider, GetAutofillFieldData(testing::_, 123, testing::_))
+      .WillRepeatedly(testing::Return(metadata));
+  AutofillAnnotationsProvider::SetFor(web_contents.get(), std::move(provider));
+
+  auto root_content = CreatePageContent();
+  // root_content is empty (no children), simulating a compromised main frame
+  // renderer.
+
+  auto orphan_content = CreatePageContent();
+  auto form_control_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kFormControl);
+  form_control_node->content_attributes->dom_node_id = 123;
+  form_control_node->content_attributes->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  form_control_node->content_attributes->geometry->visible_bounding_box =
+      gfx::Rect(10, 20, 30, 40);
+  form_control_node->content_attributes->form_control_data =
+      blink::mojom::AIPageContentFormControlData::New();
+  form_control_node->content_attributes->form_control_data->field_value =
+      "sensitive value";
+  orphan_content->root_node->children_nodes.emplace_back(
+      std::move(form_control_node));
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[orphan_frame_token] = std::move(orphan_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        RenderFrameInfo render_frame_info;
+        if (token == main_frame_token.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token;
+        } else if (token == orphan_frame_token.frame_token) {
+          render_frame_info.global_frame_token = orphan_frame_token;
+        } else {
+          return std::nullopt;
+        }
+        render_frame_info.source_origin =
+            url::Origin::Create(GURL("https://example.com"));
+        render_frame_info.url = GURL("https://example.com");
+        render_frame_info.serialized_server_token = token.ToString();
+        return render_frame_info;
+      });
+
+  auto options = blink::mojom::AIPageContentOptions::New();
+  options->mode = blink::mojom::AIPageContentMode::kActionableElements;
+  options->include_sensitive_payments_for_redaction =
+      ShouldEnableCreditCardRedaction();
+  options->include_otps_for_redaction = ShouldEnableOtpRedaction();
+
+  AIPageContentResult result;
+  FrameTokenSet frame_token_set;
+  ASSERT_TRUE(ConvertAIPageContentToProto(
+                  std::move(options), main_frame_token, page_content_map,
+                  get_render_frame_info, frame_token_set, result)
+                  .has_value());
+
+  if (ShouldEnableCreditCardRedaction()) {
+    ASSERT_EQ(result.visible_bounding_boxes_for_redaction.size(), 1u);
+    EXPECT_EQ(result.visible_bounding_boxes_for_redaction[0],
+              gfx::Rect(10, 20, 30, 40));
+  } else {
+    EXPECT_TRUE(result.visible_bounding_boxes_for_redaction.empty());
   }
 }
 

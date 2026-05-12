@@ -45,6 +45,11 @@ BASE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions,
 // are applied to the page content.
 BASE_FEATURE(kAnnotatedPageContentAutofillOtpRedactions,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether sensitive fields in OOPIFs that are omitted from the APC
+// tree are still redacted. This acts as a killswitch for that security fix.
+BASE_FEATURE(kAnnotatedPageContentRedactOrphanFrames,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace {
@@ -1275,6 +1280,17 @@ class Converter {
            blink::mojom::AIPageContentMode::kActionableElements;
   }
 
+  // Collects redaction boxes for a frame that was not visited during the main
+  // frame's tree walk (an "orphan" frame).
+  void CollectRedactionBoxesForOrphanFrame(
+      const blink::mojom::AIPageContent& page_content,
+      content::GlobalRenderFrameHostToken frame_token) {
+    AddRendererPasswordRedactionBoxes(page_content);
+    if (page_content.root_node) {
+      CollectRedactionBoxesForOrphanNode(frame_token, *page_content.root_node);
+    }
+  }
+
   void AddRendererPasswordRedactionBoxes(
       const blink::mojom::AIPageContent& mojom_page_content) {
     // Password boxes are emitted by the renderer and feed the final
@@ -1352,6 +1368,43 @@ class Converter {
   }
   optimization_guide::proto::AnnotatedPageContent& page_content_proto() {
     return page_content_result_->proto;
+  }
+
+  // Recursively walks the nodes of an orphan frame to collect redaction boxes.
+  void CollectRedactionBoxesForOrphanNode(
+      content::GlobalRenderFrameHostToken frame_token,
+      const blink::mojom::AIPageContentNode& mojom_node) {
+    const auto& mojom_attributes = *mojom_node.content_attributes;
+    // Password redaction boxes are reported at the frame level and are handled
+    // by `CollectRedactionBoxesForOrphanFrame()`. This helper only deals with
+    // browser-derived sensitive information redactions.
+    if (mojom_attributes.form_control_data) {
+      proto::ContentAttributes proto_attributes;
+      // Create minimal attributes to check for browser-side redaction signals.
+      // The dom_node_id is the primary identifier used to look up Autofill
+      // metadata for the field.
+      if (mojom_attributes.dom_node_id) {
+        proto_attributes.set_common_ancestor_dom_node_id(
+            *mojom_attributes.dom_node_id);
+      }
+      ConvertFormControlData(
+          *mojom_attributes.form_control_data,
+          mojom_attributes.redaction_decision,
+          GetAutofillFieldData(frame_token, session_, proto_attributes),
+          proto_attributes.mutable_form_control_data());
+      MaybeAddSensitivePaymentOrOtpData(mojom_attributes, proto_attributes);
+
+      // If the node is redacted, do not walk children. This is consistent with
+      // the behavior in `ConvertNode()`.
+      if (ShouldRedactContent(proto_attributes.form_control_data())) {
+        return;
+      }
+    }
+
+    // Recurse into children.
+    for (const auto& child : mojom_node.children_nodes) {
+      CollectRedactionBoxesForOrphanNode(frame_token, *child);
+    }
   }
 
   blink::mojom::AIPageContentOptionsPtr options_;
@@ -1467,6 +1520,27 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
   if (main_frame_page_content->page_interaction_info) {
     ConvertPageInteractionInfo(*main_frame_page_content->page_interaction_info,
                                proto_page_interaction_info);
+  }
+
+  // Password redaction boxes are collected from all frames that returned a
+  // result. Normally these are handled during the `ConvertNode()` tree walk.
+  // However, a compromised renderer could omit an iframe from the tree to
+  // bypass redaction.
+  //
+  // We do this after `ConvertNode()` so that `frame_token_set` is fully
+  // populated, allowing us to identify and also redact sensitive fields from
+  // "orphan" frames that were not reached during the main walk.
+  if (base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentRedactOrphanFrames)) {
+    for (const auto& [token, content_or_redacted] : page_content_map) {
+      if (!frame_token_set.contains(token)) {
+        if (const auto* content_ptr =
+                std::get_if<blink::mojom::AIPageContentPtr>(
+                    &content_or_redacted)) {
+          converter.CollectRedactionBoxesForOrphanFrame(**content_ptr, token);
+        }
+      }
+    }
   }
 
   auto mode = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_MODE_DEFAULT;
