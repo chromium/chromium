@@ -1619,7 +1619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Notifications.EnabledAppLevel"
-    enum="Boolean" expires_after="2026-06-21">
+    enum="Boolean" expires_after="2026-11-12">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
