@@ -90,6 +90,31 @@ int GetWidth(const base::Value& value) {
   return value.GetInt();
 }
 
+// Helper function to return the HTML string for the fixed bottom element test.
+std::string GetFixedBottomHtml() {
+  return "<!DOCTYPE html>\n"
+         "<html>\n"
+         "<head>\n"
+         "  <meta name='viewport' content='width=device-width, "
+         "initial-scale=1.0'>\n"
+         "  <style>\n"
+         "    body { margin: 0; height: 2000px; }\n"
+         "    #fixed { \n"
+         "      position: fixed; \n"
+         "      bottom: 0; \n"
+         "      left: 0; \n"
+         "      right: 0; \n"
+         "      height: 50px; \n"
+         "      background-color: red; \n"
+         "    }\n"
+         "  </style>\n"
+         "</head>\n"
+         "<body>\n"
+         "  <div id='fixed'>Fixed</div>\n"
+         "</body>\n"
+         "</html>";
+}
+
 // Helper function to create 404 Not Found responses.
 std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -669,6 +694,29 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   // Rotate back to portrait.
   [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
                                    error:nil];
+}
+
+- (void)testFixedElementBottom {
+  _responses["/fixed-bottom"] = GetFixedBottomHtml();
+
+  GURL URL = self.testServer->GetURL("/fixed-bottom");
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Fixed"];
+
+  int elementBottom = GetWidth([ChromeEarlGrey
+      evaluateJavaScript:
+          @"document.getElementById('fixed').getBoundingClientRect().bottom"]);
+  int screenHeight =
+      [ChromeEarlGrey screenPositionOfScreenWithNumber:0].size.height;
+  UIEdgeInsets insets = [FullscreenAppInterface currentViewportInsets];
+  UIEdgeInsets safeArea = [FullscreenAppInterface currentWindowSafeArea];
+
+  int screenBottom = insets.top + elementBottom;
+  int expectedScreenBottom = screenHeight - MAX(insets.bottom, safeArea.bottom);
+
+  GREYAssertEqual(screenBottom, expectedScreenBottom,
+                  @"Fixed element bottom should be on top of the bottom "
+                  @"toolbar or safe area.");
 }
 
 @end
