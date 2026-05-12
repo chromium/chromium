@@ -82,8 +82,8 @@ ReverbConvolverStage::ReverbConvolverStage(
         .copy_from(impulse_response.first(stage_length));
     // Account for the normalization (if any) of the convolver node.
     if (scale != 1) {
-      vector_math::Vsmul(direct_kernel->Data(), 1, scale, direct_kernel->Data(),
-                         1, stage_length);
+      vector_math::Vsmul(direct_kernel->Data(), scale, direct_kernel->Data(),
+                         stage_length);
     }
     direct_convolver_ = std::make_unique<DirectConvolver>(
         render_slice_size, std::move(direct_kernel));

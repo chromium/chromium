@@ -92,18 +92,17 @@ uint32_t ReverbAccumulationBuffer::Accumulate(base::span<const float> source,
   DCHECK_LE(number_of_frames1 + write_index, buffer_length);
   DCHECK_LE(number_of_frames2, buffer_length);
 
-  vector_math::Vadd(source.first(number_of_frames1).data(), 1,
+  vector_math::Vadd(source.first(number_of_frames1).data(),
                     destination.subspan(write_index, number_of_frames1).data(),
-                    1,
                     destination.subspan(write_index, number_of_frames1).data(),
-                    1, number_of_frames1);
+                    number_of_frames1);
 
   // Handle wrap-around if necessary
   if (number_of_frames2 > 0) {
     vector_math::Vadd(
-        source.subspan(number_of_frames1, number_of_frames2).data(), 1,
-        destination.first(number_of_frames2).data(), 1,
-        destination.first(number_of_frames2).data(), 1, number_of_frames2);
+        source.subspan(number_of_frames1, number_of_frames2).data(),
+        destination.first(number_of_frames2).data(),
+        destination.first(number_of_frames2).data(), number_of_frames2);
   }
 
   return write_index;

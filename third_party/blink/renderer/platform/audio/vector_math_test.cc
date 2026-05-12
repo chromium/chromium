@@ -26,21 +26,17 @@ namespace {
 
 struct MemoryLayout {
   size_t byte_alignment;
-  size_t stride;
 };
 
 // This is the minimum aligned needed by AVX on x86 family architectures.
 constexpr size_t kMaxBitAlignment = 256u;
 constexpr size_t kMaxByteAlignment = kMaxBitAlignment / 8u;
 
-constexpr size_t kMaxStride = 2u;
-
 constexpr auto kMemoryLayouts = std::to_array<MemoryLayout>({
-    {kMaxByteAlignment / 4u, 1u},
-    {kMaxByteAlignment / 2u, 1u},
-    {kMaxByteAlignment / 2u + kMaxByteAlignment / 4u, 1u},
-    {kMaxByteAlignment, 1u},
-    {0u, kMaxStride},
+    {kMaxByteAlignment / 4u},
+    {kMaxByteAlignment / 2u},
+    {kMaxByteAlignment / 2u + kMaxByteAlignment / 4u},
+    {kMaxByteAlignment},
 });
 constexpr size_t kMemoryLayoutCount = kMemoryLayouts.size();
 
@@ -88,11 +84,11 @@ class TestVector {
 
     constexpr Iterator() = default;
 
-    Iterator(base::raw_span<T> storage, size_t index, size_t stride)
-        : storage_(storage), index_(index), stride_(stride) {}
+    Iterator(base::raw_span<T> storage, size_t index)
+        : storage_(storage), index_(index) {}
 
     Iterator& operator++() {
-      index_ += stride_;
+      index_++;
       return *this;
     }
     Iterator operator++(int) {
@@ -101,7 +97,7 @@ class TestVector {
       return iter;
     }
     Iterator& operator--() {
-      index_ -= stride_;
+      index_--;
       return *this;
     }
     Iterator operator--(int) {
@@ -117,7 +113,6 @@ class TestVector {
    private:
     base::raw_span<T> storage_;
     size_t index_ = 0u;
-    size_t stride_ = 0;
   };
 
  public:
@@ -143,23 +138,19 @@ class TestVector {
                    primary_vector.memory_layout(),
                    primary_vector.size()) {}
 
-  Iterator begin() const { return Iterator(p_, 0u, memory_layout_->stride); }
-  Iterator end() const {
-    return Iterator(p_, size() * memory_layout_->stride,
-                    memory_layout_->stride);
-  }
+  Iterator begin() const { return Iterator(p_, 0u); }
+  Iterator end() const { return Iterator(p_, size()); }
   ReverseIterator rbegin() const { return ReverseIterator(end()); }
   ReverseIterator rend() const { return ReverseIterator(begin()); }
   const MemoryLayout* memory_layout() const { return memory_layout_; }
   T* p() const { return p_.data(); }
   size_t size() const { return size_; }
-  int stride() const { return static_cast<int>(memory_layout_->stride); }
   base::span<T> as_span() const { return p_.first(size_); }
 
   bool operator==(const TestVector& other) const {
     return std::ranges::equal(*this, other, Equal);
   }
-  T& operator[](size_t i) const { return p_[i * memory_layout_->stride]; }
+  T& operator[](size_t i) const { return p_[i]; }
 
  private:
   base::raw_span<T> p_;
@@ -219,8 +210,7 @@ class VectorMathTest : public testing::Test {
   enum {
     kDestinationCount = 4u,
     kFloatArraySize =
-        (kMaxStride * kMaxVectorSizeInBytes + kMaxByteAlignment - 1u) /
-        sizeof(float),
+        (kMaxVectorSizeInBytes + kMaxByteAlignment) / sizeof(float),
     kFullyFiniteSource = 4u,
     kFullyFiniteSource2 = 5u,
     kFullyNonNanSource = 6u,
@@ -282,9 +272,6 @@ std::array<base::AlignedHeapArray<float>, VectorMathTest::kSourceCount>
 
 TEST_F(VectorMathTest, Conv) {
   for (const auto& source : GetPrimaryVectors(GetSource(kFullyFiniteSource))) {
-    if (source.stride() != 1) {
-      continue;
-    }
     for (size_t filter_size : {3u, 32u, 64u, 128u}) {
       // The maximum number of frames which could be processed here is
       // |source.size() - filter_size + 1|. However, in order to test
@@ -331,8 +318,7 @@ TEST_F(VectorMathTest, Vadd) {
         expected_dest[i] = source1[i] + source2[i];
       }
       for (auto& dest : GetSecondaryVectors(GetDestination(1u), source1)) {
-        Vadd(source1.p(), source1.stride(), source2.p(), source2.stride(),
-             dest.p(), dest.stride(), source1.size());
+        Vadd(source1.p(), source2.p(), dest.p(), source1.size());
         EXPECT_EQ(expected_dest, dest);
       }
     }
@@ -347,8 +333,7 @@ TEST_F(VectorMathTest, Vsub) {
         expected_dest[i] = source1[i] - source2[i];
       }
       for (auto& dest : GetSecondaryVectors(GetDestination(1u), source1)) {
-        Vsub(source1.p(), source1.stride(), source2.p(), source2.stride(),
-             dest.p(), dest.stride(), source1.size());
+        Vsub(source1.p(), source2.p(), dest.p(), source1.size());
         EXPECT_EQ(expected_dest, dest);
       }
     }
@@ -366,8 +351,7 @@ TEST_F(VectorMathTest, Vclip) {
       expected_dest[i] = ClampTo(source[i], low_threshold, high_threshold);
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      Vclip(source.as_span(), source.stride(), low_threshold, high_threshold,
-            dest.as_span(), dest.stride());
+      Vclip(source.as_span(), low_threshold, high_threshold, dest.as_span());
       EXPECT_EQ(expected_dest, dest);
     }
   }
@@ -384,7 +368,7 @@ TEST_F(VectorMathTest, Vmaxmgv) {
       const float expected_max =
           std::accumulate(source.begin(), source.end(), 0.0f, maxmg);
       float max;
-      Vmaxmgv(source.p(), source.stride(), &max, source.size());
+      Vmaxmgv(source.p(), &max, source.size());
       EXPECT_EQ(expected_max, max) << testing::PrintToString(source);
     }
   }
@@ -398,8 +382,7 @@ TEST_F(VectorMathTest, Vmul) {
         expected_dest[i] = source1[i] * source2[i];
       }
       for (auto& dest : GetSecondaryVectors(GetDestination(1u), source1)) {
-        Vmul(source1.p(), source1.stride(), source2.p(), source2.stride(),
-             dest.p(), dest.stride(), source1.size());
+        Vmul(source1.p(), source2.p(), dest.p(), source1.size());
         EXPECT_EQ(expected_dest, dest);
       }
     }
@@ -416,8 +399,7 @@ TEST_F(VectorMathTest, Vsma) {
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
       std::ranges::copy(dest_source, dest.begin());
-      Vsma(source.p(), source.stride(), scale, dest.p(), dest.stride(),
-           source.size());
+      Vsma(source.p(), scale, dest.p(), source.size());
       // Different optimizations may use different precisions for intermediate
       // results which may result in different rounding errors thus let's
       // expect only mostly equal floats.
@@ -447,8 +429,7 @@ TEST_F(VectorMathTest, Vsmul) {
       expected_dest[i] = scale * source[i];
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      Vsmul(source.p(), source.stride(), scale, dest.p(), dest.stride(),
-            source.size());
+      Vsmul(source.p(), scale, dest.p(), source.size());
       EXPECT_EQ(expected_dest, dest);
     }
   }
@@ -462,8 +443,7 @@ TEST_F(VectorMathTest, Vsadd) {
       expected_dest[i] = addend + source[i];
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      Vsadd(source.p(), source.stride(), addend, dest.p(), dest.stride(),
-            source.size());
+      Vsadd(source.p(), addend, dest.p(), source.size());
       EXPECT_EQ(expected_dest, dest);
     }
   }
@@ -477,7 +457,7 @@ TEST_F(VectorMathTest, Vsvesq) {
       const float expected_sum =
           std::accumulate(source.begin(), source.end(), 0.0f, sqsum);
       float sum;
-      Vsvesq(source.p(), source.stride(), &sum, source.size());
+      Vsvesq(source.p(), &sum, source.size());
       if (std::isfinite(expected_sum)) {
         // Optimized paths in Vsvesq use parallel partial sums which may result
         // in different rounding errors than the non-partial sum algorithm used
@@ -504,9 +484,6 @@ TEST_F(VectorMathTest, Zvmul) {
     }
   }
   for (const auto& real1 : GetPrimaryVectors<float>(sources[0u].as_span())) {
-    if (real1.stride() != 1) {
-      continue;
-    }
     const TestVector<const float> imag1(sources[1u], real1);
     const TestVector<const float> real2(sources[2u], real1);
     const TestVector<const float> imag2(sources[3u], real1);
@@ -517,8 +494,7 @@ TEST_F(VectorMathTest, Zvmul) {
     const size_t source_offset =
         real1.memory_layout()->byte_alignment / sizeof(float);
     for (size_t i = 0u; i < real1.size(); ++i) {
-      const size_t source_index =
-          source_offset + i * real1.memory_layout()->stride;
+      const size_t source_index = source_offset + i;
       expected_dest_real[i] = real1[i] * real2[i] - imag1[i] * imag2[i];
       expected_dest_imag[i] = real1[i] * imag2[i] + imag1[i] * real2[i];
       if (source_index >= kOverflowStart && source_index < kOverflowEnd) {
@@ -531,7 +507,6 @@ TEST_F(VectorMathTest, Zvmul) {
     }
     for (auto& dest_real : GetSecondaryVectors(GetDestination(2u), real1)) {
       TestVector<float> dest_imag(GetDestination(3u), real1);
-      ASSERT_EQ(1, dest_real.stride());
       Zvmul(real1.p(), imag1.p(), real2.p(), imag2.p(), dest_real.p(),
             dest_imag.p(), real1.size());
       // Different optimizations may use different precisions for intermediate

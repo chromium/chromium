@@ -422,15 +422,15 @@ void WaveShaperHandler::WaveShaperCurveValues(
   //           static_cast<float>(curve_length - 1))
 
   // Add 1 to source puttting result in virtual_index
-  vector_math::Vsadd(source.data(), 1, 1, virtual_index, 1, frames_to_process);
+  vector_math::Vsadd(source.data(), 1.0f, virtual_index, frames_to_process);
 
   // Scale virtual_index in place by (curve_length -1)/2
-  vector_math::Vsmul(virtual_index, 1, 0.5 * (curve_length - 1), virtual_index,
-                     1, frames_to_process);
+  vector_math::Vsmul(virtual_index, 0.5 * (curve_length - 1), virtual_index,
+                     frames_to_process);
 
   // Clip virtual_index, in place.
-  vector_math::Vclip(virtual_index_.as_span(), 1, 0, curve_length - 1,
-                     virtual_index_.as_span(), 1, frames_to_process);
+  vector_math::Vclip(virtual_index_.as_span(), 0, curve_length - 1,
+                     virtual_index_.as_span(), frames_to_process);
 
   // index = floor(virtual_index)
   DCHECK_LE(frames_to_process, index_.size());
@@ -553,7 +553,7 @@ void WaveShaperHandler::WaveShaperCurveValues(
   }
 
   // f[k] = virtual_index[k] - index[k]
-  vector_math::Vsub(virtual_index, 1, index.data(), 1, f, 1, frames_to_process);
+  vector_math::Vsub(virtual_index, index.data(), f, frames_to_process);
 
   // Do the linear interpolation of the curve data:
   // destination[k] = v1[k] + f[k]*(v2[k] - v1[k])
@@ -562,10 +562,9 @@ void WaveShaperHandler::WaveShaperCurveValues(
   // 2. v2[k] = f[k]*v2[k] = f[k]*(v2[k] - v1[k])
   // 3. destination[k] = destination[k] + v2[k]
   //                   = v1[k] + f[k]*(v2[k] - v1[k])
-  vector_math::Vsub(v2_.Data(), 1, v1_.Data(), 1, v2_.Data(), 1,
-                    frames_to_process);
-  vector_math::Vmul(f, 1, v2_.Data(), 1, v2_.Data(), 1, frames_to_process);
-  vector_math::Vadd(v2_.Data(), 1, v1_.Data(), 1, destination.data(), 1,
+  vector_math::Vsub(v2_.Data(), v1_.Data(), v2_.Data(), frames_to_process);
+  vector_math::Vmul(f, v2_.Data(), v2_.Data(), frames_to_process);
+  vector_math::Vadd(v2_.Data(), v1_.Data(), destination.data(),
                     frames_to_process);
 }
 

@@ -263,14 +263,14 @@ void Delay::ProcessKRate(base::span<const float> source,
     //   dest[k] = dest[k] + f*(temp_buffer_[k] - dest[k]);
 
     // temp_buffer_[k] = temp_buffer_[k] - dest[k]
-    vector_math::Vsub(temp_buffer_.Data(), 1, destination.data(), 1,
-                      temp_buffer_.Data(), 1, frames_to_process);
+    vector_math::Vsub(temp_buffer_.Data(), destination.data(),
+                      temp_buffer_.Data(), frames_to_process);
 
     // dest[k] = dest[k] + f*temp_buffer_[k]
     //         = dest[k] + f*(temp_buffer_[k] - dest[k]);
     //
-    vector_math::Vsma(temp_buffer_.Data(), 1, interpolation_factor,
-                      destination.data(), 1, frames_to_process);
+    vector_math::Vsma(temp_buffer_.Data(), interpolation_factor,
+                      destination.data(), frames_to_process);
   }
 }
 

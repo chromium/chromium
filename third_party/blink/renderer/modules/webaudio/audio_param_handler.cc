@@ -401,7 +401,7 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
       HandleNaNValues(values, DefaultValue());
     }
 
-    vector_math::Vclip(values, 1, min_value, max_value, values, 1);
+    vector_math::Vclip(values, min_value, max_value, values);
 
     // Clear the channel memory to avoid holding a reference to the external
     // `values` buffer, which may be garbage collected.
@@ -1288,7 +1288,7 @@ float AudioParamHandler::ValuesForFrameRange(size_t start_frame,
                               sample_rate, control_rate, render_quantum_frames);
 
   // Clamp the values now to the nominal range
-  vector_math::Vclip(values, 1, min_value, max_value, values, 1);
+  vector_math::Vclip(values, min_value, max_value, values);
 
   return last_value;
 }

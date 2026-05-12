@@ -87,8 +87,8 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
       frame_.DoInverseFFT(output_buffer_.Data());
 
       // Overlap-add 1st half from previous time
-      vector_math::Vadd(output_buffer_.Data(), 1, last_overlap_buffer_.Data(),
-                        1, output_buffer_.Data(), 1, half_size);
+      vector_math::Vadd(output_buffer_.Data(), last_overlap_buffer_.Data(),
+                        output_buffer_.Data(), half_size);
 
       // Finally, save 2nd half of result
       DCHECK_EQ(output_buffer_.size(), 2 * half_size);

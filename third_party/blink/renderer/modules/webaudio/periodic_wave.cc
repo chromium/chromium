@@ -443,10 +443,10 @@ bool PeriodicWaveImpl::CreateBandLimitedTables(
     // arrays.  Need to scale the data by fftSize to remove the scaling that the
     // inverse IFFT would do.
     float scale = fft_size;
-    vector_math::Vsmul(real_data.data(), 1, scale, real.Data(), 1,
+    vector_math::Vsmul(real_data.data(), scale, real.Data(),
                        number_of_components);
     scale = -scale;
-    vector_math::Vsmul(imag_data.data(), 1, scale, imag.Data(), 1,
+    vector_math::Vsmul(imag_data.data(), scale, imag.Data(),
                        number_of_components);
 
     // Find the starting bin where we should start culling.  We need to clear
@@ -485,7 +485,7 @@ bool PeriodicWaveImpl::CreateBandLimitedTables(
     if (!disable_normalization) {
       if (!range_index) {
         float max_value;
-        vector_math::Vmaxmgv(data, 1, &max_value, fft_size);
+        vector_math::Vmaxmgv(data, &max_value, fft_size);
 
         if (max_value) {
           normalization_scale = 1.0f / max_value;
@@ -494,7 +494,7 @@ bool PeriodicWaveImpl::CreateBandLimitedTables(
     }
 
     // Apply normalization scale.
-    vector_math::Vsmul(data, 1, normalization_scale, data, 1, fft_size);
+    vector_math::Vsmul(data, normalization_scale, data, fft_size);
   }
   return true;
 }

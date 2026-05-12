@@ -85,33 +85,23 @@ void Conv(base::span<const float> source,
 }
 
 void Vadd(const float* source1p,
-          int source_stride1,
           const float* source2p,
-          int source_stride2,
           float* dest_p,
-          int dest_stride,
           uint32_t frames_to_process) {
-  impl::Vadd(source1p, source_stride1, source2p, source_stride2, dest_p,
-             dest_stride, frames_to_process);
+  impl::Vadd(source1p, 1, source2p, 1, dest_p, 1, frames_to_process);
 }
 
 void Vsub(const float* source1p,
-          int source_stride1,
           const float* source2p,
-          int source_stride2,
           float* dest_p,
-          int dest_stride,
           uint32_t frames_to_process) {
-  impl::Vsub(source1p, source_stride1, source2p, source_stride2, dest_p,
-             dest_stride, frames_to_process);
+  impl::Vsub(source1p, 1, source2p, 1, dest_p, 1, frames_to_process);
 }
 
 void Vclip(base::span<const float> source,
-           int source_stride,
            float low_threshold,
            float high_threshold,
-           base::span<float> dest,
-           int dest_stride) {
+           base::span<float> dest) {
 #if DCHECK_IS_ON()
   // Do the same DCHECKs that |ClampTo| would do so that optimization paths do
   // not have to do them.
@@ -122,16 +112,14 @@ void Vclip(base::span<const float> source,
   DCHECK_LE(low_threshold, high_threshold);
 #endif
 
-  impl::Vclip(source.data(), source_stride, &low_threshold, &high_threshold,
-              dest.data(), dest_stride, dest.size());
+  impl::Vclip(source.data(), 1, &low_threshold, &high_threshold, dest.data(), 1,
+              dest.size());
 }
 
 void Vclip(base::span<const float> source,
-           int source_stride,
            float low_threshold,
            float high_threshold,
            base::span<float> dest,
-           int dest_stride,
            uint32_t frames_to_process) {
 #if DCHECK_IS_ON()
   // Do the same DCHECKs that |ClampTo| would do so that optimization paths do
@@ -143,70 +131,55 @@ void Vclip(base::span<const float> source,
   DCHECK_LE(low_threshold, high_threshold);
 #endif
 
-  impl::Vclip(source.data(), source_stride, &low_threshold, &high_threshold,
-              dest.data(), dest_stride, frames_to_process);
+  impl::Vclip(source.data(), 1, &low_threshold, &high_threshold, dest.data(), 1,
+              frames_to_process);
 }
 
 void Vmaxmgv(const float* source_p,
-             int source_stride,
              float* max_p,
              uint32_t frames_to_process) {
   float max = 0;
 
-  impl::Vmaxmgv(source_p, source_stride, &max, frames_to_process);
+  impl::Vmaxmgv(source_p, 1, &max, frames_to_process);
 
   DCHECK(max_p);
   *max_p = max;
 }
 
 void Vmul(const float* source1p,
-          int source_stride1,
           const float* source2p,
-          int source_stride2,
           float* dest_p,
-          int dest_stride,
           uint32_t frames_to_process) {
-  impl::Vmul(source1p, source_stride1, source2p, source_stride2, dest_p,
-             dest_stride, frames_to_process);
+  impl::Vmul(source1p, 1, source2p, 1, dest_p, 1, frames_to_process);
 }
 
 void Vsma(const float* source_p,
-          int source_stride,
           float scale,
           float* dest_p,
-          int dest_stride,
           uint32_t frames_to_process) {
-  impl::Vsma(source_p, source_stride, &scale, dest_p, dest_stride,
-             frames_to_process);
+  impl::Vsma(source_p, 1, &scale, dest_p, 1, frames_to_process);
 }
 
 void Vsmul(const float* source_p,
-           int source_stride,
            float scale,
            float* dest_p,
-           int dest_stride,
            uint32_t frames_to_process) {
-  impl::Vsmul(source_p, source_stride, &scale, dest_p, dest_stride,
-              frames_to_process);
+  impl::Vsmul(source_p, 1, &scale, dest_p, 1, frames_to_process);
 }
 
 void Vsadd(const float* source_p,
-           int source_stride,
            float addend,
            float* dest_p,
-           int dest_stride,
            uint32_t frames_to_process) {
-  impl::Vsadd(source_p, source_stride, &addend, dest_p, dest_stride,
-              frames_to_process);
+  impl::Vsadd(source_p, 1, &addend, dest_p, 1, frames_to_process);
 }
 
 void Vsvesq(const float* source_p,
-            int source_stride,
             float* sum_p,
             uint32_t frames_to_process) {
   float sum = 0;
 
-  impl::Vsvesq(source_p, source_stride, &sum, frames_to_process);
+  impl::Vsvesq(source_p, 1, &sum, frames_to_process);
 
   DCHECK(sum_p);
   *sum_p = sum;

@@ -74,9 +74,9 @@ std::unique_ptr<FFTFrame> FFTFrame::CreateInterpolatedFrame(
 }
 
 void FFTFrame::ScaleFFT(float factor) {
-  vector_math::Vsmul(real_data_.Data(), 1, factor, real_data_.Data(), 1,
+  vector_math::Vsmul(real_data_.Data(), factor, real_data_.Data(),
                      real_data_.size());
-  vector_math::Vsmul(imag_data_.Data(), 1, factor, imag_data_.Data(), 1,
+  vector_math::Vsmul(imag_data_.Data(), factor, imag_data_.Data(),
                      imag_data_.size());
 }
 

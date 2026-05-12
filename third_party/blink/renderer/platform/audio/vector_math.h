@@ -54,80 +54,63 @@ PLATFORM_EXPORT void PrepareFilterForConv(base::span<const float> filter,
 
 // Vector scalar multiply and then add.
 //
-// dest[k*dest_stride] += scale * source[k*source_stride]
+// dest[k] += scale * source[k]
 //
 // Note: Mac has a different implementation, and it may produce slightly
 // different results from what linux and windows would do.
 PLATFORM_EXPORT void Vsma(const float* source_p,
-                          int source_stride,
                           float scale,
                           float* dest_p,
-                          int dest_stride,
                           uint32_t frames_to_process);
 
 // Vector scalar multiply:
 //
-// dest[k*dest_stride] = scale * source[k*source_stride]
+// dest[k] = scale * source[k]
 PLATFORM_EXPORT void Vsmul(const float* source_p,
-                           int source_stride,
                            float scale,
                            float* dest_p,
-                           int dest_stride,
                            uint32_t frames_to_process);
 
 PLATFORM_EXPORT void Vsadd(const float* source_p,
-                           int source_stride,
                            float addend,
                            float* dest_p,
-                           int dest_stride,
                            uint32_t frames_to_process);
 // Vector add:
 //
-// dest[k*dest_stride] = source1[k*source_stride1] + source2[k*source_stride2]
+// dest[k] = source1[k] + source2[k]
 PLATFORM_EXPORT void Vadd(const float* source1p,
-                          int source_stride1,
                           const float* source2p,
-                          int source_stride2,
                           float* dest_p,
-                          int dest_stride,
                           uint32_t frames_to_process);
 
 // Vector subtract:
 //
-// dest[k*dest_stride] = source1[k*source_stride1] - source2[k*source_stride2]
+// dest[k] = source1[k] - source2[k]
 PLATFORM_EXPORT void Vsub(const float* source1p,
-                          int source_stride1,
                           const float* source2p,
-                          int source_stride2,
                           float* dest_p,
-                          int dest_stride,
                           uint32_t frames_to_process);
 
 // Finds the maximum magnitude of a float vector:
 //
-// max = max(abs(source[k*source_stride])) for all k.
+// max = max(abs(source[k])) for all k.
 PLATFORM_EXPORT void Vmaxmgv(const float* source_p,
-                             int source_stride,
                              float* max_p,
                              uint32_t frames_to_process);
 
 // Sums the squares of a float vector's elements:
 //
-// sum = sum(source[k*source_stride]^2, k = 0, frames_to_process);
+// sum = sum(source[k]^2, k = 0, frames_to_process);
 PLATFORM_EXPORT void Vsvesq(const float* source_p,
-                            int source_stride,
                             float* sum_p,
                             uint32_t frames_to_process);
 
 // For an element-by-element multiply of two float vectors:
 //
-// dest[k*dest_stride] = source1[k*source_stride1] * source2[k*source_stride2]
+// dest[k] = source1[k] * source2[k]
 PLATFORM_EXPORT void Vmul(const float* source1p,
-                          int source_stride1,
                           const float* source2p,
-                          int source_stride2,
                           float* dest_p,
-                          int dest_stride,
                           uint32_t frames_to_process);
 
 // Multiplies two complex vectors.  Complex version of Vmul where |rea1p| and
@@ -144,23 +127,19 @@ PLATFORM_EXPORT void Zvmul(const float* real1p,
 
 // Copies elements while clipping values to the threshold inputs.
 //
-// dest[k*dest_stride] = clip(source[k*source_stride], low, high)
+// dest[k] = clip(source[k], low, high)
 //
 // where y = clip(x, low, high) = max(low, min(x, high)), effectively making
 // low <= y <= high.
 PLATFORM_EXPORT void Vclip(base::span<const float> source,
-                           int source_stride,
                            float low_threshold,
                            float high_threshold,
-                           base::span<float> dest,
-                           int dest_stride);
+                           base::span<float> dest);
 
 PLATFORM_EXPORT void Vclip(base::span<const float> source,
-                           int source_stride,
                            float low_threshold,
                            float high_threshold,
                            base::span<float> dest,
-                           int dest_stride,
                            uint32_t frames_to_process);
 
 }  // namespace blink::vector_math

@@ -59,7 +59,7 @@ void AudioChannel::Scale(float scale) {
     return;
   }
 
-  vector_math::Vsmul(Data(), 1, scale, MutableData(), 1, length());
+  vector_math::Vsmul(Data(), scale, MutableData(), length());
 }
 
 void AudioChannel::CopyFrom(const AudioChannel* source_channel) {
@@ -113,8 +113,7 @@ void AudioChannel::SumFrom(const AudioChannel* source_channel) {
   if (IsSilent()) {
     CopyFrom(source_channel);
   } else {
-    vector_math::Vadd(Data(), 1, source_channel->Data(), 1, MutableData(), 1,
-                      length());
+    vector_math::Vadd(Data(), source_channel->Data(), MutableData(), length());
   }
 }
 
@@ -125,7 +124,7 @@ float AudioChannel::MaxAbsValue() const {
 
   float max = 0;
 
-  vector_math::Vmaxmgv(Data(), 1, &max, length());
+  vector_math::Vmaxmgv(Data(), &max, length());
 
   return max;
 }

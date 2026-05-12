@@ -156,7 +156,7 @@ bool IsAudible(const AudioBus* rendered_data) {
   for (uint32_t k = 0; k < rendered_data->NumberOfChannels(); ++k) {
     const float* data = rendered_data->Channel(k)->Data();
     float channel_energy;
-    vector_math::Vsvesq(data, 1, &channel_energy, data_size);
+    vector_math::Vsvesq(data, &channel_energy, data_size);
     energy += channel_energy;
   }
 

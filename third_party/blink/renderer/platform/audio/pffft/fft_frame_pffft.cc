@@ -224,7 +224,7 @@ void FFTFrame::DoInverseFFT(float* data) {
 
   // The inverse transform needs to be scaled because PFFFT doesn't.
   float scale = 1.0 / fft_size_;
-  vector_math::Vsmul(data, 1, scale, data, 1, fft_size_);
+  vector_math::Vsmul(data, scale, data, fft_size_);
 }
 
 }  // namespace blink
