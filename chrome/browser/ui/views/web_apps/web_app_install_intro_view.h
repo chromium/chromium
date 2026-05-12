@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -17,6 +18,10 @@
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
+
+namespace views {
+class Textfield;
+}  // namespace views
 
 class GURL;
 
@@ -41,6 +46,8 @@ class WebAppInstallIntroView : public views::View {
           text_tracker_callback);
   ~WebAppInstallIntroView() override;
 
+  views::Textfield* textfield() const { return textfield_; }
+
  private:
   WebAppInstallIntroView(InstallDialogType install_type,
                          const gfx::ImageSkia& icon_image,
@@ -51,6 +58,8 @@ class WebAppInstallIntroView : public views::View {
                          base::WeakPtr<WebAppScreenshotFetcher> fetcher,
                          base::RepeatingCallback<void(const std::u16string&)>
                              text_tracker_callback);
+
+  raw_ptr<views::Textfield> textfield_ = nullptr;
 };
 
 }  // namespace web_app

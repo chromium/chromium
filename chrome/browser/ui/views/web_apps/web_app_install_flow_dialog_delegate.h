@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_modal_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
-#include "ui/base/identifier/unique_identifier.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/button/button.h"
 
 class PrefService;
@@ -35,7 +35,7 @@ namespace web_app {
 
 class ProgressDelay;
 class WebAppScreenshotFetcher;
-class WebAppInstallFlowView;
+
 class WebAppInstallProgressView;
 class WebAppInstallOptionsView;
 struct WebAppInstallInfo;
@@ -53,10 +53,13 @@ std::ostream& operator<<(std::ostream& os, InstallOsType type);
 
 class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallDialogFlowViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLearnMoreButtonId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIntroViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOptionsViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProgressViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSuccessfulViewId);
 
   WebAppInstallFlowDialogDelegate(
       content::WebContents* web_contents,
@@ -72,7 +75,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
 
   ~WebAppInstallFlowDialogDelegate() override;
 
-  static void Show(
+  static base::WeakPtr<WebAppInstallFlowDialogDelegate> Show(
       content::WebContents* web_contents,
       std::unique_ptr<WebAppInstallInfo> install_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
@@ -83,10 +86,6 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
       InstallDialogType dialog_type,
       InstallOsType os_type,
       std::unique_ptr<ProgressDelay> progress_delay);
-
-  void SetFlowView(base::WeakPtr<WebAppInstallFlowView> flow_view) {
-    flow_view_ = std::move(flow_view);
-  }
 
   void SetProgressView(base::WeakPtr<WebAppInstallProgressView> progress_view) {
     progress_view_ = std::move(progress_view);
@@ -117,10 +116,12 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
 
   InstallDialogType dialog_type() const { return dialog_type_; }
 
+  InstallDialogStep GetCurrentStepForTesting() const { return current_step_; }
+
  protected:
   InstallDialogStep current_step_ = InstallDialogStep::kInstallDialog;
   InstallOsType os_type_;
-  base::WeakPtr<WebAppInstallFlowView> flow_view_;
+
   base::WeakPtr<WebAppInstallProgressView> progress_view_;
   base::WeakPtr<WebAppInstallOptionsView> options_view_;
 

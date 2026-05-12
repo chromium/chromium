@@ -361,12 +361,15 @@ WebAppInstallIntroView::WebAppInstallIntroView(
       vertical_spacing));
 
   switch (install_type) {
-    case InstallDialogType::kDiy:
-      AddChildView(std::make_unique<SiteIconTextAndOriginView>(
+    case InstallDialogType::kDiy: {
+      auto site_icon_view = std::make_unique<SiteIconTextAndOriginView>(
           icon_image, app_name,
           l10n_util::GetStringUTF16(IDS_DIY_APP_AX_BUBBLE_NAME_LABEL),
-          start_url, nullptr, std::move(text_tracker_callback)));
+          start_url, nullptr, std::move(text_tracker_callback));
+      textfield_ = site_icon_view->title_field();
+      AddChildView(std::move(site_icon_view));
       break;
+    }
     case InstallDialogType::kDetailed: {
       CHECK(fetcher);
       AddChildView(WebAppIconNameAndOriginView::Create(icon_image, app_name,

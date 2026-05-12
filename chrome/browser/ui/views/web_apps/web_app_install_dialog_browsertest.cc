@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_flow_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -69,16 +68,6 @@ int GetTimesToAcceptDialog(const std::string& name, InstallOsType os_type) {
 
 // The number of times the dialog could be accepted before the dialog closes.
 const int kAcceptsBeforeClosure = 3;
-
-WebAppInstallFlowView* GetWebAppInstallFlowView(views::Widget* widget) {
-  if (!widget) {
-    return nullptr;
-  }
-  return static_cast<WebAppInstallFlowView*>(
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          WebAppInstallFlowDialogDelegate::kInstallDialogFlowViewId,
-          views::ElementTrackerViews::GetContextForWidget(widget)));
-}
 
 }  // namespace
 
@@ -148,7 +137,7 @@ class WebAppInstallDialogBrowserTest
     auto install_tracker = promoter->RegisterCurrentInstallForWebContents(
         webapps::WebappInstallSource::MENU_BROWSER_TAB);
 
-    WebAppInstallFlowDialogDelegate::Show(
+    delegate_ = WebAppInstallFlowDialogDelegate::Show(
         browser()->tab_strip_model()->GetActiveWebContents(),
         std::move(install_info), std::move(install_tracker),
         base::BindOnce(&WebAppInstallDialogBrowserTest::OnDialogCompleted,
@@ -194,9 +183,7 @@ class WebAppInstallDialogBrowserTest
 
       // Wait for the dialog to reach the Successful step.
       ASSERT_TRUE(base::test::RunUntil([&]() {
-        WebAppInstallFlowView* flow_view =
-            GetWebAppInstallFlowView(widget_.get());
-        return flow_view && flow_view->GetCurrentStepForTesting() ==
+        return delegate_ && delegate_->GetCurrentStepForTesting() ==
                                 InstallDialogStep::kSuccessful;
       }));
     }
@@ -222,6 +209,7 @@ class WebAppInstallDialogBrowserTest
   WebAppInstallationAcceptanceResultCallback install_result_callback_;
   TestWebAppScreenshotFetcher screenshot_fetcher_;
   base::WeakPtr<views::Widget> widget_ = nullptr;
+  base::WeakPtr<WebAppInstallFlowDialogDelegate> delegate_ = nullptr;
 
  private:
   InstallDialogType GetDialogType() { return std::get<1>(GetParam()); }
@@ -325,7 +313,7 @@ class WebAppInstallDialogCheckboxTest : public WebAppInstallDialogBrowserTest {
 
     views::View* options_view =
         views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            WebAppInstallOptionsView::kViewId,
+            WebAppInstallFlowDialogDelegate::kOptionsViewId,
             views::ElementTrackerViews::GetContextForWidget(widget_.get()));
     EXPECT_TRUE(options_view);
     if (!options_view) {

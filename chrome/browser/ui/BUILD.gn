@@ -1980,7 +1980,7 @@ static_library("ui") {
       # c/b/ui/browser.h gets componentized.
       "//chrome/browser/ui/web_applications:launch_utils",
 
-      # #TODO(crbug.com/486967014): Remove once views dep is removed for side
+      # TODO(crbug.com/486967014): Remove once views dep is removed for side
       # panel.
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
 
@@ -4707,8 +4707,6 @@ static_library("ui") {
       "views/web_apps/web_app_icon_name_and_origin_view.h",
       "views/web_apps/web_app_install_dialog_delegate.cc",
       "views/web_apps/web_app_install_dialog_delegate.h",
-      "views/web_apps/web_app_install_dialog_flow_view.cc",
-      "views/web_apps/web_app_install_dialog_flow_view.h",
       "views/web_apps/web_app_install_flow_dialog_delegate.cc",
       "views/web_apps/web_app_install_flow_dialog_delegate.h",
       "views/web_apps/web_app_install_intro_view.cc",

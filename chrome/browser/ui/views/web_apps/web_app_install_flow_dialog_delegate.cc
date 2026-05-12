@@ -42,7 +42,6 @@
 #include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_flow_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_intro_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_progress_view.h"
@@ -97,7 +96,13 @@
 namespace web_app {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
-                                      kInstallDialogFlowViewId);
+                                      kIntroViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
+                                      kOptionsViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
+                                      kProgressViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
+                                      kSuccessfulViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
                                       kLearnMoreButtonId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
@@ -295,7 +300,7 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
       break;
     }
 
-    case InstallDialogStep::kProgress:
+    case InstallDialogStep::kProgress: {
       // Trigger the installation.
       // TODO(crbug.com/508383640): Clean up metrics usage for new install flow.
       OnAccept();
@@ -309,6 +314,7 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
       dialog_model()->SetVisible(kInstallButton, false);
       dialog_model()->SetVisible(kCancelButtonId, false);
       break;
+    }
 
     case InstallDialogStep::kSuccessful: {
       ui::DialogModel::Button* ok_button =
@@ -330,12 +336,16 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
     }
   }
 
-  if (flow_view_) {
-    flow_view_->UpdateStepVisibility(current_step_);
-  }
+  dialog_model()->SetVisible(
+      kIntroViewId, current_step_ == InstallDialogStep::kInstallDialog);
+  dialog_model()->SetVisible(
+      kOptionsViewId, current_step_ == InstallDialogStep::kInstallerOptions);
+  dialog_model()->SetVisible(kProgressViewId,
+                             current_step_ == InstallDialogStep::kProgress);
+  dialog_model()->SetVisible(kSuccessfulViewId,
+                             current_step_ == InstallDialogStep::kSuccessful);
 
   UpdateDialogTitleAndHeader(current_step_);
-
   return false;
 }
 
@@ -629,7 +639,8 @@ void WebAppInstallFlowDialogDelegate::OnProgress(
 }
 
 // Builds and shows an install dialog flow according to the install_type.
-void WebAppInstallFlowDialogDelegate::Show(
+base::WeakPtr<WebAppInstallFlowDialogDelegate>
+WebAppInstallFlowDialogDelegate::Show(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> install_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
@@ -667,32 +678,23 @@ void WebAppInstallFlowDialogDelegate::Show(
       os_type, std::move(progress_delay));
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
-  absl::flat_hash_map<InstallDialogStep, std::unique_ptr<views::View>>
-      install_step_to_view;
-
   // kInstallDialog
-  install_step_to_view[InstallDialogStep::kInstallDialog] =
-      WebAppInstallIntroView::Create(
-          install_type, icon_image_32, title, start_url,
-          dialog_image_info.is_maskable, description, screenshot_fetcher,
-          base::BindRepeating(&WebAppInstallFlowDialogDelegate::
-                                  OnTextFieldChangedMaybeUpdateButton,
-                              delegate_weak_ptr));
+  auto intro_view = WebAppInstallIntroView::Create(
+      install_type, icon_image_32, title, start_url,
+      dialog_image_info.is_maskable, description, screenshot_fetcher,
+      base::BindRepeating(
+          &WebAppInstallFlowDialogDelegate::OnTextFieldChangedMaybeUpdateButton,
+          delegate_weak_ptr));
+  views::View* intro_focusable_view = intro_view->textfield();
 
-  // kInstallerOptions
   auto options_view = WebAppInstallOptionsView::Create(
       os_type, title, icon_image_32, icon_image_80,
       dialog_image_info.is_maskable, start_url);
   delegate->options_view_ = options_view->GetWeakPtr();
-  install_step_to_view[InstallDialogStep::kInstallerOptions] =
-      std::move(options_view);
 
-  // kProgress
   auto progress_view = std::make_unique<WebAppInstallProgressView>();
   auto progress_view_weak_ptr = progress_view->GetWeakPtr();
-  install_step_to_view[InstallDialogStep::kProgress] = std::move(progress_view);
 
-  // kSuccessful
   auto successful_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -700,19 +702,7 @@ void WebAppInstallFlowDialogDelegate::Show(
   successful_view->AddChildView(WebAppIconNameAndOriginView::Create(
       icon_image_32, title, start_url, dialog_image_info.is_maskable));
 
-  install_step_to_view[InstallDialogStep::kSuccessful] =
-      std::move(successful_view);
-
-  auto flow_view =
-      std::make_unique<WebAppInstallFlowView>(std::move(install_step_to_view));
-  flow_view->SetProperty(views::kElementIdentifierKey,
-                         kInstallDialogFlowViewId);
-  auto flow_view_weak_ptr = flow_view->GetWeakPtr();
-  delegate->SetFlowView(flow_view_weak_ptr);
   delegate->SetProgressView(progress_view_weak_ptr);
-
-  views::View* focusable_view =
-      flow_view->GetViewForStep(InstallDialogStep::kInstallDialog);
 
   auto dialog_model_builder = ui::DialogModel::Builder(std::move(delegate));
   dialog_model_builder.SetInternalName("WebAppInstallFlowDialog")
@@ -764,13 +754,28 @@ void WebAppInstallFlowDialogDelegate::Show(
       .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
       .AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
-              std::move(flow_view),
+              std::move(intro_view),
               views::BubbleDialogModelHost::FieldType::kControl,
-              focusable_view),
-          WebAppInstallFlowDialogDelegate::kInstallDialogFlowViewId);
+              intro_focusable_view),
+          kIntroViewId)
+      .AddCustomField(
+          std::make_unique<views::BubbleDialogModelHost::CustomView>(
+              std::move(options_view),
+              views::BubbleDialogModelHost::FieldType::kControl),
+          kOptionsViewId)
+      .AddCustomField(
+          std::make_unique<views::BubbleDialogModelHost::CustomView>(
+              std::move(progress_view),
+              views::BubbleDialogModelHost::FieldType::kControl),
+          kProgressViewId)
+      .AddCustomField(
+          std::make_unique<views::BubbleDialogModelHost::CustomView>(
+              std::move(successful_view),
+              views::BubbleDialogModelHost::FieldType::kControl),
+          kSuccessfulViewId);
 
   if (install_type == InstallDialogType::kDiy) {
-    dialog_model_builder.SetInitiallyFocusedField(kInstallDialogFlowViewId);
+    dialog_model_builder.SetInitiallyFocusedField(kIntroViewId);
   }
   if (install_type != InstallDialogType::kDetailed) {
     dialog_model_builder.SetBannerImage(ui::ImageModel::FromImageSkia(
@@ -787,17 +792,23 @@ void WebAppInstallFlowDialogDelegate::Show(
         IDS_INSTALL_PWA_DIALOG_ORIGIN_LABEL, origin_url));
   }
 
+  auto model = dialog_model_builder.Build();
+  model->SetVisible(kOptionsViewId, false);
+  model->SetVisible(kProgressViewId, false);
+  model->SetVisible(kSuccessfulViewId, false);
+
   auto dialog = views::BubbleDialogModelHost::CreateModal(
-      dialog_model_builder.Build(), ui::mojom::ModalType::kChild);
+      std::move(model), ui::mojom::ModalType::kChild);
 
   views::Widget* widget = constrained_window::ShowWebModalDialogViews(
       dialog.release(), web_contents);
 
   if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget)) {
     delegate_weak_ptr->CloseDialogAsIgnored();
-    return;
+    return nullptr;
   }
   delegate_weak_ptr->OnWidgetShownStartTracking(widget);
+  return delegate_weak_ptr;
 }
 
 }  // namespace web_app

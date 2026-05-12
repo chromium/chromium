@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_flow_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_progress_view.h"
@@ -238,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
   dialog_delegate->AcceptDialog();
 
   if (ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
-          WebAppInstallOptionsView::kViewId)) {
+          WebAppInstallFlowDialogDelegate::kOptionsViewId)) {
     dialog_delegate->AcceptDialog();
   }
 
