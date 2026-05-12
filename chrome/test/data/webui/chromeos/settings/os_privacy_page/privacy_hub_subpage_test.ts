@@ -54,6 +54,7 @@ function overriddenValues(privacyHubVersion: string) {
       return {
         showPrivacyHubLocationControl: false,
         showSpeakOnMuteDetectionPage: true,
+        shouldUseMetricsConsentRestructure: false,
       };
     }
     case PrivacyHubVersion.V0AndLocation: {
@@ -605,6 +606,9 @@ function testsuiteForMetricsConsentToggle() {
   let metricsConsentBrowserProxy: TestMetricsConsentBrowserProxy;
 
   setup(() => {
+    loadTimeData.overrideValues({
+      shouldUseMetricsConsentRestructure: false,
+    });
     metricsConsentBrowserProxy = new TestMetricsConsentBrowserProxy();
     MetricsConsentBrowserProxyImpl.setInstanceForTesting(
         metricsConsentBrowserProxy);
@@ -644,6 +648,19 @@ function testsuiteForMetricsConsentToggle() {
             'Send usage toggle should only be visible here when privacy hub' +
                 ' is hidden.');
       });
+
+  test('hidden when metrics consent restructure is enabled', async () => {
+    loadTimeData.overrideValues({shouldUseMetricsConsentRestructure: true});
+    settingsPage.remove();
+    await setUpPage(USER_METRICS_CONSENT_PREF_NAME, true);
+
+    const element =
+        settingsPage.shadowRoot!.querySelector('#metricsConsentToggle');
+    assertEquals(
+        null, element,
+        'Send usage toggle should not be visible when metrics consent' +
+            ' restructure is enabled.');
+  });
 
   test(
       'Send usage stats toggle visibility in settings-privacy-hub-subpage',
