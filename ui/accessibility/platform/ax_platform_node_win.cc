@@ -701,22 +701,25 @@ gfx::NativeViewAccessible AXPlatformNodeWin::GetNativeViewAccessible() {
 void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   TRACE_EVENT("accessibility", "NotifyAccessibilityEvent",
               perfetto::Flow::FromPointer(this));
-  AXPlatformNodeBase::NotifyAccessibilityEvent(event_type);
   const bool selection_event_on_unselected_node =
       event_type == ax::mojom::Event::kSelection &&
       HasBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
       !GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
 
   // Menu items fire selection events but Windows screen readers work reliably
-  // with focus events. Remap here if the node is selected.
+  // with focus events. Remap selected menu items and legacy selection events
+  // without explicit selected state, but do not remap explicitly unselected
+  // items.
   if (event_type == ax::mojom::Event::kSelection &&
-      !HasBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
+      !selection_event_on_unselected_node) {
     // A menu item could have something other than a role of
     // |ROLE_SYSTEM_MENUITEM|. Zoom modification controls for example have a
     // role of button.
+    const bool selection_state_is_unknown =
+        !HasBoolAttribute(ax::mojom::BoolAttribute::kSelected);
     if (int role = MSAARole(); role == ROLE_SYSTEM_MENUITEM) {
       event_type = ax::mojom::Event::kFocus;
-    } else if (role == ROLE_SYSTEM_LISTITEM) {
+    } else if (selection_state_is_unknown && role == ROLE_SYSTEM_LISTITEM) {
       if (const AXPlatformNodeBase* container = GetSelectionContainer()) {
         if (container->GetRole() == ax::mojom::Role::kListBox &&
             !container->HasState(ax::mojom::State::kMultiselectable) &&
@@ -724,14 +727,18 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
           event_type = ax::mojom::Event::kFocus;
         }
       }
-    } else if (auto* parent = GetParentPlatformNodeWin(); parent) {
-      if (int parent_role = parent->MSAARole();
-          parent_role == ROLE_SYSTEM_MENUPOPUP ||
-          parent_role == ROLE_SYSTEM_LIST) {
-        event_type = ax::mojom::Event::kFocus;
+    } else if (selection_state_is_unknown) {
+      if (auto* parent = GetParentPlatformNodeWin(); parent) {
+        if (int parent_role = parent->MSAARole();
+            parent_role == ROLE_SYSTEM_MENUPOPUP ||
+            parent_role == ROLE_SYSTEM_LIST) {
+          event_type = ax::mojom::Event::kFocus;
+        }
       }
     }
   }
+
+  AXPlatformNodeBase::NotifyAccessibilityEvent(event_type);
 
   // TODO(benjamin.beaudry): Uncomment DCHECK once https://crbug.com/331840469
   // is fixed.
