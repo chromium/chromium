@@ -63,7 +63,7 @@ constexpr CGFloat kStackViewSpacing = 4;
 // The horizontal margins of the stack view.
 constexpr CGFloat kStackViewHorizontalMargin = 8;
 // The vertical offset of the stack view in portrait.
-constexpr CGFloat kStackViewLandscapeVerticalOffset = 2;
+constexpr CGFloat kStackViewPortraitVerticalOffset = 2;
 
 // The inner padding of the buttons.
 constexpr CGFloat kButtonHorizontalPadding = 4;
@@ -157,9 +157,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   BOOL _buttonsEnabled;
   // Whether the assistant button is enabled.
   BOOL _assistantButtonEnabled;
-  // The stack view constraints that are updated on rotation.
-  NSLayoutConstraint* _stackViewTopConstraint;
-  NSLayoutConstraint* _stackViewBottomConstraint;
   // Container view for the Tab Grid button's custom preview.
   UIView* _tabGridContentView;
   // The alpha for the titles of the buttons.
@@ -240,8 +237,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     _leadingSpacer.hidden = YES;
     _trailingSpacer.hidden = YES;
   }
-
-  [self updateStackViewConstraintsForPortrait:!_isRotated];
 }
 
 - (void)toggleSpotlightView:(BOOL)shouldShow {
@@ -327,11 +322,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   UIView* view = self.view;
   [view addSubview:_stackView];
 
-  _stackViewTopConstraint =
-      [_stackView.topAnchor constraintEqualToAnchor:view.topAnchor];
-  _stackViewBottomConstraint =
-      [_stackView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor];
-
   [NSLayoutConstraint activateConstraints:@[
     [_backgroundView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
     [_backgroundView.trailingAnchor
@@ -342,20 +332,17 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     [_stackView.leadingAnchor
         constraintEqualToAnchor:view.leadingAnchor
                        constant:kStackViewHorizontalMargin],
-    _stackViewTopConstraint,
+    [_stackView.topAnchor constraintEqualToAnchor:view.topAnchor],
     [_stackView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor
                        constant:-kStackViewHorizontalMargin],
-    _stackViewBottomConstraint,
+    [_stackView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
     [view.heightAnchor constraintEqualToConstant:kAppBarHeight],
   ]];
 
   [self.layoutGuideCenter referenceView:_stackView underName:kAppBarGuide];
   [self.layoutGuideCenter referenceView:_assistantButton
                               underName:kAppBarAssistantButtonGuide];
-
-  // The AppBar is created in "portrait" orientation.
-  [self updateStackViewConstraintsForPortrait:YES];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -483,13 +470,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 }
 
 #pragma mark - Private
-
-// Updates the stack view constraints based on the orientation.
-- (void)updateStackViewConstraintsForPortrait:(BOOL)portrait {
-  CGFloat offset = portrait ? 0 : -kStackViewLandscapeVerticalOffset;
-  _stackViewTopConstraint.constant = offset;
-  _stackViewBottomConstraint.constant = offset;
-}
 
 // Returns `fullTitle` if it fits within the available width for the
 // buttons, or `truncatedTitle` otherwise.
@@ -724,6 +704,22 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   };
 }
 
+// Updates the vertical content insets of a button configuration based on the
+// current orientation.
+- (void)updateVerticalInsetsForButtonConfiguration:
+    (UIButtonConfiguration*)config {
+  BOOL portrait = !_isRotated;
+  CGFloat topInset =
+      portrait ? (kButtonVerticalPadding - kStackViewPortraitVerticalOffset)
+               : kButtonVerticalPadding;
+  CGFloat bottomInset =
+      portrait ? (kButtonVerticalPadding + kStackViewPortraitVerticalOffset)
+               : kButtonVerticalPadding;
+  config.contentInsets =
+      NSDirectionalEdgeInsetsMake(topInset, kButtonHorizontalPadding,
+                                  bottomInset, kButtonHorizontalPadding);
+}
+
 // Updates the configuration for standard buttons.
 - (void)updateStandardButtonConfiguration:(UIButton*)button {
   UIButtonConfiguration* config = button.configuration;
@@ -744,6 +740,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   [self updateButtonTitleConfiguration:config
                         highlightAlpha:activeAlpha
                                 button:button];
+
+  [self updateVerticalInsetsForButtonConfiguration:config];
 
   button.configuration = config;
 }
@@ -771,6 +769,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   symbolView.tintColor = [symbolColor colorWithAlphaComponent:highlightAlpha];
   countLabel.textColor =
       [baseLabelColor colorWithAlphaComponent:highlightAlpha];
+
+  [self updateVerticalInsetsForButtonConfiguration:config];
 
   button.configuration = config;
 }
