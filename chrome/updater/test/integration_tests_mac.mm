@@ -5,6 +5,7 @@
 #include "chrome/updater/test/integration_tests_mac.h"
 
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -578,6 +579,35 @@ void ExpectKSAdminXattrBrand(UpdaterScope scope,
   ExpectKSAdminResult(scope, elevate,
                       {{"--print-xattr-tag-brand", path.value()}},
                       std::move(want_brand), want_exit);
+}
+
+void ExpectKSAdminRegister(UpdaterScope scope,
+                           const std::string& app_id,
+                           const base::FilePath& tagged_pkg_path,
+                           const base::FilePath& brand_path,
+                           const std::string& brand_key,
+                           const std::string& brand_value,
+                           const std::string& write_brand_file) {
+  std::map<std::string, std::string> switches;
+  switches["--register"] = "";
+  switches["--productid"] = app_id;
+  if (!tagged_pkg_path.empty()) {
+    switches["--tagged-pkg-path"] = tagged_pkg_path.value();
+  }
+  if (!brand_path.empty()) {
+    switches["--brand-path"] = brand_path.value();
+  }
+  if (!brand_key.empty()) {
+    switches["--brand-key"] = brand_key;
+  }
+  if (!brand_value.empty()) {
+    switches["--brand-value"] = brand_value;
+  }
+  if (!write_brand_file.empty()) {
+    switches["--write-brand-file"] = write_brand_file;
+  }
+
+  ExpectKSAdminResult(scope, false, switches, {}, EXIT_SUCCESS);
 }
 
 void ExpectCRURegistrationCannotFindKSAdmin() {

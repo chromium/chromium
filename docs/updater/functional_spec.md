@@ -902,6 +902,50 @@ the following parameters:
           installerdata=%7B%22distribution%22%3A%7B%22msi%22%3Atrue%7D%7D
 ```
 
+### PKG installers (macOS)
+
+Similar to MSI installers on Windows, macOS flat packages (.pkg) can be tagged
+to convey dynamic install parameters. Currently, .pkg tags only support the
+`brand` parameter.
+
+Chrome PKGs are built using the signing pipeline
+(`chrome/installer/mac/sign_chrome.py`). The signing script itself does not
+insert a tag.
+
+A PKG installer can be tagged using the `tag` tool (built from
+`chrome/updater/tools/tag_main.cc`) as follows:
+
+```
+out/Default/tag
+    "--set-tag=brand=GGLL"
+    product.pkg
+```
+
+The .pkg format is a XAR archive and uses XAR signing. XAR signatures cover each
+individual file in the archive in both its compressed and uncompressed form.
+Bytes inside the archive that are not referenced as part of any compressed file
+remain outside of the signature. Apple notarization refers to the code-signed
+applications inside the archive, so it is similarly indifferent to "stray bytes"
+on the archive.
+
+Apple relies on this property for "stapling" notarization "tickets" to a signed
+.pkg without breaking the signature; the notarization ticket is appended to the
+end of the file. Apple's notarization tools only recognize a stapled
+notarization if it is at the end of the file, so we insert the Omaha tag just
+before the stapled notarization record.
+
+When a tagged Chrome PKG is run, the `postinstall` script invokes
+`ksadmin --register` including the `--tagged-pkg-path <file>` flag, providing
+the path to the `.pkg` being installed (which macOS Installer provides both as
+a parameter and an environment variable to `postinstall` scripts). `ksadmin`
+attempts to extract the tag and uses its brand code to set up a brand file
+(as specified by `--write-brand-file ifneeded` and `--brand-file-path <path>`),
+for persistent recording of the brand across updates. (It does not overwrite an
+existing brand, so an overinstall remains credited to the original brand.) If
+`ksadmin` cannot find an Omaha tag, cannot parse the tag, or cannot find a brand
+in the tag, it uses the brand code provided in the `--brand-value` parameter,
+if present. If no brand is provided by either method, no brand is written.
+
 ### Enterprise Enrollment
 The machine updater may be enrolled with a particular enterprise. Enrollment is
 coordinated with a device management server by means of an enrollment token and

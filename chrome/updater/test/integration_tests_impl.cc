@@ -1106,14 +1106,40 @@ void GetAppStates(UpdaterScope updater_scope,
           ASSERT_TRUE(it != std::end(states));
           const base::DictValue* expected = expected_state.GetIfDict();
           ASSERT_TRUE(expected);
-          EXPECT_EQ(it->app_id, *expected->FindString("app_id"));
-          EXPECT_EQ(it->version, *expected->FindString("version"));
-          EXPECT_EQ(it->ap, *expected->FindString("ap"));
-          EXPECT_EQ(it->brand_code, *expected->FindString("brand_code"));
-          EXPECT_EQ(update_client::StringTypeToUTF8(it->brand_path.value()),
-                    *expected->FindString("brand_path"));
-          EXPECT_EQ(update_client::StringTypeToUTF8(it->ecp.value()),
-                    *expected->FindString("ecp"));
+          bool checked_anything = false;
+          if (const std::string* expected_app_id_str =
+                  expected->FindString("app_id")) {
+            EXPECT_EQ(it->app_id, *expected_app_id_str);
+            checked_anything = true;
+          }
+          if (const std::string* expected_version =
+                  expected->FindString("version")) {
+            EXPECT_EQ(it->version, *expected_version);
+            checked_anything = true;
+          }
+          if (const std::string* expected_ap = expected->FindString("ap")) {
+            EXPECT_EQ(it->ap, *expected_ap);
+            checked_anything = true;
+          }
+          if (const std::string* expected_brand_code =
+                  expected->FindString("brand_code")) {
+            EXPECT_EQ(it->brand_code, *expected_brand_code);
+            checked_anything = true;
+          }
+          if (const std::string* expected_brand_path =
+                  expected->FindString("brand_path")) {
+            EXPECT_EQ(update_client::StringTypeToUTF8(it->brand_path.value()),
+                      *expected_brand_path);
+            checked_anything = true;
+          }
+          if (const std::string* expected_ecp = expected->FindString("ecp")) {
+            EXPECT_EQ(update_client::StringTypeToUTF8(it->ecp.value()),
+                      *expected_ecp);
+            checked_anything = true;
+          }
+          EXPECT_TRUE(checked_anything)
+              << "TEST ISSUE: GetAppStates had no expectations for app "
+              << expected_app_id;
         }
         loop.Quit();
       }));

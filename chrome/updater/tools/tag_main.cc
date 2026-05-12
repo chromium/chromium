@@ -21,8 +21,8 @@ namespace tools {
 //   string can be optionally passed as the value for this argument, in which
 //   case the tag string will be validated and set with the appropriate magic
 //   signature within the certificate.
-// * For MSIs, the tag string is a required argument, and will be validated and
-//   set with the appropriate magic signature within the MSI.
+// * For MSIs and PKGs, the tag string is a required argument, and will be
+//   validated and et with the appropriate magic signature within the file.
 constexpr char kSetTagSwitch[] = "set-tag";
 
 // For EXEs, a superfluous certificate tag will be padded with zeros to at least
@@ -61,7 +61,7 @@ struct CommandLineArguments {
 void PrintUsageAndExit(const base::CommandLine* cmdline) {
   std::cerr << "Usage: " << cmdline->GetProgram().AsUTF8Unsafe()
             << " [--get-tag|set-tag=TAG] [--padded-length=PADDED_LENGTH]"
-            << " [--out=OUT] binary.[exe|msi]" << std::endl;
+            << " [--out=OUT] binary.[exe|msi|pkg]" << std::endl;
   std::exit(255);
 }
 

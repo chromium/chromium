@@ -21,17 +21,34 @@
 
 #include "base/containers/span.h"
 
-namespace updater {
-namespace tagging {
+namespace updater::tagging {
 
 class BinaryInterface {
  public:
-  // tag returns the embedded tag, if any.
+  // tag returns the complete embedded tag, if any, including the tag header.
+  // It may or may not include trailing tag padding, depending on the tag
+  // format.
   virtual std::optional<std::vector<uint8_t>> tag() const = 0;
 
   // Returns an updated version of the binary with the provided `tag`, or
   // `nullopt` on error. If the binary already contains a tag then it will be
   // replaced.
+  //
+  // `tag` is injected directly into the binary with no further processing.
+  // Therefore, it must already be a valid Omaha 4 tag (including signature
+  // and length), to be useful; if it isn't, it will be written into the
+  // binary anyway over any existing tag or injected as though it is a tag.
+  //
+  // If writing over an existing tag, the `tag` argument is presumed to be no
+  // longer than the existing tag patch space, since the total patch space
+  // length cannot be verified. If it is too long, file content after the
+  // tag patch space may be overwritten with the excess bytes from `tag`,
+  // which is likely to silently corrupt the file.
+  //
+  // If writing a new tag, `tag` is inserted as the entire tag and patch
+  // space. Tags (including blank tags) intended to be patched on-the-fly by the
+  // download server must therefore be padded by the caller with null bytes to
+  // the size of the patch space (see `kMaxTagStringBytes` in tag.cc).
   virtual std::optional<std::vector<uint8_t>> SetTag(
       base::span<const uint8_t> tag) = 0;
 
@@ -43,7 +60,6 @@ std::unique_ptr<BinaryInterface> CreatePEBinary(
 std::unique_ptr<BinaryInterface> CreateMSIBinary(
     base::span<const uint8_t> contents);
 
-}  // namespace tagging
-}  // namespace updater
+}  // namespace updater::tagging
 
 #endif  // CHROME_UPDATER_CERTIFICATE_TAG_H_

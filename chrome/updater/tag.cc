@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -17,21 +18,26 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/updater/certificate_tag.h"
+#include "chrome/updater/pkg_tag.h"
 #include "chrome/updater/tag_internal.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -56,7 +62,7 @@ constexpr size_t kMaxTagStringBytes = 8192;
 // Maximum length for the binary representation of a tag, including its magic
 // signature and length bytes.
 constexpr size_t kMaxBinaryTagBytes =
-    kMaxTagStringBytes + 2 + sizeof(kTagMagicUtf8);
+    kMaxTagStringBytes + 2 + kTagMagicUtf8.size();
 #endif  // BUILDFLAG(IS_MAC)
 
 // Character that is disallowed from appearing in the tag.
@@ -559,16 +565,9 @@ std::array<uint8_t, 2> U16IntToBigEndian(uint16_t value) {
           static_cast<uint8_t>(value & 0x00FF)};
 }
 
-// Converts a big-endian 2-byte value to little-endian and returns it
-// as a uint16_t.
-uint16_t BigEndianReadU16(std::vector<uint8_t>::const_iterator it) {
-  static_assert(ARCH_CPU_LITTLE_ENDIAN, "Machine should be little-endian.");
-  return (uint16_t{*it} << 8) + (uint16_t{*(it + 1)});
-}
-
 // Loads up to the last 80K bytes from `filename`.
 std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
-  static constexpr int64_t kMaxBytesToRead = 81920;  // 80K
+  static constexpr size_t kMaxBytesToRead = 81920;  // 80K
 
   base::File file(filename, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
@@ -576,9 +575,14 @@ std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
   }
 
   const int64_t file_length = file.GetLength();
-  const int64_t bytes_to_read = std::min(file_length, kMaxBytesToRead);
+  if (file_length < 0) {
+    LOG(ERROR) << "Valid file, invalid length at path: " << filename;
+    return {};
+  }
+  const size_t unsigned_file_length = base::checked_cast<size_t>(file_length);
+  const size_t bytes_to_read = std::min(unsigned_file_length, kMaxBytesToRead);
   const int64_t offset =
-      (file_length > bytes_to_read) ? file_length - bytes_to_read : 0;
+      (unsigned_file_length > bytes_to_read) ? file_length - bytes_to_read : 0;
 
   std::vector<uint8_t> buffer(bytes_to_read);
   return file.ReadAndCheck(offset, base::span(buffer)) ? buffer
@@ -590,7 +594,7 @@ std::string ParseTagBuffer(const std::vector<uint8_t>& tag_buffer) {
     return {};
   }
 
-  const std::string tag_string = ReadTag(tag_buffer.begin(), tag_buffer.end());
+  const std::string tag_string = ReadTag(tag_buffer);
   LOG_IF(ERROR, tag_string.empty()) << __func__ << ": Tag not found in file.";
   return tag_string;
 }
@@ -762,7 +766,7 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string) {
-  std::vector<uint8_t> tag(std::begin(kTagMagicUtf8), std::end(kTagMagicUtf8));
+  std::vector<uint8_t> tag(std::from_range, kTagMagicUtf8);
   const std::array<uint8_t, 2> tag_length =
       U16IntToBigEndian(tag_string.length());
   tag.insert(tag.end(), tag_length.begin(), tag_length.end());
@@ -770,40 +774,38 @@ std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string) {
   return tag;
 }
 
-std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
-                    std::vector<uint8_t>::const_iterator end) {
-  const uint8_t* magic_begin = std::begin(kTagMagicUtf8);
-  const uint8_t* magic_end = std::end(kTagMagicUtf8);
-
-  std::vector<uint8_t>::const_iterator magic_str =
-      std::find_end(begin, end, magic_begin, magic_end);
-  if (magic_str == end) {
-    return std::string();
+ReadTagResult ReadTagAndOffset(base::span<const uint8_t> buffer) {
+  auto magic_str_subrange = std::ranges::find_end(buffer, kTagMagicUtf8);
+  auto magic_str_begin = magic_str_subrange.begin();
+  if (magic_str_begin == buffer.end()) {
+    return NoTagFound{};
   }
 
-  std::vector<uint8_t>::const_iterator taglen_buf =
-      internal::AdvanceIt(magic_str, magic_end - magic_begin, end);
+  size_t magic_offset =
+      base::checked_cast<size_t>(magic_str_begin - buffer.begin());
+  size_t taglen_offset = magic_offset + kTagMagicUtf8.size();
 
-  // Checks that the stored tag length is found within the binary.
-  if (!internal::CheckRange(taglen_buf, sizeof(uint16_t), end)) {
-    return std::string();
+  base::SpanReader reader(buffer.subspan(taglen_offset));
+  uint16_t tag_len = 0;
+  if (!reader.ReadU16BigEndian(tag_len)) {
+    return InvalidTag{.offset = magic_offset};
   }
 
-  // Tag length is stored as a big-endian uint16_t.
-  const uint16_t tag_len = BigEndianReadU16(taglen_buf);
-
-  std::vector<uint8_t>::const_iterator tag_buf =
-      internal::AdvanceIt(taglen_buf, sizeof(uint16_t), end);
-  if (tag_buf == end) {
-    return std::string();
+  std::optional<base::span<const uint8_t>> tag_span = reader.Read(tag_len);
+  if (!tag_span) {
+    return InvalidTag{.offset = magic_offset};
   }
 
-  // Checks that the specified tag is found within the binary.
-  if (!internal::CheckRange(tag_buf, tag_len, end)) {
-    return std::string();
-  }
+  return ValidTag{.offset = magic_offset,
+                  .data = std::string(base::as_string_view(*tag_span))};
+}
 
-  return std::string(tag_buf, tag_buf + tag_len);
+std::string ReadTag(base::span<const uint8_t> buffer) {
+  ReadTagResult result = ReadTagAndOffset(buffer);
+  if (const auto* valid_tag = std::get_if<ValidTag>(&result)) {
+    return valid_tag->data;
+  }
+  return std::string();
 }
 
 std::unique_ptr<tagging::BinaryInterface> CreateBinary(
@@ -813,6 +815,8 @@ std::unique_ptr<tagging::BinaryInterface> CreateBinary(
     return CreatePEBinary(contents);
   } else if (file.MatchesExtension(FILE_PATH_LITERAL(".msi"))) {
     return CreateMSIBinary(contents);
+  } else if (file.MatchesExtension(FILE_PATH_LITERAL(".pkg"))) {
+    return CreatePkgBinary(contents);
   } else {
     std::unique_ptr<BinaryInterface> binary = CreatePEBinary(contents);
     if (!binary) {
@@ -823,6 +827,10 @@ std::unique_ptr<tagging::BinaryInterface> CreateBinary(
 }
 
 std::string BinaryReadTagString(const base::FilePath& file) {
+  if (file.MatchesExtension(FILE_PATH_LITERAL(".pkg"))) {
+    return ReadTagFromPkg(ReadFileTail(file));
+  }
+
   // For MSI files, simply search the tail of the file for the tag.
   if (!file.MatchesExtension(FILE_PATH_LITERAL(".exe"))) {
     return ParseTagBuffer(ReadFileTail(file));
@@ -847,7 +855,7 @@ std::string BinaryReadTagString(const base::FilePath& file) {
   }
 
   const std::vector<uint8_t> tag_data = {tag->begin(), tag->end()};
-  const std::string tag_string = ReadTag(tag_data.begin(), tag_data.end());
+  const std::string tag_string = ReadTag(tag_data);
   if (tag_string.empty()) {
     LOG(ERROR) << __func__ << ": file is untagged: " << file;
   }
@@ -907,8 +915,7 @@ bool BinaryWriteTag(const base::FilePath& in_file,
 
   auto new_contents = bin->SetTag(tag_contents);
   if (!new_contents) {
-    LOG(ERROR) << __func__
-               << "Error while setting superfluous certificate tag.";
+    LOG(ERROR) << __func__ << "Error while setting binary tag.";
     return false;
   }
   if (out_file.empty()) {
@@ -943,8 +950,8 @@ base::expected<TagArgs, ErrorCode> ReadTagFromApplicationInstanceXattr(
              << path;
     return base::unexpected(ErrorCode::kTagNotFound);
   }
-  std::vector<uint8_t>::iterator tag_data_begin = raw_tag.begin();
-  std::string tag_string = ReadTag(tag_data_begin, tag_data_begin + got_bytes);
+  std::string tag_string =
+      ReadTag(base::span(raw_tag).first(base::checked_cast<size_t>(got_bytes)));
   if (tag_string.empty()) {
     return base::unexpected(ErrorCode::kTagNotFound);
   }

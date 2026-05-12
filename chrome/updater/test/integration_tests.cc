@@ -4751,6 +4751,50 @@ TEST_F(IntegrationTestKSAdminFourApps, XCPathMismatchUser) {
                             {});
 }
 
+TEST_F(IntegrationTestKSAdminFourApps, KSAdminRegisterWithTaggedPkg) {
+  base::FilePath tagged_pkg_path =
+      test::GetTestFilePath("tagged_pkg").AppendASCII("sample.pkg");
+
+  // Define a temp file path for the brand file, but do not populate it, so
+  // "ifneeded" mode will decide a brand file is needed.
+  base::ScopedTempFile brand_file;
+  ASSERT_TRUE(brand_file.Create());
+  ASSERT_TRUE(base::DeleteFile(brand_file.path()));
+  // `--brand-value` flag is a fallback; thus, the "WRONG" brand code should
+  // be ignored in favor of the "GGLZ" brand tagged onto `sample.pkg`.
+  ASSERT_NO_FATAL_FAILURE(ExpectKSAdminRegister(
+      UpdaterScope::kUser, kUserAppID, tagged_pkg_path, brand_file.path(),
+      "KSBrandID", "WRONG", "ifneeded"));
+
+  base::DictValue expected_app_state;
+  expected_app_state.Set("app_id", kUserAppID);
+  expected_app_state.Set("brand_code", "GGLZ");
+
+  base::DictValue expected_app_states;
+  expected_app_states.Set(kUserAppID, std::move(expected_app_state));
+  ASSERT_NO_FATAL_FAILURE(
+      user_test_commands_->GetAppStates(expected_app_states));
+
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(brand_file.path(), &content));
+  EXPECT_THAT(content, testing::HasSubstr("GGLZ"));
+}
+
+TEST_F(IntegrationTestKSAdminFourApps, KSAdminRegisterStompNotCrossUser) {
+  base::ScopedTempFile brand_file;
+  ASSERT_TRUE(brand_file.Create());
+
+  ASSERT_TRUE(base::WriteFile(brand_file.path(), "OLDCONTENT"));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectKSAdminRegister(
+      UpdaterScope::kUser, kRepeatAppID, {}, brand_file.path(), "KSBrandID",
+      "STOMPED", "overwrite"));
+
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(brand_file.path(), &content));
+  EXPECT_THAT(content, testing::HasSubstr("STOMPED"));
+}
+
 TEST_F(IntegrationTestKSAdminFourApps, CRURegistrationFetchTag) {
   // Direct, unambiguous matches (or nothing matching).
   ExpectCRURegistrationFetchesTag(kSystemAppID, system_app_xcfile_.path(),

@@ -572,6 +572,8 @@ if (is_win || is_mac || is_linux) {
       "certificate_tag.cc",
       "certificate_tag.h",
       "certificate_tag_internal.h",
+      "pkg_tag.cc",
+      "pkg_tag.h",
       "tag.cc",
       "tag.h",
       "tag_internal.h",
@@ -1004,6 +1006,7 @@ if (is_win || is_mac || is_linux) {
       "test/data/tagged_msi/GUH-size-greater-than-max.msi",
       "test/data/tagged_msi/GUH-special-value.msi",
       "test/data/tagged_msi/GUH-untagged.msi",
+      "test/data/tagged_pkg/sample.pkg",
     ]
 
     data_deps = [

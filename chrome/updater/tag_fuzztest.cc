@@ -125,7 +125,7 @@ auto SharedParseDomain() {
 }
 
 void FuzzReadTag(std::vector<uint8_t> data) {
-  ReadTag(data.begin(), data.end());
+  ReadTag(data);
 }
 
 auto BinaryTag() {

@@ -5,14 +5,9 @@
 #ifndef CHROME_UPDATER_TAG_INTERNAL_H_
 #define CHROME_UPDATER_TAG_INTERNAL_H_
 
-#include <cstdint>
 #include <string_view>
 
 namespace updater::tagging {
-
-// Magic string used to identify the tag in the binary.
-constexpr inline uint8_t kTagMagicUtf8[] = {'G', 'a', 'c', 't', '2', '.',
-                                            '0', 'O', 'm', 'a', 'h', 'a'};
 
 // LINT.IfChange(TagArgs)
 // The name of the bundle being installed. If not specified, the first app's

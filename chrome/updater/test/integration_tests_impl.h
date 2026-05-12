@@ -640,7 +640,7 @@ void ExpectKSAdminResult(UpdaterScope scope,
                          std::optional<std::string> want_stdout,
                          std::optional<int> want_exit_code);
 
-// Expect ksadmin to fetch the specified tag for the specified product
+// Expects ksadmin to fetch the specified tag for the specified product
 // ID, including fetching the empty tag if no tag is specified, or to
 // fail to retrieve a tag.
 //
@@ -663,7 +663,7 @@ void ExpectKSAdminFetchTag(UpdaterScope scope,
                            std::optional<UpdaterScope> store_flag,
                            std::optional<std::string> want_tag);
 
-// Expect ksadmin to fetch the specified brand code from a tag stored in the
+// Expects ksadmin to fetch the specified brand code from a tag stored in the
 // `com.apple.application-instance` extended attribute of the item at the
 // specified path, or to fail to retrieve a brand code.
 //
@@ -678,6 +678,25 @@ void ExpectKSAdminXattrBrand(UpdaterScope scope,
                              bool elevate,
                              const base::FilePath& path,
                              std::optional<std::string> want_brand);
+
+// Expects ksadmin to register the application specified by `app_id` using
+// the optional `tagged_pkg_path`. The `--register` switch is always provided.
+//
+// Params:
+//             scope -- Picks which ksadmin binary to use.
+//            app_id -- The product ID to register.
+//   tagged_pkg_path -- Optional path to a PKG file to use for registration.
+//        brand_path -- Optional path to a file containing a brand code.
+//         brand_key -- Optional key to use for the brand.
+//       brand_value -- Optional value for the brand.
+//  write_brand_file -- Optional switch to write brand to disk/xattr.
+void ExpectKSAdminRegister(UpdaterScope scope,
+                           const std::string& app_id,
+                           const base::FilePath& tagged_pkg_path,
+                           const base::FilePath& brand_path,
+                           const std::string& brand_key,
+                           const std::string& brand_value,
+                           const std::string& write_brand_file);
 
 void ExpectCRURegistrationChecksForUpdate(const std::string& app_id,
                                           const base::FilePath& xc_path,

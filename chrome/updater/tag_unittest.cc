@@ -14,6 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "chrome/updater/certificate_tag.h"
+#include "chrome/updater/pkg_tag.h"
 #include "chrome/updater/test/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1552,6 +1554,156 @@ TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
           tag_args);
     }
   }
+}
+
+namespace {
+// Creates a mock buffer that mimics the end of a notarized Apple PKG file,
+// appending a fake notarization trailer identified by "t8lr" sentinels to
+// a copy of the provided prefix.
+std::vector<uint8_t> CreateMockPkgBuffer(base::span<const uint8_t> prefix) {
+  std::vector<uint8_t> buffer(prefix.begin(), prefix.end());
+  buffer.append_range(std::to_array<uint8_t>({'t', '8', 'l', 'r'}));
+  buffer.insert(buffer.end(), 10, 0);  // trailer data
+  buffer.append_range(std::to_array<uint8_t>({'t', '8', 'l', 'r'}));
+  buffer.insert(buffer.end(), 12, 0);  // footer
+  return buffer;
+}
+}  // namespace
+
+TEST(PkgBinaryTest, NoTagFound) {
+  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
+  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix);
+
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      tagging::CreatePkgBinary(buffer);
+  ASSERT_TRUE(bin);
+  EXPECT_EQ(bin->tag(), std::nullopt);
+
+  std::vector<uint8_t> tag = tagging::GetTagFromTagString("brand=QAQA");
+  std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(tag);
+  ASSERT_TRUE(updated_buffer.has_value());
+
+  // Expected structure: prefix + tag + trailer
+  std::vector<uint8_t> expected = prefix;
+  expected.append_range(tag);
+  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
+  expected.append_range(trailer);
+
+  EXPECT_EQ(*updated_buffer, expected);
+}
+
+TEST(PkgBinaryTest, ValidTagOverwrites) {
+  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
+  std::vector<uint8_t> old_tag = tagging::GetTagFromTagString("brand=QAQA");
+  std::vector<uint8_t> prefix_with_tag = prefix;
+  prefix_with_tag.append_range(old_tag);
+
+  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix_with_tag);
+
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      tagging::CreatePkgBinary(buffer);
+  ASSERT_TRUE(bin);
+  EXPECT_EQ(bin->tag(), old_tag);
+
+  std::vector<uint8_t> new_tag = tagging::GetTagFromTagString("brand=QAQB");
+  std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(new_tag);
+  ASSERT_TRUE(updated_buffer.has_value());
+
+  // Expected structure: prefix + new_tag + trailer
+  std::vector<uint8_t> expected = prefix;
+  expected.append_range(new_tag);
+  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
+  expected.append_range(trailer);
+
+  EXPECT_EQ(*updated_buffer, expected);
+}
+
+TEST(PkgBinaryTest, ValidEmptyTagOverwrites) {
+  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
+  std::vector<uint8_t> empty_tag = tagging::GetTagFromTagString("");
+  std::vector<uint8_t> prefix_with_tag = prefix;
+  prefix_with_tag.append_range(empty_tag);
+
+  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix_with_tag);
+
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      tagging::CreatePkgBinary(buffer);
+  ASSERT_TRUE(bin);
+  EXPECT_EQ(bin->tag(), empty_tag);
+
+  std::vector<uint8_t> new_tag = tagging::GetTagFromTagString("brand=QAQA");
+  std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(new_tag);
+  ASSERT_TRUE(updated_buffer.has_value());
+
+  // Expected structure: prefix + new_tag + trailer
+  std::vector<uint8_t> expected = prefix;
+  expected.append_range(new_tag);
+  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
+  expected.append_range(trailer);
+
+  EXPECT_EQ(*updated_buffer, expected);
+}
+
+TEST(PkgBinaryTest, InvalidTagOverwrites) {
+  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
+  // Create an invalid tag: magic + length 5, but only 2 bytes follow.
+  std::vector<uint8_t> invalid_tag(tagging::kTagMagicUtf8.begin(),
+                                   tagging::kTagMagicUtf8.end());
+  invalid_tag.push_back(0);
+  invalid_tag.push_back(5);  // length 5
+  invalid_tag.push_back('x');
+  invalid_tag.push_back('y');
+
+  std::vector<uint8_t> prefix_with_tag = prefix;
+  prefix_with_tag.append_range(invalid_tag);
+
+  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix_with_tag);
+
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      tagging::CreatePkgBinary(buffer);
+  ASSERT_TRUE(bin);
+  EXPECT_EQ(bin->tag(), std::nullopt);  // Invalid tag returns nullopt
+
+  std::vector<uint8_t> new_tag = tagging::GetTagFromTagString("brand=QAQA");
+  std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(new_tag);
+  ASSERT_TRUE(updated_buffer.has_value());
+
+  // Expected structure: prefix + new_tag + trailer
+  // The invalid tag should have been completely replaced.
+  std::vector<uint8_t> expected = prefix;
+  expected.append_range(new_tag);
+  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
+  expected.append_range(trailer);
+
+  EXPECT_EQ(*updated_buffer, expected);
+}
+
+TEST(PkgBinaryTest, ValidTagOverwritesShorterZeroOut) {
+  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
+  std::vector<uint8_t> old_tag =
+      tagging::GetTagFromTagString("brand=LONGTAGDATA12345");
+  std::vector<uint8_t> prefix_with_tag = prefix;
+  prefix_with_tag.append_range(old_tag);
+
+  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix_with_tag);
+
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      tagging::CreatePkgBinary(buffer);
+  ASSERT_TRUE(bin);
+  EXPECT_EQ(bin->tag(), old_tag);
+
+  std::vector<uint8_t> new_tag = tagging::GetTagFromTagString("brand=SHORT");
+  std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(new_tag);
+  ASSERT_TRUE(updated_buffer.has_value());
+
+  // Expected structure: prefix + new_tag + zeroes + trailer
+  std::vector<uint8_t> expected = prefix;
+  expected.append_range(new_tag);
+  expected.insert(expected.end(), old_tag.size() - new_tag.size(), 0);
+  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
+  expected.append_range(trailer);
+
+  EXPECT_EQ(*updated_buffer, expected);
 }
 
 }  // namespace updater

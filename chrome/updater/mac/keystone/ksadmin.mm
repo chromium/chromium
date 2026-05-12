@@ -10,6 +10,7 @@
 #include "chrome/updater/mac/keystone/ksadmin.h"
 
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include <algorithm>
 #include <map>
@@ -24,7 +25,9 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -38,6 +41,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -127,6 +131,10 @@ constexpr char kCommandVersionKey[] = "version-key";
 constexpr char kCommandVersionPath[] = "version-path";
 constexpr char kCommandXCPath[] = "xcpath";
 constexpr char kCommandXattrTagBrand[] = "print-xattr-tag-brand";
+constexpr char kCommandReadPkgTag[] = "read-pkg-tag";
+constexpr char kCommandWriteBrandFile[] = "write-brand-file";
+constexpr char kCommandBrandValue[] = "brand-value";
+constexpr char kCommandTaggedPkgPath[] = "tagged-pkg-path";
 
 bool HasSwitch(const std::string& arg,
                const std::map<std::string, std::string>& switches) {
@@ -182,6 +190,27 @@ std::string SwitchValue(const std::string& arg,
   return switches.contains(alias) ? switches.at(alias) : "";
 }
 
+enum class WriteBrandFileOption {
+  kInvalid,
+  kNever,
+  kIfNeeded,
+  kOverwrite,
+};
+
+WriteBrandFileOption ParseWriteBrandFileOption(const std::string& raw_value) {
+  std::string value = base::ToLowerASCII(raw_value);
+  if (value == "ifneeded") {
+    return WriteBrandFileOption::kIfNeeded;
+  }
+  if (value == "overwrite") {
+    return WriteBrandFileOption::kOverwrite;
+  }
+  if (value == "never" || value.empty()) {
+    return WriteBrandFileOption::kNever;
+  }
+  return WriteBrandFileOption::kInvalid;
+}
+
 std::string KeystoneTicketStorePath(UpdaterScope scope) {
   return GetKeystoneFolderPath(scope)
       ->Append(FILE_PATH_LITERAL("TicketStore"))
@@ -215,6 +244,59 @@ UpdaterScope Scope(const std::map<std::string, std::string>& switches) {
                : UpdaterScope::kUser;
   }
   return IsSystemShim() ? UpdaterScope::kSystem : UpdaterScope::kUser;
+}
+
+// If `mode` says it should, tries to write a brand file. If it can't, it logs
+// a warning and moves on, allowing updater registration to continue.
+void MaybeWriteBrandFile(const base::FilePath& path,
+                         const std::string& brand_key,
+                         const std::string& brand_value,
+                         WriteBrandFileOption mode) {
+  CHECK_NE(mode, WriteBrandFileOption::kInvalid);
+  if (mode == WriteBrandFileOption::kNever) {
+    return;
+  }
+
+  const bool overwrite = mode == WriteBrandFileOption::kOverwrite;
+  base::File::Flags create_flag =
+      overwrite ? base::File::FLAG_CREATE_ALWAYS : base::File::FLAG_CREATE;
+  base::File file(path, create_flag | base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    if (overwrite || file.error_details() != base::File::FILE_ERROR_EXISTS) {
+      LOG(WARNING) << "Failed to open brand file " << path.value()
+                   << "; error: "
+                   << base::File::ErrorToString(file.error_details());
+    }
+    return;
+  }
+
+  @autoreleasepool {
+    NSDictionary* dict = @{
+      base::SysUTF8ToNSString(brand_key) : base::SysUTF8ToNSString(brand_value)
+    };
+    NSError* error = nil;
+    NSData* data = [NSPropertyListSerialization
+        dataWithPropertyList:dict
+                      format:NSPropertyListXMLFormat_v1_0
+                     options:0
+                       error:&error];
+    if (!data) {
+      LOG(WARNING) << "Failed to serialize brand file plist " << path.value()
+                   << "; error: "
+                   << base::SysNSStringToUTF8(error.localizedDescription);
+      return;
+    }
+
+    if (!file.WriteAtCurrentPosAndCheck(base::apple::NSDataToSpan(data))) {
+      LOG(WARNING) << "Failed to write brand file " << path.value();
+      return;
+    }
+  }
+
+  if (fchmod(file.GetPlatformFile(), 0644) != 0) {
+    PLOG(WARNING) << "Failed to set permissions on " << path.value();
+    return;
+  }
 }
 
 class UpdateCheckResult : public base::RefCountedThreadSafe<UpdateCheckResult> {
@@ -261,6 +343,13 @@ class KSAdminApp : public App {
   void PrintVersion();
   void PrintTickets();
   void PrintXattrTagBrand();
+  void ReadPkgTag();
+  void OnReadPkgTagContent(const std::string& tag_string);
+  void OnReadPkgTagForRegister(RegistrationRequest registration,
+                               const std::string& brand_fallback,
+                               WriteBrandFileOption write_brand_file,
+                               const std::string& tag_string);
+  void OnWriteBrandFileForRegister(RegistrationRequest registration);
 
   void DoUpdateApp(UpdaterScope scope);
   void DoListAppUpdate(UpdaterScope scope);
@@ -475,11 +564,17 @@ void KSAdminApp::PrintUsage(const std::string& error_message) {
       "  --print-tag,-G       Print a ticket's tag. Use with -P.\n"
       "  --print-tickets,-p   Print all tickets. Can filter with -P.\n"
       "  --register,-r        Register a new ticket. Use with -P, -v, -x,\n"
-      "                       -e, -a, -K, -H, -g.\n"
+      "                       -e, -a, -K, -H, -g, --tagged-pkg-path,\n"
+      "                       --write-brand-file.\n"
+      "  --read-pkg-tag PATH  Print tag from PKG file.\n"
       "Action parameters:\n"
       "  --brand-key,-b      Set the brand code key. Use with -P and -B.\n"
       "                      Value must be empty or KSBrandID.\n"
       "  --brand-path,-B     Set the brand code path. Use with -P and -b.\n"
+      "  --brand-value VAL   Set the brand code fallback value.\n"
+      "  --tagged-pkg-path PATH Read tag from PKG and use as brand.\n"
+      "  --write-brand-file VAL Write brand file during registration.\n"
+      "                         Values: ifneeded, overwrite, never.\n"
       "  --productid,-P id   ProductID.\n"
       "  --system-store,-S   Use the system-wide ticket store.\n"
       "  --tag,-g TAG        Set the tag. Use with -P.\n"
@@ -539,6 +634,84 @@ void KSAdminApp::Register() {
     return;
   }
 
+  const std::string tagged_pkg_path = SwitchValue(kCommandTaggedPkgPath);
+  const std::string brand_value = SwitchValue(kCommandBrandValue);
+  const WriteBrandFileOption write_brand_file =
+      ParseWriteBrandFileOption(SwitchValue(kCommandWriteBrandFile));
+  if (write_brand_file == WriteBrandFileOption::kInvalid) {
+    PrintUsage("--write-brand-file must be one of 'never', 'ifneeded', or "
+               "'overwrite'.");
+    return;
+  }
+
+  if (!tagged_pkg_path.empty()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(&tagging::BinaryReadTagString,
+                       base::FilePath(tagged_pkg_path)),
+        base::BindOnce(&KSAdminApp::OnReadPkgTagForRegister, this, registration,
+                       brand_value, write_brand_file));
+    return;
+  }
+
+  OnReadPkgTagForRegister(registration, brand_value, write_brand_file,
+                          /*tag_string=*/"");
+}
+
+void KSAdminApp::OnReadPkgTagForRegister(RegistrationRequest registration,
+                                         const std::string& brand_fallback,
+                                         WriteBrandFileOption write_brand_file,
+                                         const std::string& tag_string) {
+  if (write_brand_file == WriteBrandFileOption::kNever) {
+    OnWriteBrandFileForRegister(registration);
+    return;
+  }
+
+  std::string brand_to_use = brand_fallback;
+  if (!tag_string.empty()) {
+    tagging::TagArgs tag_args{};
+    if (tagging::Parse(tag_string, {}, tag_args) ==
+        tagging::ErrorCode::kSuccess) {
+      if (!tag_args.brand_code.empty()) {
+        brand_to_use = tag_args.brand_code;
+      }
+    }
+  }
+
+  if (brand_to_use.empty()) {
+    LOG(WARNING) << "No brand was found; cannot write brand file.";
+    OnWriteBrandFileForRegister(registration);
+    return;
+  }
+
+  registration.brand_code = brand_to_use;
+
+  if (write_brand_file != WriteBrandFileOption::kNever) {
+    const base::FilePath brand_path = registration.brand_path;
+    if (brand_path.empty()) {
+      LOG(ERROR) << "--write-brand-file requires --brand-path.";
+      Shutdown(1);
+      return;
+    }
+
+    const std::string brand_key = SwitchValue(kCommandBrandKey);
+    const std::string key_to_use =
+        brand_key.empty() ? base::SysNSStringToUTF8(kCRUTicketBrandKey)
+                          : brand_key;
+
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(&MaybeWriteBrandFile, brand_path, key_to_use,
+                       brand_to_use, write_brand_file),
+        base::BindOnce(&KSAdminApp::OnWriteBrandFileForRegister, this,
+                       registration));
+    return;
+  }
+
+  OnWriteBrandFileForRegister(registration);
+}
+
+void KSAdminApp::OnWriteBrandFileForRegister(RegistrationRequest registration) {
   UpdaterScope scope =
       geteuid() == 0 ? UpdaterScope::kSystem : UpdaterScope::kUser;
   MaybeInstallUpdater(scope);
@@ -818,6 +991,39 @@ void KSAdminApp::PrintXattrTagBrand() {
   Shutdown(0);
 }
 
+void KSAdminApp::ReadPkgTag() {
+  const std::string path_str = SwitchValue(kCommandReadPkgTag);
+  if (path_str.empty()) {
+    LOG(ERROR) << kCommandReadPkgTag << " requires a path.";
+    Shutdown(1);
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&tagging::BinaryReadTagString, base::FilePath(path_str)),
+      base::BindOnce(&KSAdminApp::OnReadPkgTagContent, this));
+}
+
+void KSAdminApp::OnReadPkgTagContent(const std::string& tag_string) {
+  if (tag_string.empty()) {
+    LOG(ERROR) << "Can't read tag from PKG";
+    Shutdown(1);
+    return;
+  }
+
+  tagging::TagArgs tag_args;
+  const tagging::ErrorCode error = tagging::Parse(tag_string, {}, tag_args);
+  if (error != tagging::ErrorCode::kSuccess) {
+    LOG(ERROR) << "Can't parse tag string: " << error;
+    Shutdown(1);
+    return;
+  }
+
+  printf("%s\n", tag_args.brand_code.c_str());
+  Shutdown(0);
+}
+
 void KSAdminApp::FirstTaskRun() {
   if ((geteuid() == 0) && (getuid() != 0)) {
     if (setuid(0) || setgid(0)) {
@@ -835,6 +1041,7 @@ void KSAdminApp::FirstTaskRun() {
       {kCommandPrintTickets, &KSAdminApp::PrintTickets},
       {kCommandRegister, &KSAdminApp::Register},
       {kCommandXattrTagBrand, &KSAdminApp::PrintXattrTagBrand},
+      {kCommandReadPkgTag, &KSAdminApp::ReadPkgTag},
   };
   for (const auto& [command, method] : commands) {
     if (HasSwitch(command)) {

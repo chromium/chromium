@@ -5,14 +5,17 @@
 #ifndef CHROME_UPDATER_TAG_H_
 #define CHROME_UPDATER_TAG_H_
 
+#include <array>
 #include <cstdint>
 #include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 
@@ -279,8 +282,8 @@ ErrorCode Parse(std::string_view tag,
                 std::optional<std::string_view> app_installer_data_args,
                 TagArgs& args);
 
-// Utilities for reading and writing tags to Windows PE and MSI files.
-//
+// Utilities for reading and writing tags to Windows PE (.exe), MSI, and
+// Apple PKG files.
 //
 // The tag specification is as follows:
 //   - The tag area begins with a magic signature 'Gact2.0Omaha'.
@@ -312,11 +315,31 @@ ErrorCode Parse(std::string_view tag,
 std::string BinaryReadTagString(const base::FilePath& file);
 std::optional<tagging::TagArgs> BinaryReadTag(const base::FilePath& file);
 
-// ReadTag extracts the tag string from a region of binary data. This string
-// does not include the magic signature or tag length itself. If no tag can
-// be found, this returns the empty string.
-std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
-                    std::vector<uint8_t>::const_iterator end);
+inline constexpr auto kTagMagicUtf8 = std::to_array<uint8_t>(
+    {'G', 'a', 'c', 't', '2', '.', '0', 'O', 'm', 'a', 'h', 'a'});
+
+// Returns the tag data from the last Omaha 4 binary tag found inside `buffer`,
+// excluding the signature and length bytes. If no tag is found, returns an
+// empty string.
+std::string ReadTag(base::span<const uint8_t> buffer);
+
+struct NoTagFound {};
+struct InvalidTag {
+  // The offset to the start of the "Gact2.0Omaha" signature.
+  size_t offset;
+};
+struct ValidTag {
+  // The offset to the start of the "Gact2.0Omaha" signature.
+  size_t offset;
+  // The tag data found inside the buffer, excluding the signature and length
+  // bytes.
+  std::string data;
+};
+using ReadTagResult = std::variant<NoTagFound, InvalidTag, ValidTag>;
+
+// Reads the last Omaha 4 tag found inside `buffer` and returns a
+// `ReadTagResult` expressing the outcome.
+ReadTagResult ReadTagAndOffset(base::span<const uint8_t> buffer);
 
 // GetTagFromTagString creates binary tag data from a specified tag string by
 // prefixing it with the signature and length.
