@@ -384,7 +384,7 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   }
 
   focus_ring_->DeprecatedLayoutImmediately();
-  focus_ring_->SchedulePaint();
+  focus_ring_->Refresh();
 
   view->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
 
@@ -408,7 +408,7 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoBlur() {
     return;
 
   focus_ring_->DeprecatedLayoutImmediately();
-  focus_ring_->SchedulePaint();
+  focus_ring_->Refresh();
 }
 
 bool CaptureModeSessionFocusCycler::HighlightableView::ClickView() {

@@ -142,7 +142,7 @@ void QuickInsertItemView::SetItemState(ItemState item_state) {
       UpdateClipPathForFocusRingWithInsetGap();
       [[fallthrough]];
     case FocusIndicatorStyle::kFocusRing:
-      views::FocusRing::Get(this)->SchedulePaint();
+      views::FocusRing::Get(this)->Refresh();
       break;
     case FocusIndicatorStyle::kFocusBar:
       SchedulePaint();

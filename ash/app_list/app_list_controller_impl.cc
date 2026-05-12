@@ -1057,7 +1057,7 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
   } else if (AppListToastView::IsToastButton(focused_view)) {
     // Toast button can become focused after app list sorting, so make sure the
     // focus ring appears correctly when updating `keyboard_traversal_engaged_`.
-    focused_view->SchedulePaint();
+    views::FocusRing::Get(focused_view)->Refresh();
   } else {
     // Ensure that when an app list item's focus ring is triggered by key
     // events, the item is selected.

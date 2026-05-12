@@ -226,6 +226,10 @@ void AuthInputRowView::CreateAndConfigureTextfieldContainer() {
           auth_type_ == AuthType::kPassword ? AuthTextfield::AuthType::kPassword
                                             : AuthTextfield::AuthType::kPin));
   textfield_->AddObserver(this);
+  // Update focus ring on textfield active state change.
+  textfield_->SetActiveStateChangedCallback(
+      base::BindRepeating(&AuthInputRowView::OnTextfieldActiveStateChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   input_row_layout_->SetFlexForView(textfield_container, 1);
 }
@@ -468,6 +472,10 @@ void AuthInputRowView::AddObserver(Observer* observer) {
 
 void AuthInputRowView::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void AuthInputRowView::OnTextfieldActiveStateChanged() {
+  views::FocusRing::Get(input_row_)->Refresh();
 }
 
 BEGIN_METADATA(AuthInputRowView)

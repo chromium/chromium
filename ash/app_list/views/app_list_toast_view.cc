@@ -387,12 +387,12 @@ AppListToastView::ToastPillButton::ToastPillButton(
 
 void AppListToastView::ToastPillButton::OnFocus() {
   PillButton::OnFocus();
-  views::FocusRing::Get(this)->SchedulePaint();
+  views::FocusRing::Get(this)->Refresh();
 }
 
 void AppListToastView::ToastPillButton::OnBlur() {
   PillButton::OnBlur();
-  views::FocusRing::Get(this)->SchedulePaint();
+  views::FocusRing::Get(this)->Refresh();
 }
 
 BEGIN_METADATA(AppListToastView, ToastPillButton)

@@ -458,7 +458,7 @@ void FocusModeTaskView::PaintFocusRingAndUpdateStyle() {
     ClearFocusForTextfield(textfield_);
   }
   textfield_->UpdateElideBehavior(is_active);
-  views::FocusRing::Get(textfield_container_)->SchedulePaint();
+  views::FocusRing::Get(textfield_container_)->Refresh();
 }
 
 void FocusModeTaskView::OnCompleteTask() {
