@@ -178,11 +178,10 @@ public class SendTabToSelfGestureDetector implements SensorEventListener, Defaul
                 profile,
                 tab.getWebContents(),
                 target.cacheGuid,
+                target.deviceName,
                 tab.getUrl().getSpec(),
                 tab.getTitle(),
-                result -> {
-                    Log.i(TAG, "Send tab result: %s", result);
-                });
+                result -> Log.i(TAG, "Send tab result: %s", result));
     }
 
     private static float getAccelerationThreshold() {

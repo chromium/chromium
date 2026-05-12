@@ -179,23 +179,9 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
                 mProfile,
                 webContents,
                 targetDeviceInfo.cacheGuid,
+                targetDeviceInfo.deviceName,
                 mUrl,
                 mTitle,
-                (result) -> sendTabToDeviceComplete(result, targetDeviceInfo.deviceName));
-    }
-
-    private void sendTabToDeviceComplete(@SendTabToSelfResult int result, String deviceName) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)) {
-            switch (result) {
-                case SendTabToSelfResult.SUCCESS:
-                case SendTabToSelfResult.SUCCESS_THROTTLED:
-                    String toastMessage =
-                            mContext.getString(
-                                    R.string.send_tab_to_self_post_send_success_toast_android,
-                                    deviceName);
-                    Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
+                null);
     }
 }

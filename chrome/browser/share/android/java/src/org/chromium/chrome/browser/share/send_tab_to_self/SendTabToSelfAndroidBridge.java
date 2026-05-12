@@ -4,15 +4,21 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
+import android.content.Context;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.widget.Toast;
 
 import java.util.List;
 
@@ -34,28 +40,60 @@ public class SendTabToSelfAndroidBridge {
     // TODO(crbug.com/40618597): Add logic back in to track whether model is loaded.
     // private boolean mIsNativeSendTabToSelfModelLoaded;
 
+    // TODO(crbug.com/492072882): Eventually remove the commitConfirmation parameter once
+    // confirmation feedback behavior is fully unified and centralized across all Android sites.
     /**
      * Handles the action when the user selects a device.
      *
      * @param profile The profile to use for sending.
-     * @param webContents The web contents of the current tab, or null if not available. When
-     *     null, page context such as scroll position, form fields and navigation history will
-     *     not be captured.
+     * @param webContents The web contents of the current tab, or null if not available. When null,
+     *     page context such as scroll position, form fields and navigation history will not be
+     *     captured.
      * @param targetDeviceSyncCacheGuid The GUID of the target device.
+     * @param targetDeviceName The name of the target device.
      * @param url The URL being shared.
      * @param title The title of the page being shared.
+     * @param commitConfirmation Callback to receive the commit result.
      */
     public static void sendTabToDevice(
             Profile profile,
             @Nullable WebContents webContents,
             String targetDeviceSyncCacheGuid,
+            String targetDeviceName,
             String url,
             String title,
-            CommitConfirmationCallback commitConfirmation) {
+            @Nullable CommitConfirmationCallback commitConfirmation) {
         SendTabToSelfAndroidBridgeJni.get()
                 .sendTabToDevice(
-                        profile, webContents, targetDeviceSyncCacheGuid, url, title,
-                        commitConfirmation);
+                        profile,
+                        webContents,
+                        targetDeviceSyncCacheGuid,
+                        url,
+                        title,
+                        result -> {
+                            showPostSendToast(result, targetDeviceName);
+                            if (commitConfirmation != null) {
+                                commitConfirmation.onResult(result);
+                            }
+                        });
+    }
+
+    private static void showPostSendToast(
+            @SendTabToSelfResult int result, String targetDeviceName) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)) {
+            return;
+        }
+        Context appContext = ContextUtils.getApplicationContext();
+        switch (result) {
+            case SendTabToSelfResult.SUCCESS:
+            case SendTabToSelfResult.SUCCESS_THROTTLED:
+                String successMessage =
+                        appContext.getString(
+                                R.string.send_tab_to_self_post_send_success_toast_android,
+                                targetDeviceName);
+                Toast.makeText(appContext, successMessage, Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     /**

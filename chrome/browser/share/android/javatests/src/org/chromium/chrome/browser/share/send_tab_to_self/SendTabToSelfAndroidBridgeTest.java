@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,11 +16,20 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.content_public.browser.WebContents;
@@ -29,6 +39,9 @@ import java.util.List;
 
 /** Tests for SendTabToSelfAndroidBridge */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowToast.class})
 public class SendTabToSelfAndroidBridgeTest {
     private static final String URL = "https://www.google.com";
     private static final String TITLE = "Google";
@@ -42,6 +55,7 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Before
     public void setUp() {
+        ContextUtils.initApplicationContextForTests(RuntimeEnvironment.getApplication());
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
         mWebContents = new MockWebContents();
     }
@@ -50,7 +64,13 @@ public class SendTabToSelfAndroidBridgeTest {
     @SmallTest
     public void testSendTabToDevice() {
         SendTabToSelfAndroidBridge.sendTabToDevice(
-                mProfile, mWebContents, TARGET_DEVICE_SYNC_CACHE_GUID, URL, TITLE, null);
+                mProfile,
+                mWebContents,
+                TARGET_DEVICE_SYNC_CACHE_GUID,
+                "device_name",
+                URL,
+                TITLE,
+                null);
         verify(mNativeMock)
                 .sendTabToDevice(
                         eq(mProfile),
@@ -58,7 +78,7 @@ public class SendTabToSelfAndroidBridgeTest {
                         eq(TARGET_DEVICE_SYNC_CACHE_GUID),
                         eq(URL),
                         eq(TITLE),
-                        eq(null));
+                        any());
     }
 
     @Test
@@ -108,5 +128,102 @@ public class SendTabToSelfAndroidBridgeTest {
     public void testGetEntryPointDisplayReason() {
         SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, URL);
         verify(mNativeMock).getEntryPointDisplayReason(eq(mProfile), eq(URL));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testSendTabToDevice_ShowsSuccessToast() {
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
+                confirmationCallbackCaptor =
+                        ArgumentCaptor.forClass(
+                                SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                mProfile,
+                mWebContents,
+                TARGET_DEVICE_SYNC_CACHE_GUID,
+                "Pixel 10",
+                URL,
+                TITLE,
+                null);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(mWebContents),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        eq(URL),
+                        eq(TITLE),
+                        confirmationCallbackCaptor.capture());
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
+
+        Assert.assertTrue(
+                ShadowToast.showedCustomToast("Sent to Chrome on your Pixel 10.", R.id.toast_text));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testSendTabToDevice_ShowsNoToast_OnFailure() {
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
+                confirmationCallbackCaptor =
+                        ArgumentCaptor.forClass(
+                                SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                mProfile,
+                mWebContents,
+                TARGET_DEVICE_SYNC_CACHE_GUID,
+                "Pixel 10",
+                URL,
+                TITLE,
+                null);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(mWebContents),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        eq(URL),
+                        eq(TITLE),
+                        confirmationCallbackCaptor.capture());
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.FAILURE_INVALID_URL);
+
+        Assert.assertEquals(0, ShadowToast.shownToastCount());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testSendTabToDevice_PostSendToastFeatureDisabled() {
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
+                confirmationCallbackCaptor =
+                        ArgumentCaptor.forClass(
+                                SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                mProfile,
+                mWebContents,
+                TARGET_DEVICE_SYNC_CACHE_GUID,
+                "Pixel 10",
+                URL,
+                TITLE,
+                null);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(mWebContents),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        eq(URL),
+                        eq(TITLE),
+                        confirmationCallbackCaptor.capture());
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
+
+        Assert.assertEquals(0, ShadowToast.shownToastCount());
     }
 }
