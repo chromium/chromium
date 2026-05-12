@@ -899,31 +899,19 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
 // Tests that when a GURL is opened while incognito forced and an incognito
 // browser is opened, it is opened in the already opened incognito browser.
 // Test for https://crbug.com/40912038#comment9
-// TODO(crbug.com/504176001): Re-enable this test once it's no longer flaky.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened \
-  DISABLED_OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened
-#else
-#define MAYBE_OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened \
-  OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened
-#endif
-IN_PROC_BROWSER_TEST_F(
-    AppControllerBrowserTest,
-    MAYBE_OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened) {
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
+                       OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  // Close the current non-incognito browser.
-  Profile* profile = browser()->profile();
-  ui_test_utils::BrowserDestroyedObserver observer(browser());
-  chrome::CloseAllBrowsers();
-  observer.Wait();
-  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   // Force incognito mode.
+  Profile* profile = browser()->profile();
   IncognitoModePrefs::SetAvailability(
       profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  // Close the current non-incognito browser.
+  CloseBrowserSynchronously(browser());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
   EXPECT_EQ(incognito_browser,
