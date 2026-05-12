@@ -19,10 +19,6 @@
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/logging.h"
 
-#if !defined(JNI_ZERO_ENABLE_COMPAT_API)
-#define JNI_ZERO_ENABLE_COMPAT_API 0
-#endif
-
 // Forward declaration of template class that contains @CalledByNative methods.
 // Must live in a custom / unique namespace to ensure it doesn't collide with
 // namespaces used from @JniType strings.
@@ -260,9 +256,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
     return FromJniType<To>(env, *this);
   }
 
-#if !JNI_ZERO_ENABLE_COMPAT_API
  protected:
-#endif
 // Takes ownership of the |obj| reference passed; requires it to be a local
 // reference type.
 #if JNI_ZERO_DCHECK_IS_ON()
@@ -270,10 +264,6 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
   JavaRef(JNIEnv* env, jobject obj);
 #else
   JavaRef(JNIEnv* env, jobject obj) : obj_(obj) {}
-#endif
-
-#if JNI_ZERO_ENABLE_COMPAT_API
- protected:
 #endif
 
   // Used for move semantics. obj_ must have been released first if non-null.
@@ -374,10 +364,7 @@ class JavaRef : public JavaRef<jobject> {
         env, static_cast<JArray<ElementType>>(this->obj()));
   }
 
-#if !JNI_ZERO_ENABLE_COMPAT_API
  protected:
-#endif
-
   JavaRef(JNIEnv* env, jobject obj) : JavaRef<jobject>(env, obj) {}
 };
 
@@ -566,14 +553,9 @@ class ScopedJavaLocalRef : public JavaRef<T> {
     return std::move(*reinterpret_cast<ScopedJavaLocalRef<To>*>(this));
   }
 
-#if !JNI_ZERO_ENABLE_COMPAT_API
  private:
-#endif
   ScopedJavaLocalRef(JNIEnv* env, jobject obj)
       : JavaRef<T>(env, obj), env_(env) {}
-#if JNI_ZERO_ENABLE_COMPAT_API
- private:
-#endif
 
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
@@ -813,11 +795,6 @@ inline ScopedJavaLocalRef<T> JavaRef<internal::_JObjectArray<T>*>::Get(
   jobject obj = env->GetObjectArrayElement(this->obj(), index);
   return jni_zero::AdoptRef(env, static_cast<T>(obj));
 }
-
-#if JNI_ZERO_ENABLE_COMPAT_API
-template <typename T>
-using JavaParamRef = JavaRef<T>;
-#endif
 
 // Identity overload for FromJniType when the destination type is already a
 // JavaRef.
