@@ -297,6 +297,10 @@ class UnitTest(unittest.TestCase):
   @mock.patch('os.environ.get', return_value='filename')
   @mock.patch('exception_recorder._record_time')
   def test_post_extended_properties(self, _, mock_open_file, mock_session_post):
+    # ensure exceptions and measures are empty.
+    measures.clear()
+    exception_recorder.clear()
+
     test_exception = test_runner.XcodeVersionNotFoundError("15abcd")
     exception_recorder.register(test_exception)
 
