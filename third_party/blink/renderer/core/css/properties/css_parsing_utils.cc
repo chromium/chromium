@@ -950,6 +950,8 @@ bool IsGeneratedImage(const CSSValueID id) {
     case CSSValueID::kPaint:
     case CSSValueID::kCrossFade:
       return true;
+    case CSSValueID::kImage:
+      return RuntimeEnabledFeatures::CSSImageFunctionEnabled();
 
     default:
       return false;
@@ -3602,6 +3604,18 @@ static CSSValue* ConsumeCrossFade(CSSParserTokenStream& stream,
       /*is_legacy_variant=*/false, image_and_percentages);
 }
 
+// https://drafts.csswg.org/css-images-4/#image-notation
+// image() = image( <color> )
+static CSSValue* ConsumeImageFunction(CSSParserTokenStream& stream,
+                                      const CSSParserContext& context,
+                                      CSSParserLocalContext& local_context) {
+  CSSValue* color_value = ConsumeColor(stream, context, local_context);
+  if (!color_value) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<cssvalue::CSSColorImageValue>(color_value);
+}
+
 static CSSValue* ConsumePaint(CSSParserTokenStream& stream,
                               const CSSParserContext& context,
                               CSSParserLocalContext& local_context) {
@@ -3729,6 +3743,9 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenStream& stream,
     } else if (RuntimeEnabledFeatures::CSSCrossFadeEnabled() &&
                id == CSSValueID::kCrossFade) {
       result = ConsumeCrossFade(stream, context, local_context);
+    } else if (RuntimeEnabledFeatures::CSSImageFunctionEnabled() &&
+               id == CSSValueID::kImage) {
+      result = ConsumeImageFunction(stream, context, local_context);
     } else if (id == CSSValueID::kPaint) {
       result = context.IsSecureContext()
                    ? ConsumePaint(stream, context, local_context)

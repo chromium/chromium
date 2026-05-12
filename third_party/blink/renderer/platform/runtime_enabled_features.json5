@@ -1632,6 +1632,14 @@
       status: "test",
     },
     {
+      // image(<color>) functional notation, producing a solid-color image
+      // with no natural dimensions.
+      // https://drafts.csswg.org/css-images-4/#funcdef-image
+      // https://chromestatus.com/feature/5121011285622784
+      name: "CSSImageFunction",
+      status: "experimental",
+    },
+    {
       // The inherit() function works like var(), except that it grabs
       // the computed value of the specified property from the parent style
       // instead of the current style.

@@ -1421,6 +1421,7 @@
     "paint",
     "cross-fade",
     "-webkit-cross-fade",
+    "image",
     "-webkit-gradient",
     "-webkit-linear-gradient",
     "-webkit-radial-gradient",

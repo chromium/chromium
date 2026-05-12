@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size.h"
@@ -204,6 +205,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
           conversion_data, size, document, style);
       break;
     case kConstantGradientClass:
+    case kColorImageClass:
       gradient = To<CSSConstantGradientValue>(this)->CreateGradient(
           conversion_data, size, document, style);
       break;
@@ -1081,6 +1083,9 @@ const CSSGradientValue& CSSGradientValue::ResolveValuesIfNeeded(
     case kConstantGradientClass:
       return To<CSSConstantGradientValue>(this)->ResolveValuesIfNeeded(
           style_resolver_state);
+    case kColorImageClass:
+      return To<CSSColorImageValue>(this)->ResolveValuesIfNeeded(
+          style_resolver_state);
     default:
       NOTREACHED();
   }
@@ -1100,6 +1105,9 @@ CSSGradientValue& CSSGradientValue::ResolveValuesIfNeeded(
           style_resolver_state);
     case kConstantGradientClass:
       return To<CSSConstantGradientValue>(this)->ResolveValuesIfNeeded(
+          style_resolver_state);
+    case kColorImageClass:
+      return To<CSSColorImageValue>(this)->ResolveValuesIfNeeded(
           style_resolver_state);
     default:
       NOTREACHED();
@@ -1122,6 +1130,9 @@ CSSGradientValue* CSSGradientValue::ComputedCSSValue(
           style, allow_visited_style, value_phase);
     case kConstantGradientClass:
       return To<CSSConstantGradientValue>(this)->ComputedCSSValue(
+          style, allow_visited_style, value_phase);
+    case kColorImageClass:
+      return To<CSSColorImageValue>(this)->ComputedCSSValue(
           style, allow_visited_style, value_phase);
     default:
       NOTREACHED();
@@ -2354,6 +2365,10 @@ void CSSConicGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSGradientValue::TraceAfterDispatch(visitor);
 }
 
+String CSSConstantGradientValue::CustomCSSText() const {
+  return color_->CssText();
+}
+
 bool CSSConstantGradientValue::Equals(
     const CSSConstantGradientValue& other) const {
   return base::ValuesEquivalent(color_, other.color_);
@@ -2372,6 +2387,10 @@ bool CSSConstantGradientValue::KnownToBeOpaque(
   return ResolveStopColor(CSSToLengthConversionData(/*element=*/nullptr),
                           *color_, document, style)
       .IsOpaque();
+}
+
+bool CSSConstantGradientValue::IsUsingCurrentColor() const {
+  return blink::cssvalue::IsUsingCurrentColor(*color_);
 }
 
 std::unique_ptr<Gradient> CSSConstantGradientValue::CreateGradient(
@@ -2422,6 +2441,40 @@ CSSConstantGradientValue& CSSConstantGradientValue::ResolveValuesIfNeeded(
     return *this;
   }
   return *MakeGarbageCollected<CSSConstantGradientValue>(color);
+}
+
+String CSSColorImageValue::CustomCSSText() const {
+  return StrCat({"image(", color_->CssText(), ")"});
+}
+
+bool CSSColorImageValue::Equals(const CSSColorImageValue& other) const {
+  return CSSConstantGradientValue::Equals(other);
+}
+
+CSSColorImageValue* CSSColorImageValue::ComputedCSSValue(
+    const ComputedStyle& style,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return MakeGarbageCollected<CSSColorImageValue>(
+      GetComputedStopColor(*color_, style, allow_visited_style, value_phase));
+}
+
+const CSSColorImageValue& CSSColorImageValue::ResolveValuesIfNeeded(
+    const StyleResolverState& style_resolver_state) const {
+  const CSSValue* color = ResolveColor(color_, style_resolver_state);
+  if (color == color_) {
+    return *this;
+  }
+  return *MakeGarbageCollected<CSSColorImageValue>(color);
+}
+
+CSSColorImageValue& CSSColorImageValue::ResolveValuesIfNeeded(
+    const StyleResolverState& style_resolver_state) {
+  const CSSValue* color = ResolveColor(color_, style_resolver_state);
+  if (color == color_) {
+    return *this;
+  }
+  return *MakeGarbageCollected<CSSColorImageValue>(color);
 }
 
 }  // namespace blink::cssvalue

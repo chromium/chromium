@@ -257,6 +257,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
       case kConstantGradientClass:
         return CompareCSSValues<cssvalue::CSSConstantGradientValue>(*this,
                                                                     other);
+      case kColorImageClass:
+        return CompareCSSValues<cssvalue::CSSColorImageValue>(*this, other);
       case kPaintClass:
         return CompareCSSValues<CSSPaintValue>(*this, other);
       case kCustomIdentClass:
@@ -442,6 +444,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSConicGradientValue>(this)->CustomCSSText();
     case kConstantGradientClass:
       return To<cssvalue::CSSConstantGradientValue>(this)->CustomCSSText();
+    case kColorImageClass:
+      return To<cssvalue::CSSColorImageValue>(this)->CustomCSSText();
     case kCrossfadeClass:
       return To<cssvalue::CSSCrossfadeValue>(this)->CustomCSSText();
     case kPaintClass:
@@ -629,6 +633,7 @@ unsigned CSSValue::Hash() const {
     case kRadialGradientClass:
     case kConicGradientClass:
     case kConstantGradientClass:
+    case kColorImageClass:
     case kProgressClass:
     case kLinearTimingFunctionClass:
     case kCubicBezierTimingFunctionClass:
@@ -790,6 +795,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kConstantGradientClass:
       To<cssvalue::CSSConstantGradientValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kColorImageClass:
+      To<cssvalue::CSSColorImageValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kCrossfadeClass:
       To<cssvalue::CSSCrossfadeValue>(this)->TraceAfterDispatch(visitor);
@@ -1045,6 +1053,8 @@ String CSSValue::ClassTypeToString() const {
       return "ConicGradientClass";
     case kConstantGradientClass:
       return "ConstantGradientClass";
+    case kColorImageClass:
+      return "ColorImageClass";
     case kProgressClass:
       return "kProgressTypeClass";
     case kLinearTimingFunctionClass:
@@ -1249,6 +1259,8 @@ bool CSSValue::HasRandomFunctions() const {
       return To<cssvalue::CSSConicGradientValue>(this)->HasRandomFunctions();
     case kConstantGradientClass:
       return To<cssvalue::CSSConstantGradientValue>(this)->HasRandomFunctions();
+    case kColorImageClass:
+      return To<cssvalue::CSSColorImageValue>(this)->HasRandomFunctions();
     case kStepsTimingFunctionClass:
       return To<cssvalue::CSSStepsTimingFunctionValue>(this)
           ->HasRandomFunctions();

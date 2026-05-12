@@ -117,12 +117,11 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsFunctionValue() const { return class_type_ == kFunctionClass; }
   bool IsCustomIdentValue() const { return class_type_ == kCustomIdentClass; }
   bool IsImageGeneratorValue() const {
-    return class_type_ >= kCrossfadeClass &&
-           class_type_ <= kConstantGradientClass;
+    return class_type_ >= kCrossfadeClass && class_type_ <= kColorImageClass;
   }
   bool IsGradientValue() const {
     return class_type_ >= kLinearGradientClass &&
-           class_type_ <= kConstantGradientClass;
+           class_type_ <= kColorImageClass;
   }
   bool IsImageSetOptionValue() const {
     return class_type_ == kImageSetOptionClass;
@@ -161,8 +160,10 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return class_type_ == kConicGradientClass;
   }
   bool IsConstantGradientValue() const {
-    return class_type_ == kConstantGradientClass;
+    return class_type_ == kConstantGradientClass ||
+           class_type_ == kColorImageClass;
   }
+  bool IsColorImageValue() const { return class_type_ == kColorImageClass; }
   bool IsProgressValue() const { return class_type_ == kProgressClass; }
   bool IsReflectValue() const { return class_type_ == kReflectClass; }
   bool IsShadowValue() const { return class_type_ == kShadowClass; }
@@ -327,6 +328,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kRadialGradientClass,
     kConicGradientClass,
     kConstantGradientClass,
+    kColorImageClass,
 
     // Timing function classes.
     kLinearTimingFunctionClass,

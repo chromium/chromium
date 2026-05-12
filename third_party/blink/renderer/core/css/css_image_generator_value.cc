@@ -160,6 +160,7 @@ scoped_refptr<Image> CSSImageGeneratorValue::GetImage(
       return To<CSSConicGradientValue>(this)->GetImage(
           client, node, style, container_sizes, target_size);
     case kConstantGradientClass:
+    case kColorImageClass:
       return To<CSSConstantGradientValue>(this)->GetImage(
           client, node, style, container_sizes, target_size);
     default:
@@ -186,6 +187,7 @@ bool CSSImageGeneratorValue::IsUsingCurrentColor() const {
     case kConicGradientClass:
       return To<CSSConicGradientValue>(this)->IsUsingCurrentColor();
     case kConstantGradientClass:
+    case kColorImageClass:
       return To<CSSConstantGradientValue>(this)->IsUsingCurrentColor();
     default:
       return false;
@@ -217,6 +219,7 @@ bool CSSImageGeneratorValue::KnownToBeOpaque(const Document& document,
     case kConicGradientClass:
       return To<CSSConicGradientValue>(this)->KnownToBeOpaque(document, style);
     case kConstantGradientClass:
+    case kColorImageClass:
       return To<CSSConstantGradientValue>(this)->KnownToBeOpaque(document,
                                                                  style);
     default:

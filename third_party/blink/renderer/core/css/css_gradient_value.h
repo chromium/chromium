@@ -422,15 +422,12 @@ class CSSConicGradientValue final : public CSSGradientValue {
 // and behaves otherwise like a one-color gradient, since gradients
 // have all the machinery needed to resolve colors and convert them
 // into images.
-class CSSConstantGradientValue final : public CSSGradientValue {
+class CSSConstantGradientValue : public CSSGradientValue {
  public:
   explicit CSSConstantGradientValue(const CSSValue* color)
-      : CSSGradientValue(kConstantGradientClass,
-                         kNonRepeating,
-                         kCSSConstantGradient),
-        color_(color) {}
+      : CSSConstantGradientValue(kConstantGradientClass, color) {}
 
-  String CustomCSSText() const { return color_->CssText(); }
+  String CustomCSSText() const;
 
   // Create the gradient for a given size.
   std::unique_ptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
@@ -439,6 +436,7 @@ class CSSConstantGradientValue final : public CSSGradientValue {
                                            const ComputedStyle&) const;
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
+  bool IsUsingCurrentColor() const;
   bool Equals(const CSSConstantGradientValue&) const;
   CSSConstantGradientValue* ComputedCSSValue(const ComputedStyle&,
                                              bool allow_visited_style,
@@ -454,7 +452,36 @@ class CSSConstantGradientValue final : public CSSGradientValue {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  protected:
+  CSSConstantGradientValue(ClassType class_type, const CSSValue* color)
+      : CSSGradientValue(class_type, kNonRepeating, kCSSConstantGradient),
+        color_(color) {}
+
   Member<const CSSValue> color_;
+};
+
+// Backs the image(<color>) functional notation from CSS Images Level 4 — a
+// solid-color image with no natural dimensions. Behaviorally identical to
+// CSSConstantGradientValue, but serializes as image(<color>) rather than
+// just <color>.
+//
+// https://drafts.csswg.org/css-images-4/#image-notation
+class CSSColorImageValue final : public CSSConstantGradientValue {
+ public:
+  explicit CSSColorImageValue(const CSSValue* color)
+      : CSSConstantGradientValue(kColorImageClass, color) {}
+
+  String CustomCSSText() const;
+  bool Equals(const CSSColorImageValue&) const;
+  CSSColorImageValue* ComputedCSSValue(const ComputedStyle&,
+                                       bool allow_visited_style,
+                                       CSSValuePhase value_phase) const;
+  const CSSColorImageValue& ResolveValuesIfNeeded(
+      const StyleResolverState&) const;
+  CSSColorImageValue& ResolveValuesIfNeeded(const StyleResolverState&);
+
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
+    CSSConstantGradientValue::TraceAfterDispatch(visitor);
+  }
 };
 
 }  // namespace cssvalue
@@ -491,6 +518,13 @@ template <>
 struct DowncastTraits<cssvalue::CSSConstantGradientValue> {
   static bool AllowFrom(const CSSValue& value) {
     return value.IsConstantGradientValue();
+  }
+};
+
+template <>
+struct DowncastTraits<cssvalue::CSSColorImageValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsColorImageValue();
   }
 };
 
