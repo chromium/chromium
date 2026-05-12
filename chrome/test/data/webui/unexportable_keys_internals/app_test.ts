@@ -61,8 +61,10 @@ suite('UnexportableKeysInternals', function() {
 
   const columnCount = 5;
 
+  const UNGUESSABLE_TOKEN_LENGTH = 32;
+
   const sampleKey1: UnexportableKeyInfo = {
-    keyId: {keyId: {high: 10n, low: 1n} as any},
+    keyId: {keyId: 1n.toString(16).padStart(UNGUESSABLE_TOKEN_LENGTH, '0')},
     wrappedKey: 'key1_wrapped',
     algorithm: 'ECDSA',
     keyTag: 'tag1',
@@ -70,7 +72,7 @@ suite('UnexportableKeysInternals', function() {
   };
 
   const sampleKey2: UnexportableKeyInfo = {
-    keyId: {keyId: {high: 20n, low: 2n} as any},
+    keyId: {keyId: 2n.toString(16).padStart(UNGUESSABLE_TOKEN_LENGTH, '0')},
     wrappedKey: 'key2_wrapped',
     algorithm: 'RSA',
     keyTag: 'tag2',

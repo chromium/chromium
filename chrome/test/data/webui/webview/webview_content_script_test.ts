@@ -22,7 +22,8 @@ suite('WebviewContentScriptTest', function() {
       Promise<void> {
     return new Promise<void>(resolve => {
       webview.executeScript(
-          {code: 'document.body.style.backgroundColor;'}, (results: any[]) => {
+          {code: 'document.body.style.backgroundColor;'},
+          (results: string[]) => {
             assertEquals(1, results.length);
             assertEquals('red', results[0]);
             resolve();
@@ -30,10 +31,11 @@ suite('WebviewContentScriptTest', function() {
     });
   }
 
-  function executeScript(
-      webview: chrome.webviewTag.WebView, details: any): Promise<any[]> {
-    return new Promise<any[]>(resolve => {
-      webview.executeScript(details, (results: any[]) => {
+  function executeScript<T>(
+      webview: chrome.webviewTag.WebView,
+      details: chrome.webviewTag.InjectDetails): Promise<T[]> {
+    return new Promise<T[]>(resolve => {
+      webview.executeScript(details, (results: T[]) => {
         resolve(results);
       });
     });
@@ -60,7 +62,7 @@ suite('WebviewContentScriptTest', function() {
       webview.addEventListener('loadstop', () => {
         webview.executeScript(
             {code: 'document.body.style.backgroundColor = \'red\';'},
-            (_results: any[]) => {
+            (_results: unknown[]) => {
               resolve();
             });
       });
@@ -583,13 +585,13 @@ suite('WebviewContentScriptTest', function() {
 
 
     // Set up request interception for normal and WebSocket requests.
-    webview.request.onBeforeRequest.addListener((details: any) => {
+    webview.request.onBeforeRequest.addListener((details: {url: string}) => {
       signalObservation(details.url, 'onBeforeRequest');
       return {};
     }, {urls: ['*://*/*', 'ws://*/*']}, ['blocking']);
 
     // Set up request interception for basic authentication.
-    webview.request.onAuthRequired.addListener((details: any) => {
+    webview.request.onAuthRequired.addListener((details: {url: string}) => {
       signalObservation(details.url, 'onAuthRequired');
       return {
         authCredentials: {
