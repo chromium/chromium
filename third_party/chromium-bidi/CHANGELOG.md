@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [16.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v16.0.0...chromium-bidi-v16.0.1) (2026-05-12)
+
+
+### Bug Fixes
+
+* bump local NodeJS to v24 ([#4146](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4146)) ([c438fb8](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c438fb83587f6b3849801015cd5d72de159418f4))
+
 ## [16.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v15.0.0...chromium-bidi-v16.0.0) (2026-05-12)
 
 
