@@ -454,6 +454,9 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
 bool LayoutBoxModelObject::ShouldBeHandledAsInline(
     const ComputedStyle& style) const {
   NOT_DESTROYED();
+  if (style.IsInBlockifyingDisplay()) {
+    return false;
+  }
   if (style.IsDisplayInlineType()) {
     return true;
   }

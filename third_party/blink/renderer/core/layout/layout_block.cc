@@ -176,29 +176,24 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
   DCHECK(!new_child->IsTablePart());
   DCHECK_NE(before_descendant->Parent(), this);
 
+  if (!new_child->IsInline()) {
+    LayoutObject* before_child =
+        SplitAnonymousBoxesAroundChild(before_descendant);
+
+    DCHECK_EQ(before_child->Parent(), this);
+    AddChild(new_child, before_child);
+    return;
+  }
+
   LayoutObject* before_descendant_container = before_descendant->Parent();
   while (before_descendant_container->Parent() != this) {
     before_descendant_container = before_descendant_container->Parent();
   }
-  DCHECK(before_descendant_container);
-
-  // We really can't go on if what we have found isn't anonymous. We're not
-  // supposed to use some random non-anonymous object and put the child there.
-  // That's a recipe for security issues.
   CHECK(before_descendant_container->IsAnonymous());
+  CHECK(before_descendant_container->IsLayoutBlockFlow());
 
-  // Insert the child into the anonymous block box instead of here.
-  if (new_child->IsInline() &&
-      before_descendant_container->IsAnonymousBlockFlow()) {
-    before_descendant_container->AddChild(new_child, before_descendant);
-    return;
-  }
-
-  LayoutObject* before_child =
-      SplitAnonymousBoxesAroundChild(before_descendant);
-
-  DCHECK_EQ(before_child->Parent(), this);
-  AddChild(new_child, before_child);
+  // Insert the child into the anonymous block-flow instead of here.
+  before_descendant_container->AddChild(new_child, before_descendant);
 }
 
 void LayoutBlock::AddChild(LayoutObject* new_child,
