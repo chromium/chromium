@@ -1308,6 +1308,20 @@ TEST_F(GaiaCookieManagerServiceTest, OptimizeListAccounts) {
   EXPECT_FALSE(helper.is_running());
 }
 
+// Tests delaying a network call, then calling `CancelAll`. This used to crash.
+// Regression test for crbug.com/462549500.
+TEST_F(GaiaCookieManagerServiceTest, CancelAllWithDelayedBlock) {
+  GaiaCookieManagerService helper(account_tracker_service(), token_service(),
+                                  signin_client());
+  signin_client()->SetNetworkCallsDelayed(true);
+  helper.TriggerListAccounts();
+  helper.CancelAll();
+
+  // Release delayed network calls.
+  // This used to crash in `StartFetchingListAccounts`.
+  signin_client()->SetNetworkCallsDelayed(false);
+}
+
 class GaiaCookieManagerServiceCookieTest
     : public GaiaCookieManagerServiceTest,
       public testing::WithParamInterface<

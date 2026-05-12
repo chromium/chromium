@@ -599,6 +599,9 @@ void GaiaCookieManagerService::CancelAll() {
   oauth_multilogin_helper_.reset();
   requests_.clear();
   fetcher_timer_.Stop();
+
+  // Invalidate weak pointers to cancel any outstanding callbacks.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
