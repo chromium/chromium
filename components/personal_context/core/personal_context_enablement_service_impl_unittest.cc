@@ -111,6 +111,8 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
   std::unique_ptr<PersonalContextEnablementServiceImpl> service_;
 };
 
+// Verifies that the debug override feature correctly forces the enablement
+// state regardless of other requirements.
 TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
   {
     base::test::ScopedFeatureList feature_list;
@@ -149,6 +151,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
   }
 }
 
+// Verifies that the service is disabled when all related feature flags are off.
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenFeaturesAreOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -161,6 +164,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenFeaturesAreOff) {
             PersonalContextEnablementState::kDisabledNotEligible);
 }
 
+// Verifies that the main feature flag (kPersonalContext) is a hard requirement.
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenMainFeatureIsOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -172,11 +176,15 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenMainFeatureIsOff) {
             PersonalContextEnablementState::kDisabledNotEligible);
 }
 
+// Verifies that the service is enabled when all feature flags and other
+// requirements (set up in the test fixture) are met.
 TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kEnabled);
 }
 
+// Verifies that the state correctly transitions to `kDisabledPendingInfo` when
+// the user hasn't acknowledged the introductory info yet.
 TEST_F(PersonalContextEnablementServiceImplTest,
        DisabledPendingInfoWhenInfoNotAcknowledged) {
   pref_service_.SetBoolean(
@@ -186,12 +194,15 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
+// Verifies that the service is disabled when the user is not signed in.
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kDisabledNotEligible);
 }
 
+// Verifies that the onboarding preference is reset when the user signs out,
+// ensuring they see the info again if they sign back in.
 TEST_F(PersonalContextEnablementServiceImplTest, ClearsPrefOnSignout) {
   pref_service_.SetBoolean(
       personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, false);
@@ -201,6 +212,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ClearsPrefOnSignout) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// Verifies that the service is disabled for underaged users.
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenUnderaged) {
   SignIn("under@gmail.com", /*is_underaged=*/true);
 
@@ -208,6 +220,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenUnderaged) {
             PersonalContextEnablementState::kDisabledNotEligible);
 }
 
+// Verifies that the service is disabled for managed (enterprise) accounts.
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenManaged) {
   SignIn("managed@example.com", /*is_underaged=*/false, /*is_managed=*/true);
 
@@ -215,6 +228,8 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenManaged) {
             PersonalContextEnablementState::kDisabledNotEligible);
 }
 
+// Verifies that the service is disabled if the user's AI subscription tier
+// is not eligible.
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenTierNotEligible) {
   pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
                            3);
@@ -223,6 +238,8 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenTierNotEligible) {
             PersonalContextEnablementState::kDisabledNotEligible);
 }
 
+// Verifies that the service fails safe (disabled) if the required
+// `AccountSettingService` is missing.
 TEST_F(PersonalContextEnablementServiceImplTest,
        DisabledWhenAccountSettingsServiceNotAvailable) {
   service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
@@ -234,6 +251,8 @@ TEST_F(PersonalContextEnablementServiceImplTest,
             PersonalContextEnablementState::kDisabledNotEligible);
 }
 
+// Verifies that the service is disabled if the user has explicitly opted
+// out of personal context in their global account settings.
 TEST_F(PersonalContextEnablementServiceImplTest,
        DisabledWhenAccountOptedOutOfContext) {
   EXPECT_CALL(mock_account_settings_service_,
@@ -247,6 +266,8 @@ TEST_F(PersonalContextEnablementServiceImplTest,
             PersonalContextEnablementState::kDisabledNotEligible);
 }
 
+// Verifies that the service is disabled if no specific context sources
+// (e.g. Photos, Workspace) are enabled, even if the global opt-in is on.
 TEST_F(PersonalContextEnablementServiceImplTest,
        DisabledWhenNoContextSourcesEnabled) {
   EXPECT_CALL(mock_account_settings_service_,
@@ -268,6 +289,8 @@ TEST_F(PersonalContextEnablementServiceImplTest,
             PersonalContextEnablementState::kDisabledNotEligible);
 }
 
+// Verifies that the service is enabled if at least one context source
+// is enabled.
 TEST_F(PersonalContextEnablementServiceImplTest,
        EnabledWhenAtLeastOneContextSourceEnabled) {
   EXPECT_CALL(mock_account_settings_service_,
@@ -308,6 +331,8 @@ TEST_F(PersonalContextEnablementServiceImplTest,
   }
 }
 
+// Verifies that registered observers are correctly notified when the
+// enablement state changes due to a preference update.
 TEST_F(PersonalContextEnablementServiceImplTest,
        ObserversNotifiedOnEnablementStateChanged) {
   MockPersonalContextEnablementServiceObserver observer;
@@ -333,6 +358,8 @@ TEST_F(PersonalContextEnablementServiceImplTest,
   service().RemoveObserver(&observer);
 }
 
+// Verifies that the internal state cache and observers are updated when
+// account settings change.
 TEST_F(PersonalContextEnablementServiceImplTest,
        CacheUpdatedOnAccountSettingChanged) {
   // Initial state is kEnabled.
@@ -392,6 +419,8 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(/*country_code=*/"us",
                         PersonalContextEnablementState::kEnabled)));
 
+// Verifies that the service is only enabled in supported geographical regions
+// (e.g. "US" only).
 TEST_P(PersonalContextEnablementServiceImplGeolocationTest,
        CheckCountryEnablement) {
   CreateService(std::get<0>(GetParam()));
