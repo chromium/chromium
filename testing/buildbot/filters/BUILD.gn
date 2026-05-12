@@ -233,6 +233,7 @@ source_set("content_browsertests_filters") {
     "//testing/buildbot/filters/android.mte.content_browsertests.filter",
     "//testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
     "//testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter",
+    "//testing/buildbot/filters/linux.bf_cache_content_browsertests.filter",
     "//testing/buildbot/filters/linux-arm64-rel-fyi.content_browsertests.filter",
     "//testing/buildbot/filters/linux-arm64-wayland-rel-fyi.content_browsertests.filter",
     "//testing/buildbot/filters/site_isolation_android.content_browsertests.filter",

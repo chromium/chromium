@@ -1227,6 +1227,12 @@ ci.builder(
             "linux-jammy",
         ],
         per_test_modifications = {
+            "bf_cache_content_browsertests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/512134750): Re-enable the test once the test is fixed.
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux.bf_cache_content_browsertests.filter",
+                ],
+            ),
             "blink_wpt_tests": targets.mixin(
                 args = [
                     # TODO(crbug.com/40200069): Re-enable the test.
