@@ -144,6 +144,9 @@ config("sqlite_warnings") {
       # fts3EvalSelectDeferred sqlite3Fts3InitHashTable
       # sqlite3Fts3InitTok).
       "-Wno-unused-function",
+
+      # SQLite uses sprintf.
+      "-Wno-deprecated-declarations",
     ]
 
     if (is_debug || dcheck_always_on) {
@@ -262,9 +265,9 @@ component("chromium_sqlite3") {
 # options at config("dev_sqlite3_compile_options").
 #
 # This target uses source_set instead of component intentionally because turning
-# it into a shared library will result in symbol collisions with "chromium_sqlite".
-# Given that this config is effectively test-only, we should link it statically
-# and allow "chromium_sqlite" to be the only shared library.
+# it into a shared library will result in symbol collisions with
+# "chromium_sqlite". Given that this config is effectively test-only, we should
+# link it statically and allow "chromium_sqlite" to be the only shared library.
 # TODO(altimin): mark this component as testonly = true.
 source_set("dev_sqlite3") {
   visibility = [ ":*" ]
