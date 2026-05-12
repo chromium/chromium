@@ -16,3 +16,20 @@ static_library("content") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "content_infobar_manager_unittest.cc" ]
+
+  deps = [
+    ":content",
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+}
