@@ -2445,12 +2445,6 @@
       settable_from_internals: true
     },
     {
-      // Enables proper backspace handling for emoji tag sequences
-      // (e.g., subdivision flags like 🏴󠁧󠁢󠁥󠁮󠁧󠁿) per UTS #51 ED-14a.
-      name: "EditEmojiTagSequence",
-      status: "stable",
-    },
-    {
       name: "EditingLineMovementWithRubyFix",
       status: "stable",
     },

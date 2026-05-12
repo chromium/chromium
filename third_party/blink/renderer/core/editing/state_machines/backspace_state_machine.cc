@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "third_party/blink/renderer/core/editing/state_machines/state_machine_util.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -117,8 +116,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       }
       // Emoji tag sequences end with CANCEL TAG (U+E007F).
       // http://www.unicode.org/reports/tr51/#def_emoji_tag_sequence
-      if (RuntimeEnabledFeatures::EditEmojiTagSequenceEnabled() &&
-          code_point == uchar::kCancelTag) {
+      if (code_point == uchar::kCancelTag) {
         return MoveToNextState(BackspaceState::kBeforeTagTerm);
       }
       return Finish();
@@ -154,8 +152,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
         // If processing tag sequence base, finish here instead of looking
         // for ZWJ sequences.
-        if (RuntimeEnabledFeatures::EditEmojiTagSequenceEnabled() &&
-            processing_tag_sequence_base_) {
+        if (processing_tag_sequence_base_) {
           processing_tag_sequence_base_ = false;
           return Finish();
         }
@@ -175,8 +172,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
         // If processing tag sequence base, finish here instead of looking
         // for ZWJ sequences.
-        if (RuntimeEnabledFeatures::EditEmojiTagSequenceEnabled() &&
-            processing_tag_sequence_base_) {
+        if (processing_tag_sequence_base_) {
           processing_tag_sequence_base_ = false;
           return Finish();
         }
