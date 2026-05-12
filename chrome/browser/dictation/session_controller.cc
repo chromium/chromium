@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
 #include "chrome/browser/dictation/session_ui.h"
 #include "chrome/browser/dictation/stream_provider.h"
@@ -45,9 +46,18 @@ void SessionController::EndDictationStream() {
 }
 
 void SessionController::RequestEndSession() {
-  delegate_->EndSession();
-
-  // DO NOT ADD CODE AFTER THIS: EndSession() destroys `this`.
+  // EndSession will destroy `this` which owns other objects that call into here
+  // so PostTask to avoid destroying objects in the callstack.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<SessionController> this_ptr) {
+                       if (!this_ptr) {
+                         return;
+                       }
+                       this_ptr->delegate_->EndSession();
+                       CHECK(!this_ptr);
+                     },
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SessionController::MoveToState(State new_state) {

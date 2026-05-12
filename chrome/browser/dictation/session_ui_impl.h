@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DICTATION_SESSION_UI_IMPL_H_
 #define CHROME_BROWSER_DICTATION_SESSION_UI_IMPL_H_
 
+#include <memory>
+
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/dictation/session_ui.h"
 
@@ -13,6 +15,7 @@ class BrowserWindowInterface;
 namespace dictation {
 
 class SessionUiDelegate;
+class DictationBubbleUi;
 
 class SessionUiImpl : public SessionUi {
  public:
@@ -24,7 +27,14 @@ class SessionUiImpl : public SessionUi {
   SessionUiImpl& operator=(const SessionUiImpl&) = delete;
 
  private:
+  friend class DictationSessionUiImplBrowserTest;
+  void OnDictationBubbleCloseClicked();
+
   const base::raw_ref<SessionUiDelegate> controller_;
+
+  // This is the main bubble/toast that shows up at the top-center of the
+  // screen.
+  std::unique_ptr<DictationBubbleUi> bubble_ui_;
 };
 
 }  // namespace dictation

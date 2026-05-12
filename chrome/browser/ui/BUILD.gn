@@ -3861,6 +3861,8 @@ static_library("ui") {
       "views/desktop_capture/share_this_tab_source_view.h",
       "views/device_chooser_content_view.cc",
       "views/device_chooser_content_view.h",
+      "views/dictation/dictation_bubble_ui.cc",
+      "views/dictation/dictation_bubble_ui.h",
       "views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.cc",
       "views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h",
       "views/digital_credentials/digital_identity_multi_step_dialog.cc",

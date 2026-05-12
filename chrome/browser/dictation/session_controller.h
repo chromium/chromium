@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/session_ui_delegate.h"
 
 namespace dictation {
@@ -65,6 +66,8 @@ class SessionController : public SessionUiDelegate {
     return attached_stream_provider_.get();
   }
 
+  SessionUi* ui_for_testing() { return ui_.get(); }
+
  private:
   void MoveToState(State new_state);
 
@@ -77,6 +80,8 @@ class SessionController : public SessionUiDelegate {
   std::unique_ptr<StreamProvider> attached_stream_provider_;
 
   std::unique_ptr<SessionUi> ui_;
+
+  base::WeakPtrFactory<SessionController> weak_ptr_factory_{this};
 };
 
 }  // namespace dictation

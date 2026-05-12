@@ -33,8 +33,12 @@ source_set("impl") {
   deps = [
     ":dictation",
     "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/interaction",
     "//content/public/browser",
+    "//ui/views",
   ]
 }
 
@@ -71,7 +75,10 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "dictation_keyed_service_browsertest.cc" ]
+  sources = [
+    "dictation_keyed_service_browsertest.cc",
+    "session_ui_impl_browsertest.cc",
+  ]
   deps = [
     ":impl",
     ":test_support",

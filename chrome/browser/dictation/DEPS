@@ -2,5 +2,6 @@ include_rules = [
   "+base",
   "+testing/gmock",
   "+testing/gtest",
+  "+chrome/browser/ui/views",
   "+chrome/browser/ui/browser_window/public",
 ]
