@@ -453,10 +453,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
 #if BUILDFLAG(IS_MAC)
   // This is called after SetSupportedDisplayLinkId() in the browser process.
-  // This function will force ExternalDisplayLinkMac in every
-  // RootCompositorFrameSink to check whether we need to get a new
-  // DisplayLinkMac when a display is added or removed.
-  void UpdateVSyncDisplays();
+  // Forces every RootCompositorFrameSink associated with the specified display
+  // to update its DisplayLinkMac. This ensures that frame sinks stay in sync
+  // with the display configuration when displays are added or removed.
+  void UpdateVSyncDisplays(int64_t display_id);
 #endif
 
  private:

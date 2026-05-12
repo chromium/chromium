@@ -45,7 +45,7 @@ class DISPLAY_EXPORT VSyncProviderMac {
   void SetCallbackForRemoteNeedsBeginFrame(NeedsBeginFrameCB callback);
 
   // Whether CADisplayLink in Browser with this display_id is supported.
-  bool IsDisplayLinkSupported(int64_t display_id);
+  bool IsDisplayLinkInBrowserValid(int64_t display_id);
 
   // Whether the task runner of VSyncProviderMac belongs to the current thread.
   bool BelongsToCurrentThread();

@@ -298,11 +298,11 @@ void FrameSinkManagerImpl::CreateCompositorDisplayLink(
           update_vsync_displays_cb);
 }
 
-void FrameSinkManagerImpl::UpdateVSyncDisplays() {
+void FrameSinkManagerImpl::UpdateVSyncDisplays(int64_t display_id) {
   for (auto& root_frame_sink : root_sink_map_) {
     if (root_frame_sink.second->external_begin_frame_source()) {
-      root_frame_sink.second->external_begin_frame_source()
-          ->UpdateVSyncDisplay();
+      root_frame_sink.second->external_begin_frame_source()->UpdateVSyncDisplay(
+          display_id);
     }
   }
 }

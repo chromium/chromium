@@ -108,21 +108,13 @@ void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
   }
 }
 
-// UpdateVSyncDisplay() is called only when using ExternalDisplayLinkMac which
-// is connected to a CADisplayLink created in the browser and there is a display
-// added/Removed or CADisplayLink error. For display additions and removals, the
-// sequence of calls between SetVSyncDisplayID() and
-// VSyncProviderMac::AddSupportedDisplayLinkId() is uncertain. Therefore,
-// UpdateVSyncDisplay() is called to guarantee that ExternalBeginFrameSourceMac
-// receives the displayLink for the current display.
-void ExternalBeginFrameSourceMac::UpdateVSyncDisplay() {
-  // Check whether the current display is still valid.
-  bool is_allowed = ui::DisplayLinkMac::IsDisplayLinkAllowed(display_id_);
-  if (is_allowed && display_link_mac_) {
-    return;
+// Forces an update of the DisplayLinkMac for the specified display. This is
+// called when the browser-side CADisplayLink state changes (e.g., becomes
+// valid or invalid) or when a display is added or removed.
+void ExternalBeginFrameSourceMac::UpdateVSyncDisplay(int64_t display_id) {
+  if (display_id_ == display_id) {
+    SetVSyncDisplayID(display_id_, /*force_update=*/true);
   }
-
-  SetVSyncDisplayID(display_id_, /*force_update=*/true);
 }
 
 void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,

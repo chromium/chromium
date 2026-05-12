@@ -135,7 +135,9 @@ void VSyncProviderMac::SetCallbackForRemoteNeedsBeginFrame(
   needs_begin_frame_callback_ = std::move(callback);
 }
 
-bool VSyncProviderMac::IsDisplayLinkSupported(int64_t display_id) {
+bool VSyncProviderMac::IsDisplayLinkInBrowserValid(int64_t display_id) {
+  // Early exit when the weak pointer to
+  // ExternalBeginFrameSourceMojoMac::NeedsBeginFrameWithId() is invalid.
   if (!needs_begin_frame_callback_) {
     return false;
   }

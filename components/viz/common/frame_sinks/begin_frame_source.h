@@ -237,10 +237,10 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   virtual void SetVSyncDisplayID(int64_t display_id, bool force_update) {}
 
 #if BUILDFLAG(IS_MAC)
-  // Connect to a new DisplayLinkMac, the VSync source, if needed.
-  // The browser initiates this call whenever a display is either added or
-  // removed.
-  virtual void UpdateVSyncDisplay() {}
+  // Notifies the source that it may need to reconnect to a VSync source (e.g.,
+  // DisplayLinkMac) for the specified display. This is typically triggered by
+  // display configuration changes in the browser process.
+  virtual void UpdateVSyncDisplay(int64_t display_id) {}
 
   // Notifies the display that the refresh rate has changed on the same display.
   virtual void RefreshRateChangedOnSameDisplay() {}
