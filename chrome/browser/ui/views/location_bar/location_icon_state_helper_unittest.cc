@@ -29,7 +29,6 @@ using location_bar::GetSecurityChipAccessibilityState;
 using location_bar::GetSecurityChipIconEnum;
 using location_bar::GetSecurityChipText;
 using location_bar::GetSecurityChipTooltipText;
-using location_bar::IsSecurityChipInteractive;
 using location_bar::ShouldAnimateSecurityChipTextChange;
 using location_bar::ShouldShowSecurityChipText;
 
@@ -120,24 +119,6 @@ TEST_F(SecurityChipStateHelperTest, SecurityChipIconEnum) {
   EXPECT_EQ(
       SecurityChipIcon::kDangerous,
       GetSecurityChipIconEnum(model(), /*is_add_context_button_shown=*/false));
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
-  model()->set_icon(vector_icons::kGoogleSuperGIcon);
-  EXPECT_EQ(
-      SecurityChipIcon::kGoogleSuperG,
-      GetSecurityChipIconEnum(model(), /*is_add_context_button_shown=*/false));
-#endif
-}
-
-TEST_F(SecurityChipStateHelperTest, SecurityChipInteractivity) {
-  EXPECT_FALSE(IsSecurityChipInteractive(
-      /*is_editing_or_empty=*/true, SecurityChipIcon::kHttp));
-  EXPECT_TRUE(IsSecurityChipInteractive(
-      /*is_editing_or_empty=*/false, SecurityChipIcon::kHttp));
-  EXPECT_FALSE(IsSecurityChipInteractive(
-      /*is_editing_or_empty=*/false, SecurityChipIcon::kGoogleSuperG));
-  EXPECT_FALSE(IsSecurityChipInteractive(
-      /*is_editing_or_empty=*/false, SecurityChipIcon::kGoogleGMonochrome));
 }
 
 TEST_F(SecurityChipStateHelperTest, AccessibilityState) {

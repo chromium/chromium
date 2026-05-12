@@ -26,8 +26,6 @@ enum class SecurityChipIcon {
   kSecurePageInfo,
   kNotSecureWarning,
   kDangerous,
-  kGoogleSuperG,
-  kGoogleGMonochrome,
   kAddContext,
 };
 
@@ -51,8 +49,6 @@ bool ShouldShowSecurityChipText(const LocationBarModel* model,
 // passes the enum directly to its frontend via Mojo.
 SecurityChipIcon GetSecurityChipIconEnum(const LocationBarModel* model,
                                          bool is_add_context_button_shown);
-
-bool IsSecurityChipInteractive(bool is_editing_or_empty, SecurityChipIcon icon);
 
 // Returns true if the icon is the Google Super G gradient icon.
 bool IsGradientGoogleSuperGIcon(const ui::ImageModel& icon);

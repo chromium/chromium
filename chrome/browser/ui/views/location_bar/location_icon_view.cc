@@ -263,32 +263,23 @@ void LocationIconView::UpdateIcon() {
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  bool is_super_g = location_bar::IsGradientGoogleSuperGIcon(icon);
-  bool is_monochrome_g = false;
+  const bool is_super_g = location_bar::IsGradientGoogleSuperGIcon(icon);
+  const bool is_monochrome_g =
+      icon.IsVectorIcon() && icon.GetVectorIcon().vector_icon() &&
+      icon.GetVectorIcon().vector_icon()->name ==
+          vector_icons::kGoogleGLogoMonochromeIcon.name;
 
-  if (icon.IsVectorIcon() && icon.GetVectorIcon().vector_icon()) {
-    const char* icon_name = icon.GetVectorIcon().vector_icon()->name;
-    // TODO(crbug.com/507061157): Remove `kGoogleSuperGIcon` conditional once
-    //   `location_bar::GetSecurityChipIconEnum` and
-    //   `location_bar::IsSecurityChipInteractive` support non-vector icons.
-    if (icon_name == vector_icons::kGoogleSuperGIcon.name) {
-      is_super_g = true;
-    } else if (icon_name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
-      is_monochrome_g = true;
-    }
-  }
-
-  // Remove the inkdrop around the Google G logos since we cannot interact with
-  // them.
   if (is_super_g || is_monochrome_g) {
+    // Remove the inkdrop around the Google G logos since we cannot interact
+    // with them.
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+
+    // Handle custom theme backgrounds specifically for the Super G icon.
+    if (is_super_g && GetWidget() && GetWidget()->GetCustomTheme()) {
+      SetBackgroundColor(SK_ColorWHITE);
+    }
   } else {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  }
-
-  // Handle custom theme backgrounds specifically for the Super G icon.
-  if (is_super_g && GetWidget() && GetWidget()->GetCustomTheme()) {
-    SetBackgroundColor(SK_ColorWHITE);
   }
 #endif
 

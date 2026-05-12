@@ -111,19 +111,6 @@ SecurityChipIcon GetSecurityChipIconEnum(const LocationBarModel* model,
     return SecurityChipIcon::kAddContext;
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
-  const gfx::VectorIcon& icon = model->GetVectorIcon();
-  const char* icon_name = icon.name;
-  // TODO(b/507061157): Use gradient icon here instead of
-  //   `vector_icons::kGoogleSuperGIcon`.
-  if (icon_name == vector_icons::kGoogleSuperGIcon.name) {
-    return SecurityChipIcon::kGoogleSuperG;
-  }
-  if (icon_name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
-    return SecurityChipIcon::kGoogleGMonochrome;
-  }
-#endif
-
   auto security_level = model->GetSecurityLevel();
   if (security_level == security_state::DANGEROUS) {
     return SecurityChipIcon::kDangerous;
@@ -133,18 +120,6 @@ SecurityChipIcon GetSecurityChipIconEnum(const LocationBarModel* model,
     return SecurityChipIcon::kSecurePageInfo;
   }
   return SecurityChipIcon::kHttp;
-}
-
-bool IsSecurityChipInteractive(bool is_editing_or_empty,
-                               SecurityChipIcon icon) {
-  if (is_editing_or_empty) {
-    return false;
-  }
-  if (icon == SecurityChipIcon::kGoogleSuperG ||
-      icon == SecurityChipIcon::kGoogleGMonochrome) {
-    return false;
-  }
-  return true;
 }
 
 SecurityChipAccessibilityState GetSecurityChipAccessibilityState(

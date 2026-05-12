@@ -48,10 +48,6 @@ toolbar_ui_api::mojom::SecurityChipIcon GetMojoSecurityChipIcon(
       return toolbar_ui_api::mojom::SecurityChipIcon::kNotSecureWarning;
     case location_bar::SecurityChipIcon::kDangerous:
       return toolbar_ui_api::mojom::SecurityChipIcon::kDangerous;
-    case location_bar::SecurityChipIcon::kGoogleSuperG:
-      return toolbar_ui_api::mojom::SecurityChipIcon::kGoogleSuperG;
-    case location_bar::SecurityChipIcon::kGoogleGMonochrome:
-      return toolbar_ui_api::mojom::SecurityChipIcon::kGoogleGMonochrome;
     case location_bar::SecurityChipIcon::kAddContext:
       return toolbar_ui_api::mojom::SecurityChipIcon::kAddContext;
   }
@@ -370,8 +366,9 @@ void WebUILocationBar::UpdateLhsChipsState() {
       model, /*is_add_context_button_shown=*/false);
   std::u16string security_chip_text = location_bar::GetSecurityChipText(
       model, GetWebContents(), is_editing_or_empty);
-  bool is_clickable = location_bar::IsSecurityChipInteractive(
-      is_editing_or_empty, security_chip_icon);
+  // TODO(crbug.com/509938007): Disable the security chip when one of the
+  // Google logo icons is shown.
+  bool is_clickable = !is_editing_or_empty;
 
   auto mojo_security_chip_icon = GetMojoSecurityChipIcon(security_chip_icon);
   auto mojo_security_level = GetMojoSecurityLevel(model->GetSecurityLevel());

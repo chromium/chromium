@@ -522,14 +522,6 @@ ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
         image_size);
   }
 
-  // TODO(crbug.com/507061157): Remove this once
-  //   `location_bar::GetSecurityChipIconEnum` and
-  //   `location_bar::IsSecurityChipInteractive` support non-vector icons.
-  if (base::FeatureList::IsEnabled(features::kWebUILocationBar)) {
-    return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleSuperGIcon,
-                                          gfx::kPlaceholderColor, image_size);
-  }
-
   std::optional<int> resource_id;
   // Note: The gradient "Super G" logo requires gradients and clip paths,
   // which are not supported by Chromium vector icons (see
