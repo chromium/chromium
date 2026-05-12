@@ -2573,14 +2573,6 @@ void RTCPeerConnection::DidModifyTransceivers(
     MaybeDispatchEvent(track_event);
   }
 
-  // TODO(https://crbug.com/40821064): Remove killswitch after rollout.
-  if (!base::FeatureList::IsEnabled(kWebRtcUnmuteTracksWhenPacketArrives2)) {
-    for (auto& transceiver : track_events) {
-      transceiver->receiver()->track()->Component()->Source()->SetReadyState(
-          MediaStreamSource::kReadyStateLive);
-    }
-  }
-
   // Transceiver modifications can cause changes in the set of ICE
   // transports, which may affect ICE transport state.
   // Note - this must be done every time the set of ICE transports happens.

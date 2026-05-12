@@ -21,14 +21,6 @@
 
 namespace blink {
 
-// The kWebRtcUnmuteTracksWhenPacketArrives2 feature is also gated on
-// kMediaStreamTrackEmptyVideoFrameMonitor.
-bool ShouldUnmuteTrackWhenPacketsArrive() {
-  return base::FeatureList::IsEnabled(
-             kMediaStreamTrackEmptyVideoFrameMonitor) &&
-         base::FeatureList::IsEnabled(kWebRtcUnmuteTracksWhenPacketArrives2);
-}
-
 RtpReceiverState::RtpReceiverState(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
@@ -173,11 +165,8 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
           encoded_video_transformer_->Delegate());
     }
     DCHECK(!encoded_audio_transformer_ || !encoded_video_transformer_);
-    // TODO(https://crbug.com/40821064): Remove killswitch after rollout.
-    if (ShouldUnmuteTrackWhenPacketsArrive()) {
-      CHECK(webrtc_receiver_);
-      webrtc_receiver_->SetObserver(this);
-    }
+    CHECK(webrtc_receiver_);
+    webrtc_receiver_->SetObserver(this);
   }
 
   const RtpReceiverState& state() const {
@@ -256,8 +245,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
 
   ~RTCRtpReceiverInternal() override {
     DCHECK(main_task_runner_->BelongsToCurrentThread());
-    // TODO(https://crbug.com/40821064): Remove killswitch after rollout.
-    if (webrtc_receiver_ && ShouldUnmuteTrackWhenPacketsArrive()) {
+    if (webrtc_receiver_) {
       webrtc_receiver_->SetObserver(nullptr);
     }
   }
