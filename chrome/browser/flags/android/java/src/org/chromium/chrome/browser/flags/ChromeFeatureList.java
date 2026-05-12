@@ -768,7 +768,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidNewMediaPicker =
-            newCachedFlag(ANDROID_NEW_MEDIA_PICKER, false);
+            newCachedFlag(ANDROID_NEW_MEDIA_PICKER, true);
     public static final CachedFlag sAndroidOpenIncognitoAsWindow =
             newCachedFlag(ANDROID_OPEN_INCOGNITO_AS_WINDOW, BuildConfig.IS_DESKTOP_ANDROID, true);
     public static final CachedFlag sAndroidPageInfoAsAppMenuItem =
