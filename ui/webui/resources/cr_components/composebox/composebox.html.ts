@@ -16,7 +16,7 @@ export function getHtml(this: ComposeboxElement) {
         animation-state="${this.animationState}"
         .coloredTicTacVoiceAnimationEnabled=
             "${this.voiceSearchCoherenceEnabled}"
-        .inVoiceSearchMode="${this.inVoiceSearchMode}"
+        .isListening="${this.isListening}"
         .entrypointName="${this.entrypointName}"
         .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
         .transcript="${this.transcript}"

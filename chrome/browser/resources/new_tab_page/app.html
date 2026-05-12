@@ -54,6 +54,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
         ?can-show-secondary-side="${this.realboxCanShowSecondarySide}"
         ?compose-button-enabled="${this.composeButtonEnabled}"
         ?composebox-enabled="${this.composeboxEnabled}"
+        .hasVoiceSearchError="${this.hasVoiceSearchError}"
         searchbox-layout-mode="${this.ntpRealboxNextEnabled_ ? 'Compact' : ''}"
         .inVoiceSearchMode="${this.showVoiceSearchOverlay_}"
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
@@ -192,7 +193,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
   <div id="contentBottomSpacer"></div>
 </div>
 ${this.showVoiceSearchOverlay_ ? html`
-  <ntp-voice-search-overlay @close="${this.onVoiceSearchOverlayClose_}">
+  <ntp-voice-search-overlay @close="${this.onVoiceSearchOverlayClose}">
   </ntp-voice-search-overlay>
 ` : ''}
 ${!this.ntpRealboxNextEnabled_ && this.showComposebox_ ? html`

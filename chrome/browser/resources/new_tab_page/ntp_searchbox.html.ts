@@ -22,7 +22,7 @@ export function getHtml(this: NtpSearchboxElement) {
     html`
       <search-animated-glow
         animation-state="${this.animationState}"
-        .inVoiceSearchMode="${this.inVoiceSearchMode}"
+        .isListening="${this.isListening}"
         part="animated-glow">
       </search-animated-glow>
     ` : ''}
@@ -49,7 +49,7 @@ export function getHtml(this: NtpSearchboxElement) {
     ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
       <div slot="action-buttons" class="searchbox-icon-button-container voice">
         <button id="voiceSearchButton" class="searchbox-icon-button"
-            @click="${this.onWrapperVoiceSearchClick_}"
+            @click="${this.onVoiceSearchClick}"
             title="${this.i18n('voiceSearchButtonLabel')}">
         </button>
       </div>
