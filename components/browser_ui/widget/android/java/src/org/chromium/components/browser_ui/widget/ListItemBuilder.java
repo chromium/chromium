@@ -240,7 +240,7 @@ public class ListItemBuilder {
                     .with(ListMenuItemProperties.START_ICON_ID, mStartIconRes)
                     .with(ListMenuItemProperties.END_ICON_ID, mEndIconRes);
         } else {
-            builder.with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, mSubmenuItems);
+            builder.with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, () -> mSubmenuItems);
         }
 
         if (mShouldTintIcon) {

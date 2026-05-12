@@ -33,7 +33,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_DRAWABL
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_WIDTH;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_PROVIDER;
 import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
 
 import android.app.Activity;
@@ -1805,7 +1805,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ListItem moveToWindowItem = modelList.get(1);
         assertNotNull(moveToWindowItem);
 
-        var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
+        var subMenu = moveToWindowItem.model.get(SUBMENU_PROVIDER).get();
         assertEquals("Submenu should have 2 items", 2, subMenu.size());
 
         ListItem otherWindowItem = subMenu.get(1);
@@ -1844,7 +1844,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ListItem moveToWindowItem = modelList.get(1);
         assertNotNull(moveToWindowItem);
 
-        var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
+        var subMenu = moveToWindowItem.model.get(SUBMENU_PROVIDER).get();
         assertEquals("Submenu should have 2 items", 2, subMenu.size());
 
         ListItem otherWindowItem = subMenu.get(1);
@@ -1979,7 +1979,7 @@ public class TabContextMenuCoordinatorUnitTest {
         int modelListSizeBeforeNav = modelList.size();
         var addToGroupItem = modelList.get(0);
         assertTrue("Expected 'Add to group' item to be enabled", addToGroupItem.model.get(ENABLED));
-        var subMenu = addToGroupItem.model.get(SUBMENU_ITEMS);
+        var subMenu = addToGroupItem.model.get(SUBMENU_PROVIDER).get();
         assertNotNull("Submenu should be present", subMenu);
         assertEquals(
                 "Submenu should have 2 items, but was " + getDebugString(subMenu),

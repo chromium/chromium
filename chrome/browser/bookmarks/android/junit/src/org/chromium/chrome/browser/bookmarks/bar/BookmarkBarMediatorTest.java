@@ -173,7 +173,7 @@ public class BookmarkBarMediatorTest {
 
         // Verify the structure of the submenu.
         List<ListItem> submenuItems =
-                f2ListItem.model.get(ListMenuSubmenuItemProperties.SUBMENU_ITEMS);
+                f2ListItem.model.get(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER).get();
         assertNotNull("Submenu items list should not be null.", submenuItems);
         assertEquals("Submenu should have one item (L2).", 1, submenuItems.size());
 

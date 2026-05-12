@@ -176,7 +176,9 @@ public class MenuModelBridge {
                         .with(TITLE, label)
                         .with(START_ICON_BITMAP, bitmap)
                         .with(ENABLED, isEnabled)
-                        .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems.mItems);
+                        .with(
+                                ListMenuSubmenuItemProperties.SUBMENU_PROVIDER,
+                                () -> submenuItems.mItems);
         mItems.add(new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, modelBuilder.build()));
     }
 

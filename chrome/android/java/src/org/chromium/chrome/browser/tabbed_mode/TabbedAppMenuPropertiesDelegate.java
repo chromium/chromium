@@ -725,7 +725,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.history_parent_menu_id,
                         R.string.menu_history,
                         shouldShowIconBeforeItem() ? R.drawable.ic_history_24dp : Resources.ID_NULL,
-                        submenuItems));
+                        () -> submenuItems));
     }
 
     private ListItem buildHistoryItem() {
@@ -766,7 +766,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_star_filled_24dp
                                 : Resources.ID_NULL,
-                        submenuItems));
+                        () -> submenuItems));
     }
 
     private ListItem buildToggleBookmarksBarItem() {
@@ -834,7 +834,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_extension_24dp
                                 : Resources.ID_NULL,
-                        submenuItems));
+                        () -> submenuItems));
     }
 
     private ListItem buildExtensionsMenuItem() {
@@ -994,7 +994,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_file_save_24dp
                                 : Resources.ID_NULL,
-                        submenuItems));
+                        () -> submenuItems));
     }
 
     private ListItem buildDownloadPageItem(Tab currentTab) {
@@ -1137,7 +1137,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_more_tools_24dp
                                 : Resources.ID_NULL,
-                        submenuItems));
+                        () -> submenuItems));
     }
 
     @Contract("null -> false")

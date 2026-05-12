@@ -1553,7 +1553,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                         .with(TITLE, title)
                         .with(ENABLED, true)
-                        .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems)
+                        .with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, () -> submenuItems)
                         .build();
         return new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, model);
     }

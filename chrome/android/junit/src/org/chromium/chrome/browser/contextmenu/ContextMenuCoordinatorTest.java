@@ -13,7 +13,7 @@ import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_PROVIDER;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -310,7 +310,7 @@ public class ContextMenuCoordinatorTest {
                         new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, PARENT_LABEL)
                                 .with(ENABLED, true)
-                                .with(SUBMENU_ITEMS, submenu)
+                                .with(SUBMENU_PROVIDER, () -> submenu)
                                 .build());
         ModelList modelList = new ModelList();
         modelList.add(submenuParent);

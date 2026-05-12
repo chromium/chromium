@@ -15,7 +15,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_PROVIDER;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -180,7 +180,7 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
                     R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                     moveToOtherWindowItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
         }
-        var subMenu = moveToOtherWindowItem.model.get(SUBMENU_ITEMS);
+        var subMenu = moveToOtherWindowItem.model.get(SUBMENU_PROVIDER).get();
         int expectedNumberOfItems = (expectNewWindow ? 1 : 0) + otherWindowTitles.size();
         assertEquals(
                 "Submenu should have "

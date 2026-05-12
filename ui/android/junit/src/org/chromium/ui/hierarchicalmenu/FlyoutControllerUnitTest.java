@@ -20,7 +20,7 @@ import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_IT
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_ID;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_SUBMENU_HEADER;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_WITH_SUBMENU;
-import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.SUBMENU_ITEMS;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.SUBMENU_PROVIDER;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.TITLE;
 
 import android.content.Context;
@@ -116,7 +116,9 @@ public class FlyoutControllerUnitTest {
                         new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS)
                                 .with(TITLE, SUBMENU_LEVEL_1)
                                 .with(ENABLED, true)
-                                .with(SUBMENU_ITEMS, List.of(mListItemWithModelClickCallback))
+                                .with(
+                                        SUBMENU_PROVIDER,
+                                        () -> List.of(mListItemWithModelClickCallback))
                                 .with(IS_HIGHLIGHTED, false)
                                 .build());
 
@@ -135,7 +137,9 @@ public class FlyoutControllerUnitTest {
                         new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS)
                                 .with(TITLE, SUBMENU_LEVEL_0)
                                 .with(ENABLED, true)
-                                .with(SUBMENU_ITEMS, List.of(mSubmenuLevel1, mSubmenu0Child1))
+                                .with(
+                                        SUBMENU_PROVIDER,
+                                        () -> List.of(mSubmenuLevel1, mSubmenu0Child1))
                                 .with(IS_HIGHLIGHTED, false)
                                 .build());
 
@@ -225,7 +229,7 @@ public class FlyoutControllerUnitTest {
     }
 
     private void triggerHoverEnter(ListItem item, int level, List<ListItem> path) {
-        mFlyoutController.onItemHovered(item, mListView, level, path);
+        mFlyoutController.onItemHovered(item, mListView, level, path, () -> {});
     }
 
     private static void waitForUiDelay() {

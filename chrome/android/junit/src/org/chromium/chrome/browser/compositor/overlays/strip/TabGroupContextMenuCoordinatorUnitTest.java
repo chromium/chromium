@@ -20,7 +20,7 @@ import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.Persi
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.OFF_THE_RECORD;
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_PROVIDER;
 
 import android.app.Activity;
 import android.os.SystemClock;
@@ -1109,7 +1109,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         ListItem moveToWindowItem = modelList.get(5);
         assertNotNull(moveToWindowItem);
 
-        var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
+        var subMenu = moveToWindowItem.model.get(SUBMENU_PROVIDER).get();
         assertEquals("Submenu should have 2 items", 2, subMenu.size());
 
         ListItem otherWindowItem = subMenu.get(1);
@@ -1145,7 +1145,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         ListItem moveToWindowItem = modelList.get(5);
         assertNotNull(moveToWindowItem);
 
-        var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
+        var subMenu = moveToWindowItem.model.get(SUBMENU_PROVIDER).get();
         assertEquals("Submenu should have 2 items", 2, subMenu.size());
 
         ListItem otherWindowItem = subMenu.get(1);
@@ -1190,7 +1190,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Click on "Move group to another window" to open a submenu.
         int moveToIndex = -1;
         for (int i = 0; i < modelList.size(); i++) {
-            if (modelList.get(i).model.containsKey(SUBMENU_ITEMS)) {
+            if (modelList.get(i).model.containsKey(SUBMENU_PROVIDER)) {
                 moveToIndex = i;
                 break;
             }
@@ -1236,7 +1236,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Go to submenu.
         int moveToIndex = -1;
         for (int i = 0; i < modelList.size(); i++) {
-            if (modelList.get(i).model.containsKey(SUBMENU_ITEMS)) {
+            if (modelList.get(i).model.containsKey(SUBMENU_PROVIDER)) {
                 moveToIndex = i;
                 break;
             }

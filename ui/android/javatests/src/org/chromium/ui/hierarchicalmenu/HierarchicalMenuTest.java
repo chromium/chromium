@@ -141,7 +141,7 @@ public class HierarchicalMenuTest {
                                     mActivity, keyProvider, submenuHeaderFactory);
 
                     ModelList modelList = createModelList(items);
-                    mController.setupCallbacksRecursively(
+                    mController.setupCallbacks(
                             /* headerModelList= */ null,
                             modelList,
                             /* dismissDialog= */ () -> {
@@ -429,18 +429,16 @@ public class HierarchicalMenuTest {
             Rect anchorRect = FlyoutController.calculateFlyoutAnchorRect(anchorView, mRootView);
             anchorRect.offset(0, (int) topContentOffset(mActivity));
 
+            ModelList modelList =
+                    createModelList(
+                            item.model.get(HierarchicalMenuTestUtils.SUBMENU_PROVIDER).get());
+
             AnchoredPopupWindow window =
                     new AnchoredPopupWindow.Builder(
                                     mActivity,
                                     mRootView,
                                     new ColorDrawable(Color.TRANSPARENT),
-                                    () ->
-                                            createStyledListView(
-                                                    mActivity,
-                                                    createModelList(
-                                                            item.model.get(
-                                                                    HierarchicalMenuTestUtils
-                                                                            .SUBMENU_ITEMS))),
+                                    () -> createStyledListView(mActivity, modelList),
                                     new RectProvider(anchorRect))
                             .setVerticalOverlapAnchor(true)
                             .setHorizontalOverlapAnchor(false)
@@ -462,7 +460,8 @@ public class HierarchicalMenuTest {
         boolean isGroup = subItems.length > 0;
         ListItem item = createMenuItem(text, isGroup);
         if (isGroup) {
-            item.model.set(HierarchicalMenuTestUtils.SUBMENU_ITEMS, Arrays.asList(subItems));
+            item.model.set(
+                    HierarchicalMenuTestUtils.SUBMENU_PROVIDER, () -> Arrays.asList(subItems));
         }
         return item;
     }

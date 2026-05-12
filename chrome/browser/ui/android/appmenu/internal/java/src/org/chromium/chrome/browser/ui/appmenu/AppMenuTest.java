@@ -404,8 +404,9 @@ public class AppMenuTest {
                                                     AppMenuItemProperties.TITLE,
                                                     "Menu Item With Submenu")
                                             .with(
-                                                    AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS,
-                                                    submenuItems)
+                                                    AppMenuItemWithSubmenuProperties
+                                                            .SUBMENU_PROVIDER,
+                                                    () -> submenuItems)
                                             .build());
 
                     mAppMenuHandler.getModelListForTesting().add(menuItemWithSubmenu);

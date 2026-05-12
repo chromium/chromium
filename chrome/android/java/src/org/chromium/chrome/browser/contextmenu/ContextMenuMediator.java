@@ -114,7 +114,7 @@ public class ContextMenuMediator {
         }
 
         // Setup submenu navigation callbacks.
-        hierarchicalMenuController.setupCallbacksRecursively(
+        hierarchicalMenuController.setupCallbacks(
                 /* headerModelList= */ null, mModelList, mDismissDialog);
 
         // Add callbacks to all other first-level items.

@@ -79,7 +79,7 @@ public final class ExtensionActionContextMenuUtils {
                     }
                 };
 
-        basicListMenu.setupCallbacksRecursively(
+        basicListMenu.setupCallbacks(
                 () -> {
                     buttonView.dismiss();
                 },

@@ -321,7 +321,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             runIfStillRelevantAfterFinishLoadingBookmarkModel(
                     (profileAfterLoading, modelAfterLoading) -> {
                         // Build the entire model list for this folder. The grandchildren are stored
-                        // in SUBMENU_ITEMS.
+                        // in SUBMENU_PROVIDER.
                         ModelList menuModel =
                                 buildMenuModelListForFolder(modelAfterLoading, item.getId());
                         BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_FOLDER);
@@ -467,7 +467,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         });
 
         // Go through the entire model list and add the click listeners.
-        popupListMenu.setupCallbacksRecursively(
+        popupListMenu.setupCallbacks(
                 () -> {
                     if (mAnchoredPopupWindow != null) {
                         mAnchoredPopupWindow.dismiss();
@@ -660,7 +660,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
     // Recursive method that builds the entire model list for a clicked bookmark in the bookmarks
     // bar. The size of the returned model list will just be the number of the direct children
-    // because each folder's SUBMENU_ITEMS contains the children list as a separate model list.
+    // because each folder's SUBMENU_PROVIDER contains the children list as a separate model list.
     @VisibleForTesting
     ModelList buildMenuModelListForFolder(BookmarkModel bookmarkModel, BookmarkId folderId) {
         List<BookmarkId> childIds = bookmarkModel.getChildIds(folderId);
@@ -727,7 +727,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                                         bookmarkItem.getTitle()))
                         .with(ListMenuItemProperties.TOOLTIP, bookmarkItem.getTitle())
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
-                        .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, childrenList)
+                        .with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, () -> childrenList)
                         .with(ListMenuItemProperties.START_ICON_BITMAP, sFolderIconBitmap)
                         .with(ListMenuItemProperties.ENABLED, true)
                         .with(ListMenuItemProperties.CLICK_LISTENER, clickListener)

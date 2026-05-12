@@ -84,9 +84,9 @@ public class AppMenuTestSupport {
                 }
             }
 
-            if (model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS)) {
+            if (model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)) {
                 List<ListItem> submenuItems =
-                        model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+                        model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
                 if (submenuItems != null) {
                     PropertyModel foundModel =
                             findModelInListRecursive(submenuItems::get, submenuItems::size, itemId);

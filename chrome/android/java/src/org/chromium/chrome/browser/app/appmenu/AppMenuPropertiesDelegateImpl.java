@@ -95,6 +95,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Base implementation of {@link AppMenuPropertiesDelegate} that handles hiding and showing menu
@@ -443,14 +444,14 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @param id The id of the menu item.
      * @param titleId The resource id of the title to be displayed.
      * @param iconResId The resource id of the icon to be displayed (or 0 for no icon).
-     * @param submenuItems The list of {@code ListItem}s in the submenu.
+     * @param submenuItemProvider The provider of {@code ListItem}s in the submenu.
      * @return The property model for this item.
      */
     public PropertyModel buildModelForMenuItemWithSubmenu(
             @IdRes int id,
             @StringRes int titleId,
             @DrawableRes int iconResId,
-            List<ListItem> submenuItems) {
+            Supplier<List<ListItem>> submenuItemProvider) {
         PropertyModel model =
                 new PropertyModel.Builder(AppMenuItemWithSubmenuProperties.ALL_KEYS)
                         .with(AppMenuItemProperties.MENU_ITEM_ID, id)
@@ -459,7 +460,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         .with(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(id))
                         .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
                         .with(AppMenuItemProperties.MANAGED, isMenuItemManaged(id))
-                        .with(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS, submenuItems)
+                        .with(
+                                AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER,
+                                submenuItemProvider)
                         .with(
                                 AppMenuItemProperties.ICON_SHOW_BADGE,
                                 shouldShowBadgeOnMenuItemIcon(id))

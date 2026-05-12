@@ -61,7 +61,7 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
 
         HierarchicalMenuController<Object> hierarchicalMenuController =
                 ListMenuUtils.createHierarchicalMenuController(context);
-        hierarchicalMenuController.setupCallbacksRecursively(
+        hierarchicalMenuController.setupCallbacks(
                 /* headerModelList= */ null, items, dismissMenuCallback);
 
         // Dismiss the previous popup window if it's showing.

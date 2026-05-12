@@ -12,7 +12,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.IS_EXPANDED;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_PROVIDER;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -50,6 +50,7 @@ import org.chromium.ui.util.AttrUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 @NullMarked
 public class ListMenuUtils {
@@ -129,7 +130,7 @@ public class ListMenuUtils {
      */
     public static ModelList getModelListSubtree(ListItem item) {
         ModelList modelList = new ModelList();
-        for (ListItem listItem : item.model.get(SUBMENU_ITEMS)) {
+        for (ListItem listItem : item.model.get(SUBMENU_PROVIDER).get()) {
             modelList.add(listItem);
         }
         return modelList;
@@ -243,8 +244,8 @@ public class ListMenuUtils {
         }
 
         @Override
-        public WritableObjectPropertyKey<List<ListItem>> getSubmenuItemsKey() {
-            return SUBMENU_ITEMS;
+        public WritableObjectPropertyKey<Supplier<List<ListItem>>> getSubmenuProviderKey() {
+            return SUBMENU_PROVIDER;
         }
 
         @Override

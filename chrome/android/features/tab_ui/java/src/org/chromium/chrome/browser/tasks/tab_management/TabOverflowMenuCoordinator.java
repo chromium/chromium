@@ -383,7 +383,7 @@ public abstract class TabOverflowMenuCoordinator<T>
                     modelList, mCollaborationService.getCurrentUserRoleForGroup(collaborationId));
         }
         // Set up callbacks for submenu navigation.
-        mHierarchicalMenuController.setupCallbacksRecursively(
+        mHierarchicalMenuController.setupCallbacks(
                 /* headerModelList= */ null,
                 modelList,
                 () -> {
@@ -604,7 +604,8 @@ public abstract class TabOverflowMenuCoordinator<T>
 
     private static ModelList getModelListSubtree(ListItem item) {
         ModelList modelList = new ModelList();
-        for (ListItem listItem : item.model.get(ListMenuSubmenuItemProperties.SUBMENU_ITEMS)) {
+        for (ListItem listItem :
+                item.model.get(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER).get()) {
             modelList.add(listItem);
         }
         return modelList;

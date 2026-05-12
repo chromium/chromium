@@ -325,7 +325,7 @@ class AppMenuHandlerImpl
                             mContext, new AppMenuUtil.AppMenuKeyProvider(), mSubmenuHeaderFactory);
         }
 
-        mHierarchicalMenuController.setupCallbacksRecursively(
+        mHierarchicalMenuController.setupCallbacks(
                 /* headerModelList= */ null, mModelList, () -> {});
 
         if (mAppMenu == null) {
@@ -709,9 +709,9 @@ class AppMenuHandlerImpl
                 }
             }
 
-            if (model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS)) {
+            if (model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)) {
                 List<ListItem> submenuItems =
-                        model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+                        model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
                 if (submenuItems != null) {
                     updateModelForHighlightAndClickRecursively(
                             submenuItems::get,
@@ -813,7 +813,8 @@ class AppMenuHandlerImpl
 
     private static ModelList getModelListSubtree(ListItem item) {
         ModelList modelList = new ModelList();
-        for (ListItem listItem : item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS)) {
+        for (ListItem listItem :
+                item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get()) {
             modelList.add(listItem);
         }
         return modelList;

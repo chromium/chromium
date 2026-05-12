@@ -13,9 +13,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A controller for managing flyout menus in a list-based menu system. This class handles the logic
@@ -155,12 +158,17 @@ public class FlyoutController<T> implements Destroyable {
      *     items, 1 for sub-menu items).
      * @param highlightPath The complete list of items from the root of the menu to the currently
      *     hovered {@code item}, inclusive.
+     * @param dismissRunnable The runnable to run when the menu closes.
      */
     public void enterFlyoutWithoutDelay(
-            ListItem item, View view, int levelOfHoveredItem, List<ListItem> highlightPath) {
+            ListItem item,
+            View view,
+            int levelOfHoveredItem,
+            List<ListItem> highlightPath,
+            Runnable dismissRunnable) {
         mMenuController.updateHighlights(highlightPath);
         cancelFlyoutDelay(view);
-        onFlyoutAfterDelay(item, view, levelOfHoveredItem);
+        onFlyoutAfterDelay(item, view, levelOfHoveredItem, highlightPath, dismissRunnable);
     }
 
     /**
@@ -219,9 +227,14 @@ public class FlyoutController<T> implements Destroyable {
      *     items, 1 for sub-menu items).
      * @param highlightPath The complete list of items from the root of the menu to the currently
      *     hovered {@code item}, inclusive.
+     * @param dismissRunnable The runnable to run when the menu closes.
      */
     public void onItemHovered(
-            ListItem item, View view, int levelOfHoveredItem, List<ListItem> highlightPath) {
+            ListItem item,
+            View view,
+            int levelOfHoveredItem,
+            List<ListItem> highlightPath,
+            Runnable dismissRunnable) {
         if (mPendingFlyoutParentView != null) {
             // Since we received a new `HOVER` event, we cancel the previous timer.
             cancelFlyoutDelay(mPendingFlyoutParentView);
@@ -231,7 +244,8 @@ public class FlyoutController<T> implements Destroyable {
         // intent.
         mFlyoutAfterDelayRunnable =
                 () -> {
-                    onFlyoutAfterDelay(item, view, levelOfHoveredItem);
+                    onFlyoutAfterDelay(
+                            item, view, levelOfHoveredItem, highlightPath, dismissRunnable);
                 };
         mPendingFlyoutParentView = view;
         Handler handler = view.getHandler();
@@ -241,7 +255,12 @@ public class FlyoutController<T> implements Destroyable {
                 view.getContext().getResources().getInteger(R.integer.flyout_menu_delay_in_ms));
     }
 
-    private void onFlyoutAfterDelay(ListItem item, View view, int levelOfHoveredItem) {
+    private void onFlyoutAfterDelay(
+            ListItem item,
+            View view,
+            int levelOfHoveredItem,
+            List<ListItem> highlightPath,
+            Runnable dismissRunnable) {
         if (levelOfHoveredItem >= mPopups.size()) {
             return;
         }
@@ -260,24 +279,38 @@ public class FlyoutController<T> implements Destroyable {
             }
         }
 
-        // Create a new child popup if the item has submenu and we removed the child window.
-        if (item.model.containsKey(mKeyProvider.getSubmenuItemsKey()) && !keepChildWindow) {
-            T popup =
-                    mFlyoutHandler.createAndShowFlyoutPopup(
-                            item,
-                            view,
-                            () -> {
-                                removeFlyoutWindows(levelOfHoveredItem + 1);
-                            });
-            mPopups.add(new FlyoutPopupEntry<T>(item, popup));
-
-            assert mPopups.size() > 1;
-            mFlyoutHandler.setWindowFocus(mPopups.get(mPopups.size() - 2).popupWindow, false);
-            mFlyoutHandler.setWindowFocus(popup, true);
-
-            item.model.set(
-                    mKeyProvider.getIsExpandedKey(), levelOfHoveredItem < mPopups.size() - 1);
+        if (keepChildWindow) {
+            return;
         }
+
+        WritableObjectPropertyKey<Supplier<List<ListItem>>> providerKey =
+                mKeyProvider.getSubmenuProviderKey();
+        if (!item.model.containsKey(providerKey) || item.model.get(providerKey) == null) {
+            return;
+        }
+
+        mMenuController.getLoadedSubmenuItems(
+                /* headerModelList= */ null,
+                new ModelList(),
+                item,
+                dismissRunnable,
+                levelOfHoveredItem,
+                highlightPath);
+
+        T popup =
+                mFlyoutHandler.createAndShowFlyoutPopup(
+                        item,
+                        view,
+                        () -> {
+                            removeFlyoutWindows(levelOfHoveredItem + 1);
+                        });
+        mPopups.add(new FlyoutPopupEntry<T>(item, popup));
+
+        assert mPopups.size() > 1;
+        mFlyoutHandler.setWindowFocus(mPopups.get(mPopups.size() - 2).popupWindow, false);
+        mFlyoutHandler.setWindowFocus(popup, true);
+
+        item.model.set(mKeyProvider.getIsExpandedKey(), levelOfHoveredItem < mPopups.size() - 1);
     }
 
     /**

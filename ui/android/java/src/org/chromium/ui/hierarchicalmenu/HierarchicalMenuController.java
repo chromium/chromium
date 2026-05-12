@@ -40,6 +40,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A controller to manage the logic for hierarchical menus i.e., flyout and drilldown.
@@ -91,7 +92,7 @@ public class HierarchicalMenuController<T> {
     private final SubmenuHeaderFactory mSubmenuHeaderFactory;
 
     private @Nullable FlyoutController<T> mFlyoutController;
-    private List<ListItem> mLastHighlightedPath = new ArrayList<ListItem>();
+    private List<ListItem> mLastHighlightedPath = new ArrayList<>();
 
     /**
      * Creates an instance of the controller.
@@ -279,7 +280,8 @@ public class HierarchicalMenuController<T> {
             ListItem item,
             View view,
             int levelOfHoveredItem,
-            List<ListItem> highlightPath) {
+            List<ListItem> highlightPath,
+            Runnable dismissRunnable) {
         if (mPendingHoverExitRunnable != null) {
             assert mHoverExitDelayHandler != null;
             mHoverExitDelayHandler.removeCallbacks(mPendingHoverExitRunnable);
@@ -292,7 +294,8 @@ public class HierarchicalMenuController<T> {
                 updateHighlights(highlightPath);
                 if (!shouldUseDrillDown()) {
                     assert mFlyoutController != null;
-                    mFlyoutController.onItemHovered(item, view, levelOfHoveredItem, highlightPath);
+                    mFlyoutController.onItemHovered(
+                            item, view, levelOfHoveredItem, highlightPath, dismissRunnable);
                 }
                 return true;
             case MotionEvent.ACTION_HOVER_EXIT:
@@ -333,6 +336,41 @@ public class HierarchicalMenuController<T> {
     }
 
     /**
+     * Ensures that the submenu items for the given {@code item} are loaded and initialized.
+     *
+     * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
+     * @param contentModelList {@link ModelList} for the scrollable content of the menu.
+     * @param item The menu item which was clicked.
+     * @param dismissDialog The {@link Runnable} to run to dismiss the dialog.
+     * @param levelOfHoveredItem The depth of the item within the menu hierarchy (e.g., 0 for root
+     * @param highlightPath The complete list of items from the root of the menu to the currently
+     *     hovered {@code item}, inclusive.
+     */
+    public List<ListItem> getLoadedSubmenuItems(
+            @Nullable ModelList headerModelList,
+            ModelList contentModelList,
+            ListItem item,
+            Runnable dismissDialog,
+            int levelOfItem,
+            List<ListItem> highlightPath) {
+        WritableObjectPropertyKey<Supplier<List<ListItem>>> providerKey =
+                mKeyProvider.getSubmenuProviderKey();
+        List<ListItem> submenuItems = item.model.get(providerKey).get();
+
+        for (ListItem submenuItem : submenuItems) {
+            setupCallbacksForItem(
+                    headerModelList,
+                    contentModelList,
+                    submenuItem,
+                    dismissDialog,
+                    levelOfItem + 1,
+                    highlightPath);
+        }
+
+        return submenuItems;
+    }
+
+    /**
      * Callback to use when a menu item of type MENU_ITEM_WITH_SUBMENU is clicked.
      *
      * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
@@ -340,7 +378,12 @@ public class HierarchicalMenuController<T> {
      * @param item The menu item which was clicked.
      */
     private void onItemWithSubmenuClicked(
-            @Nullable ModelList headerModelList, ModelList contentModelList, ListItem item) {
+            @Nullable ModelList headerModelList,
+            ModelList contentModelList,
+            ListItem item,
+            Runnable dismissDialog,
+            int levelOfItem,
+            List<ListItem> highlightPath) {
         if (!shouldUseDrillDown()) {
             return;
         }
@@ -364,7 +407,14 @@ public class HierarchicalMenuController<T> {
         } else {
             headerModelList.set(List.of(headerItem));
         }
-        newContentList.addAll(item.model.get(mKeyProvider.getSubmenuItemsKey()));
+        newContentList.addAll(
+                getLoadedSubmenuItems(
+                        headerModelList,
+                        contentModelList,
+                        item,
+                        dismissDialog,
+                        levelOfItem,
+                        highlightPath));
         contentModelList.set(newContentList);
     }
 
@@ -421,7 +471,7 @@ public class HierarchicalMenuController<T> {
      * @param item The item to start with.
      * @param dismissDialog The {@link Runnable} to run.
      */
-    private void setupCallbacksRecursivelyForItem(
+    private void setupCallbacksForItem(
             @Nullable ModelList headerModelList,
             ModelList contentModelList,
             ListItem item,
@@ -440,7 +490,12 @@ public class HierarchicalMenuController<T> {
                     mKeyProvider.getHoverListenerKey(),
                     (view, event) -> {
                         return handleHoverEvent(
-                                event, item, view, levelOfHoveredItem, highlightPath);
+                                event,
+                                item,
+                                view,
+                                levelOfHoveredItem,
+                                highlightPath,
+                                dismissDialog);
                     });
 
             View.OnKeyListener originalListener = item.model.get(mKeyProvider.getKeyListenerKey());
@@ -465,7 +520,15 @@ public class HierarchicalMenuController<T> {
                     });
         }
 
-        if (item.model.containsKey(mKeyProvider.getSubmenuItemsKey())) {
+        WritableObjectPropertyKey<Supplier<List<ListItem>>> providerKey =
+                mKeyProvider.getSubmenuProviderKey();
+
+        boolean hasSubmenu =
+                providerKey != null
+                        && item.model.containsKey(providerKey)
+                        && item.model.get(providerKey) != null;
+
+        if (hasSubmenu) {
             final View.OnClickListener existingListener =
                     item.model.get(mKeyProvider.getClickListenerKey());
             item.model.set(
@@ -475,27 +538,22 @@ public class HierarchicalMenuController<T> {
                             existingListener.onClick(view);
                         }
                         if (shouldUseDrillDown()) {
-                            onItemWithSubmenuClicked(headerModelList, contentModelList, item);
+                            onItemWithSubmenuClicked(
+                                    headerModelList,
+                                    contentModelList,
+                                    item,
+                                    dismissDialog,
+                                    levelOfHoveredItem,
+                                    highlightPath);
                         } else if (mFlyoutController != null) {
                             // Allow for controlling flyout with keyboard for accessibility.
                             mFlyoutController.enterFlyoutWithoutDelay(
-                                    item, view, levelOfHoveredItem, highlightPath);
+                                    item, view, levelOfHoveredItem, highlightPath, dismissDialog);
                         }
                     });
-            for (ListItem submenuItem :
-                    PropertyModel.getFromModelOrDefault(
-                            item.model, mKeyProvider.getSubmenuItemsKey(), List.of())) {
-                setupCallbacksRecursivelyForItem(
-                        headerModelList,
-                        contentModelList,
-                        submenuItem,
-                        dismissDialog,
-                        levelOfHoveredItem + 1,
-                        highlightPath);
-            }
         } else {
             // Note: SUBMENU_HEADER items should be (and are) excluded by this, because
-            // SUBMENU_HEADER items aren't in the model's SUBMENU_ITEMS.
+            // SUBMENU_HEADER items aren't in the model's SUBMENU_PROVIDER.
             // MENU_ITEM_WITH_SUBMENU items should also not be included.
             // The rationale for excluding these is that we don't want to dismiss the dialog when we
             // are navigating through submenus.
@@ -511,14 +569,14 @@ public class HierarchicalMenuController<T> {
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param dismissDialog The {@link Runnable} to run.
      */
-    public void setupCallbacksRecursively(
+    public void setupCallbacks(
             @Nullable ModelList headerModelList,
             ModelList contentModelList,
             Runnable dismissDialog) {
         long time = SystemClock.elapsedRealtime();
         if (headerModelList != null) {
             for (ListItem listItem : headerModelList) {
-                setupCallbacksRecursivelyForItem(
+                setupCallbacksForItem(
                         headerModelList,
                         contentModelList,
                         listItem,
@@ -528,7 +586,7 @@ public class HierarchicalMenuController<T> {
             }
         }
         for (ListItem listItem : contentModelList) {
-            setupCallbacksRecursivelyForItem(
+            setupCallbacksForItem(
                     headerModelList,
                     contentModelList,
                     listItem,

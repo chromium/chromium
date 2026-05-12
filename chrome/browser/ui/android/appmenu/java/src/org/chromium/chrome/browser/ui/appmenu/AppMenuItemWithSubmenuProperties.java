@@ -29,6 +29,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * {@link PropertyKey} list for app menu, most keys are set by {@link AppMenuPropertiesDelegate},
@@ -36,7 +37,7 @@ import java.util.List;
  */
 @NullMarked
 public class AppMenuItemWithSubmenuProperties {
-    public static final WritableObjectPropertyKey<List<ListItem>> SUBMENU_ITEMS =
+    public static final WritableObjectPropertyKey<Supplier<List<ListItem>>> SUBMENU_PROVIDER =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<View.@Nullable OnClickListener> CLICK_LISTENER =
@@ -61,7 +62,7 @@ public class AppMenuItemWithSubmenuProperties {
                 HAS_HOVER_BACKGROUND,
                 MENU_ICON_AT_START,
                 CLICK_LISTENER,
-                SUBMENU_ITEMS,
+                SUBMENU_PROVIDER,
                 IS_EXPANDED,
             };
 }

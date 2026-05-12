@@ -22,7 +22,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_PROVIDER;
 
 import android.app.Activity;
 import android.view.View.OnClickListener;
@@ -108,7 +108,9 @@ public class ContextMenuMediatorTest {
                         new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, SUBMENU_LEVEL_1)
                                 .with(ENABLED, true)
-                                .with(SUBMENU_ITEMS, List.of(mListItemWithModelClickCallback))
+                                .with(
+                                        SUBMENU_PROVIDER,
+                                        () -> List.of(mListItemWithModelClickCallback))
                                 .build());
 
         mSubmenu0Child1 =
@@ -125,7 +127,9 @@ public class ContextMenuMediatorTest {
                         new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, SUBMENU_LEVEL_0)
                                 .with(ENABLED, true)
-                                .with(SUBMENU_ITEMS, List.of(mSubmenuLevel1, mSubmenu0Child1))
+                                .with(
+                                        SUBMENU_PROVIDER,
+                                        () -> List.of(mSubmenuLevel1, mSubmenu0Child1))
                                 .build());
 
         // Add an item with no click callback
@@ -333,6 +337,9 @@ public class ContextMenuMediatorTest {
         inputModelList.add(mSubmenuLevel0);
         inputModelList.add(mListItemWithoutModelClickCallback);
         getItemList(List.of(inputModelList), /* hasHeader= */ false);
+
+        // This item is at the root level, so its callback is attached immediately
+        // during setup. Clicking it will trigger both the result and the dismiss.
         activateClickListener(mListItemWithoutModelClickCallback);
         verify(mClickCallback, times(1)).onResult(TEST_MENU_ITEM_ID);
         verify(mDismissDialog, times(1)).run();
@@ -344,9 +351,25 @@ public class ContextMenuMediatorTest {
         inputModelList.add(mSubmenuLevel0);
         inputModelList.add(mListItemWithoutModelClickCallback);
         getItemList(List.of(inputModelList), /* hasHeader= */ false);
+
+        // Before expansion, the nested item is untouched by the lazy-loading architecture.  Its
+        // click listener is just the original one, so clicking it will NOT trigger the dismiss
+        // runnable.
+        activateClickListener(mListItemWithModelClickCallback);
+        verify(mDismissDialog, never()).run();
+
+        // Navigate through the submenus to trigger the just-in-time loading.
+        activateClickListener(mSubmenuLevel0);
+        activateClickListener(mSubmenuLevel1);
+
+        // After expansion, the callback has now been wrapped. Clicking it will execute both the
+        // original listener AND the dismiss runnable.
         activateClickListener(mListItemWithModelClickCallback);
         verify(mClickCallback, never()).onResult(any());
         verify(mDismissDialog, times(1)).run();
+
+        // Ensure the original click listener was still executed in both cases.
+        verify(mItemClickListener, times(2)).onClick(mListView);
     }
 
     private ModelList getItemList(List<ModelList> items, boolean hasHeader) {

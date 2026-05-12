@@ -97,7 +97,7 @@ public class BrowserUiListMenuRenderTest {
                     ListMenu.Delegate delegate = (item, view) -> {};
                     BasicListMenu listMenu =
                             BrowserUiListMenuUtils.getBasicListMenu(activity, data, delegate);
-                    listMenu.setupCallbacksRecursively(
+                    listMenu.setupCallbacks(
                             /* dismissDialog= */ () -> {},
                             ListMenuUtils.createHierarchicalMenuController(activity));
 

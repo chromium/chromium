@@ -15,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * An interface to provide {@link PropertyKey}s for a hierarchical menu system.
@@ -38,7 +39,7 @@ public interface HierarchicalMenuKeyProvider {
 
     WritableObjectPropertyKey<View.OnKeyListener> getKeyListenerKey();
 
-    WritableObjectPropertyKey<List<ListItem>> getSubmenuItemsKey();
+    WritableObjectPropertyKey<Supplier<List<ListItem>>> getSubmenuProviderKey();
 
     WritableBooleanPropertyKey getIsHighlightedKey();
 

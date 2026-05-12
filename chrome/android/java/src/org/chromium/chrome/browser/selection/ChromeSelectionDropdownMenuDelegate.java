@@ -56,7 +56,7 @@ public class ChromeSelectionDropdownMenuDelegate
         mRootView = rootView;
         mClickListener = clickListener;
         mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(context);
-        mHierarchicalMenuController.setupCallbacksRecursively(
+        mHierarchicalMenuController.setupCallbacks(
                 /* headerModelList= */ null, items, dismissMenuCallback);
 
         Rect dropdownRect = new Rect(x, y, x + 1, y + 1);

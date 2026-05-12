@@ -1092,7 +1092,7 @@ public class SelectionPopupControllerTest {
         PropertyModel mainMenuItem =
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, "Main Menu Item with Submenu")
-                        .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems)
+                        .with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, () -> submenuItems)
                         .build();
         ListItem mainListItem = new ListItem(MENU_ITEM, mainMenuItem);
 

@@ -24,11 +24,12 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** The properties controlling submenu-type items in context menus. */
 @NullMarked
 public class ListMenuSubmenuItemProperties {
-    public static final WritableObjectPropertyKey<List<ListItem>> SUBMENU_ITEMS =
+    public static final WritableObjectPropertyKey<Supplier<List<ListItem>>> SUBMENU_PROVIDER =
             new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey IS_EXPANDED = new WritableBooleanPropertyKey();
@@ -42,7 +43,7 @@ public class ListMenuSubmenuItemProperties {
         HOVER_LISTENER,
         IS_HIGHLIGHTED,
         ENABLED,
-        SUBMENU_ITEMS,
+        SUBMENU_PROVIDER,
         IS_EXPANDED,
         IS_TEXT_ELLIPSIZED_AT_END,
         KEY_LISTENER,

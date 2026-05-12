@@ -242,7 +242,7 @@ public class BasicListMenu implements ListMenu {
      * @param dismissDialog The {@link Runnable} to run.
      * @param hierarchicalMenuController The {@link HierarchicalMenuController} to use.
      */
-    public void setupCallbacksRecursively(
+    public void setupCallbacks(
             Runnable dismissDialog, HierarchicalMenuController<?> hierarchicalMenuController) {
         HierarchicalMenuController<?>.AccessibilityListObserver observer =
                 hierarchicalMenuController
@@ -255,7 +255,7 @@ public class BasicListMenu implements ListMenu {
         mHeaderModelList.addObserver(observer);
         mContentModelList.addObserver(observer);
 
-        hierarchicalMenuController.setupCallbacksRecursively(
+        hierarchicalMenuController.setupCallbacks(
                 mHeaderModelList, mContentModelList, dismissDialog);
     }
 

@@ -430,13 +430,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertionLogic.accept(item, expectedNode.id);
 
         boolean hasSubItems =
-                item.model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+                item.model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER);
         Assert.assertEquals("Mismatched children.", expectedNode.children.length > 0, hasSubItems);
 
         if (!hasSubItems) return;
 
         List<MVCListAdapter.ListItem> subItems =
-                item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+                item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
         Assert.assertNotNull(subItems);
 
         Assert.assertEquals(
@@ -2683,7 +2683,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         assertFalse(
                 "Original extensions item should not have submenu properties.",
-                originalItem.model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS));
+                originalItem.model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER));
         assertEquals(
                 ContextUtils.getApplicationContext().getString(R.string.menu_extensions_menu),
                 originalItem.model.get(AppMenuItemProperties.TITLE));
@@ -2872,7 +2872,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             MVCListAdapter.ModelList modelList, int parentId) {
         for (MVCListAdapter.ListItem item : modelList) {
             if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID) == parentId) {
-                return item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+                return item.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
             }
         }
         return null;
@@ -3169,7 +3169,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 findItemById(modelList, R.id.bookmarks_parent_menu_id);
         assertNotNull(bookmarksParent);
         List<MVCListAdapter.ListItem> subItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
         MVCListAdapter.ListItem toggleItem = null;
         for (MVCListAdapter.ListItem item : subItems) {
             if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
@@ -3187,7 +3187,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
         modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        subItems = bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+        subItems =
+                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
         toggleItem = null;
         for (MVCListAdapter.ListItem item : subItems) {
             if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
