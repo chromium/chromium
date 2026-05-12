@@ -42,6 +42,7 @@ source_set("commands") {
     "help_commands.h",
     "lens_commands.h",
     "lens_overlay_commands.h",
+    "level_up_commands.h",
     "location_bar_badge_commands.h",
     "manage_storage_alert_commands.h",
     "mini_map_commands.h",

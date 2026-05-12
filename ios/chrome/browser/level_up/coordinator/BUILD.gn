@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "level_up_coordinator.h",
+    "level_up_coordinator.mm",
+    "level_up_mediator.h",
+    "level_up_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/level_up/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}

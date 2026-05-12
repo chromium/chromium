@@ -184,6 +184,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/lens_overlay/coordinator",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/level_up/coordinator",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/location_bar/ui_bundled",
     "//ios/chrome/browser/main/coordinator",
@@ -375,15 +376,15 @@ source_set("ui_bundled") {
     deps += [ "//ios/chrome/browser/print/coordinator:swift_coordinator" ]
 
     # TODO(crbug.com/456806155): Find a better solution to suppress errors from
-    # chromium clang on headers that come from the iOS SDK. Ideally, we'd want
-    # a suppression that is inherited implicitly from swift_source_set
+    # chromium clang on headers that come from the iOS SDK. Ideally, we'd want a
+    # suppression that is inherited implicitly from swift_source_set
     # dependencies. Unfortunately, the gn language does not allow child targets
     # to do things like `invoker.configs -= [...]`. Also, we'd ideally want a
     # suppression that is scoped to just the SDK headers rather than the entire
     # target that includes the headers. We can't use the
     # "build/config/compiler:no_chromium_code" config to solve this problem
-    # because we don't have any build targets that have the SDK headers as direct
-    # sources.
+    # because we don't have any build targets that have the SDK headers as
+    # direct sources.
     if (is_clang) {
       configs -= [ "//build/config/clang:find_bad_constructs" ]
     }

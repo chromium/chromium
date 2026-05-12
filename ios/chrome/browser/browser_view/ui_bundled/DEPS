@@ -72,6 +72,7 @@ include_rules = [
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_presentation_environment.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h",
   "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
+  "+ios/chrome/browser/level_up",
   "+ios/chrome/browser/main/coordinator",
   "+ios/chrome/browser/main/ui",
   "+ios/chrome/browser/main_content/ui_bundled",

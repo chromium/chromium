@@ -161,6 +161,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/level_up/coordinator/level_up_coordinator.h"
 #import "ios/chrome/browser/main/coordinator/browser_layout_coordinator.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
@@ -269,6 +270,7 @@
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
@@ -438,6 +440,7 @@ const char kChromeAppStoreUrl[] =
     BWGCommands,
     GoogleOneCommands,
     IOSPasskeyClientCommands,
+    LevelUpCommands,
     MiniMapCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
@@ -712,6 +715,9 @@ const char kChromeAppStoreUrl[] =
 
 // The coordinator used for What's New feature.
 @property(nonatomic, strong) WhatsNewCoordinator* whatsNewCoordinator;
+
+// The coordinator used for Level Up feature.
+@property(nonatomic, strong) LevelUpCoordinator* levelUpCoordinator;
 
 // The manager used to display a default browser promo.
 @property(nonatomic, strong) DefaultBrowserGenericPromoCoordinator*
@@ -1372,6 +1378,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(CountryCodePickerCommands),
     @protocol(WhatsNewCommands),
     @protocol(GoogleOneCommands),
+    @protocol(LevelUpCommands),
     @protocol(WelcomeBackPromoCommands),
     @protocol(DockingPromoCommands),
     @protocol(EnterpriseCommands),
@@ -1899,6 +1906,9 @@ const char kChromeAppStoreUrl[] =
 
   [self.whatsNewCoordinator stop];
   self.whatsNewCoordinator = nil;
+
+  [self.levelUpCoordinator stop];
+  self.levelUpCoordinator = nil;
 
   [_pictureInPictureCoordinator stop];
   _pictureInPictureCoordinator = nil;
@@ -5646,6 +5656,20 @@ const char kChromeAppStoreUrl[] =
     [self.whatsNewCoordinator stop];
     self.whatsNewCoordinator = nil;
   }
+}
+
+#pragma mark - LevelUpCommands
+
+- (void)showLevelUp {
+  self.levelUpCoordinator =
+      [[LevelUpCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser];
+  [self.levelUpCoordinator start];
+}
+
+- (void)dismissLevelUp {
+  [self.levelUpCoordinator stop];
+  self.levelUpCoordinator = nil;
 }
 
 - (void)showWhatsNewIPH {
