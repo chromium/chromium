@@ -18,7 +18,9 @@ FakeOpenTabsUIDelegate::~FakeOpenTabsUIDelegate() = default;
 
 bool FakeOpenTabsUIDelegate::GetAllForeignSessions(
     std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
-  sessions->assign(foreign_sessions_.begin(), foreign_sessions_.end());
+  for (const auto& session : foreign_sessions_) {
+    sessions->push_back(session.get());
+  }
   return !foreign_sessions_.empty();
 }
 
@@ -60,9 +62,15 @@ bool FakeOpenTabsUIDelegate::GetLocalSession(const SyncedSession** local) {
   return false;
 }
 
-void FakeOpenTabsUIDelegate::SetForeignSessions(
-    const std::vector<raw_ptr<const SyncedSession>>& sessions) {
-  foreign_sessions_ = sessions;
+SyncedSession* FakeOpenTabsUIDelegate::AddForeignSession(
+    const std::string& tag,
+    base::Time modified_time) {
+  auto session = std::make_unique<SyncedSession>();
+  session->SetSessionTag(tag);
+  session->SetModifiedTime(modified_time);
+  SyncedSession* ptr = session.get();
+  foreign_sessions_.push_back(std::move(session));
+  return ptr;
 }
 
 }  // namespace sync_sessions

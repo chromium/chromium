@@ -1243,11 +1243,7 @@ TEST_F(SendTabToSelfBridgeTest,
       CreateDevice("guid", "name", device_time);
   AddTestDevice(device.get());
 
-  sync_sessions::SyncedSession session;
-  session.SetSessionTag("guid");
-  session.SetModifiedTime(session_time);
-
-  open_tabs_ui_delegate()->SetForeignSessions({&session});
+  open_tabs_ui_delegate()->AddForeignSession("guid", session_time);
 
   TargetDeviceInfo expected_device_info(device->client_name(), device->guid(),
                                         device->form_factor(), session_time,
@@ -1255,8 +1251,6 @@ TEST_F(SendTabToSelfBridgeTest,
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(expected_device_info));
-
-  open_tabs_ui_delegate()->SetForeignSessions({});
 }
 
 // Tests that the device info timestamp is used if it is more recent than the
@@ -1272,11 +1266,7 @@ TEST_F(SendTabToSelfBridgeTest,
       CreateDevice("guid", "name", device_time);
   AddTestDevice(device.get());
 
-  sync_sessions::SyncedSession session;
-  session.SetSessionTag("guid");
-  session.SetModifiedTime(session_time);
-
-  open_tabs_ui_delegate()->SetForeignSessions({&session});
+  open_tabs_ui_delegate()->AddForeignSession("guid", session_time);
 
   TargetDeviceInfo expected_device_info(device->client_name(), device->guid(),
                                         device->form_factor(), device_time,
@@ -1284,8 +1274,6 @@ TEST_F(SendTabToSelfBridgeTest,
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(expected_device_info));
-
-  open_tabs_ui_delegate()->SetForeignSessions({});
 }
 
 TEST_F(SendTabToSelfBridgeTest,
@@ -1367,14 +1355,9 @@ TEST_F(SendTabToSelfBridgeTest,
       CreateDevice("guid", "name", device_time);
   AddTestDevice(device.get());
 
-  sync_sessions::SyncedSession session;
-  session.SetSessionTag("guid");
-  session.SetModifiedTime(session_time);
-  open_tabs_ui_delegate()->SetForeignSessions({&session});
+  open_tabs_ui_delegate()->AddForeignSession("guid", session_time);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(), SizeIs(1));
-
-  open_tabs_ui_delegate()->SetForeignSessions({});
 }
 
 TEST_F(SendTabToSelfBridgeTest,
@@ -1390,14 +1373,9 @@ TEST_F(SendTabToSelfBridgeTest,
       CreateDevice("guid", "name", device_time);
   AddTestDevice(device.get());
 
-  sync_sessions::SyncedSession session;
-  session.SetSessionTag("guid");
-  session.SetModifiedTime(session_time);
-  open_tabs_ui_delegate()->SetForeignSessions({&session});
+  open_tabs_ui_delegate()->AddForeignSession("guid", session_time);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(), SizeIs(1));
-
-  open_tabs_ui_delegate()->SetForeignSessions({});
 }
 
 TEST_F(SendTabToSelfBridgeTest,

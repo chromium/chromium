@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_FAKE_OPEN_TABS_UI_DELEGATE_H_
 #define COMPONENTS_SYNC_SESSIONS_FAKE_OPEN_TABS_UI_DELEGATE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -43,13 +44,13 @@ class FakeOpenTabsUIDelegate : public OpenTabsUIDelegate {
 
   bool GetLocalSession(const SyncedSession** local) override;
 
-  // Test helpers. FakeOpenTabsUIDelegate does not take ownership of the
-  // SyncedSession instances, so they need to outlive the delegate.
-  void SetForeignSessions(
-      const std::vector<raw_ptr<const SyncedSession>>& sessions);
+  // Creates a new SyncedSession with the given tag and modified time, and
+  // takes ownership of it. Returns a pointer to the created session.
+  SyncedSession* AddForeignSession(const std::string& tag,
+                                   base::Time modified_time);
 
  private:
-  std::vector<raw_ptr<const SyncedSession>> foreign_sessions_;
+  std::vector<std::unique_ptr<SyncedSession>> foreign_sessions_;
 };
 
 }  // namespace sync_sessions
