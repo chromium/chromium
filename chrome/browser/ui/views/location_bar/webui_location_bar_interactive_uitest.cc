@@ -50,6 +50,32 @@ const WebContentsInteractionTestUtil::DeepQuery kClassicMatchText1 = {
 const WebContentsInteractionTestUtil::DeepQuery kClassicMatchText2 = {
     "omnibox-popup-app", "cr-searchbox-dropdown",
     "cr-searchbox-match[match-index=\"2\"]", "#suggestion"};
+const WebContentsInteractionTestUtil::DeepQuery kDropdownContent = {
+    "omnibox-popup-app", "cr-searchbox-dropdown", "#content"};
+
+class ViewWidthObserver
+    : public ui::test::
+          ObservationStateObserver<int, views::View, views::ViewObserver> {
+ public:
+  explicit ViewWidthObserver(views::View* view)
+      : ObservationStateObserver<int, views::View, views::ViewObserver>(view) {}
+  ~ViewWidthObserver() override = default;
+
+  // ObservationStateObserver:
+  int GetStateObserverInitialState() const override {
+    return source()->width();
+  }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    OnStateObserverStateChanged(observed_view->width());
+  }
+  void OnViewIsDeleting(views::View*) override {
+    OnObservationStateObserverSourceDestroyed();
+  }
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewWidthObserver, kViewWidth);
 
 }  // namespace
 
@@ -239,6 +265,47 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ShowHidePopup) {
       EnterText(kOmniboxElementId, u"input"), WaitForClassicPopupReady(),
       // Removing the focus should hide the popup.
       RemoveFocusFromPopup());
+}
+
+// Test that the popup shrinks when the browser window does.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, Resize) {
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  int initial_width = -1;
+  views::View* frame_view = nullptr;
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      WaitForElementToRender(kWebUIToolbarId, kOmniboxInputDeepQuery),
+      FocusWebContents(kWebUIToolbarId),
+      ExecuteJsAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "el => el.focus()"),
+      // Shouldn't have a popup visible yet.
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      // Type some text, it should show up.
+      EnterText(kOmniboxElementId, u"input"), WaitForClassicPopupReady(),
+      WaitForElementToRender(kClassicPopupWebViewId, kDropdownContent),
+      InSameContext(WithElement(OmniboxPopupPresenterBase::kRoundedResultsFrame,
+                                [&](ui::TrackedElement* element) {
+                                  initial_width =
+                                      element->GetScreenBounds().width();
+                                })),
+      InAnyContext(WithView(OmniboxPopupPresenterBase::kRoundedResultsFrame,
+                            [&](views::View* view) { frame_view = view; })),
+      // Start watching the width.
+      ObserveState(kViewWidth, [&]() { return frame_view; }),
+      // Shrink the window horizontally.
+      Do([&]() {
+        auto* browser_widget = browser_view->GetWidget();
+        gfx::Size size = browser_widget->GetSize();
+        size.set_width(size.width() - 100);
+        browser_widget->SetSize(size);
+      }),
+
+      InSameContext(
+          WaitForState(kViewWidth, [&]() { return initial_width - 100; })),
+      StopObservingState(kViewWidth));
 }
 
 // Use arrow keys to select between various suggestions.
