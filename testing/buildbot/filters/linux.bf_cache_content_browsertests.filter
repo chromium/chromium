@@ -1,0 +1,3 @@
+# https://crbug.com/512134750
+-SecurityExploitKillDisabledBrowserTest.ForbiddenOriginHeaderInOpenURL_KillDisabled
+-SecurityExploitKillDisabledBrowserTest.OriginHeaderPOSTMismatchesInitiator_KillDisabled
