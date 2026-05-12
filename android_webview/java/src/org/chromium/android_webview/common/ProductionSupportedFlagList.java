@@ -424,6 +424,9 @@ public final class ProductionSupportedFlagList {
                 "Keeps the renderer process alive after the last WebView is destroyed to "
                         + "allow for reuse."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_PREFETCH_ON_RENDERER_REUSE,
+                "Prefetches the native WebView code to memory when renderer is reused."),
+        Flag.baseFeature(
                 BlinkFeatures.REDUCE_USER_AGENT_MINOR_VERSION,
                 "Enables reduce webview user-agent minor version."),
         Flag.baseFeature(

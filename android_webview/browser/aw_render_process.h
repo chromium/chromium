@@ -42,6 +42,7 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
 
   void ClearCache();
   void SetJsOnlineProperty(bool network_up);
+  void PrefetchNativeLibrary();
 
   // Notifies that a render view has been created for this process. After this,
   // the process will no longer be considered "unused".

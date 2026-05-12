@@ -13,4 +13,7 @@ interface Renderer {
 
   // Adjusts the javascript 'online' property value.
   SetJsOnlineProperty(bool network_up);
+
+  // Prefetch native library in the renderer process.
+  PrefetchNativeLibrary();
 };

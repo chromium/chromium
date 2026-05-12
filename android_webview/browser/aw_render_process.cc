@@ -75,6 +75,10 @@ void AwRenderProcess::SetJsOnlineProperty(bool network_up) {
   GetRendererRemote()->SetJsOnlineProperty(network_up);
 }
 
+void AwRenderProcess::PrefetchNativeLibrary() {
+  GetRendererRemote()->PrefetchNativeLibrary();
+}
+
 // static
 void AwRenderProcess::SetRenderViewReady(content::RenderProcessHost* host) {
   host->SetUserData(kAwRenderViewReadyKey,

@@ -30,6 +30,7 @@ class AwRenderThreadObserver : public content::RenderThreadObserver,
   // mojom::Renderer overrides:
   void ClearCache() override;
   void SetJsOnlineProperty(bool network_up) override;
+  void PrefetchNativeLibrary() override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);

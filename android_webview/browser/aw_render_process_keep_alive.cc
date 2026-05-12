@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "android_webview/browser/aw_render_process.h"
 #include "android_webview/common/aw_features.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -71,6 +72,17 @@ void AwRenderProcessKeepAlive::AddAwContents() {
     base::UmaHistogramLongTimes100(
         "Android.WebView.RendererKeepAlive.TimeToReuse",
         base::TimeTicks::Now() - keep_alive_start_time_);
+    if (base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
+        features::kWebViewPrefetchFromRenderer.Get() &&
+        base::FeatureList::IsEnabled(
+            features::kWebViewPrefetchOnRendererReuse)) {
+      AwRenderProcess* aw_render_process =
+          AwRenderProcess::GetInstanceForRenderProcessHost(
+              render_process_host_);
+      if (aw_render_process) {
+        aw_render_process->PrefetchNativeLibrary();
+      }
+    }
   }
   keep_alive_timer_.Stop();
   if (!kept_alive_) {

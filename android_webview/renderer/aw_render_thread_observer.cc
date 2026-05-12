@@ -4,6 +4,9 @@
 
 #include "android_webview/renderer/aw_render_thread_observer.h"
 
+#include "base/android/library_loader/anchor_functions_buildflags.h"
+#include "base/android/library_loader/library_prefetcher.h"
+#include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
@@ -42,6 +45,15 @@ void AwRenderThreadObserver::ClearCache() {
 
 void AwRenderThreadObserver::SetJsOnlineProperty(bool network_up) {
   blink::WebNetworkStateNotifier::SetOnLine(network_up);
+}
+
+void AwRenderThreadObserver::PrefetchNativeLibrary() {
+#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &base::android::NativeLibraryPrefetcher::PrefetchNativeLibrary));
+#endif
 }
 
 }  // namespace android_webview
