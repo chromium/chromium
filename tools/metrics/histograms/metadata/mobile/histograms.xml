@@ -397,8 +397,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Mobile.Messages.Passwords.Modal.Event{Mobile_Messages_Password_Type}"
     enum="MobileMessagesPasswordsModalEvent" expires_after="2026-09-29">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     Records Password specific Infobar Modal events.
     {Mobile_Messages_Password_Type}
@@ -407,9 +407,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.Messages.Passwords.Modal.Present{Mobile_Messages_Password_Type}"
-    enum="MobileMessagesPasswordsModalPresent" expires_after="2026-06-20">
-  <owner>sczs@chromium.org</owner>
+    enum="MobileMessagesPasswordsModalPresent" expires_after="2027-06-20">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
   <summary>
     Records the context when a Password Modal was presented.
     {Mobile_Messages_Password_Type}
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Banner.Event"
-    enum="MobileMessagesTranslateBannerEvent" expires_after="2026-06-20">
+    enum="MobileMessagesTranslateBannerEvent" expires_after="2027-06-20">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -437,7 +437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Present"
-    enum="MobileMessagesTranslateModalPresent" expires_after="2026-06-20">
+    enum="MobileMessagesTranslateModalPresent" expires_after="2027-06-20">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
