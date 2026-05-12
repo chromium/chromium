@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
@@ -1270,4 +1271,43 @@ class BrowserViewScrimPixelTest : public UiBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BrowserViewScrimPixelTest, InvokeUi_content_scrim) {
   ShowAndVerifyUi();
+}
+
+class TabAddingWidgetObserver : public views::WidgetObserver {
+ public:
+  explicit TabAddingWidgetObserver(BrowserWindowInterface* browser)
+      : browser_(browser) {}
+  ~TabAddingWidgetObserver() override = default;
+
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override {
+    chrome::AddTabAt(browser_, GURL("about:blank"), -1, true);
+    browser_ = nullptr;
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_;
+};
+
+// Regression test for crbug.com/456102314 crash in
+// ContentsWebView::CloneWebContentsLayer during synchronous widget destruction.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWidgetWithTabsNoCrash) {
+  BrowserWindowInterface* browser2 =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
+  EXPECT_EQ(1, browser2->GetTabStripModel()->count());
+
+  // Directly closing the NativeWidget is a multi-step process. Tabs are removed
+  // first in BrowserView::OnWidgetDestroying, and again later when the
+  // associated Browser and Widget are destroyed. Add a tab after the
+  // BrowserView has processed OnWidgetDestroying to exercise tabs closing in
+  // the latter step (at which point the NativeWidget has been destroyed).
+  TabAddingWidgetObserver observer(browser2);
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget();
+  widget->AddObserver(&observer);
+
+  // Synchronously close the associated widget and ensure the browser does not
+  // crash due to operations on detached layers.
+  BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget()->CloseNow();
 }

@@ -847,8 +847,13 @@ bool BrowserFrameViewChromeOS::ShouldEnableImmersiveModeController() const {
     return false;
   }
 
+  const aura::Window* frame_window = GetFrameWindow();
+  if (!frame_window) {
+    return false;
+  }
+
   if (IsLockedFullscreen() &&
-      !GetFrameWindow()->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
+      (!frame_window->GetProperty(chromeos::kUseImmersiveInTrustedPinned))) {
     return false;
   }
   if (display::Screen::Get()->InTabletMode() &&
@@ -919,12 +924,17 @@ bool BrowserFrameViewChromeOS::GetShowCaptionButtons() const {
 }
 
 bool BrowserFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview() const {
+  const aura::Window* frame_window = GetFrameWindow();
+  if (!frame_window) {
+    return true;
+  }
+
   // Show the caption buttons if an immersive mode is enabled for trusted pined
   // state. This is to show the three dot menu which is a part of caption button
   // container, rather than showing buttons. Only relevant for non-web browser
   // scenarios.
   if (IsLockedFullscreen() &&
-      GetFrameWindow()->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
+      frame_window->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
     return true;
   }
 
@@ -1109,7 +1119,9 @@ void BrowserFrameViewChromeOS::LayoutProfileIndicator() {
 }
 
 bool BrowserFrameViewChromeOS::GetOverviewMode() const {
-  return GetFrameWindow()->GetProperty(chromeos::kIsShowingInOverviewKey);
+  const aura::Window* frame_window = GetFrameWindow();
+  return frame_window &&
+         frame_window->GetProperty(chromeos::kIsShowingInOverviewKey);
 }
 
 bool BrowserFrameViewChromeOS::GetHideCaptionButtonsForFullscreen() const {

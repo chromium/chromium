@@ -1103,9 +1103,13 @@ BrowserFrameView* TabStyleViewsImpl::GetBrowserFrameView() const {
     return nullptr;
   }
 
-  return BrowserView::GetBrowserViewForBrowser(browser_window_interface)
-      ->browser_widget()
-      ->GetFrameView();
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_window_interface);
+  if (!browser_view || !browser_view->browser_widget()) {
+    return nullptr;
+  }
+
+  return browser_view->browser_widget()->GetFrameView();
 }
 
 float TabStyleViewsImpl::GetTopCornerRadiusForWidth(int width) const {

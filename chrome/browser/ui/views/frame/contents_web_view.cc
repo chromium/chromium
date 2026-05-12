@@ -19,6 +19,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -204,6 +205,12 @@ void ContentsWebView::CloneWebContentsLayer() {
   if (!web_contents()) {
     return;
   }
+
+  views::Widget* widget = GetWidget();
+  if (!widget || !widget->GetNativeWindow()) {
+    return;
+  }
+
 #if defined(USE_AURA)
   // We don't need to clone the layers on non-Aura (Mac), because closing an
   // NSWindow does not animate.
