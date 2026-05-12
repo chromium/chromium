@@ -53,7 +53,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void Destroy(JNIEnv* env);
   void NotifyCloseAnimationFinished(JNIEnv* env, SidePanelType panel_type);
   void NotifyOpenAnimationFinished(JNIEnv* env, SidePanelType panel_type);
-  void OnWindowResized(JNIEnv* env, bool should_show_side_panel);
+  void OnWindowResized(JNIEnv* env, bool can_show_side_panel);
 
   // Implements `SidePanelUI`:
   void ShowFrom(SidePanelEntryKey entry_key,

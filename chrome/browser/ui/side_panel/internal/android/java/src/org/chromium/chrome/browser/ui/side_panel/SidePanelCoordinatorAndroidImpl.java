@@ -51,6 +51,15 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         destroyNativePtr();
     }
 
+    @Override
+    public void onWindowResized(boolean canShowSidePanel) {
+        log(TAG, "onWindowResized", canShowSidePanel);
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidImplJni.get()
+                    .onWindowResized(mNativeSidePanelCoordinatorAndroid, canShowSidePanel);
+        }
+    }
+
     @VisibleForTesting
     void createNativePtr(long nativeBrowserWindowPtr) {
         log(TAG, "createNativePtr", nativeBrowserWindowPtr);
@@ -112,14 +121,6 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         log(TAG, "removeContentAndClose", type, suppressAnimations);
         mSidePanelContainerCoordinator.removeContentAndClose(
                 result -> notifyCloseAnimationFinished(null), suppressAnimations);
-    }
-
-    public void onWindowResized(boolean shouldShowSidePanel) {
-        log(TAG, "onWindowResized", shouldShowSidePanel);
-        if (mNativeSidePanelCoordinatorAndroid != 0) {
-            SidePanelCoordinatorAndroidImplJni.get()
-                    .onWindowResized(mNativeSidePanelCoordinatorAndroid, shouldShowSidePanel);
-        }
     }
 
     private @Nullable Rect createRectFromCoordinates(int x, int y, int width, int height) {
@@ -190,12 +191,12 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
                 long nativeSidePanelCoordinatorAndroid, @JniType("SidePanelType") int panelType);
 
         /**
-         * Sets the visibility of the side panel due to a resize.
+         * See {@link SidePanelCoordinatorAndroid#onWindowResized(boolean).
          *
          * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
          *     SidePanelCoordinatorAndroid}.
-         * @param shouldShowSidePanel Whether the side panel should be visible.
+         * @param canShowSidePanel Whether the side panel can be shown.
          */
-        void onWindowResized(long nativeSidePanelCoordinatorAndroid, boolean shouldShowSidePanel);
+        void onWindowResized(long nativeSidePanelCoordinatorAndroid, boolean canShowSidePanel);
     }
 }

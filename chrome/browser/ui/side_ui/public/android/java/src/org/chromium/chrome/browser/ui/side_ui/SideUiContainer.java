@@ -66,4 +66,19 @@ public interface SideUiContainer {
      * @param width The new width in px.
      */
     void setWidth(@Px int width);
+
+    /**
+     * Called when a window size change affects this container's visibility.
+     *
+     * <p>For example, when the window becomes too small, we may need to hide this container. When
+     * the window becomes large enough again, the container can be re-shown.
+     *
+     * <p>This method won't be called if a window size change doesn't affect the container's
+     * visibility.
+     *
+     * @param canShowSideUi Whether this container <i>can</i> be shown after a window size change.
+     *     This parameter doesn't mean this container <i>must</i> be shown or hidden. The final
+     *     decision should be made by this container.
+     */
+    void onWindowResized(boolean canShowSideUi);
 }

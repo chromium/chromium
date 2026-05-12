@@ -43,7 +43,6 @@ final class SidePanelContainerCoordinatorImpl
     private final @SidePanelType int mPanelType;
 
     // TODO(crbug.com/496407828): Use this to notify native side of events like "animation ended".
-    @SuppressWarnings("UnusedVariable")
     private @Nullable SidePanelCoordinatorAndroid mSidePanelCoordinatorAndroid;
 
     private @Nullable SidePanelContent mCurrentContent;
@@ -199,6 +198,12 @@ final class SidePanelContainerCoordinatorImpl
         }
 
         // TODO(http://crbug.com/488047364): Notify the SidePanelContent View of the width change.
+    }
+
+    @Override
+    public void onWindowResized(boolean canShowSideUi) {
+        assert mSidePanelCoordinatorAndroid != null;
+        mSidePanelCoordinatorAndroid.onWindowResized(canShowSideUi);
     }
 
     /**

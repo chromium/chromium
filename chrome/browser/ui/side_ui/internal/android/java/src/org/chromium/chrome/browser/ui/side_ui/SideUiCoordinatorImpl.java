@@ -117,7 +117,13 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     @Override
     public void requestUpdateContainer(
             SideUiContainerProperties properties, boolean suppressAnimations) {
-        requestUpdateContainerInternal(properties, suppressAnimations);
+        @Px int minWebContentsWidth = ViewUtils.dpToPx(mParentActivity, MIN_WEB_CONTENTS_WIDTH_DP);
+        requestUpdateContainerInternal(
+                properties,
+                getCurrentSideUiSpecs(),
+                getWindowWidth(),
+                minWebContentsWidth,
+                suppressAnimations);
     }
 
     @Override
@@ -183,6 +189,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             return;
         }
 
+        // 1. Get the current SideUiSpecs.
         SideUiSpecs currentSideUiSpecs = getCurrentSideUiSpecs();
         @AnchorSide int currentAnchorSide = mSideUiContainer.getAnchorSide();
         @Px
@@ -191,53 +198,95 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
                         ? currentSideUiSpecs.mStartContainerWidth
                         : currentSideUiSpecs.mEndContainerWidth;
 
-        // Requesting a UI update with the current specs will re-calculate the SideUiSpecs, and
-        // if the re-calculated SideUiSpecs is different, the UI will be updated.
+        // 2. Check if we need to close/re-open side UI.
+        //
+        // Currently there is only one SideUiContainer, so we only need to check if there is enough
+        // space for that container.
+        //
+        // When there are multiple SideUiContainers, we need to check if each container needs to
+        // be closed/re-opened/resized, based on their priority.
+        //
+        // TODO(crbug.com/478338737): Update to account for multiple side containers.
+        @Px int windowWidth = getWindowWidth();
+        @Px int minWebContentsWidth = ViewUtils.dpToPx(mParentActivity, MIN_WEB_CONTENTS_WIDTH_DP);
+        boolean canShowSideUi = (windowWidth - minWebContentsWidth > 0);
+
+        // 2.1. Check if we need to close side UI.
+        if (currentSideUiWidth != 0 && !canShowSideUi) {
+            // Don't simply close the side UI by calling requestUpdateContainerInternal() with a
+            // zero width. SideUiContainer may need to save states so that it can restore its UI
+            // when the window becomes large enough again.
+            //
+            // So we should notify SideUiContainer, which should then call requestUpdateContainer().
+            mSideUiContainer.onWindowResized(/* canShowSideUi= */ false);
+            return;
+        }
+
+        // 2.2 Check if we need to re-open side UI.
+        if (currentSideUiWidth == 0 && canShowSideUi) {
+            // Similarly, we shouldn't call requestUpdateContainerInternal() here.
+            // SideUiContainer needs to check whether there actually exists side UI to restore,
+            // based on its internal states.
+            mSideUiContainer.onWindowResized(/* canShowSideUi= */ true);
+            return;
+        }
+
+        // 3. At this point, we don't need to close or re-open side UI, so we'll just resize side
+        // UI by requesting a UI update with the current specs. This will re-calculate the
+        // SideUiSpecs, and if the re-calculated SideUiSpecs is different, the UI will be updated.
         requestUpdateContainerInternal(
                 new SideUiContainerProperties(currentAnchorSide, currentSideUiWidth),
+                currentSideUiSpecs,
+                windowWidth,
+                minWebContentsWidth,
                 /* suppressAnimations= */ true);
     }
 
     private void requestUpdateContainerInternal(
-            SideUiContainerProperties properties, boolean suppressAnimations) {
+            SideUiContainerProperties requestedSideUiProperties,
+            SideUiSpecs currentSideUiSpecs,
+            @Px int windowWidth,
+            @Px int minWebContentsWidth,
+            boolean suppressAnimations) {
         // 1. Verify the request is valid.
-        assert mSideUiContainer != null
-                : "#requestUpdateContainer called with null SideUiContainer.";
-        assert properties.mWidth >= 0 : "SideUiContainer unexpectedly requested a negative width.";
+        assert mSideUiContainer != null;
+        assert requestedSideUiProperties.mWidth >= 0
+                : "Requested a negative width for SideUiContainer.";
 
         // 2. Check if animations should be disabled entirely.
         suppressAnimations =
                 suppressAnimations
                         || ChromeFeatureList.sEnableAndroidSidePanelDisableAnimations.getValue();
 
-        // 3. Get the current SideUiSpecs.
-        var currentSideUiSpecs = getCurrentSideUiSpecs();
-
-        // 4. Determine the upcoming SideUiSpecs.
+        // 3. Determine the upcoming SideUiSpecs.
         // Currently we only have one side UI container, so "availableWidth" is "windowWidth -
         // minWebContentsWidth".
         // TODO(crbug.com/478338737): Update to account for multiple side containers.
-        @Px int windowWidth = getWindowWidth();
-        @Px int minWebContentsWidth = ViewUtils.dpToPx(mParentActivity, MIN_WEB_CONTENTS_WIDTH_DP);
         @Px int availableWidth = windowWidth - minWebContentsWidth;
         @Px
         int finalSideUiWidth =
                 mSideUiContainer.determineContainerWidth(
-                        properties.mWidth, availableWidth, windowWidth);
+                        requestedSideUiProperties.mWidth, availableWidth, windowWidth);
         var newSideUiSpecs =
                 new SideUiSpecs(
-                        properties.mAnchorSide == AnchorSide.START ? finalSideUiWidth : 0,
-                        properties.mAnchorSide == AnchorSide.END ? finalSideUiWidth : 0);
+                        requestedSideUiProperties.mAnchorSide == AnchorSide.START
+                                ? finalSideUiWidth
+                                : 0,
+                        requestedSideUiProperties.mAnchorSide == AnchorSide.END
+                                ? finalSideUiWidth
+                                : 0);
 
-        // 5. Commit the new SideUiSpecs if it's different from the current SideUiSpecs.
+        // 4. Commit the new SideUiSpecs if it's different from the current SideUiSpecs.
         if (!newSideUiSpecs.equals(currentSideUiSpecs)) {
             // If animating, notify observers of the new SideUiSpecs and gather their Transitions
             // into a TransitionSet.
             @Nullable TransitionSet transitionSet =
                     suppressAnimations
                             ? null
-                            : collectTransitions(newSideUiSpecs, properties.mAnchorSide);
-            commitNewSideUiSpecs(newSideUiSpecs, transitionSet, properties.mAnchorSide);
+                            : collectTransitions(
+                                    newSideUiSpecs, requestedSideUiProperties.mAnchorSide);
+            commitNewSideUiSpecs(
+                    newSideUiSpecs, transitionSet, requestedSideUiProperties.mAnchorSide);
         }
     }
 
