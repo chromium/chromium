@@ -2,3 +2,6 @@ haileywang@google.com
 ritikagup@google.com
 salg@google.com
 wenyufu@chromium.org
+
+# Last resort owners
+file://chrome/browser/actor/OWNERS

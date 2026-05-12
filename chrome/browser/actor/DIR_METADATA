@@ -1,4 +1,7 @@
+monorail: {
+  component: "UI>Browser>Actor"
+}
 team_email: "chrome-actor@google.com"
-buganizer: {
-  component_id: 1707859
+buganizer_public: {
+  component_id: 2127911
 }
