@@ -5841,6 +5841,8 @@ static_library("test_support") {
       "views/payments/test_secure_payment_confirmation_payment_request_delegate.h",
       "views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.cc",
       "views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h",
+      "views/web_apps/web_app_dialog_test_support.cc",
+      "views/web_apps/web_app_dialog_test_support.h",
       "views/webauthn/authenticator_request_dialog_view_test_api.cc",
       "views/webauthn/authenticator_request_dialog_view_test_api.h",
     ]
