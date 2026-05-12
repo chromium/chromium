@@ -126,7 +126,9 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
       break;
   }
   send_tab_to_self_bubble_view_ = bubble_view.get();
-  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  views::Widget* widget =
+      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  widget_observation_.Observe(widget);
   send_tab_to_self_bubble_view_->SetHighlightedElement(
       kPinnedToolbarActionSendTabToSelfElementId);
   // This is always triggered due to a user gesture, c.f. method
@@ -210,7 +212,8 @@ void SendTabToSelfBubbleController::OnManageDevicesClicked(
   Navigate(&params);
 }
 
-void SendTabToSelfBubbleController::OnBubbleClosed() {
+void SendTabToSelfBubbleController::OnWidgetDestroying(views::Widget* widget) {
+  widget_observation_.Reset();
   send_tab_to_self_bubble_view_ = nullptr;
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(

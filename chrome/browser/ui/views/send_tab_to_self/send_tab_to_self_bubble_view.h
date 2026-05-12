@@ -29,8 +29,6 @@ class SendTabToSelfBubbleView : public LocationBarBubbleDelegateView {
   // controller.
   void Hide();
 
-  // views::WidgetDelegateView:
-  void WindowClosing() override;
 
   // views::BubbleDialogDelegateView:
   void AddedToWidget() override;
@@ -41,7 +39,6 @@ class SendTabToSelfBubbleView : public LocationBarBubbleDelegateView {
 
   void BackButtonPressed();
 
-  void NotifyControllerBubbleClosed();
 
   base::WeakPtr<SendTabToSelfBubbleController> controller_;
 };

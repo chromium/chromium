@@ -27,24 +27,10 @@ SendTabToSelfBubbleView::SendTabToSelfBubbleView(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
-void SendTabToSelfBubbleView::NotifyControllerBubbleClosed() {
-  if (controller_) {
-    controller_->OnBubbleClosed();
-    controller_ = nullptr;
-  }
-}
-
-SendTabToSelfBubbleView::~SendTabToSelfBubbleView() {
-  NotifyControllerBubbleClosed();
-}
+SendTabToSelfBubbleView::~SendTabToSelfBubbleView() = default;
 
 void SendTabToSelfBubbleView::Hide() {
-  NotifyControllerBubbleClosed();
   CloseBubble();
-}
-
-void SendTabToSelfBubbleView::WindowClosing() {
-  NotifyControllerBubbleClosed();
 }
 
 void SendTabToSelfBubbleView::AddedToWidget() {
