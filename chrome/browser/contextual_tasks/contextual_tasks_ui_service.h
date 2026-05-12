@@ -138,7 +138,8 @@ class ContextualTasksUiService : public KeyedService {
   virtual bool HandleNavigation(content::OpenURLParams url_params,
                                 content::WebContents* source_contents,
                                 bool is_from_embedded_page,
-                                bool is_to_new_tab);
+                                bool is_to_new_tab,
+                                bool is_same_site_or_from_ui);
 
   // Returns the contextual_task UI for a task.
   virtual GURL GetContextualTaskUrlForTask(const base::Uuid& task_id);
@@ -333,7 +334,8 @@ class ContextualTasksUiService : public KeyedService {
                                     content::WebContents* source_contents,
                                     tabs::TabInterface* tab,
                                     bool is_from_embedded_page,
-                                    bool is_to_new_tab);
+                                    bool is_to_new_tab,
+                                    bool is_same_site_or_from_ui);
 
   // Used primarily for debugging - loads a URL in the specified WebContents.
   virtual void LoadUrlInWebContents(const GURL& url,

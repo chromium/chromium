@@ -350,6 +350,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/sms_fetcher.h"
@@ -4497,11 +4498,14 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     bool is_from_embedded_page =
         web_contents != responsible_web_contents ||
         guest_view::GuestViewBase::FromRenderFrameHost(opener);
+    content::SiteInstance* site = opener->GetSiteInstance();
+    bool is_same_site_or_from_ui = site && site->IsSameSiteWithURL(target_url);
     if (contextual_tasks_ui_service &&
-        contextual_tasks_ui_service->HandleNavigation(std::move(url_params),
-                                                      responsible_web_contents,
-                                                      is_from_embedded_page,
-                                                      /*is_to_new_tab=*/true)) {
+        contextual_tasks_ui_service->HandleNavigation(
+            std::move(url_params), responsible_web_contents,
+            is_from_embedded_page,
+            /*is_to_new_tab=*/true,
+            /*is_same_site_or_from_ui=*/is_same_site_or_from_ui)) {
       return false;
     }
   }
