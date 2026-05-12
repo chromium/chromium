@@ -346,6 +346,10 @@ experimental domain Audits
       ValidationFailedInvalidLength
       ValidationFailedSignatureMismatch
       ValidationFailedIntegrityMismatch
+      SignatureBaseUnknownDerivedComponent
+      SignatureBaseMissingHeader
+      SignatureBaseInvalidUnencodedDigest
+      SignatureBaseUnsupportedComponent
 
   type UnencodedDigestError extends string
     enum

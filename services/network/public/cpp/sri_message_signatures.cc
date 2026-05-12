@@ -665,15 +665,16 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
   return parsed_headers;
 }
 
-std::optional<std::string> ConstructSignatureBase(
-    const mojom::SRIMessageSignaturePtr& signature,
-    const net::URLRequest& url_request,
-    const net::HttpResponseHeaders& headers) {
+base::expected<std::string, mojom::SRIMessageSignatureError>
+ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
+                       const net::URLRequest& url_request,
+                       const net::HttpResponseHeaders& headers) {
   const GURL request_url = url_request.url();
   DCHECK(request_url.is_valid());
 
   if (!signature) {
-    return std::nullopt;
+    return base::unexpected(
+        mojom::SRIMessageSignatureError::kSignatureInputHeaderMissingLabel);
   }
 
   // Build the signature base per
@@ -710,7 +711,8 @@ std::optional<std::string> ConstructSignatureBase(
     std::optional<std::string> component_value;
     if (component->name.starts_with('@')) {
       if (!std::ranges::contains(kDerivedComponents, component->name)) {
-        return std::nullopt;
+        return base::unexpected(mojom::SRIMessageSignatureError::
+                                    kSignatureBaseUnknownDerivedComponent);
       }
       component_value = SerializeDerivedComponent(
           url_request, headers.response_code(), component);
@@ -727,8 +729,8 @@ std::optional<std::string> ConstructSignatureBase(
               ? url_request.extra_request_headers().GetHeader(component->name)
               : headers.GetNormalizedHeader(component->name);
       if (!header.has_value()) {
-        // TODO(mkwst): We should have a more-specific error here.
-        return std::nullopt;
+        return base::unexpected(
+            mojom::SRIMessageSignatureError::kSignatureBaseMissingHeader);
       }
 
       // Determine how to serialize the header:
@@ -746,12 +748,14 @@ std::optional<std::string> ConstructSignatureBase(
           std::optional<net::structured_headers::Dictionary> dict =
               net::structured_headers::ParseDictionary(header.value());
           if (!dict.has_value()) {
-            return std::nullopt;
+            return base::unexpected(mojom::SRIMessageSignatureError::
+                                        kSignatureBaseInvalidUnencodedDigest);
           }
           component_value =
               net::structured_headers::SerializeDictionary(dict.value());
         } else {
-          return std::nullopt;
+          return base::unexpected(mojom::SRIMessageSignatureError::
+                                      kSignatureBaseUnsupportedComponent);
         }
       } else {
         component_value = header.value();
@@ -760,7 +764,8 @@ std::optional<std::string> ConstructSignatureBase(
     // 2.6. Append the covered component's canonicalized component value.
     // 2.7. Append a single newline (`\n`).
     if (!component_value.has_value()) {
-      return std::nullopt;
+      return base::unexpected(
+          mojom::SRIMessageSignatureError::kSignatureBaseUnsupportedComponent);
     }
     signature_base << component_value.value() << '\n';
   }
@@ -803,9 +808,15 @@ bool ValidateSRIMessageSignaturesOverHeaders(
     }
 
     // Generate the signature base:
-    std::string signature_base =
-        ConstructSignatureBase(message_signature, url_request, headers)
-            .value_or("");
+    base::expected<std::string, mojom::SRIMessageSignatureError>
+        signature_base_result =
+            ConstructSignatureBase(message_signature, url_request, headers);
+    if (!signature_base_result.has_value()) {
+      AddIssueFromErrorEnum(signature_base_result.error(),
+                            message_signatures->issues);
+      return false;
+    }
+    const std::string& signature_base = signature_base_result.value();
 
     // Decode the public key, and validate that both the public key and the
     // message's signature are the correct length for Ed25519 (32 and 64 bits,

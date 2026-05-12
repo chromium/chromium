@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
@@ -34,15 +35,14 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
 
 // Given an SRI Message Signature, a request, and a set of response headers,
 // construct the "signature base" as per Section 2.5 of RFC9421. Returns
-// `std::nullopt` and populates `SRIMessageSignature::issues` if no base can
-// be constructed.
+// the signature base on success, or an error code on failure.
 //
 // https://www.rfc-editor.org/rfc/rfc9421.html#name-creating-the-signature-base
 COMPONENT_EXPORT(NETWORK_CPP)
-std::optional<std::string> ConstructSignatureBase(
-    const mojom::SRIMessageSignaturePtr& signature,
-    const net::URLRequest& url_request,
-    const net::HttpResponseHeaders& headers);
+base::expected<std::string, mojom::SRIMessageSignatureError>
+ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
+                       const net::URLRequest& url_request,
+                       const net::HttpResponseHeaders& headers);
 
 // Validates a response's SRI-relevant HTTP Message Signatures.
 //

@@ -838,9 +838,11 @@ TEST_F(SRIMessageSignatureBaseTest, NoSignaturesNoBase) {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200").Build();
   mojom::SRIMessageSignaturePtr signature;
 
-  std::optional<std::string> result =
+  base::expected<std::string, mojom::SRIMessageSignatureError> result =
       ConstructSignatureBase(signature, request(), *headers);
   EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(mojom::SRIMessageSignatureError::kSignatureInputHeaderMissingLabel,
+            result.error());
 }
 
 TEST_F(SRIMessageSignatureBaseTest, ValidHeadersValidBase) {
@@ -851,7 +853,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersValidBase) {
   ASSERT_EQ(1u, parsed->signatures.size());
   EXPECT_EQ(0u, parsed->issues.size());
 
-  std::optional<std::string> result =
+  base::expected<std::string, mojom::SRIMessageSignatureError> result =
       ConstructSignatureBase(parsed->signatures[0], request(), *headers);
   ASSERT_TRUE(result.has_value());
   std::string expected_base =
@@ -898,7 +900,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersStrictlySerializedBase) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     std::string expected_base =
@@ -946,7 +948,7 @@ TEST_F(SRIMessageSignatureBaseTest, AuthorityComponent) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     request_ = CreateRequest(*context_, test.url);
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
@@ -987,7 +989,7 @@ TEST_F(SRIMessageSignatureBaseTest, QueryComponent) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     request_ = CreateRequest(*context_, test.url);
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
@@ -1038,7 +1040,7 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
       EXPECT_EQ(0u, parsed->issues.size());
 
       request_ = CreateRequest(*context_, test.url);
-      std::optional<std::string> result =
+      base::expected<std::string, mojom::SRIMessageSignatureError> result =
           ConstructSignatureBase(parsed->signatures[0], request(), *headers);
       ASSERT_TRUE(result.has_value());
       EXPECT_EQ(expected_base.str(), result.value())
@@ -1068,7 +1070,7 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
       EXPECT_EQ(0u, parsed->issues.size());
 
       request_ = CreateRequest(*context_, test.url);
-      std::optional<std::string> result =
+      base::expected<std::string, mojom::SRIMessageSignatureError> result =
           ConstructSignatureBase(parsed->signatures[0], request(), *headers);
       ASSERT_TRUE(result.has_value());
       EXPECT_EQ(expected_base.str(), result.value())
@@ -1101,7 +1103,7 @@ TEST_F(SRIMessageSignatureBaseTest, MethodComponent) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     request_->set_method(test_method);
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
@@ -1148,7 +1150,7 @@ TEST_F(SRIMessageSignatureBaseTest, PathComponent) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     request_ = CreateRequest(*context_, test.url);
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
@@ -1195,7 +1197,7 @@ TEST_F(SRIMessageSignatureBaseTest, TargetUriComponent) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     request_ = CreateRequest(*context_, test.url);
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
@@ -1234,7 +1236,7 @@ TEST_F(SRIMessageSignatureBaseTest, SchemeComponent) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     request_ = CreateRequest(*context_, test.url);
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
@@ -1270,7 +1272,7 @@ TEST_F(SRIMessageSignatureBaseTest, StatusComponent) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
@@ -1329,7 +1331,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeaderParams) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
@@ -1362,9 +1364,10 @@ TEST_F(SRIMessageSignatureBaseTest, ParameterSorting) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
-    EXPECT_THAT(result, testing::Optional(expected_base.str()));
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(expected_base.str(), result.value());
   } while (std::next_permutation(params.begin(), params.end()));
 }
 
@@ -1388,7 +1391,7 @@ TEST_F(SRIMessageSignatureBaseTest, UnknownParameters) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     std::string expected_base =
@@ -1427,9 +1430,11 @@ TEST_F(SRIMessageSignatureBaseTest, ArbitraryResponseHeaderComponent) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(mojom::SRIMessageSignatureError::kSignatureBaseMissingHeader,
+              result.error());
   }
 
   // Then, add the header and verify success:
@@ -1441,7 +1446,7 @@ TEST_F(SRIMessageSignatureBaseTest, ArbitraryResponseHeaderComponent) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
-    std::optional<std::string> result =
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
         ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
@@ -1473,7 +1478,7 @@ TEST_F(SRIMessageSignatureBaseTest, BinaryWrappedComponent) {
   ASSERT_EQ(1u, parsed->signatures.size());
   EXPECT_EQ(0u, parsed->issues.size());
 
-  std::optional<std::string> result =
+  base::expected<std::string, mojom::SRIMessageSignatureError> result =
       ConstructSignatureBase(parsed->signatures[0], request(), *headers);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(expected_base.str(), result.value());
@@ -1654,9 +1659,12 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
     EXPECT_FALSE(
         ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
     EXPECT_EQ(1u, parsed->issues.size());
-    EXPECT_EQ(
-        mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
-        parsed->issues[0]->error);
+    mojom::SRIMessageSignatureError expected_error =
+        (strlen(test) == 0)
+            ? mojom::SRIMessageSignatureError::kSignatureBaseMissingHeader
+            : mojom::SRIMessageSignatureError::
+                  kValidationFailedSignatureMismatch;
+    EXPECT_EQ(expected_error, parsed->issues[0]->error);
   }
 }
 
@@ -1680,8 +1688,27 @@ TEST_F(SRIMessageSignatureValidationTest, MissingHeader) {
   EXPECT_FALSE(
       ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
   ASSERT_EQ(1u, parsed->issues.size());
-  EXPECT_EQ(mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
+  EXPECT_EQ(mojom::SRIMessageSignatureError::kSignatureBaseMissingHeader,
             parsed->issues[0]->error);
+}
+
+TEST_F(SRIMessageSignatureValidationTest, InvalidUnencodedDigest) {
+  // `unencoded-digest` must be a valid structured field dictionary. If it's
+  // not, signature base generation should fail.
+  scoped_refptr<net::HttpResponseHeaders> headers = Headers(
+      "not a dictionary", kValidSignatureHeader, kValidSignatureInputHeader);
+
+  mojom::SRIMessageSignaturesPtr parsed =
+      ParseSRIMessageSignaturesFromHeaders(*headers);
+  ASSERT_EQ(1u, parsed->signatures.size());
+  EXPECT_EQ(0u, parsed->issues.size());
+
+  EXPECT_FALSE(
+      ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
+  ASSERT_EQ(1u, parsed->issues.size());
+  EXPECT_EQ(
+      mojom::SRIMessageSignatureError::kSignatureBaseInvalidUnencodedDigest,
+      parsed->issues[0]->error);
 }
 
 class SRIMessageSignatureEnforcementTest
