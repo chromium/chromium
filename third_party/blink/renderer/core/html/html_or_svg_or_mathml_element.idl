@@ -10,8 +10,9 @@ interface mixin HTMLOrSVGOrMathMLElement {
   [CEReactions, Reflect] attribute boolean autofocus;
   [CEReactions] attribute long tabIndex;
 
-  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Focusgroup/explainer.md
-  [CEReactions, Reflect, RuntimeEnabled=Focusgroup, Measure] attribute DOMString focusgroup;
+  // https://open-ui.org/components/scoped-focusgroup.explainer/
+  [CEReactions, Reflect, RuntimeEnabled=Focusgroup, Measure] attribute DOMString focusGroup;
+  [CEReactions, Reflect, RuntimeEnabled=Focusgroup, MeasureAs=FocusGroupStart] attribute boolean focusGroupStart;
 
   [ImplementedAs=focusForBindings] void focus(optional FocusOptions options = {});
   void blur();

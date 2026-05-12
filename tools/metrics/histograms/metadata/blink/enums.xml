@@ -4702,12 +4702,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4241" label="ScriptSchedulingType_InOrder"/>
   <int value="4242" label="ScriptSchedulingType_Async"/>
   <int value="4243" label="Focusgroup"/>
-  <int value="4244" label="V8HTMLElement_Focusgroup_AttributeGetter"/>
-  <int value="4245" label="V8HTMLElement_Focusgroup_AttributeSetter"/>
-  <int value="4246" label="V8MathMLElement_Focusgroup_AttributeGetter"/>
-  <int value="4247" label="V8MathMLElement_Focusgroup_AttributeSetter"/>
-  <int value="4248" label="V8SVGElement_Focusgroup_AttributeGetter"/>
-  <int value="4249" label="V8SVGElement_Focusgroup_AttributeSetter"/>
+  <int value="4244" label="V8HTMLElement_FocusGroup_AttributeGetter"/>
+  <int value="4245" label="V8HTMLElement_FocusGroup_AttributeSetter"/>
+  <int value="4246" label="V8MathMLElement_FocusGroup_AttributeGetter"/>
+  <int value="4247" label="V8MathMLElement_FocusGroup_AttributeSetter"/>
+  <int value="4248" label="V8SVGElement_FocusGroup_AttributeGetter"/>
+  <int value="4249" label="V8SVGElement_FocusGroup_AttributeSetter"/>
   <int value="4250" label="CSSLegacyPerspectiveOrigin"/>
   <int value="4251" label="CSSLegacyTransformOrigin"/>
   <int value="4252" label="CSSLegacyBorderImage"/>
@@ -6536,6 +6536,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5892" label="CapabilityElementOnPromptDismiss"/>
   <int value="5893" label="CapabilityElementOnValidationStatusChange"/>
   <int value="5894" label="InputParsedParentSelectNoOptions"/>
+  <int value="5895" label="FocusGroupStart"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

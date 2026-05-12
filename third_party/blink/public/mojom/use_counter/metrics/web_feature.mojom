@@ -3511,12 +3511,12 @@ enum WebFeature {
   kScriptSchedulingType_InOrder = 4241,
   kScriptSchedulingType_Async = 4242,
   kFocusgroup = 4243,
-  kV8HTMLElement_Focusgroup_AttributeGetter = 4244,
-  kV8HTMLElement_Focusgroup_AttributeSetter = 4245,
-  kV8MathMLElement_Focusgroup_AttributeGetter = 4246,
-  kV8MathMLElement_Focusgroup_AttributeSetter = 4247,
-  kV8SVGElement_Focusgroup_AttributeGetter = 4248,
-  kV8SVGElement_Focusgroup_AttributeSetter = 4249,
+  kV8HTMLElement_FocusGroup_AttributeGetter = 4244,
+  kV8HTMLElement_FocusGroup_AttributeSetter = 4245,
+  kV8MathMLElement_FocusGroup_AttributeGetter = 4246,
+  kV8MathMLElement_FocusGroup_AttributeSetter = 4247,
+  kV8SVGElement_FocusGroup_AttributeGetter = 4248,
+  kV8SVGElement_FocusGroup_AttributeSetter = 4249,
   kCSSLegacyPerspectiveOrigin = 4250,
   kCSSLegacyTransformOrigin = 4251,
   kCSSLegacyBorderImage = 4252,
@@ -5209,6 +5209,7 @@ enum WebFeature {
   kCapabilityElementOnPromptDismiss = 5892,
   kCapabilityElementOnValidationStatusChange = 5893,
   kInputParsedParentSelectNoOptions = 5894,
+  kFocusGroupStart = 5895,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

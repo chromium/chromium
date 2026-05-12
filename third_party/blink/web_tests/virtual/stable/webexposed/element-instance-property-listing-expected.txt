@@ -120,7 +120,8 @@ namespace http://www.w3.org/1999/xhtml
     property firstChild
     property firstElementChild
     property focus
-    property focusgroup
+    property focusGroup
+    property focusGroupStart
     property getAnimations
     property getAttribute
     property getAttributeNS
@@ -1385,7 +1386,8 @@ namespace http://www.w3.org/2000/svg
     property firstChild
     property firstElementChild
     property focus
-    property focusgroup
+    property focusGroup
+    property focusGroupStart
     property getAnimations
     property getAttribute
     property getAttributeNS
