@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
+#include "content/public/common/content_features.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -551,6 +552,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
                        ResumeTabGroupInAnotherWindow) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   const tab_groups::TabGroupId group_id =

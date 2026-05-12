@@ -2359,6 +2359,13 @@ class TabDragControllerTestDialog : public views::DialogDelegateView {
 // The dialog should follow the new browser window.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DetachToOwnWindowWithDialog) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -4389,6 +4396,12 @@ using DetachTabWithUrlControlledByWebApp = DetachToBrowserTabDragControllerTest;
 // The kTearOffWebAppTabOpensWebAppWindow experiment determines whether the new
 // browser window will be a normal browser window or an app window.
 IN_PROC_BROWSER_TEST_P(DetachTabWithUrlControlledByWebApp, TearOffWebApp) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled (crbug.com/477426026).";
+  }
+#endif
+
 #if BUILDFLAG(IS_LINUX)
   if (ui::OzonePlatform::RunningOnWaylandForTest() &&
       base::FeatureList::IsEnabled(features::kInitialWebUI)) {

@@ -92,6 +92,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -3185,6 +3186,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
 // TODO(crbug.com/376592844): Re-enable this test
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
                        DISABLED_ThemeColorChange) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -3209,6 +3217,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
 // TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
                        DISABLED_OutOfScopeBarWithThemeColorChange) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -3248,6 +3263,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
 // TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
                        DISABLED_WebAppOriginTextAccessibleProperties) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
   InstallAndLaunchWebApp();
   auto* origin_text = helper()->origin_text_view();
   ui::AXNodeData data;

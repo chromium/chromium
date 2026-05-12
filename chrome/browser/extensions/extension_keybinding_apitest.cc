@@ -8,6 +8,8 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -482,6 +484,13 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, DontOverwriteSystemShortcuts) {
 // web pages.
 IN_PROC_BROWSER_TEST_F(CommandsApiTest,
                        OverwriteBookmarkShortcutByUserOverridesWebKeybinding) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -622,6 +631,13 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, TabParameter) {
 
 // Test Keybinding in incognito mode.
 IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, IncognitoMode) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   bool is_incognito_enabled = GetParam();

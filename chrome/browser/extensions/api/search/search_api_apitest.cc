@@ -5,6 +5,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
@@ -32,6 +34,13 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, MAYBE_Normal) {
 
 // Test incognito browser in extension default spanning mode.
 IN_PROC_BROWSER_TEST_F(SearchApiTest, Incognito) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
   ResultCatcher catcher;
   auto* incognito_web_contents =
       PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));

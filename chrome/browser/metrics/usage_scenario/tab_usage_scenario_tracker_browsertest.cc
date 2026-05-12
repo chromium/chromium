@@ -806,6 +806,13 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
                        InitialVisibleNotification) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
