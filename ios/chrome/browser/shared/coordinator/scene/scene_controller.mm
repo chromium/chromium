@@ -69,7 +69,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
-#import "ios/chrome/browser/how_to_chrome/model/how_to_chrome_scene_agent.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -77,6 +76,7 @@
 #import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/level_up/model/level_up_scene_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/browser_lifecycle_manager.h"
 #import "ios/chrome/browser/main/ui_bundled/default_browser_promo_scene_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/incognito_blocker_scene_agent.h"
@@ -1477,8 +1477,8 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
   [sceneState addAgent:[[WhatsNewSceneAgent alloc]
                            initWithPromosManager:promosManager]];
 
-  if (IsHowToChromeEnabled()) {
-    [sceneState addAgent:[[HowToChromeSceneAgent alloc] init]];
+  if (IsLevelUpEnabled()) {
+    [sceneState addAgent:[[LevelUpSceneAgent alloc] init]];
   }
 
   if (IsDockingPromoV2Enabled()) {

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/how_to_chrome/model/how_to_chrome_scene_agent.h"
+#import "ios/chrome/browser/level_up/model/level_up_scene_agent.h"
 
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/metrics/user_metrics.h"
 #import "base/time/time.h"
 
-@implementation HowToChromeSceneAgent {
+@implementation LevelUpSceneAgent {
   // The callback registered with `base::AddActionCallback`.
   base::ActionCallback _actionCallback;
 }
@@ -34,7 +34,7 @@
   if (_actionCallback) {
     return;
   }
-  __weak HowToChromeSceneAgent* weakSelf = self;
+  __weak LevelUpSceneAgent* weakSelf = self;
   _actionCallback = base::BindRepeating(
       ^(const std::string& action, base::TimeTicks action_time) {
         [weakSelf onUserAction:action];

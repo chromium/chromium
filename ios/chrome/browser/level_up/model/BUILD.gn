@@ -4,8 +4,8 @@
 
 source_set("model") {
   sources = [
-    "how_to_chrome_scene_agent.h",
-    "how_to_chrome_scene_agent.mm",
+    "level_up_scene_agent.h",
+    "level_up_scene_agent.mm",
   ]
   deps = [
     "//base",

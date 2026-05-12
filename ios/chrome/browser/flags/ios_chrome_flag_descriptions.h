@@ -952,10 +952,6 @@ inline constexpr char kIOSExpandedTipsDescription[] =
     "Enables a feature that adds several new Tips Notifications that can be "
     "sent.";
 
-inline constexpr char kIOSHowToChromeName[] = "How to Chrome";
-inline constexpr char kIOSHowToChromeDescription[] =
-    "Enables the 'How to Chrome' feature on iOS.";
-
 inline constexpr char kIOSKeyboardAccessoryDefaultViewName[] =
     "Default Input Accessory View";
 inline constexpr char kIOSKeyboardAccessoryDefaultViewDescription[] =
@@ -967,6 +963,10 @@ inline constexpr char kIOSKeyboardAccessoryTwoBubbleName[] =
 inline constexpr char kIOSKeyboardAccessoryTwoBubbleDescription[] =
     "When enabled, the two-bubble design is used for the Keyboard Accessory "
     "view.";
+
+inline constexpr char kIOSLevelUpName[] = "Level Up";
+inline constexpr char kIOSLevelUpDescription[] =
+    "Enables the 'Level Up' feature on iOS.";
 
 inline constexpr char kIOSMiniMapUniversalLinkCounterfactualName[] =
     "Counterfactual for opening Maps Universal links in native view";
