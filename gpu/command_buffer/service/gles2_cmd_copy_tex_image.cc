@@ -232,6 +232,9 @@ void CopyTexImageResourceManager::DoCopyTexSubImageToLUMACompatibilityTexture(
   glDepthMask(GL_FALSE);
   glDisable(GL_BLEND);
   glDisable(GL_DITHER);
+  if (decoder->GetFeatureInfo()->IsWebGL2OrES3OrHigherContext()) {
+    glDisable(GL_RASTERIZER_DISCARD);
+  }
   if (decoder->GetFeatureInfo()->feature_flags().ext_window_rectangles) {
     glWindowRectanglesEXT(GL_EXCLUSIVE_EXT, 0, nullptr);
   }
