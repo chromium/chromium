@@ -529,4 +529,5 @@ Refer to README.md for content description and update process.
  <item id="device_management_remote_commands" added_in_milestone="149" content_hash_code="02f9a08a" os_list="linux,windows,android,chromeos" file_path="components/policy/core/common/cloud/device_management_service.cc" />
  <item id="private_verification_tokens_service_get_tokens" added_in_milestone="149" content_hash_code="04a115b2" os_list="linux,windows,android,chromeos" file_path="components/private_verification_tokens/common/private_verification_tokens_fetcher.cc" />
  <item id="safe_browsing_v5_update" added_in_milestone="150" content_hash_code="03eccc50" os_list="linux,windows,android,chromeos" file_path="components/safe_browsing/core/browser/db/v5_update_protocol_manager.cc" />
+ <item id="skills_fetcher" added_in_milestone="150" content_hash_code="023f2b7e" os_list="linux,windows,chromeos" file_path="components/skills/internal/skills_fetcher.cc" />
 </annotations>

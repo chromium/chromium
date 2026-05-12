@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -40,6 +41,7 @@ SkillsServiceFactory::SkillsServiceFactory()
               .WithRegular(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
@@ -60,7 +62,8 @@ SkillsServiceFactory::BuildServiceInstanceForBrowserContext(
   // TODO(crbug.com/466802878): Return a nullptr if the feature is disabled.
   return std::make_unique<SkillsServiceImpl>(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      chrome::GetChannel(), std::move(store_factory),
+      IdentityManagerFactory::GetForProfile(profile), chrome::GetChannel(),
+      std::move(store_factory),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }

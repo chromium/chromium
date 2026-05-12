@@ -80,7 +80,7 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
     Profile* profile = Profile::FromBrowserContext(context);
     return std::make_unique<skills::SkillsServiceImpl>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-        chrome::GetChannel(),
+        IdentityManagerFactory::GetForProfile(profile), chrome::GetChannel(),
         DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));

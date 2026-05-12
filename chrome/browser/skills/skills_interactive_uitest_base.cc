@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
@@ -134,7 +135,7 @@ std::unique_ptr<KeyedService> SkillsInteractiveUiTestBase::CreateSkillsService(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<skills::SkillsServiceImpl>(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      chrome::GetChannel(),
+      IdentityManagerFactory::GetForProfile(profile), chrome::GetChannel(),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_));

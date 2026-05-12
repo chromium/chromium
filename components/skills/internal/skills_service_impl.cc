@@ -10,8 +10,10 @@
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/internal/skills_sync_bridge.h"
@@ -32,9 +34,12 @@ constexpr base::TimeDelta kMinimumTimeBetweenDiscoverySkillsRefresh =
 
 SkillsServiceImpl::SkillsServiceImpl(
     optimization_guide::OptimizationGuideDecider* optimization_guide,
+    signin::IdentityManager* identity_manager,
     version_info::Channel channel,
     syncer::OnceDataTypeStoreFactory create_store_callback,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : identity_manager_(identity_manager),
+      url_loader_factory_(url_loader_factory) {
   sync_bridge_ = std::make_unique<SkillsSyncBridge>(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SKILL,
@@ -49,8 +54,7 @@ SkillsServiceImpl::SkillsServiceImpl(
           {optimization_guide::proto::SKILLS});
     }
   }
-  skills_downloader_ =
-      std::make_unique<SkillsDownloader>(std::move(url_loader_factory));
+  skills_downloader_ = std::make_unique<SkillsDownloader>(url_loader_factory_);
 
   discovery_skills_refresh_timer_.Start(
       FROM_HERE, kMinimumTimeBetweenDiscoverySkillsRefresh, this,
@@ -275,9 +279,38 @@ void SkillsServiceImpl::FetchDiscoverySkills() {
   if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
     return;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSkillsServiceApi) &&
+      identity_manager_ &&
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    if (!skills_fetcher_) {
+      skills_fetcher_ = std::make_unique<SkillsFetcher>(url_loader_factory_,
+                                                        identity_manager_);
+    }
+    skills_fetcher_->FetchDiscoverySkills(
+        base::BindOnce(&SkillsServiceImpl::OnDiscoverySkillsFetchedFromService,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   skills_downloader_->FetchDiscoverySkills(base::BindOnce(
       &SkillsServiceImpl::Handle1pSkills, weak_ptr_factory_.GetWeakPtr()));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void SkillsServiceImpl::OnDiscoverySkillsFetchedFromService(
+    std::unique_ptr<FirstPartySkillData> first_party_skill_data) {
+  if (first_party_skill_data) {
+    Handle1pSkills(std::move(first_party_skill_data));
+    return;
+  }
+  // Fallback to downloader if API failed.
+  skills_downloader_->FetchDiscoverySkills(base::BindOnce(
+      &SkillsServiceImpl::Handle1pSkills, weak_ptr_factory_.GetWeakPtr()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void SkillsServiceImpl::Handle1pSkills(
     std::unique_ptr<FirstPartySkillData> first_party_skill_data) {

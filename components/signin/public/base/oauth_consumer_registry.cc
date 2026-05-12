@@ -773,6 +773,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*scopes=*/{kSiteAutomationIndexOAuth2Scope});
     case OAuthConsumerId::kGlicInvokeApi:
       return GetOAuthConsumerForGlicInvokeApi();
+    case OAuthConsumerId::kSkillsService:
+      return GetOAuthConsumerForSkillsService();
     case OAuthConsumerId::kSecureGatewayService:
       return OAuthConsumer(
           /*name=*/kSecureGatewayServiceName,

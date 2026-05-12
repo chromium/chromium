@@ -39,6 +39,7 @@ class OAuthConsumerRegistry {
   virtual OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress() const = 0;
   virtual OAuthConsumer GetOAuthConsumerForGlicUserStatus() const = 0;
   virtual OAuthConsumer GetOAuthConsumerForGlicInvokeApi() const = 0;
+  virtual OAuthConsumer GetOAuthConsumerForSkillsService() const = 0;
 
   // TODO: b/502940191 - Remove this and hard-code the scope after Indigo is
   // launched.

@@ -1,5 +1,7 @@
 include_rules = [
+  "+components/endpoint_fetcher",
   "+components/keyed_service",
   "+components/optimization_guide",
+  "+components/signin",
   "+components/sync",
 ]

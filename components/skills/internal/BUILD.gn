@@ -41,8 +41,19 @@ source_set("downloader") {
     "skills_downloader.h",
   ]
 
+  if (!is_android) {
+    sources += [
+      "skills_fetcher.cc",
+      "skills_fetcher.h",
+    ]
+  }
+
   deps = [
     "//base",
+    "//components/endpoint_fetcher",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/skills:features",
     "//components/skills/proto",
     "//components/skills/public:metrics",
     "//components/skills/public:types",
@@ -60,6 +71,10 @@ source_set("unit_tests") {
     "skills_sync_bridge_unittest.cc",
   ]
 
+  if (!is_android) {
+    sources += [ "skills_fetcher_unittest.cc" ]
+  }
+
   deps = [
     ":downloader",
     ":internal",
@@ -67,6 +82,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/skills:features",
     "//components/skills/mocks",
     "//components/skills/proto",
@@ -75,6 +91,7 @@ source_set("unit_tests") {
     "//components/sync/base",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 

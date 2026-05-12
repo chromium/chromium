@@ -55,6 +55,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/skills/features.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -189,6 +190,14 @@ class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
 #else
     NOTREACHED();
 #endif
+  }
+
+  signin::OAuthConsumer GetOAuthConsumerForSkillsService() const override {
+    CHECK(base::FeatureList::IsEnabled(features::kSkillsEnabled));
+    CHECK(base::FeatureList::IsEnabled(features::kSkillsServiceApi));
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kSkillsServiceName,
+        {features::kSkillsServiceApiOAuth2Scope.Get()});
   }
 
   signin::OAuthConsumer GetOAuthConsumerForIndigo() const override {

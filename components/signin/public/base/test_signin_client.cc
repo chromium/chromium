@@ -42,6 +42,10 @@ class TestOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
   signin::OAuthConsumer GetOAuthConsumerForIndigo() const override {
     NOTREACHED();
   }
+
+  signin::OAuthConsumer GetOAuthConsumerForSkillsService() const override {
+    return signin::OAuthConsumer("skills_service", {"test_scope"});
+  }
 };
 
 }  // namespace
