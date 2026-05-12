@@ -1509,9 +1509,13 @@ void WidgetBase::ImeSetComposition(
   }
 
   ImeEventGuard guard(weak_ptr_factory_.GetWeakPtr());
-  if (!frame_widget->SetComposition(text, ime_text_spans, replacement_range,
-                                    selection_start, selection_end,
-                                    ime_state)) {
+  bool success =
+      frame_widget->SetComposition(text, ime_text_spans, replacement_range,
+                                   selection_start, selection_end, ime_state);
+  if (!guard.IsValid()) {
+    return;
+  }
+  if (!success) {
     // If we failed to set the composition text, then we need to let the browser
     // process to cancel the input method's ongoing composition session, to make
     // sure we are in a consistent state.
@@ -1543,6 +1547,9 @@ void WidgetBase::ImeCommitText(const String& text,
   input_handler_.set_handling_input_event(true);
   frame_widget->CommitText(text, ime_text_spans, replacement_range,
                            relative_cursor_pos);
+  if (!guard.IsValid()) {
+    return;
+  }
   input_handler_.set_handling_input_event(false);
   UpdateCompositionInfo(false /* not an immediate request */);
 }
@@ -1562,6 +1569,9 @@ void WidgetBase::ImeFinishComposingText(bool keep_selection) {
   ImeEventGuard guard(weak_ptr_factory_.GetWeakPtr());
   input_handler_.set_handling_input_event(true);
   frame_widget->FinishComposingText(keep_selection);
+  if (!guard.IsValid()) {
+    return;
+  }
   input_handler_.set_handling_input_event(false);
   UpdateCompositionInfo(false /* not an immediate request */);
 }

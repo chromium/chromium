@@ -20,6 +20,9 @@ class ImeEventGuard {
   explicit ImeEventGuard(base::WeakPtr<WidgetBase> widget);
   ~ImeEventGuard();
 
+  // Returns true if the widget is still alive.
+  bool IsValid() const;
+
   bool show_virtual_keyboard() const { return show_virtual_keyboard_; }
   void set_show_virtual_keyboard(bool show) { show_virtual_keyboard_ = show; }
 
