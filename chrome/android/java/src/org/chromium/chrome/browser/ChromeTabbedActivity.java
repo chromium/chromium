@@ -237,7 +237,6 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
-import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfGestureDetector;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfMetricsRecorder;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -3716,10 +3715,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         try (TraceEvent e =
                                 TraceEvent.scoped("CheckSyncErrorOnDidFinishNavigation")) {
                             SyncErrorMessage.maybeShowMessageUi(getWindowAndroid(), profile);
-                        }
-                        try (TraceEvent te = TraceEvent.scoped("updateActiveWebContents")) {
-                            SendTabToSelfAndroidBridge.updateActiveWebContents(
-                                    tab.getWebContents());
                         }
                     }
                 };

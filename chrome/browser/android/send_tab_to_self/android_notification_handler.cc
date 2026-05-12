@@ -9,35 +9,21 @@
 #include <vector>
 
 #include "base/android/jni_string.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
-#include "chrome/grit/generated_resources.h"
-#include "components/messages/android/message_dispatcher_bridge.h"
-#include "components/messages/android/message_enums.h"
-#include "components/messages/android/message_wrapper.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
-#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/NotificationManager_jni.h"
 #include "chrome/android/chrome_jni_headers/SendTabToSelfNotificationReceiver_jni.h"
 
-using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
 
 namespace send_tab_to_self {
 
@@ -58,39 +44,13 @@ std::optional<std::string> GetScrollToTextFragmentFromEntry(
                                 EscapedStringFormat::kWithoutTextDirective);
 }
 
-void LogDismissReason(messages::DismissReason dismiss_reason) {
-  switch (dismiss_reason) {
-    case messages::DismissReason::PRIMARY_ACTION:
-      RecordNotificationOpened();
-      break;
-    case messages::DismissReason::TIMER:
-      RecordNotificationTimedOut();
-      break;
-    case messages::DismissReason::GESTURE:
-      RecordNotificationDismissed();
-      break;
-    case messages::DismissReason::UNKNOWN:
-      RecordNotificationDismissReasonUnknown();
-      break;
-    default:
-      RecordNotificationDismissed();
-      break;
-  }
-}
-
 }  // namespace
 
 AndroidNotificationHandler::AndroidNotificationHandler(
     SendTabToSelfModel* send_tab_to_self_model)
     : send_tab_to_self_model_((send_tab_to_self_model)) {}
 
-AndroidNotificationHandler::~AndroidNotificationHandler() {
-  while (!queued_messages_.empty()) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        queued_messages_.at(0).get(), messages::DismissReason::UNKNOWN);
-  }
-  DCHECK(queued_messages_.size() == 0);
-}
+AndroidNotificationHandler::~AndroidNotificationHandler() {}
 
 void AndroidNotificationHandler::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
@@ -141,69 +101,6 @@ void AndroidNotificationHandler::DismissEntries(
   for (const std::string& guid : guids) {
     Java_NotificationManager_hideNotification(
         env, ConvertUTF8ToJavaString(env, guid));
-  }
-}
-
-void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
-  if (!web_contents_) {
-    return;
-  }
-
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
-  params.should_replace_current_entry = false;
-
-  const SendTabToSelfEntry* entry =
-      send_tab_to_self_model_->GetEntryByGUID(guid);
-
-  if (entry) {
-    params.internal_scroll_to_text_fragment =
-        GetScrollToTextFragmentFromEntry(*entry);
-  }
-
-  content::WebContents* new_contents =
-      web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
-
-  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields) &&
-      new_contents) {
-    if (entry) {
-      FillWebContents(new_contents, url::Origin::Create(entry->GetURL()),
-                      entry->GetPageContext());
-    }
-  }
-
-  send_tab_to_self_model_->MarkEntryOpened(guid);
-}
-
-void AndroidNotificationHandler::OnMessageDismissed(
-    messages::MessageWrapper* message,
-    std::string guid,
-    messages::DismissReason dismiss_reason) {
-  // Any reason other than UNKNOWN indicates the notification was displayed.
-  if (dismiss_reason != messages::DismissReason::UNKNOWN) {
-    send_tab_to_self::RecordNotificationShown();
-  }
-  for (unsigned int i = 0; i < queued_messages_.size(); i++) {
-    if (queued_messages_.at(i).get() == message) {
-      queued_messages_.erase(queued_messages_.begin() + i);
-      send_tab_to_self_model_->DismissEntry(guid);
-      LogDismissReason(dismiss_reason);
-    }
-  }
-}
-
-void AndroidNotificationHandler::UpdateWebContents(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  web_contents_ = web_contents->GetWeakPtr();
-  while (!pending_messages_.empty()) {
-    queued_messages_.push_back(std::move(pending_messages_.front()));
-    pending_messages_.pop();
-    messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
-        std::move(queued_messages_.back().get()),
-        web_contents_->GetTopLevelNativeWindow(),
-        messages::MessagePriority::kNormal);
   }
 }
 

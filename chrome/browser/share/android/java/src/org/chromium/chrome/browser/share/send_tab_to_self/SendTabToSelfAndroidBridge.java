@@ -127,12 +127,6 @@ public class SendTabToSelfAndroidBridge {
         return SendTabToSelfAndroidBridgeJni.get().getAllTargetDeviceInfos(profile);
     }
 
-    /**
-     * @param webContents WebContents where a navigation was just completed.
-     */
-    public static void updateActiveWebContents(WebContents webContents) {
-        SendTabToSelfAndroidBridgeJni.get().updateActiveWebContents(webContents);
-    }
 
     public static @Nullable @EntryPointDisplayReason Integer getEntryPointDisplayReason(
             Profile profile, String url) {
@@ -155,8 +149,6 @@ public class SendTabToSelfAndroidBridge {
 
         @JniType("std::vector")
         List<TargetDeviceInfo> getAllTargetDeviceInfos(@JniType("Profile*") Profile profile);
-
-        void updateActiveWebContents(WebContents webContents);
 
         @Nullable Integer getEntryPointDisplayReason(
                 @JniType("Profile*") Profile profile, String url);

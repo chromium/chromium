@@ -138,20 +138,6 @@ static void JNI_SendTabToSelfAndroidBridge_DismissEntry(
   }
 }
 
-static void JNI_SendTabToSelfAndroidBridge_UpdateActiveWebContents(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!web_contents->GetBrowserContext()->IsOffTheRecord()) {
-    static_cast<AndroidNotificationHandler*>(
-        SendTabToSelfClientServiceFactory::GetForProfile(profile)
-            ->GetReceivingUiHandler())
-        ->UpdateWebContents(web_contents);
-  }
-}
 
 static ScopedJavaLocalRef<jobject>
 JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(

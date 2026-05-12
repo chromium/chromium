@@ -116,12 +116,6 @@ public class SendTabToSelfAndroidBridgeTest {
         Assert.assertEquals(expected, actual);
     }
 
-    @Test
-    @SmallTest
-    public void testUpdateActiveWebContents() {
-        SendTabToSelfAndroidBridge.updateActiveWebContents(mWebContents);
-        verify(mNativeMock).updateActiveWebContents(eq(mWebContents));
-    }
 
     @Test
     @SmallTest
