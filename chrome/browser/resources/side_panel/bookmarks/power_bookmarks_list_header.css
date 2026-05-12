@@ -1,0 +1,34 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=//bookmarks-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+sp-heading {
+  margin: 8px 14px;
+}
+
+cr-icon-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+  margin: 0;
+}
+
+#sortMenu cr-icon {
+  height: 20px;
+  width: 20px;
+}
+
+cr-icon[invisible] {
+  visibility: hidden;
+}
+
+.dropdown-item {
+  gap: 4px;
+}

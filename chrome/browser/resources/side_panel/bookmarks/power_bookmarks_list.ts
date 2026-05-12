@@ -800,10 +800,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
       this.updateDisplayLists_();
     }
     this.notifyBookmarksListResize_();
+    recordViewType(this.compact_);
     const viewType = this.compact_ ? ViewType.kCompact : ViewType.kExpanded;
     this.bookmarksApi_.setViewType(viewType);
-    chrome.metricsPrivate.recordEnumerationValue(
-        'PowerBookmarks.SidePanel.ViewTypeShown', viewType, ViewType.kCount);
   }
 
   private computeHasShownBookmarks_(): boolean {

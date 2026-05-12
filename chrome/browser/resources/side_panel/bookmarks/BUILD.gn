@@ -19,8 +19,6 @@ build_webui("build") {
   web_component_files = [
     "power_bookmarks_list.ts",
     "power_bookmarks_app.ts",
-    "power_bookmarks_add_folder_button.ts",
-    "power_bookmarks_list_header.ts",
   ]
 
   ts_files = [
@@ -29,6 +27,10 @@ build_webui("build") {
     "commerce/shopping_list.ts",
     "keyboard_arrow_navigation_service.ts",
     "power_bookmarks_metrics.ts",
+    "power_bookmarks_add_folder_button.html.ts",
+    "power_bookmarks_add_folder_button.ts",
+    "power_bookmarks_list_header.html.ts",
+    "power_bookmarks_list_header.ts",
     "power_bookmark_row.html.ts",
     "power_bookmark_row.ts",
     "power_bookmark_row_item.html.ts",
@@ -47,6 +49,8 @@ build_webui("build") {
   css_files = [
     "power_bookmark_row.css",
     "power_bookmark_row_item.css",
+    "power_bookmarks_add_folder_button.css",
+    "power_bookmarks_list_header.css",
     "power_bookmarks_context_menu.css",
     "power_bookmarks_edit_dialog.css",
     "commerce/shopping_list.css",

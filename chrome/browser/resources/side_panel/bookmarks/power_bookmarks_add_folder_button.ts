@@ -4,35 +4,33 @@
 
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './power_bookmarks_add_folder_button.html.js';
+import {getCss} from './power_bookmarks_add_folder_button.css.js';
+import {getHtml} from './power_bookmarks_add_folder_button.html.js';
 
-export class PowerBookmarksAddFolderButtonElement extends PolymerElement {
+export class PowerBookmarksAddFolderButtonElement extends CrLitElement {
   static get is() {
     return 'power-bookmarks-add-folder-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      compact: {
-        type: Boolean,
-        value: false,
-      },
+  static override get properties() {
+    return {
+      disabled: {type: Boolean},
+      compact: {type: Boolean},
     };
   }
 
-  declare disabled: boolean;
-  declare compact: boolean;
+  accessor disabled: boolean = false;
+  accessor compact: boolean = false;
 }
 
 declare global {
