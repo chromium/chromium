@@ -541,7 +541,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupShowHide_triggersScrim() {
-        OmniboxFeatures.sShowBottomSheetPopup.setForTesting(true);
+        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
         assertNotNull(runnable);
@@ -557,7 +558,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupShowHide_floatingMode_doesNotTriggerScrim() {
-        OmniboxFeatures.sShowBottomSheetPopup.setForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
         assertNotNull(runnable);
@@ -565,6 +566,19 @@ public class FuseboxMediatorUnitTest {
         // Show popup.
         runnable.run();
         verify(mScrimManager, never()).showScrim(any());
+    }
+
+    @Test
+    public void testPopupShowHide_desktopPlatform_usesFloatingMode() {
+        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        recreateMediator();
+        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
+        assertNotNull(runnable);
+
+        // Show popup.
+        runnable.run();
+        assertEquals(PopupState.FLOATING, (int) mModel.get(FuseboxProperties.POPUP_STATE));
     }
 
     @Test
@@ -1135,7 +1149,8 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testModelPickerVisibility_hidesInBottomSheet() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        OmniboxFeatures.sShowBottomSheetPopup.setForTesting(true);
+        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         recreateMediator();
 
         ModelConfig config1 =

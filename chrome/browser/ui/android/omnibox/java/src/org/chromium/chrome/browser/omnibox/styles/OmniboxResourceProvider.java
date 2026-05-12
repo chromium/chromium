@@ -851,7 +851,7 @@ public class OmniboxResourceProvider {
 
         @DrawableRes
         int resId =
-                OmniboxFeatures.sShowBottomSheetPopup.getValue()
+                OmniboxFeatures.shouldShowBottomSheetPopup()
                         ? isIncognito
                                 ? R.drawable.fusebox_popup_bg_tinted_on_dark_bg
                                 : R.drawable.fusebox_popup_bg_tinted

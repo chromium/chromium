@@ -163,7 +163,11 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sShowModelPicker =
             newBooleanParam(sOmniboxMultimodalInput, "show_model_picker", false);
 
-    public static final BooleanCachedFeatureParam sShowBottomSheetPopup =
+    /**
+     * Whether the bottom sheet popup should be shown. This is private to ensure that callers use
+     * {@link #shouldShowBottomSheetPopup()} which also checks if the platform is desktop.
+     */
+    private static final BooleanCachedFeatureParam sShowBottomSheetPopup =
             newBooleanParam(sOmniboxMultimodalInput, "show_bottom_sheet_popup", false);
 
     public static final BooleanCachedFeatureParam sUseAskHintForNtp =
@@ -434,6 +438,11 @@ public class OmniboxFeatures {
         ResettersForTesting.register(() -> sIsDesktopPlatformForTesting = null);
     }
 
+    /** Modifies the output of {@link #shouldShowBottomSheetPopup()} for testing. */
+    public static void setShowBottomSheetPopupForTesting(boolean value) {
+        sShowBottomSheetPopup.setForTesting(value);
+    }
+
     /**
      * Return whether the current platform is specifically a desktop platform.
      *
@@ -445,6 +454,15 @@ public class OmniboxFeatures {
             return sIsDesktopPlatformForTesting;
         }
         return DeviceInfo.isDesktop();
+    }
+
+    /**
+     * Returns whether the bottom sheet popup should be shown.
+     *
+     * <p>This checks both the feature param and whether the platform is desktop.
+     */
+    public static boolean shouldShowBottomSheetPopup() {
+        return !isDesktopPlatform() && sShowBottomSheetPopup.getValue();
     }
 
     /**

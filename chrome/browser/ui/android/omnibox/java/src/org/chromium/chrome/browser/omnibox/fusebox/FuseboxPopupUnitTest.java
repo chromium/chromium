@@ -167,7 +167,7 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testDynamicInflation_VerticalLayout() {
-        OmniboxFeatures.sShowBottomSheetPopup.setForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
 
         // Re-create content view and popup to trigger new inflation logic
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
@@ -191,7 +191,8 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testDynamicInflation_HorizontalLayout() {
-        OmniboxFeatures.sShowBottomSheetPopup.setForTesting(true);
+        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
 
         // Re-create content view and popup to trigger new inflation logic
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);

@@ -496,7 +496,7 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE, mClipboard.hasImage());
         mModel.set(
                 FuseboxProperties.POPUP_STATE,
-                OmniboxFeatures.sShowBottomSheetPopup.getValue()
+                OmniboxFeatures.shouldShowBottomSheetPopup()
                         ? PopupState.BOTTOM
                         : PopupState.FLOATING);
         if (mScrimManager != null
@@ -1180,7 +1180,7 @@ import java.util.function.Supplier;
         }
         boolean showModelPicker = modelButtonDataList.size() >= 2;
         boolean showModelPickerDivider =
-                showModelPicker && !OmniboxFeatures.sShowBottomSheetPopup.getValue();
+                showModelPicker && !OmniboxFeatures.shouldShowBottomSheetPopup();
         mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, showModelPickerDivider);
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, showModelPicker);
         mModel.set(
