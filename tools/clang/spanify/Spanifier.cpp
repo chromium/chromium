@@ -3142,7 +3142,6 @@ class Spanifier {
     auto frontier_exclusions = anyOf(
         // 1. Common exclusions that aren't project specific:
         isExpansionInSystemHeader(), isInExcludedMacroLocation(),
-        raw_ptr_plugin::isInThirdPartyLocation(),
         raw_ptr_plugin::isInGeneratedLocation(),
         raw_ptr_plugin::ImplicitFieldDeclaration(),
         raw_ptr_plugin::isInExternCContext(),
