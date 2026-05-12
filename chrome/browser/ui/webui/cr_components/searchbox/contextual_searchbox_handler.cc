@@ -208,10 +208,10 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     std::sort(tab_times.begin(), tab_times.end(), cmp);
   } else {
     int max_tab_suggestions = std::min(static_cast<int>(tab_times.size()),
-                                      GetContextMenuMaxTabSuggestions());
+                                       GetContextMenuMaxTabSuggestions());
     std::partial_sort(tab_times.begin(),
-                      tab_times.begin() + max_tab_suggestions,
-                      tab_times.end(), cmp);
+                      tab_times.begin() + max_tab_suggestions, tab_times.end(),
+                      cmp);
     tab_times.resize(max_tab_suggestions);
   }
 
@@ -345,23 +345,21 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
           profile);
   contextual_tasks_service_ =
       contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
-  if (contextual_tasks_service_) {
-    // It is safe to use base::Unretained(this) here because `desktop_delegate_`
-    // is owned by `this` and will be destroyed when `this` is destroyed,
-    // cancelling any pending callbacks.
-    desktop_delegate_ =
-        std::make_unique<contextual_tasks::DesktopQueryContextualizerDelegate>(
-            base::BindRepeating(
-                &ContextualSearchboxHandler::GetContextualSessionHandle,
-                base::Unretained(this)),
-            base::BindRepeating(
-                &ContextualSearchboxHandler::CreateImageEncodingOptions),
-            contextual_tasks_context_service_,
-            webui::GetBrowserWindowInterface(web_contents_));
-    query_contextualizer_ =
-        std::make_unique<contextual_tasks::QueryContextualizer>(
-            contextual_tasks_service_, desktop_delegate_.get());
-  }
+  // It is safe to use base::Unretained(this) here because `desktop_delegate_`
+  // is owned by `this` and will be destroyed when `this` is destroyed,
+  // cancelling any pending callbacks.
+  desktop_delegate_ =
+      std::make_unique<contextual_tasks::DesktopQueryContextualizerDelegate>(
+          base::BindRepeating(
+              &ContextualSearchboxHandler::GetContextualSessionHandle,
+              base::Unretained(this)),
+          base::BindRepeating(
+              &ContextualSearchboxHandler::CreateImageEncodingOptions),
+          contextual_tasks_context_service_,
+          webui::GetBrowserWindowInterface(web_contents_));
+  query_contextualizer_ =
+      std::make_unique<contextual_tasks::QueryContextualizer>(
+          contextual_tasks_service_, desktop_delegate_.get());
 }
 
 void ContextualSearchboxHandler::UpdateTabListObservation(

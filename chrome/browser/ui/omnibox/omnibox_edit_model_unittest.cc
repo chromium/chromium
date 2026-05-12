@@ -1676,7 +1676,8 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
 
 TEST_F(OmniboxEditModelTest, OpenMatchInvocationSource) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kOmniboxAppendInvocationSource);
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kOmniboxAppendInvocationSource);
 
   AutocompleteMatch match(
       controller()->autocomplete_controller()->search_provider(), 0, false,
@@ -1739,6 +1740,32 @@ TEST_F(OmniboxEditModelTest, OpenAiModeTriggersContextualize) {
 
   // Reset the mock contextualizer so it is destroyed before the local
   // mock_service and fake_delegate it points to.
+  model()->SetQueryContextualizerForTesting(nullptr);
+}
+
+TEST_F(OmniboxEditModelTest, OpenAiModeTriggersContextualizeWithoutService) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kAiModeOmniboxEntryPoint);
+
+  // Inject our mock contextualizer with a null service.
+  auto fake_delegate = std::make_unique<FakeQueryContextualizerDelegate>();
+  auto mock_contextualizer =
+      std::make_unique<MockQueryContextualizer>(nullptr, fake_delegate.get());
+
+  auto* mock_ptr = mock_contextualizer.get();
+  model()->SetQueryContextualizerForTesting(std::move(mock_contextualizer));
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::SEARCH_SUGGEST;
+  match.contents = u"test query";
+  model()->SetCurrentMatchForTest(match);
+
+  EXPECT_CALL(*mock_ptr, MockContextualize(_, "test query", _, _)).Times(1);
+
+  model()->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/false);
+
+  // Reset the mock contextualizer so it is destroyed before the local
+  // fake_delegate it points to.
   model()->SetQueryContextualizerForTesting(nullptr);
 }
 

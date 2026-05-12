@@ -1287,6 +1287,40 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
   EXPECT_EQ("50", udm_param);
 }
 
+TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_NoContextualTasksService) {
+  // Force the ContextualTasksService to be null.
+  contextual_tasks::ContextualTasksServiceFactory::GetInstance()
+      ->SetTestingFactory(
+          profile(), base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            return nullptr;
+          }));
+
+  // Recreate handler to test initialization with a null service.
+  mock_searchbox_page_.receiver_.reset();
+  auto handler_without_service =
+      std::make_unique<FakeContextualSearchboxHandler>(
+          mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+          mock_searchbox_page_.BindAndGetRemote(), profile(), web_contents(),
+          std::make_unique<OmniboxController>(
+              std::make_unique<TestOmniboxClient>()),
+          base::BindLambdaForTesting(
+              [&]() { return contextual_session_handle_.get(); }));
+
+  content::TestNavigationObserver navigation_observer(web_contents());
+  handler_without_service->SubmitQuery(kQueryText, 1, false, false, false,
+                                       false);
+  auto navigation = content::NavigationSimulator::CreateFromPending(
+      web_contents()->GetController());
+  ASSERT_TRUE(navigation);
+  navigation->Commit();
+  navigation_observer.Wait();
+
+  GURL query_url =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+  EXPECT_TRUE(query_url.spec().find(kQueryText) != std::string::npos);
+}
+
 TEST_F(ContextualSearchboxHandlerTest, QueryAutocomplete_SetsLensInputs) {
   // Set suggest inputs on the client.
   lens::proto::LensOverlaySuggestInputs suggest_inputs;

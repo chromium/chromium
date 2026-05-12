@@ -917,13 +917,12 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
             contextual_tasks::ContextualTasksContextServiceFactory::
                 GetForProfile(profile),
             chrome_omnibox_client->browser());
-        if (auto* service =
-                contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
-                    profile)) {
-          query_contextualizer_ =
-              std::make_unique<contextual_tasks::QueryContextualizer>(
-                  service, query_contextualizer_delegate_.get());
-        }
+        auto* service =
+            contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+                profile);
+        query_contextualizer_ =
+            std::make_unique<contextual_tasks::QueryContextualizer>(
+                service, query_contextualizer_delegate_.get());
       }
     }
   }
