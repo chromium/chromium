@@ -375,6 +375,11 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
   SocketPoolState StateForTest() const { return State(); }
 
+  void SetSocketSoftCapOverrideForTest(
+      std::optional<size_t> socket_soft_cap_override_for_test) {
+    socket_soft_cap_override_for_test_ = socket_soft_cap_override_for_test;
+  }
+
  protected:
   ClientSocketPool(size_t socket_soft_cap,
                    SocketPoolAdditionalCapacity additional_capacity,
@@ -397,7 +402,11 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       SocketTag socket_tag,
       ConnectJob::Delegate* delegate);
 
-  size_t SocketSoftCap() const { return socket_soft_cap_; }
+  size_t SocketSoftCap() const {
+    return socket_soft_cap_override_for_test_
+               ? *socket_soft_cap_override_for_test_
+               : socket_soft_cap_;
+  }
 
   // This should return the sockets the pool considers to be in-use (reserved)
   // of the overall pool. This won't contain 'stalled' sockets as those have yet
@@ -412,15 +421,16 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   SocketPoolState State() const { return state_; }
 
   // This should be called exactly once before each attempted socket allocation
-  // via `RequestSocket` or `RequestSockets`. Be sure not to over-invoke to
-  // prevent early capping of the socket pool.
+  // via `RequestSocket` or `RequestSockets` (including before each retry after
+  // dropping idle sockets). Under invoking this function can impact security;
+  // over invoking this function can impact performance.
   void UpdateStateBeforeAllocation();
 
   // This should be called once after each successful socket released (and not
   // reused) via `RequestSocket`, `RequestSockets`, `CancelRequest`,
   // `ReleaseSocket`, `OnConnectJobComplete`, `CloseIdleSockets`, or
-  // `CloseIdleSocketsInGroup`. Be sure not to over-invoke to prevent early
-  // uncapping of the socket pool.
+  // `CloseIdleSocketsInGroup`. Under invoking this function can impact
+  // performance; over invoking this function can impact security.
   void UpdateStateAfterRelease();
 
   // This is used to reset the pool to the initial uncapped state when the
@@ -440,6 +450,9 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   const size_t socket_soft_cap_;
   const SocketPoolAdditionalCapacity additional_capacity_;
   SocketPoolState state_ = SocketPoolState::kUncapped;
+
+  // If set, this overrides `socket_soft_cap_` for future calculations.
+  std::optional<size_t> socket_soft_cap_override_for_test_ = std::nullopt;
 
   const ProxyChain proxy_chain_;
   const bool is_for_websockets_;

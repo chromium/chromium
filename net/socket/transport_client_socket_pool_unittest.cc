@@ -1155,6 +1155,112 @@ TEST_P(TransportClientSocketPoolTest, SSLCertError) {
   EXPECT_TRUE(handle.socket());
 }
 
+// Idle sockets dropped during allocation should force state recalculation.
+// See crbug.com/510607132.
+TEST_P(TransportClientSocketPoolTest,
+       EnsureStateRecalculationDuringIdleSocketDrop) {
+  TransportClientSocketPool pool(
+      /*socket_soft_cap=*/2, /*max_sockets_per_group=*/1,
+      SocketPoolAdditionalCapacity::CreateEmpty(), kUnusedIdleSocketTimeout,
+      ProxyChain::Direct(),
+      /*is_for_websockets=*/false, common_connect_job_params_.get());
+  ClientSocketPool::GroupId group_id_1(
+      url::SchemeHostPort(url::kHttpScheme, "www.example.com", 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+  ClientSocketPool::GroupId group_id_2(
+      url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+  ClientSocketPool::GroupId group_id_3(
+      url::SchemeHostPort(url::kHttpScheme, "www.example.net", 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+  ClientSocketPool::GroupId group_id_4(
+      url::SchemeHostPort(url::kHttpScheme, "www.example.us", 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+  session_deps_.host_resolver->set_synchronous_mode(true);
+
+  // Connect a socket in Group 1.
+  TestCompletionCallback callback1;
+  ClientSocketHandle handle1;
+  int rv1 =
+      handle1.Init(group_id_1, params_, /*proxy_annotation_tag=*/std::nullopt,
+                   LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                   callback1.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &pool, NetLogWithSource());
+  EXPECT_THAT(rv1, IsOk());
+  EXPECT_TRUE(handle1.is_initialized());
+  EXPECT_EQ(0u, pool.IdleSocketCount());
+  EXPECT_EQ(1u, pool.SocketsInUse());
+  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+
+  // Connect a socket in Group 2.
+  TestCompletionCallback callback2;
+  ClientSocketHandle handle2;
+  int rv2 =
+      handle2.Init(group_id_2, params_, /*proxy_annotation_tag=*/std::nullopt,
+                   LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                   callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &pool, NetLogWithSource());
+  EXPECT_THAT(rv2, IsOk());
+  EXPECT_TRUE(handle2.is_initialized());
+  EXPECT_EQ(0u, pool.IdleSocketCount());
+  EXPECT_EQ(2u, pool.SocketsInUse());
+  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+
+  // Let sockets go idle.
+  handle1.Reset();
+  handle2.Reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2u, pool.IdleSocketCount());
+  EXPECT_EQ(2u, pool.SocketsInUse());
+  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+
+  // Connect a socket in Group 3, see one idle sockets released.
+  TestCompletionCallback callback3;
+  ClientSocketHandle handle3;
+  int rv3 =
+      handle3.Init(group_id_3, params_, /*proxy_annotation_tag=*/std::nullopt,
+                   LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                   callback3.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &pool, NetLogWithSource());
+  EXPECT_THAT(rv3, IsOk());
+  EXPECT_TRUE(handle3.is_initialized());
+  EXPECT_EQ(1u, pool.IdleSocketCount());
+  EXPECT_EQ(2u, pool.SocketsInUse());
+  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+
+  // Let sockets go idle.
+  handle3.Reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2u, pool.IdleSocketCount());
+  EXPECT_EQ(2u, pool.SocketsInUse());
+  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+
+  // Adjust the soft cap downward to 1.
+  pool.SetSocketSoftCapOverrideForTest(1);
+
+  // Connect a socket in Group 4, see both idle sockets released.
+  TestCompletionCallback callback4;
+  ClientSocketHandle handle4;
+  int rv4 =
+      handle4.Init(group_id_4, params_, /*proxy_annotation_tag=*/std::nullopt,
+                   LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                   callback4.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &pool, NetLogWithSource());
+  EXPECT_THAT(rv4, IsOk());
+  EXPECT_TRUE(handle4.is_initialized());
+  EXPECT_EQ(0u, pool.IdleSocketCount());
+  EXPECT_EQ(1u, pool.SocketsInUse());
+  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+}
+
 namespace {
 class TransportClientSocketPoolSSLConfigChangeTest
     : public TransportClientSocketPoolTestBase,

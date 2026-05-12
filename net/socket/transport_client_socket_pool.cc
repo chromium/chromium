@@ -436,15 +436,7 @@ int TransportClientSocketPool::RequestSocketInternal(
       request.respect_limits() == RespectLimits::ENABLED) {
     // NOTE(mmenke):  Wonder if we really need different code for each case
     // here.  Only reason for them now seems to be preconnects.
-    if (idle_socket_count_ > 0) {
-      // There's an idle socket in this pool. Either that's because there's
-      // still one in this group, but we got here due to preconnecting
-      // bypassing idle sockets, or because there's an idle socket in another
-      // group.
-      bool closed = CloseOneIdleSocketExceptInGroup(group);
-      if (preconnecting && !closed)
-        return ERR_PRECONNECT_MAX_SOCKET_LIMIT;
-    } else {
+    if (idle_socket_count_ == 0) {
       // Checking for a stalled higher layer group here could result in
       // reentrancy issues, so instead return an error for preconnects and
       // ERR_IO_PENDING if invoked from another callsite.
@@ -462,6 +454,28 @@ int TransportClientSocketPool::RequestSocketInternal(
       // stalled.
       request.net_log().AddEvent(
           NetLogEventType::SOCKET_POOL_STALLED_MAX_SOCKETS);
+      return preconnecting ? ERR_PRECONNECT_MAX_SOCKET_LIMIT : ERR_IO_PENDING;
+    }
+
+    // There's an idle socket in this pool. Either that's because there's
+    // still one in this group, but we got here due to preconnecting
+    // bypassing idle sockets, or because there's an idle socket in another
+    // group. Close idle sockets until we have capacity (or there are none
+    // left outside the current group).
+    while (idle_socket_count_ > 0) {
+      bool closed = CloseOneIdleSocketExceptInGroup(group);
+      if (!closed) {
+        break;
+      }
+      // We want to know if a new allocation could succeed, if not we must
+      // release more idle sockets and try again.
+      UpdateStateBeforeAllocation();
+      if (State() == SocketPoolState::kUncapped) {
+        break;
+      }
+    }
+    // If the pool is still capped by now, there's no free capacity to allocate.
+    if (State() == SocketPoolState::kCapped) {
       return preconnecting ? ERR_PRECONNECT_MAX_SOCKET_LIMIT : ERR_IO_PENDING;
     }
   }
@@ -1086,9 +1100,7 @@ void TransportClientSocketPool::CheckForStalledSocketGroups() {
 
     if (State() == SocketPoolState::kCapped) {
       if (idle_socket_count_ > 0) {
-        if (CloseOneIdleSocketExceptInGroup(nullptr)) {
-          UpdateStateAfterRelease();
-        }
+        CloseOneIdleSocketExceptInGroup(nullptr);
       } else {
         // We can't activate more sockets since we're already at our global
         // limit.
@@ -1312,7 +1324,8 @@ bool TransportClientSocketPool::CloseOneIdleSocketExceptInGroup(
       DecrementIdleCount();
       if (group->IsEmpty())
         RemoveGroup(i);
-
+      // As a socket was released, the state should be updated to reflect this.
+      UpdateStateAfterRelease();
       return true;
     }
   }
