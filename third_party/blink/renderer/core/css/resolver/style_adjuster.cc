@@ -771,6 +771,7 @@ void StyleAdjuster::AdjustStyleForDisplay(
       }
     }
     if (layout_parent_style.IsDisplayFlex() ||
+        layout_parent_style.IsDisplayWebkitBox() ||
         layout_parent_style.IsDisplayGrid() ||
         layout_parent_style.IsDisplayGridLanes() ||
         layout_parent_style.IsDisplayMath() ||
