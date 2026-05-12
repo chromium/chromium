@@ -4,6 +4,7 @@
 
 source_set("autofill_and_passwords") {
   sources = [
+    "autofill_ai_base_mutator.h",
     "autofill_and_passwords_consumer.h",
     "autofill_and_passwords_table_view_controller.h",
     "autofill_and_passwords_table_view_controller.mm",

@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_ai_base_mutator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -68,7 +69,7 @@ enum SectionIdentifier {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  [self.mutator didSelectTravelInfoItem:item];
+  [self.mutator didSelectEntityItem:item];
 }
 
 #pragma mark - UITableViewDataSource

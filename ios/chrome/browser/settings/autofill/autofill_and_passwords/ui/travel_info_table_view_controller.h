@@ -9,15 +9,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
+@protocol AutofillAIBaseMutator;
 @class TravelInfoTableViewController;
-
-// Protocol for actions triggered by the Travel Info view.
-@protocol TravelInfoMutator <NSObject>
-
-// Called when the user taps on a travel info item.
-- (void)didSelectTravelInfoItem:(TableViewItem*)item;
-
-@end
 
 // Delegate for presentation events related to TravelInfoTableViewController.
 @protocol TravelInfoTableViewControllerDelegate <NSObject>
@@ -37,7 +30,7 @@
 @property(nonatomic, weak) id<TravelInfoTableViewControllerDelegate> delegate;
 
 // Mutator for actions in the view.
-@property(nonatomic, weak) id<TravelInfoMutator> mutator;
+@property(nonatomic, weak) id<AutofillAIBaseMutator> mutator;
 
 @end
 

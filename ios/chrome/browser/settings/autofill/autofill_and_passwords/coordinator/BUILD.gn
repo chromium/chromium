@@ -4,6 +4,9 @@
 
 source_set("coordinator") {
   sources = [
+    "autofill_ai_base_mediator.h",
+    "autofill_ai_base_mediator.mm",
+    "autofill_ai_base_mediator_protected.h",
     "autofill_and_passwords_coordinator.h",
     "autofill_and_passwords_coordinator.mm",
     "autofill_and_passwords_mediator.h",

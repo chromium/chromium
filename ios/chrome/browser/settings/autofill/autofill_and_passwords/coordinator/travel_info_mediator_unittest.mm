@@ -58,13 +58,13 @@ TEST_F(TravelInfoMediatorTest, SetsConsumerValuesSafe) {
 }
 
 @interface FakeTravelInfoMediatorDelegate
-    : NSObject <TravelInfoMediatorDelegate>
+    : NSObject <AutofillAIBaseMediatorDelegate>
 @property(nonatomic, assign) std::optional<autofill::EntityInstance::EntityId>
     lastOpenedEntityID;
 @end
 
 @implementation FakeTravelInfoMediatorDelegate
-- (void)travelInfoMediator:(TravelInfoMediator*)mediator
+- (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
     didRequestToOpenEntityWithID:(autofill::EntityInstance::EntityId)entityID {
   _lastOpenedEntityID = entityID;
 }
@@ -79,7 +79,7 @@ TEST_F(TravelInfoMediatorTest, SelectsItemForwardsToDelegate) {
   AutofillAIEntityItem* item = [[AutofillAIEntityItem alloc] initWithType:0];
   item.guid = autofill::EntityInstance::EntityId("test-id-123");
 
-  [mediator_ didSelectTravelInfoItem:item];
+  [mediator_ didSelectEntityItem:item];
 
   ASSERT_TRUE(delegate.lastOpenedEntityID.has_value());
   EXPECT_EQ(delegate.lastOpenedEntityID.value(), item.guid);

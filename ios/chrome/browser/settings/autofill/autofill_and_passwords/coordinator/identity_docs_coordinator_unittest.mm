@@ -87,9 +87,9 @@ TEST_F(IdentityDocsCoordinatorTest, StartsEntityEditCoordinator) {
 
   NSUInteger initialCount = navigation_controller_.viewControllers.count;
 
-  id<IdentityDocsMediatorDelegate> delegate =
-      static_cast<id<IdentityDocsMediatorDelegate>>(coordinator_);
-  [delegate identityDocsMediator:mediator
+  id<AutofillAIBaseMediatorDelegate> delegate =
+      static_cast<id<AutofillAIBaseMediatorDelegate>>(coordinator_);
+  [delegate autofillAIBaseMediator:mediator
       didRequestToOpenEntityWithID:entity_id];
   EXPECT_GT(navigation_controller_.viewControllers.count, initialCount);
 

@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 @interface IdentityDocsCoordinator () <AutofillAIEntityEditCoordinatorDelegate,
-                                       IdentityDocsMediatorDelegate,
+                                       AutofillAIBaseMediatorDelegate,
                                        IdentityDocsTableViewControllerDelegate>
 @end
 
@@ -85,9 +85,9 @@
   [self.delegate identityDocsCoordinatorDidRemove:self];
 }
 
-#pragma mark - IdentityDocsMediatorDelegate
+#pragma mark - AutofillAIBaseMediatorDelegate
 
-- (void)identityDocsMediator:(IdentityDocsMediator*)mediator
+- (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
     didRequestToOpenEntityWithID:(autofill::EntityInstance::EntityId)entityID {
   [self startEntityEditCoordinatorWithID:entityID];
 }

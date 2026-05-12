@@ -9,15 +9,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
+@protocol AutofillAIBaseMutator;
 @class IdentityDocsTableViewController;
-
-// Protocol for actions triggered by the Identity Docs view.
-@protocol IdentityDocsMutator <NSObject>
-
-// Called when the user taps on an identity doc item.
-- (void)didSelectIdentityDocItem:(TableViewItem*)item;
-
-@end
 
 // Delegate for presentation events related to IdentityDocsTableViewController.
 @protocol IdentityDocsTableViewControllerDelegate <NSObject>
@@ -37,7 +30,7 @@
 @property(nonatomic, weak) id<IdentityDocsTableViewControllerDelegate> delegate;
 
 // Mutator for actions in the view.
-@property(nonatomic, weak) id<IdentityDocsMutator> mutator;
+@property(nonatomic, weak) id<AutofillAIBaseMutator> mutator;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_DESIGNATED_INITIALIZER;
 
