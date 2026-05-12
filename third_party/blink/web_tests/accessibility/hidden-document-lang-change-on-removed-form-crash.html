@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html hidden>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+</head>
+<body id="body">
+<form>
+<submit id="target"></submit>
+</form>
+<script>
+async_test(t => {
+  t.step_timeout(() => {
+    document.getElementById("target").addEventListener(
+        "pointerdown", function() {
+          var elt = document.getElementById("target");
+          elt.setAttribute("lang", "ar-eg");
+          elt = document.getElementById("body");
+          elt.setAttribute("lang", "zh-Hant-TW");
+        });
+    var element = document.getElementById("target");
+    var event = document.createEvent("Event");
+    event.initEvent("pointerdown");
+    element.dispatchEvent(event);
+    document.getElementById("body").addEventListener("mousedown", function() {});
+    t.done();
+  }, 100);
+}, "Changing lang in a hidden form subtree should not crash");
+</script>
+</body>
+</html>
