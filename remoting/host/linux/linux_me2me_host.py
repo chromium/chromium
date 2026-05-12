@@ -1271,6 +1271,16 @@ class WaylandDesktop(Desktop):
 
   def _launch_server(self, *args, **kwargs):
     logging.info("Launching wayland server.")
+    # Remove the display layout file, which will cause problems if it is applied
+    # right after the session is launched. See: http://crbug.com/487749302
+    display_layout_file = os.path.join(
+        CONFIG_DIR, "host#%s.display_layout.pb" % g_host_hash)
+    try:
+      os.remove(display_layout_file)
+      logging.info("Existing display layout file deleted.")
+    except FileNotFoundError:
+      pass
+
     session_binary = self._wayland_session.get_session_binary()
 
     if not shutil.which(session_binary):

@@ -381,12 +381,18 @@ void GnomeRemoteDesktopSession::OnPersistentLayoutLoaded() {
   // Block and queue up any further display changes for a short period to avoid
   // a race condition in GNOME/Mutter during session startup.
   // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4642
+  // This has been disabled because of http://crbug.com/487749302#comment12. The
+  // delay is not needed on the single-process host because we don't persist
+  // display layouts across session restarts, and on multi-process host, the
+  // problem doesn't seem to reproduce any more.
+  // TODO: crbug.com/487749302 - either remove this or change it back to 6
+  // seconds.
   desktop_resizer_.BlockAndQueueDisplayChanges();
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&GnomeDesktopResizer::UnblockAndFlushDisplayChanges,
                      desktop_resizer_.GetWeakPtr()),
-      base::Seconds(6));
+      base::Seconds(0));
 
   initialization_state_ = InitializationState::kInitialized;
   init_callbacks_.Notify(base::ok());
