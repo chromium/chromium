@@ -12972,6 +12972,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          payments::features::kPaymentRequestRejectTooSmallWindows)},
 
+    {"in-stock-notification", flag_descriptions::kInStockNotificationName,
+     flag_descriptions::kInStockNotificationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kInStockNotification)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"long-screenshots-lenient-memory-check",
      flag_descriptions::kLongScreenshotsLenientMemoryCheckName,

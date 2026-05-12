@@ -5719,6 +5719,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "in-stock-notification",
+    "owners": [ "luisantunes@google.com", "darwinyang@google.com", "chrome-payments-eng@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "incognito-screenshot",
     "owners": [ "zalmashni@google.com", "sideyilmaz@chromium.org", "chrome-incognito@google.com" ],
     // This flag is used by testers and developers to screenshot incognito features.

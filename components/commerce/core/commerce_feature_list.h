@@ -48,6 +48,11 @@ BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey);
 BASE_DECLARE_FEATURE(kShoppingPageTypes);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kSubscriptionsApi);
+
+// Feature flag for detecting out of stock product, showing the user a
+// notification, and allowing the user to subscribe to in stock notifications.
+BASE_DECLARE_FEATURE(kInStockNotification);
+
 // Feature flag for showing discounts on checkout autofill.
 BASE_DECLARE_FEATURE(kDiscountAutofill);
 
