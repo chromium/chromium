@@ -566,6 +566,12 @@ void WebUIToolbarWebView::DidFinishNavigation(
 }
 
 void WebUIToolbarWebView::SetBackButtonLeadingMargin(int margin) {
+  // This is called every time ToolbarView::Layout() is called, almost always
+  // with the same value as before. Best to avoid the expensive
+  // PreferredSizeChanged() call if nothing actually changed.
+  if (margin == back_button_leading_margin_) {
+    return;
+  }
   back_button_leading_margin_ = margin;
   OnBackForwardStateChanged();
   PreferredSizeChanged();
@@ -581,7 +587,6 @@ void WebUIToolbarWebView::SetBackForwardEnabled(int command_id, bool enabled) {
 
 void WebUIToolbarWebView::SetForwardVisible(bool visible) {
   forward_control_.SetIsPinned(visible);
-  PreferredSizeChanged();
 }
 
 void WebUIToolbarWebView::DidFirstVisuallyNonEmptyPaint() {

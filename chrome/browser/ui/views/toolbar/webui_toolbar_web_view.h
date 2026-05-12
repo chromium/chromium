@@ -55,7 +55,9 @@ class WebUIToolbarControlDelegate {
   // Announces an alert to accessibility screen readers.
   virtual void AnnounceAlert(const std::u16string& announcement) = 0;
 
-  // Indicate preferred size of a toolbar control has changed.
+  // Indicate preferred size of a toolbar control has changed. This results in
+  // synchronously fully recalculating layout to see if anything needs to be
+  // changed, so should only be called when something actually changed.
   virtual void OnPreferredSizeChanged() = 0;
 
   // Indicates a toolbar control's state has changed.

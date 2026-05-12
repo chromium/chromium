@@ -63,6 +63,7 @@ void WebUIBackForwardControl::SetIsPinned(bool is_pinned) {
     return;
   }
   is_pinned_ = is_pinned;
+  delegate_->OnPreferredSizeChanged();
   delegate_->OnBackForwardStateChanged();
 }
 
