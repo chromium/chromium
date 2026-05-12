@@ -35,11 +35,15 @@ class StubSendTabToSelfSyncService : public SendTabToSelfSyncService {
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
+  void SetEntryPointDisplayReason(
+      std::optional<EntryPointDisplayReason> reason);
+
   FakeSendTabToSelfModel* GetFakeSendTabToSelfModel();
 
  private:
   FakeSendTabToSelfModel model_;
   syncer::FakeDataTypeControllerDelegate fake_delegate_;
+  std::optional<EntryPointDisplayReason> entry_point_display_reason_;
 };
 
 }  // namespace send_tab_to_self

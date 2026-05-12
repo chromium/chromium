@@ -3277,6 +3277,13 @@ Google Chrome is unable to recover your settings.
         For security, Chrome turns off JavaScript optimization when you visit a site for the first time.&#xA;
 If this page isn’t working as expected, try allowing optimization.
       </message>
+      <!-- Send Tab To Self -->
+      <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_TITLE" desc="Title of the send-tab-to-self sign-in promo bubble.">
+        Sign in to Chrome
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BUTTON_LABEL" desc="Label of the sign-in button in the send-tab-to-self sign-in promo bubble.">
+        Sign in to Chrome
+      </message>
     </messages>
   </release>
 </grit>

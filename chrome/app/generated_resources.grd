@@ -13948,6 +13948,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL" desc = "Text shown when a user with no available target devices attempts to use send-tab-to-self.">
         To send this tab to another device, sign in to Chrome there
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BODY" desc="Body label text of the send-tab-to-self sign-in promo bubble.">
+        To send links between devices, ensure both are signed in to the same Google account.
+      </message>
 
       <!-- Share via QR Code strings -->
       <if expr="not use_titlecase">

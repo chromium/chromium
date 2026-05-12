@@ -31,17 +31,40 @@ class SendTabToSelfPromoBubbleView : public SendTabToSelfBubbleView {
   METADATA_HEADER(SendTabToSelfPromoBubbleView, SendTabToSelfBubbleView)
 
  public:
+  enum class PromoType {
+    kSignInPromo,
+    // TODO(crbug.com/488252159): Implement the modernized signed-out case in
+    // an account-aware state by showing the profile icon/avatar header.
+    kAccountAwareSignInPromo,
+    kNoTargetDevice,
+  };
+
   // Bubble will be anchored to `anchor`.
   SendTabToSelfPromoBubbleView(views::BubbleAnchor anchor,
                                content::WebContents* web_contents,
-                               bool show_signin_button);
+                               PromoType promo_type);
 
   SendTabToSelfPromoBubbleView(const SendTabToSelfPromoBubbleView&) = delete;
   SendTabToSelfPromoBubbleView& operator=(const SendTabToSelfPromoBubbleView&) =
       delete;
 
+  // views::WidgetObserver:
+  // Sets up header illustration or custom profile styling.
+  void AddedToWidget() override;
+
+  // views::BubbleDialogDelegateView:
+  // Override to prevent the OK button from receiving initial focus on display.
+  views::View* GetInitiallyFocusedView() override;
+
  private:
-  void OnSignInButtonClicked();
+  // Private helper to construct the view hierarchy.
+  void InitLayout();
+
+  // Launches the Dice sign-in tab.
+  void HandleSignInButtonClicked();
+
+  // The mode/variant of this promo bubble.
+  const PromoType promo_type_;
 };
 
 }  // namespace send_tab_to_self

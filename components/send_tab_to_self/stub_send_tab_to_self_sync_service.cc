@@ -13,14 +13,20 @@
 namespace send_tab_to_self {
 
 StubSendTabToSelfSyncService::StubSendTabToSelfSyncService()
-    : fake_delegate_(syncer::SEND_TAB_TO_SELF) {}
+    : fake_delegate_(syncer::SEND_TAB_TO_SELF),
+      entry_point_display_reason_(EntryPointDisplayReason::kOfferFeature) {}
 
 StubSendTabToSelfSyncService::~StubSendTabToSelfSyncService() = default;
 
 std::optional<EntryPointDisplayReason>
 StubSendTabToSelfSyncService::GetEntryPointDisplayReason(
     const GURL& url_to_share) {
-  return EntryPointDisplayReason::kOfferFeature;
+  return entry_point_display_reason_;
+}
+
+void StubSendTabToSelfSyncService::SetEntryPointDisplayReason(
+    std::optional<EntryPointDisplayReason> reason) {
+  entry_point_display_reason_ = reason;
 }
 
 SendTabToSelfModel* StubSendTabToSelfSyncService::GetSendTabToSelfModel() {
