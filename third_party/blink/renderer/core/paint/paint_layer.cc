@@ -1182,7 +1182,8 @@ static bool IsHitCandidateForDepthOrder(
     const PaintLayer* hit_layer,
     bool can_depth_sort,
     double* z_offset,
-    const HitTestingTransformState* transform_state) {
+    const HitTestingTransformState* transform_state,
+    bool occlusion_hit_test) {
   if (!hit_layer)
     return false;
 
@@ -1199,9 +1200,37 @@ static bool IsHitCandidateForDepthOrder(
   DCHECK(!z_offset || transform_state ||
          hit_layer->GetLayoutObject().IsSVGForeignObject());
   if (z_offset && transform_state) {
-    // This is actually computing our z, but that's OK because the hitLayer is
-    // coplanar with us.
-    double child_z_offset = ComputeZOffset(*transform_state);
+    double child_z_offset;
+    // When performing a hit test for occlusion, we consider a layer to be
+    // occluding if any part of it has a z-axis position greater than or equal
+    // to the z-axis position of the occlusion target. The occlusion target is
+    // assumed not to have a 3D projection, so its z-axis position is uniformly
+    // zero (see the call to target->HasDistortingVisualEffects() in
+    // intersection_geometry.cc). For the layer under test, we compute the
+    // z-axis position at all four corners to find the max.
+    if (occlusion_hit_test && hit_layer->Has3DTransform()) {
+      child_z_offset = -std::numeric_limits<double>::infinity();
+      PhysicalRect rect = hit_layer->GetLayoutObject().VisualOverflowRect();
+      gfx::QuadF local_quad{gfx::RectF(rect)};
+      gfx::PointF pts[4] = {local_quad.p1(), local_quad.p2(), local_quad.p3(),
+                            local_quad.p4()};
+      for (const auto& pt : pts) {
+        gfx::Point3F pt3(pt.x(), pt.y(), 0);
+        pt3 = transform_state->AccumulatedTransform().MapPoint(pt3);
+        if (pt3.z() > child_z_offset) {
+          child_z_offset = pt3.z();
+        }
+      }
+      if (child_z_offset >= 0) {
+        *z_offset = child_z_offset;
+        return true;
+      }
+      return false;
+    } else {
+      // This is actually computing our z, but that's OK because the hitLayer is
+      // coplanar with us.
+      child_z_offset = ComputeZOffset(*transform_state);
+    }
     if (child_z_offset > *z_offset) {
       *z_offset = child_z_offset;
       return true;
@@ -1534,12 +1563,14 @@ PaintLayer* PaintLayer::HitTestLayer(
               RuntimeEnabledFeatures::
                       HitTestContainerTransformStateForPreserve3dEnabled()
                   ? container_transform_state
-                  : local_transform_state) &&
+                  : local_transform_state,
+              temp_result.GetHitTestRequest().IsHitTestVisualOverflow()) &&
           IsHitCandidateForStopNode(GetLayoutObject(), stop_node)) {
-        if (result.GetHitTestRequest().ListBased())
+        if (result.GetHitTestRequest().ListBased()) {
           result.Append(temp_result);
-        else
+        } else {
           result = temp_result;
+        }
         if (!depth_sort_descendants)
           return this;
         // Foreground can depth-sort with descendant layers, so keep this as a
@@ -1578,12 +1609,14 @@ PaintLayer* PaintLayer::HitTestLayer(
             RuntimeEnabledFeatures::
                     HitTestContainerTransformStateForPreserve3dEnabled()
                 ? container_transform_state
-                : local_transform_state) &&
+                : local_transform_state,
+            temp_result.GetHitTestRequest().IsHitTestVisualOverflow()) &&
         IsHitCandidateForStopNode(GetLayoutObject(), stop_node)) {
-      if (result.GetHitTestRequest().ListBased())
+      if (result.GetHitTestRequest().ListBased()) {
         result.Append(temp_result);
-      else
+      } else {
         result = temp_result;
+      }
       return this;
     }
     if (inside_fragment_background_rect &&
@@ -1904,8 +1937,9 @@ PaintLayer* PaintLayer::HitTestChildren(
       result.Append(temp_result);
     }
 
-    if (IsHitCandidateForDepthOrder(hit_layer, depth_sort_descendants, z_offset,
-                                    local_transform_state)) {
+    if (IsHitCandidateForDepthOrder(
+            hit_layer, depth_sort_descendants, z_offset, local_transform_state,
+            result.GetHitTestRequest().IsHitTestVisualOverflow())) {
       result_layer = hit_layer;
       if (!result.GetHitTestRequest().ListBased())
         result = temp_result;

@@ -446,4 +446,42 @@ TEST_F(HitTestingTest, ReferenceFilter) {
             PhysicalRect(-10, -10, 120, 120));
 }
 
+TEST_F(HitTestingTest, OcclusionHitTestWith3DTransform) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+      transform-style: preserve-3d;
+    }
+    div {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+    }
+    #target {
+      background: green;
+    }
+    #occluder {
+      background: red;
+      transform: translateZ(-10px) rotateY(30deg);
+      transform-origin: center;
+    }
+    </style>
+    <div id=occluder></div>
+    <div id=target></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  Element* occluder = GetElementById("occluder");
+
+  HitTestResult result = HitTestForOcclusion(*target);
+  EXPECT_EQ(result.InnerNode(), occluder);
+
+  // Place the occluder entirely behind the target.
+  occluder->SetInlineStyleProperty(CSSPropertyID::kTransform,
+                                   "translateZ(-10px) rotateY(10deg)");
+  UpdateAllLifecyclePhasesForTest();
+  result = HitTestForOcclusion(*target);
+  EXPECT_EQ(result.InnerNode(), target);
+}
+
 }  // namespace blink
