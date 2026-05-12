@@ -444,6 +444,9 @@ export class SpeechController {
         this.onSpeechFinished_();
       }
     }, playFromSelectionTimeout);
+    // Reset the current content position to avoid playing from a stale position
+    // once speech has already been started.
+    this.model_.setCurrentContentPosition(null);
     return true;
   }
 
@@ -878,6 +881,7 @@ export class SpeechController {
     this.model_.setContextNode(null);
     this.model_.setResumeSpeechOnVoiceMenuClose(false);
     this.model_.setWordsHeard(0);
+    this.model_.setCurrentContentPosition(null);
   }
 
   saveReadAloudState() {

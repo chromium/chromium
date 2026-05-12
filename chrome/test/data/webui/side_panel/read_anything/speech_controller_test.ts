@@ -932,4 +932,44 @@ suite('SpeechController', () => {
 
         assertFalse(onPlayingFromPosition);
       });
+
+  test('playFromContentPosition clears currentContentPosition', async () => {
+    const text = 'Clearing position test.';
+    setContent(text, readAloudModel);
+    const node = nodeStore.getDomNode(2)!;
+    speechController.onSelectionChange(
+        {node, offset: 0, source: ContentPositionSource.SELECTION});
+    const element = document.createElement('p');
+    element.textContent = text;
+
+    speechController.onPlayPauseToggle(element);
+    await speech.whenCalled('speak');
+    assertTrue(onPlayingFromPosition);
+
+    // Pause
+    speechController.onPlayPauseToggle(element);
+    onPlayingFromPosition = false;
+    speech.reset();
+
+    // Resume
+    speechController.onPlayPauseToggle(element);
+    await speech.whenCalled('resume');
+    assertFalse(onPlayingFromPosition);
+  });
+
+  test('clearReadAloudState clears currentContentPosition', async () => {
+    const text = 'Clearing state test.';
+    setContent(text, readAloudModel);
+    const node = nodeStore.getDomNode(2)!;
+    speechController.onSelectionChange(
+        {node, offset: 0, source: ContentPositionSource.SELECTION});
+    const element = document.createElement('p');
+    element.textContent = text;
+
+    speechController.clearReadAloudState();
+    speechController.onPlayPauseToggle(element);
+    await speech.whenCalled('speak');
+
+    assertFalse(onPlayingFromPosition);
+  });
 });
