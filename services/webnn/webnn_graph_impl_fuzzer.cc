@@ -18,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/debug/asan_service.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -1162,7 +1163,16 @@ class GlobalFuzzEnvironment {
 
     mojo::core::Init();
 
-    webnn_test_environment_ = std::make_unique<WebNNTestEnvironment>();
+    // Currently only the ORT backend will call this callback when it encounters
+    // an inference failure, crash the process so the fuzzer can catch the
+    // error.
+    auto lose_all_contexts_callback = base::BindOnce([]() {
+      LOG(FATAL)
+          << "Lose all WebNN contexts, likely due to an inference failure.";
+    });
+    webnn_test_environment_ = std::make_unique<WebNNTestEnvironment>(
+        WebNNContextProviderImpl::WebNNStatus::kWebNNEnabled,
+        std::move(lose_all_contexts_callback));
 
     // Also increase the runloop timeout.
     runloop_timeout_ = std::make_unique<base::test::ScopedRunLoopTimeout>(
