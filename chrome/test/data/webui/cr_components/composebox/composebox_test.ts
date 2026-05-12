@@ -369,17 +369,15 @@ suite('composeboxSharedMountAutoRepostionDefault', () => {
       composeCreateImagePlaceholder: 'Create Image',
       searchboxComposePlaceholder: 'Compose',
       composeboxShowContextMenu: true,
-      // Keys accessed by ContextualActionMenuElement /
-      // ContextualEntrypointAndMenuElement class-field initializations once the
-      // shared `<cr-composebox-contextual-entrypoint-and-menu>` mount renders.
-      // loadTimeData.getBoolean() asserts on absent keys, so these are
-      // required.
+      // Keys accessed by ContextualActionMenuElement class-field
+      // initialization once the shared
+      // `<cr-composebox-contextual-entrypoint-and-menu>` mount renders.
+      // loadTimeData.getBoolean() asserts on absent keys, so these are required.
       // Not optional with defaults - when `composeboxShowContextMenu` is true.
       composeboxContextMenuEnableMultiTabSelection: false,
       composeboxShowContextMenuTabPreviews: false,
       ShowContextMenuHeaders: false,
       composeboxSmartTabSharingVisible: false,
-      contextualMenuUsePecApi: true,
       menu: 'menu',
       addContextTile: 'Add context',
       addContext: 'Add context',
@@ -415,6 +413,7 @@ suite('composeboxSharedMountAutoRepostionDefault', () => {
 
     composebox = document.createElement('cr-composebox');
     composebox.showMenuOnClick = true;
+    composebox.usePecApi = true;
     document.body.appendChild(composebox);
     await composebox.updateComplete;
   });

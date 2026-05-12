@@ -31,6 +31,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       .showMenuOnClick="${false}"
       .shouldShowGhostFiles="${true}"
       .showVoiceSearch="${true}"
+      .usePecApi="${this.usePecApi_}"
       entrypoint-name="Omnibox">
   </cr-composebox>`}
 </div>

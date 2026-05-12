@@ -117,7 +117,10 @@ export function createComposeboxElement(
     testProxy: ComposeboxTestElement,
     properties: Partial<ComposeboxElement> = {}) {
   testProxy.element = new ComposeboxElement();
-  Object.assign(testProxy.element, properties);
+  Object.assign(testProxy.element, {
+    usePecApi: loadTimeData.getBoolean('contextualMenuUsePecApi'),
+    ...properties,
+  });
   document.body.appendChild(testProxy.element);
 }
 

@@ -10,7 +10,7 @@ import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_a
 export function getHtml(this: ContextualEntrypointAndMenuElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    ${hasAllowedInputs(this.inputState, this.usePecApi_) ? html`
+    ${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
       <cr-composebox-contextual-entrypoint-button id="entrypointButton"
           exportparts="context-menu-entrypoint-icon, entrypoint-button"
           .inputState="${this.inputState}"

@@ -66,6 +66,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
           .clearAllInputsWhenSubmittingQuery="${true}"
           .showVoiceSearch="${true}"
+          .usePecApi="${this.usePecApi_}"
           .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
           .isZeroState="${this.isZeroState}"
           @result-changed="${this.onSuggestionsResultChanged_}"

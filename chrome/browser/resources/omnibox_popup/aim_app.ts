@@ -56,6 +56,7 @@ export class OmniboxAimAppElement extends CrLitElement {
         reflect: true,
       },
       disableVoiceSearchAnimation_: {type: Boolean},
+      usePecApi_: {type: Boolean},
     };
   }
 
@@ -79,6 +80,8 @@ export class OmniboxAimAppElement extends CrLitElement {
   // across all surfaces (= Nextbox, Omnibox, and Realbox).
   protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectEnabled');
+  protected accessor usePecApi_: boolean =
+      loadTimeData.getBoolean('contextualMenuUsePecApi');
 
   private eventTracker_ = new EventTracker();
   private pageHandler_: PageHandlerInterface;

@@ -25,6 +25,7 @@ suite('ContextualEntrypointAndMenu', () => {
         document.createElement('cr-composebox-contextual-entrypoint-and-menu');
     Object.assign(entrypointAndMenu, {
       inputState,
+      usePecApi: loadTimeData.getBoolean('contextualMenuUsePecApi'),
     });
     document.body.appendChild(entrypointAndMenu);
     await microtasksFinished();

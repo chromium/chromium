@@ -266,6 +266,7 @@ export class AppElement extends AppElementBase {
       browserPromoCompletedLimit_: {type: Number},
       showBrowserPromo_: {type: Boolean},
       caretAnimationsEnabled_: {type: Boolean},
+      usePecApi_: {type: Boolean},
 
       modulesShownToUser: {
         type: Boolean,
@@ -378,6 +379,8 @@ export class AppElement extends AppElementBase {
   protected accessor showComposebox_: boolean = false;
   protected accessor caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
+  protected accessor usePecApi_: boolean =
+      loadTimeData.getBoolean('contextualMenuUsePecApi');
   protected accessor logoEnabled_: boolean =
       loadTimeData.getBoolean('logoEnabled');
   protected accessor oneGoogleBarEnabled_: boolean =
