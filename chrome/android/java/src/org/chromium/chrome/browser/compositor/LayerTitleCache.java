@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -85,8 +84,8 @@ public class LayerTitleCache {
      * @param context The Android {@link Context}.
      * @param resourceManager The manager for static resources to be used by native layers.
      * @param tabStripHeightPx The height of the tab strip in pixels.
-     * @param tabModelSelector The {@link TabModelSelector} to retrieve {@link TabGroupModelFilter}
-     *     and get {@link Tab} by id.
+     * @param tabModelSelector The {@link TabModelSelector} to retrieve {@link TabModel} and get
+     *     {@link Tab} by id.
      */
     public LayerTitleCache(
             Context context,

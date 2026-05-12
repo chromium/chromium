@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -134,31 +133,31 @@ public class TabUiUtils {
     /**
      * Ungroups a tab group and maybe shows a confirmation dialog.
      *
-     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param tabModel The {@link TabModel} to act on.
      * @param tabGroupId The id of the tab group.
      */
-    public static void ungroupTabGroup(TabGroupModelFilter filter, Token tabGroupId) {
-        if (!filter.tabGroupExists(tabGroupId)) return;
+    public static void ungroupTabGroup(TabModel tabModel, Token tabGroupId) {
+        if (!tabModel.tabGroupExists(tabGroupId)) return;
 
-        filter.getTabUngrouper()
+        tabModel.getTabUngrouper()
                 .ungroupTabGroup(tabGroupId, /* trailing= */ false, /* allowDialog= */ true);
     }
 
     /**
      * Update the tab group color.
      *
-     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param tabModel The {@link TabModel} to act on.
      * @param tabGroupId The group id of the interacting tab group.
      * @param newGroupColor The new group color being assigned to the tab group.
      * @return Whether the tab group color is updated.
      */
     public static boolean updateTabGroupColor(
-            TabGroupModelFilter filter, Token tabGroupId, @TabGroupColorId int newGroupColor) {
-        if (!filter.tabGroupExists(tabGroupId)) return false;
+            TabModel tabModel, Token tabGroupId, @TabGroupColorId int newGroupColor) {
+        if (!tabModel.tabGroupExists(tabGroupId)) return false;
 
-        int curGroupColor = filter.getTabGroupColor(tabGroupId);
+        int curGroupColor = tabModel.getTabGroupColor(tabGroupId);
         if (curGroupColor != newGroupColor) {
-            filter.setTabGroupColor(tabGroupId, newGroupColor);
+            tabModel.setTabGroupColor(tabGroupId, newGroupColor);
             return true;
         }
         return false;
@@ -167,19 +166,19 @@ public class TabUiUtils {
     /**
      * Update the tab group title.
      *
-     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param tabModel The {@link TabModel} to act on.
      * @param tabGroupId The group id of the interacting tab group.
      * @param newGroupTitle The new group title being assigned to the tab group.
      * @return Whether the tab group title is updated.
      */
     public static boolean updateTabGroupTitle(
-            TabGroupModelFilter filter, Token tabGroupId, String newGroupTitle) {
+            TabModel tabModel, Token tabGroupId, String newGroupTitle) {
         assert newGroupTitle != null;
-        if (!filter.tabGroupExists(tabGroupId)) return false;
+        if (!tabModel.tabGroupExists(tabGroupId)) return false;
 
-        String curGroupTitle = filter.getTabGroupTitle(tabGroupId);
+        String curGroupTitle = tabModel.getTabGroupTitle(tabGroupId);
         if (!newGroupTitle.equals(curGroupTitle)) {
-            filter.setTabGroupTitle(tabGroupId, newGroupTitle);
+            tabModel.setTabGroupTitle(tabGroupId, newGroupTitle);
             return true;
         }
         return false;

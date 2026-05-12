@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
@@ -47,7 +46,6 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             AnimationHost animationHost,
             ScrollDelegate scrollDelegate,
             TabModel model,
-            TabGroupModelFilter tabGroupModelFilter,
             View containerView,
             SettableNullableObservableSupplier<Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
@@ -58,7 +56,6 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
                 animationHost,
                 scrollDelegate,
                 model,
-                tabGroupModelFilter,
                 containerView,
                 groupIdToHideSupplier,
                 tabWidthSupplier,
@@ -216,7 +213,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         } else {
             groupTitle = (StripLayoutGroupTitle) mInteractingViewDuringStop;
             Token destinationTabGroupId = groupTitle.getTabGroupId();
-            destinationTabId = mTabGroupModelFilter.getGroupLastShownTabId(destinationTabGroupId);
+            destinationTabId = mModel.getGroupLastShownTabId(destinationTabGroupId);
         }
 
         // 1. If hovered on view is not part of group or is collapsed, no-op.
@@ -231,9 +228,9 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             // Need to reverse, since the list of tab ids was reversed.
             tabsToMerge.add(0, mModel.getTabByIdChecked(tabId));
         }
-        List<Tab> destinationTabList = mTabGroupModelFilter.getRelatedTabList(destinationTabId);
+        List<Tab> destinationTabList = mModel.getRelatedTabList(destinationTabId);
         int mergeIndex = dropIndex - mModel.indexOf(destinationTabList.get(0));
-        mTabGroupModelFilter.mergeListOfTabsToGroup(
+        mModel.mergeListOfTabsToGroup(
                 tabsToMerge,
                 mModel.getTabByIdChecked(destinationTabId),
                 mergeIndex,
@@ -249,7 +246,6 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         List<Animator> animators = new ArrayList<>();
         updateBottomIndicatorWidthForTabReorder(
                 mAnimationHost.getAnimationHandler(),
-                mTabGroupModelFilter,
                 groupTitle,
                 /* isMovingOutOfGroup= */ false,
                 /* throughGroupTitle= */ false,
@@ -296,7 +292,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         } else {
             assert interactingView instanceof StripLayoutTab : "Unexpected view type";
             return !StripLayoutUtils.isNonTrailingTabInGroup(
-                    mTabGroupModelFilter, mModel, (StripLayoutTab) interactingView);
+                    mModel, (StripLayoutTab) interactingView);
         }
     }
 

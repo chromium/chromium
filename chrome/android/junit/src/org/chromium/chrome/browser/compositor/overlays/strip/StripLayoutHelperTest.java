@@ -131,11 +131,11 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -201,7 +201,6 @@ public class StripLayoutHelperTest {
     @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private CompositorButton mModelSelectorBtn;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private View mToolbarContainerView;
     @Mock private StripTabHoverCardView mTabHoverCardView;
@@ -287,13 +286,10 @@ public class StripLayoutHelperTest {
     /** Reset the environment before each test. */
     @Before
     public void beforeTest() {
-        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
-        when(mTabGroupModelFilter.getTabGroupTitle(any(Token.class)))
-                .thenReturn(UNSET_TAB_GROUP_TITLE);
-        when(mTabGroupModelFilter.getTabGroupTitle(any(Tab.class)))
-                .thenReturn(UNSET_TAB_GROUP_TITLE);
+        when(mModel.isTabInTabGroup(any())).thenReturn(false);
+        when(mModel.getTabUngrouper()).thenReturn(mTabUngrouper);
+        when(mModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
+        when(mModel.getTabGroupTitle(any(Tab.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
 
         mModel.setTabRemover(mTabRemover);
         mContext =
@@ -590,7 +586,7 @@ public class StripLayoutHelperTest {
     @Feature({"Accessibility"})
     public void testAccessibilityDescriptions_GroupIndicator_MultipleTabs_NamedGroup() {
         // Setup and group first three tabs. Name the group.
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
+        when(mModel.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
         initializeTest(false, false, 0);
         groupTabs(0, 3, TAB_GROUP_ID_1);
 
@@ -654,7 +650,7 @@ public class StripLayoutHelperTest {
     @Feature({"Accessibility"})
     public void testAccessibilityDescriptions_GroupIndicator_SharedGroup_MultipleTabs_NamedGroup() {
         // Setup and group first three tabs. Name the group.
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
+        when(mModel.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
         initializeTest(false, false, 0);
 
         // Create collaboration group.
@@ -678,7 +674,7 @@ public class StripLayoutHelperTest {
     @Feature({"Accessibility"})
     public void testAccessibilityDescriptions_GroupIndicator_SharedGroup_Notification() {
         // Setup and group first three tabs. Name the group.
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
+        when(mModel.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
         initializeTest(false, false, 0);
 
         // Create collaboration group and show notification bubble on group title.
@@ -707,7 +703,7 @@ public class StripLayoutHelperTest {
     @Feature({"Accessibility"})
     public void testAccessibilityDescriptions_TabWithUpdate_SharedGroup_Notification() {
         // Setup and group first three tabs. Name the group.
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
+        when(mModel.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
         initializeTest(false, false, 0);
 
         // Create collaboration group and show notification bubble on group title.
@@ -1025,7 +1021,7 @@ public class StripLayoutHelperTest {
         assertEquals("Should have two closing tabs.", 2, numClosingTabs);
 
         // Notify group removal and verify state.
-        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
+        when(mModel.isTabInTabGroup(any())).thenReturn(false);
         mStripLayoutHelper
                 .getTabGroupModelFilterObserverForTesting()
                 .didRemoveTabGroup(
@@ -1075,7 +1071,7 @@ public class StripLayoutHelperTest {
         assertEquals("Should have no closing tabs.", 0, numClosingTabs);
 
         // Notify group removal and verify state.
-        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
+        when(mModel.isTabInTabGroup(any())).thenReturn(false);
         mStripLayoutHelper
                 .getTabGroupModelFilterObserverForTesting()
                 .didRemoveTabGroup(
@@ -2536,12 +2532,8 @@ public class StripLayoutHelperTest {
     @Feature("Tab Context Menu")
     public void testBottomSheet_constructedWithoutDestroyHide() {
         var tabs = initializeTest_ForTab();
-        MockTabModel tabModel = new MockTabModel(mProfile, null);
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
-        tabModel.setActive(true);
-        tabModel.addTab(tabs[0].getTabId());
-        when(mTab.getUrl()).thenReturn(URL);
+        when(mModel.getTabById(tabs[0].getTabId()).getUrl()).thenReturn(URL);
 
         // Initialize the menu.
         mStripLayoutHelper.showTabContextMenuForTesting(
@@ -2553,7 +2545,7 @@ public class StripLayoutHelperTest {
                         eq(mProfile),
                         any(),
                         any(),
-                        eq(mTabGroupModelFilter),
+                        eq(mModel),
                         eq(mBottomSheetController),
                         eq(true),
                         eq(false));
@@ -2561,10 +2553,7 @@ public class StripLayoutHelperTest {
 
     /** Sets up tabModel and menu coordinator. */
     private void setupForContextMenu() {
-        MockTabModel tabModel = new MockTabModel(mProfile, null);
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
-        tabModel.setActive(true);
     }
 
     private void setupForGroupContextMenu() {
@@ -2696,11 +2685,11 @@ public class StripLayoutHelperTest {
         // Restore tabs state for undo.
         mModel.addTab("Tab 1");
         mModel.addTab("Tab 2");
-        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(true);
+        when(mModel.isTabInTabGroup(any())).thenReturn(true);
         List<Tab> relatedTabs = new ArrayList<>();
         relatedTabs.add(mModel.getTabAt(0));
         relatedTabs.add(mModel.getTabAt(1));
-        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID_1)).thenReturn(relatedTabs);
+        when(mModel.getTabsInGroup(TAB_GROUP_ID_1)).thenReturn(relatedTabs);
         when(mModel.getTabAt(0).getTabGroupId()).thenReturn(TAB_GROUP_ID_1);
         when(mModel.getTabAt(1).getTabGroupId()).thenReturn(TAB_GROUP_ID_1);
 
@@ -3014,7 +3003,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Act: Close tab and remove from group.
-        when(mTabGroupModelFilter.getTabCountForGroup(groupTitle.getTabGroupId())).thenReturn(1);
+        when(mModel.getTabCountForGroup(groupTitle.getTabGroupId())).thenReturn(1);
         closeTabAt(/* index= */ 0);
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
@@ -4663,15 +4652,6 @@ public class StripLayoutHelperTest {
     }
 
     private void initializeTest(boolean rtl, boolean incognito, int tabIndex, int numTabs) {
-        initializeTest(rtl, incognito, tabIndex, numTabs, mTabGroupModelFilter);
-    }
-
-    private void initializeTest(
-            boolean rtl,
-            boolean incognito,
-            int tabIndex,
-            int numTabs,
-            TabGroupModelFilter tabGroupModelFilter) {
         mStripLayoutHelper = createStripLayoutHelper(rtl, incognito);
         mIncognito = incognito;
 
@@ -4690,13 +4670,9 @@ public class StripLayoutHelperTest {
         }
         mModel.setIndex(tabIndex);
         mStripLayoutHelper.tabModelSelected(/* selected= */ true);
-        mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
-        mStripLayoutHelper.setTabStripIphControllerForTesting(mController);
         when(mController.wouldTriggerIph(anyInt())).thenReturn(true);
         mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
-        if (tabGroupModelFilter != null) {
-            mStripLayoutHelper.setTabGroupModelFilter(tabGroupModelFilter);
-        }
+        mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0);
         // Flush UI updated
     }
@@ -4738,37 +4714,42 @@ public class StripLayoutHelperTest {
 
     private StripLayoutHelper createStripLayoutHelper(boolean rtl, boolean incognito) {
         LocalizationUtils.setRtlForTesting(rtl);
-        return new StripLayoutHelper(
-                mActivity,
-                mSceneOverlay,
-                new StripLayoutHelper.TrailingButtonDelegate() {
-                    @Override
-                    public boolean isMenuShowing() {
-                        return false;
-                    }
+        StripLayoutHelper helper =
+                new StripLayoutHelper(
+                        mActivity,
+                        mSceneOverlay,
+                        new StripLayoutHelper.TrailingButtonDelegate() {
+                            @Override
+                            public boolean isMenuShowing() {
+                                return false;
+                            }
 
-                    @Override
-                    public void dismissContextMenu() {}
+                            @Override
+                            public void dismissContextMenu() {}
 
-                    @Override
-                    public void fadeCompositorButtons(boolean fade) {}
-                },
-                mManagerHost,
-                mUpdateHost,
-                mRenderHost,
-                incognito,
-                mModelSelectorBtn,
-                mTabStripDragHandler,
-                mToolbarContainerView,
-                mWindowAndroid,
-                mActionConfirmationManager,
-                mDataSharingTabManager,
-                /* tabStripVisibleSupplier= */ () -> true,
-                mBottomSheetController,
-                mMultiInstanceManager,
-                ObservableSuppliers.createMonotonic(mShareDelegate),
-                mBottomSheetCoordinatorFactory,
-                mSnackbarManager);
+                            @Override
+                            public void fadeCompositorButtons(boolean fade) {}
+                        },
+                        mManagerHost,
+                        mUpdateHost,
+                        mRenderHost,
+                        incognito,
+                        mModelSelectorBtn,
+                        mTabStripDragHandler,
+                        mToolbarContainerView,
+                        mWindowAndroid,
+                        mActionConfirmationManager,
+                        mDataSharingTabManager,
+                        /* tabStripVisibleSupplier= */ () -> true,
+                        mBottomSheetController,
+                        mMultiInstanceManager,
+                        ObservableSuppliers.createMonotonic(mShareDelegate),
+                        mBottomSheetCoordinatorFactory,
+                        mSnackbarManager);
+        // Inject the test IPH controller so that setTabModel doesn't try to construct a real one
+        // (which would call into TrackerFactory native).
+        helper.setTabStripIphControllerForTesting(mController);
+        return helper;
     }
 
     private String[] getExpectedAccessibilityDescriptions(int tabIndex) {
@@ -4823,14 +4804,14 @@ public class StripLayoutHelperTest {
         List<Tab> relatedTabs = new ArrayList<>();
         for (int i = startIndex; i < endIndex; i++) {
             Tab tab = mModel.getTabAt(i);
-            when(mTabGroupModelFilter.isTabInTabGroup(eq(tab))).thenReturn(true);
-            when(mTabGroupModelFilter.getIndexOfTabInGroup(tab)).thenReturn(i - startIndex);
+            when(mModel.isTabInTabGroup(eq(tab))).thenReturn(true);
+            when(mModel.getIndexOfTabInGroup(tab)).thenReturn(i - startIndex);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
             relatedTabs.add(tab);
         }
-        when(mTabGroupModelFilter.tabGroupExists(tabGroupId)).thenReturn(true);
-        when(mTabGroupModelFilter.getTabCountForGroup(eq(tabGroupId))).thenReturn(numTabs);
-        when(mTabGroupModelFilter.getTabsInGroup(eq(tabGroupId))).thenReturn(relatedTabs);
+        when(mModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mModel.getTabCountForGroup(eq(tabGroupId))).thenReturn(numTabs);
+        when(mModel.getTabsInGroup(eq(tabGroupId))).thenReturn(relatedTabs);
 
         mStripLayoutHelper.updateGroupTextAndSharedState(tabGroupId);
         mStripLayoutHelper.rebuildStripViews();
@@ -5311,7 +5292,7 @@ public class StripLayoutHelperTest {
         initializeTest(/* tabIndex= */ 0);
 
         // Fake that the tab group ID exists without a matching Tab.
-        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(true);
 
         // Set nonexistent group ID to hide.
         mStripLayoutHelper.getGroupIdToHideSupplierForTesting().set(TAB_GROUP_ID_1);
@@ -5329,7 +5310,7 @@ public class StripLayoutHelperTest {
         // Fake that there's a matching Tab for the group ID, but that the group ID doesn't exist in
         // the model.
         groupTabs(0, 1, TAB_GROUP_ID_1);
-        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(false);
+        when(mModel.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(false);
 
         // Set nonexistent group ID to hide and verify an AssertionError is thrown.
         try {
@@ -5368,7 +5349,7 @@ public class StripLayoutHelperTest {
                 TIMESTAMP, views[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE, 0);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
-        verify(mTabGroupModelFilter)
+        verify(mModel)
                 .setTabGroupCollapsed(TAB_GROUP_ID_1, /* isCollapsed= */ true, /* animate= */ true);
         // Verify we record the correct metric.
         histogramWatcher.assertExpected("Should record true, since we're collapsing.");
@@ -5388,12 +5369,12 @@ public class StripLayoutHelperTest {
         // Mark the group as collapsed. Fake a click on the group indicator.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
-        when(mTabGroupModelFilter.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
         mStripLayoutHelper.onClick(
                 TIMESTAMP, views[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE, 0);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
-        verify(mTabGroupModelFilter)
+        verify(mModel)
                 .setTabGroupCollapsed(
                         TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ true);
         // Verify we record the correct metric.
@@ -5613,27 +5594,26 @@ public class StripLayoutHelperTest {
         int startIndex = 3;
         initializeTest(startIndex);
         groupTabs(0, 2, TAB_GROUP_ID_1);
-        when(mTabGroupModelFilter.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
 
         // Select the first tab.
         mStripLayoutHelper.tabSelected(TIMESTAMP, 0, startIndex);
 
         // Verify we auto-expand.
-        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB_GROUP_ID_1);
+        verify(mModel).deleteTabGroupCollapsed(TAB_GROUP_ID_1);
     }
 
     private void testTabCreated_InCollapsedGroup(boolean selected) {
         // Group first two tabs and collapse.
         initializeTest(/* tabIndex= */ 3);
         groupTabs(0, 2, TAB_GROUP_ID_1);
-        when(mTabGroupModelFilter.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
         doAnswer(
                         invocation -> {
-                            when(mTabGroupModelFilter.getTabGroupCollapsed(TAB_GROUP_ID_1))
-                                    .thenReturn(false);
+                            when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(false);
                             return null;
                         })
-                .when(mTabGroupModelFilter)
+                .when(mModel)
                 .deleteTabGroupCollapsed(TAB_GROUP_ID_1);
 
         // Create a tab in the collapsed group.
@@ -5645,8 +5625,7 @@ public class StripLayoutHelperTest {
                 TIMESTAMP, tabId, selected, /* closureCancelled= */ false, /* onStartup= */ false);
 
         // Verify we only auto-expand if selected.
-        verify(mTabGroupModelFilter, times(selected ? 1 : 0))
-                .deleteTabGroupCollapsed(TAB_GROUP_ID_1);
+        verify(mModel, times(selected ? 1 : 0)).deleteTabGroupCollapsed(TAB_GROUP_ID_1);
     }
 
     @Test
@@ -5948,21 +5927,20 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testSetTabGroupModelFilter() {
+    public void testSetTabModel() {
         // Setup and verify initial state.
         initializeTest(false, false, 0);
         TabGroupModelFilterObserver observer =
                 mStripLayoutHelper.getTabGroupModelFilterObserverForTesting();
-        verify(mTabGroupModelFilter).addTabGroupObserver(observer);
+        verify(mModel).addTabGroupObserver(observer);
 
-        // Set a new TabGroupModelFilter.
-        TabGroupModelFilter newModelFilter = mock(TabGroupModelFilter.class);
-        when(newModelFilter.getTabModel()).thenReturn(mModel);
-        mStripLayoutHelper.setTabGroupModelFilter(newModelFilter);
+        // Set a new TabModel.
+        TabModel newModel = mock(TabModel.class);
+        mStripLayoutHelper.setTabModel(newModel, mTabCreator, true);
 
         // Verify the observers have been updated as expected.
-        verify(mTabGroupModelFilter).removeTabGroupObserver(observer);
-        verify(newModelFilter).addTabGroupObserver(observer);
+        verify(mModel).removeTabGroupObserver(observer);
+        verify(newModel).addTabGroupObserver(observer);
     }
 
     @Test
@@ -5991,7 +5969,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.destroy();
 
         // Verify the observer has been removed as expected.
-        verify(mTabGroupModelFilter).removeTabGroupObserver(observer);
+        verify(mModel).removeTabGroupObserver(observer);
     }
 
     @Test
@@ -6261,14 +6239,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testWidthCalculated_withNullTabGroupModelFilter() {
-        initializeTest(false, false, 0, 1, null);
-        mStripLayoutHelper.onSizeChanged(
-                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        assertNotEquals(0, mStripLayoutHelper.getUnpinnedTabWidth(), EPSILON);
-    }
-
-    @Test
     public void testMultiSelect_CtrlClick_SelectsAndActivatesTab() {
         initializeTest(false, false, 0, 5);
         // Update layout to set view draw properties
@@ -6505,7 +6475,7 @@ public class StripLayoutHelperTest {
     public void testMultiSelect_ShiftClick_ThroughCollapsedGroup_ExpandsGroup() {
         initializeTest(false, false, 0, 5);
         groupTabs(1, 4, TAB_GROUP_ID_1);
-        when(mTabGroupModelFilter.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
         // Update layout to set view draw properties
         mStripLayoutHelper.onSizeChanged(
                 STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
@@ -6520,8 +6490,7 @@ public class StripLayoutHelperTest {
                 MotionEvent.BUTTON_PRIMARY,
                 KeyEvent.META_SHIFT_ON);
 
-        verify(mTabGroupModelFilter)
-                .setTabGroupCollapsed(eq(TAB_GROUP_ID_1), eq(false), anyBoolean());
+        verify(mModel).setTabGroupCollapsed(eq(TAB_GROUP_ID_1), eq(false), anyBoolean());
     }
 
     @Test
@@ -6706,8 +6675,7 @@ public class StripLayoutHelperTest {
         // Expected model: 0, 1, [2, 3], 4
         verify(mTabUngrouper, times(1))
                 .ungroupTabs(eq(List.of(mModel.getTabAt(4))), eq(true), eq(true), any());
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mModel, never()).moveTab(anyInt(), anyInt());
     }
 
@@ -6730,7 +6698,7 @@ public class StripLayoutHelperTest {
         // Original model: 0, 1, [2, 3], 4
         // Expected model: 0, 1, [2, 3, 4]
         Tab expectedDestinationTab = mModel.getTabById(3);
-        verify(mTabGroupModelFilter, times(1))
+        verify(mModel, times(1))
                 .mergeListOfTabsToGroup(
                         mTabListCaptor.capture(),
                         eq(expectedDestinationTab),
@@ -6760,7 +6728,7 @@ public class StripLayoutHelperTest {
         // Original model: 0, 1, [2, 3], 4
         // Expected model: 0, [1, 2, 3], 4
         Tab expectedDestinationTab = mModel.getTabById(2);
-        verify(mTabGroupModelFilter, times(1))
+        verify(mModel, times(1))
                 .mergeListOfTabsToGroup(
                         mTabListCaptor.capture(),
                         eq(expectedDestinationTab),
@@ -6789,8 +6757,7 @@ public class StripLayoutHelperTest {
         // Verify: Tab 1 has left the group and is now at index 0.
         verify(mTabUngrouper, times(1))
                 .ungroupTabs(eq(List.of(mModel.getTabAt(0))), eq(false), eq(true), any());
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mModel, never()).moveTab(anyInt(), anyInt());
     }
 
@@ -6811,8 +6778,7 @@ public class StripLayoutHelperTest {
 
         // Verify: The order within the group has changed.
         verify(mModel, times(1)).moveTab(0, 1);
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6834,8 +6800,7 @@ public class StripLayoutHelperTest {
         // Original model: 0, 1, 2, 3, 4
         // Expected model: 0, 2, 1, 3, 4
         verify(mModel, times(1)).moveTab(1, 2);
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6858,8 +6823,7 @@ public class StripLayoutHelperTest {
 
         // Verify: The tab order has changed.
         verify(mModel, times(1)).moveTab(0, 2);
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6882,8 +6846,7 @@ public class StripLayoutHelperTest {
 
         // Verify: The tab order has changed.
         verify(mModel, times(1)).moveTab(3, 1);
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6899,14 +6862,13 @@ public class StripLayoutHelperTest {
         StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[1]; // Group 1
         group.setKeyboardFocused(true);
         int lastShownTabId = ((StripLayoutTab) views[2]).getTabId();
-        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
-                .thenReturn(lastShownTabId);
+        when(mModel.getGroupLastShownTabId(group.getTabGroupId())).thenReturn(lastShownTabId);
 
         // Action: Move Group 1 to the right, past tab 3.
         mStripLayoutHelper.moveSelectedStripView(false);
 
         // Verify: The group has moved.
-        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 3);
+        verify(mModel, times(1)).moveRelatedTabs(lastShownTabId, 3);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6923,14 +6885,13 @@ public class StripLayoutHelperTest {
         StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[0]; // Group A
         group.setKeyboardFocused(true);
         int lastShownTabId = ((StripLayoutTab) views[1]).getTabId();
-        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
-                .thenReturn(lastShownTabId);
+        when(mModel.getGroupLastShownTabId(group.getTabGroupId())).thenReturn(lastShownTabId);
 
         // Action: Move Group A to the right, past Group B.
         mStripLayoutHelper.moveSelectedStripView(false);
 
         // Verify: The groups have swapped positions.
-        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 3);
+        verify(mModel, times(1)).moveRelatedTabs(lastShownTabId, 3);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6946,14 +6907,13 @@ public class StripLayoutHelperTest {
         StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[2]; // Group 1
         group.setKeyboardFocused(true);
         int lastShownTabId = ((StripLayoutTab) views[3]).getTabId();
-        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
-                .thenReturn(lastShownTabId);
+        when(mModel.getGroupLastShownTabId(group.getTabGroupId())).thenReturn(lastShownTabId);
 
         // Action: Move Group 1 to the left, past tab 1.
         mStripLayoutHelper.moveSelectedStripView(true);
 
         // Verify: The group has moved.
-        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 1);
+        verify(mModel, times(1)).moveRelatedTabs(lastShownTabId, 1);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6970,14 +6930,13 @@ public class StripLayoutHelperTest {
         StripLayoutGroupTitle group = (StripLayoutGroupTitle) views[3]; // Group B
         group.setKeyboardFocused(true);
         int lastShownTabId = ((StripLayoutTab) views[4]).getTabId();
-        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
-                .thenReturn(lastShownTabId);
+        when(mModel.getGroupLastShownTabId(group.getTabGroupId())).thenReturn(lastShownTabId);
 
         // Action: Move Group B to the left, past Group A.
         mStripLayoutHelper.moveSelectedStripView(true);
 
         // Verify: The groups have swapped positions.
-        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 0);
+        verify(mModel, times(1)).moveRelatedTabs(lastShownTabId, 0);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6995,14 +6954,13 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[3], true);
         group.setKeyboardFocused(true);
         int lastShownTabId = ((StripLayoutTab) views[1]).getTabId();
-        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
-                .thenReturn(lastShownTabId);
+        when(mModel.getGroupLastShownTabId(group.getTabGroupId())).thenReturn(lastShownTabId);
 
         // Action: Move Group A to the right, past Group B.
         mStripLayoutHelper.moveSelectedStripView(false);
 
         // Verify: The groups have swapped positions.
-        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 3);
+        verify(mModel, times(1)).moveRelatedTabs(lastShownTabId, 3);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -7020,14 +6978,13 @@ public class StripLayoutHelperTest {
         group.setKeyboardFocused(true);
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
         int lastShownTabId = ((StripLayoutTab) views[4]).getTabId();
-        when(mTabGroupModelFilter.getGroupLastShownTabId(group.getTabGroupId()))
-                .thenReturn(lastShownTabId);
+        when(mModel.getGroupLastShownTabId(group.getTabGroupId())).thenReturn(lastShownTabId);
 
         // Action: Move Group B to the left, past Group A.
         mStripLayoutHelper.moveSelectedStripView(true);
 
         // Verify: The groups have swapped positions.
-        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(lastShownTabId, 0);
+        verify(mModel, times(1)).moveRelatedTabs(lastShownTabId, 0);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 

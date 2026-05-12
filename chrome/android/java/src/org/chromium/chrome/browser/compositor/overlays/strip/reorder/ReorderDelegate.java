@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -218,7 +217,7 @@ public class ReorderDelegate {
      *
      * @param animationHost The {@link AnimationHost} for triggering animations.
      * @param stripUpdateDelegate The {@link StripUpdateDelegate} for refreshing all strip views.
-     * @param tabGroupModelFilter The {@link TabGroupModelFilter} for accessing tab state.
+     * @param tabModel The {@link TabModel} for accessing tab state.
      * @param scrollDelegate The {@link ScrollDelegate} for updating scroll offset. actions, such as
      *     delete and ungroup.
      * @param tabStripDragHandler The drag-drop manager {@link TabStripDragHandler} for triggering
@@ -234,7 +233,7 @@ public class ReorderDelegate {
     public void initialize(
             AnimationHost animationHost,
             StripUpdateDelegate stripUpdateDelegate,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             ScrollDelegate scrollDelegate,
             @Nullable TabStripDragHandler tabStripDragHandler,
             ActionConfirmationManager actionConfirmationManager,
@@ -245,7 +244,7 @@ public class ReorderDelegate {
         mStripUpdateDelegate = stripUpdateDelegate;
         mScrollDelegate = scrollDelegate;
         mTabWidthSupplier = tabWidthSupplier;
-        mModel = tabGroupModelFilter.getTabModel();
+        mModel = tabModel;
 
         mTabStrategy =
                 new TabReorderStrategy(
@@ -254,7 +253,6 @@ public class ReorderDelegate {
                         animationHost,
                         mScrollDelegate,
                         mModel,
-                        tabGroupModelFilter,
                         containerView,
                         groupIdToHideSupplier,
                         mTabWidthSupplier,
@@ -267,7 +265,6 @@ public class ReorderDelegate {
                         animationHost,
                         mScrollDelegate,
                         mModel,
-                        tabGroupModelFilter,
                         containerView,
                         groupIdToHideSupplier,
                         mTabWidthSupplier,
@@ -281,7 +278,6 @@ public class ReorderDelegate {
                         animationHost,
                         mScrollDelegate,
                         mModel,
-                        tabGroupModelFilter,
                         containerView,
                         groupIdToHideSupplier,
                         mTabWidthSupplier,
@@ -294,7 +290,6 @@ public class ReorderDelegate {
                             animationHost,
                             mScrollDelegate,
                             mModel,
-                            tabGroupModelFilter,
                             containerView,
                             groupIdToHideSupplier,
                             mTabWidthSupplier,
@@ -311,7 +306,6 @@ public class ReorderDelegate {
                             animationHost,
                             mScrollDelegate,
                             mModel,
-                            tabGroupModelFilter,
                             containerView,
                             groupIdToHideSupplier,
                             mTabWidthSupplier,

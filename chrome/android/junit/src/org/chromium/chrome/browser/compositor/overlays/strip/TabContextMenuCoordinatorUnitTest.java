@@ -87,7 +87,6 @@ import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -221,7 +220,6 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private TabRemover mTabRemover;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private Profile mProfile;
     @Mock private TabGroupListBottomSheetCoordinator mBottomSheetCoordinator;
@@ -289,23 +287,15 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(INSTANCE_ID_1))
                 .thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
-        when(mTabGroupModelFilter.getAllTabGroupIds()).thenReturn(Set.of(TAB_GROUP_ID));
-        when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
-        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID))
-                .thenReturn(Collections.singletonList(mTab1));
-        when(mTabGroupModelFilter.getTabGroupColor(TAB_GROUP_ID))
-                .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
-        when(mTabGroupModelFilter.getTabGroupColorWithFallback(TAB_GROUP_ID))
-                .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
-        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TAB_GROUP_TITLE);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TAB_GROUP_TITLE);
+        when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TAB_GROUP_ID));
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(Collections.singletonList(mTab1));
+        when(mTabModel.getTabGroupColor(TAB_GROUP_ID)).thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
         when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID))
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(Collections.singletonList(mTab1));
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TAB_GROUP_TITLE);
         mTotalTabCountSupplier = ObservableSuppliers.createNonNull(3);
         when(mTabModel.getTabCountSupplier()).thenReturn(mTotalTabCountSupplier);
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(INSTANCE_ID_1);
@@ -354,7 +344,6 @@ public class TabContextMenuCoordinatorUnitTest {
         mOnItemClickedCallback =
                 TabContextMenuCoordinator.getMenuItemClickedCallback(
                         () -> mTabModel,
-                        mTabGroupModelFilter,
                         mBottomSheetCoordinator,
                         mTabGroupCreationCallback,
                         mMultiInstanceManager,
@@ -362,7 +351,6 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator =
                 TabContextMenuCoordinator.createContextMenuCoordinator(
                         () -> mTabModel,
-                        mTabGroupModelFilter,
                         mBottomSheetCoordinator,
                         mTabGroupCreationCallback,
                         mMultiInstanceManager,
@@ -380,7 +368,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
                 COLLABORATION_ID,
                 /* listViewTouchTracker= */ null);
-        verify(mTabGroupModelFilter, times(1)).createSingleTabGroup(mTab1);
+        verify(mTabModel, times(1)).createSingleTabGroup(mTab1);
         verify(mTabGroupCreationCallback, times(1)).onTabGroupCreated(TAB_GROUP_ID);
     }
 
@@ -392,7 +380,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
                 COLLABORATION_ID,
                 /* listViewTouchTracker= */ null);
-        verify(mTabGroupModelFilter, times(1))
+        verify(mTabModel, times(1))
                 .mergeListOfTabsToGroup(
                         eq(List.of(mTab1, mTab2)),
                         eq(mTab1),
@@ -653,7 +641,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     @SuppressWarnings("DirectInvocationOnMock")
     public void testAddToGroupSubmenu_fallbackTabGroupName() {
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
+        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
         MultiWindowUtils.setInstanceCountForTesting(1);
         mSavedTabGroup.title = "";
@@ -677,7 +665,7 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testAddToGroupSubmenu_fallbackTabGroupName_incognito() {
         setupWithIncognito(true);
         initializeCoordinator();
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
+        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
         MultiWindowUtils.setInstanceCountForTesting(1);
         mSavedTabGroup.title = "";
@@ -1931,7 +1919,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     public void testListMenuItems_noGroups_submenusEnabled() {
         // No groups
-        when(mTabGroupModelFilter.getAllTabGroupIds()).thenReturn(Collections.emptySet());
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
 
         var modelList = new ModelList();

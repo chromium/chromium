@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupListBottomSheetCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -56,7 +56,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private TabGroupModelFilter mFilter;
+    @Mock private TabModel mTabModel;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private DataSharingService mDataSharingService;
@@ -87,7 +87,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                         mProfile,
                         /* tabGroupCreationCallback= */ ignored -> {},
                         /* tabMovedCallback= */ null,
-                        mFilter,
+                        mTabModel,
                         mBottomSheetController,
                         /* supportsShowNewGroup= */ true,
                         /* destroyOnHide= */ false);
@@ -153,7 +153,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                 mProfile,
                 /* tabGroupCreationCallback= */ ignored -> {},
                 /* tabMovedCallback= */ null,
-                mFilter,
+                mTabModel,
                 mBottomSheetController,
                 /* supportsShowNewGroup= */ true,
                 /* destroyOnHide= */ false);

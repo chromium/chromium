@@ -9,9 +9,9 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Factory class for creating {@link TabGroupListBottomSheetCoordinator} instances. */
@@ -25,7 +25,7 @@ public interface TabGroupListBottomSheetCoordinatorFactory {
      * @param profile The current user profile.
      * @param tabGroupCreationCallback Used to follow up on tab group creation.
      * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
-     * @param filter Used to read current tab groups.
+     * @param tabModel Used to read current tab groups.
      * @param controller Used to interact with the bottom sheet.
      * @param supportsShowNewGroup Whether the 'New Tab Group' row is supported.
      * @param destroyOnHide Whether the coordinator should be destroyed on hide.
@@ -35,7 +35,7 @@ public interface TabGroupListBottomSheetCoordinatorFactory {
             Profile profile,
             TabGroupCreationCallback tabGroupCreationCallback,
             @Nullable TabMovedCallback tabMovedCallback,
-            TabGroupModelFilter filter,
+            TabModel tabModel,
             BottomSheetController controller,
             boolean supportsShowNewGroup,
             boolean destroyOnHide);

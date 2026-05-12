@@ -70,7 +70,6 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                         mAnimationHost,
                         mScrollDelegate,
                         mModel,
-                        mTabGroupModelFilter,
                         mContainerView,
                         mGroupIdToHideSupplier,
                         mTabWidthSupplier,
@@ -388,7 +387,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         // Verify
         Tab expectedPrimaryTab = mModel.getTabByIdChecked(INTERACTING_VIEW_ID);
         int expectedMergeIndex = 0;
-        verify(mTabGroupModelFilter)
+        verify(mModel)
                 .mergeListOfTabsToGroup(
                         mTabListCaptor.capture(),
                         eq(expectedPrimaryTab),
@@ -417,8 +416,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         mStrategy.handleDrop(mGroupTitles, Collections.singletonList(draggedTabId), dropIndex);
 
         // Verify
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         assertNull(
                 "mInteractingViewDuringStop should be null",
                 mStrategy.getInteractingViewDuringStopForTesting());

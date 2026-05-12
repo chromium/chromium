@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
@@ -136,7 +135,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
     }
 
-    private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
@@ -148,7 +146,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private TabContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
-            TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationCallback tabGroupCreationCallback,
             MultiInstanceManager multiInstanceManager,
@@ -163,7 +160,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
                         tabModelSupplier,
-                        tabGroupModelFilter,
                         tabGroupListBottomSheetCoordinator,
                         tabGroupCreationCallback,
                         multiInstanceManager,
@@ -174,7 +170,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 collaborationService,
                 activity,
                 reorderFunction);
-        mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupCreationCallback = tabGroupCreationCallback;
         mWindowAndroid = windowAndroid;
         mActivity = activity;
@@ -248,7 +243,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
      * Creates the TabContextMenuCoordinator object.
      *
      * @param tabModelSupplier Supplies the {@link TabModel}.
-     * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
      * @param tabGroupListBottomSheetCoordinator The {@link TabGroupListBottomSheetCoordinator} that
      *     will be used to show a bottom sheet when the user selects the "Add to group" option.
      * @param tabGroupCreationCallback The {@link TabGroupCreationCallback} to run after creating a
@@ -262,7 +256,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
      */
     public static TabContextMenuCoordinator createContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
-            TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationCallback tabGroupCreationCallback,
             MultiInstanceManager multiInstanceManager,
@@ -280,7 +273,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
         return new TabContextMenuCoordinator(
                 tabModelSupplier,
-                tabGroupModelFilter,
                 tabGroupListBottomSheetCoordinator,
                 tabGroupCreationCallback,
                 multiInstanceManager,
@@ -295,7 +287,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     @VisibleForTesting
     static OnItemClickedCallback<AnchorInfo> getMenuItemClickedCallback(
             Supplier<TabModel> tabModelSupplier,
-            TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationCallback tabGroupCreationCallback,
             MultiInstanceManager multiInstanceManager,
@@ -312,15 +303,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 tabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
             } else if (menuId == R.id.add_to_new_tab_group) {
                 createNewGroupForTabs(
-                        tabs,
-                        tabGroupModelFilter,
-                        /* tabMovedCallback= */ null,
-                        tabGroupCreationCallback);
+                        tabs, tabModel, /* tabMovedCallback= */ null, tabGroupCreationCallback);
             } else if (menuId == R.id.remove_from_tab_group) {
                 // Ungrouping in reverse to maintain the order of the tabs.
                 Collections.reverse(tabs);
-                tabGroupModelFilter
-                        .getTabUngrouper()
+                tabModel.getTabUngrouper()
                         .ungroupTabs(tabs, /* trailing= */ true, /* allowDialog= */ true);
             } else if (menuId == R.id.move_to_other_window_menu_id) {
                 moveAndCleanupSource(
@@ -601,7 +588,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                             isIncognito);
                                     createNewGroupForTabs(
                                             tabs,
-                                            mTabGroupModelFilter,
+                                            getTabModel(),
                                             /* tabMovedCallback= */ null,
                                             mTabGroupCreationCallback);
                                 })
@@ -873,12 +860,12 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private List<ListItem> getIncognitoTabGroups(
             List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
         List<ListItem> result = new ArrayList<>();
-        for (Token groupId : mTabGroupModelFilter.getAllTabGroupIds()) {
+        for (Token groupId : getTabModel().getAllTabGroupIds()) {
             if (Objects.equals(groupToNotBeIncluded, groupId)) {
                 continue;
             }
 
-            int tabIdInGroup = mTabGroupModelFilter.getGroupLastShownTabId(groupId);
+            int tabIdInGroup = getTabModel().getGroupLastShownTabId(groupId);
             OnClickListener clickListener =
                     (v) -> {
                         recordMenuAction(
@@ -890,12 +877,12 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                     new ListItemBuilder()
                             .withTitle(
                                     TabGroupTitleUtils.getDisplayableTitle(
-                                            mActivity, mTabGroupModelFilter, groupId))
+                                            mActivity, getTabModel(), groupId))
                             .withClickListener(clickListener)
                             .withIsIncognito(true)
                             .withStartIconDrawable(
                                     getCircleDrawable(
-                                            mTabGroupModelFilter.getTabGroupColor(groupId), true))
+                                            getTabModel().getTabGroupColor(groupId), true))
                             .withStartIconWidth(mCircleSize)
                             .withShouldTintIcon(false)
                             .build());
@@ -1004,10 +991,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     /** Ungroups any tabs in {@param tabs} which are currently in a group. */
     private void ungroupTabs(List<Tab> tabs) {
-        List<Tab> groupedTabs = TabGroupUtils.getGroupedTabs(mTabGroupModelFilter, tabs);
+        List<Tab> groupedTabs = TabGroupUtils.getGroupedTabs(getTabModel(), tabs);
         if (!groupedTabs.isEmpty()) {
             // Ungroup all tabs before performing the move operation.
-            mTabGroupModelFilter
+            getTabModel()
                     .getTabUngrouper()
                     .ungroupTabs(groupedTabs, /* trailing= */ true, /* allowDialog= */ false);
         }

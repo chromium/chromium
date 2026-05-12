@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
@@ -68,7 +67,6 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             AnimationHost animationHost,
             ScrollDelegate scrollDelegate,
             TabModel model,
-            TabGroupModelFilter tabGroupModelFilter,
             View containerView,
             SettableNullableObservableSupplier<Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
@@ -84,7 +82,6 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 animationHost,
                 scrollDelegate,
                 model,
-                tabGroupModelFilter,
                 containerView,
                 groupIdToHideSupplier,
                 tabWidthSupplier,
@@ -233,12 +230,11 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     private boolean shouldShowUserPrompt(StripLayoutTab draggedTab) {
-        if (mTabGroupModelFilter.getTabModel().isIncognitoBranded()) {
+        if (mModel.isIncognitoBranded()) {
             return false;
         }
         int tabId = draggedTab.getTabId();
-        boolean draggingLastTabInGroup =
-                StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId);
+        boolean draggingLastTabInGroup = StripLayoutUtils.isLastTabInGroup(mModel, tabId);
         boolean willSkipDialog =
                 mActionConfirmationManager.willSkipUngroupTabAttempt()
                         && !isTabInCollaboration(tabId);
@@ -246,13 +242,12 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     private boolean isTabInCollaboration(int tabId) {
-        var profile = assumeNonNull(mTabGroupModelFilter.getTabModel().getProfile());
+        var profile = assumeNonNull(mModel.getProfile());
         @Nullable TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(profile);
 
         @Nullable String collaborationId =
-                TabShareUtils.getCollaborationIdOrNull(
-                        tabId, mTabGroupModelFilter.getTabModel(), tabGroupSyncService);
+                TabShareUtils.getCollaborationIdOrNull(tabId, mModel, tabGroupSyncService);
         return TabShareUtils.isCollaborationIdValid(collaborationId);
     }
 
@@ -435,7 +430,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                     && mModel.getTabById(draggedTab.getTabId()) != null
                     && draggedTab.isDraggedOffStrip()) {
                 // If tab was ungrouped during drag, restore group indicator.
-                if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, draggedTab.getTabId())
+                if (StripLayoutUtils.isLastTabInGroup(mModel, draggedTab.getTabId())
                         && mActionConfirmationManager.willSkipUngroupTabAttempt()) {
                     mGroupIdToHideSupplier.set(null);
                 }
@@ -668,7 +663,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             // If this is not the case, attempt to restore the group to its original position.
             StripLayoutGroupTitle draggedGroupTitle = (StripLayoutGroupTitle) mViewBeingDragged;
             if (draggedGroupTitle != null
-                    && mTabGroupModelFilter.tabGroupExists(draggedGroupTitle.getTabGroupId())
+                    && mModel.tabGroupExists(draggedGroupTitle.getTabGroupId())
                     && draggedGroupTitle.isDraggedOffStrip()) {
                 mAnimationHost.finishAnimationsAndPushTabUpdates();
                 for (StripLayoutView view : mViewsBeingDragged) {

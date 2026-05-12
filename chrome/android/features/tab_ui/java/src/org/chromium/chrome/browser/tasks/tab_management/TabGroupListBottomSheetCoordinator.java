@@ -17,9 +17,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -72,7 +72,7 @@ public class TabGroupListBottomSheetCoordinator {
      * @param profile The current user profile.
      * @param tabGroupCreationCallback Used to follow up on tab group creation.
      * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
-     * @param filter Used to read current tab groups.
+     * @param tabModel Used to read current tab groups.
      * @param bottomSheetController Used to interact with the bottom sheet.
      * @param supportsShowNewGroup Whether the 'New Tab Group' row is supported.
      * @param destroyOnHide Whether this object should be destroyed on hiding the bottom sheet.
@@ -82,7 +82,7 @@ public class TabGroupListBottomSheetCoordinator {
             Profile profile,
             TabGroupCreationCallback tabGroupCreationCallback,
             @Nullable TabMovedCallback tabMovedCallback,
-            TabGroupModelFilter filter,
+            TabModel tabModel,
             BottomSheetController bottomSheetController,
             boolean supportsShowNewGroup,
             boolean destroyOnHide) {
@@ -133,7 +133,7 @@ public class TabGroupListBottomSheetCoordinator {
         mMediator =
                 new TabGroupListBottomSheetMediator(
                         modelList,
-                        filter.getTabModel(),
+                        tabModel,
                         tabGroupCreationCallback,
                         tabMovedCallback,
                         faviconResolver,
