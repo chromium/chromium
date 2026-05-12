@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.glic;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
@@ -19,7 +21,8 @@ public class ActorLoginPermission {
     private final GURL mFaviconUrl;
 
     @CalledByNative
-    private ActorLoginPermission(
+    @VisibleForTesting
+    ActorLoginPermission(
             String siteOrAppName, GURL url, String signonRealm, String username, GURL faviconUrl) {
         mSiteOrAppName = siteOrAppName;
         mUrl = url;

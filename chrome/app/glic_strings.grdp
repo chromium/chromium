@@ -312,19 +312,19 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2" desc="Second point in 'things to consider' column of the 'let Gemini browse for you' expands" formatter_data="android_java">
     Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. You are responsible for Gemini's actions during a task, including mistakes and <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
   </message>
-  <message name="IDS_SETTINGS_GLIC_ACTOR_LOGIN_PERMISSIONS_SECTION_TITLE" desc="Title for the Gemini web login linkout.">
+  <message name="IDS_SETTINGS_GLIC_ACTOR_LOGIN_PERMISSIONS_SECTION_TITLE" desc="Title for the Gemini web login linkout." formatter_data="android_java">
     Sites Gemini can sign you in to
   </message>
-  <message name="IDS_SETTINGS_GLIC_ACTOR_LOGIN_PERMISSIONS_SECTION_SUBLABEL" desc="Description for the Gemini web login linkout.">
+  <message name="IDS_SETTINGS_GLIC_ACTOR_LOGIN_PERMISSIONS_SECTION_SUBLABEL" desc="Description for the Gemini web login linkout." formatter_data="android_java">
     Let Gemini automatically sign you in to complete tasks for you on the web
   </message>
-  <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_PAGE_TITLE" desc="Title for the sites and accounts section on the Gemini web login permissions page.">
+  <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_PAGE_TITLE" desc="Title for the sites and accounts section on the Gemini web login permissions page." formatter_data="android_java">
     Sites and accounts
   </message>
   <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_OFFLINE_WARNING" desc="Warning message shown at the top of the Gemini web login permissions page when the user is offline.">
     You’re offline. Check your internet connection to manage sites Gemini can sign you in to.
   </message>
-  <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_PAGE_DESCRIPTION" desc="Description for the sites and accounts section on the Gemini web login permissions page.">
+  <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_PAGE_DESCRIPTION" desc="Description for the sites and accounts section on the Gemini web login permissions page." formatter_data="android_java">
     You've allowed Gemini to automatically sign you in to these sites and apps using your accounts
   </message>
   <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_NO_SITES" desc="Message shown when there are no sites in the Gemini web login permissions page.">

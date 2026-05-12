@@ -60,6 +60,7 @@ import org.chromium.ui.base.TestActivity;
     ChromeFeatureList.ANDROID_BOTTOM_BAR,
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
 })
+@EnableFeatures(ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)
 public class GlicSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

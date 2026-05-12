@@ -55,6 +55,13 @@ found in the LICENSE file.
         android:summary="@string/settings_glic_permissions_chrome_web_actuation_toggle_sublabel"
         app:expandedContentLayout="@layout/glic_auto_browse" />
 
+    <Preference
+        android:key="glic_actor_login_permissions"
+        android:title=
+            "@string/settings_glic_actor_login_permissions_section_title"
+        android:summary="@string/settings_glic_actor_login_permissions_section_sublabel"
+        android:fragment=
+            "org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="glic_permissions_activity"

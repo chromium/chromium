@@ -27,8 +27,10 @@ android_resources("java_resources") {
     "java/res/layout/glic_default_tab_access.xml",
     "java/res/layout/glic_promo_bottom_sheet.xml",
     "java/res/layout/glic_settings_extra_info.xml",
+    "java/res/layout/preference_widget_revoke.xml",
     "java/res/raw/glic_spinner.json",
     "java/res/values/dimens.xml",
+    "java/res/xml/glic_actor_login_permissions.xml",
     "java/res/xml/glic_settings.xml",
   ]
   deps = [
@@ -97,7 +99,9 @@ android_library("common_java") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/glic/ActorLoginPermission.java",
+    "java/src/org/chromium/chrome/browser/glic/ActorLoginPermissionPreference.java",
     "java/src/org/chromium/chrome/browser/glic/GlicActorLoginBridge.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicActorLoginPermissionsFragment.java",
     "java/src/org/chromium/chrome/browser/glic/GlicExtraInfoPreference.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelper.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
@@ -144,6 +148,7 @@ android_library("java") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
+    "//components/favicon/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
@@ -246,6 +251,33 @@ robolectric_library("junit") {
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_junit_test_support",
+    "//url:url_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/glic/GlicActorLoginPermissionsFragmentRenderTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/settings:java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/settings/android:test_support_java",
+    "//components/favicon/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
     "//url:url_java",
   ]
 }

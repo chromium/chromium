@@ -24,6 +24,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -53,6 +54,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
     private static final String PERMISSION_AUTO_BROWSE = "glic_permissions_auto_browse";
+    private static final String PERMISSION_ACTOR_LOGIN = "glic_actor_login_permissions";
     // TODO(b/498717684): Replace answer number urls with a p= identifier instead.
     private static final String LEARN_MORE_AI_URL = "https://support.google.com/a/answer/15706919";
     private static final String LEARN_MORE_MANAGED_AI_URL =
@@ -187,6 +189,12 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 SpanApplier.applySpans(
                         autoBrowseSummary, getLearnMoreSpanInfo(AUTO_BROWSE_LEARN_MORE_URL)));
         autoBrowsePref.setOnBindExpandedAreaListener(this::setupAutoBrowseExpandedArea);
+
+        Preference actorLoginPref = findPreference(PERMISSION_ACTOR_LOGIN);
+        if (actorLoginPref != null) {
+            actorLoginPref.setVisible(
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI));
+        }
 
         Preference permissionActivityPref =
                 assertNonNull(findPreference(PREF_KEY_GLIC_PERMISSIONS_ACTIVITY));
@@ -407,6 +415,10 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON);
                     } else {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON_TOGGLE);
+                    }
+                    if (!ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)) {
+                        indexData.removeEntryForKey(prefFrag, PERMISSION_ACTOR_LOGIN);
                     }
                 }
             };

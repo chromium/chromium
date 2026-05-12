@@ -2413,6 +2413,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/facilitated_payments/ui/android/internal:javatests",
       "//chrome/browser/flags:javatests",
       "//chrome/browser/gesturenav/android:javatests",
+      "//chrome/browser/glic/android:javatests",
       "//chrome/browser/password_manager/android:javatests",
       "//chrome/browser/password_manager/android/bottom_sheet:javatests",
       "//chrome/browser/picture_in_picture/test:javatests",
