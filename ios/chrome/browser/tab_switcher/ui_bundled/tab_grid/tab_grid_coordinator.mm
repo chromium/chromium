@@ -739,9 +739,15 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
           ? [LayoutGuideCenterForScene(browser->GetSceneState())
                 referencedViewUnderName:kAppContentGuide]
           : nil;
+
+  UIViewController* parentViewController = _viewController;
+  if (IsChromeNextIaEnabled()) {
+    parentViewController = _viewController.parentViewController;
+  }
+
   auto params = std::make_unique<TabGridTransitionHandlerInitParams>(
       direction, self.browserLayoutViewController, _viewController,
-      appContentView);
+      parentViewController, appContentView);
 
   if (animationEnabled) {
     // Use reduced animation on TabGroup panel to avoid weird animation where

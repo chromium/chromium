@@ -204,6 +204,7 @@ enum class TabGridTransitionType {
 // Prepares items for the Tab Grid to Browser transition.
 - (void)prepareTabGridToBrowserTransition {
   UIViewController* tabGrid = _params->tab_grid_view_controller;
+  UIViewController* parentViewController = _params->parent_view_controller;
   UIViewController* browserLayout = _params->browser_layout_view_controller;
   UIView* appContentGuide = _params->app_content_view;
 
@@ -254,7 +255,7 @@ enum class TabGridTransitionType {
   browserLayout.view.frame = browserLayoutOriginalFrame;
 
   if (IsChromeNextIaEnabled()) {
-    [tabGrid addChildViewController:browserLayout];
+    [parentViewController addChildViewController:browserLayout];
     [appContentGuide addSubview:browserLayout.view];
     if (IsFullscreenRefactoringEnabled()) {
       browserLayout.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -286,9 +287,9 @@ enum class TabGridTransitionType {
 
 // Takes all necessary actions to finish TabGrid to Browser transition.
 - (void)finalizeTabGridToBrowserTransition {
-  UIViewController* tabGrid = _params->tab_grid_view_controller;
   UIViewController* browserLayout = _params->browser_layout_view_controller;
-  [browserLayout didMoveToParentViewController:tabGrid];
+  UIViewController* parentViewController = _params->parent_view_controller;
+  [browserLayout didMoveToParentViewController:parentViewController];
 
   [browserLayout setNeedsStatusBarAppearanceUpdate];
 }
