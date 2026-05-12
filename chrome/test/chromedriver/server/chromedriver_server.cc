@@ -80,23 +80,12 @@ void SendResponseOnCmdThread(
 }
 
 void HandleRequestOnCmdThread(
-    HttpHandler* handler,
-    const std::vector<net::IPAddress>& allowed_ips,
+    base::WeakPtr<HttpHandler> handler,
     const net::HttpServerRequestInfo& request,
     const HttpResponseSenderFunc& send_response_func) {
-  if (!allowed_ips.empty()) {
-    const net::IPAddress& peer_address = request.peer.address();
-    if (!std::ranges::contains(allowed_ips, peer_address)) {
-      LOG(WARNING) << "unauthorized access from " << request.peer.ToString();
-      std::unique_ptr<net::HttpServerResponseInfo> response(
-          new net::HttpServerResponseInfo(net::HTTP_UNAUTHORIZED));
-      response->SetBody("Unauthorized access", "text/plain");
-      send_response_func.Run(std::move(response));
-      return;
-    }
+  if (handler) {
+    handler->Handle(request, send_response_func);
   }
-
-  handler->Handle(request, send_response_func);
 }
 
 void HandleRequestOnIOThread(
@@ -270,7 +259,7 @@ void RunServer(uint16_t port,
   HttpHandler handler(cmd_run_loop.QuitClosure(), io_thread.task_runner(),
                       main_task_executor.task_runner(), url_base, adb_port);
   HttpRequestHandlerFunc handle_request_func =
-      base::BindRepeating(&HandleRequestOnCmdThread, &handler, allowed_ips);
+      base::BindRepeating(&HandleRequestOnCmdThread, handler.WeakPtr());
 
   io_thread.task_runner()->PostTask(
       FROM_HERE,

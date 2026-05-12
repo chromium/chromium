@@ -122,6 +122,14 @@ bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info,
                           bool allow_remote,
                           const std::vector<net::IPAddress>& whitelisted_ips,
                           const std::vector<std::string>& allowed_origins) {
+  if (!whitelisted_ips.empty()) {
+    const net::IPAddress& peer_address = info.peer.address();
+    if (!std::ranges::contains(whitelisted_ips, peer_address)) {
+      LOG(WARNING) << "unauthorized access from " << info.peer.ToString();
+      return false;
+    }
+  }
+
   std::string origin_header_value = info.GetHeaderValue("origin");
   std::string host_header_value = info.GetHeaderValue("host");
   bool is_origin_set = !origin_header_value.empty();
@@ -218,10 +226,10 @@ void HttpServer::OnHttpRequest(int connection_id,
                                const net::HttpServerRequestInfo& info) {
   if (!RequestIsSafeToServe(info, allow_remote_, whitelisted_ips_,
                             allowed_origins_)) {
-    server_->Send500(connection_id,
-                     "Host header or origin header is specified and is not "
-                     "whitelisted or localhost.",
-                     TRAFFIC_ANNOTATION_FOR_TESTS);
+    server_->Send(connection_id, net::HTTP_FORBIDDEN,
+                  "The request was rejected by the server (e.g. unauthorized "
+                  "IP, or invalid Host/Origin header).",
+                  "text/plain", TRAFFIC_ANNOTATION_FOR_TESTS);
     return;
   }
   handle_request_func_.Run(
@@ -237,8 +245,8 @@ void HttpServer::OnWebSocketRequest(int connection_id,
   if (!RequestIsSafeToServe(info, allow_remote_, whitelisted_ips_,
                             allowed_origins_)) {
     server_->Send(connection_id, net::HTTP_FORBIDDEN,
-                  "Host header or origin header is specified and is not "
-                  "whitelisted or localhost.",
+                  "The request was rejected by the server (e.g. unauthorized "
+                  "IP, or invalid Host/Origin header).",
                   "text/html", TRAFFIC_ANNOTATION_FOR_TESTS);
     return;
   }
