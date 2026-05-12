@@ -52,8 +52,9 @@ import org.chromium.url.GURL;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@SuppressWarnings("DoNotMock") // Mocks GURL
 public class MerchantTrustBottomSheetCoordinatorTest {
+    private static final GURL TEST_URL = new GURL("https://example.com");
+
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -70,8 +71,6 @@ public class MerchantTrustBottomSheetCoordinatorTest {
 
     @Mock private MerchantTrustMetrics mMockMetrics;
 
-    @Mock private GURL mMockGurl;
-
     @Mock private MerchantTrustBottomSheetMediator mMockMediator;
 
     @Mock private Runnable mMockOnBottomSheetDismissed;
@@ -82,7 +81,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
 
     @Captor private ArgumentCaptor<MerchantTrustBottomSheetContent> mSheetContentCaptor;
 
-    private static final String DUMMY_SHEET_TITLE = "DUMMY_TITLE";
+    private static final String TEST_SHEET_TITLE = "Test Title";
 
     private WindowAndroid mWindowAndroid;
     private MerchantTrustBottomSheetCoordinator mDetailsTabCoordinator;
@@ -125,7 +124,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDetailsTabCoordinator.requestOpenSheet(
-                            mMockGurl, DUMMY_SHEET_TITLE, mMockOnBottomSheetDismissed);
+                            TEST_URL, TEST_SHEET_TITLE, mMockOnBottomSheetDismissed);
                 });
         verify(mMockMediator, times(1))
                 .setupSheetWebContents(any(ThinWebView.class), any(PropertyModel.class));
@@ -133,7 +132,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
                 .addObserver(mBottomSheetObserverCaptor.capture());
         verify(mMockDecorView, times(1))
                 .addOnLayoutChangeListener(any(OnLayoutChangeListener.class));
-        verify(mMockMediator, times(1)).navigateToUrl(eq(mMockGurl), eq(DUMMY_SHEET_TITLE));
+        verify(mMockMediator, times(1)).navigateToUrl(eq(TEST_URL), eq(TEST_SHEET_TITLE));
         verify(mMockBottomSheetController, times(1))
                 .requestShowContent(mSheetContentCaptor.capture(), eq(true));
     }
