@@ -20,6 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_switches.h"
@@ -1191,7 +1192,13 @@ TEST_F(MP4StreamParserTest, MultiTrackFile) {
   EXPECT_EQ(audio_track2.language().value(), "und");
 }
 
-TEST_F(MP4StreamParserTest, TimedMetadataTrack) {
+// The test depends on AV1 codec.
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
+#define MAYBE_TimedMetadataTrack TimedMetadataTrack
+#else
+#define MAYBE_TimedMetadataTrack DISABLED_TimedMetadataTrack
+#endif
+TEST_F(MP4StreamParserTest, MAYBE_TimedMetadataTrack) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kMP4TimedMetadataTrack, features::kHdrAgtm},
                                 {});
