@@ -296,10 +296,12 @@ public class AccessibilityTestService extends AccessibilityService {
     static boolean eventMatches(AccessibilityEvent event, WaitForEventParams params) {
         if (event.getEventType() != params.eventType) return false;
 
-        // ContentChangeTypes are optional, but if a non-default value is provided, we should only
-        // match the events with the ContentChangeType requested.
+        // contentChangeTypes is a bitmask: when a non-zero value is provided, only match events
+        // whose getContentChangeTypes() includes all requested flags. Other flags set by Android
+        // are tolerated.
         if (params.contentChangeTypes != 0
-                && event.getContentChangeTypes() != params.contentChangeTypes) {
+                && (event.getContentChangeTypes() & params.contentChangeTypes)
+                        != params.contentChangeTypes) {
             return false;
         }
 
