@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -65,6 +66,7 @@ public class SidePanelDevFeatureIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL + ":disable_animations/true")
+    @DisabledTest(message = "b/512331243 - Deterministic failure on desktop emulators")
     public void toggle_toggleDevContent() {
         // Arrange.
         var sidePanelDevFeature = getSidePanelDevFeature();
