@@ -25,8 +25,8 @@ namespace blink {
 namespace {
 
 bool IsInlineContainerForNode(const BlockNode& node,
-                              const LayoutObject* inline_container) {
-  return inline_container && inline_container->IsLayoutInline() &&
+                              const LayoutInline* inline_container) {
+  return inline_container &&
          inline_container->CanContainOutOfFlowPositionedElement(
              node.Style().GetPosition());
 }
@@ -766,20 +766,20 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
   for (const PhysicalOofPositionedNode& descendant :
        fragment.OutOfFlowPositionedDescendants()) {
     BlockNode node = descendant.Node();
-    LogicalStaticPosition static_position =
-        descendant.StaticPosition().ConvertToLogical(converter);
+    LogicalOofPositionedNode logical_descendant =
+        PhysicalOofPositionedNodeToLogical(descendant, converter);
+    LogicalStaticPosition static_position = logical_descendant.StaticPosition();
 
-    OofInlineContainer<LogicalOffset> new_inline_container;
-    if (const LayoutInline* inline_object = descendant.InlineContainer()) {
-      LogicalOffset new_relative_offset =
-          converter.ToLogical(descendant.InlineContainerRelativeOffset(),
-                              PhysicalSize()) +
-          relative_offset;
-      new_inline_container =
-          OofInlineContainer<LogicalOffset>(inline_object, new_relative_offset);
-    } else if (inline_container &&
-               IsInlineContainerForNode(node, inline_container->Container())) {
+    OofInlineContainer<LogicalOffset>& new_inline_container =
+        logical_descendant.InlineContainerInfo();
+    if (!new_inline_container.Container() && inline_container &&
+        IsInlineContainerForNode(node, inline_container->Container())) {
+      // Found an inline container for this OOF.
       new_inline_container = *inline_container;
+    } else if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+      if (new_inline_container.Container()) {
+        new_inline_container.IncreaseRelativeOffset(relative_offset);
+      }
     }
 
     // If an OOF element is inside a fragmentation context, it will be laid out
@@ -833,9 +833,8 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
     DCHECK(!std::ranges::contains(oof_positioned_candidates_, node,
                                   &LogicalOofPositionedNode::Node));
     oof_candidates_may_have_anchors_ |= node.MayContainAnchor();
-    oof_positioned_candidates_.emplace_back(
-        node, descendant.GetBreakToken(), static_position,
-        descendant.RequiresContentBeforeBreaking(), new_inline_container);
+    logical_descendant.SetStaticPositionOffset(static_position.offset);
+    oof_positioned_candidates_.push_back(logical_descendant);
   }
 
   const auto* oof_data = fragment.GetFragmentedOofData();
@@ -1020,7 +1019,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
         UpdatedClippedContainerBlockOffset(descendant.containing_block);
 
     LogicalOffset inline_relative_offset = converter.ToLogical(
-        descendant.InlineContainerRelativeOffset(), PhysicalSize());
+        descendant.InlineContainerInfo().RelativeOffset(), PhysicalSize());
     OofInlineContainer<LogicalOffset> new_inline_container(
         descendant.InlineContainer(), inline_relative_offset);
 

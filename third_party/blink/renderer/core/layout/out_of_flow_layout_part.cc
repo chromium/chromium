@@ -954,7 +954,7 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
       InlineContainingBlockUtils::InlineContainingBlockGeometry
           inline_geometry = {};
       inline_geometry.relative_offset =
-          descendant.InlineContainerRelativeOffset();
+          descendant.InlineContainerInfo().RelativeOffset();
       auto it = inline_containing_blocks.find(containing_block);
       if (it != inline_containing_blocks.end()) {
         if (!it->value.map.Contains(inline_container)) {
@@ -1221,12 +1221,9 @@ void OutOfFlowLayoutPart::LayoutCandidates(
               node_info.node.Style().GetWritingDirection());
       BoxStrut margins = physical_margins.ConvertToLogical(
           container_builder_->GetWritingDirection());
-      OofInlineContainer<LogicalOffset> inline_container_info(
-          candidate.InlineContainer(),
-          candidate.InlineContainerRelativeOffset());
       container_builder_->AddResult(
           *result, result->OutOfFlowPositionedOffset(), margins,
-          /* relative_offset */ std::nullopt, &inline_container_info);
+          /* relative_offset */ std::nullopt, &candidate.InlineContainerInfo());
       container_builder_->SetHasOutOfFlowFragmentChild(true);
       if (GetConstraintSpace().IsInitialColumnBalancingPass()) {
         container_builder_->PropagateTallestUnbreakableBlockSize(

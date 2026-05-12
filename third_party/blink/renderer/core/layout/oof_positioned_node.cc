@@ -32,6 +32,32 @@ void OofPositionedNode<LogicalOffset, LogicalStaticPosition>::Trace(
   }
 }
 
+PhysicalOofPositionedNode LogicalOofPositionedNodeToPhysical(
+    const LogicalOofPositionedNode& logical,
+    const WritingModeConverter& converter) {
+  OofInlineContainer<PhysicalOffset> inline_container(
+      logical.InlineContainer(),
+      converter.ToPhysical(logical.InlineContainerInfo().RelativeOffset(),
+                           PhysicalSize()));
+  return PhysicalOofPositionedNode(
+      logical.Node(), logical.GetBreakToken(),
+      logical.StaticPosition().ConvertToPhysical(converter),
+      logical.RequiresContentBeforeBreaking(), inline_container);
+}
+
+LogicalOofPositionedNode PhysicalOofPositionedNodeToLogical(
+    const PhysicalOofPositionedNode& physical,
+    const WritingModeConverter& converter) {
+  OofInlineContainer<LogicalOffset> inline_container(
+      physical.InlineContainer(),
+      converter.ToLogical(physical.InlineContainerInfo().RelativeOffset(),
+                          PhysicalSize()));
+  return LogicalOofPositionedNode(
+      physical.Node(), physical.GetBreakToken(),
+      physical.StaticPosition().ConvertToLogical(converter),
+      physical.RequiresContentBeforeBreaking(), inline_container);
+}
+
 void PhysicalOofNodeForFragmentation::TraceAfterDispatch(
     Visitor* visitor) const {
   PhysicalOofPositionedNode::TraceAfterDispatch(visitor);

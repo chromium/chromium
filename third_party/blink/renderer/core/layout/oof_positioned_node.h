@@ -108,6 +108,10 @@ class OofInlineContainer {
     }
     return relative_offset_;
   }
+  void IncreaseRelativeOffset(OffsetType increase) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    relative_offset_ += increase;
+  }
 
  private:
   Member<const LayoutInline> container_;
@@ -199,10 +203,15 @@ class CORE_EXPORT OofPositionedNode {
   const LayoutInline* InlineContainer() const {
     return inline_container_.Container();
   }
-  OffsetType InlineContainerRelativeOffset() const {
+  OofInlineContainer<OffsetType>& InlineContainerInfo() {
     // Only needed by the old OOF fragmentation machinery, i.e. when
     // FragmentedOofInCb is off.
-    return inline_container_.RelativeOffset();
+    return inline_container_;
+  }
+  const OofInlineContainer<OffsetType>& InlineContainerInfo() const {
+    // Only needed by the old OOF fragmentation machinery, i.e. when
+    // FragmentedOofInCb is off.
+    return inline_container_;
   }
   bool IsForFragmentation() const {
     DCHECK(!is_for_fragmentation_ ||
@@ -213,6 +222,9 @@ class CORE_EXPORT OofPositionedNode {
     return requires_content_before_breaking_;
   }
 
+  void SetStaticPositionOffset(OffsetType offset) {
+    static_position_.offset = offset;
+  }
   void IncreaseStaticPositionOffset(OffsetType increase) {
     static_position_.offset += increase;
   }
@@ -245,6 +257,13 @@ void OofPositionedNode<PhysicalOffset, PhysicalStaticPosition>::Trace(
 template <>
 void OofPositionedNode<LogicalOffset, LogicalStaticPosition>::Trace(
     Visitor* visitor) const;
+
+PhysicalOofPositionedNode LogicalOofPositionedNodeToPhysical(
+    const LogicalOofPositionedNode&,
+    const WritingModeConverter&);
+LogicalOofPositionedNode PhysicalOofPositionedNodeToLogical(
+    const PhysicalOofPositionedNode&,
+    const WritingModeConverter&);
 
 // When fragmentation comes into play, we no longer place a positioned-node as
 // soon as it reaches its containing block. Instead, we continue to bubble the
@@ -332,14 +351,11 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
 
   explicit LogicalOofNodeForFragmentation(
       const LogicalOofPositionedNode& oof_node)
-      : LogicalOofPositionedNode(
-            oof_node.Node(),
-            /*break_token=*/nullptr,
-            oof_node.StaticPosition(),
-            oof_node.RequiresContentBeforeBreaking(),
-            OofInlineContainer<LogicalOffset>(
-                oof_node.InlineContainer(),
-                oof_node.InlineContainerRelativeOffset())) {
+      : LogicalOofPositionedNode(oof_node.Node(),
+                                 /*break_token=*/nullptr,
+                                 oof_node.StaticPosition(),
+                                 oof_node.RequiresContentBeforeBreaking(),
+                                 oof_node.InlineContainerInfo()) {
     DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     is_for_fragmentation_ = true;
   }

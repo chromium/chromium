@@ -489,14 +489,8 @@ PhysicalFragment::OofData* PhysicalFragment::OofDataFromBuilder(
         builder->oof_positioned_descendants_.size());
     for (const LogicalOofPositionedNode& descendant :
          builder->oof_positioned_descendants_) {
-      OofInlineContainer<PhysicalOffset> inline_container(
-          descendant.InlineContainer(),
-          converter.ToPhysical(descendant.InlineContainerRelativeOffset(),
-                               PhysicalSize()));
-      oof_data->OofPositionedDescendants().emplace_back(
-          descendant.Node(), descendant.GetBreakToken(),
-          descendant.StaticPosition().ConvertToPhysical(converter),
-          descendant.RequiresContentBeforeBreaking(), inline_container);
+      oof_data->OofPositionedDescendants().push_back(
+          LogicalOofPositionedNodeToPhysical(descendant, converter));
     }
   }
 
@@ -526,7 +520,7 @@ PhysicalFragment::OofData* PhysicalFragment::FragmentedOofDataFromBuilder(
        builder->oof_positioned_fragmentainer_descendants_) {
     OofInlineContainer<PhysicalOffset> inline_container(
         descendant.InlineContainer(),
-        converter.ToPhysical(descendant.InlineContainerRelativeOffset(),
+        converter.ToPhysical(descendant.InlineContainerInfo().RelativeOffset(),
                              PhysicalSize()));
     OofInlineContainer<PhysicalOffset> fixedpos_inline_container(
         descendant.fixedpos_inline_container.Container(),
