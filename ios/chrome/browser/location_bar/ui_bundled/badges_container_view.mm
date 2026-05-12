@@ -87,7 +87,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     AddSameConstraints(self, _containerStackView);
     _placeholderViewWrapper = [[UIView alloc] init];
     _placeholderViewWrapper.translatesAutoresizingMaskIntoConstraints = NO;
-    [_containerStackView addSubview:_placeholderViewWrapper];
+    [_containerStackView addArrangedSubview:_placeholderViewWrapper];
     [_placeholderViewWrapper.heightAnchor
         constraintEqualToAnchor:_containerStackView.heightAnchor]
         .active = YES;
@@ -384,7 +384,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   placeholderViewShouldBeVisibleFinal =
       !badgeViewShouldBeVisibleFinal &&
       !contextualPanelEntrypointShouldBeVisibleFinal &&
-      !_readerModeChipShouldBeVisible;
+      !_readerModeChipShouldBeVisible && _placeholderView != nil;
 
   SetViewHiddenIfNecessary(self.readerModeChipView,
                            !readerModeChipShouldBeVisibleFinal);
@@ -393,6 +393,8 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   SetViewHiddenIfNecessary(self.badgeView, !badgeViewShouldBeVisibleFinal);
   SetViewHiddenIfNecessary(self.contextualPanelEntrypointView,
                            !contextualPanelEntrypointShouldBeVisibleFinal);
+  SetViewHiddenIfNecessary(_placeholderViewWrapper,
+                           !placeholderViewShouldBeVisibleFinal);
 
   if (_placeholderView &&
       !!placeholderViewShouldBeVisibleFinal != !_placeholderView.hidden) {
@@ -548,7 +550,8 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 // Returns YES if any badges are currently visible.
 - (BOOL)hasVisibleBadges {
   for (UIView* subview in _containerStackView.arrangedSubviews) {
-    if (!subview.hidden && subview != _placeholderView) {
+    if (!subview.hidden && subview != _placeholderView &&
+        subview != _placeholderViewWrapper) {
       return !_disableProactiveOverlay;
     }
   }
