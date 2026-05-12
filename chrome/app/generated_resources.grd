@@ -20033,6 +20033,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_FILTER_CHIP_UPDATER_SCOPE" desc="Text displayed in a filter chip showing the selected updater scopes.">
         Updater Scope: <ph name="OUTCOMES">$1<ex>Per-system updater, Per-user updater</ex></ph>
       </message>
+      <message name="IDS_UPDATER_HELP_CENTER_TOOLTIP" desc="Tooltip for the help center link about maintaining Chrome updates.">
+        Learn more about maintaining Chrome updates
+      </message>
       <message name="IDS_UPDATER_INACTIVE_VERSIONS_LABEL" desc="A label for a list of inactive versions of the Chrome Updater. Multiple Chrome Updater versions may be present on a users machine but only one may be active at a time.">
         Inactive Versions:
       </message>
@@ -20053,6 +20056,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_LAST_STARTED_LABEL" desc="A label for a timestamp indicating the last time the Chrome Updater performed its periodic tasks.">
         Last Periodic Task Run:
+      </message>
+      <message name="IDS_UPDATER_LEARN_MORE" desc="Label for a button that opens a help center article.">
+        Learn More
       </message>
       <message name="IDS_UPDATER_LOAD_HISTORY_FILE" desc="Label for the button that allows users to upload one or more external updater history files for display.">
         Load History Files

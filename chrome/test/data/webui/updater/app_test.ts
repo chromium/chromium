@@ -8,6 +8,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {PageDataSource} from 'chrome://updater/app.js';
 import type {UpdaterAppElement} from 'chrome://updater/app.js';
 import {BrowserProxyImpl} from 'chrome://updater/browser_proxy.js';
+import {loadTimeData} from 'chrome://updater/i18n_setup.js';
 import {PageHandlerRemote} from 'chrome://updater/updater_ui.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -235,5 +236,20 @@ suite('UpdaterAppElement', () => {
 
       assertEquals(PageDataSource.INSTALL, element.pageDataSource);
     });
+  });
+
+  test('learn more button exists and has correct properties', async () => {
+    const helpCenterURL = 'https://support.google.com/chrome/a/answer/17070626';
+    await initApp();
+    const learnMoreButton = element.shadowRoot.querySelector<HTMLAnchorElement>(
+        `#controls a[href="${helpCenterURL}"]`);
+    assertTrue(!!learnMoreButton);
+    assertEquals('_blank', learnMoreButton.target);
+
+    const button = learnMoreButton.querySelector('cr-button');
+    assertTrue(!!button);
+    assertEquals(
+        loadTimeData.getString('helpCenterTooltip'),
+        button.getAttribute('title'));
   });
 });

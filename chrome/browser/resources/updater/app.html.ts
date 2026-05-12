@@ -35,6 +35,12 @@ export function getHtml(this: UpdaterAppElement) {
           <cr-button @click="${this.onLoadHistoryClick}">
             $i18n{loadHistoryFile}
           </cr-button>
+          <a href="https://support.google.com/chrome/a/answer/17070626"
+              target="_blank" rel="noopener noreferrer">
+            <cr-button title="$i18n{helpCenterTooltip}">
+              $i18n{learnMore}
+            </cr-button>
+          </a>
         `}
         <input type="file" id="fileInput" hidden multiple
             accept=".jsonl, .jsonl.old, .zip"
