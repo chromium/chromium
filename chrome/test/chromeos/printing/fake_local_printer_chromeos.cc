@@ -6,10 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-void FakeLocalPrinter::ShowSystemPrintSettings(
-    ShowSystemPrintSettingsCallback callback) {
-  FAIL();
-}
 
 void FakeLocalPrinter::CreatePrintJob(crosapi::mojom::PrintJobPtr job,
                                       CreatePrintJobCallback callback) {

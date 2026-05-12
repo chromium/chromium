@@ -13,6 +13,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -78,12 +79,17 @@
 #endif  // BUILDFLAG(IS_MAC)
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 #if DCHECK_IS_ON()
@@ -1256,11 +1262,15 @@ void PrintPreviewHandler::SetPdfSavedClosureForTesting(
 
 void PrintPreviewHandler::HandleManagePrinters(const base::ListValue& args) {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!local_printer_) {
-    LOG(ERROR) << "Local printer not available";
-    return;
-  }
-  local_printer_->ShowSystemPrintSettings(base::DoNothing());
+  // TODO(crbug.com/447287122): Consider to use the active session, instead of
+  // primary session, or pass the user context from callers.
+  auto* session = session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(session);
+  auto* user =
+      user_manager::UserManager::Get()->FindUser(session->account_id());
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(user),
+      {.sub_page = chromeos::settings::mojom::kPrintingDetailsSubpagePath});
 #else
   printing::PrinterManagerDialog::ShowPrinterManagerDialog();
 #endif

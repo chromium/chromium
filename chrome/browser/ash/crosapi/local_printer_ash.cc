@@ -205,20 +205,6 @@ void LocalPrinterAsh::OnServerPrintersChanged(
   }
 }
 
-void LocalPrinterAsh::ShowSystemPrintSettings(
-    ShowSystemPrintSettingsCallback callback) {
-  // TODO(crbug.com/447287122): Consider to use the active session, instead of
-  // primary session, or pass the user context from callers.
-  auto* session = session_manager::SessionManager::Get()->GetPrimarySession();
-  CHECK(session);
-  auto* user =
-      user_manager::UserManager::Get()->FindUser(session->account_id());
-  ash::SettingsAppManager::Get()->Open(
-      CHECK_DEREF(user),
-      {.sub_page = chromeos::settings::mojom::kPrintingDetailsSubpagePath});
-  std::move(callback).Run();
-}
-
 void LocalPrinterAsh::CreatePrintJob(mojom::PrintJobPtr job,
                                      CreatePrintJobCallback callback) {
   Profile* profile = GetProfile();

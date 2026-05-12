@@ -81,8 +81,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
 
 
   // crosapi::mojom::LocalPrinter:
-  void ShowSystemPrintSettings(
-      ShowSystemPrintSettingsCallback callback) override;
   void CreatePrintJob(mojom::PrintJobPtr job,
                       CreatePrintJobCallback callback) override;
   void CancelPrintJob(const std::string& printer_id,
