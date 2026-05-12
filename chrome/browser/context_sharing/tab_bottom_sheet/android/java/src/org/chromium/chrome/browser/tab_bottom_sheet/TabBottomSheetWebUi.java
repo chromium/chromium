@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -26,6 +27,7 @@ import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
+import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -140,8 +142,19 @@ public class TabBottomSheetWebUi {
                             .setSupportTheming(true)
                             .build());
             mWebViewResizingHelper.setThinWebView(mThinWebView, mWebContents);
+            setAllowFullscreenIme(
+                    mContext.getResources().getConfiguration().orientation
+                            == Configuration.ORIENTATION_LANDSCAPE);
         } else {
             resetThinWebView();
+        }
+    }
+
+    void setAllowFullscreenIme(boolean allow) {
+        if (mWebContents == null) return;
+        ImeAdapter adapter = ImeAdapter.fromWebContents(mWebContents);
+        if (adapter != null) {
+            adapter.setAllowFullscreenIme(allow);
         }
     }
 

@@ -343,6 +343,26 @@ public class TabBottomSheetCoordinatorTest {
     }
 
     @Test
+    public void testAllowFullscreenImeOnLandscape() {
+        simulateShowSuccessAndGetObserver();
+
+        verify(mContext).registerComponentCallbacks(mComponentCallbacksArgumentCaptor.capture());
+        ComponentCallbacks callbacks = mComponentCallbacksArgumentCaptor.getValue();
+
+        Configuration landscapeConfig = new Configuration();
+        landscapeConfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        callbacks.onConfigurationChanged(landscapeConfig);
+
+        verify(mMockWebUi).setAllowFullscreenIme(true);
+
+        Configuration portraitConfig = new Configuration();
+        portraitConfig.orientation = Configuration.ORIENTATION_PORTRAIT;
+        callbacks.onConfigurationChanged(portraitConfig);
+
+        verify(mMockWebUi).setAllowFullscreenIme(false);
+    }
+
+    @Test
     public void testTouchEventObserverRegistration() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 

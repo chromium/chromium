@@ -364,6 +364,8 @@ public class TabBottomSheetCoordinator {
                 if (mIsShowingTabBottomSheet) {
                     mExpectingLayoutChange = true;
                 }
+                mCoBrowseViews.setAllowFullscreenIme(
+                        configuration.orientation == Configuration.ORIENTATION_LANDSCAPE);
             }
 
             @Override

@@ -123,4 +123,11 @@ public interface ImeAdapter {
 
     /** Resets IME adapter and hides the keyboard. This will unblock input connection. */
     void resetAndHideKeyboard();
+
+    /**
+     * Sets whether to allow fullscreen IME when space is limited.
+     *
+     * @param allow True to allow, false to prevent.
+     */
+    void setAllowFullscreenIme(boolean allow);
 }

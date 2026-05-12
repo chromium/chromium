@@ -149,6 +149,12 @@ public class CoBrowseViews {
         }
     }
 
+    void setAllowFullscreenIme(boolean allow) {
+        if (mWebUi != null) {
+            mWebUi.setAllowFullscreenIme(allow);
+        }
+    }
+
     @TabBottomSheetClientType
     int getClientType() {
         return mClientType;

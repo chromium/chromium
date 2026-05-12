@@ -25,6 +25,7 @@ import android.text.style.SuggestionSpan;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.view.inputmethod.CorrectionInfo;
+import android.view.inputmethod.EditorInfo;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -59,7 +60,8 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
     ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
     ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2,
     ContentFeatureList.ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
-    ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE
+    ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
+    ContentFeatureList.ANDROID_MEDIA_INSERTION
 })
 public class ImeAdapterImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -516,5 +518,28 @@ public class ImeAdapterImplUnitTest {
                         /* suggestionHighlightColor= */ anyInt(),
                         /* suggestions= */ any(),
                         /* shouldHideSuggestionMenu= */ anyBoolean());
+    }
+
+    @Test
+    public void testOnCreateInputConnection_Default() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        updateTextInputType(adapter, TextInputType.TEXT);
+        EditorInfo outAttrs = new EditorInfo();
+        adapter.onCreateInputConnection(outAttrs);
+
+        Assert.assertTrue((outAttrs.imeOptions & EditorInfo.IME_FLAG_NO_FULLSCREEN) != 0);
+        Assert.assertTrue((outAttrs.imeOptions & EditorInfo.IME_FLAG_NO_EXTRACT_UI) != 0);
+    }
+
+    @Test
+    public void testOnCreateInputConnection_AllowFullscreenIme() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        updateTextInputType(adapter, TextInputType.TEXT);
+        adapter.setAllowFullscreenIme(true);
+        EditorInfo outAttrs = new EditorInfo();
+        adapter.onCreateInputConnection(outAttrs);
+
+        Assert.assertTrue((outAttrs.imeOptions & EditorInfo.IME_FLAG_NO_FULLSCREEN) == 0);
+        Assert.assertTrue((outAttrs.imeOptions & EditorInfo.IME_FLAG_NO_EXTRACT_UI) == 0);
     }
 }

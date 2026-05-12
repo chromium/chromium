@@ -198,6 +198,8 @@ public class ImeAdapterImpl
     // True if ImeAdapter is connected to render process.
     private boolean mIsConnected;
 
+    private boolean mAllowFullscreenIme;
+
     // Whether to force show keyboard during stylus handwriting. We do not show it when writing
     // system is active and stylus is used to edit input text. This is used to show the soft
     // keyboard from Direct writing toolbar.
@@ -528,9 +530,15 @@ public class ImeAdapterImpl
      */
     public @Nullable ChromiumBaseInputConnection onCreateInputConnection(
             EditorInfo outAttrs, boolean allowKeyboardLearning) {
+        outAttrs.imeOptions = 0;
+
         // InputMethodService evaluates fullscreen mode even when the new input connection is
         // null. This makes sure IME doesn't enter fullscreen mode or open custom UI.
-        outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_FULLSCREEN | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
+        if (!mAllowFullscreenIme) {
+            outAttrs.imeOptions |=
+                    EditorInfo.IME_FLAG_NO_FULLSCREEN | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
+        }
+
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_MEDIA_INSERTION)) {
             mSupportedMimeTypes =
                     ImeAdapterImplJni.get().getSupportedMimeTypes(mNativeImeAdapterAndroid);
@@ -602,6 +610,11 @@ public class ImeAdapterImpl
         if (mCursorAnchorInfoController != null) {
             mCursorAnchorInfoController.setInputMethodManagerWrapper(immw);
         }
+    }
+
+    @Override
+    public void setAllowFullscreenIme(boolean allow) {
+        mAllowFullscreenIme = allow;
     }
 
     @VisibleForTesting
