@@ -162,7 +162,7 @@ pre_process() {
 
     # A preliminary rewriter run in a special mode that generates a list of fields
     # to ignore. These fields would likely lead to compiler errors if rewritten.
-    echo "*** Generating the ignore list for $PLATFORM ***"
+    echo "*** Phase 1: Analysis for $PLATFORM ***"
     time tools/clang/scripts/run_tool.py \
         $TARGET_OS_OPTION \
         --tool rewrite_raw_ptr_fields \
@@ -182,11 +182,12 @@ main_rewrite() {
     fi
 
     # Main rewrite.
-    echo "*** Running the main rewrite phase for $PLATFORM ***"
+    echo "*** Phase 2: Rewrite for $PLATFORM ***"
     time tools/clang/scripts/run_tool.py \
         $TARGET_OS_OPTION \
         --tool rewrite_raw_ptr_fields \
         --tool-arg=--exclude-fields="$HOME/scratch/combined-fields-to-ignore.txt" \
+        --tool-arg=--arithmetic-fields="$HOME/scratch/arithmetic-fields.txt" \
         -p $OUT_DIR \
         $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out
     cat ~/scratch/rewriter-$PLATFORM.main.out >> ~/scratch/rewriter.main.out
@@ -199,7 +200,16 @@ done
 
 cat ~/scratch/rewriter.out \
     | sed '/^==== BEGIN FIELD FILTERS ====$/,/^==== END FIELD FILTERS ====$/{//!b};d' \
+    | sort | uniq > ~/scratch/raw-field-filters.txt
+
+grep "pointer-arithmetic" ~/scratch/raw-field-filters.txt \
+    | sed 's/  # .*//' \
+    | sort | uniq > ~/scratch/arithmetic-fields.txt
+
+grep "ignore:" ~/scratch/raw-field-filters.txt \
+    | sed 's/  # .*//' \
     | sort | uniq > ~/scratch/automated-fields-to-ignore.txt
+
 cat ~/scratch/automated-fields-to-ignore.txt \
     tools/clang/rewrite_raw_ptr_fields/manual-fields-to-ignore.txt \
     | grep -v "base::FileDescriptorWatcher::Controller::watcher_" \

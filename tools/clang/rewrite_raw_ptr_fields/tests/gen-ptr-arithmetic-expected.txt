@@ -1,0 +1,20 @@
+==== BEGIN EDITS ====
+include-user-header:::gen-ptr-arithmetic-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
+r:::gen-ptr-arithmetic-actual.cc:::190:::5:::raw_ptr<int> 
+r:::gen-ptr-arithmetic-actual.cc:::218:::5:::raw_ptr<int> 
+r:::gen-ptr-arithmetic-actual.cc:::247:::5:::raw_ptr<int> 
+r:::gen-ptr-arithmetic-actual.cc:::281:::5:::raw_ptr<int> 
+r:::gen-ptr-arithmetic-actual.cc:::316:::5:::raw_ptr<int> 
+r:::gen-ptr-arithmetic-actual.cc:::349:::5:::raw_ptr<int> 
+r:::gen-ptr-arithmetic-actual.cc:::382:::5:::raw_ptr<int> 
+r:::gen-ptr-arithmetic-actual.cc:::415:::5:::raw_ptr<int> 
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+my_namespace::MyStruct::ptr_arithmetic_decrement @ gen-ptr-arithmetic-actual.cc:13:3  # pointer-arithmetic
+my_namespace::MyStruct::ptr_arithmetic_increment @ gen-ptr-arithmetic-actual.cc:12:3  # pointer-arithmetic
+my_namespace::MyStruct::ptr_arithmetic_minus @ gen-ptr-arithmetic-actual.cc:9:3  # pointer-arithmetic
+my_namespace::MyStruct::ptr_arithmetic_minus_equal @ gen-ptr-arithmetic-actual.cc:11:3  # pointer-arithmetic
+my_namespace::MyStruct::ptr_arithmetic_plus @ gen-ptr-arithmetic-actual.cc:8:3  # pointer-arithmetic
+my_namespace::MyStruct::ptr_arithmetic_plus_equal @ gen-ptr-arithmetic-actual.cc:10:3  # pointer-arithmetic
+my_namespace::MyStruct::ptr_arithmetic_subscript @ gen-ptr-arithmetic-actual.cc:14:3  # pointer-arithmetic
+==== END FIELD FILTERS ====

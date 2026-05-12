@@ -1,0 +1,1 @@
+my_namespace::MyStruct::ptr_arithmetic
