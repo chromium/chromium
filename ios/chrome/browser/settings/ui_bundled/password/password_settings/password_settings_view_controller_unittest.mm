@@ -44,7 +44,7 @@ NSString* GetExpectedSavePasswordsItemTitle() {
 // table view item.
 NSString* GetExpectedPasswordsInOtherAppsItemTitle() {
   return l10n_util::GetNSString(
-      IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_IOS18);
+      IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS);
 }
 
 }  // namespace

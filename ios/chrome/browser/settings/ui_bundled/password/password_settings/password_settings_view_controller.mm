@@ -447,8 +447,8 @@ NSString* GetSavePasswordsItemTitle() {
   TableViewMultiDetailTextItem* passwordsInOtherAppsItem =
       [[TableViewMultiDetailTextItem alloc]
           initWithType:ItemTypePasswordsInOtherApps];
-  passwordsInOtherAppsItem.text = l10n_util::GetNSString(
-      IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_IOS18);
+  passwordsInOtherAppsItem.text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS);
   passwordsInOtherAppsItem.leadingDetailText = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION);
   passwordsInOtherAppsItem.accessibilityIdentifier =

@@ -95,7 +95,7 @@ CGFloat const kSubtitleMarginLayoutGuideHeight = 24;
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _titleText = l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER_IOS18);
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER);
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
     _subtitleText = l10n_util::GetNSString(
         IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE);
@@ -653,8 +653,8 @@ CGFloat const kSubtitleMarginLayoutGuideHeight = 24;
 // Returns caption text that shows below the subtitle in `turnOffInstructions`.
 - (UITextView*)drawCaptionTextView {
   NSString* text;
-  text = l10n_util::GetNSString(
-      IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS18);
+  text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION);
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kGrey600Color],
     NSFontAttributeName :

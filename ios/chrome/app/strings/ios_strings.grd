@@ -6974,13 +6974,7 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SETTINGS_PASSWORDS_EXCEPTIONS_HEADING" desc="The title for a list of sites where passwords will not be saved. These items are already saved by the browser and can only be deleted. [Length: one line] [iOS only]">
       Never saved
       </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION" desc="The caption label below subtitle of the view that teaches users to turn off iOS AutoFill from Chrome password manager">
-        To turn off, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph> and go to AutoFill Passwords.
-      </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS17" desc="The caption label below subtitle of the view that teaches users to turn off iOS AutoFill from Chrome password manager. 'Password Options' is the name of an iOS setting (iOS settings &gt; Passwords &gt; Password Options). The translation and capitalization should match that of the iOS setting. [iOS only]" meaning="Translation and capitalization of 'Password Options' should match that of the iOS setting.">
-        To turn off, go to <ph name="BEGIN_LINK">BEGIN_LINK</ph>Password Options<ph name="END_LINK">END_LINK</ph>
-      </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS18" desc="The caption label below the title of the view that teaches users how to turn off iOS AutoFill from Chrome password manager on iOS 18 and above. 'AutoFill &amp; Passwords' is the name of an iOS setting (iOS settings &gt; General &gt; AutoFill &amp; Passwords). The translation and capitalization should match that of the iOS setting. [iOS only]" meaning="Translation and capitalization of 'AutoFill &amp; Passwords' should match that of the iOS setting.">
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION" desc="The caption label below the title of the view that teaches users how to turn off iOS AutoFill from Chrome password manager. 'AutoFill &amp; Passwords' is the name of an iOS setting (iOS settings &gt; General &gt; AutoFill &amp; Passwords). The translation and capitalization should match that of the iOS setting. [iOS only]" meaning="Translation and capitalization of 'AutoFill &amp; Passwords' should match that of the iOS setting.">
         To turn off, go to <ph name="BEGIN_LINK">BEGIN_LINK</ph>AutoFill &amp; Passwords<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16" desc="Text of the row indicating the first step of shortened instruction of of turning on iOS auto-fill from Chrome password manager on iOS 16 and above [iOS only]">
@@ -7007,17 +7001,11 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SETTINGS_PASSWORDS_NUMBER_ACCOUNT" desc="A description presented to the user of how many accounts have sign-in information available by tapping on this menu item. [iOS only]">
         <ph name="NUMBER_OF_ACCOUNTS">$1<ex>2</ex></ph> accounts
       </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS" desc="The title of the view in password settings that allows users to turn on iOS auto-fill from Chrome password manager. Refer to Glossary when translating passkeys. [iOS only]">
-        Access passwords &amp; passkeys from any app
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS" desc="The title of the view in password settings that allows users to turn on iOS AutoFill from Chrome password manager. Refer to Glossary when translating passkeys. [iOS only]">
+        Autofill passwords &amp; passkeys
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER" desc="The title of the view that teaches users to turn on iOS AutoFill from Chrome password manager. Refer to Glossary when translating passkeys. [iOS only]">
-        Access your passwords &amp; passkeys from any app
-      </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER_IOS18" desc="The title of the view that teaches users to turn on iOS AutoFill from Chrome password manager. Used on iOS 18+. Refer to Glossary when translating passkeys. [iOS only]">
         Autofill passwords and passkeys
-      </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_IOS18" desc="The title of the view in password settings that allows users to turn on iOS AutoFill from Chrome password manager. Used on iOS 18+. Refer to Glossary when translating passkeys. [iOS only]">
-        Autofill passwords &amp; passkeys
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_SAVED_HEADING" desc="The title for a list of items, with each entry consisting of a password or a passkey, and a corresponding username and website. These items are already saved by the browser and can be deleted/edited. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [Length: one line] [iOS only]">
         Saved passwords &amp; passkeys
