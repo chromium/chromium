@@ -190,7 +190,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
 #if BUILDFLAG(IS_MAC)
   void OnPermissionUpdate(bool has_permission);
-  void RecordPermissionInteractionUma() const;
   void OnAudioSharingApprovedByUserUpdate();
   void OnAudioPermissionUpdate();
   void RecordUserActionOnDeniedAudioPermissionUma(
@@ -233,8 +232,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<ScreenCapturePermissionChecker>
       screen_capture_permission_checker_;
-  std::optional<bool> initial_permission_state_;
-  bool permission_pane_was_shown_ = false;
   std::unique_ptr<AudioCapturePermissionChecker>
       audio_capture_permission_checker_;
 #endif

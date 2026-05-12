@@ -159,15 +159,6 @@ void RecordUma(GDMResult result, base::TimeTicks dialog_open_time) {
   histogram->AddTime(elapsed);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PermissionInteraction {
-  kNotShown = 0,
-  kShown = 1,
-  kClicked = 2,
-  kMaxValue = kClicked
-};
-
 void RecordUmaCancellation(base::TimeTicks dialog_open_time) {
   RecordAction(base::UserMetricsAction("GetDisplayMedia.Cancel"));
   RecordUma(GDMResult::kUserCancelled, dialog_open_time);
@@ -219,11 +210,6 @@ void RecordUmaSelection(content::GlobalRenderFrameHostId capturer_global_id,
 }
 
 #if BUILDFLAG(IS_MAC)
-void RecordUma(PermissionInteraction permission_interaction) {
-  base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMedia.PermissionInteractionMac",
-      permission_interaction);
-}
 
 void RecordPermissionButtonOpenedAction(DesktopMediaList::Type type) {
   switch (type) {
@@ -724,11 +710,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   GetSelectedController()->FocusView();
 }
 
-DesktopMediaPickerDialogView::~DesktopMediaPickerDialogView() {
-#if BUILDFLAG(IS_MAC)
-  RecordPermissionInteractionUma();
-#endif
-}
+DesktopMediaPickerDialogView::~DesktopMediaPickerDialogView() = default;
 
 void DesktopMediaPickerDialogView::RecordUmaDismissal() const {
   RecordUma(GDMResult::kDialogDismissed, dialog_open_time_);
@@ -763,7 +745,6 @@ void DesktopMediaPickerDialogView::ConfigureUIForNewPane(int index) {
   }
 #if BUILDFLAG(IS_MAC)
   if (category.pane->IsPermissionPaneVisible()) {
-    permission_pane_was_shown_ = true;
     RecordPermissionButtonOpenedAction(category.type);
   }
 #endif
@@ -1289,10 +1270,6 @@ void DesktopMediaPickerDialogView::OnCanReselectChanged(
 void DesktopMediaPickerDialogView::OnPermissionUpdate(bool has_permission) {
   CHECK(screen_capture_permission_checker_);
 
-  if (!initial_permission_state_.has_value()) {
-    initial_permission_state_ = has_permission;
-  }
-
   if (has_permission) {
     // Avoid needless polling.
     // (A user who revokes permission while the media-picker is visible,
@@ -1305,26 +1282,7 @@ void DesktopMediaPickerDialogView::OnPermissionUpdate(bool has_permission) {
   }
 }
 
-void DesktopMediaPickerDialogView::RecordPermissionInteractionUma() const {
-  if (initial_permission_state_.value_or(true)) {
-    return;
-  }
 
-  bool permission_button_was_clicked = false;
-  for (auto& category : categories_) {
-    if (category.pane->WasPermissionButtonClicked()) {
-      permission_button_was_clicked = true;
-      break;
-    }
-  }
-
-  const PermissionInteraction permission_interaction =
-      permission_button_was_clicked ? PermissionInteraction::kClicked
-      : permission_pane_was_shown_  ? PermissionInteraction::kShown
-                                    : PermissionInteraction::kNotShown;
-
-  RecordUma(permission_interaction);
-}
 
 void DesktopMediaPickerDialogView::OnAudioSharingApprovedByUserUpdate() {
   const int index = GetSelectedTabIndex();

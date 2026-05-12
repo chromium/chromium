@@ -1895,12 +1895,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kUserSelectedThisTab"/>
 </enum>
 
-<enum name="MediaUiGetDisplayMediaPermissionInteraction">
-  <int value="0" label="PermissionButtonNotShown"/>
-  <int value="1" label="PermissionButtonShown"/>
-  <int value="2" label="PermissionButtonClicked"/>
-</enum>
-
 <enum name="MediaUiGetDisplayMediaPreferCurrentTabFlowUserInteraction">
   <int value="0" label="kDialogDismissed"/>
   <int value="1" label="kUserCancelled"/>
