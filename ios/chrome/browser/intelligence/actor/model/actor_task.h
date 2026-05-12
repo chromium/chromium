@@ -15,8 +15,11 @@
 #import "base/scoped_multi_source_observation.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state_observer.h"
+
+@class CRBProtocolObservers;
 
 namespace web {
 class WebState;
@@ -41,6 +44,14 @@ class ActorTask : public web::WebStateObserver,
 
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;
+
+  // Adds an observer to be notified of task state transitions and tool
+  // executions. Registered observers will immediately receive a notification
+  // with the current state via `didRegisterAsObserverForTaskID:`.
+  void AddObserver(id<ActorTaskUpdatesObserver> observer);
+
+  // Removes a registered observer.
+  void RemoveObserver(id<ActorTaskUpdatesObserver> observer);
 
   // Accessors. TODO(crbug.com/496164697): Remove when they are used internally
   // in ActorTask, this is to fix compilation.
@@ -150,6 +161,13 @@ class ActorTask : public web::WebStateObserver,
   // amount of time ActorTask can wait for a page to finish loading before
   // executing the Act callback.
   base::OneShotTimer load_timeout_timer_;
+
+  // The latest task update string.
+  std::string last_task_update_;
+
+  // List of registered observers notified of task state changes and tool
+  // executions.
+  CRBProtocolObservers<ActorTaskUpdatesObserver>* observers_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};

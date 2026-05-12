@@ -61,6 +61,7 @@ source_set("unit_tests") {
     ":model",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_factory",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
