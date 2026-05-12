@@ -1393,6 +1393,8 @@ bool IsFullscreenNextIAEnabled() {
     // (Landscape).
     self.secondaryToolbarRegularBottomConstraint = [toolbarView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor];
+    self.secondaryToolbarRegularBottomConstraint.active =
+        (self.layoutState.appBarPosition != AppBarPosition::kBottom);
   } else {
     [toolbarView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
         .active = YES;
@@ -1410,6 +1412,8 @@ bool IsFullscreenNextIAEnabled() {
       self.toolbarCoordinator.secondaryToolbarViewController.view;
   self.secondaryToolbarAppBarBottomConstraint =
       [toolbarView.bottomAnchor constraintEqualToAnchor:appBar.topAnchor];
+  self.secondaryToolbarAppBarBottomConstraint.active =
+      (self.layoutState.appBarPosition == AppBarPosition::kBottom);
 }
 
 // Adds constraints to the primary and secondary toolbars, anchoring them to the
@@ -1666,8 +1670,7 @@ bool IsFullscreenNextIAEnabled() {
   // If ChromeNextIa is disabled, it always pins to the view edge.
   BOOL useBottomViewEdge = NO;
   if (IsChromeNextIaEnabled()) {
-    useBottomViewEdge =
-        !canShowTabStrip && !isSplitToolbarMode && !_isOffTheRecord;
+    useBottomViewEdge = !canShowTabStrip && !_isOffTheRecord;
   }
 
   NSLayoutYAxisAnchor* topAnchor =
@@ -2168,11 +2171,6 @@ bool IsFullscreenNextIAEnabled() {
 
   BOOL shouldUseAppBar =
       (self.layoutState.appBarPosition == AppBarPosition::kBottom);
-
-  // Return early if the constraint is already in the correct state.
-  if (self.secondaryToolbarAppBarBottomConstraint.active == shouldUseAppBar) {
-    return;
-  }
 
   self.secondaryToolbarAppBarBottomConstraint.active = shouldUseAppBar;
   self.secondaryToolbarRegularBottomConstraint.active = !shouldUseAppBar;
