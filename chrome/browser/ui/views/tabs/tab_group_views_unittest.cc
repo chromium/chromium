@@ -5,9 +5,13 @@
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
@@ -28,8 +32,7 @@ class TabGroupViewsTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     tab_container_ = widget_->SetContentsView(std::make_unique<views::View>());
     tab_container_->SetBounds(0, 0, 1000, 100);
     drag_context_ =
@@ -59,6 +62,21 @@ class TabGroupViewsTest : public ChromeViewsTestBase {
   }
 
  protected:
+  void SetGroupTitle(std::u16string title) {
+    tab_strip_controller_->SetVisualDataForGroup(
+        id_, tab_groups::TabGroupVisualData(
+                 std::move(title), tab_groups::TabGroupColorId::kGrey, false));
+    group_views_->OnGroupVisualsChanged();
+  }
+
+  views::View* title_chip() { return group_views_->header()->children()[0]; }
+
+  views::View* title_label() { return title_chip()->children()[0]; }
+
+  int CenteredTitleX() {
+    return (title_chip()->width() - title_label()->width()) / 2;
+  }
+
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::View> tab_container_;
   raw_ptr<views::View> drag_context_;
@@ -90,6 +108,77 @@ TEST_F(TabGroupViewsTest, HeaderInitialAccessibilityProperties) {
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
 }
+
+TEST_F(TabGroupViewsTest, HeaderTitleIsCentered) {
+  SetGroupTitle(u"a");
+
+  EXPECT_EQ(CenteredTitleX(), title_label()->x());
+}
+
+// The visual centering offset for color-emoji titles only applies on macOS
+// (Apple Color Emoji has asymmetric side bearings). The tests below verify
+// that offset is applied. They are macOS-only because shaping color emoji
+// requires a color-emoji font with PNG-encoded glyphs, which is not available
+// in the unit_tests environment on Linux/Windows (the Skia PNG decoder is not
+// registered there, causing GetStringSize to crash).
+#if BUILDFLAG(IS_MAC)
+TEST_F(TabGroupViewsTest, SingleEmojiHeaderTitleIsVisuallyCentered) {
+  // Emoji-presentation codepoint (U+1F60A SMILING FACE WITH SMILING EYES).
+  SetGroupTitle(u"\U0001F60A");
+  EXPECT_EQ(CenteredTitleX() + 1, title_label()->x());
+}
+
+TEST_F(TabGroupViewsTest, SingleEmojiHeaderTitleIsVisuallyCenteredInRtl) {
+  base::i18n::SetRTLForTesting(true);
+
+  SetGroupTitle(u"\U0001F60A");
+  EXPECT_EQ(CenteredTitleX() - 1, title_label()->x());
+
+  base::i18n::SetRTLForTesting(false);
+}
+
+// Skin-tone modifier sequence: thumbs-up + medium skin tone. Two codepoints,
+// one grapheme.
+TEST_F(TabGroupViewsTest, SkinToneEmojiHeaderTitleIsVisuallyCentered) {
+  SetGroupTitle(u"\U0001F44D\U0001F3FD");
+  EXPECT_EQ(CenteredTitleX() + 1, title_label()->x());
+}
+
+// ZWJ sequence: family (man, woman, girl, boy joined with U+200D). Multiple
+// codepoints, one grapheme.
+TEST_F(TabGroupViewsTest, ZwjEmojiHeaderTitleIsVisuallyCentered) {
+  SetGroupTitle(u"\U0001F468\u200D\U0001F469\u200D\U0001F467\u200D\U0001F466");
+  EXPECT_EQ(CenteredTitleX() + 1, title_label()->x());
+}
+
+// Regional indicator pair forming the U.S. flag. Two codepoints, one
+// grapheme.
+TEST_F(TabGroupViewsTest, FlagEmojiHeaderTitleIsVisuallyCentered) {
+  SetGroupTitle(u"\U0001F1FA\U0001F1F8");
+  EXPECT_EQ(CenteredTitleX() + 1, title_label()->x());
+}
+
+// Text-default codepoint with Variation Selector-16 (U+263A + U+FE0F).
+// Use conservative behavior here and do not apply the emoji offset.
+TEST_F(TabGroupViewsTest, EmojiVariationSelectorTitleIsCentered) {
+  SetGroupTitle(u"\u263A\uFE0F");
+  EXPECT_EQ(CenteredTitleX(), title_label()->x());
+}
+
+// Regression: some text-default symbols followed by VS-16 (e.g. diamond suit)
+// can still render with text-like metrics in this UI context, so applying the
+// emoji offset makes them appear visually right-biased.
+TEST_F(TabGroupViewsTest, TextLikeVs16SymbolTitleIsCentered) {
+  SetGroupTitle(u"\u2666\uFE0F");
+  EXPECT_EQ(CenteredTitleX(), title_label()->x());
+}
+
+// Multiple emoji should not receive the single-grapheme visual offset.
+TEST_F(TabGroupViewsTest, MultiEmojiHeaderTitleIsCentered) {
+  SetGroupTitle(u"\U0001F60A\U0001F60A");
+  EXPECT_EQ(CenteredTitleX(), title_label()->x());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Underline should actually underline the group.
 TEST_F(TabGroupViewsTest, UnderlineBoundsNoDrag) {
