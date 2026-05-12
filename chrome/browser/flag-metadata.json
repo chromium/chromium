@@ -1450,11 +1450,6 @@
     "expiry_milestone": 156
   },
   {
-    "name": "capture-handle-for-standalone-pwas-and-iwas",
-    "owners": [ "paulinagacek@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 180
-  },
-  {
     "name": "cast-message-logging",
     "owners": [ "mfoltz@chromium.org", "ahmedmoussa@google.com" ],
     "expiry_milestone": 150

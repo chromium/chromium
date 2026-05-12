@@ -82,12 +82,6 @@ inline constexpr char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 inline constexpr char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";
 
-inline constexpr char kCaptureHandleForStandalonePwasAndIwasName[] =
-    "Capture Handle for Standalone PWAs and IWAs";
-inline constexpr char kCaptureHandleForStandalonePwasAndIwasDescription[] =
-    "Enables Capture Handle support for standalone PWAs and IWAs "
-    "when their windows are captured.";
-
 inline constexpr char kCredentialManagementUnifiedUiName[] =
     "Credential Management Unified UI";
 inline constexpr char kCredentialManagementUnifiedUiDescription[] =

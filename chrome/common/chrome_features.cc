@@ -99,11 +99,6 @@ const base::FeatureParam<std::string> kBoardingPassDetectorUrlParam(
 BASE_FEATURE(kBorealis, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kCaptureHandleForStandalonePwasAndIwas,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enable project Crostini, Linux VMs on Chrome OS.
 BASE_FEATURE(kCrostini, base::FEATURE_DISABLED_BY_DEFAULT);

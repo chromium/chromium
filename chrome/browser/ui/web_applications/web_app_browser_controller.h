@@ -124,7 +124,6 @@ class WebAppBrowserController : public AppBrowserController,
   bool HasPendingUpdateNotIgnoredByUser() const override;
   void TriggerAppUpdateOrMigrationDialog(
       base::TimeTicks start_time) const override;
-  bool IsWindowCaptureHandleAllowed() const override;
 #if BUILDFLAG(IS_CHROMEOS)
   const ash::SystemWebAppDelegate* system_app() const override;
   bool ShouldShowCustomTabBar() const override;

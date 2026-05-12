@@ -18,9 +18,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/common/chrome_features.h"
@@ -42,7 +39,6 @@
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util_win.h"
@@ -56,14 +52,6 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/android/tab_sharing_indicator_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
-#endif
-
-#if defined(USE_AURA)
-#include "ui/aura/window.h"
-#endif
 
 namespace {
 
@@ -88,57 +76,6 @@ content::WebContents* GetWebContentsFromWebContentsId(
   return web_contents;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-views::Widget* GetTopLevelWidgetFromNativeWindow(
-    gfx::NativeWindow native_window) {
-  if (!native_window) {
-    return nullptr;
-  }
-
-#if defined(USE_AURA)
-  if (native_window->IsRootWindow()) {
-    // Traverse down one level to find the widget.
-    for (aura::Window* child : native_window->children()) {
-      if (views::Widget* widget =
-              views::Widget::GetTopLevelWidgetForNativeView(child)) {
-        return widget;
-      }
-    }
-    return nullptr;
-  }
-  return views::Widget::GetTopLevelWidgetForNativeView(native_window);
-#else
-  return views::Widget::GetWidgetForNativeWindow(native_window);
-#endif
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-content::WebContents* GetWebContentsFromWindowId(
-    const content::DesktopMediaID& media_id) {
-#if !BUILDFLAG(IS_ANDROID)
-  gfx::NativeWindow native_window =
-      content::DesktopMediaID::GetNativeWindowById(media_id);
-  return GetWebContentsFromWindowIfCaptureHandleAllowed(native_window);
-#else
-  return nullptr;
-#endif
-}
-
-content::WebContents* GetWebContents(const content::DesktopMediaID& media_id) {
-  switch (media_id.type) {
-    case content::DesktopMediaID::TYPE_WINDOW:
-      return GetWebContentsFromWindowId(media_id);
-
-    case content::DesktopMediaID::TYPE_WEB_CONTENTS:
-      return GetWebContentsFromWebContentsId(media_id);
-
-    case content::DesktopMediaID::TYPE_SCREEN:
-    case content::DesktopMediaID::TYPE_NONE:
-      return nullptr;
-  }
-  NOTREACHED();
-}
-
 // TODO(crbug.com/40181897): Eliminate code duplication with
 // capture_handle_manager.cc.
 media::mojom::CaptureHandlePtr CreateCaptureHandle(
@@ -149,7 +86,8 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
     return nullptr;
   }
 
-  content::WebContents* const captured_wc = GetWebContents(captured_id);
+  content::WebContents* const captured_wc =
+      GetWebContentsFromWebContentsId(captured_id);
   if (!captured_wc) {
     return nullptr;
   }
@@ -220,6 +158,7 @@ DesktopMediaIDToDisplayMediaInformation(
   const bool uses_aura = false;
 #endif  // defined(USE_AURA)
 
+  media::mojom::CaptureHandlePtr capture_handle;
   int zoom_level = 100;
   switch (media_id.type) {
     case content::DesktopMediaID::TYPE_SCREEN:
@@ -235,7 +174,7 @@ DesktopMediaIDToDisplayMediaInformation(
     case content::DesktopMediaID::TYPE_WEB_CONTENTS:
       display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
       cursor = media::mojom::CursorCaptureType::MOTION;
-
+      capture_handle = CreateCaptureHandle(capturer, capturer_origin, media_id);
       if (base::FeatureList::IsEnabled(
               blink::features::kCapturedSurfaceControl)) {
         zoom_level = GetZoomLevel(capturer, media_id).value_or(zoom_level);
@@ -246,8 +185,8 @@ DesktopMediaIDToDisplayMediaInformation(
   }
 
   return media::mojom::DisplayMediaInformation::New(
-      display_surface, logical_surface, cursor,
-      CreateCaptureHandle(capturer, capturer_origin, media_id), zoom_level);
+      display_surface, logical_surface, cursor, std::move(capture_handle),
+      zoom_level);
 }
 
 // Showing notifications about capture is handled at the OS level in Android.
@@ -595,37 +534,4 @@ void GetDevicesForDesktopCapture(
       web_contents, media_id, video_type, capture_audio, display_notification,
       application_title, captured_surface_control_active, std::move(devices),
       std::move(on_media_stream_capture_indicator_ui_created_callback));
-}
-
-content::WebContents* GetWebContentsFromWindowIfCaptureHandleAllowed(
-    gfx::NativeWindow native_window) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          features::kCaptureHandleForStandalonePwasAndIwas)) {
-    return nullptr;
-  }
-
-  views::Widget* widget = GetTopLevelWidgetFromNativeWindow(native_window);
-  if (!widget) {
-    return nullptr;
-  }
-
-  BrowserWindowInterface* const browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
-          widget->GetNativeWindow());
-  if (!browser) {
-    return nullptr;
-  }
-
-  web_app::WebAppBrowserController* app_controller =
-      web_app::WebAppBrowserController::From(browser);
-  if (!app_controller || !app_controller->IsWindowCaptureHandleAllowed()) {
-    return nullptr;
-  }
-
-  tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
-  return active_tab ? active_tab->GetContents() : nullptr;
-#else
-  return nullptr;
-#endif
 }
