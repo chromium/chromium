@@ -118,6 +118,7 @@ enum class PositionForExplainGeminiEditMenu {
   kDisabled = 0,
   kAfterEdit = 1,
   kAfterSearch = 2,
+  kAdjacent = 3,
 };
 
 // Returns the position of Explain Gemini in the EditMenu.

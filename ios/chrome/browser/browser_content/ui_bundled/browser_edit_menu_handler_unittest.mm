@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_edit_menu_builder.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_test_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
 #import "ios/chrome/browser/partial_translate/ui_bundled/partial_translate_mediator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -32,6 +33,10 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
+
+@interface SearchWithMediator (Testing)
+- (NSString*)buttonTitle;
+@end
 
 namespace {
 
@@ -528,3 +533,46 @@ TEST_F(BrowserEditMenuHandlerTest, CheckShareNotRemovedByPolicy) {
   EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
 }
 
+TEST_F(BrowserEditMenuHandlerTest, SearchWithButtonTitle_Adjacent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kPageActionMenu, {}},
+       {kExplainGeminiEditMenu, {{"PositionForExplainGeminiEditMenu", "3"}}}},
+      {});
+
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+  TemplateURLData template_url_data;
+  template_url_data.SetURL(kGoogleSearchTemplate);
+  template_url_data.SetShortName(u"Google");
+  template_url_service->ApplyDefaultSearchChangeForTesting(
+      &template_url_data, DefaultSearchManager::FROM_USER);
+
+  SearchWithMediator* search_with_mediator = [[SearchWithMediator alloc]
+      initWithTemplateURLService:template_url_service
+                       incognito:NO];
+
+  EXPECT_NSEQ([search_with_mediator buttonTitle], @"Google Search");
+}
+
+TEST_F(BrowserEditMenuHandlerTest, SearchWithButtonTitle_Default) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kPageActionMenu, {}},
+       {kExplainGeminiEditMenu, {{"PositionForExplainGeminiEditMenu", "1"}}}},
+      {});
+
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+  TemplateURLData template_url_data;
+  template_url_data.SetURL(kGoogleSearchTemplate);
+  template_url_data.SetShortName(u"Google");
+  template_url_service->ApplyDefaultSearchChangeForTesting(
+      &template_url_data, DefaultSearchManager::FROM_USER);
+
+  SearchWithMediator* search_with_mediator = [[SearchWithMediator alloc]
+      initWithTemplateURLService:template_url_service
+                       incognito:NO];
+
+  EXPECT_NSEQ([search_with_mediator buttonTitle], @"Search with Google");
+}

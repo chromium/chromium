@@ -1361,12 +1361,16 @@ const FeatureEntry::FeatureParam kAfterEditForExplainGeminiEditMenu[] = {
     {kExplainGeminiEditMenuParams, "1"}};
 const FeatureEntry::FeatureParam kAfterSearchForExplainGeminiEditMenu[] = {
     {kExplainGeminiEditMenuParams, "2"}};
+const FeatureEntry::FeatureParam kAdjacentForExplainGeminiEditMenu[] = {
+    {kExplainGeminiEditMenuParams, "3"}};
 
 const FeatureEntry::FeatureVariation kPositionForExplainGeminiEditMenu[] = {
     {"Explain Gemini shows up after Edit", kAfterEditForExplainGeminiEditMenu,
      nullptr},
     {"Explain Gemini shows up after Search with Google",
-     kAfterSearchForExplainGeminiEditMenu, nullptr}};
+     kAfterSearchForExplainGeminiEditMenu, nullptr},
+    {"Explain Gemini shows up adjacent to Search with Google",
+     kAdjacentForExplainGeminiEditMenu, nullptr}};
 
 const FeatureEntry::FeatureParam kPageActionMenuIconSparkles1[] = {
     {kPageActionMenuIconParams, "1"}};
