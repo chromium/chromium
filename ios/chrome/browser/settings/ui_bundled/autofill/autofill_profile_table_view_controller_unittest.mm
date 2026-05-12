@@ -337,4 +337,101 @@ TEST_F(AutofillProfileTableViewControllerTest, DeleteAIEntity) {
                                       autofill::EntityTypeName::kVehicle, 1);
 }
 
+// Tests that a server wallet entity is grayed out (opacity 0.5) and
+// non-interactable (userInteractionEnabled = NO) in editing mode, and returns
+// to full opacity and interactable when editing is disabled.
+TEST_F(AutofillProfileTableViewControllerTest,
+       TestServerWalletEntityOpacityAndInteractionInEditing) {
+  autofill::EntityDataManager* entity_data_manager =
+      IOSAutofillEntityDataManagerFactory::GetForProfile(profile_.get());
+
+  // Add a server wallet vehicle entity.
+  autofill::EntityInstance wallet_entity =
+      autofill::test::GetVehicleEntityInstance(
+          {.guid = "00000000-0000-4000-8000-200000000001",
+           .record_type = autofill::EntityInstance::RecordType::kServerWallet});
+
+  // Verify local instance is server wallet item.
+  ASSERT_TRUE(wallet_entity.IsServerInstance());
+
+  entity_data_manager->AddOrUpdateEntityInstance(wallet_entity);
+
+  // Wait for the entity to be added to the manager.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager->GetEntityInstance(wallet_entity.guid())
+            .has_value();
+      }));
+
+  // Verify cache entry.
+  auto stored_instance =
+      entity_data_manager->GetEntityInstance(wallet_entity.guid());
+  ASSERT_TRUE(stored_instance.has_value());
+  ASSERT_TRUE(stored_instance->IsServerInstance());
+
+  CreateController();
+  CheckController();
+
+  AutofillProfileTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillProfileTableViewController>(
+          controller());
+
+  // Find the index path of the server wallet entity item.
+  NSIndexPath* target_path = nil;
+  for (NSInteger section = 0; section < NumberOfSections(); ++section) {
+    for (NSInteger row = 0; row < NumberOfItemsInSection(section); ++row) {
+      TableViewItem* item = GetTableViewItem(section, row);
+      if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
+        AutofillAIEntityItem* aiItem =
+            base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
+        if (aiItem.guid == wallet_entity.guid()) {
+          target_path = [NSIndexPath indexPathForRow:row inSection:section];
+          EXPECT_TRUE(aiItem.isServerWalletItem);
+          break;
+        }
+      }
+    }
+    if (target_path) {
+      break;
+    }
+  }
+
+  ASSERT_TRUE(target_path != nil);
+
+  // Initially, not in editing mode: load cell via data source and verify it is
+  // fully opaque and interactive.
+  EXPECT_FALSE(view_controller.tableView.editing);
+  UITableViewCell* cellNonEditing =
+      [view_controller tableView:view_controller.tableView
+           cellForRowAtIndexPath:target_path];
+  ASSERT_TRUE(cellNonEditing != nil);
+  EXPECT_EQ(1.0, cellNonEditing.contentView.alpha);
+  EXPECT_TRUE(cellNonEditing.userInteractionEnabled);
+
+  // Put table view in editing mode.
+  [view_controller setEditing:YES animated:NO];
+
+  // Load cell via data source in editing mode and verify it is grayed out
+  // and non-interactable.
+  EXPECT_TRUE(view_controller.tableView.editing);
+  UITableViewCell* cellEditing =
+      [view_controller tableView:view_controller.tableView
+           cellForRowAtIndexPath:target_path];
+  ASSERT_TRUE(cellEditing != nil);
+  EXPECT_EQ(0.5, cellEditing.contentView.alpha);
+  EXPECT_FALSE(cellEditing.userInteractionEnabled);
+
+  // Take table view out of editing mode.
+  [view_controller setEditing:NO animated:NO];
+
+  // Load cell via data source again and verify it returns to normal state.
+  EXPECT_FALSE(view_controller.tableView.editing);
+  UITableViewCell* cellNonEditing2 =
+      [view_controller tableView:view_controller.tableView
+           cellForRowAtIndexPath:target_path];
+  ASSERT_TRUE(cellNonEditing2 != nil);
+  EXPECT_EQ(1.0, cellNonEditing2.contentView.alpha);
+  EXPECT_TRUE(cellNonEditing2.userInteractionEnabled);
+}
+
 }  // namespace
