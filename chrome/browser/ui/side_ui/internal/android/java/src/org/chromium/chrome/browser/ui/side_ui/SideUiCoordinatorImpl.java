@@ -285,11 +285,13 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         if (anchorSide == AnchorSide.START) {
             transitionSet.addTransition(
                     SideUiContainerTransition.createContainerTransition(
-                            mSideUiContainer, AnchorSide.START, sideUiSpecs.mStartContainerWidth));
+                            mStartAnchorContainer,
+                            AnchorSide.START,
+                            sideUiSpecs.mStartContainerWidth));
         } else {
             transitionSet.addTransition(
                     SideUiContainerTransition.createContainerTransition(
-                            mSideUiContainer, AnchorSide.END, sideUiSpecs.mEndContainerWidth));
+                            mEndAnchorContainer, AnchorSide.END, sideUiSpecs.mEndContainerWidth));
         }
 
         for (SideUiObserver observer : mSideUiObservers) {
@@ -366,11 +368,23 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             // like setting a View's translation, is not enough alone.
             ViewUtils.triggerSynchronousMeasureAndLayout(mAnchorContainerParent);
             TransitionManager.beginDelayedTransition(getRootView(), transitionSet);
-            SideUiContainerTransition.triggerContainerTransition(
-                    mSideUiContainer, anchorSide, sideUiWidth);
+            if (anchorSide == AnchorSide.START) {
+                SideUiContainerTransition.triggerContainerTransition(
+                        mStartAnchorContainer,
+                        mStartAnchorContainer.getWidth(),
+                        AnchorSide.START,
+                        sideUiWidth);
+            } else {
+                SideUiContainerTransition.triggerContainerTransition(
+                        mEndAnchorContainer,
+                        mEndAnchorContainer.getWidth(),
+                        AnchorSide.END,
+                        sideUiWidth);
+            }
         } else {
-            // Reset the side UI container to clear any leftover state from previous Transitions.
-            SideUiContainerTransition.resetContainer(mSideUiContainer);
+            // Reset the side UI containers to clear any leftover state from previous Transitions.
+            SideUiContainerTransition.resetContainer(mStartAnchorContainer);
+            SideUiContainerTransition.resetContainer(mEndAnchorContainer);
 
             if (sideUiWidth != 0) {
                 attachSideUiContainerView(mSideUiContainer.getView(), anchorSide);

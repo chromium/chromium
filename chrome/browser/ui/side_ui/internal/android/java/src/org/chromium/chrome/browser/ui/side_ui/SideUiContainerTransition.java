@@ -18,56 +18,54 @@ public final class SideUiContainerTransition {
     private SideUiContainerTransition() {}
 
     /**
-     * Create a Transition for opening or closing a container on a specific side.
+     * Create a Transition for opening or closing a view on a specific side.
      *
-     * @param container The container for which to create a Transition animation.
-     * @param anchorSide The side the container is anchored to.
-     * @param acceptedWidth The accepted width for the container.
-     * @return The {@link Transition} animating the container showing or hiding.
+     * @param view The side UI container view for which to create a Transition animation.
+     * @param anchorSide The side the view is anchored to.
+     * @param acceptedWidth The accepted width for the view.
+     * @return The {@link Transition} animating the view showing or hiding.
      */
     public static Transition createContainerTransition(
-            SideUiContainer container,
-            @SideUiCoordinator.AnchorSide int anchorSide,
-            int acceptedWidth) {
+            View view, @SideUiCoordinator.AnchorSide int anchorSide, int acceptedWidth) {
         if (acceptedWidth != 0) {
-            // Showing the container - position the view offscreen, so that it can slide in.
-            container.getView().setTranslationX(getOffscreenOffset(anchorSide, acceptedWidth));
+            // Showing the view - position the view offscreen, so that it can slide in.
+            view.setTranslationX(getOffscreenOffset(anchorSide, acceptedWidth));
         } else {
-            // Hiding the container - keep the view in its position, so that it can slide off.
-            container.getView().setTranslationX(0);
+            // Hiding the view - keep the view in its position, so that it can slide off.
+            view.setTranslationX(0);
         }
-        return new ChangeTransform().addTarget(container.getView());
+        return new ChangeTransform().addTarget(view);
     }
 
     /**
-     * Trigger a Transition for opening or closing a container on a specific side.
+     * Trigger a Transition for opening or closing a view on a specific side.
      *
-     * @param container The container for which to trigger the Transition change.
-     * @param anchorSide The side the container is anchored to.
-     * @param acceptedWidth The accepted width for the container.
+     * @param view The view for which to trigger the Transition change.
+     * @param currentWidth The current width of the view.
+     * @param anchorSide The side the view is anchored to.
+     * @param acceptedWidth The accepted width for the view.
      */
     public static void triggerContainerTransition(
-            SideUiContainer container,
+            View view,
+            int currentWidth,
             @SideUiCoordinator.AnchorSide int anchorSide,
             int acceptedWidth) {
-        View containerView = container.getView();
         if (acceptedWidth != 0) {
-            // Reset the translation so the container's view can slide into its position.
-            containerView.setTranslationX(0);
+            // Reset the translation so the view can slide into its position.
+            view.setTranslationX(0);
         } else {
-            // Move the container's view offscreen so it can slide off.
-            containerView.setTranslationX(
-                    getOffscreenOffset(anchorSide, container.getCurrentWidth()));
+            // Move the view offscreen so it can slide off.
+            view.setTranslationX(getOffscreenOffset(anchorSide, currentWidth));
         }
     }
 
     /**
-     * Reset the container when an update occurs for which animations are suppressed.
+     * Reset the view when an update occurs for which animations are suppressed.
      *
-     * @param container The container that has been updated without animations.
+     * @param view The view that has been updated without animations.
      */
-    public static void resetContainer(SideUiContainer container) {
-        container.getView().setTranslationX(0);
+    public static void resetContainer(View view) {
+        view.setTranslationX(0);
     }
 
     /**
