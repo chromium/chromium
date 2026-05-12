@@ -522,6 +522,11 @@ XRRuntimeManagerImpl::~XRRuntimeManagerImpl() {
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
         switches::kUseAdapterLuid);
 
+    // Ensure this object is no longer registered as a GpuDataManager observer,
+    // which may happen if MakeXrCompatible is called and the page is navigated
+    // before the GPU process restarts.
+    content::GpuDataManager::GetInstance()->RemoveObserver(this);
+
 #if BUILDFLAG(IS_WIN)
     // If we changed the GPU, revert it back to the default GPU. This is
     // separate from xr_compatible_restarted_gpu_ because the GPU process may
