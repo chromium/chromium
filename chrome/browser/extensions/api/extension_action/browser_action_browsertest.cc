@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
@@ -17,6 +18,11 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+// Desktop Android only supports manifest v3 extensions, and MV3 extensions
+// don't persist their action badge state (e.g. color) across browser restarts.
+// Therefore this test isn't relevant on Android.
+static_assert(!BUILDFLAG(IS_ANDROID));
 
 namespace extensions {
 
@@ -38,18 +44,18 @@ void QuitMessageLoop(content::MessageLoopRunner* runner,
 // to the state store, which should be handled after all others.
 void WaitForStateStore(Profile* profile, const ExtensionId& extension_id) {
   scoped_refptr<content::MessageLoopRunner> runner =
-      new content::MessageLoopRunner;
+      base::MakeRefCounted<content::MessageLoopRunner>();
   ExtensionSystem::Get(profile)->state_store()->GetExtensionValue(
       extension_id, kBrowserActionStorageKey,
       base::BindOnce(&QuitMessageLoop, base::RetainedRef(runner)));
   runner->Run();
 }
 
-}  // namespace
+using BrowserActionBrowserTest = ExtensionBrowserTest;
 
 // Setup for the test by loading an extension, which should set the browser
 // action background to blue.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserActionBrowserTest,
                        PRE_BrowserActionDefaultPersistence) {
   ExtensionTestMessageListener listener("Background Color Set");
 
@@ -74,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 // When Chrome restarts, the Extension will immediately update the browser
 // action, but will not modify the badge background color. Thus, the background
 // should remain blue (persisting the default set in onInstalled()).
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BrowserActionDefaultPersistence) {
+IN_PROC_BROWSER_TEST_F(BrowserActionBrowserTest,
+                       BrowserActionDefaultPersistence) {
   // Find the extension (it's a shame we don't have an ID for this, but it
   // was generated in the last test).
   const Extension* extension = nullptr;
@@ -115,4 +122,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BrowserActionDefaultPersistence) {
   EXPECT_EQ(SK_ColorBLUE, extension_action->GetBadgeBackgroundColor(0));
 }
 
+}  // namespace
 }  // namespace extensions
