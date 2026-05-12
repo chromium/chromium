@@ -1439,7 +1439,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   std::vector<SuppressShowingImeCallback> suppress_showing_ime_callbacks_;
 
   // Input event callbacks.
-  base::ObserverList<RenderWidgetHost::InputEventObserver>::Unchecked
+  // TODO(crbug.com/512323406): Make observer list non-reentrant.
+  base::ObserverList<
+      RenderWidgetHost::InputEventObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
       input_event_observers_;
 
 #if BUILDFLAG(IS_ANDROID)
