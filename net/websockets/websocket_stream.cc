@@ -28,6 +28,7 @@
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
@@ -419,8 +420,10 @@ void Delegate::OnReceivedRedirect(URLRequest* request,
 void Delegate::OnResponseStarted(URLRequest* request, int net_error) {
   DCHECK_NE(ERR_IO_PENDING, net_error);
 
-  const bool is_http2 =
-      request->response_info().connection_info == HttpConnectionInfo::kHTTP2;
+  const HttpConnectionInfoCoarse connection_info =
+      HttpConnectionInfoToCoarse(request->response_info().connection_info);
+  const bool is_http2 = connection_info == HttpConnectionInfoCoarse::kHTTP2;
+  const bool is_http3 = connection_info == HttpConnectionInfoCoarse::kQUIC;
 
   // All error codes, including OK and ABORTED, as with
   // Net.ErrorCodesForMainFrame4
@@ -443,7 +446,7 @@ void Delegate::OnResponseStarted(URLRequest* request, int net_error) {
   const int response_code = request->GetResponseCode();
   DVLOG(3) << "OnResponseStarted (response code " << response_code << ")";
 
-  if (is_http2) {
+  if (is_http2 || is_http3) {
     if (response_code == HTTP_OK) {
       owner_->PerformUpgrade();
       return;

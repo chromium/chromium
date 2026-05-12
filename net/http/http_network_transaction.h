@@ -132,6 +132,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
                            CreateWebSocketHandshakeStream);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
+                           WebSocketFallbackResultUsesHttp3ConnectionInfo);
+  FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
                            SetProxyInfoInResponse_Direct);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
                            SetProxyInfoInResponse_Proxied);

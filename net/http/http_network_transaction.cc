@@ -138,11 +138,12 @@ bool EarlyHintsAreAllowedOn(HttpConnectionInfo connection_info) {
 // numeric values should never be reused.
 enum class WebSocketFallbackResult {
   kSuccessHttp11 = 0,
-  kSuccessHttp2,
-  kSuccessHttp11AfterFallback,
-  kFailure,
-  kFailureAfterFallback,
-  kMaxValue = kFailureAfterFallback,
+  kSuccessHttp2 = 1,
+  kSuccessHttp11AfterFallback = 2,
+  kFailure = 3,
+  kFailureAfterFallback = 4,
+  kSuccessHttp3 = 5,
+  kMaxValue = kSuccessHttp3,
 };
 
 WebSocketFallbackResult CalculateWebSocketFallbackResult(
@@ -152,6 +153,9 @@ WebSocketFallbackResult CalculateWebSocketFallbackResult(
   if (result == OK) {
     if (connection_info == HttpConnectionInfoCoarse::kHTTP2) {
       return WebSocketFallbackResult::kSuccessHttp2;
+    }
+    if (connection_info == HttpConnectionInfoCoarse::kQUIC) {
+      return WebSocketFallbackResult::kSuccessHttp3;
     }
     return http_1_1_was_required
                ? WebSocketFallbackResult::kSuccessHttp11AfterFallback
@@ -165,8 +169,6 @@ WebSocketFallbackResult CalculateWebSocketFallbackResult(
 void RecordWebSocketFallbackResult(int result,
                                    bool http_1_1_was_required,
                                    HttpConnectionInfoCoarse connection_info) {
-  CHECK_NE(connection_info, HttpConnectionInfoCoarse::kQUIC);
-
   // `connection_info` could be kOTHER in tests.
   if (connection_info == HttpConnectionInfoCoarse::kOTHER) {
     return;

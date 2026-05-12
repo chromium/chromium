@@ -3402,6 +3402,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Success over HTTP/1.1 after fallback"/>
   <int value="3" label="Failure without fallback"/>
   <int value="4" label="Failure after fallback"/>
+  <int value="5" label="Success over HTTP/3"/>
 </enum>
 
 <enum name="WebSocketHandshakeResult2">
