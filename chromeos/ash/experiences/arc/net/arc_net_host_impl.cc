@@ -43,6 +43,7 @@
 #include "chromeos/ash/experiences/arc/net/passpoint_dialog_view.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/onc/onc_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "dbus/object_path.h"
@@ -424,6 +425,16 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
     base::DictValue empty_eap;
     CreateNetworkWithEapTranslated(std::move(cfg), std::move(callback),
                                    std::move(empty_eap));
+    return;
+  }
+  // b/511757251
+  if (cfg->eap->password.has_value() &&
+      cfg->eap->password.value() ==
+          onc::substitutes::kPasswordPlaceholderVerbatim) {
+    NET_LOG(ERROR) << __func__ << ": \""
+                   << onc::substitutes::kPasswordPlaceholderVerbatim
+                   << "\" password literal is forbidden";
+    std::move(callback).Run(std::string());
     return;
   }
   mojom::EapCredentialsPtr eap = cfg->eap.Clone();
@@ -1046,7 +1057,15 @@ void ArcNetHostImpl::TranslatePasspointCredentialsToDict(
                    << ": mojom::PasspointCredentials has no EAP properties";
     return;
   }
-
+  // b/511757251
+  if (cred->eap->password.has_value() &&
+      cred->eap->password.value() ==
+          onc::substitutes::kPasswordPlaceholderVerbatim) {
+    NET_LOG(ERROR) << __func__ << ": \""
+                   << onc::substitutes::kPasswordPlaceholderVerbatim
+                   << "\" password literal is forbidden";
+    return;
+  }
   mojom::EapCredentialsPtr eap = cred->eap.Clone();
   TranslateEapCredentialsToDict(
       std::move(eap),
