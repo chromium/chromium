@@ -10,9 +10,12 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import androidx.activity.ComponentDialog;
 import androidx.annotation.VisibleForTesting;
@@ -180,7 +183,12 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                 PropertyModelChangeProcessor.create(mModel, mDialogView, new ViewBinder());
         // setContentView() can trigger using LayoutInflater, which may read from disk.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mDialog.setContentView(mDialogView);
+            FrameLayout.LayoutParams params =
+                    new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            Gravity.CENTER);
+            mDialog.setContentView(mDialogView, params);
         }
 
         mDialog.setOnShowListener(
