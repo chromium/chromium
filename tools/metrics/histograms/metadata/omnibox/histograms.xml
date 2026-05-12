@@ -216,6 +216,7 @@ chromium-metrics-reviews@google.com.
   <variant name="APP_SEARCH" summary="search app"/>
   <variant name="BLANK" summary="about:blank"/>
   <variant name="CHROMEOS_APP_LIST" summary="ChromeOS app list"/>
+  <variant name="CO_BROWSING_COMPOSEBOX" summary="Co-browsing composebox"/>
   <variant name="CONTEXTUAL_SEARCHBOX" summary="Contextual searchbox"/>
   <variant name="HOME_PAGE" summary="the user's home page"/>
   <variant name="INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS"
@@ -230,6 +231,12 @@ chromium-metrics-reviews@google.com.
       summary="Lens side panel searchbox"/>
   <variant name="NTP"
       summary="extension-replaced new tab page OR obsolete new tab page"/>
+  <variant name="NTP_COMPOSEBOX"
+      summary="New Tab Page with focus in the composebox"/>
+  <variant name="NTP_COMPOSEBOX_PREFETCH"
+      summary="New Tab Page composebox zero-prefix suggestion prefetch"/>
+  <variant name="NTP_OMNIBOX_COMPOSEBOX"
+      summary="Omnibox composebox in the NTP"/>
   <variant name="NTP_REALBOX"
       summary="New Tab Page with realbox as starting focus"/>
   <variant name="NTP_ZPS_PREFETCH"
@@ -246,6 +253,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OTHER"
       summary="other (typically an arbitrary URL, not a search results page,
                new tab page, etc.)"/>
+  <variant name="OTHER_OMNIBOX_COMPOSEBOX" summary="Omnibox composebox on Web"/>
   <variant name="OTHER_ON_CCT"
       summary="other (typically an arbitrary URL, not a search results page,
                new tab page, etc.) on CCT"/>
@@ -259,6 +267,8 @@ chromium-metrics-reviews@google.com.
       summary="search results page on CCT"/>
   <variant name="SEARCH_SIDE_PANEL_SEARCHBOX"
       summary="Search side panel searchbox"/>
+  <variant name="SRP_OMNIBOX_COMPOSEBOX"
+      summary="Omnibox composebox in the SRP"/>
   <variant name="SRP_ZPS_PREFETCH"
       summary="Search Results Page zero-prefix suggestion prefetch"/>
 </variants>
