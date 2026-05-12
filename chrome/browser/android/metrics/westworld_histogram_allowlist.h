@@ -9,18 +9,18 @@
 
 #include "chrome/browser/android/metrics/uma_utils.h"
 
-namespace chrome::android {
+namespace chrome::android::westworld {
 
 // An allowlist of UMA histograms that are registered for Westworld logging.
 //
 // To add a new histogram to Westworld:
 // 1. Add the histogram name string here in the list.
-// 2. Define and atom to be sent in `westworld_histogram_mapping.h`.
-inline constexpr const char* kWestworldHistogramsAllowlist[] = {
+// 2. Define an atom to be sent in `westworld_histogram_mapping.cc`.
+inline constexpr const char* kWestworldHistogramAllowlist[] = {
     "Tabs.TabCount",
     "Tabs.WindowCount",
 };
 
-}  // namespace chrome::android
+}  // namespace chrome::android::westworld
 
 #endif  // CHROME_BROWSER_ANDROID_METRICS_WESTWORLD_HISTOGRAM_ALLOWLIST_H_
