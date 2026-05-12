@@ -1025,4 +1025,10 @@ bool IsAssistantAimMinimizedStateEnabled();
 // Feature flag to enable the use of UIGraphicsImageRenderer for fallback icons.
 BASE_DECLARE_FEATURE(kUseUIGraphicsImageRendererForFallbackIcons);
 
+// Enables the Native Dark Mode Detection feature.
+BASE_DECLARE_FEATURE(kIOSDarkModeDetection);
+
+// Returns true if the Native Dark Mode Detection feature is enabled.
+bool IsIOSDarkModeDetectionEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

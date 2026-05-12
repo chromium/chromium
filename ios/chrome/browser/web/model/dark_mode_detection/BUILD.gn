@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("dark_mode_detection") {
+  sources = [
+    "dark_mode_detection_java_script_feature.h",
+    "dark_mode_detection_java_script_feature.mm",
+  ]
+  deps = [
+    ":dark_mode_detection_js",
+    "//base",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "dark_mode_detection_java_script_feature_unittest.mm" ]
+  deps = [
+    ":dark_mode_detection",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "dark_mode_detection_egtest.mm" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+}
+
+optimize_ts("dark_mode_detection_js") {
+  visibility = [ ":dark_mode_detection" ]
+  sources = [ "resources/dark_mode_detection.ts" ]
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+}

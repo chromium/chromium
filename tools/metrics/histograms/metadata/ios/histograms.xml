@@ -1229,6 +1229,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DarkModeDetection.SupportsDarkMode"
+    enum="IOSDarkModeDetectionCrossedState" expires_after="2027-05-01">
+  <owner>qpubert@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Tracks whether the loaded webpage natively supports dark mode via any of the
+    native indicators (meta tag, CSS color-scheme, or prefers-color-scheme media
+    queries). Logged on page load.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DarkModeDetection.SupportsVia{SupportType}"
+    enum="IOSDarkModeDetectionCrossedState" expires_after="2027-05-01">
+  <owner>qpubert@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Tracks whether the loaded webpage natively supports dark mode via
+    {SupportType}. Logged on page load.
+  </summary>
+  <token key="SupportType">
+    <variant name="Css" summary="the CSS color-scheme root property"/>
+    <variant name="MediaQuery"
+        summary="CSS prefers-color-scheme media queries"/>
+    <variant name="Meta" summary="the HTML color-scheme meta tag"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserAbandonment{PeriodConsidered}"
     enum="Boolean" expires_after="2026-08-30">
   <owner>gujen@google.com</owner>
