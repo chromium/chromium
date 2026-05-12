@@ -128,7 +128,7 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
 
     @Nullable
     @Override
-    public Bundle getBundleForMenuItem(int itemId) {
+    public Bundle getBundleForMenuItem(PropertyModel model) {
         return null;
     }
 

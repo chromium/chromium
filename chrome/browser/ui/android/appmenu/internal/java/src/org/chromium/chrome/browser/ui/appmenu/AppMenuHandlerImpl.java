@@ -496,7 +496,7 @@ class AppMenuHandlerImpl
         }
 
         mAppMenuDelegate.onOptionsItemSelected(
-                itemId, mDelegate.getBundleForMenuItem(itemId), triggeringMotion);
+                itemId, mDelegate.getBundleForMenuItem(model), triggeringMotion);
     }
 
     @Override

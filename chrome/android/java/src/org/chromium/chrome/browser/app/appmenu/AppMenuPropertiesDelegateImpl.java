@@ -862,7 +862,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     @Override
-    public @Nullable Bundle getBundleForMenuItem(int itemId) {
+    public @Nullable Bundle getBundleForMenuItem(PropertyModel model) {
         return null;
     }
 

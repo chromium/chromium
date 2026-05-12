@@ -45,13 +45,14 @@ public interface AppMenuPropertiesDelegate {
     /**
      * Gets a bundle of (optional) extra data associated with the provided MenuItem.
      *
-     * @param itemId The id of the menu item for which to return the Bundle.
+     * @param model The {@link PropertyModel} of the menu item for which to return the Bundle.
      * @return A {@link Bundle} for the provided MenuItem containing extra data, if any.
      */
-    @Nullable Bundle getBundleForMenuItem(int itemId);
+    @Nullable Bundle getBundleForMenuItem(PropertyModel model);
 
     /**
      * Notify the delegate that the load state changed.
+     *
      * @param isLoading Whether the page is currently loading.
      */
     void loadingStateChanged(boolean isLoading);
