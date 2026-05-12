@@ -284,6 +284,13 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
   elements.insert(
       elements.end(),
       {ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo(
+               kToolbarBatterySaverButtonElementId,
+               IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER,
+               &kBatterySaverRefreshIcon, kToolbarBatterySaverButtonElementId,
+               kToolbarBatterySaverBubbleElementId),
+           /*is_section_end=*/false),
+       ToolbarController::ResponsiveElementInfo(
            ToolbarController::ElementIdInfo(kToolbarChromeLabsButtonElementId,
                                             IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
                                             &kScienceIcon,
@@ -319,8 +326,8 @@ ToolbarController::GetDefaultOverflowOrder() {
   return std::vector<ui::ElementIdentifier>(
       {kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId,
        kToolbarMediaButtonElementId, kToolbarNewTabButtonElementId,
-       kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId,
-       kToolbarSplitTabsToolbarButtonElementId,
+       kToolbarForwardButtonElementId, kToolbarBatterySaverButtonElementId,
+       kToolbarAvatarButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
        ContextualTasksButton::kContextualTasksToolbarButton});
 }
 
@@ -332,6 +339,7 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
       std::variant<ui::ElementIdentifier, actions::ActionId>, std::string_view>>
       identifier_to_action_name_map(
           {{kToolbarAvatarButtonElementId, "AvatarButton"},
+           {kToolbarBatterySaverButtonElementId, "BatterySaverButton"},
            {kToolbarChromeLabsButtonElementId, "ChromeLabsButton"},
            {kExtensionsMenuButtonElementId, "ExtensionsMenuButton"},
            {kToolbarForwardButtonElementId, "ForwardButton"},

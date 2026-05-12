@@ -19369,6 +19369,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_CONTEXTUAL_TASKS" desc="Text of overflow menu item of contextual tasks button">
       Contextual Tasks
     </message>
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER" desc="Text of overflow menu item of energy saver button">
+      Energy Saver
+    </message>
 
     <!-- Promise icon status labels. -->
     <message name="IDS_PROMISE_STATUS_WAITING" desc="Text label for a promise icon in the Launcher or Shelf to indicate that the app is pending installation">
