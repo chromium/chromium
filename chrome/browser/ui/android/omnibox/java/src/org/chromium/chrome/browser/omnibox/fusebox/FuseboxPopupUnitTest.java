@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -289,5 +290,24 @@ public class FuseboxPopupUnitTest {
         mFuseboxPopup.updateLayout();
 
         assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
+    }
+
+    @Test
+    public void testFlingDismissesPopup_whenBottomSheet() {
+        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
+        mFuseboxPopup =
+                new FuseboxPopup(
+                        mActivity,
+                        mWindowAndroid,
+                        mPopupWindow,
+                        mContentView,
+                        mDynamicRectProvider,
+                        /* isBottomSheet= */ true);
+
+        // Call onFling directly on the exposed listener to avoid flaky MotionEvents.
+        int minFlingVelocity = ViewConfiguration.get(mActivity).getScaledMinimumFlingVelocity();
+        mFuseboxPopup.mScrollView.mGestureListener.onFling(null, null, 0, minFlingVelocity + 1);
+
+        verify(mPopupWindow).dismiss();
     }
 }

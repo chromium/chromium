@@ -11,7 +11,6 @@ import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.PopupWindow.OnDismissListener;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.core.graphics.Insets;
@@ -43,7 +42,7 @@ class FuseboxPopup {
 
     /* package */ final AnchoredPopupWindow mPopupWindow;
     /* package */ final ViewGroup mViewGroup;
-    /* package */ final ScrollView mScrollView;
+    /* package */ final FuseboxScrollView mScrollView;
     /* package */ final View mAddCurrentTab;
     /* package */ final View mTabButton;
     /* package */ final View mClipboardButton;
@@ -106,6 +105,10 @@ class FuseboxPopup {
                 });
         mScrollView = contentView.findViewById(R.id.fusebox_scroll_view);
         mInitialScrollPaddingBottom = mScrollView.getPaddingBottom();
+
+        if (isBottomSheet) {
+            mScrollView.setOnSwipeDownListener(this::dismiss);
+        }
 
         ViewStub stub = contentView.findViewById(R.id.fusebox_attachments_stub);
         stub.setLayoutResource(
@@ -174,6 +177,7 @@ class FuseboxPopup {
         if (mInsetObserver != null) {
             mInsetObserver.removeObserver(mWindowInsetObserver);
         }
+        mScrollView.setOnSwipeDownListener(null);
     }
 
     /** Show the popup window. */
