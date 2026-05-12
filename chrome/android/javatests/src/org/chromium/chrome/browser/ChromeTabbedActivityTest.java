@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfGestureDetector;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -1195,5 +1196,43 @@ public class ChromeTabbedActivityTest {
                             relatedTabs,
                             Matchers.hasItems(tabModel2.getTabById(tab1.getId()), movedTab2));
                 });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_GESTURE)
+    public void testSendTabToSelfGestureDetectorLifecycle_Enabled() {
+        SendTabToSelfGestureDetector detector =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivity.getSendTabToSelfGestureDetectorForTesting());
+        Assert.assertNotNull("Gesture detector should be initialized", detector);
+
+        // Verify the detector is listening.
+        boolean isListening =
+                ThreadUtils.runOnUiThreadBlocking(() -> detector.isListening());
+        Assert.assertTrue("Gesture detector should be listening", isListening);
+
+        // Finish the activity to trigger onDestroyInternal.
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.finishAndRemoveTask());
+
+        // Wait for it to be destroyed.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+
+        // Verify the detector stops listening.
+        boolean isListeningAfterDestroy =
+                ThreadUtils.runOnUiThreadBlocking(() -> detector.isListening());
+        Assert.assertFalse(
+                "Gesture detector should stop listening after activity is destroyed",
+                isListeningAfterDestroy);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_GESTURE)
+    public void testSendTabToSelfGestureDetectorLifecycle_Disabled() {
+        SendTabToSelfGestureDetector detector =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivity.getSendTabToSelfGestureDetectorForTesting());
+        Assert.assertNull("Gesture detector should be null when feature is disabled", detector);
     }
 }

@@ -17,6 +17,8 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -48,11 +50,14 @@ public class SendTabToSelfGestureDetectorTest {
     @Mock private Profile mProfile;
     @Mock private WebContents mWebContents;
     @Mock private SendTabToSelfAndroidBridge.Natives mNativeMock;
+    @Mock private LifecycleOwner mLifecycleOwner;
+    @Mock private Lifecycle mLifecycle;
 
     private SendTabToSelfGestureDetector mDetector;
 
     @Before
     public void setUp() {
+        when(mLifecycleOwner.getLifecycle()).thenReturn(mLifecycle);
         when(mContext.getSystemService(Context.SENSOR_SERVICE)).thenReturn(mSensorManager);
         when(mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)).thenReturn(mSensor);
 
@@ -71,7 +76,9 @@ public class SendTabToSelfGestureDetectorTest {
         when(mNativeMock.getEntryPointDisplayReason(any(), any()))
                 .thenReturn(EntryPointDisplayReason.OFFER_FEATURE);
 
-        mDetector = new SendTabToSelfGestureDetector(mContext, () -> mTab, () -> mProfile);
+        mDetector =
+                new SendTabToSelfGestureDetector(
+                        mContext, mLifecycleOwner, () -> mTab, () -> mProfile);
     }
 
     @Test
@@ -201,15 +208,15 @@ public class SendTabToSelfGestureDetectorTest {
     @Test
     @SmallTest
     public void testStartRegistersListener() {
-        mDetector.start();
+        mDetector.onStart(mLifecycleOwner);
         verify(mSensorManager).registerListener(eq(mDetector), eq(mSensor), anyInt());
     }
 
     @Test
     @SmallTest
     public void testStopUnregistersListener() {
-        mDetector.start();
-        mDetector.stop();
+        mDetector.onStart(mLifecycleOwner);
+        mDetector.onStop(mLifecycleOwner);
         verify(mSensorManager).unregisterListener(mDetector);
     }
 
@@ -218,16 +225,17 @@ public class SendTabToSelfGestureDetectorTest {
     public void testStartDoesNotRegisterIfSensorMissing() {
         when(mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)).thenReturn(null);
         SendTabToSelfGestureDetector detector =
-                new SendTabToSelfGestureDetector(mContext, () -> mTab, () -> mProfile);
+                new SendTabToSelfGestureDetector(
+                        mContext, mLifecycleOwner, () -> mTab, () -> mProfile);
 
-        detector.start();
+        detector.onStart(mLifecycleOwner);
         verify(mSensorManager, never()).registerListener(any(), any(), anyInt());
     }
 
     @Test
     @SmallTest
     public void testStopDoesNothingIfNotStarted() {
-        mDetector.stop();
+        mDetector.onStop(mLifecycleOwner);
         verify(mSensorManager, never()).unregisterListener(eq(mDetector));
     }
 }

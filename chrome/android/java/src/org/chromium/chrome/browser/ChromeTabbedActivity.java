@@ -1816,12 +1816,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_GESTURE)) {
             mSendTabToSelfGestureDetector =
                     new SendTabToSelfGestureDetector(
-                            this, getActivityTabProvider(), mTabModelProfileSupplier);
-        }
-        // This is not inside the above if-statement to handle the case where the gesture detector
-        // might have been stopped if the activity went to the background.
-        if (mSendTabToSelfGestureDetector != null) {
-            mSendTabToSelfGestureDetector.start();
+                            /* context= */ this,
+                            /* lifecycleOwner= */ this,
+                            getActivityTabProvider(),
+                            mTabModelProfileSupplier);
         }
     }
 
@@ -5081,9 +5079,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     public void onStop() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onStop")) {
             super.onStop();
-            if (mSendTabToSelfGestureDetector != null) {
-                mSendTabToSelfGestureDetector.stop();
-            }
         }
     }
 
@@ -5276,6 +5271,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     public UndoBarController getUndoBarControllerForTesting() {
         return mUndoBarPopupController;
+    }
+
+    public @Nullable SendTabToSelfGestureDetector getSendTabToSelfGestureDetectorForTesting() {
+        return mSendTabToSelfGestureDetector;
     }
 
     private void initiateArchivedTabsAutoDeletePromoManager() {
