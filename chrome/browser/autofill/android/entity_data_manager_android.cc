@@ -82,7 +82,7 @@ EntityDataManagerAndroid::EntityDataManagerAndroid(
 
 EntityDataManagerAndroid::~EntityDataManagerAndroid() = default;
 
-static jboolean JNI_EntityDataManager_IsAccessibilityAnnotatorSettingVisible(
+static jboolean JNI_EntityDataManager_IsPersonalContextSettingVisible(
     JNIEnv* env,
     Profile* profile) {
   CHECK(profile);
@@ -99,8 +99,9 @@ static jboolean JNI_EntityDataManager_IsAccessibilityAnnotatorSettingVisible(
              personal_context::PersonalContextEnablementState::kEnabled;
 }
 
-static std::string JNI_EntityDataManager_GetAccessibilityAnnotatorSettingsUrl(
+static std::string JNI_EntityDataManager_GetPersonalContextSettingsUrl(
     JNIEnv* env) {
+  // TODO(b/511173039): Rename when service files are updated.
   return accessibility_annotator::kAccessibilityAnnotatorSettingsURL;
 }
 

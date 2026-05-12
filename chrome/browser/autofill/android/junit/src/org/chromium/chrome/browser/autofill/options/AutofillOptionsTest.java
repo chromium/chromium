@@ -932,49 +932,43 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
-    public void testAccessibilityAnnotatorSettingsLinkRowVisible() {
-        doReturn(true)
-                .when(mMockEntityDataManagerJni)
-                .isAccessibilityAnnotatorSettingVisible(any());
+    public void testPersonalContextSettingsLinkRowVisible() {
+        doReturn(true).when(mMockEntityDataManagerJni).isPersonalContextSettingVisible(any());
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
 
-        assertTrue(mFragment.getAutofillAiAccessibilityAnnotator().isVisible());
+        assertTrue(mFragment.getAutofillAiPersonalContext().isVisible());
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
-    public void testAccessibilityAnnotatorSettingsLinkRowNotVisible() {
-        doReturn(false)
-                .when(mMockEntityDataManagerJni)
-                .isAccessibilityAnnotatorSettingVisible(any());
+    public void testPersonalContextSettingsLinkRowNotVisible() {
+        doReturn(false).when(mMockEntityDataManagerJni).isPersonalContextSettingVisible(any());
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
 
-        assertFalse(mFragment.getAutofillAiAccessibilityAnnotator().isVisible());
+        assertFalse(mFragment.getAutofillAiPersonalContext().isVisible());
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
-    public void testAccessibilityAnnotatorSettingsLinkRowClick() {
+    public void testPersonalContextSettingsLinkRowClick() {
         final String testUrl = "https://test.com";
-        doReturn(true)
-                .when(mMockEntityDataManagerJni)
-                .isAccessibilityAnnotatorSettingVisible(any());
-        doReturn(testUrl).when(mMockEntityDataManagerJni).getAccessibilityAnnotatorSettingsUrl();
+        doReturn(true).when(mMockEntityDataManagerJni).isPersonalContextSettingVisible(any());
+        doReturn(testUrl).when(mMockEntityDataManagerJni).getPersonalContextSettingsUrl();
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
 
         var userActionTester = new UserActionTester();
         mFragment
-                .getAutofillAiAccessibilityAnnotator()
+                .getAutofillAiPersonalContext()
                 .getOnPreferenceClickListener()
-                .onPreferenceClick(mFragment.getAutofillAiAccessibilityAnnotator());
+                .onPreferenceClick(mFragment.getAutofillAiPersonalContext());
 
         Intent intent =
                 Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
@@ -987,7 +981,7 @@ public class AutofillOptionsTest {
                         .getActions()
                         .contains(
                                 AutofillOptionsMediator
-                                        .HISTOGRAM_ACCESSIBILITY_ANNOTATOR_SETTINGS_LINK_ROW_CLICK));
+                                        .HISTOGRAM_PERSONAL_CONTEXT_SETTINGS_LINK_ROW_CLICK));
         userActionTester.tearDown();
     }
 
