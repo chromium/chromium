@@ -50,8 +50,7 @@ suite('WebviewBasicTest', function() {
 
   async function testMediaRequest(allowRequest: boolean) {
     const webview = createWebview();
-    webview.addEventListener('permissionrequest', event => {
-      const e = event as chrome.webviewTag.PermissionRequestEvent;
+    webview.addEventListener('permissionrequest', (e: any) => {
       if (e.permission === 'media') {
         if (allowRequest) {
           e.request.allow();
@@ -65,7 +64,7 @@ suite('WebviewBasicTest', function() {
     await webviewLoadStopped(webview);
 
     const result = new Promise<boolean>(resolve => {
-      window.addEventListener('message', e => {
+      window.addEventListener('message', (e: any) => {
         if (e.data.granted !== undefined) {
           resolve(e.data.granted);
         }

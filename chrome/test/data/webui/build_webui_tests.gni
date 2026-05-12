@@ -192,8 +192,11 @@ template("build_webui_tests") {
         "//chrome/test/data/webui/new_tab_page",
         "//chrome/test/data/webui/print_preview",
         "//chrome/test/data/webui/settings",
+        "//chrome/test/data/webui/side_panel/customize_chrome",
         "//chrome/test/data/webui/tab_search",
+        "//chrome/test/data/webui/unexportable_keys_internals",
         "//chrome/test/data/webui/webui_toolbar",
+        "//chrome/test/data/webui/webview",
       ]
 
       if (is_android) {
