@@ -63,6 +63,16 @@ TEST(ValuesStructTraitsTest, DoubleValue) {
   }
 }
 
+TEST(ValuesStructTraitsTest, DoubleValue_NonFinite) {
+  mojom::ValuePtr in =
+      mojom::Value::NewDoubleValue(std::numeric_limits<double>::quiet_NaN());
+  base::Value out;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
+
+  in = mojom::Value::NewDoubleValue(std::numeric_limits<double>::infinity());
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
+}
+
 TEST(ValuesStructTraitsTest, StringValue) {
   static constexpr const char* kTestCases[] = {
       "",

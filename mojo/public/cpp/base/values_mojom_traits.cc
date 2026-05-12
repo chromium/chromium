@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -72,6 +73,9 @@ bool UnionTraits<mojo_base::mojom::ValueDataView, base::Value>::Read(
       return true;
     }
     case mojo_base::mojom::ValueDataView::Tag::kDoubleValue: {
+      if (!std::isfinite(data.double_value())) {
+        return false;
+      }
       *value_out = base::Value(data.double_value());
       return true;
     }
