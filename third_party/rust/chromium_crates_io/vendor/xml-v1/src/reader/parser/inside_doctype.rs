@@ -22,7 +22,7 @@ impl PullParser {
                 Token::Character(c) if is_name_start_char(c) => {
                     self.buf.push(c);
                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::DoctypeName))
-                }
+                },
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
             DoctypeSubstate::DoctypeName => match t {
@@ -32,18 +32,18 @@ impl PullParser {
                         syntax: self.data.doctype.clone().unwrap_or_default(),
                     };
                     self.into_state_emit(State::OutsideTag, Ok(event))
-                }
+                },
                 Token::Character(c) if is_whitespace_char(c) => {
                     self.data.doctype_name = Some(self.take_buf_boxed());
                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
-                }
+                },
                 Token::Character(c) if is_name_char(c) => {
                     self.buf.push(c);
                     if self.buf.len() > self.config.max_name_length {
                         return Some(self.error(SyntaxError::ExceededConfiguredLimit));
                     }
                     None
-                }
+                },
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
             DoctypeSubstate::ExternalIdKeyword => match t {
@@ -65,56 +65,56 @@ impl PullParser {
                         return None;
                     }
                     Some(self.error(SyntaxError::UnexpectedToken(t)))
-                }
+                },
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
             DoctypeSubstate::BeforeSystemLiteral => match t {
                 Token::Character(c) if is_whitespace_char(c) => None,
                 Token::SingleQuote | Token::DoubleQuote => {
-                    self.data.quote = super::QuoteToken::from_token(t);
+                    self.data.quote = QuoteToken::from_token(t);
                     self.buf.clear();
                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::SystemLiteral))
-                }
+                },
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
             DoctypeSubstate::SystemLiteral => match t {
                 Token::SingleQuote if self.data.quote != Some(QuoteToken::SingleQuoteToken) => {
                     self.buf.push('\'');
                     None
-                }
+                },
                 Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => {
                     self.buf.push('"');
                     None
-                }
+                },
                 Token::SingleQuote | Token::DoubleQuote => {
                     self.data.quote = None;
                     self.data.doctype_system_id = Some(self.take_buf_boxed());
                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
-                }
+                },
                 Token::Character(c) => {
                     self.buf.push(c);
                     None
-                }
+                },
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
             DoctypeSubstate::BeforePubId => match t {
                 Token::Character(c) if is_whitespace_char(c) => None,
                 Token::SingleQuote | Token::DoubleQuote => {
-                    self.data.quote = super::QuoteToken::from_token(t);
+                    self.data.quote = QuoteToken::from_token(t);
                     self.buf.clear();
                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PubId))
-                }
+                },
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
             DoctypeSubstate::PubId => match t {
                 Token::SingleQuote if self.data.quote != Some(QuoteToken::SingleQuoteToken) => {
                     self.buf.push('\'');
                     None
-                }
+                },
                 Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => {
                     self.buf.push('"');
                     None
-                }
+                },
                 Token::SingleQuote | Token::DoubleQuote => {
                     self.data.quote = None;
                     self.data.doctype_public_id = Some(self.take_buf_boxed());
@@ -125,11 +125,11 @@ impl PullParser {
                 Token::Character(c) if is_pubid_char(c) => {
                     self.buf.push(c);
                     None
-                }
+                },
                 Token::ReferenceEnd => {
                     self.buf.push(';');
                     None
-                }
+                },
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
             DoctypeSubstate::Outside => match t {
@@ -161,7 +161,7 @@ impl PullParser {
 
                 Token::SingleQuote | Token::DoubleQuote => {
                     // just discard string literals
-                    self.data.quote = super::QuoteToken::from_token(t);
+                    self.data.quote = QuoteToken::from_token(t);
                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::String))
                 }
                 Token::CommentStart => {
@@ -209,7 +209,7 @@ impl PullParser {
                 Token::Character(c @ 'A'..='Z') => {
                     self.buf.push(c);
                     None
-                }
+                },
                 Token::Character(c) if is_whitespace_char(c) => {
                     let state = match self.buf.as_str() {
                         "ENTITY" => self.into_state_continue(State::InsideDoctype(
@@ -222,7 +222,7 @@ impl PullParser {
                     };
                     self.buf.clear();
                     state
-                }
+                },
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
             DoctypeSubstate::BeforeEntityName => {
@@ -242,10 +242,10 @@ impl PullParser {
                         }
                         self.data.name.push(c);
                         self.into_state_continue(State::InsideDoctype(DoctypeSubstate::EntityName))
-                    }
+                    },
                     _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
                 }
-            }
+            },
             DoctypeSubstate::EntityName => match t {
                 Token::Character(c) if is_whitespace_char(c) => self
                     .into_state_continue(State::InsideDoctype(DoctypeSubstate::BeforeEntityValue)),
@@ -255,7 +255,7 @@ impl PullParser {
                     }
                     self.data.name.push(c);
                     None
-                }
+                },
                 _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
             },
             DoctypeSubstate::BeforeEntityValue => {
@@ -272,7 +272,7 @@ impl PullParser {
                         ))
                     }
                     Token::SingleQuote | Token::DoubleQuote => {
-                        self.data.quote = super::QuoteToken::from_token(t);
+                        self.data.quote = QuoteToken::from_token(t);
                         self.into_state_continue(State::InsideDoctype(DoctypeSubstate::EntityValue))
                     }
                     _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),

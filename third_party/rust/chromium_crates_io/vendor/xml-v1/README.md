@@ -7,7 +7,7 @@ xml-rs, an XML library for Rust
 
 [Documentation](https://docs.rs/xml/)
 
-  [crates-io-img]: https://img.shields.io/crates/v/xml-rs.svg
+  [crates-io-img]: https://img.shields.io/crates/v/xml.svg
   [docs-img]: https://img.shields.io/badge/docs-latest%20release-6495ed.svg
 
 xml-rs is an XML library for the [Rust](https://www.rust-lang.org/) programming language.

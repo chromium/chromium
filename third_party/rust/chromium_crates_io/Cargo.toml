@@ -62,7 +62,7 @@ shared-brotli-patch-decoder = "0.1.3"
 skrifa = "0.42.1"
 small_ctor = "0.1"
 static_assertions = "1"
-xml = "1.2.0"
+xml = "1.3.0"
 
 [dependencies.bytemuck]
 version = "1"

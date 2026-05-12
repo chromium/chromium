@@ -91,8 +91,8 @@ impl<'a> Name<'a> {
     pub fn to_owned(&self) -> OwnedName {
         OwnedName {
             local_name: self.local_name.into(),
-            namespace: self.namespace.map(std::convert::Into::into),
-            prefix: self.prefix.map(std::convert::Into::into),
+            namespace: self.namespace.map(Into::into),
+            prefix: self.prefix.map(Into::into),
         }
     }
 
@@ -248,7 +248,7 @@ impl OwnedName {
         Self {
             local_name: local_name.into(),
             namespace: Some(namespace.into()),
-            prefix: prefix.map(std::convert::Into::into),
+            prefix: prefix.map(Into::into),
         }
     }
 

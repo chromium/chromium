@@ -1,3 +1,3 @@
 This page contains the following errors:
-error on line 18 at column 1: Unexpected end of stream: still inside the root element
+error on line 7 at column 33: Attribute '{http://www.w3.org/1999/xlink}xlink:href' is redefined
 Below is a rendering of the page up to the first error.

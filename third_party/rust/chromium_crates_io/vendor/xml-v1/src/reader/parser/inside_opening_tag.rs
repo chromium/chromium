@@ -1,5 +1,5 @@
 use crate::attribute::OwnedAttribute;
-use crate::common::{is_name_start_char, is_whitespace_char};
+use crate::common::{is_name_start_char, is_whitespace_char, Position};
 use crate::namespace;
 use crate::reader::error::SyntaxError;
 
@@ -39,6 +39,7 @@ impl PullParser {
                     if self.qualified_name_buf.len() > self.config.max_name_length {
                         return Some(self.error(SyntaxError::ExceededConfiguredLimit));
                     }
+                    self.data.attr_pos = Some(self.lexer.position());
                     self.qualified_name_buf.push(c);
                     self.into_state_continue(State::InsideOpeningTag(OpeningTagSubstate::InsideAttributeName))
                 },
@@ -46,12 +47,6 @@ impl PullParser {
             },
 
             OpeningTagSubstate::InsideAttributeName => self.read_qualified_name(t, QualifiedNameTarget::Attribute, |this, token, name| {
-                // check that no attribute with such name is already present
-                // if there is one, XML is not well-formed
-                if this.data.attributes.contains(&name) {
-                    return Some(this.error(SyntaxError::RedefinedAttribute(name.to_string().into())))
-                }
-
                 this.data.attr_name = Some(name);
                 match token {
                     Token::EqualsSign => this.into_state_continue(State::InsideOpeningTag(OpeningTagSubstate::InsideAttributeValue)),
@@ -70,6 +65,7 @@ impl PullParser {
 
             OpeningTagSubstate::InsideAttributeValue => self.read_attribute_value(t, |this, value| {
                 let name = this.data.take_attr_name()?;  // will always succeed here
+                let pos = this.data.take_attr_pos();
                 match name.prefix_ref() {
                     // declaring a new prefix; it is sufficient to check prefix only
                     // because "xmlns" prefix is reserved
@@ -102,6 +98,9 @@ impl PullParser {
                     _ => {
                         if this.data.attributes.len() >= max_attrs {
                             return Some(this.error(SyntaxError::ExceededConfiguredLimit));
+                        }
+                        if let Some(pos) = pos {
+                            this.data.attribute_positions.push(pos);
                         }
                         this.data.attributes.push(OwnedAttribute { name, value });
                         this.into_state_continue(State::InsideOpeningTag(OpeningTagSubstate::AfterAttributeValue))

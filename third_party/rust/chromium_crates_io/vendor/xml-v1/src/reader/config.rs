@@ -229,7 +229,7 @@ impl ParserConfig {
     /// ```
     #[must_use]
     #[inline]
-    pub fn add_entities<S: Into<String>, T: Into<String>>(mut self, entities: impl IntoIterator<Item=(S, T)>) -> Self {
+    pub fn add_entities<S: Into<String>, T: Into<String>>(mut self, entities: impl IntoIterator<Item = (S, T)>) -> Self {
         self.extra_entities.extend(entities.into_iter().map(|(k, v)| (k.into(), v.into())));
         self
     }

@@ -1,6 +1,6 @@
-use crate::Encoding;
 use crate::reader::lexer::Token;
 use crate::writer::Error as EmitterError;
+use crate::Encoding;
 
 use std::borrow::Cow;
 use std::error::Error as _;
@@ -188,7 +188,7 @@ impl Position for Error {
 
 impl Error {
     #[doc(hidden)]
-    #[must_use] 
+    #[must_use]
     pub fn msg(&self) -> String {
         self.to_string()
     }

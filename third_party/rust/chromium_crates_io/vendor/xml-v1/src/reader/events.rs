@@ -120,29 +120,29 @@ pub enum XmlEvent {
 /// Supplement to the Doctype event (use the event if you want the full syntax)
 pub struct DoctypeRef<'tmp> {
     pub(crate) syntax: &'tmp str,
-    /// Doctype name, following <?DOCTYPE ...
+    /// Doctype name, following `<?DOCTYPE `…
     pub(crate) name: &'tmp str,
-    /// Public id of Doctype, if available. See https://www.w3.org/TR/xml/#NT-ExternalID
+    /// [Public id](https://www.w3.org/TR/xml/#NT-ExternalID) of Doctype, if available.
     pub(crate) public_id: Option<&'tmp str>,
-    /// System id of Doctype, if available See https://www.w3.org/TR/xml/#NT-ExternalID
+    /// [System id](https://www.w3.org/TR/xml/#NT-ExternalID) of Doctype, if available
     pub(crate) system_id: Option<&'tmp str>,
 }
 
 impl DoctypeRef<'_> {
     /// Doctype name, following <?DOCTYPE ...
-    #[must_use] 
+    #[must_use]
     pub fn name(&self) -> &str {
         self.name
     }
 
-    /// Public id of Doctype, if available. See https://www.w3.org/TR/xml/#NT-ExternalID
-    #[must_use] 
+    /// [Public id](https://www.w3.org/TR/xml/#NT-ExternalID) of Doctype, if available.
+    #[must_use]
     pub fn public_id(&self) -> Option<&str> {
         self.public_id
     }
 
-    /// System id of Doctype, if available See https://www.w3.org/TR/xml/#NT-ExternalID
-    #[must_use] 
+    /// [System id](https://www.w3.org/TR/xml/#NT-ExternalID) of Doctype, if available
+    #[must_use]
     pub fn system_id(&self) -> Option<&str> {
         self.system_id
     }

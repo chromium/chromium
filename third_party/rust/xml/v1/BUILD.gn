@@ -25,7 +25,6 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/config.rs",
     "//third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/error.rs",
     "//third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/events.rs",
-    "//third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/indexset.rs",
     "//third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/lexer.rs",
     "//third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs",
     "//third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_cdata.rs",
@@ -51,7 +50,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "xml"
   cargo_pkg_description = "An XML library in pure Rust"
   cargo_pkg_repository = "https://github.com/kornelski/xml-rs"
-  cargo_pkg_version = "1.2.1"
+  cargo_pkg_version = "1.3.0"
 
   allow_unsafe = false
 

@@ -3,7 +3,6 @@ use std::io::prelude::*;
 use std::{fmt, io, result};
 
 use crate::attribute::Attribute;
-use crate::common;
 use crate::common::XmlVersion;
 use crate::escape::{AttributeEscapes, Escaped, PcDataEscapes};
 use crate::name::{Name, OwnedName};
@@ -242,7 +241,7 @@ impl Emitter {
 
     fn check_document_started<W: Write>(&mut self, target: &mut W) -> Result<()> {
         if !self.start_document_emitted && self.config.write_document_declaration {
-            self.emit_start_document(target, common::XmlVersion::Version10, "UTF-8", None)
+            self.emit_start_document(target, XmlVersion::Version10, "UTF-8", None)
         } else {
             Ok(())
         }

@@ -128,7 +128,7 @@ impl<'a> XmlEvent<'a> {
 
     /// Returns a builder for an closing element.
     ///
-    /// This method, unline `start_element()`, does not accept a name because by default
+    /// This method, unlike `start_element()`, does not accept a name because by default
     /// the writer is able to determine it automatically. However, when this functionality
     /// is disabled, it is possible to specify the name with `name()` method on the builder.
     #[inline]

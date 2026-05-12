@@ -334,7 +334,6 @@ third_party/blink/renderer/core/scheduler
 third_party/blink/renderer/modules/accessibility
 third_party/blink/renderer/modules/ad_auction
 third_party/blink/renderer/modules/badging
-third_party/blink/renderer/modules/canvas/canvas2d
 third_party/blink/renderer/modules/credentialmanagement
 third_party/blink/renderer/modules/csspaint
 third_party/blink/renderer/modules/device_orientation
@@ -428,7 +427,6 @@ third_party/blink/web_tests/wpt_internal/attribution-reporting
 third_party/blink/web_tests/wpt_internal/fenced_frame/resources
 third_party/blink/web_tests/wpt_internal/hid
 third_party/blink/web_tests/wpt_internal/html/semantics/parser-blocking-stylesheets
-third_party/blink/web_tests/wpt_internal/webgpu/canvas_webgpu_transfer
 third_party/brotli/enc
 third_party/byte_buddy
 third_party/chevron
@@ -548,7 +546,6 @@ third_party/mediapipe/src/mediapipe/modules/pose_landmark
 third_party/mediapipe/src/mediapipe/modules/selfie_segmentation
 third_party/mediapipe/src/mediapipe/tasks/cc/components/calculators
 third_party/mediapipe/src/mediapipe/tasks/cc/components/processors
-third_party/mediapipe/src/mediapipe/tasks/cc/genai/inference/proto
 third_party/mediapipe/src/mediapipe/tasks/cc/metadata/utils
 third_party/mediapipe/src/mediapipe/tasks/cc/text/custom_ops/sentencepiece
 third_party/mediapipe/src/mediapipe/util/tflite/operations

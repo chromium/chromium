@@ -92,7 +92,7 @@ impl PullParser {
                     {
                         // XML 1.1 forbids any other versions
                         Some(XmlVersion::Version10)
-                    }
+                    },
                     _ => None,
                 };
                 if this.data.version.is_some() {
@@ -103,7 +103,9 @@ impl PullParser {
             }),
 
             DeclarationSubstate::AfterVersionValue => match t {
-                Token::Character(c) if is_whitespace_char(c) => self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::BeforeEncoding)),
+                Token::Character(c) if is_whitespace_char(c) => {
+                    self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::BeforeEncoding))
+                },
                 Token::ProcessingInstructionEnd => self.emit_start_document(),
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },

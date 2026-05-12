@@ -1,11 +1,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
+<script>
+if (window.testRunner)
+testRunner.dumpAsText();
+</script>
 <svg xmlns:xl="http://www.w3.org/1999/xlink" xmlns:xlink="http://www.w3.org/1999/xlink">
 <linearGradient xl:href="#tCF2" xlink:href="resources/smiley.png"></linearGradient>
 </svg>
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-
 var element = document.querySelector('linearGradient');
 var attr1 = element.attributes[0];
 var attr2 = element.attributes[1];
@@ -14,4 +15,3 @@ var attr3 = doc2.adoptNode(attr2);
 var doc3 = document.implementation.createHTMLDocument('Doc 3');
 var attr4 = doc3.adoptNode(attr3);
 </script>
-
