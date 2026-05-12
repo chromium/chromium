@@ -999,6 +999,22 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   return nullptr;
 }
 
+SharedImageBackingFactory* SharedImageFactory::GetFactoryByType(
+    SharedImageBackingType type) {
+  if (backing_factory_for_testing_ &&
+      backing_factory_for_testing_->GetBackingType() == type) {
+    return backing_factory_for_testing_;
+  }
+
+  for (auto& factory : factories_) {
+    if (factory->GetBackingType() == type) {
+      return factory.get();
+    }
+  }
+
+  return nullptr;
+}
+
 void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                                              viz::SharedImageFormat format,
                                              gfx::GpuMemoryBufferType gmb_type,

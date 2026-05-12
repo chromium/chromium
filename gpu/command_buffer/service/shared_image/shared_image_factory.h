@@ -210,6 +210,11 @@ class GPU_GLES2_EXPORT SharedImageFactory {
       gfx::GpuMemoryBufferType gmb_type,
       std::optional<SharedImageAccessStream> stream,
       const AccessParams* params);
+
+  // Returns the factory with the given type. This is used for lazy allocation
+  // of backings for CompoundImageBacking.
+  SharedImageBackingFactory* GetFactoryByType(SharedImageBackingType type);
+
   void LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                            viz::SharedImageFormat format,
                            gfx::GpuMemoryBufferType gmb_type,
