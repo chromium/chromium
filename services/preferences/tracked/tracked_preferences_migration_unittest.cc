@@ -139,8 +139,10 @@ class TrackedPreferencesMigrationTest : public testing::Test {
         base::BindRepeating(
             &TrackedPreferencesMigrationTest::RegisterSuccessfulWriteClosure,
             base::Unretained(this), MOCK_PROTECTED_PREF_STORE),
-        std::unique_ptr<PrefHashStore>(new PrefHashStoreImpl(kSeed, false)),
-        std::unique_ptr<PrefHashStore>(new PrefHashStoreImpl(kSeed, true)),
+        std::unique_ptr<PrefHashStore>(
+            new PrefHashStoreImpl(kSeed, false, false)),
+        std::unique_ptr<PrefHashStore>(
+            new PrefHashStoreImpl(kSeed, true, true)),
         &mock_unprotected_pref_filter_, &mock_protected_pref_filter_);
 
     // Verify initial expectations are met.
@@ -172,11 +174,13 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         store = unprotected_prefs_.get();
-        pref_hash_store = std::make_unique<PrefHashStoreImpl>(kSeed, false);
+        pref_hash_store =
+            std::make_unique<PrefHashStoreImpl>(kSeed, false, false);
         break;
       case MOCK_PROTECTED_PREF_STORE:
         store = protected_prefs_.get();
-        pref_hash_store = std::make_unique<PrefHashStoreImpl>(kSeed, true);
+        pref_hash_store =
+            std::make_unique<PrefHashStoreImpl>(kSeed, true, true);
         break;
     }
     DCHECK(store);

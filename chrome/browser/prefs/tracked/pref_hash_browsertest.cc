@@ -1544,6 +1544,49 @@ class PrefHashBrowserTestEncryptedTampered
 
 PREF_HASH_BROWSER_TEST(PrefHashBrowserTestEncryptedTampered, EncryptedTampered);
 
+// Tests that the SuperEncryptedHash is written to the Secure Preferences file.
+class PrefHashBrowserTestSuperEncryptedHashWritten
+    : public PrefHashBrowserTestBase {
+ public:
+  PrefHashBrowserTestSuperEncryptedHashWritten() = default;
+
+  void SetupPreferences() override {
+    // Set a tracked preference to ensure the store is used.
+    profile()->GetPrefs()->SetString(prefs::kHomePage, "http://example.com");
+  }
+
+  void AttackPreferencesOnDisk(
+      base::DictValue* unprotected_preferences,
+      base::DictValue* protected_preferences) override {
+    if (protection_level_ <= PROTECTION_DISABLED_FOR_GROUP) {
+      return;
+    }
+
+    ASSERT_TRUE(protected_preferences);
+
+    // Verify that the super_encrypted_hash exists.
+    const std::string* super_encrypted_hash =
+        protected_preferences->FindStringByDottedPath(
+            "protection.super_encrypted_hash");
+
+    super_encrypted_hash_found_ = (super_encrypted_hash != nullptr);
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    if (protection_level_ <= PROTECTION_DISABLED_FOR_GROUP) {
+      return;
+    }
+
+    EXPECT_TRUE(super_encrypted_hash_found_);
+  }
+
+ private:
+  bool super_encrypted_hash_found_ = false;
+};
+
+PREF_HASH_BROWSER_TEST(PrefHashBrowserTestSuperEncryptedHashWritten,
+                       SuperEncryptedHashWritten);
+
 // Tests the fallback path: loads prefs with only legacy MACs and verifies
 // that new encrypted hashes are created without resetting any values.
 class PrefHashBrowserTestEncryptedFallbackAndGeneratingEH

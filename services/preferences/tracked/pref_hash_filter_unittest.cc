@@ -231,8 +231,9 @@ class MockPrefHashStore : public PrefHashStore {
   ValuePtrStrategyPair checked_value(const std::string& path) const {
     std::map<std::string, ValuePtrStrategyPair>::const_iterator value =
         checked_values_.find(path);
-    if (value != checked_values_.end())
+    if (value != checked_values_.end()) {
       return value->second;
+    }
     return std::make_pair(reinterpret_cast<void*>(0xBAD),
                           static_cast<PrefTrackingStrategy>(-1));
   }
@@ -424,8 +425,9 @@ base::DictValue MockPrefHashStore::ComputeSplitMacs(
     const std::string& path,
     const base::DictValue* split_values) {
   base::DictValue macs_dict;
-  if (!split_values)
+  if (!split_values) {
     return macs_dict;
+  }
   for (const auto item : *split_values) {
     macs_dict.Set(item.first,
                   base::Value("split mac for: " + path + "/" + item.first));
@@ -472,8 +474,9 @@ ValueState MockPrefHashStore::RecordCheckValue(const std::string& path,
   // asynchronous validation pass.
   checked_values_[path] = std::make_pair(value, strategy);
   auto result = check_results_.find(path);
-  if (result != check_results_.end())
+  if (result != check_results_.end()) {
     return result->second;
+  }
   return ValueState::UNCHANGED;
 }
 
@@ -585,8 +588,9 @@ std::vector<prefs::mojom::TrackedPreferenceMetadataPtr> GetConfiguration(
     EnforcementLevel max_enforcement_level) {
   auto configuration = prefs::ConstructTrackedConfiguration(kTestTrackedPrefs);
   for (const auto& metadata : configuration) {
-    if (metadata->enforcement_level > max_enforcement_level)
+    if (metadata->enforcement_level > max_enforcement_level) {
       metadata->enforcement_level = max_enforcement_level;
+    }
   }
   return configuration;
 }
@@ -629,6 +633,8 @@ class MockHashStoreContents : public HashStoreContents {
   const base::DictValue* GetContents() const override;
   std::string GetSuperMac() const override;
   void SetSuperMac(const std::string& super_mac) override;
+  std::string GetSuperEncryptedHash() const override;
+  void SetSuperEncryptedHash(const std::string& super_encrypted_hash) override;
 
  private:
   explicit MockHashStoreContents(MockHashStoreContents* origin_mock);
@@ -652,6 +658,7 @@ class MockHashStoreContents : public HashStoreContents {
 
   base::DictValue dictionary_;
   std::set<std::string> removed_entries_;
+  std::string super_encrypted_hash_;
 
   // The code being tested copies its HashStoreContents for use in a callback
   // which can be executed during shutdown. To be able to capture the behavior
@@ -726,19 +733,21 @@ bool MockHashStoreContents::GetSplitMacs(
 
 void MockHashStoreContents::SetMac(const std::string& path,
                                    const std::string& value) {
-  if (origin_mock_)
+  if (origin_mock_) {
     origin_mock_->RecordSetMac(path, value);
-  else
+  } else {
     RecordSetMac(path, value);
+  }
 }
 
 void MockHashStoreContents::SetSplitMac(const std::string& path,
                                         const std::string& split_path,
                                         const std::string& value) {
-  if (origin_mock_)
+  if (origin_mock_) {
     origin_mock_->RecordSetSplitMac(path, split_path, value);
-  else
+  } else {
     RecordSetSplitMac(path, split_path, value);
+  }
 }
 
 void MockHashStoreContents::ImportEntry(const std::string& path,
@@ -747,10 +756,11 @@ void MockHashStoreContents::ImportEntry(const std::string& path,
 }
 
 bool MockHashStoreContents::RemoveEntry(const std::string& path) {
-  if (origin_mock_)
+  if (origin_mock_) {
     origin_mock_->RecordRemoveEntry(path);
-  else
+  } else {
     RecordRemoveEntry(path);
+  }
   return true;
 }
 
@@ -766,6 +776,22 @@ std::string MockHashStoreContents::GetSuperMac() const {
 
 void MockHashStoreContents::SetSuperMac(const std::string& super_mac) {
   ADD_FAILURE() << "Unexpected call.";
+}
+
+std::string MockHashStoreContents::GetSuperEncryptedHash() const {
+  if (origin_mock_) {
+    return origin_mock_->GetSuperEncryptedHash();
+  }
+  return super_encrypted_hash_;
+}
+
+void MockHashStoreContents::SetSuperEncryptedHash(
+    const std::string& super_encrypted_hash) {
+  if (origin_mock_) {
+    origin_mock_->SetSuperEncryptedHash(super_encrypted_hash);
+  } else {
+    super_encrypted_hash_ = super_encrypted_hash;
+  }
 }
 
 class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,

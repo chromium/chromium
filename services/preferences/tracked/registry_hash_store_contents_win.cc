@@ -209,3 +209,14 @@ void RegistryHashStoreContentsWin::SetSuperMac(const std::string& super_mac) {
   NOTREACHED()
       << "RegistryHashStoreContents does not support the SetSuperMac operation";
 }
+
+std::string RegistryHashStoreContentsWin::GetSuperEncryptedHash() const {
+  NOTREACHED() << "RegistryHashStoreContents does not support the "
+                  "GetSuperEncryptedHash operation";
+}
+
+void RegistryHashStoreContentsWin::SetSuperEncryptedHash(
+    const std::string& super_encrypted_hash) {
+  NOTREACHED() << "RegistryHashStoreContents does not support the "
+                  "SetSuperEncryptedHash operation";
+}

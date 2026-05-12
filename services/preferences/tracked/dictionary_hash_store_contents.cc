@@ -14,6 +14,7 @@
 namespace {
 const char kPreferenceMACs[] = "protection.macs";
 const char kSuperMACPref[] = "protection.super_mac";
+const char kSuperEncryptedHashPref[] = "protection.super_encrypted_hash";
 }
 
 DictionaryHashStoreContents::DictionaryHashStoreContents(
@@ -124,6 +125,19 @@ std::string DictionaryHashStoreContents::GetSuperMac() const {
 
 void DictionaryHashStoreContents::SetSuperMac(const std::string& super_mac) {
   storage_->SetByDottedPath(kSuperMACPref, super_mac);
+}
+
+std::string DictionaryHashStoreContents::GetSuperEncryptedHash() const {
+  if (const std::string* super_encrypted_hash_string =
+          storage_->FindStringByDottedPath(kSuperEncryptedHashPref)) {
+    return *super_encrypted_hash_string;
+  }
+  return std::string();
+}
+
+void DictionaryHashStoreContents::SetSuperEncryptedHash(
+    const std::string& super_encrypted_hash) {
+  storage_->SetByDottedPath(kSuperEncryptedHashPref, super_encrypted_hash);
 }
 
 const base::DictValue* DictionaryHashStoreContents::GetContents() const {

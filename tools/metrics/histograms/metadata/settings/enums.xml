@@ -539,6 +539,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/settings/search/SettingsSearchCoordinator.java:ExitReason) -->
 
+<!-- LINT.IfChange(SuperEncryptedHashResult) -->
+
+<enum name="SuperEncryptedHashResult">
+  <int value="0" label="Match"/>
+  <int value="1" label="Mismatch"/>
+  <int value="2" label="Missing"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/preferences/tracked/pref_hash_store_impl.cc:SuperEncryptedHashResult) -->
+
 <enum name="TrackedPreference">
   <int value="0" label="kShowHomeButton"/>
   <int value="1" label="kHomePageIsNewTabPage"/>
