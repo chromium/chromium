@@ -83,10 +83,14 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
 
   void ExecuteCommand(int command_id, int event_flags) override;
 
-  // Overrides the double-click interval for testing.
+  // Overrides the timer interval delays for testing.
   void set_double_click_timer_delay_for_testing(
       base::TimeDelta double_click_timer_delay) {
     double_click_timer_delay_ = double_click_timer_delay;
+  }
+  void set_mode_switch_timer_delay_for_testing(
+      base::TimeDelta mode_switch_timer_delay) {
+    mode_switch_timer_delay_ = mode_switch_timer_delay;
   }
 
  private:

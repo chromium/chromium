@@ -52,10 +52,9 @@ class WebUIReloadControl : public ReloadControl {
 
   bool is_initialized() const { return is_initialized_; }
 
-  void set_double_click_interval_for_testing(
-      base::TimeDelta double_click_interval) {
-    double_click_interval_ = double_click_interval;
-  }
+  // Overrides the timer interval delays for testing. Triggers a state update
+  // message being sent to the WebUI renderer process with the new value.
+  void SetDoubleClickIntervalForTesting(base::TimeDelta double_click_interval);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,

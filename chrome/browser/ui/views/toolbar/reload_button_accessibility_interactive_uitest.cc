@@ -191,6 +191,13 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest, MAYBE_NormalReload) {
   GURL url = embedded_test_server()->GetURL("/title1.html");
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
+      // Make sure mouse is not hovering over the reload button, as that can
+      // result in temporarily disabling the button on load complete.
+      MoveMouseTo(ToolbarView::kToolbarElementId,
+                  base::BindOnce([](ui::TrackedElement* el) {
+                    return el->GetScreenBounds().bottom_center() +
+                           gfx::Vector2d(0, 1);
+                  })),
       NavigateWebContents(kWebContentsElementId, url),
       WaitForShow(kReloadButtonElementId),
       WaitForReloadButtonTooltip(IDS_TOOLTIP_RELOAD),
@@ -230,6 +237,13 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest,
   GURL url = embedded_test_server()->GetURL("/title1.html");
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
+      // Make sure mouse is not hovering over the reload button, as that can
+      // result in temporarily disabling the button on load complete.
+      MoveMouseTo(ToolbarView::kToolbarElementId,
+                  base::BindOnce([](ui::TrackedElement* el) {
+                    return el->GetScreenBounds().bottom_center() +
+                           gfx::Vector2d(0, 1);
+                  })),
       NavigateWebContents(kWebContentsElementId, url),
       WaitForShow(kReloadButtonElementId),
       WaitForReloadButtonTooltip(IDS_TOOLTIP_RELOAD),
@@ -272,6 +286,13 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest, MAYBE_MiddleClickReload) {
   GURL url = embedded_test_server()->GetURL("/title1.html");
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
+      // Make sure mouse is not hovering over the reload button, as that can
+      // result in temporarily disabling the button on load complete.
+      MoveMouseTo(ToolbarView::kToolbarElementId,
+                  base::BindOnce([](ui::TrackedElement* el) {
+                    return el->GetScreenBounds().bottom_center() +
+                           gfx::Vector2d(0, 1);
+                  })),
       NavigateWebContents(kWebContentsElementId, url),
       WaitForShow(kReloadButtonElementId),
 

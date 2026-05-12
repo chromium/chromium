@@ -94,6 +94,12 @@ void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
       command_id, ui::DispositionFromEventFlags(event_flags));
 }
 
+void WebUIReloadControl::SetDoubleClickIntervalForTesting(
+    base::TimeDelta double_click_interval) {
+  double_click_interval_ = double_click_interval;
+  UpdateState();
+}
+
 void WebUIReloadControl::UpdateState() {
   auto state = toolbar_ui_api::mojom::ReloadControlState::New();
   state->double_click_interval = double_click_interval_;

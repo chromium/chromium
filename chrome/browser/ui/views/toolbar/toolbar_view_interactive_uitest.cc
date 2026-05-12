@@ -183,6 +183,17 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url1 = embedded_test_server()->GetURL("/title1.html");
   const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  // Move mouse off of toolbar. Having the mouse over the reload button when a
+  // page finishes loading may temporarily disable the reload button, making it
+  // no longer focusable, which will cause walking through focusable elements to
+  // skip over it, and the test will then fail.
+  RunTestSequence(MoveMouseTo(ToolbarView::kToolbarElementId,
+                              base::BindOnce([](ui::TrackedElement* el) {
+                                return el->GetScreenBounds().bottom_center() +
+                                       gfx::Vector2d(0, 1);
+                              })));
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url1));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url2));
   // Navigate back once so forward is enabled too.
