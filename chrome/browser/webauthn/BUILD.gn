@@ -35,7 +35,6 @@ source_set("webauthn") {
 
   if (!is_android) {
     public += [
-      "authenticator_list_observer.h",
       "authenticator_reference.h",
       "authenticator_request_dialog_controller.h",
       "authenticator_request_dialog_model.h",
@@ -53,7 +52,6 @@ source_set("webauthn") {
       "gpm_enclave_transaction.h",
       "immediate_request_rate_limiter_factory.h",
       "local_authentication_token.h",
-      "observable_authenticator_list.h",
       "passkey_model_factory.h",
       "passkey_unlock_manager.h",
       "passkey_unlock_manager_factory.h",
@@ -141,7 +139,6 @@ source_set("impl") {
       "gpm_enclave_controller.cc",
       "gpm_enclave_transaction.cc",
       "immediate_request_rate_limiter_factory.cc",
-      "observable_authenticator_list.cc",
       "passkey_model_factory.cc",
       "passkey_unlock_manager.cc",
       "passkey_unlock_manager_factory.cc",

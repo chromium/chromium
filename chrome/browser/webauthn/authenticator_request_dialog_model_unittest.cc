@@ -1282,9 +1282,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
       auto model =
           base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
       AuthenticatorRequestDialogController controller(model.get(), main_rfh());
-      controller.saved_authenticators().AddAuthenticator(
-          AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
-                                 device::AuthenticatorType::kWinNative));
+      controller.saved_authenticators().emplace_back(
+          "ID", AuthenticatorTransport::kInternal,
+          device::AuthenticatorType::kWinNative);
       controller.set_cable_transport_info(std::nullopt, "fido:/1234");
 
       UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
@@ -1345,9 +1345,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
-  controller.saved_authenticators().AddAuthenticator(
-      AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
-                             device::AuthenticatorType::kWinNative));
+  controller.saved_authenticators().emplace_back(
+      "ID", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kWinNative);
   controller.set_cable_transport_info(std::nullopt, "fido:/1234");
   UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
   controller.StartFlow(std::move(tai), {});
@@ -1400,9 +1400,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCredMatchEmptyAllowList) {
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       kWinAuthenticatorId, AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kWinNative));
+      device::AuthenticatorType::kWinNative);
   base::RunLoop run_loop;
   controller.SetRequestCallback(base::BindLambdaForTesting(
       [&run_loop](const std::string& authenticator_id) {
@@ -1864,13 +1864,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   controller.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) { ++(*i); },
       &request_num_called));
-  controller.saved_authenticators().AddAuthenticator(
-      AuthenticatorReference(/*device_id=*/"authenticator",
-                             AuthenticatorTransport::kUsbHumanInterfaceDevice,
-                             device::AuthenticatorType::kOther));
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
+      /*device_id=*/"authenticator",
+      AuthenticatorTransport::kUsbHumanInterfaceDevice,
+      device::AuthenticatorType::kOther);
+  controller.saved_authenticators().emplace_back(
       /*device_id=*/"authenticator", AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kOther));
+      device::AuthenticatorType::kOther);
 
   TransportAvailabilityInfo transports_info;
   transports_info.attestation_conveyance_preference =
@@ -1908,12 +1908,12 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
         ++(*i);
       },
       &request_num_called));
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       /*device_id=*/"usb", AuthenticatorTransport::kUsbHumanInterfaceDevice,
-      device::AuthenticatorType::kOther));
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      device::AuthenticatorType::kOther);
+  controller.saved_authenticators().emplace_back(
       /*device_id=*/"internal", AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kOther));
+      device::AuthenticatorType::kOther);
 
   TransportAvailabilityInfo transports_info;
   transports_info.attestation_conveyance_preference =
@@ -1946,9 +1946,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUICancelRequest) {
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   model->observers.AddObserver(&mock_observer);
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       /*device_id=*/"internal", AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kOther));
+      device::AuthenticatorType::kOther);
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   TransportAvailabilityInfo transports_info;
@@ -1981,9 +1981,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   model->observers.AddObserver(&mock_observer);
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       /*device_id=*/"internal", AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kOther));
+      device::AuthenticatorType::kOther);
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   TransportAvailabilityInfo transports_info;
@@ -2014,9 +2014,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PlatformVirtualAuthenticator) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       /*device_id=*/"virtual-authenticator", AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kOther));
+      device::AuthenticatorType::kOther);
   controller.SetAccountPreselectedCallback(base::DoNothing());
   base::RunLoop run_loop;
   controller.SetRequestCallback(
@@ -2058,13 +2058,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
           ++request_num_called;
         }));
 
-    controller.saved_authenticators().AddAuthenticator(
-        AuthenticatorReference(/*device_id=*/"usb-authenticator",
-                               AuthenticatorTransport::kUsbHumanInterfaceDevice,
-                               device::AuthenticatorType::kOther));
-    controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+    controller.saved_authenticators().emplace_back(
+        /*device_id=*/"usb-authenticator",
+        AuthenticatorTransport::kUsbHumanInterfaceDevice,
+        device::AuthenticatorType::kOther);
+    controller.saved_authenticators().emplace_back(
         /*device_id=*/"internal-authenticator",
-        AuthenticatorTransport::kInternal, device::AuthenticatorType::kOther));
+        AuthenticatorTransport::kInternal, device::AuthenticatorType::kOther);
 
     TransportAvailabilityInfo transports_info;
     transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2128,9 +2128,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   controller.SetRequestCallback(
       base::BindLambdaForTesting([](const std::string& authenticator_id) {}));
 
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       /*device_id=*/"internal-authenticator", AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kOther));
+      device::AuthenticatorType::kOther);
 
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2165,9 +2165,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, JumpToWindowsWithNewUI) {
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   transports_info.recognized_credentials = {kWinCred1, kWinCred2};
 
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       /*device_id=*/"win", AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kWinNative));
+      device::AuthenticatorType::kWinNative);
 
   RequestCallbackReceiver request_callback;
   controller.SetRequestCallback(request_callback.Callback());
@@ -2451,13 +2451,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
       controller.SetRequestCallback(request_callback.Callback());
 
       const std::string kProfileAuthenticatorId = "platauth";
-      controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      controller.saved_authenticators().emplace_back(
           kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
-          device::AuthenticatorType::kTouchID));
+          device::AuthenticatorType::kTouchID);
       const std::string kICloudKeychainId = "ickc";
-      controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      controller.saved_authenticators().emplace_back(
           kICloudKeychainId, AuthenticatorTransport::kInternal,
-          device::AuthenticatorType::kICloudKeychain));
+          device::AuthenticatorType::kICloudKeychain);
       UpdateModelBeforeStartFlow(model.get(), transports_info,
                                  /*is_off_the_record=*/false);
       controller.StartFlow(std::move(transports_info), {});
@@ -2475,12 +2475,12 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
                                    ? Step::kMechanismSelection
                                    : Step::kErrorInternalUnrecognized);
 
-      controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      controller.saved_authenticators().emplace_back(
           kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
-          device::AuthenticatorType::kTouchID));
-      controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+          device::AuthenticatorType::kTouchID);
+      controller.saved_authenticators().emplace_back(
           kICloudKeychainId, AuthenticatorTransport::kInternal,
-          device::AuthenticatorType::kICloudKeychain));
+          device::AuthenticatorType::kICloudKeychain);
 
       // Dispatch and cancel again to confirm that canceling the non-automatic
       // dispatch cancels the whole request.
@@ -2596,9 +2596,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   RequestCallbackReceiver request_callback;
   controller.SetRequestCallback(request_callback.Callback());
   const std::string kLocalAuthenticatorId = "local-authenticator";
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kOther));
+      device::AuthenticatorType::kOther);
   UpdateModelBeforeStartFlow(model.get(), transports_info,
                              /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
@@ -2620,9 +2620,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
 
   // Reset the model as if the user had cancelled out of the operation.
   controller.StartOver();
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kOther));
+      device::AuthenticatorType::kOther);
 
   // The second entry will be `kCred2`.
   const AuthenticatorRequestDialogModel::Mechanism& mech2 =
@@ -2905,9 +2905,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   RequestCallbackReceiver request_callback;
   controller.SetRequestCallback(request_callback.Callback());
   const std::string kICloudKeychainId = "ickc";
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       kICloudKeychainId, AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kICloudKeychain));
+      device::AuthenticatorType::kICloudKeychain);
   controller.set_allow_icloud_keychain(true);
   controller.set_should_create_in_icloud_keychain(true);
   content::AuthenticatorRequestClientDelegate::Hints hints;
@@ -2935,9 +2935,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
   // Select iCloud Keychain again and cancel. This time, the request should be
   // cancelled.
-  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().emplace_back(
       kICloudKeychainId, AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kICloudKeychain));
+      device::AuthenticatorType::kICloudKeychain);
   controller.HideDialogAndDispatchToPlatformAuthenticator(
       device::AuthenticatorType::kICloudKeychain);
   controller.OnUserConsentDenied();

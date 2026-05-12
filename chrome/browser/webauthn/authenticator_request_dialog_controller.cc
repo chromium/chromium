@@ -775,8 +775,7 @@ void AuthenticatorRequestDialogController::TransitionToModalWebAuthnRequest() {
   DCHECK_EQ(model_->step(), Step::kPasskeyAutofill);
 
   // Dispatch requests to any plugged in authenticators.
-  for (auto& authenticator :
-       ephemeral_state_.saved_authenticators_.authenticator_list()) {
+  for (auto& authenticator : ephemeral_state_.saved_authenticators_) {
     if (authenticator.transport != device::FidoTransportProtocol::kInternal) {
       DispatchRequestAsync(&authenticator);
     }
@@ -988,7 +987,7 @@ void AuthenticatorRequestDialogController::
   SetCurrentStep(Step::kPlatformAuthenticator);
 
   std::vector<AuthenticatorReference>& authenticators =
-      ephemeral_state_.saved_authenticators_.authenticator_list();
+      ephemeral_state_.saved_authenticators_;
 #if BUILDFLAG(IS_WIN)
   // The Windows-native UI already handles retrying so we do not offer a second
   // level of retry in that case.
@@ -1416,16 +1415,16 @@ void AuthenticatorRequestDialogController::AddAuthenticator(
       authenticator.AuthenticatorTransport().value_or(
           AuthenticatorTransport::kInternal);
 
-  AuthenticatorReference authenticator_reference(
+  ephemeral_state_.saved_authenticators_.emplace_back(
       authenticator.GetId(), transport, authenticator.GetType());
-
-  ephemeral_state_.saved_authenticators_.AddAuthenticator(
-      std::move(authenticator_reference));
 }
 
 void AuthenticatorRequestDialogController::RemoveAuthenticator(
     std::string_view authenticator_id) {
-  ephemeral_state_.saved_authenticators_.RemoveAuthenticator(authenticator_id);
+  std::erase_if(ephemeral_state_.saved_authenticators_,
+                [authenticator_id](const AuthenticatorReference& ref) {
+                  return ref.authenticator_id == authenticator_id;
+                });
 }
 
 // SelectAccount is called to trigger an account selection dialog.
@@ -1476,7 +1475,7 @@ AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
 
 void AuthenticatorRequestDialogController::SetSelectedAuthenticatorForTesting(
     AuthenticatorReference test_authenticator) {
-  ephemeral_state_.saved_authenticators_.AddAuthenticator(
+  ephemeral_state_.saved_authenticators_.emplace_back(
       std::move(test_authenticator));
 }
 

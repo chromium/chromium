@@ -21,7 +21,6 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
-#include "chrome/browser/webauthn/observable_authenticator_list.h"
 #include "chrome/browser/webauthn/password_credential_fetcher.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
@@ -285,8 +284,7 @@ class AuthenticatorRequestDialogController
   transport_availability_for_testing() {
     return transport_availability_;
   }
-
-  ObservableAuthenticatorList& saved_authenticators() {
+  std::vector<AuthenticatorReference>& saved_authenticators() {
     return ephemeral_state_.saved_authenticators_;
   }
 
@@ -360,7 +358,7 @@ class AuthenticatorRequestDialogController
     // be dispatched dispatched after some UI interaction. This is useful for
     // platform authenticators (and Windows) where dispatch to the authenticator
     // immediately results in modal UI to appear.
-    ObservableAuthenticatorList saved_authenticators_;
+    std::vector<AuthenticatorReference> saved_authenticators_;
 
     // responses_ contains possible responses to select between after an
     // authenticator has responded to a request.
