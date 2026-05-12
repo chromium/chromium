@@ -754,7 +754,7 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
 
     case IDC_SEND_TAB_TO_SELF:
       send_tab_to_self::SendTabToSelfBubbleController::
-          CreateOrGetFromWebContents(location_bar_view_->GetWebContents())
+          GetOrCreateForWebContents(location_bar_view_->GetWebContents())
               ->ShowBubble();
       return;
 

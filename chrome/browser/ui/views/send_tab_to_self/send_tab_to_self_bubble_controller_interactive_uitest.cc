@@ -81,7 +81,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
 
   auto ShowBubble() {
     return Do([this]() {
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents())
           ->ShowBubble();
     });
@@ -109,7 +109,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
 
   SendTabToSelfDevicePickerBubbleView* GetBubbleView() {
     return static_cast<SendTabToSelfDevicePickerBubbleView*>(
-        SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+        SendTabToSelfBubbleController::GetOrCreateForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents())
             ->send_tab_to_self_bubble_view());
   }
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
       WaitForShow(SendTabToSelfDevicePickerBubbleView::
                       kSendTabToSelfDevicePickerBubbleId),
       Do([this]() {
-        SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+        SendTabToSelfBubbleController::GetOrCreateForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents())
             ->OnDeviceSelected("device_1", "device_1");
       }),
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
                  /*screenshot_name=*/"SendTabToSelfSuccessToast",
                  /*baseline_cl=*/kScreenshotBaselineCL),
       Do([this]() {
-        SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+        SendTabToSelfBubbleController::GetOrCreateForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents())
             ->HideBubble();
       }),
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
       PressButton(views::DialogClientView::kOkButtonElementId),
       WaitForShow(toasts::ToastView::kToastViewId), StopToastTimer(),
       Do([this]() {
-        SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+        SendTabToSelfBubbleController::GetOrCreateForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents())
             ->HideBubble();
       }),
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
       PressButton(views::DialogClientView::kOkButtonElementId),
       WaitForShow(toasts::ToastView::kToastViewId), StopToastTimer(),
       Do([this]() {
-        SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+        SendTabToSelfBubbleController::GetOrCreateForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents())
             ->HideBubble();
       }),

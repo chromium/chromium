@@ -17,9 +17,9 @@ SendTabToSelfBubbleView::SendTabToSelfBubbleView(
     views::BubbleAnchor anchor,
     content::WebContents* web_contents)
     : LocationBarBubbleDelegateView(anchor, web_contents),
-      controller_(SendTabToSelfBubbleController::CreateOrGetFromWebContents(
-                      web_contents)
-                      ->AsWeakPtr()) {
+      controller_(
+          SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents)
+              ->AsWeakPtr()) {
   DCHECK(controller_);
   SetShowCloseButton(true);
   SetTitle(IDS_SEND_TAB_TO_SELF);

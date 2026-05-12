@@ -60,14 +60,6 @@ SendTabToSelfBubbleController::~SendTabToSelfBubbleController() {
   HideBubble();
 }
 
-// Static:
-SendTabToSelfBubbleController*
-SendTabToSelfBubbleController::CreateOrGetFromWebContents(
-    content::WebContents* web_contents) {
-  // TODO(crbug.com/498659392: Remove `CreateOrGetFromWebContents` and use
-  // `GetOrCreateForWebContents` instead everywhere.
-  return GetOrCreateForWebContents(web_contents);
-}
 
 void SendTabToSelfBubbleController::HideBubble() {
   if (send_tab_to_self_bubble_view_) {

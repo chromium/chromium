@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
 
   send_tab_to_self::SendTabToSelfBubbleController* controller =
       send_tab_to_self::SendTabToSelfBubbleController::
-          CreateOrGetFromWebContents(web_contents);
+          GetOrCreateForWebContents(web_contents);
   // Increase the timeout to avoid flakiness on slow bots.
   controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
 
   send_tab_to_self::SendTabToSelfBubbleController* controller =
       send_tab_to_self::SendTabToSelfBubbleController::
-          CreateOrGetFromWebContents(web_contents);
+          GetOrCreateForWebContents(web_contents);
 
   constexpr char kTargetGuid[] = "target_guid";
   controller->OnDeviceSelected(kTargetGuid, "device_name");

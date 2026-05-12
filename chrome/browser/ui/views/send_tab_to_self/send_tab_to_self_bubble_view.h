@@ -29,7 +29,6 @@ class SendTabToSelfBubbleView : public LocationBarBubbleDelegateView {
   // controller.
   void Hide();
 
-
   // views::BubbleDialogDelegateView:
   void AddedToWidget() override;
 
@@ -38,7 +37,6 @@ class SendTabToSelfBubbleView : public LocationBarBubbleDelegateView {
                           content::WebContents* web_contents);
 
   void BackButtonPressed();
-
 
   base::WeakPtr<SendTabToSelfBubbleController> controller_;
 };

@@ -58,8 +58,6 @@ class SendTabToSelfBubbleController
 
   ~SendTabToSelfBubbleController() override;
 
-  static SendTabToSelfBubbleController* CreateOrGetFromWebContents(
-      content::WebContents* web_contents);
   // Hides send tab to self bubble.
   void HideBubble();
   // Displays send tab to self bubble.
@@ -82,7 +80,6 @@ class SendTabToSelfBubbleController
 
   // Handler for when user clicks the link to manage their available devices.
   void OnManageDevicesClicked(const ui::Event& event);
-
 
   // Close the bubble when the user clicks on the back button.
   void OnBackButtonPressed();
@@ -109,11 +106,6 @@ class SendTabToSelfBubbleController
 
  private:
   friend class content::WebContentsUserData<SendTabToSelfBubbleController>;
-  friend class SendTabToSelfDevicePickerBubbleViewTest;
-  FRIEND_TEST_ALL_PREFIXES(SendTabToSelfDevicePickerBubbleViewTest,
-                           PopulateScrollView);
-  FRIEND_TEST_ALL_PREFIXES(SendTabToSelfDevicePickerBubbleViewTest,
-                           DevicePressed);
 
   Profile* GetProfile();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();

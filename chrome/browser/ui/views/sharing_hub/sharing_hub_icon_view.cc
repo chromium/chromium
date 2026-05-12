@@ -31,7 +31,7 @@ namespace {
 send_tab_to_self::SendTabToSelfBubbleController* GetSendTabToSelfController(
     content::WebContents* web_contents) {
   return send_tab_to_self::SendTabToSelfBubbleController::
-      CreateOrGetFromWebContents(web_contents);
+      GetOrCreateForWebContents(web_contents);
 }
 
 bool IsQRCodeDialogOpen(content::WebContents* web_contents) {

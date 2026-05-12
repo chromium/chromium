@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   ASSERT_TRUE(sync_service);
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   sync_service->GetFakeSendTabToSelfModel()->SetIsReady(false);
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   controller->OnDeviceSelected("device_1", "device_name_1");
 
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
   NotificationDisplayServiceTester notification_tester(browser()->profile());
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   controller->OnDeviceSelected("device_1", "device_name_1");
 
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   ASSERT_TRUE(sync_service);
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
   // Increase the timeout for tests to avoid flakiness on slow bots.
   controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   ASSERT_TRUE(sync_service);
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
   // Increase the timeout for tests to avoid flakiness on slow bots.
   controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   ASSERT_TRUE(sync_service);
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
   // Increase the timeout for tests to avoid flakiness on slow bots.
   controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       EntryPointDisplayReason::kOfferSignIn);
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
 
   controller->ShowBubble();
 
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       EntryPointDisplayReason::kOfferSignIn);
 
   SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
   controller->ShowBubble();
 
   ASSERT_TRUE(controller->IsBubbleShown());

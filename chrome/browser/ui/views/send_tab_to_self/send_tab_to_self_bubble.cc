@@ -12,7 +12,7 @@ namespace send_tab_to_self {
 // SendTabToSelfBubbleController that can be called outside of /views/.
 
 void ShowBubble(content::WebContents* web_contents, bool show_back_button) {
-  return SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents)
+  return SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents)
       ->ShowBubble(show_back_button);
 }
 
