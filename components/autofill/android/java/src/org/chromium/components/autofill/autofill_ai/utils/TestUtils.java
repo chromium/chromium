@@ -94,7 +94,6 @@ public final class TestUtils {
         EntityInstance entityInstance =
                 new EntityInstance.Builder(entityType)
                         .setGuid(UUID.randomUUID().toString())
-                        .setUseCount(0)
                         .build();
         return new EntityInstanceWithLabels(
                 entityInstance.getGuid(),

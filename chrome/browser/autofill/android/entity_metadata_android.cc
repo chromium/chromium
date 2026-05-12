@@ -23,7 +23,7 @@ EntityMetadataAndroid EntityMetadataAndroid::FromJavaEntityMetadata(
   std::string guid = Java_EntityMetadata_getGuid(env, j_metadata);
   base::Time date_modified = base::Time::FromMillisecondsSinceUnixEpoch(
       Java_EntityMetadata_getModifiedTimeMillis(env, j_metadata));
-  int use_count = Java_EntityMetadata_getUseCount(env, j_metadata);
+  int64_t use_count = Java_EntityMetadata_getUseCount(env, j_metadata);
   base::Time use_date = base::Time::FromMillisecondsSinceUnixEpoch(
       Java_EntityMetadata_getUseDateMillis(env, j_metadata));
 
@@ -33,7 +33,7 @@ EntityMetadataAndroid EntityMetadataAndroid::FromJavaEntityMetadata(
 
 EntityMetadataAndroid::EntityMetadataAndroid(std::string guid,
                                              base::Time date_modified,
-                                             int use_count,
+                                             int64_t use_count,
                                              base::Time use_date)
     : guid(std::move(guid)),
       date_modified(date_modified),

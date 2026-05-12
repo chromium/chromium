@@ -90,7 +90,6 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
             new EntityInstance.Builder(TestUtils.getVehicleEntityType())
                     .setGuid("")
                     .setRecordType(RecordType.LOCAL)
-                    .setUseCount(0)
                     .build();
     private AutofillAiSaveUpdateEntityPromptController mPromptController;
     private AutofillAiSaveUpdateEntityPrompt mPrompt;

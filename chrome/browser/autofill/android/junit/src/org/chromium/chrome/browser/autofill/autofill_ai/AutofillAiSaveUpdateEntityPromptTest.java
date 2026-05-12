@@ -99,7 +99,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
                         .setGuid("")
                         .setRecordType(RecordType.LOCAL)
-                        .setUseCount(0)
                         .build();
         mPrompt =
                 new AutofillAiSaveUpdateEntityPrompt(
@@ -407,7 +406,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
                         .setGuid("")
                         .setRecordType(RecordType.LOCAL)
-                        .setUseCount(0)
                         .build();
         mPrompt.onDone(updatedEntity, /* descriptionStringId= */ 0, /* acceptButtonStringId= */ 0);
 
@@ -446,7 +444,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
                         .setGuid("")
                         .setRecordType(RecordType.LOCAL)
-                        .setUseCount(0)
                         .build();
         mPrompt.onDone(updatedEntity, /* descriptionStringId= */ 0, /* acceptButtonStringId= */ 0);
         when(mEntityEditor.isShowing()).thenReturn(false);

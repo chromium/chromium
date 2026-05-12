@@ -40,7 +40,7 @@ public class EntityInstance {
         private final List<AttributeInstance> mAttributes = new ArrayList<>();
         private String mNickname = "";
         private long mModifiedDateMillis;
-        private @Nullable Integer mUseCount;
+        private long mUseCount;
         private long mUseDateMillis;
         private boolean mRequiresReauthToSee;
         private boolean mIsMaskedServerEntity;
@@ -74,7 +74,7 @@ public class EntityInstance {
             return this;
         }
 
-        public Builder setUseCount(int useCount) {
+        public Builder setUseCount(long useCount) {
             mUseCount = useCount;
             return this;
         }
@@ -98,9 +98,6 @@ public class EntityInstance {
             final long currentDate = TimeUtils.currentTimeMillis();
             if (mModifiedDateMillis == 0) {
                 mModifiedDateMillis = currentDate;
-            }
-            if (mUseCount == null) {
-                throw new IllegalStateException("mUseCount cannot be null");
             }
             if (mUseDateMillis == 0) {
                 mUseDateMillis = currentDate;

@@ -230,7 +230,6 @@ public class EntityEditorModuleTest {
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGuid("guid")
                     .setRecordType(RecordType.LOCAL)
-                    .setUseCount(0)
                     .addAttribute(
                             new AttributeInstance(
                                     PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
@@ -244,21 +243,18 @@ public class EntityEditorModuleTest {
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGuid("")
                     .setRecordType(RecordType.LOCAL)
-                    .setUseCount(0)
                     .build();
 
     private static final EntityInstance NEW_WALLET_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGuid("")
                     .setRecordType(RecordType.SERVER_WALLET)
-                    .setUseCount(0)
                     .build();
 
     private static final EntityInstance WALLET_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGuid("guid")
                     .setRecordType(RecordType.SERVER_WALLET)
-                    .setUseCount(0)
                     .addAttribute(
                             new AttributeInstance(
                                     PASSPORT_NAME_ATTRIBUTE_TYPE, /* value= */ "John Doe"))
@@ -272,7 +268,6 @@ public class EntityEditorModuleTest {
                     .setGuid("guid")
                     .setRecordType(RecordType.SERVER_WALLET)
                     .setIsMaskedServerEntity(true)
-                    .setUseCount(0)
                     .build();
 
     private final CoreAccountInfo mAccountInfo =
@@ -488,7 +483,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(PASSPORT_TYPE)
                         .setGuid("")
                         .setRecordType(RecordType.LOCAL)
-                        .setUseCount(0)
                         .build();
         showEditorDialog(newPassport);
 
@@ -573,7 +567,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(PASSPORT_TYPE)
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
-                        .setUseCount(0)
                         .addAttribute(
                                 new AttributeInstance(
                                         PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
@@ -619,7 +612,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(PASSPORT_TYPE)
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
-                        .setUseCount(0)
                         .addAttribute(
                                 new AttributeInstance(
                                         PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
@@ -679,7 +671,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(PASSPORT_TYPE)
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
-                        .setUseCount(0)
                         .addAttribute(
                                 new AttributeInstance(
                                         PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
@@ -770,7 +761,6 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(passportType)
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
-                        .setUseCount(0)
                         .addAttribute(
                                 new AttributeInstance(
                                         PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
@@ -828,7 +818,6 @@ public class EntityEditorModuleTest {
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
                         .setIsMaskedServerEntity(false)
-                        .setUseCount(0)
                         .build();
         showEditorDialog(localVehicle);
 
@@ -911,7 +900,6 @@ public class EntityEditorModuleTest {
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
                         .setIsMaskedServerEntity(false)
-                        .setUseCount(0)
                         .build();
         showEditorDialog(passportEntity);
 
@@ -984,7 +972,6 @@ public class EntityEditorModuleTest {
                         .setGuid("guid")
                         .setRecordType(RecordType.LOCAL)
                         .setIsMaskedServerEntity(false)
-                        .setUseCount(0)
                         .build();
         showEditorDialog(passportEntity);
 
