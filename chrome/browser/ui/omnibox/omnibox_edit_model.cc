@@ -3302,7 +3302,7 @@ bool OmniboxEditModel::ShouldAcceptKeywordAfterInsertingSpaceInMiddle(
     return false;
   }
 
-  // Check if  the text was unchanged. E.g. old text was 'youtube[ ]query' and
+  // Check if the text was unchanged. E.g. old text was 'youtube[ ]query' and
   // the user replaced the selected space with another space.
   if (old_text == new_text) {
     return false;
@@ -3312,6 +3312,15 @@ bool OmniboxEditModel::ShouldAcceptKeywordAfterInsertingSpaceInMiddle(
   // 'youtube google |query' shouldn't accept the 'youtube' keyword.
   if (new_text.substr(0, space_position)
           .find_first_of(base::kWhitespaceUTF16) != std::u16string_view::npos) {
+    return false;
+  }
+
+  // Check the word preceding the space matches a keyword.
+  std::u16string keyword;
+  base::TrimWhitespace(new_text.substr(0, space_position), base::TRIM_LEADING,
+                       &keyword);
+  if (!autocomplete_controller()->keyword_provider()->GetTemplateUrlForText(
+          keyword, controller_->client()->GetTemplateURLService())) {
     return false;
   }
 

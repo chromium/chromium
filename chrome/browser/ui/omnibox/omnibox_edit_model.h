@@ -707,12 +707,15 @@ class OmniboxEditModel {
   // - youtube[.com] -> youtube |  (a space replaced other text after a keyword)
   // Returns false when pressing space at the end of a keyword *prefix*:
   // - youtub[e.com] -> youtub |
+  // Does not verify the text matched a valid (enabled, substituting, etc)
+  // keyword.
   bool ShouldAcceptKeywordAfterInsertingSpaceAtEnd(
       const std::u16string& new_text);
 
   // Whether the user inserted a space into `old_text` and by doing so created a
   // `new_text` that looks like "<keyword> <search phrase>":
   // - youtube|query -> youtube |query
+  // Does verify the text matched a valid (enabled, substituting, etc) keyword.
   bool ShouldAcceptKeywordAfterInsertingSpaceInMiddle(
       std::u16string_view old_text,
       std::u16string_view new_text,
