@@ -433,7 +433,11 @@ void HTMLSelectElement::ParseAttribute(
       ChangeRendering();
       UpdateUserAgentShadowTree(*UserAgentShadowRoot());
       UpdateMutationObserver();
-      ResetToDefaultSelection();
+      // The selection can't change if there are no children; this is a
+      // common case during parsing.
+      if (hasChildren()) {
+        ResetToDefaultSelection();
+      }
       select_type_->UpdateTextStyleAndContent();
       select_type_->SaveListboxActiveSelection();
     }
