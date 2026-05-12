@@ -14,14 +14,14 @@
 
 #include <map>
 
-#include "absl/flags/flag.h"
-#include "absl/strings/ascii.h"
-#include "absl/strings/str_join.h"
-#include "absl/strings/str_split.h"
 #include "filesystem.h"
 #include "init.h"
 #include "sentencepiece_model.pb.h"
 #include "sentencepiece_trainer.h"
+#include "absl/flags/flag.h"
+#include "absl/strings/ascii.h"
+#include "absl/strings/str_join.h"
+#include "absl/strings/str_split.h"
 #include "util.h"
 
 using sentencepiece::NormalizerSpec;
@@ -33,217 +33,132 @@ static sentencepiece::NormalizerSpec kDefaultNormalizerSpec;
 }  // namespace
 
 ABSL_FLAG(std::string, input, "", "comma separated list of input sentences");
-ABSL_FLAG(std::string,
-          input_format,
-          kDefaultTrainerSpec.input_format(),
+ABSL_FLAG(std::string, input_format, kDefaultTrainerSpec.input_format(),
           "Input format. Supported format is `text` or `tsv`.");
 ABSL_FLAG(std::string, model_prefix, "", "output model prefix");
-ABSL_FLAG(std::string,
-          model_type,
-          "unigram",
+ABSL_FLAG(std::string, model_type, "unigram",
           "model algorithm: unigram, bpe, word or char");
-ABSL_FLAG(int32,
-          vocab_size,
-          kDefaultTrainerSpec.vocab_size(),
+ABSL_FLAG(int32_t, vocab_size, kDefaultTrainerSpec.vocab_size(),
           "vocabulary size");
-ABSL_FLAG(std::string,
-          accept_language,
-          "",
+ABSL_FLAG(std::string, accept_language, "",
           "comma-separated list of languages this model can accept");
-ABSL_FLAG(int32,
-          self_test_sample_size,
+ABSL_FLAG(int32_t, self_test_sample_size,
           kDefaultTrainerSpec.self_test_sample_size(),
           "the size of self test samples");
-ABSL_FLAG(double,
-          character_coverage,
-          kDefaultTrainerSpec.character_coverage(),
+ABSL_FLAG(double, character_coverage, kDefaultTrainerSpec.character_coverage(),
           "character coverage to determine the minimum symbols");
-ABSL_FLAG(std::uint64_t,
-          input_sentence_size,
+ABSL_FLAG(std::uint64_t, input_sentence_size,
           kDefaultTrainerSpec.input_sentence_size(),
           "maximum size of sentences the trainer loads");
-ABSL_FLAG(bool,
-          shuffle_input_sentence,
+ABSL_FLAG(bool, shuffle_input_sentence,
           kDefaultTrainerSpec.shuffle_input_sentence(),
           "Randomly sample input sentences in advance. Valid when "
           "--input_sentence_size > 0");
-ABSL_FLAG(int32,
-          seed_sentencepiece_size,
+ABSL_FLAG(int32_t, seed_sentencepiece_size,
           kDefaultTrainerSpec.seed_sentencepiece_size(),
           "the size of seed sentencepieces");
-ABSL_FLAG(double,
-          shrinking_factor,
-          kDefaultTrainerSpec.shrinking_factor(),
+ABSL_FLAG(std::string, seed_sentencepieces_file, "",
+          "file to load seed sentencepieces from");
+ABSL_FLAG(double, shrinking_factor, kDefaultTrainerSpec.shrinking_factor(),
           "Keeps top shrinking_factor pieces with respect to the loss");
-ABSL_FLAG(int32,
-          num_threads,
-          kDefaultTrainerSpec.num_threads(),
+ABSL_FLAG(int32_t, num_threads, kDefaultTrainerSpec.num_threads(),
           "number of threads for training");
-ABSL_FLAG(int32,
-          num_sub_iterations,
-          kDefaultTrainerSpec.num_sub_iterations(),
+ABSL_FLAG(int32_t, num_sub_iterations, kDefaultTrainerSpec.num_sub_iterations(),
           "number of EM sub-iterations");
-ABSL_FLAG(int32,
-          max_sentencepiece_length,
+ABSL_FLAG(int32_t, max_sentencepiece_length,
           kDefaultTrainerSpec.max_sentencepiece_length(),
           "maximum length of sentence piece");
-ABSL_FLAG(int32,
-          max_sentence_length,
+ABSL_FLAG(int32_t, max_sentence_length,
           kDefaultTrainerSpec.max_sentence_length(),
           "maximum length of sentence in byte");
-ABSL_FLAG(bool,
-          split_by_unicode_script,
+ABSL_FLAG(bool, split_by_unicode_script,
           kDefaultTrainerSpec.split_by_unicode_script(),
           "use Unicode script to split sentence pieces");
-ABSL_FLAG(bool,
-          split_by_number,
-          kDefaultTrainerSpec.split_by_number(),
+ABSL_FLAG(bool, split_by_number, kDefaultTrainerSpec.split_by_number(),
           "split tokens by numbers (0-9)");
-ABSL_FLAG(bool,
-          split_by_whitespace,
-          kDefaultTrainerSpec.split_by_whitespace(),
+ABSL_FLAG(bool, split_by_whitespace, kDefaultTrainerSpec.split_by_whitespace(),
           "use a white space to split sentence pieces");
-ABSL_FLAG(bool,
-          split_digits,
-          kDefaultTrainerSpec.split_digits(),
+ABSL_FLAG(bool, split_digits, kDefaultTrainerSpec.split_digits(),
           "split all digits (0-9) into separate pieces");
-ABSL_FLAG(std::string,
-          pretokenization_delimiter,
+ABSL_FLAG(std::string, pretokenization_delimiter,
           kDefaultTrainerSpec.pretokenization_delimiter(),
           "specifies the delimiter of pre-tokenization");
-ABSL_FLAG(bool,
-          treat_whitespace_as_suffix,
+ABSL_FLAG(bool, treat_whitespace_as_suffix,
           kDefaultTrainerSpec.treat_whitespace_as_suffix(),
           "treat whitespace marker as suffix instead of prefix.");
-ABSL_FLAG(bool,
-          allow_whitespace_only_pieces,
+ABSL_FLAG(bool, allow_whitespace_only_pieces,
           kDefaultTrainerSpec.allow_whitespace_only_pieces(),
           "allow pieces that only contain (consecutive) whitespace tokens");
-ABSL_FLAG(std::string,
-          control_symbols,
-          "",
+ABSL_FLAG(std::string, control_symbols, "",
           "comma separated list of control symbols");
-ABSL_FLAG(std::string,
-          control_symbols_file,
-          "",
+ABSL_FLAG(std::string, control_symbols_file, "",
           "load control_symbols from file.");
-ABSL_FLAG(std::string,
-          user_defined_symbols,
-          "",
+ABSL_FLAG(std::string, user_defined_symbols, "",
           "comma separated list of user defined symbols");
-ABSL_FLAG(std::string,
-          user_defined_symbols_file,
-          "",
+ABSL_FLAG(std::string, user_defined_symbols_file, "",
           "load user_defined_symbols from file.");
-ABSL_FLAG(std::string,
-          required_chars,
-          "",
+ABSL_FLAG(std::string, required_chars, "",
           "UTF8 characters in this flag are always used in the character "
           "set regardless of --character_coverage");
-ABSL_FLAG(std::string,
-          required_chars_file,
-          "",
+ABSL_FLAG(std::string, required_chars_file, "",
           "load required_chars from file.");
-ABSL_FLAG(bool,
-          byte_fallback,
-          kDefaultTrainerSpec.byte_fallback(),
+ABSL_FLAG(bool, byte_fallback, kDefaultTrainerSpec.byte_fallback(),
           "decompose unknown pieces into UTF-8 byte pieces");
-ABSL_FLAG(bool,
-          vocabulary_output_piece_score,
+ABSL_FLAG(bool, vocabulary_output_piece_score,
           kDefaultTrainerSpec.vocabulary_output_piece_score(),
           "Define score in vocab file");
-ABSL_FLAG(std::string,
-          normalization_rule_name,
-          "nmt_nfkc",
+ABSL_FLAG(std::string, normalization_rule_name, "nmt_nfkc",
           "Normalization rule name. "
           "Choose from nfkc or identity");
-ABSL_FLAG(std::string,
-          normalization_rule_tsv,
-          "",
+ABSL_FLAG(std::string, normalization_rule_tsv, "",
           "Normalization rule TSV file. ");
-ABSL_FLAG(std::string,
-          denormalization_rule_tsv,
-          "",
+ABSL_FLAG(std::string, denormalization_rule_tsv, "",
           "Denormalization rule TSV file.");
-ABSL_FLAG(bool,
-          add_dummy_prefix,
-          kDefaultNormalizerSpec.add_dummy_prefix(),
+ABSL_FLAG(bool, add_dummy_prefix, kDefaultNormalizerSpec.add_dummy_prefix(),
           "Add dummy whitespace at the beginning of text");
-ABSL_FLAG(bool,
-          remove_extra_whitespaces,
+ABSL_FLAG(bool, remove_extra_whitespaces,
           kDefaultNormalizerSpec.remove_extra_whitespaces(),
           "Removes leading, trailing, and "
           "duplicate internal whitespace");
-ABSL_FLAG(bool,
-          hard_vocab_limit,
-          kDefaultTrainerSpec.hard_vocab_limit(),
+ABSL_FLAG(bool, hard_vocab_limit, kDefaultTrainerSpec.hard_vocab_limit(),
           "If set to false, --vocab_size is considered as a soft limit.");
-ABSL_FLAG(bool,
-          use_all_vocab,
-          kDefaultTrainerSpec.use_all_vocab(),
+ABSL_FLAG(bool, use_all_vocab, kDefaultTrainerSpec.use_all_vocab(),
           "If set to true, use all tokens as vocab. "
           "Valid for word/char models.");
-ABSL_FLAG(int32,
-          unk_id,
-          kDefaultTrainerSpec.unk_id(),
+ABSL_FLAG(int32_t, unk_id, kDefaultTrainerSpec.unk_id(),
           "Override UNK (<unk>) id.");
-ABSL_FLAG(int32,
-          bos_id,
-          kDefaultTrainerSpec.bos_id(),
+ABSL_FLAG(int32_t, bos_id, kDefaultTrainerSpec.bos_id(),
           "Override BOS (<s>) id. Set -1 to disable BOS.");
-ABSL_FLAG(int32,
-          eos_id,
-          kDefaultTrainerSpec.eos_id(),
+ABSL_FLAG(int32_t, eos_id, kDefaultTrainerSpec.eos_id(),
           "Override EOS (</s>) id. Set -1 to disable EOS.");
-ABSL_FLAG(int32,
-          pad_id,
-          kDefaultTrainerSpec.pad_id(),
+ABSL_FLAG(int32_t, pad_id, kDefaultTrainerSpec.pad_id(),
           "Override PAD (<pad>) id. Set -1 to disable PAD.");
-ABSL_FLAG(std::string,
-          unk_piece,
-          kDefaultTrainerSpec.unk_piece(),
+ABSL_FLAG(std::string, unk_piece, kDefaultTrainerSpec.unk_piece(),
           "Override UNK (<unk>) piece.");
-ABSL_FLAG(std::string,
-          bos_piece,
-          kDefaultTrainerSpec.bos_piece(),
+ABSL_FLAG(std::string, bos_piece, kDefaultTrainerSpec.bos_piece(),
           "Override BOS (<s>) piece.");
-ABSL_FLAG(std::string,
-          eos_piece,
-          kDefaultTrainerSpec.eos_piece(),
+ABSL_FLAG(std::string, eos_piece, kDefaultTrainerSpec.eos_piece(),
           "Override EOS (</s>) piece.");
-ABSL_FLAG(std::string,
-          pad_piece,
-          kDefaultTrainerSpec.pad_piece(),
+ABSL_FLAG(std::string, pad_piece, kDefaultTrainerSpec.pad_piece(),
           "Override PAD (<pad>) piece.");
-ABSL_FLAG(std::string,
-          unk_surface,
-          kDefaultTrainerSpec.unk_surface(),
+ABSL_FLAG(std::string, unk_surface, kDefaultTrainerSpec.unk_surface(),
           "Dummy surface string for <unk>. In decoding <unk> is decoded to "
           "`unk_surface`.");
-ABSL_FLAG(bool,
-          train_extremely_large_corpus,
+ABSL_FLAG(bool, train_extremely_large_corpus,
           kDefaultTrainerSpec.train_extremely_large_corpus(),
           "Increase bit depth for unigram tokenization.");
-ABSL_FLAG(uint32,
-          random_seed,
-          static_cast<uint32>(-1),
+ABSL_FLAG(uint32_t, random_seed, std::numeric_limits<uint32_t>::max(),
           "Seed value for random generator.");
 
 // DP related.
-ABSL_FLAG(bool,
-          enable_differential_privacy,
-          false,
+ABSL_FLAG(bool, enable_differential_privacy, false,
           "Whether to add DP while training. Currently supported only by "
           "UNIGRAM model.");
 
-ABSL_FLAG(float,
-          differential_privacy_noise_level,
-          0.0f,
+ABSL_FLAG(float, differential_privacy_noise_level, 0.0f,
           "Amount of noise to add for"
           " DP");
-ABSL_FLAG(std::uint64_t,
-          differential_privacy_clipping_threshold,
-          0,
+ABSL_FLAG(std::uint64_t, differential_privacy_clipping_threshold, 0,
           "Threshold for"
           " clipping the counts for DP");
 
@@ -255,21 +170,20 @@ int main(int argc, char *argv[]) {
   sentencepiece::NormalizerSpec normalizer_spec;
   NormalizerSpec denormalizer_spec;
 
-  CHECK(!absl::GetFlag(FLAGS_input).empty());
-  CHECK(!absl::GetFlag(FLAGS_model_prefix).empty());
+  ABSL_QCHECK(!absl::GetFlag(FLAGS_input).empty());
+  ABSL_QCHECK(!absl::GetFlag(FLAGS_model_prefix).empty());
 
-  if (absl::GetFlag(FLAGS_random_seed) != -1) {
+  if (absl::GetFlag(FLAGS_random_seed) !=
+      std::numeric_limits<uint32_t>::max()) {
     sentencepiece::SetRandomGeneratorSeed(absl::GetFlag(FLAGS_random_seed));
   }
 
   auto load_lines = [](absl::string_view filename) {
     std::vector<std::string> lines;
     auto input = sentencepiece::filesystem::NewReadableFile(filename);
-    CHECK_OK(input->status());
+    ABSL_CHECK_OK(input->status());
     std::string line;
-    while (input->ReadLine(&line)) {
-      lines.emplace_back(line);
-    }
+    while (input->ReadLine(&line)) lines.emplace_back(line);
     return lines;
   };
 
@@ -288,7 +202,7 @@ int main(int argc, char *argv[]) {
 
 #define SetRepeatedTrainerSpecFromFlag(name)                                \
   if (!absl::GetFlag(FLAGS_##name).empty()) {                               \
-    for (const auto& v :                                                    \
+    for (const auto &v :                                                    \
          sentencepiece::util::StrSplitAsCSV(absl::GetFlag(FLAGS_##name))) { \
       trainer_spec.add_##name(v);                                           \
     }                                                                       \
@@ -296,7 +210,7 @@ int main(int argc, char *argv[]) {
 
 #define SetRepeatedTrainerSpecFromFile(name)                               \
   if (!absl::GetFlag(FLAGS_##name##_file).empty()) {                       \
-    for (const auto& v : load_lines(absl::GetFlag(FLAGS_##name##_file))) { \
+    for (const auto &v : load_lines(absl::GetFlag(FLAGS_##name##_file))) { \
       trainer_spec.add_##name(v);                                          \
     }                                                                      \
   }
@@ -311,6 +225,7 @@ int main(int argc, char *argv[]) {
   SetTrainerSpecFromFlag(input_sentence_size);
   SetTrainerSpecFromFlag(shuffle_input_sentence);
   SetTrainerSpecFromFlag(seed_sentencepiece_size);
+  SetTrainerSpecFromFlag(seed_sentencepieces_file);
   SetTrainerSpecFromFlag(shrinking_factor);
   SetTrainerSpecFromFlag(num_threads);
   SetTrainerSpecFromFlag(num_sub_iterations);
@@ -363,10 +278,10 @@ int main(int argc, char *argv[]) {
     denormalizer_spec.set_escape_whitespaces(false);
   }
 
-  CHECK_OK(sentencepiece::SentencePieceTrainer::PopulateModelTypeFromString(
+  ABSL_CHECK_OK(sentencepiece::SentencePieceTrainer::PopulateModelTypeFromString(
       absl::GetFlag(FLAGS_model_type), &trainer_spec));
 
-  CHECK_OK(sentencepiece::SentencePieceTrainer::Train(
+  ABSL_CHECK_OK(sentencepiece::SentencePieceTrainer::Train(
       trainer_spec, normalizer_spec, denormalizer_spec));
 
   return 0;

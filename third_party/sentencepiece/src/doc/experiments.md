@@ -5,7 +5,7 @@
 
 *   Segmentation algorithms:
     *   **SentencePiece**: SentencePiece with a language-model based segmentation. (`--model_type=unigram`)
-    *   **SentencePeice(BPE)**: SentencePiece with Byte Pair Encoding. [[Sennrich et al.](http://www.aclweb.org/anthology/P16-1162)]] (`--model_type=bpe`)
+    *   **SentencePiece(BPE)**: SentencePiece with Byte Pair Encoding. [[Sennrich et al.](http://www.aclweb.org/anthology/P16-1162)]] (`--model_type=bpe`)
     *   **Moses**: [Moses tokenizer](https://github.com/moses-smt/mosesdecoder/blob/master/scripts/tokenizer/tokenizer.perl) for English.
     *   **KyTea**: [KyTea](http://www.phontron.com/kytea/) for Japanese.
     *   **MeCab**: [MeCab](http://taku910.github.io/mecab/) for Japanese.

@@ -15,7 +15,8 @@ config("sentencepiece_config") {
 
   defines = [
     "DARTS_DISABLE_EXCEPTIONS=1",
-    "SENTENCEPIECE_DISABLE_EXCEPTIONS=1",
+    "_USE_EXTERNAL_ABSL",
+    "_USE_EXTERNAL_PROTOBUF",
   ]
 }
 
@@ -48,6 +49,7 @@ static_library("sentencepiece") {
     "src/src/filesystem.cc",
     "src/src/filesystem.h",
     "src/src/freelist.h",
+    "src/src/init.cc",
     "src/src/init.h",
     "src/src/model_factory.cc",
     "src/src/model_factory.h",

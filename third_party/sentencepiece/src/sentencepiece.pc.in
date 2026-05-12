@@ -2,6 +2,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir_for_pc_file@
 includedir=@includedir_for_pc_file@
+datadir=@datadir_for_pc_file@
 
 Name: @PROJECT_NAME@
 Description: Unsupervised text tokenizer and detokenizer for Neural Network-based text generation.

@@ -16,10 +16,6 @@
 
 #include <utility>
 
-#include "absl/container/flat_hash_map.h"
-#include "absl/memory/memory.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
 #include "builder.h"
 #include "filesystem.h"
 #include "model_interface.h"
@@ -28,6 +24,9 @@
 #include "sentencepiece_model.pb.h"
 #include "sentencepiece_trainer.h"
 #include "testharness.h"
+#include "absl/container/flat_hash_map.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
 #include "util.h"
 
 namespace sentencepiece {
@@ -123,7 +122,7 @@ NormalizerSpec MakeDefaultNormalizerSpec() {
 TEST(SentencepieceProcessorTest, StatusTest) {
   SentencePieceProcessor sp;
   EXPECT_FALSE(sp.status().ok());
-  auto mock = absl::make_unique<MockModel>();
+  auto mock = std::make_unique<MockModel>();
   sp.SetModel(std::move(mock));
   EXPECT_FALSE(sp.status().ok());
 }
@@ -135,7 +134,7 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
   const auto normalization_spec = MakeDefaultNormalizerSpec();
 
   {
-    auto mock = absl::make_unique<MockModel>();
+    auto mock = std::make_unique<MockModel>();
 
     const EncodeResult result = {
         {WS "ABC", 3}, {WS "DE", 4}, {"F", 0}, {"</s>", 2}};
@@ -143,7 +142,7 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
 
     sp.SetModel(std::move(mock));
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     std::vector<std::string> output;
     EXPECT_TRUE(sp.Encode("ABC DEF", &output).ok());
@@ -186,7 +185,7 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
 
   // Unknown sequences.
   {
-    auto mock = absl::make_unique<MockModel>();
+    auto mock = std::make_unique<MockModel>();
 
     const EncodeResult result = {
         {WS "ABC", 3}, {WS "D", 4}, {"E", 0}, {"F", 0}, {"</s>", 2}};
@@ -196,7 +195,7 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
     mock->SetEncodeResult(kInput, result);
     sp.SetModel(std::move(mock));
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     std::vector<std::string> output;
     EXPECT_TRUE(sp.Encode("ABC DEF", &output).ok());
@@ -236,7 +235,7 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
   // Byte-fallback.
   {
     const absl::string_view kInput2 = WS "ABC" WS "DEFあ";
-    auto mock = absl::make_unique<ByteFallbackMockModel>();
+    auto mock = std::make_unique<ByteFallbackMockModel>();
 
     const EncodeResult result = {{WS "ABC", 3}, {WS "D", 4}, {"E", 0},
                                  {"F", 0},      {"あ", 0},   {"</s>", 2}};
@@ -250,7 +249,7 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
     mock->SetEncodeResult(kInput2, result);
     sp.SetModel(std::move(mock));
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     std::vector<std::string> output;
     EXPECT_TRUE(sp.Encode("ABC DEFあ", &output).ok());
@@ -306,12 +305,12 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
   // Crash if
   // ModelInterface::Encode() returns shorter results.
   {
-    auto mock = absl::make_unique<MockModel>();
+    auto mock = std::make_unique<MockModel>();
     const EncodeResult result = {{WS "ABC", 3}};
     mock->SetEncodeResult(kInput, result);
     sp.SetModel(std::move(mock));
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
     SentencePieceText spt;
     // Expects crash.
     EXPECT_FALSE(sp.Encode("ABC DEF", &spt).ok());
@@ -320,13 +319,13 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
   // Crash if
   // ModelInterface::Encode() returns longer results.
   {
-    auto mock = absl::make_unique<MockModel>();
+    auto mock = std::make_unique<MockModel>();
     const EncodeResult result = {
         {WS "ABC", 3}, {WS "DE", 4}, {"F", 5}, {"G", 6}};
     mock->SetEncodeResult(kInput, result);
     sp.SetModel(std::move(mock));
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
     SentencePieceText spt;
     // Expects crash.
     EXPECT_FALSE(sp.Encode("ABC DEF", &spt).ok());
@@ -335,13 +334,13 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
   // Crash if
   // ModelInterface::Encode() returns an empty piece.
   {
-    auto mock = absl::make_unique<MockModel>();
+    auto mock = std::make_unique<MockModel>();
     const EncodeResult result = {
         {WS "ABC", 3}, {WS "DE", 4}, {"", 5}, {"F", 6}};
     mock->SetEncodeResult(kInput, result);
     sp.SetModel(std::move(mock));
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
     SentencePieceText spt;
     // Expects crash.
     EXPECT_FALSE(sp.Encode("ABC DEF", &spt).ok());
@@ -349,7 +348,7 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
 
   // Halfwidth to Fullwidith katakana normalization.
   {
-    auto mock = absl::make_unique<MockModel>();
+    auto mock = std::make_unique<MockModel>();
     const EncodeResult result = {{WS "グー", 3}, {"グル", 4}, {"</s>", 2}};
     const absl::string_view input = WS "グーグル";
     mock->SetEncodeResult(input, result);
@@ -383,7 +382,7 @@ TEST(SentencepieceProcessorTest, EncodeTest) {
 
   // One to many normalization.
   {
-    auto mock = absl::make_unique<MockModel>();
+    auto mock = std::make_unique<MockModel>();
     const EncodeResult result = {{WS "株式", 3}, {"会社", 4}, {"</s>", 2}};
     const absl::string_view input = WS "株式会社";
     mock->SetEncodeResult(input, result);
@@ -422,7 +421,7 @@ TEST(SentencepieceProcessorTest, NBestEncodeTest) {
 
   const auto normalization_spec = MakeDefaultNormalizerSpec();
 
-  auto mock = absl::make_unique<MockModel>();
+  auto mock = std::make_unique<MockModel>();
 
   const NBestEncodeResult result = {
       {{{WS "ABC", 3}, {WS "DE", 4}, {"F", 0}, {"</s>", 2}},
@@ -433,7 +432,7 @@ TEST(SentencepieceProcessorTest, NBestEncodeTest) {
   mock->SetNBestEncodeResult(kInput, result);
   sp.SetModel(std::move(mock));
   sp.SetNormalizer(
-      absl::make_unique<normalizer::Normalizer>(normalization_spec));
+      std::make_unique<normalizer::Normalizer>(normalization_spec));
 
   std::vector<std::vector<std::string>> output;
   EXPECT_TRUE(sp.NBestEncode("ABC DEF", 2, &output).ok());
@@ -464,7 +463,7 @@ TEST(SentencepieceProcessorTest, NBestEncodeTest) {
       spt2.ParseFromString(sp.NBestEncodeAsSerializedProto("ABC DEF", 2)));
   EXPECT_EQ(spt.SerializeAsString(), spt2.SerializeAsString());
 
-  auto mock_empty = absl::make_unique<MockModel>();
+  auto mock_empty = std::make_unique<MockModel>();
   mock_empty->SetNBestEncodeResult(kInput, {});
   sp.SetModel(std::move(mock_empty));
   EXPECT_FALSE(sp.NBestEncode("ABC DEF", 2, &output).ok());
@@ -476,7 +475,7 @@ TEST(SentencepieceProcessorTest, SampleEncodeTest) {
 
   const auto normalization_spec = MakeDefaultNormalizerSpec();
 
-  auto mock = absl::make_unique<MockModel>();
+  auto mock = std::make_unique<MockModel>();
 
   const EncodeResult result = {
       {WS "ABC", 3}, {WS "DE", 4}, {"F", 0}, {"</s>", 2}};
@@ -490,7 +489,7 @@ TEST(SentencepieceProcessorTest, SampleEncodeTest) {
   mock->SetEncodeResult(kInput, result);
   sp.SetModel(std::move(mock));
   sp.SetNormalizer(
-      absl::make_unique<normalizer::Normalizer>(normalization_spec));
+      std::make_unique<normalizer::Normalizer>(normalization_spec));
 
   std::vector<std::string> output;
   EXPECT_TRUE(sp.SampleEncode("ABC DEF", -1, 0.5, &output).ok());
@@ -528,7 +527,7 @@ TEST(SentencepieceProcessorTest, SampleEncodeTest) {
     else if (GetSpVec(nbest_result[1].first) == output)
       freq[1]++;
     else
-      LOG(FATAL) << "Invalid result.";
+      ABSL_LOG(FATAL) << "Invalid result.";
   }
 
   const float expected_prob =
@@ -536,7 +535,7 @@ TEST(SentencepieceProcessorTest, SampleEncodeTest) {
   const float prob = 1.0 * freq[0] / (freq[0] + freq[1]);
   EXPECT_NEAR(prob, expected_prob, 0.05);
 
-  auto mock_empty = absl::make_unique<MockModel>();
+  auto mock_empty = std::make_unique<MockModel>();
   mock_empty->SetNBestEncodeResult(kInput, {});
   sp.SetModel(std::move(mock_empty));
   EXPECT_FALSE(sp.SampleEncode("ABC DEF", 10, 0.5, &output).ok());
@@ -578,12 +577,12 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
 
   {
     SentencePieceProcessor sp;
-    auto mock = absl::make_unique<DecodeMockModel>();
+    auto mock = std::make_unique<DecodeMockModel>();
     sp.SetModel(std::move(mock));
 
     const auto normalization_spec = MakeDefaultNormalizerSpec();
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     SentencePieceText spt;
 
@@ -629,15 +628,15 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
   // unk_surface is not defined.
   {
     SentencePieceProcessor sp;
-    auto proto = absl::make_unique<ModelProto>();
+    auto proto = std::make_unique<ModelProto>();
     sp.Load(std::move(proto)).IgnoreError();
 
-    auto mock = absl::make_unique<DecodeMockModel>();
+    auto mock = std::make_unique<DecodeMockModel>();
     sp.SetModel(std::move(mock));
 
     const auto normalization_spec = MakeDefaultNormalizerSpec();
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     SentencePieceText spt;
 
@@ -648,16 +647,16 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
 
   {
     SentencePieceProcessor sp;
-    auto proto = absl::make_unique<ModelProto>();
+    auto proto = std::make_unique<ModelProto>();
     proto->mutable_trainer_spec()->set_unk_surface("");
     sp.Load(std::move(proto)).IgnoreError();
 
-    auto mock = absl::make_unique<DecodeMockModel>();
+    auto mock = std::make_unique<DecodeMockModel>();
     sp.SetModel(std::move(mock));
 
     const auto normalization_spec = MakeDefaultNormalizerSpec();
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     SentencePieceText spt;
 
@@ -668,16 +667,16 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
 
   {
     SentencePieceProcessor sp;
-    auto proto = absl::make_unique<ModelProto>();
+    auto proto = std::make_unique<ModelProto>();
     proto->mutable_trainer_spec()->set_unk_surface("<UNK>");
     sp.Load(std::move(proto)).IgnoreError();
 
-    auto mock = absl::make_unique<DecodeMockModel>();
+    auto mock = std::make_unique<DecodeMockModel>();
     sp.SetModel(std::move(mock));
 
     const auto normalization_spec = MakeDefaultNormalizerSpec();
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     SentencePieceText spt;
 
@@ -688,18 +687,18 @@ TEST(SentencepieceProcessorTest, DecodeTest) {
 
   {
     SentencePieceProcessor sp;
-    auto proto = absl::make_unique<ModelProto>();
+    auto proto = std::make_unique<ModelProto>();
     proto->mutable_trainer_spec()->set_unk_surface("");
     proto->mutable_normalizer_spec()->set_add_dummy_prefix(false);
     proto->mutable_normalizer_spec()->set_remove_extra_whitespaces(false);
     sp.Load(std::move(proto)).IgnoreError();
 
-    auto mock = absl::make_unique<DecodeMockModel>();
+    auto mock = std::make_unique<DecodeMockModel>();
     sp.SetModel(std::move(mock));
 
     const auto normalization_spec = MakeDefaultNormalizerSpec();
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     SentencePieceText spt;
 
@@ -725,7 +724,7 @@ TEST(SentencepieceProcessorTest, DummyPrefixDecodeTest) {
       return port::FindWithDefault(kMap, piece, 0);
     }
 
-    const std::string& IdToPiece(int id) const override {
+    const std::string &IdToPiece(int id) const override {
       static std::vector<std::string> kMap = {
           "<unk>", "<s>", "</s>", WS "ABC", WS "DE", "F", "G" WS "H", WS};
       return kMap[id];
@@ -746,18 +745,18 @@ TEST(SentencepieceProcessorTest, DummyPrefixDecodeTest) {
 
   {
     SentencePieceProcessor sp;
-    auto proto = absl::make_unique<ModelProto>();
+    auto proto = std::make_unique<ModelProto>();
     proto->mutable_trainer_spec()->set_unk_surface("");
     proto->mutable_normalizer_spec()->set_add_dummy_prefix(true);
     proto->mutable_normalizer_spec()->set_remove_extra_whitespaces(false);
     sp.Load(std::move(proto)).IgnoreError();
 
-    auto mock = absl::make_unique<DecodeMockModel>();
+    auto mock = std::make_unique<DecodeMockModel>();
     sp.SetModel(std::move(mock));
 
     const auto normalization_spec = MakeDefaultNormalizerSpec();
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     SentencePieceText spt;
 
@@ -768,18 +767,18 @@ TEST(SentencepieceProcessorTest, DummyPrefixDecodeTest) {
 
   {
     SentencePieceProcessor sp;
-    auto proto = absl::make_unique<ModelProto>();
+    auto proto = std::make_unique<ModelProto>();
     proto->mutable_trainer_spec()->set_unk_surface("");
     proto->mutable_normalizer_spec()->set_add_dummy_prefix(true);
     proto->mutable_normalizer_spec()->set_remove_extra_whitespaces(true);
     sp.Load(std::move(proto)).IgnoreError();
 
-    auto mock = absl::make_unique<DecodeMockModel>();
+    auto mock = std::make_unique<DecodeMockModel>();
     sp.SetModel(std::move(mock));
 
     const auto normalization_spec = MakeDefaultNormalizerSpec();
     sp.SetNormalizer(
-        absl::make_unique<normalizer::Normalizer>(normalization_spec));
+        std::make_unique<normalizer::Normalizer>(normalization_spec));
 
     SentencePieceText spt;
 
@@ -810,7 +809,7 @@ TEST(SentencepieceProcessorTest, ByteFallbackDecodeTest) {
       return port::FindWithDefault(kMap, std::string(piece), 0);
     }
 
-    const std::string& IdToPiece(int id) const override {
+    const std::string &IdToPiece(int id) const override {
       static std::vector<std::string> kMap = []() -> std::vector<std::string> {
         std::vector<std::string> m = {"<unk>", "<s>", "</s>", "A", "B", "C"};
         for (int i = 0; i < 256; ++i) {
@@ -833,12 +832,12 @@ TEST(SentencepieceProcessorTest, ByteFallbackDecodeTest) {
   };
 
   SentencePieceProcessor sp;
-  auto mock = absl::make_unique<ByteFallbackDecodeMockModel>();
+  auto mock = std::make_unique<ByteFallbackDecodeMockModel>();
   sp.SetModel(std::move(mock));
 
   const auto normalization_spec = MakeDefaultNormalizerSpec();
   sp.SetNormalizer(
-      absl::make_unique<normalizer::Normalizer>(normalization_spec));
+      std::make_unique<normalizer::Normalizer>(normalization_spec));
 
   {
     const std::vector<std::string> input = {
@@ -995,13 +994,13 @@ TEST(SentencePieceProcessorTest, EndToEndTest) {
 
   {
     auto output = filesystem::NewWritableFile(
-        util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "model"), true);
+        util::JoinPath(::testing::TempDir(), "model"), true);
     output->Write(model_proto.SerializeAsString());
   }
 
   SentencePieceProcessor sp;
   EXPECT_TRUE(
-      sp.Load(util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "model")).ok());
+      sp.Load(util::JoinPath(::testing::TempDir(), "model")).ok());
 
   EXPECT_EQ(model_proto.SerializeAsString(),
             sp.model_proto().SerializeAsString());
@@ -1347,7 +1346,7 @@ TEST(SentencePieceProcessorTest, EndToEndTest) {
   // Moves ModelProto.
   {
     SentencePieceProcessor sp;
-    auto moved = absl::make_unique<ModelProto>();
+    auto moved = std::make_unique<ModelProto>();
     const ModelProto *moved_ptr = moved.get();
     *moved = model_proto;
     EXPECT_TRUE(sp.Load(std::move(moved)).ok());
@@ -1399,7 +1398,7 @@ TEST(SentencePieceProcessorTest, SkipNormalizationTest) {
 
   std::vector<std::string> pieces;
   EXPECT_TRUE(sp.Encode("AB<USER>C<uSEr>", &pieces).ok());
-  for (const auto &sp : pieces) LOG(INFO) << sp;
+  for (const auto &sp : pieces) ABSL_LOG(INFO) << sp;
   EXPECT_EQ(std::vector<std::string>(
                 {WS, "a", "b", "<USER>", "c", "<", "u", "s", "e", "r", ">"}),
             pieces);
@@ -1468,10 +1467,10 @@ TEST(SentencePieceProcessorTest, VocabularyTest) {
   auto GetInlineFilename = [](const std::string content) {
     {
       auto out = filesystem::NewWritableFile(
-          util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "vocab.txt"));
+          util::JoinPath(::testing::TempDir(), "vocab.txt"));
       out->Write(content);
     }
-    return util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "vocab.txt");
+    return util::JoinPath(::testing::TempDir(), "vocab.txt");
   };
 
   sp1->set_type(ModelProto::SentencePiece::UNKNOWN);
@@ -1568,12 +1567,12 @@ TEST(SentencePieceProcessorTest, ImmutableSentencePieceTextTest) {
   EXPECT_EQ(spt.score(), 0.0);
   EXPECT_TRUE(spt.SerializeAsString().empty());
 
-  auto* v = spt.mutable_proto();
+  auto *v = spt.mutable_proto();
 
   v->set_text("hello world");
   v->set_score(1.0);
   for (int i = 0; i < 10; ++i) {
-    auto* p = v->add_pieces();
+    auto *p = v->add_pieces();
     p->set_surface(absl::StrCat("surface_", i));
     p->set_piece(absl::StrCat("surface_", i));
     p->set_id(i);
@@ -1590,9 +1589,9 @@ TEST(SentencePieceProcessorTest, ImmutableSentencePieceTextTest) {
     EXPECT_EQ(v->pieces(i).end(), spt.pieces(i).end());
   }
 
-  auto check_proto = [&v](const ImmutableSentencePieceText& s) {
+  auto check_proto = [&v](const ImmutableSentencePieceText &s) {
     int n = 0;
-    for (auto& p : s.pieces()) {
+    for (auto &p : s.pieces()) {
       EXPECT_EQ(v->pieces(n).surface(), p.surface());
       EXPECT_EQ(v->pieces(n).piece(), p.piece());
       EXPECT_EQ(v->pieces(n).id(), p.id());
@@ -1627,15 +1626,15 @@ TEST(SentencePieceProcessorTest, ImmutableNBestSentencePieceTextTest) {
   EXPECT_EQ(spt.nbests_size(), 0);
   EXPECT_TRUE(spt.SerializeAsString().empty());
 
-  auto* v = spt.mutable_proto();
+  auto *v = spt.mutable_proto();
 
   for (int i = 0; i < 10; ++i) {
-    auto* p = v->add_nbests();
+    auto *p = v->add_nbests();
     p->set_text(absl::StrCat("text_", i));
     p->set_score(2.0 * i);
   }
 
-  auto check_proto = [&v](const ImmutableNBestSentencePieceText& s) {
+  auto check_proto = [&v](const ImmutableNBestSentencePieceText &s) {
     EXPECT_EQ(v->nbests_size(), s.nbests_size());
     for (int i = 0; i < v->nbests_size(); ++i) {
       EXPECT_EQ(v->nbests(i).text(), s.nbests(i).text());
@@ -1656,13 +1655,13 @@ TEST(SentencePieceProcessorTest, ImmutableNBestSentencePieceTextTest) {
 }
 
 TEST(SentencePieceProcessorTest, ConvertToUnicodeSpansTest) {
-  auto make_spt = [&](const std::vector<std::string>& tokens) {
+  auto make_spt = [&](const std::vector<std::string> &tokens) {
     ImmutableSentencePieceText ispt;
-    auto* spt = ispt.mutable_proto();
+    auto *spt = ispt.mutable_proto();
     int prev = 0;
     std::string text;
-    for (const auto& tok : tokens) {
-      auto* piece = spt->add_pieces();
+    for (const auto &tok : tokens) {
+      auto *piece = spt->add_pieces();
       piece->set_surface(tok);
       piece->set_piece(tok);
       piece->set_begin(prev);
@@ -1707,6 +1706,14 @@ TEST(SentencePieceProcessorTest, ConvertToUnicodeSpansTest) {
     EXPECT_EQ(spt.pieces(1).end(), 8);
     EXPECT_EQ(spt.pieces(2).begin(), 8);
     EXPECT_EQ(spt.pieces(2).end(), 10);
+  }
+
+  for (const char lead : {static_cast<char>(0xC2), static_cast<char>(0xE0),
+                          static_cast<char>(0xF0)}) {
+    const auto spt = make_spt({std::string(1, lead)});
+    EXPECT_EQ(spt.pieces_size(), 1);
+    EXPECT_EQ(spt.pieces(0).begin(), 0);
+    EXPECT_EQ(spt.pieces(0).end(), 1);
   }
 }
 

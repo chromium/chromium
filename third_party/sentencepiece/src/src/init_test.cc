@@ -17,10 +17,12 @@
 #include "common.h"
 #include "testharness.h"
 
-ABSL_FLAG(int32, int32_f, 10, "int32_flags");
+#ifndef _USE_EXTERNAL_ABSL
+
+ABSL_FLAG(int32_t, int32_f, 10, "int32_flags");
 ABSL_FLAG(bool, bool_f, false, "bool_flags");
-ABSL_FLAG(int64, int64_f, 9223372036854775807LL, "int64_flags");
-ABSL_FLAG(uint64, uint64_f, 18446744073709551615ULL, "uint64_flags");
+ABSL_FLAG(int64_t, int64_f, 9223372036854775807LL, "int64_flags");
+ABSL_FLAG(uint64_t, uint64_f, 18446744073709551615ULL, "uint64_flags");
 ABSL_FLAG(double, double_f, 40.0, "double_flags");
 ABSL_FLAG(std::string, string_f, "str", "string_flags");
 
@@ -40,12 +42,12 @@ TEST(FlagsTest, DefaultValueTest) {
 }
 
 TEST(FlagsTest, ParseCommandLineFlagsTest) {
-  const char* kFlags[] = {"program",        "--int32_f=100",  "other1",
+  const char *kFlags[] = {"program",        "--int32_f=100",  "other1",
                           "--bool_f=true",  "--int64_f=200",  "--uint64_f=300",
                           "--double_f=400", "--string_f=foo", "other2",
                           "other3"};
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
+  int argc = std::size(kFlags);
+  char **argv = const_cast<char **>(kFlags);
   ParseCommandLineFlags(kFlags[0], &argc, &argv);
 
   EXPECT_EQ(100, absl::GetFlag(FLAGS_int32_f));
@@ -62,11 +64,11 @@ TEST(FlagsTest, ParseCommandLineFlagsTest) {
 }
 
 TEST(FlagsTest, ParseCommandLineFlagsTest2) {
-  const char* kFlags[] = {"program",       "--int32_f", "500",
+  const char *kFlags[] = {"program",       "--int32_f", "500",
                           "-int64_f=600",  "-uint64_f", "700",
                           "--bool_f=FALSE"};
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
+  int argc = std::size(kFlags);
+  char **argv = const_cast<char **>(kFlags);
   ParseCommandLineFlags(kFlags[0], &argc, &argv);
 
   EXPECT_EQ(500, absl::GetFlag(FLAGS_int32_f));
@@ -77,71 +79,34 @@ TEST(FlagsTest, ParseCommandLineFlagsTest2) {
 }
 
 TEST(FlagsTest, ParseCommandLineFlagsTest3) {
-  const char* kFlags[] = {"program", "--bool_f", "--int32_f", "800"};
+  const char *kFlags[] = {"program", "--bool_f", "--int32_f", "800"};
 
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
+  int argc = std::size(kFlags);
+  char **argv = const_cast<char **>(kFlags);
   ParseCommandLineFlags(kFlags[0], &argc, &argv);
   EXPECT_TRUE(absl::GetFlag(FLAGS_bool_f));
   EXPECT_EQ(800, absl::GetFlag(FLAGS_int32_f));
   EXPECT_EQ(1, argc);
 }
 
-#ifndef _USE_EXTERNAL_ABSL
-
-TEST(FlagsTest, ParseCommandLineFlagsHelpTest) {
-  const char* kFlags[] = {"program", "--help"};
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
-  EXPECT_DEATH(ParseCommandLineFlags(kFlags[0], &argc, &argv), "");
-  absl::SetFlag(&FLAGS_help, false);
-}
-
-TEST(FlagsTest, ParseCommandLineFlagsVersionTest) {
-  const char* kFlags[] = {"program", "--version"};
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
-  EXPECT_DEATH(ParseCommandLineFlags(kFlags[0], &argc, &argv), "");
-  absl::SetFlag(&FLAGS_version, false);
-}
-
-TEST(FlagsTest, ParseCommandLineFlagsUnknownTest) {
-  const char* kFlags[] = {"program", "--foo"};
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
-  EXPECT_DEATH(ParseCommandLineFlags(kFlags[0], &argc, &argv), "");
-}
-
-TEST(FlagsTest, ParseCommandLineFlagsInvalidBoolTest) {
-  const char* kFlags[] = {"program", "--bool_f=X"};
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
-  EXPECT_DEATH(ParseCommandLineFlags(kFlags[0], &argc, &argv), "");
-}
-
 TEST(FlagsTest, ParseCommandLineFlagsEmptyStringArgs) {
-  const char* kFlags[] = {"program", "--string_f="};
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
+  const char *kFlags[] = {"program", "--string_f="};
+  int argc = std::size(kFlags);
+  char **argv = const_cast<char **>(kFlags);
   ParseCommandLineFlags(kFlags[0], &argc, &argv);
   EXPECT_EQ(1, argc);
   EXPECT_EQ("", absl::GetFlag(FLAGS_string_f));
 }
 
 TEST(FlagsTest, ParseCommandLineFlagsEmptyBoolArgs) {
-  const char* kFlags[] = {"program", "--bool_f"};
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
+  const char *kFlags[] = {"program", "--bool_f"};
+  int argc = std::size(kFlags);
+  char **argv = const_cast<char **>(kFlags);
   ParseCommandLineFlags(kFlags[0], &argc, &argv);
   EXPECT_EQ(1, argc);
   EXPECT_TRUE(absl::GetFlag(FLAGS_bool_f));
 }
 
-TEST(FlagsTest, ParseCommandLineFlagsEmptyIntArgs) {
-  const char* kFlags[] = {"program", "--int32_f"};
-  int argc = arraysize(kFlags);
-  char** argv = const_cast<char**>(kFlags);
-  EXPECT_DEATH(ParseCommandLineFlags(kFlags[0], &argc, &argv), );
-}
-#endif  // _USE_EXTERNAL_ABSL
 }  // namespace absl
+
+#endif  // _USE_EXTERNAL_ABSL

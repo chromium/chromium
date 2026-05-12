@@ -1,21 +1,21 @@
-From c9502627a134b4ec78548a86d2795b07f4b0a0f6 Mon Sep 17 00:00:00 2001
-From: Clark DuVall <cduvall@chromium.org>
-Date: Wed, 16 Aug 2023 16:07:15 -0700
-Subject: [PATCH 4/4] Remove util::Status
+From 060d2cf767e6c1aa65a08abe3f15b0a337af54ca Mon Sep 17 00:00:00 2001
+From: Mike Wittman <wittman@chromium.org>
+Date: Thu, 30 Apr 2026 16:28:43 -0700
+Subject: [PATCH 4/5] Remove util::Status
 
 ---
  third_party/sentencepiece/src/src/error.cc    | 103 ------------------
- .../src/src/sentencepiece_processor.h         |  47 +-------
- 2 files changed, 4 insertions(+), 146 deletions(-)
+ .../src/src/sentencepiece_processor.h         |  48 +-------
+ 2 files changed, 4 insertions(+), 147 deletions(-)
 
 diff --git a/third_party/sentencepiece/src/src/error.cc b/third_party/sentencepiece/src/src/error.cc
-index 19ef6f35b822e..6e327f1779af9 100644
+index ec468dd98b2e6..1d673e157b985 100644
 --- a/third_party/sentencepiece/src/src/error.cc
 +++ b/third_party/sentencepiece/src/src/error.cc
-@@ -54,107 +54,4 @@ void SetTestCounter(int c) { gTestCounter = c; }
- bool GetTestCounter() { return gTestCounter; }
- }  // namespace error
+@@ -18,107 +18,4 @@
+ #include "sentencepiece_processor.h"
  
+ namespace sentencepiece {
 -namespace util {
 -
 -Status::Status() {}
@@ -121,22 +121,23 @@ index 19ef6f35b822e..6e327f1779af9 100644
 -}  // namespace util
  }  // namespace sentencepiece
 diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.h b/third_party/sentencepiece/src/src/sentencepiece_processor.h
-index 14b1e8cd830c7..d6c7da32d05b1 100644
+index 0edee1b2428be..bffe3ff89053d 100644
 --- a/third_party/sentencepiece/src/src/sentencepiece_processor.h
 +++ b/third_party/sentencepiece/src/src/sentencepiece_processor.h
-@@ -22,6 +22,8 @@
+@@ -23,6 +23,8 @@
  #include <utility>
  #include <vector>
  
 +#include "absl/status/status.h"
 +
- #ifndef SWIG
- namespace absl {
- using std::string_view;
-@@ -31,49 +33,8 @@ using std::string_view;
+ #ifdef _USE_EXTERNAL_ABSL
+ #include "absl/strings/string_view.h"
+ #else  // _USE_EXTERNAL_ABSL
+@@ -35,50 +37,8 @@ using std::string_view;
+ 
  namespace sentencepiece {
  namespace util {
- 
+-
 -enum class StatusCode : int {
 -  kOk = 0,
 -  kCancelled = 1,
@@ -186,5 +187,5 @@ index 14b1e8cd830c7..d6c7da32d05b1 100644
  
  // SentencePieceProcessor:
 -- 
-2.42.0.rc1.204.g551eb34607-goog
+2.54.0.545.g6539524ca2-goog
 

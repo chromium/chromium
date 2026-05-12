@@ -1,10 +1,10 @@
 Name: Sentencepiece
 Short Name: sentencepiece
 URL: https://github.com/google/sentencepiece
-Version: 8cbdf13794284c30877936f91c6f31e2c1d5aef7
-Revision: 8cbdf13794284c30877936f91c6f31e2c1d5aef7
+Version: 0dfa26997af6d7dd0d22c0bbfaf6a806cd8e98c0
+Revision: 0dfa26997af6d7dd0d22c0bbfaf6a806cd8e98c0
 Update Mechanism: Manual
-Date: 2023-08-16
+Date: 2026-04-23
 License: BSD-3-Clause, Apache-2.0, MIT
 License File: LICENSE
 Security Critical: Yes
@@ -25,21 +25,15 @@ Making new patches:
 2. Run `git format-patch -o third_party/sentencepiece/patches/ origin/main third_party/sentencepiece/src/`
 
 Patches:
-* 0001-Remove-config-include.patch - Removes a header for version information
-that is not used and requires cmake.
+* 0001-Avoid-try-catch.patch - Removes the one usage of try/catch.
 * 0002-Fix-absl-includes.patch - Rewrites absl includes from third_party/absl to
 just absl.
 * 0003-Remove-absl-flags.patch - Removes some usage of absl flags which was not
 needed for chromium.
 * 0004-Remove-util-Status.patch - Swaps out the custom util::Status for
 absl::Status.
-* 0005-Fix-utf8towide.patch - Fixes file loading on Windows.
-* 0006-Fix-gn-check-in-sentencepiece.patch - Removes more usage of absl flags
-which was not needed and was giving "gn check" errors.
-* 0007-SentencePiece-introduce-no-exceptions-mode.patch - Introduces a new build
-variant that allows us to build SentencePiece and its dependencies without
-having to enable exceptions. Candidate for upstreaming.
+* 0005-Update-absl-logging.patch - Prefixes logging statements with ABSL_ to
+avoid conflict with Chrome logging.
 
-In addition the python, third_party/absl, and third_party/protobuf-lite
-directories were removed to avoid adding a bunch of unused code which could
-cause strange compile errors if include paths were incorrect.
+In addition the unused data, python, third_party/absl, and
+third_party/protobuf-lite directories were removed.

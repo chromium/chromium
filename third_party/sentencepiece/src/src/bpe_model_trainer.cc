@@ -19,11 +19,17 @@
 #include <unordered_set>
 #include <vector>
 
+#include "pretokenizer_for_training.h"
 #include "absl/container/flat_hash_set.h"
+#include "absl/flags/flag.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/str_replace.h"
-#include "pretokenizer_for_training.h"
 #include "util.h"
+
+#ifdef SPM_NLCODEC_BPE
+#include "contrib/nlcodec/bpe_model_trainer_nlcodec.h"
+ABSL_DECLARE_FLAG(bool, nlcodec_bpe);
+#endif  // SPM_NLCODEC_BPE
 
 namespace sentencepiece {
 namespace bpe {
@@ -33,8 +39,8 @@ std::string Trainer::Symbol::ToString() const {
 }
 
 Trainer::Symbol *Trainer::GetCharSymbol(char32 c) {
-  const uint64 freq = port::FindWithDefault(required_chars_, c, 1);
-  CHECK_GT(freq, 0);
+  const uint64_t freq = port::FindWithDefault(required_chars_, c, 1);
+  ABSL_CHECK_GT(freq, 0);
   const auto it = symbols_cache_.find(c);
   if (it != symbols_cache_.end()) {
     return it->second;
@@ -55,14 +61,14 @@ Trainer::Symbol *Trainer::GetPairSymbol(const Symbol *left,
     return nullptr;
   }
 
-  const uint64 fp = port::FingerprintCat(left->fp, right->fp);
+  const uint64_t fp = port::FingerprintCat(left->fp, right->fp);
   const auto it = symbols_cache_.find(fp);
   if (it != symbols_cache_.end()) {
     return it->second;
   }
 
-  CHECK(!left->chars.empty());
-  CHECK(!right->chars.empty());
+  ABSL_CHECK(!left->chars.empty());
+  ABSL_CHECK(!right->chars.empty());
   string_util::UnicodeText ut;
   for (const char32 c : left->chars) ut.push_back(c);
   for (const char32 c : right->chars) ut.push_back(c);
@@ -86,7 +92,7 @@ void Trainer::ComputeFreq(Symbol *symbol) const {
   if (symbol->freq > 0) {  // if freq == 0, re-computation is required.
     return;
   }
-  CHECK_EQ(0, symbol->freq);
+  ABSL_CHECK_EQ(0, symbol->freq);
   for (auto it = symbol->positions.begin(); it != symbol->positions.end();) {
     const Position pos = DecodePos(*it);
     // symbols_[sid][left] and symbols_[sid]right] must store
@@ -156,7 +162,7 @@ void Trainer::UpdateActiveSymbols() {
 
   std::partial_sort(symbols.begin(), symbols.begin() + size, symbols.end(),
                     [](Symbol *s1, Symbol *s2) { return s1->freq > s2->freq; });
-  LOG(INFO) << "Updating active symbols. max_freq=" << symbols[0]->freq
+  ABSL_LOG(INFO) << "Updating active symbols. max_freq=" << symbols[0]->freq
             << " min_freq=" << symbols[size - 1]->freq;
 
   active_symbols_.clear();
@@ -165,6 +171,12 @@ void Trainer::UpdateActiveSymbols() {
 
 util::Status Trainer::Train() {
   RETURN_IF_ERROR(status());
+
+#ifdef SPM_NLCODEC_BPE
+  if (absl::GetFlag(FLAGS_nlcodec_bpe)) {
+    return TrainFast();
+  }
+#endif  // SPM_NLCODEC_BPE
 
   CHECK_OR_RETURN(normalizer_spec_.escape_whitespaces());
   CHECK_EQ_OR_RETURN(TrainerSpec::BPE, trainer_spec_.model_type());
@@ -183,12 +195,12 @@ util::Status Trainer::Train() {
 
   // Pretokenizer applied only in training time.
   // Pretokenizer is used as a constraint of piece extractions.
-  const auto* pretokenizer = SentencePieceTrainer::GetPretokenizerForTraining();
+  const auto *pretokenizer = SentencePieceTrainer::GetPretokenizerForTraining();
 
   if (pretokenizer || !trainer_spec_.pretokenization_delimiter().empty()) {
     absl::string_view delimiter = trainer_spec_.pretokenization_delimiter();
-    LOG(INFO) << "Preprocessing with pretokenizer...";
-    for (auto& w : sentences_) {
+    ABSL_LOG(INFO) << "Preprocessing with pretokenizer...";
+    for (auto &w : sentences_) {
       if (pretokenizer) {
         w.first = absl::StrJoin(pretokenizer->PreTokenize(w.first),
                                 TrainerInterface::kUPPBoundaryStr);
@@ -249,7 +261,7 @@ util::Status Trainer::Train() {
     }
 
     if (best_symbol == nullptr) {
-      LOG(WARNING) << "No valid symbol found";
+      ABSL_LOG(WARNING) << "No valid symbol found";
       break;
     }
 
@@ -265,7 +277,7 @@ util::Status Trainer::Train() {
                                -static_cast<float>(final_pieces_.size()));
 
     if (final_pieces_.size() % 20 == 0) {
-      LOG(INFO) << "Added: freq=" << best_symbol->freq
+      ABSL_LOG(INFO) << "Added: freq=" << best_symbol->freq
                 << " size=" << final_pieces_.size()
                 << " all=" << symbols_cache_.size()
                 << " active=" << active_symbols_.size()
@@ -275,7 +287,7 @@ util::Status Trainer::Train() {
     // Add new bigrams which are created after symbol replacement.
     // We do not need to scan all characters, but scan the neighbors in
     // best_symbol.
-    for (const uint64 &encoded_pos : best_symbol->positions) {
+    for (const uint64_t &encoded_pos : best_symbol->positions) {
       const Position pos = DecodePos(encoded_pos);
 
       if (symbols_[pos.sid][pos.left] == nullptr) {
@@ -319,5 +331,40 @@ util::Status Trainer::Train() {
 
   return Save();
 }
+
+#ifdef SPM_NLCODEC_BPE
+util::Status Trainer::TrainFast() {
+  CHECK_OR_RETURN(normalizer_spec_.escape_whitespaces());
+  CHECK_EQ_OR_RETURN(TrainerSpec::BPE, trainer_spec_.model_type());
+
+  RETURN_IF_ERROR(LoadSentences());
+
+  if (trainer_spec_.split_by_whitespace()) {
+    SplitSentencesByWhitespace();
+  }
+
+  const int vocab_size =
+      trainer_spec_.vocab_size() - meta_pieces_.size() - required_chars_.size();
+  CHECK_GE_OR_RETURN(vocab_size, 0);
+  CHECK_OR_RETURN(final_pieces_.empty());
+
+  RETURN_IF_ERROR(
+      nlcodec::RunFastBPEMerges(sentences_, vocab_size, &final_pieces_,
+                                [this](const string_util::UnicodeText &ut) {
+                                  return IsValidSentencePiece(ut);
+                                }));
+
+  // Add required_chars_
+  for (const auto &w : Sorted(required_chars_)) {
+    const Symbol *symbol = GetCharSymbol(w.first);
+    final_pieces_.emplace_back(symbol->ToString(),
+                               -static_cast<float>(final_pieces_.size()));
+  }
+
+  port::STLDeleteElements(&allocated_);
+
+  return Save();
+}
+#endif  // SPM_NLCODEC_BPE
 }  // namespace bpe
 }  // namespace sentencepiece

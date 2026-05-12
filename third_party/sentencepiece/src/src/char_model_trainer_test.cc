@@ -15,12 +15,12 @@
 #include <string>
 #include <vector>
 
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_join.h"
 #include "char_model_trainer.h"
 #include "filesystem.h"
 #include "sentencepiece_processor.h"
 #include "testharness.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_join.h"
 #include "util.h"
 
 namespace sentencepiece {
@@ -32,9 +32,9 @@ namespace {
 
 std::string RunTrainer(const std::vector<std::string> &input, int size) {
   const std::string input_file =
-      util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "input");
+      util::JoinPath(::testing::TempDir(), "input");
   const std::string model_prefix =
-      util::JoinPath(absl::GetFlag(FLAGS_test_tmpdir), "model");
+      util::JoinPath(::testing::TempDir(), "model");
   {
     auto output = filesystem::NewWritableFile(input_file);
     for (const auto &line : input) {

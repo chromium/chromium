@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "absl/flags/flag.h"
 #include "builder.h"
 #include "common.h"
 #include "filesystem.h"
@@ -22,26 +21,19 @@
 #include "sentencepiece_model.pb.h"
 #include "sentencepiece_processor.h"
 #include "sentencepiece_trainer.h"
+#include "absl/flags/flag.h"
 
 ABSL_FLAG(std::string, model, "", "Model file name");
-ABSL_FLAG(bool,
-          use_internal_normalization,
-          false,
+ABSL_FLAG(bool, use_internal_normalization, false,
           "Use NormalizerSpec \"as-is\" to run the normalizer "
           "for SentencePiece segmentation");
-ABSL_FLAG(std::string,
-          normalization_rule_name,
-          "",
+ABSL_FLAG(std::string, normalization_rule_name, "",
           "Normalization rule name. "
           "Choose from nfkc or identity");
-ABSL_FLAG(std::string,
-          normalization_rule_tsv,
-          "",
+ABSL_FLAG(std::string, normalization_rule_tsv, "",
           "Normalization rule TSV file. ");
 ABSL_FLAG(bool, remove_extra_whitespaces, true, "Remove extra whitespaces");
-ABSL_FLAG(bool,
-          decompile,
-          false,
+ABSL_FLAG(bool, decompile, false,
           "Decompile compiled charamap and output it as TSV.");
 ABSL_FLAG(std::string, input, "", "Input filename");
 ABSL_FLAG(std::string, output, "", "Output filename");
@@ -71,17 +63,17 @@ int main(int argc, char *argv[]) {
   if (!absl::GetFlag(FLAGS_model).empty()) {
     ModelProto model_proto;
     SentencePieceProcessor sp;
-    CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
+    ABSL_QCHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
     spec = sp.model_proto().normalizer_spec();
   } else if (!absl::GetFlag(FLAGS_normalization_rule_tsv).empty()) {
     spec.set_normalization_rule_tsv(
         absl::GetFlag(FLAGS_normalization_rule_tsv));
-    CHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
+    ABSL_QCHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
   } else if (!absl::GetFlag(FLAGS_normalization_rule_name).empty()) {
     spec.set_name(absl::GetFlag(FLAGS_normalization_rule_name));
-    CHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
+    ABSL_QCHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
   } else {
-    LOG(FATAL) << "Sets --model, normalization_rule_tsv, or "
+    ABSL_LOG(FATAL) << "Sets --model, normalization_rule_tsv, or "
                   "normalization_rule_name flag.";
   }
 
@@ -95,14 +87,14 @@ int main(int argc, char *argv[]) {
 
   if (absl::GetFlag(FLAGS_decompile)) {
     Builder::CharsMap chars_map;
-    CHECK_OK(
+    ABSL_QCHECK_OK(
         Builder::DecompileCharsMap(spec.precompiled_charsmap(), &chars_map));
-    CHECK_OK(Builder::SaveCharsMap(absl::GetFlag(FLAGS_output), chars_map));
+    ABSL_QCHECK_OK(Builder::SaveCharsMap(absl::GetFlag(FLAGS_output), chars_map));
   } else {
     const Normalizer normalizer(spec);
     auto output =
         sentencepiece::filesystem::NewWritableFile(absl::GetFlag(FLAGS_output));
-    CHECK_OK(output->status());
+    ABSL_QCHECK_OK(output->status());
 
     if (rest_args.empty()) {
       rest_args.push_back("");  // empty means that read from stdin.
@@ -111,7 +103,7 @@ int main(int argc, char *argv[]) {
     std::string line;
     for (const auto &filename : rest_args) {
       auto input = sentencepiece::filesystem::NewReadableFile(filename);
-      CHECK_OK(input->status());
+      ABSL_CHECK_OK(input->status());
       while (input->ReadLine(&line)) {
         output->WriteLine(normalizer.Normalize(line));
       }

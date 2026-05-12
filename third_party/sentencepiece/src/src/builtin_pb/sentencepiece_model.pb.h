@@ -19,17 +19,17 @@
 #error regenerate this file with a newer version of protoc.
 #endif
 
+#include <google/protobuf/port_undef.inc>
+#include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/arenastring.h>
-#include <google/protobuf/extension_set.h>  // IWYU pragma: export
-#include <google/protobuf/generated_enum_util.h>
 #include <google/protobuf/generated_message_table_driven.h>
 #include <google/protobuf/generated_message_util.h>
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/message_lite.h>
 #include <google/protobuf/metadata_lite.h>
+#include <google/protobuf/message_lite.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
-#include <google/protobuf/port_undef.inc>
+#include <google/protobuf/extension_set.h>  // IWYU pragma: export
+#include <google/protobuf/generated_enum_util.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_sentencepiece_5fmodel_2eproto
@@ -41,16 +41,14 @@ PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
 struct TableStruct_sentencepiece_5fmodel_2eproto {
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTableField
-      entries[] PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField
-      aux[] PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable
-      schema[6] PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata
-      field_metadata[];
-  static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable
-      serialization_table[];
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTableField entries[]
+    PROTOBUF_SECTION_VARIABLE(protodesc_cold);
+  static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
+    PROTOBUF_SECTION_VARIABLE(protodesc_cold);
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[6]
+    PROTOBUF_SECTION_VARIABLE(protodesc_cold);
+  static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
+  static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
   static const ::PROTOBUF_NAMESPACE_ID::uint32 offsets[];
 };
 namespace sentencepiece {
@@ -59,8 +57,7 @@ class ModelProtoDefaultTypeInternal;
 extern ModelProtoDefaultTypeInternal _ModelProto_default_instance_;
 class ModelProto_SentencePiece;
 class ModelProto_SentencePieceDefaultTypeInternal;
-extern ModelProto_SentencePieceDefaultTypeInternal
-    _ModelProto_SentencePiece_default_instance_;
+extern ModelProto_SentencePieceDefaultTypeInternal _ModelProto_SentencePiece_default_instance_;
 class NormalizerSpec;
 class NormalizerSpecDefaultTypeInternal;
 extern NormalizerSpecDefaultTypeInternal _NormalizerSpec_default_instance_;
@@ -69,31 +66,18 @@ class SelfTestDataDefaultTypeInternal;
 extern SelfTestDataDefaultTypeInternal _SelfTestData_default_instance_;
 class SelfTestData_Sample;
 class SelfTestData_SampleDefaultTypeInternal;
-extern SelfTestData_SampleDefaultTypeInternal
-    _SelfTestData_Sample_default_instance_;
+extern SelfTestData_SampleDefaultTypeInternal _SelfTestData_Sample_default_instance_;
 class TrainerSpec;
 class TrainerSpecDefaultTypeInternal;
 extern TrainerSpecDefaultTypeInternal _TrainerSpec_default_instance_;
 }  // namespace sentencepiece
 PROTOBUF_NAMESPACE_OPEN
-template <>
-::sentencepiece::ModelProto*
-Arena::CreateMaybeMessage<::sentencepiece::ModelProto>(Arena*);
-template <>
-::sentencepiece::ModelProto_SentencePiece*
-Arena::CreateMaybeMessage<::sentencepiece::ModelProto_SentencePiece>(Arena*);
-template <>
-::sentencepiece::NormalizerSpec*
-Arena::CreateMaybeMessage<::sentencepiece::NormalizerSpec>(Arena*);
-template <>
-::sentencepiece::SelfTestData*
-Arena::CreateMaybeMessage<::sentencepiece::SelfTestData>(Arena*);
-template <>
-::sentencepiece::SelfTestData_Sample*
-Arena::CreateMaybeMessage<::sentencepiece::SelfTestData_Sample>(Arena*);
-template <>
-::sentencepiece::TrainerSpec*
-Arena::CreateMaybeMessage<::sentencepiece::TrainerSpec>(Arena*);
+template<> ::sentencepiece::ModelProto* Arena::CreateMaybeMessage<::sentencepiece::ModelProto>(Arena*);
+template<> ::sentencepiece::ModelProto_SentencePiece* Arena::CreateMaybeMessage<::sentencepiece::ModelProto_SentencePiece>(Arena*);
+template<> ::sentencepiece::NormalizerSpec* Arena::CreateMaybeMessage<::sentencepiece::NormalizerSpec>(Arena*);
+template<> ::sentencepiece::SelfTestData* Arena::CreateMaybeMessage<::sentencepiece::SelfTestData>(Arena*);
+template<> ::sentencepiece::SelfTestData_Sample* Arena::CreateMaybeMessage<::sentencepiece::SelfTestData_Sample>(Arena*);
+template<> ::sentencepiece::TrainerSpec* Arena::CreateMaybeMessage<::sentencepiece::TrainerSpec>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace sentencepiece {
 
@@ -104,25 +88,20 @@ enum TrainerSpec_ModelType : int {
   TrainerSpec_ModelType_CHAR = 4
 };
 bool TrainerSpec_ModelType_IsValid(int value);
-constexpr TrainerSpec_ModelType TrainerSpec_ModelType_ModelType_MIN =
-    TrainerSpec_ModelType_UNIGRAM;
-constexpr TrainerSpec_ModelType TrainerSpec_ModelType_ModelType_MAX =
-    TrainerSpec_ModelType_CHAR;
-constexpr int TrainerSpec_ModelType_ModelType_ARRAYSIZE =
-    TrainerSpec_ModelType_ModelType_MAX + 1;
+constexpr TrainerSpec_ModelType TrainerSpec_ModelType_ModelType_MIN = TrainerSpec_ModelType_UNIGRAM;
+constexpr TrainerSpec_ModelType TrainerSpec_ModelType_ModelType_MAX = TrainerSpec_ModelType_CHAR;
+constexpr int TrainerSpec_ModelType_ModelType_ARRAYSIZE = TrainerSpec_ModelType_ModelType_MAX + 1;
 
 const std::string& TrainerSpec_ModelType_Name(TrainerSpec_ModelType value);
-template <typename T>
+template<typename T>
 inline const std::string& TrainerSpec_ModelType_Name(T enum_t_value) {
-  static_assert(
-      ::std::is_same<T, TrainerSpec_ModelType>::value ||
-          ::std::is_integral<T>::value,
-      "Incorrect type passed to function TrainerSpec_ModelType_Name.");
-  return TrainerSpec_ModelType_Name(
-      static_cast<TrainerSpec_ModelType>(enum_t_value));
+  static_assert(::std::is_same<T, TrainerSpec_ModelType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function TrainerSpec_ModelType_Name.");
+  return TrainerSpec_ModelType_Name(static_cast<TrainerSpec_ModelType>(enum_t_value));
 }
-bool TrainerSpec_ModelType_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
-                                 TrainerSpec_ModelType* value);
+bool TrainerSpec_ModelType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, TrainerSpec_ModelType* value);
 enum ModelProto_SentencePiece_Type : int {
   ModelProto_SentencePiece_Type_NORMAL = 1,
   ModelProto_SentencePiece_Type_UNKNOWN = 2,
@@ -132,39 +111,31 @@ enum ModelProto_SentencePiece_Type : int {
   ModelProto_SentencePiece_Type_UNUSED = 5
 };
 bool ModelProto_SentencePiece_Type_IsValid(int value);
-constexpr ModelProto_SentencePiece_Type ModelProto_SentencePiece_Type_Type_MIN =
-    ModelProto_SentencePiece_Type_NORMAL;
-constexpr ModelProto_SentencePiece_Type ModelProto_SentencePiece_Type_Type_MAX =
-    ModelProto_SentencePiece_Type_BYTE;
-constexpr int ModelProto_SentencePiece_Type_Type_ARRAYSIZE =
-    ModelProto_SentencePiece_Type_Type_MAX + 1;
+constexpr ModelProto_SentencePiece_Type ModelProto_SentencePiece_Type_Type_MIN = ModelProto_SentencePiece_Type_NORMAL;
+constexpr ModelProto_SentencePiece_Type ModelProto_SentencePiece_Type_Type_MAX = ModelProto_SentencePiece_Type_BYTE;
+constexpr int ModelProto_SentencePiece_Type_Type_ARRAYSIZE = ModelProto_SentencePiece_Type_Type_MAX + 1;
 
-const std::string& ModelProto_SentencePiece_Type_Name(
-    ModelProto_SentencePiece_Type value);
-template <typename T>
+const std::string& ModelProto_SentencePiece_Type_Name(ModelProto_SentencePiece_Type value);
+template<typename T>
 inline const std::string& ModelProto_SentencePiece_Type_Name(T enum_t_value) {
-  static_assert(
-      ::std::is_same<T, ModelProto_SentencePiece_Type>::value ||
-          ::std::is_integral<T>::value,
-      "Incorrect type passed to function ModelProto_SentencePiece_Type_Name.");
-  return ModelProto_SentencePiece_Type_Name(
-      static_cast<ModelProto_SentencePiece_Type>(enum_t_value));
+  static_assert(::std::is_same<T, ModelProto_SentencePiece_Type>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function ModelProto_SentencePiece_Type_Name.");
+  return ModelProto_SentencePiece_Type_Name(static_cast<ModelProto_SentencePiece_Type>(enum_t_value));
 }
 bool ModelProto_SentencePiece_Type_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
-    ModelProto_SentencePiece_Type* value);
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, ModelProto_SentencePiece_Type* value);
 // ===================================================================
 
-class TrainerSpec PROTOBUF_FINAL
-    : public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.TrainerSpec)
-                                                   */
-{
+class TrainerSpec PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.TrainerSpec) */ {
  public:
   inline TrainerSpec() : TrainerSpec(nullptr) {}
   virtual ~TrainerSpec();
 
   TrainerSpec(const TrainerSpec& from);
-  TrainerSpec(TrainerSpec&& from) noexcept : TrainerSpec() {
+  TrainerSpec(TrainerSpec&& from) noexcept
+    : TrainerSpec() {
     *this = ::std::move(from);
   }
 
@@ -174,9 +145,7 @@ class TrainerSpec PROTOBUF_FINAL
   }
   inline TrainerSpec& operator=(TrainerSpec&& from) noexcept {
     if (GetArena() == from.GetArena()) {
-      if (this != &from) {
-        InternalSwap(&from);
-      }
+      if (this != &from) InternalSwap(&from);
     } else {
       CopyFrom(from);
     }
@@ -184,8 +153,7 @@ class TrainerSpec PROTOBUF_FINAL
   }
 
   inline const std::string& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<std::string>(
-        ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
+    return _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
   }
   inline std::string* mutable_unknown_fields() {
     return _internal_metadata_.mutable_unknown_fields<std::string>();
@@ -195,15 +163,16 @@ class TrainerSpec PROTOBUF_FINAL
 
   static inline const TrainerSpec* internal_default_instance() {
     return reinterpret_cast<const TrainerSpec*>(
-        &_TrainerSpec_default_instance_);
+               &_TrainerSpec_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 0;
+  static constexpr int kIndexInFileMessages =
+    0;
 
-  friend void swap(TrainerSpec& a, TrainerSpec& b) { a.Swap(&b); }
+  friend void swap(TrainerSpec& a, TrainerSpec& b) {
+    a.Swap(&b);
+  }
   inline void Swap(TrainerSpec* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
     } else {
@@ -211,9 +180,7 @@ class TrainerSpec PROTOBUF_FINAL
     }
   }
   void UnsafeArenaSwap(TrainerSpec* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
   }
@@ -227,24 +194,21 @@ class TrainerSpec PROTOBUF_FINAL
   TrainerSpec* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
     return CreateMaybeMessage<TrainerSpec>(arena);
   }
-  void CheckTypeAndMergeFrom(
-      const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) final;
+  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)
+    final;
   void CopyFrom(const TrainerSpec& from);
   void MergeFrom(const TrainerSpec& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
   size_t ByteSizeLong() const final;
-  const char* _InternalParse(
-      const char* ptr,
-      ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
   ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target,
-      ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
   void DiscardUnknownFields();
   int GetCachedSize() const final { return _cached_size_.Get(); }
 
- private:
+  private:
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const;
@@ -253,42 +217,43 @@ class TrainerSpec PROTOBUF_FINAL
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
     return "sentencepiece.TrainerSpec";
   }
-
- protected:
+  protected:
   explicit TrainerSpec(::PROTOBUF_NAMESPACE_ID::Arena* arena);
-
- private:
+  private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
 
- public:
   std::string GetTypeName() const final;
 
   // nested types ----------------------------------------------------
 
   typedef TrainerSpec_ModelType ModelType;
-  static constexpr ModelType UNIGRAM = TrainerSpec_ModelType_UNIGRAM;
-  static constexpr ModelType BPE = TrainerSpec_ModelType_BPE;
-  static constexpr ModelType WORD = TrainerSpec_ModelType_WORD;
-  static constexpr ModelType CHAR = TrainerSpec_ModelType_CHAR;
+  static constexpr ModelType UNIGRAM =
+    TrainerSpec_ModelType_UNIGRAM;
+  static constexpr ModelType BPE =
+    TrainerSpec_ModelType_BPE;
+  static constexpr ModelType WORD =
+    TrainerSpec_ModelType_WORD;
+  static constexpr ModelType CHAR =
+    TrainerSpec_ModelType_CHAR;
   static inline bool ModelType_IsValid(int value) {
     return TrainerSpec_ModelType_IsValid(value);
   }
   static constexpr ModelType ModelType_MIN =
-      TrainerSpec_ModelType_ModelType_MIN;
+    TrainerSpec_ModelType_ModelType_MIN;
   static constexpr ModelType ModelType_MAX =
-      TrainerSpec_ModelType_ModelType_MAX;
+    TrainerSpec_ModelType_ModelType_MAX;
   static constexpr int ModelType_ARRAYSIZE =
-      TrainerSpec_ModelType_ModelType_ARRAYSIZE;
-  template <typename T>
+    TrainerSpec_ModelType_ModelType_ARRAYSIZE;
+  template<typename T>
   static inline const std::string& ModelType_Name(T enum_t_value) {
-    static_assert(
-        ::std::is_same<T, ModelType>::value || ::std::is_integral<T>::value,
-        "Incorrect type passed to function ModelType_Name.");
+    static_assert(::std::is_same<T, ModelType>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function ModelType_Name.");
     return TrainerSpec_ModelType_Name(enum_t_value);
   }
-  static inline bool ModelType_Parse(
-      ::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+  static inline bool ModelType_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
       ModelType* value) {
     return TrainerSpec_ModelType_Parse(name, value);
   }
@@ -309,6 +274,7 @@ class TrainerSpec PROTOBUF_FINAL
     kEosPieceFieldNumber = 47,
     kPadPieceFieldNumber = 48,
     kPretokenizationDelimiterFieldNumber = 53,
+    kSeedSentencepiecesFileFieldNumber = 54,
     kSelfTestSampleSizeFieldNumber = 6,
     kMiningSentenceSizeFieldNumber = 12,
     kInputSentenceSizeFieldNumber = 11,
@@ -344,11 +310,9 @@ class TrainerSpec PROTOBUF_FINAL
   };
   // repeated string input = 1;
   int input_size() const;
-
- private:
+  private:
   int _internal_input_size() const;
-
- public:
+  public:
   void clear_input();
   const std::string& input(int index) const;
   std::string* mutable_input(int index);
@@ -363,19 +327,16 @@ class TrainerSpec PROTOBUF_FINAL
   void add_input(const char* value, size_t size);
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& input() const;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_input();
-
- private:
+  private:
   const std::string& _internal_input(int index) const;
   std::string* _internal_add_input();
+  public:
 
- public:
   // repeated string accept_language = 5;
   int accept_language_size() const;
-
- private:
+  private:
   int _internal_accept_language_size() const;
-
- public:
+  public:
   void clear_accept_language();
   const std::string& accept_language(int index) const;
   std::string* mutable_accept_language(int index);
@@ -388,23 +349,18 @@ class TrainerSpec PROTOBUF_FINAL
   void add_accept_language(std::string&& value);
   void add_accept_language(const char* value);
   void add_accept_language(const char* value, size_t size);
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
-  accept_language() const;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
-  mutable_accept_language();
-
- private:
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& accept_language() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_accept_language();
+  private:
   const std::string& _internal_accept_language(int index) const;
   std::string* _internal_add_accept_language();
+  public:
 
- public:
   // repeated string control_symbols = 30;
   int control_symbols_size() const;
-
- private:
+  private:
   int _internal_control_symbols_size() const;
-
- public:
+  public:
   void clear_control_symbols();
   const std::string& control_symbols(int index) const;
   std::string* mutable_control_symbols(int index);
@@ -417,23 +373,18 @@ class TrainerSpec PROTOBUF_FINAL
   void add_control_symbols(std::string&& value);
   void add_control_symbols(const char* value);
   void add_control_symbols(const char* value, size_t size);
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
-  control_symbols() const;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
-  mutable_control_symbols();
-
- private:
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& control_symbols() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_control_symbols();
+  private:
   const std::string& _internal_control_symbols(int index) const;
   std::string* _internal_add_control_symbols();
+  public:
 
- public:
   // repeated string user_defined_symbols = 31;
   int user_defined_symbols_size() const;
-
- private:
+  private:
   int _internal_user_defined_symbols_size() const;
-
- public:
+  public:
   void clear_user_defined_symbols();
   const std::string& user_defined_symbols(int index) const;
   std::string* mutable_user_defined_symbols(int index);
@@ -446,23 +397,18 @@ class TrainerSpec PROTOBUF_FINAL
   void add_user_defined_symbols(std::string&& value);
   void add_user_defined_symbols(const char* value);
   void add_user_defined_symbols(const char* value, size_t size);
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
-  user_defined_symbols() const;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
-  mutable_user_defined_symbols();
-
- private:
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& user_defined_symbols() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_user_defined_symbols();
+  private:
   const std::string& _internal_user_defined_symbols(int index) const;
   std::string* _internal_add_user_defined_symbols();
+  public:
 
- public:
   // optional string model_prefix = 2;
   bool has_model_prefix() const;
-
- private:
+  private:
   bool _internal_has_model_prefix() const;
-
- public:
+  public:
   void clear_model_prefix();
   const std::string& model_prefix() const;
   void set_model_prefix(const std::string& value);
@@ -472,20 +418,17 @@ class TrainerSpec PROTOBUF_FINAL
   std::string* mutable_model_prefix();
   std::string* release_model_prefix();
   void set_allocated_model_prefix(std::string* model_prefix);
-
- private:
+  private:
   const std::string& _internal_model_prefix() const;
   void _internal_set_model_prefix(const std::string& value);
   std::string* _internal_mutable_model_prefix();
+  public:
 
- public:
   // optional string input_format = 7;
   bool has_input_format() const;
-
- private:
+  private:
   bool _internal_has_input_format() const;
-
- public:
+  public:
   void clear_input_format();
   const std::string& input_format() const;
   void set_input_format(const std::string& value);
@@ -495,20 +438,17 @@ class TrainerSpec PROTOBUF_FINAL
   std::string* mutable_input_format();
   std::string* release_input_format();
   void set_allocated_input_format(std::string* input_format);
-
- private:
+  private:
   const std::string& _internal_input_format() const;
   void _internal_set_input_format(const std::string& value);
   std::string* _internal_mutable_input_format();
+  public:
 
- public:
   // optional string required_chars = 36;
   bool has_required_chars() const;
-
- private:
+  private:
   bool _internal_has_required_chars() const;
-
- public:
+  public:
   void clear_required_chars();
   const std::string& required_chars() const;
   void set_required_chars(const std::string& value);
@@ -518,20 +458,17 @@ class TrainerSpec PROTOBUF_FINAL
   std::string* mutable_required_chars();
   std::string* release_required_chars();
   void set_allocated_required_chars(std::string* required_chars);
-
- private:
+  private:
   const std::string& _internal_required_chars() const;
   void _internal_set_required_chars(const std::string& value);
   std::string* _internal_mutable_required_chars();
+  public:
 
- public:
   // optional string unk_surface = 44 [default = " \342\201\207 "];
   bool has_unk_surface() const;
-
- private:
+  private:
   bool _internal_has_unk_surface() const;
-
- public:
+  public:
   void clear_unk_surface();
   const std::string& unk_surface() const;
   void set_unk_surface(const std::string& value);
@@ -541,20 +478,17 @@ class TrainerSpec PROTOBUF_FINAL
   std::string* mutable_unk_surface();
   std::string* release_unk_surface();
   void set_allocated_unk_surface(std::string* unk_surface);
-
- private:
+  private:
   const std::string& _internal_unk_surface() const;
   void _internal_set_unk_surface(const std::string& value);
   std::string* _internal_mutable_unk_surface();
+  public:
 
- public:
   // optional string unk_piece = 45 [default = "<unk>"];
   bool has_unk_piece() const;
-
- private:
+  private:
   bool _internal_has_unk_piece() const;
-
- public:
+  public:
   void clear_unk_piece();
   const std::string& unk_piece() const;
   void set_unk_piece(const std::string& value);
@@ -564,20 +498,17 @@ class TrainerSpec PROTOBUF_FINAL
   std::string* mutable_unk_piece();
   std::string* release_unk_piece();
   void set_allocated_unk_piece(std::string* unk_piece);
-
- private:
+  private:
   const std::string& _internal_unk_piece() const;
   void _internal_set_unk_piece(const std::string& value);
   std::string* _internal_mutable_unk_piece();
+  public:
 
- public:
   // optional string bos_piece = 46 [default = "<s>"];
   bool has_bos_piece() const;
-
- private:
+  private:
   bool _internal_has_bos_piece() const;
-
- public:
+  public:
   void clear_bos_piece();
   const std::string& bos_piece() const;
   void set_bos_piece(const std::string& value);
@@ -587,20 +518,17 @@ class TrainerSpec PROTOBUF_FINAL
   std::string* mutable_bos_piece();
   std::string* release_bos_piece();
   void set_allocated_bos_piece(std::string* bos_piece);
-
- private:
+  private:
   const std::string& _internal_bos_piece() const;
   void _internal_set_bos_piece(const std::string& value);
   std::string* _internal_mutable_bos_piece();
+  public:
 
- public:
   // optional string eos_piece = 47 [default = "</s>"];
   bool has_eos_piece() const;
-
- private:
+  private:
   bool _internal_has_eos_piece() const;
-
- public:
+  public:
   void clear_eos_piece();
   const std::string& eos_piece() const;
   void set_eos_piece(const std::string& value);
@@ -610,20 +538,17 @@ class TrainerSpec PROTOBUF_FINAL
   std::string* mutable_eos_piece();
   std::string* release_eos_piece();
   void set_allocated_eos_piece(std::string* eos_piece);
-
- private:
+  private:
   const std::string& _internal_eos_piece() const;
   void _internal_set_eos_piece(const std::string& value);
   std::string* _internal_mutable_eos_piece();
+  public:
 
- public:
   // optional string pad_piece = 48 [default = "<pad>"];
   bool has_pad_piece() const;
-
- private:
+  private:
   bool _internal_has_pad_piece() const;
-
- public:
+  public:
   void clear_pad_piece();
   const std::string& pad_piece() const;
   void set_pad_piece(const std::string& value);
@@ -633,20 +558,17 @@ class TrainerSpec PROTOBUF_FINAL
   std::string* mutable_pad_piece();
   std::string* release_pad_piece();
   void set_allocated_pad_piece(std::string* pad_piece);
-
- private:
+  private:
   const std::string& _internal_pad_piece() const;
   void _internal_set_pad_piece(const std::string& value);
   std::string* _internal_mutable_pad_piece();
+  public:
 
- public:
   // optional string pretokenization_delimiter = 53 [default = ""];
   bool has_pretokenization_delimiter() const;
-
- private:
+  private:
   bool _internal_has_pretokenization_delimiter() const;
-
- public:
+  public:
   void clear_pretokenization_delimiter();
   const std::string& pretokenization_delimiter() const;
   void set_pretokenization_delimiter(const std::string& value);
@@ -655,540 +577,449 @@ class TrainerSpec PROTOBUF_FINAL
   void set_pretokenization_delimiter(const char* value, size_t size);
   std::string* mutable_pretokenization_delimiter();
   std::string* release_pretokenization_delimiter();
-  void set_allocated_pretokenization_delimiter(
-      std::string* pretokenization_delimiter);
-
- private:
+  void set_allocated_pretokenization_delimiter(std::string* pretokenization_delimiter);
+  private:
   const std::string& _internal_pretokenization_delimiter() const;
   void _internal_set_pretokenization_delimiter(const std::string& value);
   std::string* _internal_mutable_pretokenization_delimiter();
+  public:
 
- public:
+  // optional string seed_sentencepieces_file = 54 [default = ""];
+  bool has_seed_sentencepieces_file() const;
+  private:
+  bool _internal_has_seed_sentencepieces_file() const;
+  public:
+  void clear_seed_sentencepieces_file();
+  const std::string& seed_sentencepieces_file() const;
+  void set_seed_sentencepieces_file(const std::string& value);
+  void set_seed_sentencepieces_file(std::string&& value);
+  void set_seed_sentencepieces_file(const char* value);
+  void set_seed_sentencepieces_file(const char* value, size_t size);
+  std::string* mutable_seed_sentencepieces_file();
+  std::string* release_seed_sentencepieces_file();
+  void set_allocated_seed_sentencepieces_file(std::string* seed_sentencepieces_file);
+  private:
+  const std::string& _internal_seed_sentencepieces_file() const;
+  void _internal_set_seed_sentencepieces_file(const std::string& value);
+  std::string* _internal_mutable_seed_sentencepieces_file();
+  public:
+
   // optional int32 self_test_sample_size = 6 [default = 0];
   bool has_self_test_sample_size() const;
-
- private:
+  private:
   bool _internal_has_self_test_sample_size() const;
-
- public:
+  public:
   void clear_self_test_sample_size();
   ::PROTOBUF_NAMESPACE_ID::int32 self_test_sample_size() const;
   void set_self_test_sample_size(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_self_test_sample_size() const;
-  void _internal_set_self_test_sample_size(
-      ::PROTOBUF_NAMESPACE_ID::int32 value);
+  void _internal_set_self_test_sample_size(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional int32 mining_sentence_size = 12 [deprecated = true];
   PROTOBUF_DEPRECATED bool has_mining_sentence_size() const;
-
- private:
+  private:
   bool _internal_has_mining_sentence_size() const;
-
- public:
+  public:
   PROTOBUF_DEPRECATED void clear_mining_sentence_size();
-  PROTOBUF_DEPRECATED ::PROTOBUF_NAMESPACE_ID::int32 mining_sentence_size()
-      const;
-  PROTOBUF_DEPRECATED void set_mining_sentence_size(
-      ::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  PROTOBUF_DEPRECATED ::PROTOBUF_NAMESPACE_ID::int32 mining_sentence_size() const;
+  PROTOBUF_DEPRECATED void set_mining_sentence_size(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_mining_sentence_size() const;
   void _internal_set_mining_sentence_size(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional uint64 input_sentence_size = 11 [default = 0];
   bool has_input_sentence_size() const;
-
- private:
+  private:
   bool _internal_has_input_sentence_size() const;
-
- public:
+  public:
   void clear_input_sentence_size();
   ::PROTOBUF_NAMESPACE_ID::uint64 input_sentence_size() const;
   void set_input_sentence_size(::PROTOBUF_NAMESPACE_ID::uint64 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::uint64 _internal_input_sentence_size() const;
   void _internal_set_input_sentence_size(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  public:
 
- public:
   // optional int32 training_sentence_size = 13 [deprecated = true];
   PROTOBUF_DEPRECATED bool has_training_sentence_size() const;
-
- private:
+  private:
   bool _internal_has_training_sentence_size() const;
-
- public:
+  public:
   PROTOBUF_DEPRECATED void clear_training_sentence_size();
-  PROTOBUF_DEPRECATED ::PROTOBUF_NAMESPACE_ID::int32 training_sentence_size()
-      const;
-  PROTOBUF_DEPRECATED void set_training_sentence_size(
-      ::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  PROTOBUF_DEPRECATED ::PROTOBUF_NAMESPACE_ID::int32 training_sentence_size() const;
+  PROTOBUF_DEPRECATED void set_training_sentence_size(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_training_sentence_size() const;
-  void _internal_set_training_sentence_size(
-      ::PROTOBUF_NAMESPACE_ID::int32 value);
+  void _internal_set_training_sentence_size(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional bool enable_differential_privacy = 50 [default = false];
   bool has_enable_differential_privacy() const;
-
- private:
+  private:
   bool _internal_has_enable_differential_privacy() const;
-
- public:
+  public:
   void clear_enable_differential_privacy();
   bool enable_differential_privacy() const;
   void set_enable_differential_privacy(bool value);
-
- private:
+  private:
   bool _internal_enable_differential_privacy() const;
   void _internal_set_enable_differential_privacy(bool value);
+  public:
 
- public:
   // optional bool treat_whitespace_as_suffix = 24 [default = false];
   bool has_treat_whitespace_as_suffix() const;
-
- private:
+  private:
   bool _internal_has_treat_whitespace_as_suffix() const;
-
- public:
+  public:
   void clear_treat_whitespace_as_suffix();
   bool treat_whitespace_as_suffix() const;
   void set_treat_whitespace_as_suffix(bool value);
-
- private:
+  private:
   bool _internal_treat_whitespace_as_suffix() const;
   void _internal_set_treat_whitespace_as_suffix(bool value);
+  public:
 
- public:
   // optional bool allow_whitespace_only_pieces = 26 [default = false];
   bool has_allow_whitespace_only_pieces() const;
-
- private:
+  private:
   bool _internal_has_allow_whitespace_only_pieces() const;
-
- public:
+  public:
   void clear_allow_whitespace_only_pieces();
   bool allow_whitespace_only_pieces() const;
   void set_allow_whitespace_only_pieces(bool value);
-
- private:
+  private:
   bool _internal_allow_whitespace_only_pieces() const;
   void _internal_set_allow_whitespace_only_pieces(bool value);
+  public:
 
- public:
   // optional bool split_digits = 25 [default = false];
   bool has_split_digits() const;
-
- private:
+  private:
   bool _internal_has_split_digits() const;
-
- public:
+  public:
   void clear_split_digits();
   bool split_digits() const;
   void set_split_digits(bool value);
-
- private:
+  private:
   bool _internal_split_digits() const;
   void _internal_set_split_digits(bool value);
+  public:
 
- public:
   // optional bool byte_fallback = 35 [default = false];
   bool has_byte_fallback() const;
-
- private:
+  private:
   bool _internal_has_byte_fallback() const;
-
- public:
+  public:
   void clear_byte_fallback();
   bool byte_fallback() const;
   void set_byte_fallback(bool value);
-
- private:
+  private:
   bool _internal_byte_fallback() const;
   void _internal_set_byte_fallback(bool value);
+  public:
 
- public:
   // optional bool use_all_vocab = 34 [default = false];
   bool has_use_all_vocab() const;
-
- private:
+  private:
   bool _internal_has_use_all_vocab() const;
-
- public:
+  public:
   void clear_use_all_vocab();
   bool use_all_vocab() const;
   void set_use_all_vocab(bool value);
-
- private:
+  private:
   bool _internal_use_all_vocab() const;
   void _internal_set_use_all_vocab(bool value);
+  public:
 
- public:
   // optional bool train_extremely_large_corpus = 49 [default = false];
   bool has_train_extremely_large_corpus() const;
-
- private:
+  private:
   bool _internal_has_train_extremely_large_corpus() const;
-
- public:
+  public:
   void clear_train_extremely_large_corpus();
   bool train_extremely_large_corpus() const;
   void set_train_extremely_large_corpus(bool value);
-
- private:
+  private:
   bool _internal_train_extremely_large_corpus() const;
   void _internal_set_train_extremely_large_corpus(bool value);
+  public:
 
- public:
   // optional int32 unk_id = 40 [default = 0];
   bool has_unk_id() const;
-
- private:
+  private:
   bool _internal_has_unk_id() const;
-
- public:
+  public:
   void clear_unk_id();
   ::PROTOBUF_NAMESPACE_ID::int32 unk_id() const;
   void set_unk_id(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_unk_id() const;
   void _internal_set_unk_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional float differential_privacy_noise_level = 51 [default = 0];
   bool has_differential_privacy_noise_level() const;
-
- private:
+  private:
   bool _internal_has_differential_privacy_noise_level() const;
-
- public:
+  public:
   void clear_differential_privacy_noise_level();
   float differential_privacy_noise_level() const;
   void set_differential_privacy_noise_level(float value);
-
- private:
+  private:
   float _internal_differential_privacy_noise_level() const;
   void _internal_set_differential_privacy_noise_level(float value);
+  public:
 
- public:
   // optional uint64 differential_privacy_clipping_threshold = 52 [default = 0];
   bool has_differential_privacy_clipping_threshold() const;
-
- private:
+  private:
   bool _internal_has_differential_privacy_clipping_threshold() const;
-
- public:
+  public:
   void clear_differential_privacy_clipping_threshold();
-  ::PROTOBUF_NAMESPACE_ID::uint64 differential_privacy_clipping_threshold()
-      const;
-  void set_differential_privacy_clipping_threshold(
-      ::PROTOBUF_NAMESPACE_ID::uint64 value);
+  ::PROTOBUF_NAMESPACE_ID::uint64 differential_privacy_clipping_threshold() const;
+  void set_differential_privacy_clipping_threshold(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_differential_privacy_clipping_threshold() const;
+  void _internal_set_differential_privacy_clipping_threshold(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  public:
 
- private:
-  ::PROTOBUF_NAMESPACE_ID::uint64
-  _internal_differential_privacy_clipping_threshold() const;
-  void _internal_set_differential_privacy_clipping_threshold(
-      ::PROTOBUF_NAMESPACE_ID::uint64 value);
-
- public:
-  // optional .sentencepiece.TrainerSpec.ModelType model_type = 3 [default =
-  // UNIGRAM];
+  // optional .sentencepiece.TrainerSpec.ModelType model_type = 3 [default = UNIGRAM];
   bool has_model_type() const;
-
- private:
+  private:
   bool _internal_has_model_type() const;
-
- public:
+  public:
   void clear_model_type();
   ::sentencepiece::TrainerSpec_ModelType model_type() const;
   void set_model_type(::sentencepiece::TrainerSpec_ModelType value);
-
- private:
+  private:
   ::sentencepiece::TrainerSpec_ModelType _internal_model_type() const;
   void _internal_set_model_type(::sentencepiece::TrainerSpec_ModelType value);
+  public:
 
- public:
   // optional int32 vocab_size = 4 [default = 8000];
   bool has_vocab_size() const;
-
- private:
+  private:
   bool _internal_has_vocab_size() const;
-
- public:
+  public:
   void clear_vocab_size();
   ::PROTOBUF_NAMESPACE_ID::int32 vocab_size() const;
   void set_vocab_size(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_vocab_size() const;
   void _internal_set_vocab_size(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional float character_coverage = 10 [default = 0.9995];
   bool has_character_coverage() const;
-
- private:
+  private:
   bool _internal_has_character_coverage() const;
-
- public:
+  public:
   void clear_character_coverage();
   float character_coverage() const;
   void set_character_coverage(float value);
-
- private:
+  private:
   float _internal_character_coverage() const;
   void _internal_set_character_coverage(float value);
+  public:
 
- public:
   // optional int32 seed_sentencepiece_size = 14 [default = 1000000];
   bool has_seed_sentencepiece_size() const;
-
- private:
+  private:
   bool _internal_has_seed_sentencepiece_size() const;
-
- public:
+  public:
   void clear_seed_sentencepiece_size();
   ::PROTOBUF_NAMESPACE_ID::int32 seed_sentencepiece_size() const;
   void set_seed_sentencepiece_size(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_seed_sentencepiece_size() const;
-  void _internal_set_seed_sentencepiece_size(
-      ::PROTOBUF_NAMESPACE_ID::int32 value);
+  void _internal_set_seed_sentencepiece_size(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional float shrinking_factor = 15 [default = 0.75];
   bool has_shrinking_factor() const;
-
- private:
+  private:
   bool _internal_has_shrinking_factor() const;
-
- public:
+  public:
   void clear_shrinking_factor();
   float shrinking_factor() const;
   void set_shrinking_factor(float value);
-
- private:
+  private:
   float _internal_shrinking_factor() const;
   void _internal_set_shrinking_factor(float value);
+  public:
 
- public:
   // optional int32 num_threads = 16 [default = 16];
   bool has_num_threads() const;
-
- private:
+  private:
   bool _internal_has_num_threads() const;
-
- public:
+  public:
   void clear_num_threads();
   ::PROTOBUF_NAMESPACE_ID::int32 num_threads() const;
   void set_num_threads(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_num_threads() const;
   void _internal_set_num_threads(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional int32 num_sub_iterations = 17 [default = 2];
   bool has_num_sub_iterations() const;
-
- private:
+  private:
   bool _internal_has_num_sub_iterations() const;
-
- public:
+  public:
   void clear_num_sub_iterations();
   ::PROTOBUF_NAMESPACE_ID::int32 num_sub_iterations() const;
   void set_num_sub_iterations(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_num_sub_iterations() const;
   void _internal_set_num_sub_iterations(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional int32 max_sentence_length = 18 [default = 4192];
   bool has_max_sentence_length() const;
-
- private:
+  private:
   bool _internal_has_max_sentence_length() const;
-
- public:
+  public:
   void clear_max_sentence_length();
   ::PROTOBUF_NAMESPACE_ID::int32 max_sentence_length() const;
   void set_max_sentence_length(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_max_sentence_length() const;
   void _internal_set_max_sentence_length(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional int32 max_sentencepiece_length = 20 [default = 16];
   bool has_max_sentencepiece_length() const;
-
- private:
+  private:
   bool _internal_has_max_sentencepiece_length() const;
-
- public:
+  public:
   void clear_max_sentencepiece_length();
   ::PROTOBUF_NAMESPACE_ID::int32 max_sentencepiece_length() const;
   void set_max_sentencepiece_length(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_max_sentencepiece_length() const;
-  void _internal_set_max_sentencepiece_length(
-      ::PROTOBUF_NAMESPACE_ID::int32 value);
+  void _internal_set_max_sentencepiece_length(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional bool shuffle_input_sentence = 19 [default = true];
   bool has_shuffle_input_sentence() const;
-
- private:
+  private:
   bool _internal_has_shuffle_input_sentence() const;
-
- public:
+  public:
   void clear_shuffle_input_sentence();
   bool shuffle_input_sentence() const;
   void set_shuffle_input_sentence(bool value);
-
- private:
+  private:
   bool _internal_shuffle_input_sentence() const;
   void _internal_set_shuffle_input_sentence(bool value);
+  public:
 
- public:
   // optional bool split_by_unicode_script = 21 [default = true];
   bool has_split_by_unicode_script() const;
-
- private:
+  private:
   bool _internal_has_split_by_unicode_script() const;
-
- public:
+  public:
   void clear_split_by_unicode_script();
   bool split_by_unicode_script() const;
   void set_split_by_unicode_script(bool value);
-
- private:
+  private:
   bool _internal_split_by_unicode_script() const;
   void _internal_set_split_by_unicode_script(bool value);
+  public:
 
- public:
   // optional bool split_by_number = 23 [default = true];
   bool has_split_by_number() const;
-
- private:
+  private:
   bool _internal_has_split_by_number() const;
-
- public:
+  public:
   void clear_split_by_number();
   bool split_by_number() const;
   void set_split_by_number(bool value);
-
- private:
+  private:
   bool _internal_split_by_number() const;
   void _internal_set_split_by_number(bool value);
+  public:
 
- public:
   // optional bool split_by_whitespace = 22 [default = true];
   bool has_split_by_whitespace() const;
-
- private:
+  private:
   bool _internal_has_split_by_whitespace() const;
-
- public:
+  public:
   void clear_split_by_whitespace();
   bool split_by_whitespace() const;
   void set_split_by_whitespace(bool value);
-
- private:
+  private:
   bool _internal_split_by_whitespace() const;
   void _internal_set_split_by_whitespace(bool value);
+  public:
 
- public:
   // optional bool vocabulary_output_piece_score = 32 [default = true];
   bool has_vocabulary_output_piece_score() const;
-
- private:
+  private:
   bool _internal_has_vocabulary_output_piece_score() const;
-
- public:
+  public:
   void clear_vocabulary_output_piece_score();
   bool vocabulary_output_piece_score() const;
   void set_vocabulary_output_piece_score(bool value);
-
- private:
+  private:
   bool _internal_vocabulary_output_piece_score() const;
   void _internal_set_vocabulary_output_piece_score(bool value);
+  public:
 
- public:
   // optional bool hard_vocab_limit = 33 [default = true];
   bool has_hard_vocab_limit() const;
-
- private:
+  private:
   bool _internal_has_hard_vocab_limit() const;
-
- public:
+  public:
   void clear_hard_vocab_limit();
   bool hard_vocab_limit() const;
   void set_hard_vocab_limit(bool value);
-
- private:
+  private:
   bool _internal_hard_vocab_limit() const;
   void _internal_set_hard_vocab_limit(bool value);
+  public:
 
- public:
   // optional int32 bos_id = 41 [default = 1];
   bool has_bos_id() const;
-
- private:
+  private:
   bool _internal_has_bos_id() const;
-
- public:
+  public:
   void clear_bos_id();
   ::PROTOBUF_NAMESPACE_ID::int32 bos_id() const;
   void set_bos_id(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_bos_id() const;
   void _internal_set_bos_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional int32 eos_id = 42 [default = 2];
   bool has_eos_id() const;
-
- private:
+  private:
   bool _internal_has_eos_id() const;
-
- public:
+  public:
   void clear_eos_id();
   ::PROTOBUF_NAMESPACE_ID::int32 eos_id() const;
   void set_eos_id(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_eos_id() const;
   void _internal_set_eos_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   // optional int32 pad_id = 43 [default = -1];
   bool has_pad_id() const;
-
- private:
+  private:
   bool _internal_has_pad_id() const;
-
- public:
+  public:
   void clear_pad_id();
   ::PROTOBUF_NAMESPACE_ID::int32 pad_id() const;
   void set_pad_id(::PROTOBUF_NAMESPACE_ID::int32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_pad_id() const;
   void _internal_set_pad_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
 
- public:
   GOOGLE_PROTOBUF_EXTENSION_ACCESSORS(TrainerSpec)
   // @@protoc_insertion_point(class_scope:sentencepiece.TrainerSpec)
  private:
@@ -1196,8 +1027,7 @@ class TrainerSpec PROTOBUF_FINAL
 
   ::PROTOBUF_NAMESPACE_ID::internal::ExtensionSet _extensions_;
 
-  template <typename T>
-  friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<2> _has_bits_;
@@ -1209,22 +1039,18 @@ class TrainerSpec PROTOBUF_FINAL
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr model_prefix_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr input_format_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr required_chars_;
-  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString
-      _i_give_permission_to_break_this_code_default_unk_surface_;
+  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString _i_give_permission_to_break_this_code_default_unk_surface_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr unk_surface_;
-  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString
-      _i_give_permission_to_break_this_code_default_unk_piece_;
+  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString _i_give_permission_to_break_this_code_default_unk_piece_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr unk_piece_;
-  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString
-      _i_give_permission_to_break_this_code_default_bos_piece_;
+  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString _i_give_permission_to_break_this_code_default_bos_piece_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr bos_piece_;
-  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString
-      _i_give_permission_to_break_this_code_default_eos_piece_;
+  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString _i_give_permission_to_break_this_code_default_eos_piece_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr eos_piece_;
-  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString
-      _i_give_permission_to_break_this_code_default_pad_piece_;
+  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString _i_give_permission_to_break_this_code_default_pad_piece_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr pad_piece_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr pretokenization_delimiter_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr seed_sentencepieces_file_;
   ::PROTOBUF_NAMESPACE_ID::int32 self_test_sample_size_;
   ::PROTOBUF_NAMESPACE_ID::int32 mining_sentence_size_;
   ::PROTOBUF_NAMESPACE_ID::uint64 input_sentence_size_;
@@ -1261,16 +1087,15 @@ class TrainerSpec PROTOBUF_FINAL
 };
 // -------------------------------------------------------------------
 
-class NormalizerSpec PROTOBUF_FINAL
-    : public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.NormalizerSpec)
-                                                   */
-{
+class NormalizerSpec PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.NormalizerSpec) */ {
  public:
   inline NormalizerSpec() : NormalizerSpec(nullptr) {}
   virtual ~NormalizerSpec();
 
   NormalizerSpec(const NormalizerSpec& from);
-  NormalizerSpec(NormalizerSpec&& from) noexcept : NormalizerSpec() {
+  NormalizerSpec(NormalizerSpec&& from) noexcept
+    : NormalizerSpec() {
     *this = ::std::move(from);
   }
 
@@ -1280,9 +1105,7 @@ class NormalizerSpec PROTOBUF_FINAL
   }
   inline NormalizerSpec& operator=(NormalizerSpec&& from) noexcept {
     if (GetArena() == from.GetArena()) {
-      if (this != &from) {
-        InternalSwap(&from);
-      }
+      if (this != &from) InternalSwap(&from);
     } else {
       CopyFrom(from);
     }
@@ -1290,8 +1113,7 @@ class NormalizerSpec PROTOBUF_FINAL
   }
 
   inline const std::string& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<std::string>(
-        ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
+    return _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
   }
   inline std::string* mutable_unknown_fields() {
     return _internal_metadata_.mutable_unknown_fields<std::string>();
@@ -1301,15 +1123,16 @@ class NormalizerSpec PROTOBUF_FINAL
 
   static inline const NormalizerSpec* internal_default_instance() {
     return reinterpret_cast<const NormalizerSpec*>(
-        &_NormalizerSpec_default_instance_);
+               &_NormalizerSpec_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 1;
+  static constexpr int kIndexInFileMessages =
+    1;
 
-  friend void swap(NormalizerSpec& a, NormalizerSpec& b) { a.Swap(&b); }
+  friend void swap(NormalizerSpec& a, NormalizerSpec& b) {
+    a.Swap(&b);
+  }
   inline void Swap(NormalizerSpec* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
     } else {
@@ -1317,9 +1140,7 @@ class NormalizerSpec PROTOBUF_FINAL
     }
   }
   void UnsafeArenaSwap(NormalizerSpec* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
   }
@@ -1333,24 +1154,21 @@ class NormalizerSpec PROTOBUF_FINAL
   NormalizerSpec* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
     return CreateMaybeMessage<NormalizerSpec>(arena);
   }
-  void CheckTypeAndMergeFrom(
-      const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) final;
+  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)
+    final;
   void CopyFrom(const NormalizerSpec& from);
   void MergeFrom(const NormalizerSpec& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
   size_t ByteSizeLong() const final;
-  const char* _InternalParse(
-      const char* ptr,
-      ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
   ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target,
-      ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
   void DiscardUnknownFields();
   int GetCachedSize() const final { return _cached_size_.Get(); }
 
- private:
+  private:
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const;
@@ -1359,15 +1177,13 @@ class NormalizerSpec PROTOBUF_FINAL
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
     return "sentencepiece.NormalizerSpec";
   }
-
- protected:
+  protected:
   explicit NormalizerSpec(::PROTOBUF_NAMESPACE_ID::Arena* arena);
-
- private:
+  private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
 
- public:
   std::string GetTypeName() const final;
 
   // nested types ----------------------------------------------------
@@ -1384,11 +1200,9 @@ class NormalizerSpec PROTOBUF_FINAL
   };
   // optional string name = 1;
   bool has_name() const;
-
- private:
+  private:
   bool _internal_has_name() const;
-
- public:
+  public:
   void clear_name();
   const std::string& name() const;
   void set_name(const std::string& value);
@@ -1398,20 +1212,17 @@ class NormalizerSpec PROTOBUF_FINAL
   std::string* mutable_name();
   std::string* release_name();
   void set_allocated_name(std::string* name);
-
- private:
+  private:
   const std::string& _internal_name() const;
   void _internal_set_name(const std::string& value);
   std::string* _internal_mutable_name();
+  public:
 
- public:
   // optional bytes precompiled_charsmap = 2;
   bool has_precompiled_charsmap() const;
-
- private:
+  private:
   bool _internal_has_precompiled_charsmap() const;
-
- public:
+  public:
   void clear_precompiled_charsmap();
   const std::string& precompiled_charsmap() const;
   void set_precompiled_charsmap(const std::string& value);
@@ -1421,20 +1232,17 @@ class NormalizerSpec PROTOBUF_FINAL
   std::string* mutable_precompiled_charsmap();
   std::string* release_precompiled_charsmap();
   void set_allocated_precompiled_charsmap(std::string* precompiled_charsmap);
-
- private:
+  private:
   const std::string& _internal_precompiled_charsmap() const;
   void _internal_set_precompiled_charsmap(const std::string& value);
   std::string* _internal_mutable_precompiled_charsmap();
+  public:
 
- public:
   // optional string normalization_rule_tsv = 6;
   bool has_normalization_rule_tsv() const;
-
- private:
+  private:
   bool _internal_has_normalization_rule_tsv() const;
-
- public:
+  public:
   void clear_normalization_rule_tsv();
   const std::string& normalization_rule_tsv() const;
   void set_normalization_rule_tsv(const std::string& value);
@@ -1443,63 +1251,52 @@ class NormalizerSpec PROTOBUF_FINAL
   void set_normalization_rule_tsv(const char* value, size_t size);
   std::string* mutable_normalization_rule_tsv();
   std::string* release_normalization_rule_tsv();
-  void set_allocated_normalization_rule_tsv(
-      std::string* normalization_rule_tsv);
-
- private:
+  void set_allocated_normalization_rule_tsv(std::string* normalization_rule_tsv);
+  private:
   const std::string& _internal_normalization_rule_tsv() const;
   void _internal_set_normalization_rule_tsv(const std::string& value);
   std::string* _internal_mutable_normalization_rule_tsv();
+  public:
 
- public:
   // optional bool add_dummy_prefix = 3 [default = true];
   bool has_add_dummy_prefix() const;
-
- private:
+  private:
   bool _internal_has_add_dummy_prefix() const;
-
- public:
+  public:
   void clear_add_dummy_prefix();
   bool add_dummy_prefix() const;
   void set_add_dummy_prefix(bool value);
-
- private:
+  private:
   bool _internal_add_dummy_prefix() const;
   void _internal_set_add_dummy_prefix(bool value);
+  public:
 
- public:
   // optional bool remove_extra_whitespaces = 4 [default = true];
   bool has_remove_extra_whitespaces() const;
-
- private:
+  private:
   bool _internal_has_remove_extra_whitespaces() const;
-
- public:
+  public:
   void clear_remove_extra_whitespaces();
   bool remove_extra_whitespaces() const;
   void set_remove_extra_whitespaces(bool value);
-
- private:
+  private:
   bool _internal_remove_extra_whitespaces() const;
   void _internal_set_remove_extra_whitespaces(bool value);
+  public:
 
- public:
   // optional bool escape_whitespaces = 5 [default = true];
   bool has_escape_whitespaces() const;
-
- private:
+  private:
   bool _internal_has_escape_whitespaces() const;
-
- public:
+  public:
   void clear_escape_whitespaces();
   bool escape_whitespaces() const;
   void set_escape_whitespaces(bool value);
-
- private:
+  private:
   bool _internal_escape_whitespaces() const;
   void _internal_set_escape_whitespaces(bool value);
+  public:
 
- public:
   GOOGLE_PROTOBUF_EXTENSION_ACCESSORS(NormalizerSpec)
   // @@protoc_insertion_point(class_scope:sentencepiece.NormalizerSpec)
  private:
@@ -1507,8 +1304,7 @@ class NormalizerSpec PROTOBUF_FINAL
 
   ::PROTOBUF_NAMESPACE_ID::internal::ExtensionSet _extensions_;
 
-  template <typename T>
-  friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
@@ -1523,17 +1319,15 @@ class NormalizerSpec PROTOBUF_FINAL
 };
 // -------------------------------------------------------------------
 
-class SelfTestData_Sample PROTOBUF_FINAL
-    : public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.SelfTestData.Sample)
-                                                   */
-{
+class SelfTestData_Sample PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.SelfTestData.Sample) */ {
  public:
   inline SelfTestData_Sample() : SelfTestData_Sample(nullptr) {}
   virtual ~SelfTestData_Sample();
 
   SelfTestData_Sample(const SelfTestData_Sample& from);
   SelfTestData_Sample(SelfTestData_Sample&& from) noexcept
-      : SelfTestData_Sample() {
+    : SelfTestData_Sample() {
     *this = ::std::move(from);
   }
 
@@ -1543,9 +1337,7 @@ class SelfTestData_Sample PROTOBUF_FINAL
   }
   inline SelfTestData_Sample& operator=(SelfTestData_Sample&& from) noexcept {
     if (GetArena() == from.GetArena()) {
-      if (this != &from) {
-        InternalSwap(&from);
-      }
+      if (this != &from) InternalSwap(&from);
     } else {
       CopyFrom(from);
     }
@@ -1553,8 +1345,7 @@ class SelfTestData_Sample PROTOBUF_FINAL
   }
 
   inline const std::string& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<std::string>(
-        ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
+    return _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
   }
   inline std::string* mutable_unknown_fields() {
     return _internal_metadata_.mutable_unknown_fields<std::string>();
@@ -1564,17 +1355,16 @@ class SelfTestData_Sample PROTOBUF_FINAL
 
   static inline const SelfTestData_Sample* internal_default_instance() {
     return reinterpret_cast<const SelfTestData_Sample*>(
-        &_SelfTestData_Sample_default_instance_);
+               &_SelfTestData_Sample_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 2;
+  static constexpr int kIndexInFileMessages =
+    2;
 
   friend void swap(SelfTestData_Sample& a, SelfTestData_Sample& b) {
     a.Swap(&b);
   }
   inline void Swap(SelfTestData_Sample* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
     } else {
@@ -1582,9 +1372,7 @@ class SelfTestData_Sample PROTOBUF_FINAL
     }
   }
   void UnsafeArenaSwap(SelfTestData_Sample* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
   }
@@ -1598,24 +1386,21 @@ class SelfTestData_Sample PROTOBUF_FINAL
   SelfTestData_Sample* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
     return CreateMaybeMessage<SelfTestData_Sample>(arena);
   }
-  void CheckTypeAndMergeFrom(
-      const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) final;
+  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)
+    final;
   void CopyFrom(const SelfTestData_Sample& from);
   void MergeFrom(const SelfTestData_Sample& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
   size_t ByteSizeLong() const final;
-  const char* _InternalParse(
-      const char* ptr,
-      ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
   ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target,
-      ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
   void DiscardUnknownFields();
   int GetCachedSize() const final { return _cached_size_.Get(); }
 
- private:
+  private:
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const;
@@ -1624,15 +1409,13 @@ class SelfTestData_Sample PROTOBUF_FINAL
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
     return "sentencepiece.SelfTestData.Sample";
   }
-
- protected:
+  protected:
   explicit SelfTestData_Sample(::PROTOBUF_NAMESPACE_ID::Arena* arena);
-
- private:
+  private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
 
- public:
   std::string GetTypeName() const final;
 
   // nested types ----------------------------------------------------
@@ -1645,11 +1428,9 @@ class SelfTestData_Sample PROTOBUF_FINAL
   };
   // optional string input = 1;
   bool has_input() const;
-
- private:
+  private:
   bool _internal_has_input() const;
-
- public:
+  public:
   void clear_input();
   const std::string& input() const;
   void set_input(const std::string& value);
@@ -1659,20 +1440,17 @@ class SelfTestData_Sample PROTOBUF_FINAL
   std::string* mutable_input();
   std::string* release_input();
   void set_allocated_input(std::string* input);
-
- private:
+  private:
   const std::string& _internal_input() const;
   void _internal_set_input(const std::string& value);
   std::string* _internal_mutable_input();
+  public:
 
- public:
   // optional string expected = 2;
   bool has_expected() const;
-
- private:
+  private:
   bool _internal_has_expected() const;
-
- public:
+  public:
   void clear_expected();
   const std::string& expected() const;
   void set_expected(const std::string& value);
@@ -1682,19 +1460,17 @@ class SelfTestData_Sample PROTOBUF_FINAL
   std::string* mutable_expected();
   std::string* release_expected();
   void set_allocated_expected(std::string* expected);
-
- private:
+  private:
   const std::string& _internal_expected() const;
   void _internal_set_expected(const std::string& value);
   std::string* _internal_mutable_expected();
+  public:
 
- public:
   // @@protoc_insertion_point(class_scope:sentencepiece.SelfTestData.Sample)
  private:
   class _Internal;
 
-  template <typename T>
-  friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
@@ -1705,16 +1481,15 @@ class SelfTestData_Sample PROTOBUF_FINAL
 };
 // -------------------------------------------------------------------
 
-class SelfTestData PROTOBUF_FINAL
-    : public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.SelfTestData)
-                                                   */
-{
+class SelfTestData PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.SelfTestData) */ {
  public:
   inline SelfTestData() : SelfTestData(nullptr) {}
   virtual ~SelfTestData();
 
   SelfTestData(const SelfTestData& from);
-  SelfTestData(SelfTestData&& from) noexcept : SelfTestData() {
+  SelfTestData(SelfTestData&& from) noexcept
+    : SelfTestData() {
     *this = ::std::move(from);
   }
 
@@ -1724,9 +1499,7 @@ class SelfTestData PROTOBUF_FINAL
   }
   inline SelfTestData& operator=(SelfTestData&& from) noexcept {
     if (GetArena() == from.GetArena()) {
-      if (this != &from) {
-        InternalSwap(&from);
-      }
+      if (this != &from) InternalSwap(&from);
     } else {
       CopyFrom(from);
     }
@@ -1734,8 +1507,7 @@ class SelfTestData PROTOBUF_FINAL
   }
 
   inline const std::string& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<std::string>(
-        ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
+    return _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
   }
   inline std::string* mutable_unknown_fields() {
     return _internal_metadata_.mutable_unknown_fields<std::string>();
@@ -1745,15 +1517,16 @@ class SelfTestData PROTOBUF_FINAL
 
   static inline const SelfTestData* internal_default_instance() {
     return reinterpret_cast<const SelfTestData*>(
-        &_SelfTestData_default_instance_);
+               &_SelfTestData_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 3;
+  static constexpr int kIndexInFileMessages =
+    3;
 
-  friend void swap(SelfTestData& a, SelfTestData& b) { a.Swap(&b); }
+  friend void swap(SelfTestData& a, SelfTestData& b) {
+    a.Swap(&b);
+  }
   inline void Swap(SelfTestData* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
     } else {
@@ -1761,9 +1534,7 @@ class SelfTestData PROTOBUF_FINAL
     }
   }
   void UnsafeArenaSwap(SelfTestData* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
   }
@@ -1777,24 +1548,21 @@ class SelfTestData PROTOBUF_FINAL
   SelfTestData* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
     return CreateMaybeMessage<SelfTestData>(arena);
   }
-  void CheckTypeAndMergeFrom(
-      const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) final;
+  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)
+    final;
   void CopyFrom(const SelfTestData& from);
   void MergeFrom(const SelfTestData& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
   size_t ByteSizeLong() const final;
-  const char* _InternalParse(
-      const char* ptr,
-      ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
   ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target,
-      ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
   void DiscardUnknownFields();
   int GetCachedSize() const final { return _cached_size_.Get(); }
 
- private:
+  private:
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const;
@@ -1803,15 +1571,13 @@ class SelfTestData PROTOBUF_FINAL
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
     return "sentencepiece.SelfTestData";
   }
-
- protected:
+  protected:
   explicit SelfTestData(::PROTOBUF_NAMESPACE_ID::Arena* arena);
-
- private:
+  private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
 
- public:
   std::string GetTypeName() const final;
 
   // nested types ----------------------------------------------------
@@ -1825,28 +1591,21 @@ class SelfTestData PROTOBUF_FINAL
   };
   // repeated .sentencepiece.SelfTestData.Sample samples = 1;
   int samples_size() const;
-
- private:
+  private:
   int _internal_samples_size() const;
-
- public:
+  public:
   void clear_samples();
   ::sentencepiece::SelfTestData_Sample* mutable_samples(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::SelfTestData_Sample>*
-  mutable_samples();
-
- private:
-  const ::sentencepiece::SelfTestData_Sample& _internal_samples(
-      int index) const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SelfTestData_Sample >*
+      mutable_samples();
+  private:
+  const ::sentencepiece::SelfTestData_Sample& _internal_samples(int index) const;
   ::sentencepiece::SelfTestData_Sample* _internal_add_samples();
-
- public:
+  public:
   const ::sentencepiece::SelfTestData_Sample& samples(int index) const;
   ::sentencepiece::SelfTestData_Sample* add_samples();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::SelfTestData_Sample>&
-  samples() const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SelfTestData_Sample >&
+      samples() const;
 
   GOOGLE_PROTOBUF_EXTENSION_ACCESSORS(SelfTestData)
   // @@protoc_insertion_point(class_scope:sentencepiece.SelfTestData)
@@ -1855,43 +1614,34 @@ class SelfTestData PROTOBUF_FINAL
 
   ::PROTOBUF_NAMESPACE_ID::internal::ExtensionSet _extensions_;
 
-  template <typename T>
-  friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::SelfTestData_Sample>
-      samples_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SelfTestData_Sample > samples_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_sentencepiece_5fmodel_2eproto;
 };
 // -------------------------------------------------------------------
 
-class ModelProto_SentencePiece PROTOBUF_FINAL
-    : public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.ModelProto.SentencePiece)
-                                                   */
-{
+class ModelProto_SentencePiece PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.ModelProto.SentencePiece) */ {
  public:
   inline ModelProto_SentencePiece() : ModelProto_SentencePiece(nullptr) {}
   virtual ~ModelProto_SentencePiece();
 
   ModelProto_SentencePiece(const ModelProto_SentencePiece& from);
   ModelProto_SentencePiece(ModelProto_SentencePiece&& from) noexcept
-      : ModelProto_SentencePiece() {
+    : ModelProto_SentencePiece() {
     *this = ::std::move(from);
   }
 
-  inline ModelProto_SentencePiece& operator=(
-      const ModelProto_SentencePiece& from) {
+  inline ModelProto_SentencePiece& operator=(const ModelProto_SentencePiece& from) {
     CopyFrom(from);
     return *this;
   }
-  inline ModelProto_SentencePiece& operator=(
-      ModelProto_SentencePiece&& from) noexcept {
+  inline ModelProto_SentencePiece& operator=(ModelProto_SentencePiece&& from) noexcept {
     if (GetArena() == from.GetArena()) {
-      if (this != &from) {
-        InternalSwap(&from);
-      }
+      if (this != &from) InternalSwap(&from);
     } else {
       CopyFrom(from);
     }
@@ -1899,8 +1649,7 @@ class ModelProto_SentencePiece PROTOBUF_FINAL
   }
 
   inline const std::string& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<std::string>(
-        ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
+    return _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
   }
   inline std::string* mutable_unknown_fields() {
     return _internal_metadata_.mutable_unknown_fields<std::string>();
@@ -1910,17 +1659,16 @@ class ModelProto_SentencePiece PROTOBUF_FINAL
 
   static inline const ModelProto_SentencePiece* internal_default_instance() {
     return reinterpret_cast<const ModelProto_SentencePiece*>(
-        &_ModelProto_SentencePiece_default_instance_);
+               &_ModelProto_SentencePiece_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 4;
+  static constexpr int kIndexInFileMessages =
+    4;
 
   friend void swap(ModelProto_SentencePiece& a, ModelProto_SentencePiece& b) {
     a.Swap(&b);
   }
   inline void Swap(ModelProto_SentencePiece* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
     } else {
@@ -1928,9 +1676,7 @@ class ModelProto_SentencePiece PROTOBUF_FINAL
     }
   }
   void UnsafeArenaSwap(ModelProto_SentencePiece* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
   }
@@ -1941,28 +1687,24 @@ class ModelProto_SentencePiece PROTOBUF_FINAL
     return CreateMaybeMessage<ModelProto_SentencePiece>(nullptr);
   }
 
-  ModelProto_SentencePiece* New(
-      ::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+  ModelProto_SentencePiece* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
     return CreateMaybeMessage<ModelProto_SentencePiece>(arena);
   }
-  void CheckTypeAndMergeFrom(
-      const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) final;
+  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)
+    final;
   void CopyFrom(const ModelProto_SentencePiece& from);
   void MergeFrom(const ModelProto_SentencePiece& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
   size_t ByteSizeLong() const final;
-  const char* _InternalParse(
-      const char* ptr,
-      ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
   ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target,
-      ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
   void DiscardUnknownFields();
   int GetCachedSize() const final { return _cached_size_.Get(); }
 
- private:
+  private:
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const;
@@ -1971,43 +1713,48 @@ class ModelProto_SentencePiece PROTOBUF_FINAL
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
     return "sentencepiece.ModelProto.SentencePiece";
   }
-
- protected:
+  protected:
   explicit ModelProto_SentencePiece(::PROTOBUF_NAMESPACE_ID::Arena* arena);
-
- private:
+  private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
 
- public:
   std::string GetTypeName() const final;
 
   // nested types ----------------------------------------------------
 
   typedef ModelProto_SentencePiece_Type Type;
-  static constexpr Type NORMAL = ModelProto_SentencePiece_Type_NORMAL;
-  static constexpr Type UNKNOWN = ModelProto_SentencePiece_Type_UNKNOWN;
-  static constexpr Type CONTROL = ModelProto_SentencePiece_Type_CONTROL;
+  static constexpr Type NORMAL =
+    ModelProto_SentencePiece_Type_NORMAL;
+  static constexpr Type UNKNOWN =
+    ModelProto_SentencePiece_Type_UNKNOWN;
+  static constexpr Type CONTROL =
+    ModelProto_SentencePiece_Type_CONTROL;
   static constexpr Type USER_DEFINED =
-      ModelProto_SentencePiece_Type_USER_DEFINED;
-  static constexpr Type BYTE = ModelProto_SentencePiece_Type_BYTE;
-  static constexpr Type UNUSED = ModelProto_SentencePiece_Type_UNUSED;
+    ModelProto_SentencePiece_Type_USER_DEFINED;
+  static constexpr Type BYTE =
+    ModelProto_SentencePiece_Type_BYTE;
+  static constexpr Type UNUSED =
+    ModelProto_SentencePiece_Type_UNUSED;
   static inline bool Type_IsValid(int value) {
     return ModelProto_SentencePiece_Type_IsValid(value);
   }
-  static constexpr Type Type_MIN = ModelProto_SentencePiece_Type_Type_MIN;
-  static constexpr Type Type_MAX = ModelProto_SentencePiece_Type_Type_MAX;
+  static constexpr Type Type_MIN =
+    ModelProto_SentencePiece_Type_Type_MIN;
+  static constexpr Type Type_MAX =
+    ModelProto_SentencePiece_Type_Type_MAX;
   static constexpr int Type_ARRAYSIZE =
-      ModelProto_SentencePiece_Type_Type_ARRAYSIZE;
-  template <typename T>
+    ModelProto_SentencePiece_Type_Type_ARRAYSIZE;
+  template<typename T>
   static inline const std::string& Type_Name(T enum_t_value) {
-    static_assert(
-        ::std::is_same<T, Type>::value || ::std::is_integral<T>::value,
-        "Incorrect type passed to function Type_Name.");
+    static_assert(::std::is_same<T, Type>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function Type_Name.");
     return ModelProto_SentencePiece_Type_Name(enum_t_value);
   }
   static inline bool Type_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
-                                Type* value) {
+      Type* value) {
     return ModelProto_SentencePiece_Type_Parse(name, value);
   }
 
@@ -2020,11 +1767,9 @@ class ModelProto_SentencePiece PROTOBUF_FINAL
   };
   // optional string piece = 1;
   bool has_piece() const;
-
- private:
+  private:
   bool _internal_has_piece() const;
-
- public:
+  public:
   void clear_piece();
   const std::string& piece() const;
   void set_piece(const std::string& value);
@@ -2034,46 +1779,38 @@ class ModelProto_SentencePiece PROTOBUF_FINAL
   std::string* mutable_piece();
   std::string* release_piece();
   void set_allocated_piece(std::string* piece);
-
- private:
+  private:
   const std::string& _internal_piece() const;
   void _internal_set_piece(const std::string& value);
   std::string* _internal_mutable_piece();
+  public:
 
- public:
   // optional float score = 2;
   bool has_score() const;
-
- private:
+  private:
   bool _internal_has_score() const;
-
- public:
+  public:
   void clear_score();
   float score() const;
   void set_score(float value);
-
- private:
+  private:
   float _internal_score() const;
   void _internal_set_score(float value);
+  public:
 
- public:
-  // optional .sentencepiece.ModelProto.SentencePiece.Type type = 3 [default =
-  // NORMAL];
+  // optional .sentencepiece.ModelProto.SentencePiece.Type type = 3 [default = NORMAL];
   bool has_type() const;
-
- private:
+  private:
   bool _internal_has_type() const;
-
- public:
+  public:
   void clear_type();
   ::sentencepiece::ModelProto_SentencePiece_Type type() const;
   void set_type(::sentencepiece::ModelProto_SentencePiece_Type value);
-
- private:
+  private:
   ::sentencepiece::ModelProto_SentencePiece_Type _internal_type() const;
   void _internal_set_type(::sentencepiece::ModelProto_SentencePiece_Type value);
+  public:
 
- public:
   GOOGLE_PROTOBUF_EXTENSION_ACCESSORS(ModelProto_SentencePiece)
   // @@protoc_insertion_point(class_scope:sentencepiece.ModelProto.SentencePiece)
  private:
@@ -2081,8 +1818,7 @@ class ModelProto_SentencePiece PROTOBUF_FINAL
 
   ::PROTOBUF_NAMESPACE_ID::internal::ExtensionSet _extensions_;
 
-  template <typename T>
-  friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
@@ -2094,16 +1830,15 @@ class ModelProto_SentencePiece PROTOBUF_FINAL
 };
 // -------------------------------------------------------------------
 
-class ModelProto PROTOBUF_FINAL
-    : public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.ModelProto)
-                                                   */
-{
+class ModelProto PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.ModelProto) */ {
  public:
   inline ModelProto() : ModelProto(nullptr) {}
   virtual ~ModelProto();
 
   ModelProto(const ModelProto& from);
-  ModelProto(ModelProto&& from) noexcept : ModelProto() {
+  ModelProto(ModelProto&& from) noexcept
+    : ModelProto() {
     *this = ::std::move(from);
   }
 
@@ -2113,9 +1848,7 @@ class ModelProto PROTOBUF_FINAL
   }
   inline ModelProto& operator=(ModelProto&& from) noexcept {
     if (GetArena() == from.GetArena()) {
-      if (this != &from) {
-        InternalSwap(&from);
-      }
+      if (this != &from) InternalSwap(&from);
     } else {
       CopyFrom(from);
     }
@@ -2123,8 +1856,7 @@ class ModelProto PROTOBUF_FINAL
   }
 
   inline const std::string& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<std::string>(
-        ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
+    return _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
   }
   inline std::string* mutable_unknown_fields() {
     return _internal_metadata_.mutable_unknown_fields<std::string>();
@@ -2133,15 +1865,17 @@ class ModelProto PROTOBUF_FINAL
   static const ModelProto& default_instance();
 
   static inline const ModelProto* internal_default_instance() {
-    return reinterpret_cast<const ModelProto*>(&_ModelProto_default_instance_);
+    return reinterpret_cast<const ModelProto*>(
+               &_ModelProto_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages =
+    5;
 
-  friend void swap(ModelProto& a, ModelProto& b) { a.Swap(&b); }
+  friend void swap(ModelProto& a, ModelProto& b) {
+    a.Swap(&b);
+  }
   inline void Swap(ModelProto* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
     } else {
@@ -2149,9 +1883,7 @@ class ModelProto PROTOBUF_FINAL
     }
   }
   void UnsafeArenaSwap(ModelProto* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
   }
@@ -2165,24 +1897,21 @@ class ModelProto PROTOBUF_FINAL
   ModelProto* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
     return CreateMaybeMessage<ModelProto>(arena);
   }
-  void CheckTypeAndMergeFrom(
-      const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) final;
+  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)
+    final;
   void CopyFrom(const ModelProto& from);
   void MergeFrom(const ModelProto& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
   size_t ByteSizeLong() const final;
-  const char* _InternalParse(
-      const char* ptr,
-      ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
   ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target,
-      ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
   void DiscardUnknownFields();
   int GetCachedSize() const final { return _cached_size_.Get(); }
 
- private:
+  private:
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const;
@@ -2191,15 +1920,13 @@ class ModelProto PROTOBUF_FINAL
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
     return "sentencepiece.ModelProto";
   }
-
- protected:
+  protected:
   explicit ModelProto(::PROTOBUF_NAMESPACE_ID::Arena* arena);
-
- private:
+  private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
 
- public:
   std::string GetTypeName() const final;
 
   // nested types ----------------------------------------------------
@@ -2217,116 +1944,90 @@ class ModelProto PROTOBUF_FINAL
   };
   // repeated .sentencepiece.ModelProto.SentencePiece pieces = 1;
   int pieces_size() const;
-
- private:
+  private:
   int _internal_pieces_size() const;
-
- public:
+  public:
   void clear_pieces();
   ::sentencepiece::ModelProto_SentencePiece* mutable_pieces(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::ModelProto_SentencePiece>*
-  mutable_pieces();
-
- private:
-  const ::sentencepiece::ModelProto_SentencePiece& _internal_pieces(
-      int index) const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::ModelProto_SentencePiece >*
+      mutable_pieces();
+  private:
+  const ::sentencepiece::ModelProto_SentencePiece& _internal_pieces(int index) const;
   ::sentencepiece::ModelProto_SentencePiece* _internal_add_pieces();
-
- public:
+  public:
   const ::sentencepiece::ModelProto_SentencePiece& pieces(int index) const;
   ::sentencepiece::ModelProto_SentencePiece* add_pieces();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::ModelProto_SentencePiece>&
-  pieces() const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::ModelProto_SentencePiece >&
+      pieces() const;
 
   // optional .sentencepiece.TrainerSpec trainer_spec = 2;
   bool has_trainer_spec() const;
-
- private:
+  private:
   bool _internal_has_trainer_spec() const;
-
- public:
+  public:
   void clear_trainer_spec();
   const ::sentencepiece::TrainerSpec& trainer_spec() const;
   ::sentencepiece::TrainerSpec* release_trainer_spec();
   ::sentencepiece::TrainerSpec* mutable_trainer_spec();
   void set_allocated_trainer_spec(::sentencepiece::TrainerSpec* trainer_spec);
-
- private:
+  private:
   const ::sentencepiece::TrainerSpec& _internal_trainer_spec() const;
   ::sentencepiece::TrainerSpec* _internal_mutable_trainer_spec();
-
- public:
+  public:
   void unsafe_arena_set_allocated_trainer_spec(
       ::sentencepiece::TrainerSpec* trainer_spec);
   ::sentencepiece::TrainerSpec* unsafe_arena_release_trainer_spec();
 
   // optional .sentencepiece.NormalizerSpec normalizer_spec = 3;
   bool has_normalizer_spec() const;
-
- private:
+  private:
   bool _internal_has_normalizer_spec() const;
-
- public:
+  public:
   void clear_normalizer_spec();
   const ::sentencepiece::NormalizerSpec& normalizer_spec() const;
   ::sentencepiece::NormalizerSpec* release_normalizer_spec();
   ::sentencepiece::NormalizerSpec* mutable_normalizer_spec();
-  void set_allocated_normalizer_spec(
-      ::sentencepiece::NormalizerSpec* normalizer_spec);
-
- private:
+  void set_allocated_normalizer_spec(::sentencepiece::NormalizerSpec* normalizer_spec);
+  private:
   const ::sentencepiece::NormalizerSpec& _internal_normalizer_spec() const;
   ::sentencepiece::NormalizerSpec* _internal_mutable_normalizer_spec();
-
- public:
+  public:
   void unsafe_arena_set_allocated_normalizer_spec(
       ::sentencepiece::NormalizerSpec* normalizer_spec);
   ::sentencepiece::NormalizerSpec* unsafe_arena_release_normalizer_spec();
 
   // optional .sentencepiece.SelfTestData self_test_data = 4;
   bool has_self_test_data() const;
-
- private:
+  private:
   bool _internal_has_self_test_data() const;
-
- public:
+  public:
   void clear_self_test_data();
   const ::sentencepiece::SelfTestData& self_test_data() const;
   ::sentencepiece::SelfTestData* release_self_test_data();
   ::sentencepiece::SelfTestData* mutable_self_test_data();
-  void set_allocated_self_test_data(
-      ::sentencepiece::SelfTestData* self_test_data);
-
- private:
+  void set_allocated_self_test_data(::sentencepiece::SelfTestData* self_test_data);
+  private:
   const ::sentencepiece::SelfTestData& _internal_self_test_data() const;
   ::sentencepiece::SelfTestData* _internal_mutable_self_test_data();
-
- public:
+  public:
   void unsafe_arena_set_allocated_self_test_data(
       ::sentencepiece::SelfTestData* self_test_data);
   ::sentencepiece::SelfTestData* unsafe_arena_release_self_test_data();
 
   // optional .sentencepiece.NormalizerSpec denormalizer_spec = 5;
   bool has_denormalizer_spec() const;
-
- private:
+  private:
   bool _internal_has_denormalizer_spec() const;
-
- public:
+  public:
   void clear_denormalizer_spec();
   const ::sentencepiece::NormalizerSpec& denormalizer_spec() const;
   ::sentencepiece::NormalizerSpec* release_denormalizer_spec();
   ::sentencepiece::NormalizerSpec* mutable_denormalizer_spec();
-  void set_allocated_denormalizer_spec(
-      ::sentencepiece::NormalizerSpec* denormalizer_spec);
-
- private:
+  void set_allocated_denormalizer_spec(::sentencepiece::NormalizerSpec* denormalizer_spec);
+  private:
   const ::sentencepiece::NormalizerSpec& _internal_denormalizer_spec() const;
   ::sentencepiece::NormalizerSpec* _internal_mutable_denormalizer_spec();
-
- public:
+  public:
   void unsafe_arena_set_allocated_denormalizer_spec(
       ::sentencepiece::NormalizerSpec* denormalizer_spec);
   ::sentencepiece::NormalizerSpec* unsafe_arena_release_denormalizer_spec();
@@ -2338,15 +2039,12 @@ class ModelProto PROTOBUF_FINAL
 
   ::PROTOBUF_NAMESPACE_ID::internal::ExtensionSet _extensions_;
 
-  template <typename T>
-  friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::ModelProto_SentencePiece>
-      pieces_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::ModelProto_SentencePiece > pieces_;
   ::sentencepiece::TrainerSpec* trainer_spec_;
   ::sentencepiece::NormalizerSpec* normalizer_spec_;
   ::sentencepiece::SelfTestData* self_test_data_;
@@ -2355,11 +2053,12 @@ class ModelProto PROTOBUF_FINAL
 };
 // ===================================================================
 
+
 // ===================================================================
 
 #ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
 // TrainerSpec
 
@@ -2402,7 +2101,8 @@ inline void TrainerSpec::set_input(int index, const char* value) {
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.input)
 }
 inline void TrainerSpec::set_input(int index, const char* value, size_t size) {
-  input_.Mutable(index)->assign(reinterpret_cast<const char*>(value), size);
+  input_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.input)
 }
 inline std::string* TrainerSpec::_internal_add_input() {
@@ -2465,37 +2165,30 @@ inline const std::string& TrainerSpec::_internal_input_format() const {
 }
 inline void TrainerSpec::_internal_set_input_format(const std::string& value) {
   _has_bits_[0] |= 0x00000002u;
-  input_format_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value,
-      GetArena());
+  input_format_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void TrainerSpec::set_input_format(std::string&& value) {
   _has_bits_[0] |= 0x00000002u;
   input_format_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.input_format)
 }
 inline void TrainerSpec::set_input_format(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000002u;
-  input_format_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(value), GetArena());
+  input_format_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.input_format)
 }
-inline void TrainerSpec::set_input_format(const char* value, size_t size) {
+inline void TrainerSpec::set_input_format(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000002u;
-  input_format_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  input_format_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.input_format)
 }
 inline std::string* TrainerSpec::_internal_mutable_input_format() {
   _has_bits_[0] |= 0x00000002u;
-  return input_format_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return input_format_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* TrainerSpec::release_input_format() {
   // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.input_format)
@@ -2503,9 +2196,7 @@ inline std::string* TrainerSpec::release_input_format() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000002u;
-  return input_format_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return input_format_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 inline void TrainerSpec::set_allocated_input_format(std::string* input_format) {
   if (input_format != nullptr) {
@@ -2513,9 +2204,8 @@ inline void TrainerSpec::set_allocated_input_format(std::string* input_format) {
   } else {
     _has_bits_[0] &= ~0x00000002u;
   }
-  input_format_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      input_format, GetArena());
+  input_format_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), input_format,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.input_format)
 }
 
@@ -2548,37 +2238,30 @@ inline const std::string& TrainerSpec::_internal_model_prefix() const {
 }
 inline void TrainerSpec::_internal_set_model_prefix(const std::string& value) {
   _has_bits_[0] |= 0x00000001u;
-  model_prefix_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value,
-      GetArena());
+  model_prefix_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void TrainerSpec::set_model_prefix(std::string&& value) {
   _has_bits_[0] |= 0x00000001u;
   model_prefix_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.model_prefix)
 }
 inline void TrainerSpec::set_model_prefix(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000001u;
-  model_prefix_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(value), GetArena());
+  model_prefix_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.model_prefix)
 }
-inline void TrainerSpec::set_model_prefix(const char* value, size_t size) {
+inline void TrainerSpec::set_model_prefix(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000001u;
-  model_prefix_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  model_prefix_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.model_prefix)
 }
 inline std::string* TrainerSpec::_internal_mutable_model_prefix() {
   _has_bits_[0] |= 0x00000001u;
-  return model_prefix_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return model_prefix_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* TrainerSpec::release_model_prefix() {
   // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.model_prefix)
@@ -2586,9 +2269,7 @@ inline std::string* TrainerSpec::release_model_prefix() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000001u;
-  return model_prefix_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return model_prefix_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 inline void TrainerSpec::set_allocated_model_prefix(std::string* model_prefix) {
   if (model_prefix != nullptr) {
@@ -2596,16 +2277,14 @@ inline void TrainerSpec::set_allocated_model_prefix(std::string* model_prefix) {
   } else {
     _has_bits_[0] &= ~0x00000001u;
   }
-  model_prefix_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      model_prefix, GetArena());
+  model_prefix_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), model_prefix,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.model_prefix)
 }
 
-// optional .sentencepiece.TrainerSpec.ModelType model_type = 3 [default =
-// UNIGRAM];
+// optional .sentencepiece.TrainerSpec.ModelType model_type = 3 [default = UNIGRAM];
 inline bool TrainerSpec::_internal_has_model_type() const {
-  bool value = (_has_bits_[0] & 0x00800000u) != 0;
+  bool value = (_has_bits_[0] & 0x01000000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_model_type() const {
@@ -2613,31 +2292,28 @@ inline bool TrainerSpec::has_model_type() const {
 }
 inline void TrainerSpec::clear_model_type() {
   model_type_ = 1;
-  _has_bits_[0] &= ~0x00800000u;
+  _has_bits_[0] &= ~0x01000000u;
 }
-inline ::sentencepiece::TrainerSpec_ModelType
-TrainerSpec::_internal_model_type() const {
-  return static_cast<::sentencepiece::TrainerSpec_ModelType>(model_type_);
+inline ::sentencepiece::TrainerSpec_ModelType TrainerSpec::_internal_model_type() const {
+  return static_cast< ::sentencepiece::TrainerSpec_ModelType >(model_type_);
 }
 inline ::sentencepiece::TrainerSpec_ModelType TrainerSpec::model_type() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.model_type)
   return _internal_model_type();
 }
-inline void TrainerSpec::_internal_set_model_type(
-    ::sentencepiece::TrainerSpec_ModelType value) {
+inline void TrainerSpec::_internal_set_model_type(::sentencepiece::TrainerSpec_ModelType value) {
   assert(::sentencepiece::TrainerSpec_ModelType_IsValid(value));
-  _has_bits_[0] |= 0x00800000u;
+  _has_bits_[0] |= 0x01000000u;
   model_type_ = value;
 }
-inline void TrainerSpec::set_model_type(
-    ::sentencepiece::TrainerSpec_ModelType value) {
+inline void TrainerSpec::set_model_type(::sentencepiece::TrainerSpec_ModelType value) {
   _internal_set_model_type(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.model_type)
 }
 
 // optional int32 vocab_size = 4 [default = 8000];
 inline bool TrainerSpec::_internal_has_vocab_size() const {
-  bool value = (_has_bits_[0] & 0x01000000u) != 0;
+  bool value = (_has_bits_[0] & 0x02000000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_vocab_size() const {
@@ -2645,19 +2321,17 @@ inline bool TrainerSpec::has_vocab_size() const {
 }
 inline void TrainerSpec::clear_vocab_size() {
   vocab_size_ = 8000;
-  _has_bits_[0] &= ~0x01000000u;
+  _has_bits_[0] &= ~0x02000000u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_vocab_size()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_vocab_size() const {
   return vocab_size_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::vocab_size() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.vocab_size)
   return _internal_vocab_size();
 }
-inline void TrainerSpec::_internal_set_vocab_size(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x01000000u;
+inline void TrainerSpec::_internal_set_vocab_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[0] |= 0x02000000u;
   vocab_size_ = value;
 }
 inline void TrainerSpec::set_vocab_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -2679,8 +2353,7 @@ inline std::string* TrainerSpec::add_accept_language() {
   // @@protoc_insertion_point(field_add_mutable:sentencepiece.TrainerSpec.accept_language)
   return _internal_add_accept_language();
 }
-inline const std::string& TrainerSpec::_internal_accept_language(
-    int index) const {
+inline const std::string& TrainerSpec::_internal_accept_language(int index) const {
   return accept_language_.Get(index);
 }
 inline const std::string& TrainerSpec::accept_language(int index) const {
@@ -2691,8 +2364,7 @@ inline std::string* TrainerSpec::mutable_accept_language(int index) {
   // @@protoc_insertion_point(field_mutable:sentencepiece.TrainerSpec.accept_language)
   return accept_language_.Mutable(index);
 }
-inline void TrainerSpec::set_accept_language(int index,
-                                             const std::string& value) {
+inline void TrainerSpec::set_accept_language(int index, const std::string& value) {
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.accept_language)
   accept_language_.Mutable(index)->assign(value);
 }
@@ -2705,11 +2377,9 @@ inline void TrainerSpec::set_accept_language(int index, const char* value) {
   accept_language_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.accept_language)
 }
-inline void TrainerSpec::set_accept_language(int index,
-                                             const char* value,
-                                             size_t size) {
-  accept_language_.Mutable(index)->assign(reinterpret_cast<const char*>(value),
-                                          size);
+inline void TrainerSpec::set_accept_language(int index, const char* value, size_t size) {
+  accept_language_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.accept_language)
 }
 inline std::string* TrainerSpec::_internal_add_accept_language() {
@@ -2745,7 +2415,7 @@ TrainerSpec::mutable_accept_language() {
 
 // optional int32 self_test_sample_size = 6 [default = 0];
 inline bool TrainerSpec::_internal_has_self_test_sample_size() const {
-  bool value = (_has_bits_[0] & 0x00000200u) != 0;
+  bool value = (_has_bits_[0] & 0x00000400u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_self_test_sample_size() const {
@@ -2753,31 +2423,27 @@ inline bool TrainerSpec::has_self_test_sample_size() const {
 }
 inline void TrainerSpec::clear_self_test_sample_size() {
   self_test_sample_size_ = 0;
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000400u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32
-TrainerSpec::_internal_self_test_sample_size() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_self_test_sample_size() const {
   return self_test_sample_size_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::self_test_sample_size()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::self_test_sample_size() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.self_test_sample_size)
   return _internal_self_test_sample_size();
 }
-inline void TrainerSpec::_internal_set_self_test_sample_size(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x00000200u;
+inline void TrainerSpec::_internal_set_self_test_sample_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[0] |= 0x00000400u;
   self_test_sample_size_ = value;
 }
-inline void TrainerSpec::set_self_test_sample_size(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void TrainerSpec::set_self_test_sample_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_self_test_sample_size(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.self_test_sample_size)
 }
 
 // optional bool enable_differential_privacy = 50 [default = false];
 inline bool TrainerSpec::_internal_has_enable_differential_privacy() const {
-  bool value = (_has_bits_[0] & 0x00002000u) != 0;
+  bool value = (_has_bits_[0] & 0x00004000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_enable_differential_privacy() const {
@@ -2785,7 +2451,7 @@ inline bool TrainerSpec::has_enable_differential_privacy() const {
 }
 inline void TrainerSpec::clear_enable_differential_privacy() {
   enable_differential_privacy_ = false;
-  _has_bits_[0] &= ~0x00002000u;
+  _has_bits_[0] &= ~0x00004000u;
 }
 inline bool TrainerSpec::_internal_enable_differential_privacy() const {
   return enable_differential_privacy_;
@@ -2795,7 +2461,7 @@ inline bool TrainerSpec::enable_differential_privacy() const {
   return _internal_enable_differential_privacy();
 }
 inline void TrainerSpec::_internal_set_enable_differential_privacy(bool value) {
-  _has_bits_[0] |= 0x00002000u;
+  _has_bits_[0] |= 0x00004000u;
   enable_differential_privacy_ = value;
 }
 inline void TrainerSpec::set_enable_differential_privacy(bool value) {
@@ -2804,9 +2470,8 @@ inline void TrainerSpec::set_enable_differential_privacy(bool value) {
 }
 
 // optional float differential_privacy_noise_level = 51 [default = 0];
-inline bool TrainerSpec::_internal_has_differential_privacy_noise_level()
-    const {
-  bool value = (_has_bits_[0] & 0x00200000u) != 0;
+inline bool TrainerSpec::_internal_has_differential_privacy_noise_level() const {
+  bool value = (_has_bits_[0] & 0x00400000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_differential_privacy_noise_level() const {
@@ -2814,7 +2479,7 @@ inline bool TrainerSpec::has_differential_privacy_noise_level() const {
 }
 inline void TrainerSpec::clear_differential_privacy_noise_level() {
   differential_privacy_noise_level_ = 0;
-  _has_bits_[0] &= ~0x00200000u;
+  _has_bits_[0] &= ~0x00400000u;
 }
 inline float TrainerSpec::_internal_differential_privacy_noise_level() const {
   return differential_privacy_noise_level_;
@@ -2823,9 +2488,8 @@ inline float TrainerSpec::differential_privacy_noise_level() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.differential_privacy_noise_level)
   return _internal_differential_privacy_noise_level();
 }
-inline void TrainerSpec::_internal_set_differential_privacy_noise_level(
-    float value) {
-  _has_bits_[0] |= 0x00200000u;
+inline void TrainerSpec::_internal_set_differential_privacy_noise_level(float value) {
+  _has_bits_[0] |= 0x00400000u;
   differential_privacy_noise_level_ = value;
 }
 inline void TrainerSpec::set_differential_privacy_noise_level(float value) {
@@ -2834,9 +2498,8 @@ inline void TrainerSpec::set_differential_privacy_noise_level(float value) {
 }
 
 // optional uint64 differential_privacy_clipping_threshold = 52 [default = 0];
-inline bool TrainerSpec::_internal_has_differential_privacy_clipping_threshold()
-    const {
-  bool value = (_has_bits_[0] & 0x00400000u) != 0;
+inline bool TrainerSpec::_internal_has_differential_privacy_clipping_threshold() const {
+  bool value = (_has_bits_[0] & 0x00800000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_differential_privacy_clipping_threshold() const {
@@ -2844,31 +2507,27 @@ inline bool TrainerSpec::has_differential_privacy_clipping_threshold() const {
 }
 inline void TrainerSpec::clear_differential_privacy_clipping_threshold() {
   differential_privacy_clipping_threshold_ = PROTOBUF_ULONGLONG(0);
-  _has_bits_[0] &= ~0x00400000u;
+  _has_bits_[0] &= ~0x00800000u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64
-TrainerSpec::_internal_differential_privacy_clipping_threshold() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint64 TrainerSpec::_internal_differential_privacy_clipping_threshold() const {
   return differential_privacy_clipping_threshold_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64
-TrainerSpec::differential_privacy_clipping_threshold() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint64 TrainerSpec::differential_privacy_clipping_threshold() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.differential_privacy_clipping_threshold)
   return _internal_differential_privacy_clipping_threshold();
 }
-inline void TrainerSpec::_internal_set_differential_privacy_clipping_threshold(
-    ::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _has_bits_[0] |= 0x00400000u;
+inline void TrainerSpec::_internal_set_differential_privacy_clipping_threshold(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _has_bits_[0] |= 0x00800000u;
   differential_privacy_clipping_threshold_ = value;
 }
-inline void TrainerSpec::set_differential_privacy_clipping_threshold(
-    ::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void TrainerSpec::set_differential_privacy_clipping_threshold(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   _internal_set_differential_privacy_clipping_threshold(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.differential_privacy_clipping_threshold)
 }
 
 // optional float character_coverage = 10 [default = 0.9995];
 inline bool TrainerSpec::_internal_has_character_coverage() const {
-  bool value = (_has_bits_[0] & 0x02000000u) != 0;
+  bool value = (_has_bits_[0] & 0x04000000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_character_coverage() const {
@@ -2876,7 +2535,7 @@ inline bool TrainerSpec::has_character_coverage() const {
 }
 inline void TrainerSpec::clear_character_coverage() {
   character_coverage_ = 0.9995f;
-  _has_bits_[0] &= ~0x02000000u;
+  _has_bits_[0] &= ~0x04000000u;
 }
 inline float TrainerSpec::_internal_character_coverage() const {
   return character_coverage_;
@@ -2886,7 +2545,7 @@ inline float TrainerSpec::character_coverage() const {
   return _internal_character_coverage();
 }
 inline void TrainerSpec::_internal_set_character_coverage(float value) {
-  _has_bits_[0] |= 0x02000000u;
+  _has_bits_[0] |= 0x04000000u;
   character_coverage_ = value;
 }
 inline void TrainerSpec::set_character_coverage(float value) {
@@ -2896,7 +2555,7 @@ inline void TrainerSpec::set_character_coverage(float value) {
 
 // optional uint64 input_sentence_size = 11 [default = 0];
 inline bool TrainerSpec::_internal_has_input_sentence_size() const {
-  bool value = (_has_bits_[0] & 0x00000800u) != 0;
+  bool value = (_has_bits_[0] & 0x00001000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_input_sentence_size() const {
@@ -2904,31 +2563,27 @@ inline bool TrainerSpec::has_input_sentence_size() const {
 }
 inline void TrainerSpec::clear_input_sentence_size() {
   input_sentence_size_ = PROTOBUF_ULONGLONG(0);
-  _has_bits_[0] &= ~0x00000800u;
+  _has_bits_[0] &= ~0x00001000u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64
-TrainerSpec::_internal_input_sentence_size() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint64 TrainerSpec::_internal_input_sentence_size() const {
   return input_sentence_size_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 TrainerSpec::input_sentence_size()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::uint64 TrainerSpec::input_sentence_size() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.input_sentence_size)
   return _internal_input_sentence_size();
 }
-inline void TrainerSpec::_internal_set_input_sentence_size(
-    ::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _has_bits_[0] |= 0x00000800u;
+inline void TrainerSpec::_internal_set_input_sentence_size(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _has_bits_[0] |= 0x00001000u;
   input_sentence_size_ = value;
 }
-inline void TrainerSpec::set_input_sentence_size(
-    ::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void TrainerSpec::set_input_sentence_size(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   _internal_set_input_sentence_size(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.input_sentence_size)
 }
 
 // optional bool shuffle_input_sentence = 19 [default = true];
 inline bool TrainerSpec::_internal_has_shuffle_input_sentence() const {
-  bool value = (_has_bits_[1] & 0x00000001u) != 0;
+  bool value = (_has_bits_[1] & 0x00000002u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_shuffle_input_sentence() const {
@@ -2936,7 +2591,7 @@ inline bool TrainerSpec::has_shuffle_input_sentence() const {
 }
 inline void TrainerSpec::clear_shuffle_input_sentence() {
   shuffle_input_sentence_ = true;
-  _has_bits_[1] &= ~0x00000001u;
+  _has_bits_[1] &= ~0x00000002u;
 }
 inline bool TrainerSpec::_internal_shuffle_input_sentence() const {
   return shuffle_input_sentence_;
@@ -2946,7 +2601,7 @@ inline bool TrainerSpec::shuffle_input_sentence() const {
   return _internal_shuffle_input_sentence();
 }
 inline void TrainerSpec::_internal_set_shuffle_input_sentence(bool value) {
-  _has_bits_[1] |= 0x00000001u;
+  _has_bits_[1] |= 0x00000002u;
   shuffle_input_sentence_ = value;
 }
 inline void TrainerSpec::set_shuffle_input_sentence(bool value) {
@@ -2956,7 +2611,7 @@ inline void TrainerSpec::set_shuffle_input_sentence(bool value) {
 
 // optional int32 mining_sentence_size = 12 [deprecated = true];
 inline bool TrainerSpec::_internal_has_mining_sentence_size() const {
-  bool value = (_has_bits_[0] & 0x00000400u) != 0;
+  bool value = (_has_bits_[0] & 0x00000800u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_mining_sentence_size() const {
@@ -2964,31 +2619,27 @@ inline bool TrainerSpec::has_mining_sentence_size() const {
 }
 inline void TrainerSpec::clear_mining_sentence_size() {
   mining_sentence_size_ = 0;
-  _has_bits_[0] &= ~0x00000400u;
+  _has_bits_[0] &= ~0x00000800u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32
-TrainerSpec::_internal_mining_sentence_size() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_mining_sentence_size() const {
   return mining_sentence_size_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::mining_sentence_size()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::mining_sentence_size() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.mining_sentence_size)
   return _internal_mining_sentence_size();
 }
-inline void TrainerSpec::_internal_set_mining_sentence_size(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x00000400u;
+inline void TrainerSpec::_internal_set_mining_sentence_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[0] |= 0x00000800u;
   mining_sentence_size_ = value;
 }
-inline void TrainerSpec::set_mining_sentence_size(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void TrainerSpec::set_mining_sentence_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_mining_sentence_size(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.mining_sentence_size)
 }
 
 // optional int32 training_sentence_size = 13 [deprecated = true];
 inline bool TrainerSpec::_internal_has_training_sentence_size() const {
-  bool value = (_has_bits_[0] & 0x00001000u) != 0;
+  bool value = (_has_bits_[0] & 0x00002000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_training_sentence_size() const {
@@ -2996,31 +2647,27 @@ inline bool TrainerSpec::has_training_sentence_size() const {
 }
 inline void TrainerSpec::clear_training_sentence_size() {
   training_sentence_size_ = 0;
-  _has_bits_[0] &= ~0x00001000u;
+  _has_bits_[0] &= ~0x00002000u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32
-TrainerSpec::_internal_training_sentence_size() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_training_sentence_size() const {
   return training_sentence_size_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::training_sentence_size()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::training_sentence_size() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.training_sentence_size)
   return _internal_training_sentence_size();
 }
-inline void TrainerSpec::_internal_set_training_sentence_size(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x00001000u;
+inline void TrainerSpec::_internal_set_training_sentence_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[0] |= 0x00002000u;
   training_sentence_size_ = value;
 }
-inline void TrainerSpec::set_training_sentence_size(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void TrainerSpec::set_training_sentence_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_training_sentence_size(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.training_sentence_size)
 }
 
 // optional int32 seed_sentencepiece_size = 14 [default = 1000000];
 inline bool TrainerSpec::_internal_has_seed_sentencepiece_size() const {
-  bool value = (_has_bits_[0] & 0x04000000u) != 0;
+  bool value = (_has_bits_[0] & 0x08000000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_seed_sentencepiece_size() const {
@@ -3028,31 +2675,27 @@ inline bool TrainerSpec::has_seed_sentencepiece_size() const {
 }
 inline void TrainerSpec::clear_seed_sentencepiece_size() {
   seed_sentencepiece_size_ = 1000000;
-  _has_bits_[0] &= ~0x04000000u;
+  _has_bits_[0] &= ~0x08000000u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32
-TrainerSpec::_internal_seed_sentencepiece_size() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_seed_sentencepiece_size() const {
   return seed_sentencepiece_size_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::seed_sentencepiece_size()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::seed_sentencepiece_size() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.seed_sentencepiece_size)
   return _internal_seed_sentencepiece_size();
 }
-inline void TrainerSpec::_internal_set_seed_sentencepiece_size(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x04000000u;
+inline void TrainerSpec::_internal_set_seed_sentencepiece_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[0] |= 0x08000000u;
   seed_sentencepiece_size_ = value;
 }
-inline void TrainerSpec::set_seed_sentencepiece_size(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void TrainerSpec::set_seed_sentencepiece_size(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_seed_sentencepiece_size(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.seed_sentencepiece_size)
 }
 
 // optional float shrinking_factor = 15 [default = 0.75];
 inline bool TrainerSpec::_internal_has_shrinking_factor() const {
-  bool value = (_has_bits_[0] & 0x08000000u) != 0;
+  bool value = (_has_bits_[0] & 0x10000000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_shrinking_factor() const {
@@ -3060,7 +2703,7 @@ inline bool TrainerSpec::has_shrinking_factor() const {
 }
 inline void TrainerSpec::clear_shrinking_factor() {
   shrinking_factor_ = 0.75f;
-  _has_bits_[0] &= ~0x08000000u;
+  _has_bits_[0] &= ~0x10000000u;
 }
 inline float TrainerSpec::_internal_shrinking_factor() const {
   return shrinking_factor_;
@@ -3070,7 +2713,7 @@ inline float TrainerSpec::shrinking_factor() const {
   return _internal_shrinking_factor();
 }
 inline void TrainerSpec::_internal_set_shrinking_factor(float value) {
-  _has_bits_[0] |= 0x08000000u;
+  _has_bits_[0] |= 0x10000000u;
   shrinking_factor_ = value;
 }
 inline void TrainerSpec::set_shrinking_factor(float value) {
@@ -3080,7 +2723,7 @@ inline void TrainerSpec::set_shrinking_factor(float value) {
 
 // optional int32 max_sentence_length = 18 [default = 4192];
 inline bool TrainerSpec::_internal_has_max_sentence_length() const {
-  bool value = (_has_bits_[0] & 0x40000000u) != 0;
+  bool value = (_has_bits_[0] & 0x80000000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_max_sentence_length() const {
@@ -3088,30 +2731,27 @@ inline bool TrainerSpec::has_max_sentence_length() const {
 }
 inline void TrainerSpec::clear_max_sentence_length() {
   max_sentence_length_ = 4192;
-  _has_bits_[0] &= ~0x40000000u;
+  _has_bits_[0] &= ~0x80000000u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32
-TrainerSpec::_internal_max_sentence_length() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_max_sentence_length() const {
   return max_sentence_length_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::max_sentence_length() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.max_sentence_length)
   return _internal_max_sentence_length();
 }
-inline void TrainerSpec::_internal_set_max_sentence_length(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x40000000u;
+inline void TrainerSpec::_internal_set_max_sentence_length(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[0] |= 0x80000000u;
   max_sentence_length_ = value;
 }
-inline void TrainerSpec::set_max_sentence_length(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void TrainerSpec::set_max_sentence_length(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_max_sentence_length(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.max_sentence_length)
 }
 
 // optional int32 num_threads = 16 [default = 16];
 inline bool TrainerSpec::_internal_has_num_threads() const {
-  bool value = (_has_bits_[0] & 0x10000000u) != 0;
+  bool value = (_has_bits_[0] & 0x20000000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_num_threads() const {
@@ -3119,19 +2759,17 @@ inline bool TrainerSpec::has_num_threads() const {
 }
 inline void TrainerSpec::clear_num_threads() {
   num_threads_ = 16;
-  _has_bits_[0] &= ~0x10000000u;
+  _has_bits_[0] &= ~0x20000000u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_num_threads()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_num_threads() const {
   return num_threads_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::num_threads() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.num_threads)
   return _internal_num_threads();
 }
-inline void TrainerSpec::_internal_set_num_threads(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x10000000u;
+inline void TrainerSpec::_internal_set_num_threads(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[0] |= 0x20000000u;
   num_threads_ = value;
 }
 inline void TrainerSpec::set_num_threads(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -3141,7 +2779,7 @@ inline void TrainerSpec::set_num_threads(::PROTOBUF_NAMESPACE_ID::int32 value) {
 
 // optional int32 num_sub_iterations = 17 [default = 2];
 inline bool TrainerSpec::_internal_has_num_sub_iterations() const {
-  bool value = (_has_bits_[0] & 0x20000000u) != 0;
+  bool value = (_has_bits_[0] & 0x40000000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_num_sub_iterations() const {
@@ -3149,30 +2787,27 @@ inline bool TrainerSpec::has_num_sub_iterations() const {
 }
 inline void TrainerSpec::clear_num_sub_iterations() {
   num_sub_iterations_ = 2;
-  _has_bits_[0] &= ~0x20000000u;
+  _has_bits_[0] &= ~0x40000000u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32
-TrainerSpec::_internal_num_sub_iterations() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_num_sub_iterations() const {
   return num_sub_iterations_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::num_sub_iterations() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.num_sub_iterations)
   return _internal_num_sub_iterations();
 }
-inline void TrainerSpec::_internal_set_num_sub_iterations(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x20000000u;
+inline void TrainerSpec::_internal_set_num_sub_iterations(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[0] |= 0x40000000u;
   num_sub_iterations_ = value;
 }
-inline void TrainerSpec::set_num_sub_iterations(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void TrainerSpec::set_num_sub_iterations(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_num_sub_iterations(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.num_sub_iterations)
 }
 
 // optional int32 max_sentencepiece_length = 20 [default = 16];
 inline bool TrainerSpec::_internal_has_max_sentencepiece_length() const {
-  bool value = (_has_bits_[0] & 0x80000000u) != 0;
+  bool value = (_has_bits_[1] & 0x00000001u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_max_sentencepiece_length() const {
@@ -3180,31 +2815,27 @@ inline bool TrainerSpec::has_max_sentencepiece_length() const {
 }
 inline void TrainerSpec::clear_max_sentencepiece_length() {
   max_sentencepiece_length_ = 16;
-  _has_bits_[0] &= ~0x80000000u;
+  _has_bits_[1] &= ~0x00000001u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32
-TrainerSpec::_internal_max_sentencepiece_length() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_max_sentencepiece_length() const {
   return max_sentencepiece_length_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::max_sentencepiece_length()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::max_sentencepiece_length() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.max_sentencepiece_length)
   return _internal_max_sentencepiece_length();
 }
-inline void TrainerSpec::_internal_set_max_sentencepiece_length(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x80000000u;
+inline void TrainerSpec::_internal_set_max_sentencepiece_length(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[1] |= 0x00000001u;
   max_sentencepiece_length_ = value;
 }
-inline void TrainerSpec::set_max_sentencepiece_length(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void TrainerSpec::set_max_sentencepiece_length(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_max_sentencepiece_length(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.max_sentencepiece_length)
 }
 
 // optional bool split_by_unicode_script = 21 [default = true];
 inline bool TrainerSpec::_internal_has_split_by_unicode_script() const {
-  bool value = (_has_bits_[1] & 0x00000002u) != 0;
+  bool value = (_has_bits_[1] & 0x00000004u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_split_by_unicode_script() const {
@@ -3212,7 +2843,7 @@ inline bool TrainerSpec::has_split_by_unicode_script() const {
 }
 inline void TrainerSpec::clear_split_by_unicode_script() {
   split_by_unicode_script_ = true;
-  _has_bits_[1] &= ~0x00000002u;
+  _has_bits_[1] &= ~0x00000004u;
 }
 inline bool TrainerSpec::_internal_split_by_unicode_script() const {
   return split_by_unicode_script_;
@@ -3222,7 +2853,7 @@ inline bool TrainerSpec::split_by_unicode_script() const {
   return _internal_split_by_unicode_script();
 }
 inline void TrainerSpec::_internal_set_split_by_unicode_script(bool value) {
-  _has_bits_[1] |= 0x00000002u;
+  _has_bits_[1] |= 0x00000004u;
   split_by_unicode_script_ = value;
 }
 inline void TrainerSpec::set_split_by_unicode_script(bool value) {
@@ -3232,7 +2863,7 @@ inline void TrainerSpec::set_split_by_unicode_script(bool value) {
 
 // optional bool split_by_number = 23 [default = true];
 inline bool TrainerSpec::_internal_has_split_by_number() const {
-  bool value = (_has_bits_[1] & 0x00000004u) != 0;
+  bool value = (_has_bits_[1] & 0x00000008u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_split_by_number() const {
@@ -3240,7 +2871,7 @@ inline bool TrainerSpec::has_split_by_number() const {
 }
 inline void TrainerSpec::clear_split_by_number() {
   split_by_number_ = true;
-  _has_bits_[1] &= ~0x00000004u;
+  _has_bits_[1] &= ~0x00000008u;
 }
 inline bool TrainerSpec::_internal_split_by_number() const {
   return split_by_number_;
@@ -3250,7 +2881,7 @@ inline bool TrainerSpec::split_by_number() const {
   return _internal_split_by_number();
 }
 inline void TrainerSpec::_internal_set_split_by_number(bool value) {
-  _has_bits_[1] |= 0x00000004u;
+  _has_bits_[1] |= 0x00000008u;
   split_by_number_ = value;
 }
 inline void TrainerSpec::set_split_by_number(bool value) {
@@ -3260,7 +2891,7 @@ inline void TrainerSpec::set_split_by_number(bool value) {
 
 // optional bool split_by_whitespace = 22 [default = true];
 inline bool TrainerSpec::_internal_has_split_by_whitespace() const {
-  bool value = (_has_bits_[1] & 0x00000008u) != 0;
+  bool value = (_has_bits_[1] & 0x00000010u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_split_by_whitespace() const {
@@ -3268,7 +2899,7 @@ inline bool TrainerSpec::has_split_by_whitespace() const {
 }
 inline void TrainerSpec::clear_split_by_whitespace() {
   split_by_whitespace_ = true;
-  _has_bits_[1] &= ~0x00000008u;
+  _has_bits_[1] &= ~0x00000010u;
 }
 inline bool TrainerSpec::_internal_split_by_whitespace() const {
   return split_by_whitespace_;
@@ -3278,7 +2909,7 @@ inline bool TrainerSpec::split_by_whitespace() const {
   return _internal_split_by_whitespace();
 }
 inline void TrainerSpec::_internal_set_split_by_whitespace(bool value) {
-  _has_bits_[1] |= 0x00000008u;
+  _has_bits_[1] |= 0x00000010u;
   split_by_whitespace_ = value;
 }
 inline void TrainerSpec::set_split_by_whitespace(bool value) {
@@ -3288,7 +2919,7 @@ inline void TrainerSpec::set_split_by_whitespace(bool value) {
 
 // optional bool treat_whitespace_as_suffix = 24 [default = false];
 inline bool TrainerSpec::_internal_has_treat_whitespace_as_suffix() const {
-  bool value = (_has_bits_[0] & 0x00004000u) != 0;
+  bool value = (_has_bits_[0] & 0x00008000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_treat_whitespace_as_suffix() const {
@@ -3296,7 +2927,7 @@ inline bool TrainerSpec::has_treat_whitespace_as_suffix() const {
 }
 inline void TrainerSpec::clear_treat_whitespace_as_suffix() {
   treat_whitespace_as_suffix_ = false;
-  _has_bits_[0] &= ~0x00004000u;
+  _has_bits_[0] &= ~0x00008000u;
 }
 inline bool TrainerSpec::_internal_treat_whitespace_as_suffix() const {
   return treat_whitespace_as_suffix_;
@@ -3306,7 +2937,7 @@ inline bool TrainerSpec::treat_whitespace_as_suffix() const {
   return _internal_treat_whitespace_as_suffix();
 }
 inline void TrainerSpec::_internal_set_treat_whitespace_as_suffix(bool value) {
-  _has_bits_[0] |= 0x00004000u;
+  _has_bits_[0] |= 0x00008000u;
   treat_whitespace_as_suffix_ = value;
 }
 inline void TrainerSpec::set_treat_whitespace_as_suffix(bool value) {
@@ -3316,7 +2947,7 @@ inline void TrainerSpec::set_treat_whitespace_as_suffix(bool value) {
 
 // optional bool allow_whitespace_only_pieces = 26 [default = false];
 inline bool TrainerSpec::_internal_has_allow_whitespace_only_pieces() const {
-  bool value = (_has_bits_[0] & 0x00008000u) != 0;
+  bool value = (_has_bits_[0] & 0x00010000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_allow_whitespace_only_pieces() const {
@@ -3324,7 +2955,7 @@ inline bool TrainerSpec::has_allow_whitespace_only_pieces() const {
 }
 inline void TrainerSpec::clear_allow_whitespace_only_pieces() {
   allow_whitespace_only_pieces_ = false;
-  _has_bits_[0] &= ~0x00008000u;
+  _has_bits_[0] &= ~0x00010000u;
 }
 inline bool TrainerSpec::_internal_allow_whitespace_only_pieces() const {
   return allow_whitespace_only_pieces_;
@@ -3333,9 +2964,8 @@ inline bool TrainerSpec::allow_whitespace_only_pieces() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.allow_whitespace_only_pieces)
   return _internal_allow_whitespace_only_pieces();
 }
-inline void TrainerSpec::_internal_set_allow_whitespace_only_pieces(
-    bool value) {
-  _has_bits_[0] |= 0x00008000u;
+inline void TrainerSpec::_internal_set_allow_whitespace_only_pieces(bool value) {
+  _has_bits_[0] |= 0x00010000u;
   allow_whitespace_only_pieces_ = value;
 }
 inline void TrainerSpec::set_allow_whitespace_only_pieces(bool value) {
@@ -3345,7 +2975,7 @@ inline void TrainerSpec::set_allow_whitespace_only_pieces(bool value) {
 
 // optional bool split_digits = 25 [default = false];
 inline bool TrainerSpec::_internal_has_split_digits() const {
-  bool value = (_has_bits_[0] & 0x00010000u) != 0;
+  bool value = (_has_bits_[0] & 0x00020000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_split_digits() const {
@@ -3353,7 +2983,7 @@ inline bool TrainerSpec::has_split_digits() const {
 }
 inline void TrainerSpec::clear_split_digits() {
   split_digits_ = false;
-  _has_bits_[0] &= ~0x00010000u;
+  _has_bits_[0] &= ~0x00020000u;
 }
 inline bool TrainerSpec::_internal_split_digits() const {
   return split_digits_;
@@ -3363,7 +2993,7 @@ inline bool TrainerSpec::split_digits() const {
   return _internal_split_digits();
 }
 inline void TrainerSpec::_internal_set_split_digits(bool value) {
-  _has_bits_[0] |= 0x00010000u;
+  _has_bits_[0] |= 0x00020000u;
   split_digits_ = value;
 }
 inline void TrainerSpec::set_split_digits(bool value) {
@@ -3387,8 +3017,7 @@ inline const std::string& TrainerSpec::pretokenization_delimiter() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.pretokenization_delimiter)
   return _internal_pretokenization_delimiter();
 }
-inline void TrainerSpec::set_pretokenization_delimiter(
-    const std::string& value) {
+inline void TrainerSpec::set_pretokenization_delimiter(const std::string& value) {
   _internal_set_pretokenization_delimiter(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.pretokenization_delimiter)
 }
@@ -3396,45 +3025,35 @@ inline std::string* TrainerSpec::mutable_pretokenization_delimiter() {
   // @@protoc_insertion_point(field_mutable:sentencepiece.TrainerSpec.pretokenization_delimiter)
   return _internal_mutable_pretokenization_delimiter();
 }
-inline const std::string& TrainerSpec::_internal_pretokenization_delimiter()
-    const {
+inline const std::string& TrainerSpec::_internal_pretokenization_delimiter() const {
   return pretokenization_delimiter_.Get();
 }
-inline void TrainerSpec::_internal_set_pretokenization_delimiter(
-    const std::string& value) {
+inline void TrainerSpec::_internal_set_pretokenization_delimiter(const std::string& value) {
   _has_bits_[0] |= 0x00000100u;
-  pretokenization_delimiter_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value,
-      GetArena());
+  pretokenization_delimiter_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void TrainerSpec::set_pretokenization_delimiter(std::string&& value) {
   _has_bits_[0] |= 0x00000100u;
   pretokenization_delimiter_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.pretokenization_delimiter)
 }
 inline void TrainerSpec::set_pretokenization_delimiter(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000100u;
-  pretokenization_delimiter_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(value), GetArena());
+  pretokenization_delimiter_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.pretokenization_delimiter)
 }
 inline void TrainerSpec::set_pretokenization_delimiter(const char* value,
-                                                       size_t size) {
+    size_t size) {
   _has_bits_[0] |= 0x00000100u;
-  pretokenization_delimiter_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  pretokenization_delimiter_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.pretokenization_delimiter)
 }
 inline std::string* TrainerSpec::_internal_mutable_pretokenization_delimiter() {
   _has_bits_[0] |= 0x00000100u;
-  return pretokenization_delimiter_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return pretokenization_delimiter_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* TrainerSpec::release_pretokenization_delimiter() {
   // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.pretokenization_delimiter)
@@ -3442,20 +3061,16 @@ inline std::string* TrainerSpec::release_pretokenization_delimiter() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000100u;
-  return pretokenization_delimiter_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return pretokenization_delimiter_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void TrainerSpec::set_allocated_pretokenization_delimiter(
-    std::string* pretokenization_delimiter) {
+inline void TrainerSpec::set_allocated_pretokenization_delimiter(std::string* pretokenization_delimiter) {
   if (pretokenization_delimiter != nullptr) {
     _has_bits_[0] |= 0x00000100u;
   } else {
     _has_bits_[0] &= ~0x00000100u;
   }
-  pretokenization_delimiter_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      pretokenization_delimiter, GetArena());
+  pretokenization_delimiter_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), pretokenization_delimiter,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.pretokenization_delimiter)
 }
 
@@ -3473,8 +3088,7 @@ inline std::string* TrainerSpec::add_control_symbols() {
   // @@protoc_insertion_point(field_add_mutable:sentencepiece.TrainerSpec.control_symbols)
   return _internal_add_control_symbols();
 }
-inline const std::string& TrainerSpec::_internal_control_symbols(
-    int index) const {
+inline const std::string& TrainerSpec::_internal_control_symbols(int index) const {
   return control_symbols_.Get(index);
 }
 inline const std::string& TrainerSpec::control_symbols(int index) const {
@@ -3485,8 +3099,7 @@ inline std::string* TrainerSpec::mutable_control_symbols(int index) {
   // @@protoc_insertion_point(field_mutable:sentencepiece.TrainerSpec.control_symbols)
   return control_symbols_.Mutable(index);
 }
-inline void TrainerSpec::set_control_symbols(int index,
-                                             const std::string& value) {
+inline void TrainerSpec::set_control_symbols(int index, const std::string& value) {
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.control_symbols)
   control_symbols_.Mutable(index)->assign(value);
 }
@@ -3499,11 +3112,9 @@ inline void TrainerSpec::set_control_symbols(int index, const char* value) {
   control_symbols_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.control_symbols)
 }
-inline void TrainerSpec::set_control_symbols(int index,
-                                             const char* value,
-                                             size_t size) {
-  control_symbols_.Mutable(index)->assign(reinterpret_cast<const char*>(value),
-                                          size);
+inline void TrainerSpec::set_control_symbols(int index, const char* value, size_t size) {
+  control_symbols_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.control_symbols)
 }
 inline std::string* TrainerSpec::_internal_add_control_symbols() {
@@ -3551,8 +3162,7 @@ inline std::string* TrainerSpec::add_user_defined_symbols() {
   // @@protoc_insertion_point(field_add_mutable:sentencepiece.TrainerSpec.user_defined_symbols)
   return _internal_add_user_defined_symbols();
 }
-inline const std::string& TrainerSpec::_internal_user_defined_symbols(
-    int index) const {
+inline const std::string& TrainerSpec::_internal_user_defined_symbols(int index) const {
   return user_defined_symbols_.Get(index);
 }
 inline const std::string& TrainerSpec::user_defined_symbols(int index) const {
@@ -3563,27 +3173,22 @@ inline std::string* TrainerSpec::mutable_user_defined_symbols(int index) {
   // @@protoc_insertion_point(field_mutable:sentencepiece.TrainerSpec.user_defined_symbols)
   return user_defined_symbols_.Mutable(index);
 }
-inline void TrainerSpec::set_user_defined_symbols(int index,
-                                                  const std::string& value) {
+inline void TrainerSpec::set_user_defined_symbols(int index, const std::string& value) {
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.user_defined_symbols)
   user_defined_symbols_.Mutable(index)->assign(value);
 }
-inline void TrainerSpec::set_user_defined_symbols(int index,
-                                                  std::string&& value) {
+inline void TrainerSpec::set_user_defined_symbols(int index, std::string&& value) {
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.user_defined_symbols)
   user_defined_symbols_.Mutable(index)->assign(std::move(value));
 }
-inline void TrainerSpec::set_user_defined_symbols(int index,
-                                                  const char* value) {
+inline void TrainerSpec::set_user_defined_symbols(int index, const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   user_defined_symbols_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.user_defined_symbols)
 }
-inline void TrainerSpec::set_user_defined_symbols(int index,
-                                                  const char* value,
-                                                  size_t size) {
+inline void TrainerSpec::set_user_defined_symbols(int index, const char* value, size_t size) {
   user_defined_symbols_.Mutable(index)->assign(
-      reinterpret_cast<const char*>(value), size);
+    reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.user_defined_symbols)
 }
 inline std::string* TrainerSpec::_internal_add_user_defined_symbols() {
@@ -3602,10 +3207,8 @@ inline void TrainerSpec::add_user_defined_symbols(const char* value) {
   user_defined_symbols_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:sentencepiece.TrainerSpec.user_defined_symbols)
 }
-inline void TrainerSpec::add_user_defined_symbols(const char* value,
-                                                  size_t size) {
-  user_defined_symbols_.Add()->assign(reinterpret_cast<const char*>(value),
-                                      size);
+inline void TrainerSpec::add_user_defined_symbols(const char* value, size_t size) {
+  user_defined_symbols_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:sentencepiece.TrainerSpec.user_defined_symbols)
 }
 inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
@@ -3646,40 +3249,32 @@ inline std::string* TrainerSpec::mutable_required_chars() {
 inline const std::string& TrainerSpec::_internal_required_chars() const {
   return required_chars_.Get();
 }
-inline void TrainerSpec::_internal_set_required_chars(
-    const std::string& value) {
+inline void TrainerSpec::_internal_set_required_chars(const std::string& value) {
   _has_bits_[0] |= 0x00000004u;
-  required_chars_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value,
-      GetArena());
+  required_chars_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void TrainerSpec::set_required_chars(std::string&& value) {
   _has_bits_[0] |= 0x00000004u;
   required_chars_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.required_chars)
 }
 inline void TrainerSpec::set_required_chars(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000004u;
-  required_chars_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(value), GetArena());
+  required_chars_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.required_chars)
 }
-inline void TrainerSpec::set_required_chars(const char* value, size_t size) {
+inline void TrainerSpec::set_required_chars(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000004u;
-  required_chars_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  required_chars_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.required_chars)
 }
 inline std::string* TrainerSpec::_internal_mutable_required_chars() {
   _has_bits_[0] |= 0x00000004u;
-  return required_chars_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return required_chars_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* TrainerSpec::release_required_chars() {
   // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.required_chars)
@@ -3687,26 +3282,22 @@ inline std::string* TrainerSpec::release_required_chars() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000004u;
-  return required_chars_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return required_chars_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void TrainerSpec::set_allocated_required_chars(
-    std::string* required_chars) {
+inline void TrainerSpec::set_allocated_required_chars(std::string* required_chars) {
   if (required_chars != nullptr) {
     _has_bits_[0] |= 0x00000004u;
   } else {
     _has_bits_[0] &= ~0x00000004u;
   }
-  required_chars_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      required_chars, GetArena());
+  required_chars_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), required_chars,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.required_chars)
 }
 
 // optional bool byte_fallback = 35 [default = false];
 inline bool TrainerSpec::_internal_has_byte_fallback() const {
-  bool value = (_has_bits_[0] & 0x00020000u) != 0;
+  bool value = (_has_bits_[0] & 0x00040000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_byte_fallback() const {
@@ -3714,7 +3305,7 @@ inline bool TrainerSpec::has_byte_fallback() const {
 }
 inline void TrainerSpec::clear_byte_fallback() {
   byte_fallback_ = false;
-  _has_bits_[0] &= ~0x00020000u;
+  _has_bits_[0] &= ~0x00040000u;
 }
 inline bool TrainerSpec::_internal_byte_fallback() const {
   return byte_fallback_;
@@ -3724,7 +3315,7 @@ inline bool TrainerSpec::byte_fallback() const {
   return _internal_byte_fallback();
 }
 inline void TrainerSpec::_internal_set_byte_fallback(bool value) {
-  _has_bits_[0] |= 0x00020000u;
+  _has_bits_[0] |= 0x00040000u;
   byte_fallback_ = value;
 }
 inline void TrainerSpec::set_byte_fallback(bool value) {
@@ -3734,7 +3325,7 @@ inline void TrainerSpec::set_byte_fallback(bool value) {
 
 // optional bool vocabulary_output_piece_score = 32 [default = true];
 inline bool TrainerSpec::_internal_has_vocabulary_output_piece_score() const {
-  bool value = (_has_bits_[1] & 0x00000010u) != 0;
+  bool value = (_has_bits_[1] & 0x00000020u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_vocabulary_output_piece_score() const {
@@ -3742,7 +3333,7 @@ inline bool TrainerSpec::has_vocabulary_output_piece_score() const {
 }
 inline void TrainerSpec::clear_vocabulary_output_piece_score() {
   vocabulary_output_piece_score_ = true;
-  _has_bits_[1] &= ~0x00000010u;
+  _has_bits_[1] &= ~0x00000020u;
 }
 inline bool TrainerSpec::_internal_vocabulary_output_piece_score() const {
   return vocabulary_output_piece_score_;
@@ -3751,9 +3342,8 @@ inline bool TrainerSpec::vocabulary_output_piece_score() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.vocabulary_output_piece_score)
   return _internal_vocabulary_output_piece_score();
 }
-inline void TrainerSpec::_internal_set_vocabulary_output_piece_score(
-    bool value) {
-  _has_bits_[1] |= 0x00000010u;
+inline void TrainerSpec::_internal_set_vocabulary_output_piece_score(bool value) {
+  _has_bits_[1] |= 0x00000020u;
   vocabulary_output_piece_score_ = value;
 }
 inline void TrainerSpec::set_vocabulary_output_piece_score(bool value) {
@@ -3763,7 +3353,7 @@ inline void TrainerSpec::set_vocabulary_output_piece_score(bool value) {
 
 // optional bool hard_vocab_limit = 33 [default = true];
 inline bool TrainerSpec::_internal_has_hard_vocab_limit() const {
-  bool value = (_has_bits_[1] & 0x00000020u) != 0;
+  bool value = (_has_bits_[1] & 0x00000040u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_hard_vocab_limit() const {
@@ -3771,7 +3361,7 @@ inline bool TrainerSpec::has_hard_vocab_limit() const {
 }
 inline void TrainerSpec::clear_hard_vocab_limit() {
   hard_vocab_limit_ = true;
-  _has_bits_[1] &= ~0x00000020u;
+  _has_bits_[1] &= ~0x00000040u;
 }
 inline bool TrainerSpec::_internal_hard_vocab_limit() const {
   return hard_vocab_limit_;
@@ -3781,7 +3371,7 @@ inline bool TrainerSpec::hard_vocab_limit() const {
   return _internal_hard_vocab_limit();
 }
 inline void TrainerSpec::_internal_set_hard_vocab_limit(bool value) {
-  _has_bits_[1] |= 0x00000020u;
+  _has_bits_[1] |= 0x00000040u;
   hard_vocab_limit_ = value;
 }
 inline void TrainerSpec::set_hard_vocab_limit(bool value) {
@@ -3791,7 +3381,7 @@ inline void TrainerSpec::set_hard_vocab_limit(bool value) {
 
 // optional bool use_all_vocab = 34 [default = false];
 inline bool TrainerSpec::_internal_has_use_all_vocab() const {
-  bool value = (_has_bits_[0] & 0x00040000u) != 0;
+  bool value = (_has_bits_[0] & 0x00080000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_use_all_vocab() const {
@@ -3799,7 +3389,7 @@ inline bool TrainerSpec::has_use_all_vocab() const {
 }
 inline void TrainerSpec::clear_use_all_vocab() {
   use_all_vocab_ = false;
-  _has_bits_[0] &= ~0x00040000u;
+  _has_bits_[0] &= ~0x00080000u;
 }
 inline bool TrainerSpec::_internal_use_all_vocab() const {
   return use_all_vocab_;
@@ -3809,7 +3399,7 @@ inline bool TrainerSpec::use_all_vocab() const {
   return _internal_use_all_vocab();
 }
 inline void TrainerSpec::_internal_set_use_all_vocab(bool value) {
-  _has_bits_[0] |= 0x00040000u;
+  _has_bits_[0] |= 0x00080000u;
   use_all_vocab_ = value;
 }
 inline void TrainerSpec::set_use_all_vocab(bool value) {
@@ -3819,7 +3409,7 @@ inline void TrainerSpec::set_use_all_vocab(bool value) {
 
 // optional int32 unk_id = 40 [default = 0];
 inline bool TrainerSpec::_internal_has_unk_id() const {
-  bool value = (_has_bits_[0] & 0x00100000u) != 0;
+  bool value = (_has_bits_[0] & 0x00200000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_unk_id() const {
@@ -3827,7 +3417,7 @@ inline bool TrainerSpec::has_unk_id() const {
 }
 inline void TrainerSpec::clear_unk_id() {
   unk_id_ = 0;
-  _has_bits_[0] &= ~0x00100000u;
+  _has_bits_[0] &= ~0x00200000u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_unk_id() const {
   return unk_id_;
@@ -3836,9 +3426,8 @@ inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::unk_id() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.unk_id)
   return _internal_unk_id();
 }
-inline void TrainerSpec::_internal_set_unk_id(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[0] |= 0x00100000u;
+inline void TrainerSpec::_internal_set_unk_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[0] |= 0x00200000u;
   unk_id_ = value;
 }
 inline void TrainerSpec::set_unk_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -3848,7 +3437,7 @@ inline void TrainerSpec::set_unk_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
 
 // optional int32 bos_id = 41 [default = 1];
 inline bool TrainerSpec::_internal_has_bos_id() const {
-  bool value = (_has_bits_[1] & 0x00000040u) != 0;
+  bool value = (_has_bits_[1] & 0x00000080u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_bos_id() const {
@@ -3856,7 +3445,7 @@ inline bool TrainerSpec::has_bos_id() const {
 }
 inline void TrainerSpec::clear_bos_id() {
   bos_id_ = 1;
-  _has_bits_[1] &= ~0x00000040u;
+  _has_bits_[1] &= ~0x00000080u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_bos_id() const {
   return bos_id_;
@@ -3865,9 +3454,8 @@ inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::bos_id() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.bos_id)
   return _internal_bos_id();
 }
-inline void TrainerSpec::_internal_set_bos_id(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[1] |= 0x00000040u;
+inline void TrainerSpec::_internal_set_bos_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[1] |= 0x00000080u;
   bos_id_ = value;
 }
 inline void TrainerSpec::set_bos_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -3877,7 +3465,7 @@ inline void TrainerSpec::set_bos_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
 
 // optional int32 eos_id = 42 [default = 2];
 inline bool TrainerSpec::_internal_has_eos_id() const {
-  bool value = (_has_bits_[1] & 0x00000080u) != 0;
+  bool value = (_has_bits_[1] & 0x00000100u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_eos_id() const {
@@ -3885,7 +3473,7 @@ inline bool TrainerSpec::has_eos_id() const {
 }
 inline void TrainerSpec::clear_eos_id() {
   eos_id_ = 2;
-  _has_bits_[1] &= ~0x00000080u;
+  _has_bits_[1] &= ~0x00000100u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_eos_id() const {
   return eos_id_;
@@ -3894,9 +3482,8 @@ inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::eos_id() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.eos_id)
   return _internal_eos_id();
 }
-inline void TrainerSpec::_internal_set_eos_id(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[1] |= 0x00000080u;
+inline void TrainerSpec::_internal_set_eos_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[1] |= 0x00000100u;
   eos_id_ = value;
 }
 inline void TrainerSpec::set_eos_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -3906,7 +3493,7 @@ inline void TrainerSpec::set_eos_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
 
 // optional int32 pad_id = 43 [default = -1];
 inline bool TrainerSpec::_internal_has_pad_id() const {
-  bool value = (_has_bits_[1] & 0x00000100u) != 0;
+  bool value = (_has_bits_[1] & 0x00000200u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_pad_id() const {
@@ -3914,7 +3501,7 @@ inline bool TrainerSpec::has_pad_id() const {
 }
 inline void TrainerSpec::clear_pad_id() {
   pad_id_ = -1;
-  _has_bits_[1] &= ~0x00000100u;
+  _has_bits_[1] &= ~0x00000200u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::_internal_pad_id() const {
   return pad_id_;
@@ -3923,9 +3510,8 @@ inline ::PROTOBUF_NAMESPACE_ID::int32 TrainerSpec::pad_id() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.pad_id)
   return _internal_pad_id();
 }
-inline void TrainerSpec::_internal_set_pad_id(
-    ::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _has_bits_[1] |= 0x00000100u;
+inline void TrainerSpec::_internal_set_pad_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _has_bits_[1] |= 0x00000200u;
   pad_id_ = value;
 }
 inline void TrainerSpec::set_pad_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -3942,17 +3528,12 @@ inline bool TrainerSpec::has_unk_piece() const {
   return _internal_has_unk_piece();
 }
 inline void TrainerSpec::clear_unk_piece() {
-  unk_piece_.ClearToDefault(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_unk_piece_,
-      GetArena());
+  unk_piece_.ClearToDefault(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_unk_piece_, GetArena());
   _has_bits_[0] &= ~0x00000010u;
 }
 inline const std::string& TrainerSpec::unk_piece() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.unk_piece)
-  if (unk_piece_.IsDefault(nullptr)) {
-    return _i_give_permission_to_break_this_code_default_unk_piece_.get();
-  }
+  if (unk_piece_.IsDefault(nullptr)) return _i_give_permission_to_break_this_code_default_unk_piece_.get();
   return _internal_unk_piece();
 }
 inline void TrainerSpec::set_unk_piece(const std::string& value) {
@@ -3968,38 +3549,30 @@ inline const std::string& TrainerSpec::_internal_unk_piece() const {
 }
 inline void TrainerSpec::_internal_set_unk_piece(const std::string& value) {
   _has_bits_[0] |= 0x00000010u;
-  unk_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      value, GetArena());
+  unk_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, value, GetArena());
 }
 inline void TrainerSpec::set_unk_piece(std::string&& value) {
   _has_bits_[0] |= 0x00000010u;
   unk_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.unk_piece)
 }
 inline void TrainerSpec::set_unk_piece(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000010u;
-  unk_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(value), GetArena());
+  unk_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.unk_piece)
 }
-inline void TrainerSpec::set_unk_piece(const char* value, size_t size) {
+inline void TrainerSpec::set_unk_piece(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000010u;
-  unk_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  unk_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.unk_piece)
 }
 inline std::string* TrainerSpec::_internal_mutable_unk_piece() {
   _has_bits_[0] |= 0x00000010u;
-  return unk_piece_.Mutable(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_unk_piece_,
-      GetArena());
+  return unk_piece_.Mutable(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_unk_piece_, GetArena());
 }
 inline std::string* TrainerSpec::release_unk_piece() {
   // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.unk_piece)
@@ -4015,7 +3588,8 @@ inline void TrainerSpec::set_allocated_unk_piece(std::string* unk_piece) {
   } else {
     _has_bits_[0] &= ~0x00000010u;
   }
-  unk_piece_.SetAllocated(nullptr, unk_piece, GetArena());
+  unk_piece_.SetAllocated(nullptr, unk_piece,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.unk_piece)
 }
 
@@ -4028,17 +3602,12 @@ inline bool TrainerSpec::has_bos_piece() const {
   return _internal_has_bos_piece();
 }
 inline void TrainerSpec::clear_bos_piece() {
-  bos_piece_.ClearToDefault(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_bos_piece_,
-      GetArena());
+  bos_piece_.ClearToDefault(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_bos_piece_, GetArena());
   _has_bits_[0] &= ~0x00000020u;
 }
 inline const std::string& TrainerSpec::bos_piece() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.bos_piece)
-  if (bos_piece_.IsDefault(nullptr)) {
-    return _i_give_permission_to_break_this_code_default_bos_piece_.get();
-  }
+  if (bos_piece_.IsDefault(nullptr)) return _i_give_permission_to_break_this_code_default_bos_piece_.get();
   return _internal_bos_piece();
 }
 inline void TrainerSpec::set_bos_piece(const std::string& value) {
@@ -4054,38 +3623,30 @@ inline const std::string& TrainerSpec::_internal_bos_piece() const {
 }
 inline void TrainerSpec::_internal_set_bos_piece(const std::string& value) {
   _has_bits_[0] |= 0x00000020u;
-  bos_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      value, GetArena());
+  bos_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, value, GetArena());
 }
 inline void TrainerSpec::set_bos_piece(std::string&& value) {
   _has_bits_[0] |= 0x00000020u;
   bos_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.bos_piece)
 }
 inline void TrainerSpec::set_bos_piece(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000020u;
-  bos_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(value), GetArena());
+  bos_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.bos_piece)
 }
-inline void TrainerSpec::set_bos_piece(const char* value, size_t size) {
+inline void TrainerSpec::set_bos_piece(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000020u;
-  bos_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  bos_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.bos_piece)
 }
 inline std::string* TrainerSpec::_internal_mutable_bos_piece() {
   _has_bits_[0] |= 0x00000020u;
-  return bos_piece_.Mutable(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_bos_piece_,
-      GetArena());
+  return bos_piece_.Mutable(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_bos_piece_, GetArena());
 }
 inline std::string* TrainerSpec::release_bos_piece() {
   // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.bos_piece)
@@ -4101,7 +3662,8 @@ inline void TrainerSpec::set_allocated_bos_piece(std::string* bos_piece) {
   } else {
     _has_bits_[0] &= ~0x00000020u;
   }
-  bos_piece_.SetAllocated(nullptr, bos_piece, GetArena());
+  bos_piece_.SetAllocated(nullptr, bos_piece,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.bos_piece)
 }
 
@@ -4114,17 +3676,12 @@ inline bool TrainerSpec::has_eos_piece() const {
   return _internal_has_eos_piece();
 }
 inline void TrainerSpec::clear_eos_piece() {
-  eos_piece_.ClearToDefault(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_eos_piece_,
-      GetArena());
+  eos_piece_.ClearToDefault(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_eos_piece_, GetArena());
   _has_bits_[0] &= ~0x00000040u;
 }
 inline const std::string& TrainerSpec::eos_piece() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.eos_piece)
-  if (eos_piece_.IsDefault(nullptr)) {
-    return _i_give_permission_to_break_this_code_default_eos_piece_.get();
-  }
+  if (eos_piece_.IsDefault(nullptr)) return _i_give_permission_to_break_this_code_default_eos_piece_.get();
   return _internal_eos_piece();
 }
 inline void TrainerSpec::set_eos_piece(const std::string& value) {
@@ -4140,38 +3697,30 @@ inline const std::string& TrainerSpec::_internal_eos_piece() const {
 }
 inline void TrainerSpec::_internal_set_eos_piece(const std::string& value) {
   _has_bits_[0] |= 0x00000040u;
-  eos_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      value, GetArena());
+  eos_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, value, GetArena());
 }
 inline void TrainerSpec::set_eos_piece(std::string&& value) {
   _has_bits_[0] |= 0x00000040u;
   eos_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.eos_piece)
 }
 inline void TrainerSpec::set_eos_piece(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000040u;
-  eos_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(value), GetArena());
+  eos_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.eos_piece)
 }
-inline void TrainerSpec::set_eos_piece(const char* value, size_t size) {
+inline void TrainerSpec::set_eos_piece(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000040u;
-  eos_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  eos_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.eos_piece)
 }
 inline std::string* TrainerSpec::_internal_mutable_eos_piece() {
   _has_bits_[0] |= 0x00000040u;
-  return eos_piece_.Mutable(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_eos_piece_,
-      GetArena());
+  return eos_piece_.Mutable(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_eos_piece_, GetArena());
 }
 inline std::string* TrainerSpec::release_eos_piece() {
   // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.eos_piece)
@@ -4187,7 +3736,8 @@ inline void TrainerSpec::set_allocated_eos_piece(std::string* eos_piece) {
   } else {
     _has_bits_[0] &= ~0x00000040u;
   }
-  eos_piece_.SetAllocated(nullptr, eos_piece, GetArena());
+  eos_piece_.SetAllocated(nullptr, eos_piece,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.eos_piece)
 }
 
@@ -4200,17 +3750,12 @@ inline bool TrainerSpec::has_pad_piece() const {
   return _internal_has_pad_piece();
 }
 inline void TrainerSpec::clear_pad_piece() {
-  pad_piece_.ClearToDefault(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_pad_piece_,
-      GetArena());
+  pad_piece_.ClearToDefault(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_pad_piece_, GetArena());
   _has_bits_[0] &= ~0x00000080u;
 }
 inline const std::string& TrainerSpec::pad_piece() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.pad_piece)
-  if (pad_piece_.IsDefault(nullptr)) {
-    return _i_give_permission_to_break_this_code_default_pad_piece_.get();
-  }
+  if (pad_piece_.IsDefault(nullptr)) return _i_give_permission_to_break_this_code_default_pad_piece_.get();
   return _internal_pad_piece();
 }
 inline void TrainerSpec::set_pad_piece(const std::string& value) {
@@ -4226,38 +3771,30 @@ inline const std::string& TrainerSpec::_internal_pad_piece() const {
 }
 inline void TrainerSpec::_internal_set_pad_piece(const std::string& value) {
   _has_bits_[0] |= 0x00000080u;
-  pad_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      value, GetArena());
+  pad_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, value, GetArena());
 }
 inline void TrainerSpec::set_pad_piece(std::string&& value) {
   _has_bits_[0] |= 0x00000080u;
   pad_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.pad_piece)
 }
 inline void TrainerSpec::set_pad_piece(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000080u;
-  pad_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(value), GetArena());
+  pad_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.pad_piece)
 }
-inline void TrainerSpec::set_pad_piece(const char* value, size_t size) {
+inline void TrainerSpec::set_pad_piece(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000080u;
-  pad_piece_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  pad_piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.pad_piece)
 }
 inline std::string* TrainerSpec::_internal_mutable_pad_piece() {
   _has_bits_[0] |= 0x00000080u;
-  return pad_piece_.Mutable(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_pad_piece_,
-      GetArena());
+  return pad_piece_.Mutable(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_pad_piece_, GetArena());
 }
 inline std::string* TrainerSpec::release_pad_piece() {
   // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.pad_piece)
@@ -4273,7 +3810,8 @@ inline void TrainerSpec::set_allocated_pad_piece(std::string* pad_piece) {
   } else {
     _has_bits_[0] &= ~0x00000080u;
   }
-  pad_piece_.SetAllocated(nullptr, pad_piece, GetArena());
+  pad_piece_.SetAllocated(nullptr, pad_piece,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.pad_piece)
 }
 
@@ -4286,17 +3824,12 @@ inline bool TrainerSpec::has_unk_surface() const {
   return _internal_has_unk_surface();
 }
 inline void TrainerSpec::clear_unk_surface() {
-  unk_surface_.ClearToDefault(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_unk_surface_,
-      GetArena());
+  unk_surface_.ClearToDefault(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_unk_surface_, GetArena());
   _has_bits_[0] &= ~0x00000008u;
 }
 inline const std::string& TrainerSpec::unk_surface() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.unk_surface)
-  if (unk_surface_.IsDefault(nullptr)) {
-    return _i_give_permission_to_break_this_code_default_unk_surface_.get();
-  }
+  if (unk_surface_.IsDefault(nullptr)) return _i_give_permission_to_break_this_code_default_unk_surface_.get();
   return _internal_unk_surface();
 }
 inline void TrainerSpec::set_unk_surface(const std::string& value) {
@@ -4312,38 +3845,30 @@ inline const std::string& TrainerSpec::_internal_unk_surface() const {
 }
 inline void TrainerSpec::_internal_set_unk_surface(const std::string& value) {
   _has_bits_[0] |= 0x00000008u;
-  unk_surface_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      value, GetArena());
+  unk_surface_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, value, GetArena());
 }
 inline void TrainerSpec::set_unk_surface(std::string&& value) {
   _has_bits_[0] |= 0x00000008u;
   unk_surface_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.unk_surface)
 }
 inline void TrainerSpec::set_unk_surface(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000008u;
-  unk_surface_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(value), GetArena());
+  unk_surface_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.unk_surface)
 }
-inline void TrainerSpec::set_unk_surface(const char* value, size_t size) {
+inline void TrainerSpec::set_unk_surface(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000008u;
-  unk_surface_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  unk_surface_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.unk_surface)
 }
 inline std::string* TrainerSpec::_internal_mutable_unk_surface() {
   _has_bits_[0] |= 0x00000008u;
-  return unk_surface_.Mutable(
-      ::sentencepiece::TrainerSpec::
-          _i_give_permission_to_break_this_code_default_unk_surface_,
-      GetArena());
+  return unk_surface_.Mutable(::sentencepiece::TrainerSpec::_i_give_permission_to_break_this_code_default_unk_surface_, GetArena());
 }
 inline std::string* TrainerSpec::release_unk_surface() {
   // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.unk_surface)
@@ -4359,13 +3884,14 @@ inline void TrainerSpec::set_allocated_unk_surface(std::string* unk_surface) {
   } else {
     _has_bits_[0] &= ~0x00000008u;
   }
-  unk_surface_.SetAllocated(nullptr, unk_surface, GetArena());
+  unk_surface_.SetAllocated(nullptr, unk_surface,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.unk_surface)
 }
 
 // optional bool train_extremely_large_corpus = 49 [default = false];
 inline bool TrainerSpec::_internal_has_train_extremely_large_corpus() const {
-  bool value = (_has_bits_[0] & 0x00080000u) != 0;
+  bool value = (_has_bits_[0] & 0x00100000u) != 0;
   return value;
 }
 inline bool TrainerSpec::has_train_extremely_large_corpus() const {
@@ -4373,7 +3899,7 @@ inline bool TrainerSpec::has_train_extremely_large_corpus() const {
 }
 inline void TrainerSpec::clear_train_extremely_large_corpus() {
   train_extremely_large_corpus_ = false;
-  _has_bits_[0] &= ~0x00080000u;
+  _has_bits_[0] &= ~0x00100000u;
 }
 inline bool TrainerSpec::_internal_train_extremely_large_corpus() const {
   return train_extremely_large_corpus_;
@@ -4382,14 +3908,86 @@ inline bool TrainerSpec::train_extremely_large_corpus() const {
   // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.train_extremely_large_corpus)
   return _internal_train_extremely_large_corpus();
 }
-inline void TrainerSpec::_internal_set_train_extremely_large_corpus(
-    bool value) {
-  _has_bits_[0] |= 0x00080000u;
+inline void TrainerSpec::_internal_set_train_extremely_large_corpus(bool value) {
+  _has_bits_[0] |= 0x00100000u;
   train_extremely_large_corpus_ = value;
 }
 inline void TrainerSpec::set_train_extremely_large_corpus(bool value) {
   _internal_set_train_extremely_large_corpus(value);
   // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.train_extremely_large_corpus)
+}
+
+// optional string seed_sentencepieces_file = 54 [default = ""];
+inline bool TrainerSpec::_internal_has_seed_sentencepieces_file() const {
+  bool value = (_has_bits_[0] & 0x00000200u) != 0;
+  return value;
+}
+inline bool TrainerSpec::has_seed_sentencepieces_file() const {
+  return _internal_has_seed_sentencepieces_file();
+}
+inline void TrainerSpec::clear_seed_sentencepieces_file() {
+  seed_sentencepieces_file_.ClearToEmpty();
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline const std::string& TrainerSpec::seed_sentencepieces_file() const {
+  // @@protoc_insertion_point(field_get:sentencepiece.TrainerSpec.seed_sentencepieces_file)
+  return _internal_seed_sentencepieces_file();
+}
+inline void TrainerSpec::set_seed_sentencepieces_file(const std::string& value) {
+  _internal_set_seed_sentencepieces_file(value);
+  // @@protoc_insertion_point(field_set:sentencepiece.TrainerSpec.seed_sentencepieces_file)
+}
+inline std::string* TrainerSpec::mutable_seed_sentencepieces_file() {
+  // @@protoc_insertion_point(field_mutable:sentencepiece.TrainerSpec.seed_sentencepieces_file)
+  return _internal_mutable_seed_sentencepieces_file();
+}
+inline const std::string& TrainerSpec::_internal_seed_sentencepieces_file() const {
+  return seed_sentencepieces_file_.Get();
+}
+inline void TrainerSpec::_internal_set_seed_sentencepieces_file(const std::string& value) {
+  _has_bits_[0] |= 0x00000200u;
+  seed_sentencepieces_file_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
+}
+inline void TrainerSpec::set_seed_sentencepieces_file(std::string&& value) {
+  _has_bits_[0] |= 0x00000200u;
+  seed_sentencepieces_file_.Set(
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:sentencepiece.TrainerSpec.seed_sentencepieces_file)
+}
+inline void TrainerSpec::set_seed_sentencepieces_file(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _has_bits_[0] |= 0x00000200u;
+  seed_sentencepieces_file_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
+  // @@protoc_insertion_point(field_set_char:sentencepiece.TrainerSpec.seed_sentencepieces_file)
+}
+inline void TrainerSpec::set_seed_sentencepieces_file(const char* value,
+    size_t size) {
+  _has_bits_[0] |= 0x00000200u;
+  seed_sentencepieces_file_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:sentencepiece.TrainerSpec.seed_sentencepieces_file)
+}
+inline std::string* TrainerSpec::_internal_mutable_seed_sentencepieces_file() {
+  _has_bits_[0] |= 0x00000200u;
+  return seed_sentencepieces_file_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
+}
+inline std::string* TrainerSpec::release_seed_sentencepieces_file() {
+  // @@protoc_insertion_point(field_release:sentencepiece.TrainerSpec.seed_sentencepieces_file)
+  if (!_internal_has_seed_sentencepieces_file()) {
+    return nullptr;
+  }
+  _has_bits_[0] &= ~0x00000200u;
+  return seed_sentencepieces_file_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void TrainerSpec::set_allocated_seed_sentencepieces_file(std::string* seed_sentencepieces_file) {
+  if (seed_sentencepieces_file != nullptr) {
+    _has_bits_[0] |= 0x00000200u;
+  } else {
+    _has_bits_[0] &= ~0x00000200u;
+  }
+  seed_sentencepieces_file_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), seed_sentencepieces_file,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:sentencepiece.TrainerSpec.seed_sentencepieces_file)
 }
 
 // -------------------------------------------------------------------
@@ -4425,34 +4023,30 @@ inline const std::string& NormalizerSpec::_internal_name() const {
 }
 inline void NormalizerSpec::_internal_set_name(const std::string& value) {
   _has_bits_[0] |= 0x00000001u;
-  name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-            value, GetArena());
+  name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void NormalizerSpec::set_name(std::string&& value) {
   _has_bits_[0] |= 0x00000001u;
-  name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-            ::std::move(value), GetArena());
+  name_.Set(
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.NormalizerSpec.name)
 }
 inline void NormalizerSpec::set_name(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000001u;
-  name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-            ::std::string(value), GetArena());
+  name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.NormalizerSpec.name)
 }
-inline void NormalizerSpec::set_name(const char* value, size_t size) {
+inline void NormalizerSpec::set_name(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000001u;
-  name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-            ::std::string(reinterpret_cast<const char*>(value), size),
-            GetArena());
+  name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.NormalizerSpec.name)
 }
 inline std::string* NormalizerSpec::_internal_mutable_name() {
   _has_bits_[0] |= 0x00000001u;
-  return name_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return name_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* NormalizerSpec::release_name() {
   // @@protoc_insertion_point(field_release:sentencepiece.NormalizerSpec.name)
@@ -4460,9 +4054,7 @@ inline std::string* NormalizerSpec::release_name() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000001u;
-  return name_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return name_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 inline void NormalizerSpec::set_allocated_name(std::string* name) {
   if (name != nullptr) {
@@ -4470,8 +4062,7 @@ inline void NormalizerSpec::set_allocated_name(std::string* name) {
   } else {
     _has_bits_[0] &= ~0x00000001u;
   }
-  name_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), name,
+  name_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), name,
       GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.NormalizerSpec.name)
 }
@@ -4500,45 +4091,35 @@ inline std::string* NormalizerSpec::mutable_precompiled_charsmap() {
   // @@protoc_insertion_point(field_mutable:sentencepiece.NormalizerSpec.precompiled_charsmap)
   return _internal_mutable_precompiled_charsmap();
 }
-inline const std::string& NormalizerSpec::_internal_precompiled_charsmap()
-    const {
+inline const std::string& NormalizerSpec::_internal_precompiled_charsmap() const {
   return precompiled_charsmap_.Get();
 }
-inline void NormalizerSpec::_internal_set_precompiled_charsmap(
-    const std::string& value) {
+inline void NormalizerSpec::_internal_set_precompiled_charsmap(const std::string& value) {
   _has_bits_[0] |= 0x00000002u;
-  precompiled_charsmap_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value,
-      GetArena());
+  precompiled_charsmap_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void NormalizerSpec::set_precompiled_charsmap(std::string&& value) {
   _has_bits_[0] |= 0x00000002u;
   precompiled_charsmap_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.NormalizerSpec.precompiled_charsmap)
 }
 inline void NormalizerSpec::set_precompiled_charsmap(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000002u;
-  precompiled_charsmap_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(value), GetArena());
+  precompiled_charsmap_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.NormalizerSpec.precompiled_charsmap)
 }
 inline void NormalizerSpec::set_precompiled_charsmap(const void* value,
-                                                     size_t size) {
+    size_t size) {
   _has_bits_[0] |= 0x00000002u;
-  precompiled_charsmap_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  precompiled_charsmap_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.NormalizerSpec.precompiled_charsmap)
 }
 inline std::string* NormalizerSpec::_internal_mutable_precompiled_charsmap() {
   _has_bits_[0] |= 0x00000002u;
-  return precompiled_charsmap_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return precompiled_charsmap_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* NormalizerSpec::release_precompiled_charsmap() {
   // @@protoc_insertion_point(field_release:sentencepiece.NormalizerSpec.precompiled_charsmap)
@@ -4546,20 +4127,16 @@ inline std::string* NormalizerSpec::release_precompiled_charsmap() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000002u;
-  return precompiled_charsmap_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return precompiled_charsmap_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void NormalizerSpec::set_allocated_precompiled_charsmap(
-    std::string* precompiled_charsmap) {
+inline void NormalizerSpec::set_allocated_precompiled_charsmap(std::string* precompiled_charsmap) {
   if (precompiled_charsmap != nullptr) {
     _has_bits_[0] |= 0x00000002u;
   } else {
     _has_bits_[0] &= ~0x00000002u;
   }
-  precompiled_charsmap_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      precompiled_charsmap, GetArena());
+  precompiled_charsmap_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), precompiled_charsmap,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.NormalizerSpec.precompiled_charsmap)
 }
 
@@ -4663,8 +4240,7 @@ inline const std::string& NormalizerSpec::normalization_rule_tsv() const {
   // @@protoc_insertion_point(field_get:sentencepiece.NormalizerSpec.normalization_rule_tsv)
   return _internal_normalization_rule_tsv();
 }
-inline void NormalizerSpec::set_normalization_rule_tsv(
-    const std::string& value) {
+inline void NormalizerSpec::set_normalization_rule_tsv(const std::string& value) {
   _internal_set_normalization_rule_tsv(value);
   // @@protoc_insertion_point(field_set:sentencepiece.NormalizerSpec.normalization_rule_tsv)
 }
@@ -4672,45 +4248,35 @@ inline std::string* NormalizerSpec::mutable_normalization_rule_tsv() {
   // @@protoc_insertion_point(field_mutable:sentencepiece.NormalizerSpec.normalization_rule_tsv)
   return _internal_mutable_normalization_rule_tsv();
 }
-inline const std::string& NormalizerSpec::_internal_normalization_rule_tsv()
-    const {
+inline const std::string& NormalizerSpec::_internal_normalization_rule_tsv() const {
   return normalization_rule_tsv_.Get();
 }
-inline void NormalizerSpec::_internal_set_normalization_rule_tsv(
-    const std::string& value) {
+inline void NormalizerSpec::_internal_set_normalization_rule_tsv(const std::string& value) {
   _has_bits_[0] |= 0x00000004u;
-  normalization_rule_tsv_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value,
-      GetArena());
+  normalization_rule_tsv_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void NormalizerSpec::set_normalization_rule_tsv(std::string&& value) {
   _has_bits_[0] |= 0x00000004u;
   normalization_rule_tsv_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.NormalizerSpec.normalization_rule_tsv)
 }
 inline void NormalizerSpec::set_normalization_rule_tsv(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000004u;
-  normalization_rule_tsv_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(value), GetArena());
+  normalization_rule_tsv_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.NormalizerSpec.normalization_rule_tsv)
 }
 inline void NormalizerSpec::set_normalization_rule_tsv(const char* value,
-                                                       size_t size) {
+    size_t size) {
   _has_bits_[0] |= 0x00000004u;
-  normalization_rule_tsv_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  normalization_rule_tsv_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.NormalizerSpec.normalization_rule_tsv)
 }
 inline std::string* NormalizerSpec::_internal_mutable_normalization_rule_tsv() {
   _has_bits_[0] |= 0x00000004u;
-  return normalization_rule_tsv_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return normalization_rule_tsv_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* NormalizerSpec::release_normalization_rule_tsv() {
   // @@protoc_insertion_point(field_release:sentencepiece.NormalizerSpec.normalization_rule_tsv)
@@ -4718,20 +4284,16 @@ inline std::string* NormalizerSpec::release_normalization_rule_tsv() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000004u;
-  return normalization_rule_tsv_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return normalization_rule_tsv_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void NormalizerSpec::set_allocated_normalization_rule_tsv(
-    std::string* normalization_rule_tsv) {
+inline void NormalizerSpec::set_allocated_normalization_rule_tsv(std::string* normalization_rule_tsv) {
   if (normalization_rule_tsv != nullptr) {
     _has_bits_[0] |= 0x00000004u;
   } else {
     _has_bits_[0] &= ~0x00000004u;
   }
-  normalization_rule_tsv_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      normalization_rule_tsv, GetArena());
+  normalization_rule_tsv_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), normalization_rule_tsv,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.NormalizerSpec.normalization_rule_tsv)
 }
 
@@ -4768,34 +4330,30 @@ inline const std::string& SelfTestData_Sample::_internal_input() const {
 }
 inline void SelfTestData_Sample::_internal_set_input(const std::string& value) {
   _has_bits_[0] |= 0x00000001u;
-  input_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             value, GetArena());
+  input_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void SelfTestData_Sample::set_input(std::string&& value) {
   _has_bits_[0] |= 0x00000001u;
-  input_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             ::std::move(value), GetArena());
+  input_.Set(
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.SelfTestData.Sample.input)
 }
 inline void SelfTestData_Sample::set_input(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000001u;
-  input_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             ::std::string(value), GetArena());
+  input_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.SelfTestData.Sample.input)
 }
-inline void SelfTestData_Sample::set_input(const char* value, size_t size) {
+inline void SelfTestData_Sample::set_input(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000001u;
-  input_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             ::std::string(reinterpret_cast<const char*>(value), size),
-             GetArena());
+  input_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.SelfTestData.Sample.input)
 }
 inline std::string* SelfTestData_Sample::_internal_mutable_input() {
   _has_bits_[0] |= 0x00000001u;
-  return input_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return input_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* SelfTestData_Sample::release_input() {
   // @@protoc_insertion_point(field_release:sentencepiece.SelfTestData.Sample.input)
@@ -4803,9 +4361,7 @@ inline std::string* SelfTestData_Sample::release_input() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000001u;
-  return input_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return input_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 inline void SelfTestData_Sample::set_allocated_input(std::string* input) {
   if (input != nullptr) {
@@ -4813,8 +4369,7 @@ inline void SelfTestData_Sample::set_allocated_input(std::string* input) {
   } else {
     _has_bits_[0] &= ~0x00000001u;
   }
-  input_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), input,
+  input_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), input,
       GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.SelfTestData.Sample.input)
 }
@@ -4846,40 +4401,32 @@ inline std::string* SelfTestData_Sample::mutable_expected() {
 inline const std::string& SelfTestData_Sample::_internal_expected() const {
   return expected_.Get();
 }
-inline void SelfTestData_Sample::_internal_set_expected(
-    const std::string& value) {
+inline void SelfTestData_Sample::_internal_set_expected(const std::string& value) {
   _has_bits_[0] |= 0x00000002u;
-  expected_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value,
-      GetArena());
+  expected_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void SelfTestData_Sample::set_expected(std::string&& value) {
   _has_bits_[0] |= 0x00000002u;
   expected_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.SelfTestData.Sample.expected)
 }
 inline void SelfTestData_Sample::set_expected(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000002u;
-  expected_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(value), GetArena());
+  expected_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.SelfTestData.Sample.expected)
 }
-inline void SelfTestData_Sample::set_expected(const char* value, size_t size) {
+inline void SelfTestData_Sample::set_expected(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000002u;
-  expected_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  expected_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.SelfTestData.Sample.expected)
 }
 inline std::string* SelfTestData_Sample::_internal_mutable_expected() {
   _has_bits_[0] |= 0x00000002u;
-  return expected_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return expected_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* SelfTestData_Sample::release_expected() {
   // @@protoc_insertion_point(field_release:sentencepiece.SelfTestData.Sample.expected)
@@ -4887,9 +4434,7 @@ inline std::string* SelfTestData_Sample::release_expected() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000002u;
-  return expected_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return expected_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 inline void SelfTestData_Sample::set_allocated_expected(std::string* expected) {
   if (expected != nullptr) {
@@ -4897,9 +4442,8 @@ inline void SelfTestData_Sample::set_allocated_expected(std::string* expected) {
   } else {
     _has_bits_[0] &= ~0x00000002u;
   }
-  expected_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      expected, GetArena());
+  expected_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), expected,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.SelfTestData.Sample.expected)
 }
 
@@ -4917,36 +4461,30 @@ inline int SelfTestData::samples_size() const {
 inline void SelfTestData::clear_samples() {
   samples_.Clear();
 }
-inline ::sentencepiece::SelfTestData_Sample* SelfTestData::mutable_samples(
-    int index) {
+inline ::sentencepiece::SelfTestData_Sample* SelfTestData::mutable_samples(int index) {
   // @@protoc_insertion_point(field_mutable:sentencepiece.SelfTestData.samples)
   return samples_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-    ::sentencepiece::SelfTestData_Sample>*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SelfTestData_Sample >*
 SelfTestData::mutable_samples() {
   // @@protoc_insertion_point(field_mutable_list:sentencepiece.SelfTestData.samples)
   return &samples_;
 }
-inline const ::sentencepiece::SelfTestData_Sample&
-SelfTestData::_internal_samples(int index) const {
+inline const ::sentencepiece::SelfTestData_Sample& SelfTestData::_internal_samples(int index) const {
   return samples_.Get(index);
 }
-inline const ::sentencepiece::SelfTestData_Sample& SelfTestData::samples(
-    int index) const {
+inline const ::sentencepiece::SelfTestData_Sample& SelfTestData::samples(int index) const {
   // @@protoc_insertion_point(field_get:sentencepiece.SelfTestData.samples)
   return _internal_samples(index);
 }
-inline ::sentencepiece::SelfTestData_Sample*
-SelfTestData::_internal_add_samples() {
+inline ::sentencepiece::SelfTestData_Sample* SelfTestData::_internal_add_samples() {
   return samples_.Add();
 }
 inline ::sentencepiece::SelfTestData_Sample* SelfTestData::add_samples() {
   // @@protoc_insertion_point(field_add:sentencepiece.SelfTestData.samples)
   return _internal_add_samples();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-    ::sentencepiece::SelfTestData_Sample>&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SelfTestData_Sample >&
 SelfTestData::samples() const {
   // @@protoc_insertion_point(field_list:sentencepiece.SelfTestData.samples)
   return samples_;
@@ -4983,38 +4521,32 @@ inline std::string* ModelProto_SentencePiece::mutable_piece() {
 inline const std::string& ModelProto_SentencePiece::_internal_piece() const {
   return piece_.Get();
 }
-inline void ModelProto_SentencePiece::_internal_set_piece(
-    const std::string& value) {
+inline void ModelProto_SentencePiece::_internal_set_piece(const std::string& value) {
   _has_bits_[0] |= 0x00000001u;
-  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             value, GetArena());
+  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void ModelProto_SentencePiece::set_piece(std::string&& value) {
   _has_bits_[0] |= 0x00000001u;
-  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             ::std::move(value), GetArena());
+  piece_.Set(
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.ModelProto.SentencePiece.piece)
 }
 inline void ModelProto_SentencePiece::set_piece(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000001u;
-  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             ::std::string(value), GetArena());
+  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.ModelProto.SentencePiece.piece)
 }
 inline void ModelProto_SentencePiece::set_piece(const char* value,
-                                                size_t size) {
+    size_t size) {
   _has_bits_[0] |= 0x00000001u;
-  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             ::std::string(reinterpret_cast<const char*>(value), size),
-             GetArena());
+  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.ModelProto.SentencePiece.piece)
 }
 inline std::string* ModelProto_SentencePiece::_internal_mutable_piece() {
   _has_bits_[0] |= 0x00000001u;
-  return piece_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return piece_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* ModelProto_SentencePiece::release_piece() {
   // @@protoc_insertion_point(field_release:sentencepiece.ModelProto.SentencePiece.piece)
@@ -5022,9 +4554,7 @@ inline std::string* ModelProto_SentencePiece::release_piece() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000001u;
-  return piece_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return piece_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 inline void ModelProto_SentencePiece::set_allocated_piece(std::string* piece) {
   if (piece != nullptr) {
@@ -5032,8 +4562,7 @@ inline void ModelProto_SentencePiece::set_allocated_piece(std::string* piece) {
   } else {
     _has_bits_[0] &= ~0x00000001u;
   }
-  piece_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), piece,
+  piece_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), piece,
       GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.ModelProto.SentencePiece.piece)
 }
@@ -5066,8 +4595,7 @@ inline void ModelProto_SentencePiece::set_score(float value) {
   // @@protoc_insertion_point(field_set:sentencepiece.ModelProto.SentencePiece.score)
 }
 
-// optional .sentencepiece.ModelProto.SentencePiece.Type type = 3 [default =
-// NORMAL];
+// optional .sentencepiece.ModelProto.SentencePiece.Type type = 3 [default = NORMAL];
 inline bool ModelProto_SentencePiece::_internal_has_type() const {
   bool value = (_has_bits_[0] & 0x00000004u) != 0;
   return value;
@@ -5079,23 +4607,19 @@ inline void ModelProto_SentencePiece::clear_type() {
   type_ = 1;
   _has_bits_[0] &= ~0x00000004u;
 }
-inline ::sentencepiece::ModelProto_SentencePiece_Type
-ModelProto_SentencePiece::_internal_type() const {
-  return static_cast<::sentencepiece::ModelProto_SentencePiece_Type>(type_);
+inline ::sentencepiece::ModelProto_SentencePiece_Type ModelProto_SentencePiece::_internal_type() const {
+  return static_cast< ::sentencepiece::ModelProto_SentencePiece_Type >(type_);
 }
-inline ::sentencepiece::ModelProto_SentencePiece_Type
-ModelProto_SentencePiece::type() const {
+inline ::sentencepiece::ModelProto_SentencePiece_Type ModelProto_SentencePiece::type() const {
   // @@protoc_insertion_point(field_get:sentencepiece.ModelProto.SentencePiece.type)
   return _internal_type();
 }
-inline void ModelProto_SentencePiece::_internal_set_type(
-    ::sentencepiece::ModelProto_SentencePiece_Type value) {
+inline void ModelProto_SentencePiece::_internal_set_type(::sentencepiece::ModelProto_SentencePiece_Type value) {
   assert(::sentencepiece::ModelProto_SentencePiece_Type_IsValid(value));
   _has_bits_[0] |= 0x00000004u;
   type_ = value;
 }
-inline void ModelProto_SentencePiece::set_type(
-    ::sentencepiece::ModelProto_SentencePiece_Type value) {
+inline void ModelProto_SentencePiece::set_type(::sentencepiece::ModelProto_SentencePiece_Type value) {
   _internal_set_type(value);
   // @@protoc_insertion_point(field_set:sentencepiece.ModelProto.SentencePiece.type)
 }
@@ -5114,36 +4638,30 @@ inline int ModelProto::pieces_size() const {
 inline void ModelProto::clear_pieces() {
   pieces_.Clear();
 }
-inline ::sentencepiece::ModelProto_SentencePiece* ModelProto::mutable_pieces(
-    int index) {
+inline ::sentencepiece::ModelProto_SentencePiece* ModelProto::mutable_pieces(int index) {
   // @@protoc_insertion_point(field_mutable:sentencepiece.ModelProto.pieces)
   return pieces_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-    ::sentencepiece::ModelProto_SentencePiece>*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::ModelProto_SentencePiece >*
 ModelProto::mutable_pieces() {
   // @@protoc_insertion_point(field_mutable_list:sentencepiece.ModelProto.pieces)
   return &pieces_;
 }
-inline const ::sentencepiece::ModelProto_SentencePiece&
-ModelProto::_internal_pieces(int index) const {
+inline const ::sentencepiece::ModelProto_SentencePiece& ModelProto::_internal_pieces(int index) const {
   return pieces_.Get(index);
 }
-inline const ::sentencepiece::ModelProto_SentencePiece& ModelProto::pieces(
-    int index) const {
+inline const ::sentencepiece::ModelProto_SentencePiece& ModelProto::pieces(int index) const {
   // @@protoc_insertion_point(field_get:sentencepiece.ModelProto.pieces)
   return _internal_pieces(index);
 }
-inline ::sentencepiece::ModelProto_SentencePiece*
-ModelProto::_internal_add_pieces() {
+inline ::sentencepiece::ModelProto_SentencePiece* ModelProto::_internal_add_pieces() {
   return pieces_.Add();
 }
 inline ::sentencepiece::ModelProto_SentencePiece* ModelProto::add_pieces() {
   // @@protoc_insertion_point(field_add:sentencepiece.ModelProto.pieces)
   return _internal_add_pieces();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-    ::sentencepiece::ModelProto_SentencePiece>&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::ModelProto_SentencePiece >&
 ModelProto::pieces() const {
   // @@protoc_insertion_point(field_list:sentencepiece.ModelProto.pieces)
   return pieces_;
@@ -5159,17 +4677,13 @@ inline bool ModelProto::has_trainer_spec() const {
   return _internal_has_trainer_spec();
 }
 inline void ModelProto::clear_trainer_spec() {
-  if (trainer_spec_ != nullptr) {
-    trainer_spec_->Clear();
-  }
+  if (trainer_spec_ != nullptr) trainer_spec_->Clear();
   _has_bits_[0] &= ~0x00000001u;
 }
-inline const ::sentencepiece::TrainerSpec& ModelProto::_internal_trainer_spec()
-    const {
+inline const ::sentencepiece::TrainerSpec& ModelProto::_internal_trainer_spec() const {
   const ::sentencepiece::TrainerSpec* p = trainer_spec_;
-  return p != nullptr ? *p
-                      : reinterpret_cast<const ::sentencepiece::TrainerSpec&>(
-                            ::sentencepiece::_TrainerSpec_default_instance_);
+  return p != nullptr ? *p : reinterpret_cast<const ::sentencepiece::TrainerSpec&>(
+      ::sentencepiece::_TrainerSpec_default_instance_);
 }
 inline const ::sentencepiece::TrainerSpec& ModelProto::trainer_spec() const {
   // @@protoc_insertion_point(field_get:sentencepiece.ModelProto.trainer_spec)
@@ -5178,8 +4692,7 @@ inline const ::sentencepiece::TrainerSpec& ModelProto::trainer_spec() const {
 inline void ModelProto::unsafe_arena_set_allocated_trainer_spec(
     ::sentencepiece::TrainerSpec* trainer_spec) {
   if (GetArena() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(
-        trainer_spec_);
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(trainer_spec_);
   }
   trainer_spec_ = trainer_spec;
   if (trainer_spec) {
@@ -5198,16 +4711,14 @@ inline ::sentencepiece::TrainerSpec* ModelProto::release_trainer_spec() {
   }
   return temp;
 }
-inline ::sentencepiece::TrainerSpec*
-ModelProto::unsafe_arena_release_trainer_spec() {
+inline ::sentencepiece::TrainerSpec* ModelProto::unsafe_arena_release_trainer_spec() {
   // @@protoc_insertion_point(field_release:sentencepiece.ModelProto.trainer_spec)
   _has_bits_[0] &= ~0x00000001u;
   ::sentencepiece::TrainerSpec* temp = trainer_spec_;
   trainer_spec_ = nullptr;
   return temp;
 }
-inline ::sentencepiece::TrainerSpec*
-ModelProto::_internal_mutable_trainer_spec() {
+inline ::sentencepiece::TrainerSpec* ModelProto::_internal_mutable_trainer_spec() {
   _has_bits_[0] |= 0x00000001u;
   if (trainer_spec_ == nullptr) {
     auto* p = CreateMaybeMessage<::sentencepiece::TrainerSpec>(GetArena());
@@ -5219,15 +4730,14 @@ inline ::sentencepiece::TrainerSpec* ModelProto::mutable_trainer_spec() {
   // @@protoc_insertion_point(field_mutable:sentencepiece.ModelProto.trainer_spec)
   return _internal_mutable_trainer_spec();
 }
-inline void ModelProto::set_allocated_trainer_spec(
-    ::sentencepiece::TrainerSpec* trainer_spec) {
+inline void ModelProto::set_allocated_trainer_spec(::sentencepiece::TrainerSpec* trainer_spec) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
   if (message_arena == nullptr) {
     delete trainer_spec_;
   }
   if (trainer_spec) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(trainer_spec);
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(trainer_spec);
     if (message_arena != submessage_arena) {
       trainer_spec = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, trainer_spec, submessage_arena);
@@ -5250,29 +4760,22 @@ inline bool ModelProto::has_normalizer_spec() const {
   return _internal_has_normalizer_spec();
 }
 inline void ModelProto::clear_normalizer_spec() {
-  if (normalizer_spec_ != nullptr) {
-    normalizer_spec_->Clear();
-  }
+  if (normalizer_spec_ != nullptr) normalizer_spec_->Clear();
   _has_bits_[0] &= ~0x00000002u;
 }
-inline const ::sentencepiece::NormalizerSpec&
-ModelProto::_internal_normalizer_spec() const {
+inline const ::sentencepiece::NormalizerSpec& ModelProto::_internal_normalizer_spec() const {
   const ::sentencepiece::NormalizerSpec* p = normalizer_spec_;
-  return p != nullptr
-             ? *p
-             : reinterpret_cast<const ::sentencepiece::NormalizerSpec&>(
-                   ::sentencepiece::_NormalizerSpec_default_instance_);
+  return p != nullptr ? *p : reinterpret_cast<const ::sentencepiece::NormalizerSpec&>(
+      ::sentencepiece::_NormalizerSpec_default_instance_);
 }
-inline const ::sentencepiece::NormalizerSpec& ModelProto::normalizer_spec()
-    const {
+inline const ::sentencepiece::NormalizerSpec& ModelProto::normalizer_spec() const {
   // @@protoc_insertion_point(field_get:sentencepiece.ModelProto.normalizer_spec)
   return _internal_normalizer_spec();
 }
 inline void ModelProto::unsafe_arena_set_allocated_normalizer_spec(
     ::sentencepiece::NormalizerSpec* normalizer_spec) {
   if (GetArena() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(
-        normalizer_spec_);
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(normalizer_spec_);
   }
   normalizer_spec_ = normalizer_spec;
   if (normalizer_spec) {
@@ -5291,16 +4794,14 @@ inline ::sentencepiece::NormalizerSpec* ModelProto::release_normalizer_spec() {
   }
   return temp;
 }
-inline ::sentencepiece::NormalizerSpec*
-ModelProto::unsafe_arena_release_normalizer_spec() {
+inline ::sentencepiece::NormalizerSpec* ModelProto::unsafe_arena_release_normalizer_spec() {
   // @@protoc_insertion_point(field_release:sentencepiece.ModelProto.normalizer_spec)
   _has_bits_[0] &= ~0x00000002u;
   ::sentencepiece::NormalizerSpec* temp = normalizer_spec_;
   normalizer_spec_ = nullptr;
   return temp;
 }
-inline ::sentencepiece::NormalizerSpec*
-ModelProto::_internal_mutable_normalizer_spec() {
+inline ::sentencepiece::NormalizerSpec* ModelProto::_internal_mutable_normalizer_spec() {
   _has_bits_[0] |= 0x00000002u;
   if (normalizer_spec_ == nullptr) {
     auto* p = CreateMaybeMessage<::sentencepiece::NormalizerSpec>(GetArena());
@@ -5312,15 +4813,14 @@ inline ::sentencepiece::NormalizerSpec* ModelProto::mutable_normalizer_spec() {
   // @@protoc_insertion_point(field_mutable:sentencepiece.ModelProto.normalizer_spec)
   return _internal_mutable_normalizer_spec();
 }
-inline void ModelProto::set_allocated_normalizer_spec(
-    ::sentencepiece::NormalizerSpec* normalizer_spec) {
+inline void ModelProto::set_allocated_normalizer_spec(::sentencepiece::NormalizerSpec* normalizer_spec) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
   if (message_arena == nullptr) {
     delete normalizer_spec_;
   }
   if (normalizer_spec) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(normalizer_spec);
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(normalizer_spec);
     if (message_arena != submessage_arena) {
       normalizer_spec = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, normalizer_spec, submessage_arena);
@@ -5343,17 +4843,13 @@ inline bool ModelProto::has_self_test_data() const {
   return _internal_has_self_test_data();
 }
 inline void ModelProto::clear_self_test_data() {
-  if (self_test_data_ != nullptr) {
-    self_test_data_->Clear();
-  }
+  if (self_test_data_ != nullptr) self_test_data_->Clear();
   _has_bits_[0] &= ~0x00000004u;
 }
-inline const ::sentencepiece::SelfTestData&
-ModelProto::_internal_self_test_data() const {
+inline const ::sentencepiece::SelfTestData& ModelProto::_internal_self_test_data() const {
   const ::sentencepiece::SelfTestData* p = self_test_data_;
-  return p != nullptr ? *p
-                      : reinterpret_cast<const ::sentencepiece::SelfTestData&>(
-                            ::sentencepiece::_SelfTestData_default_instance_);
+  return p != nullptr ? *p : reinterpret_cast<const ::sentencepiece::SelfTestData&>(
+      ::sentencepiece::_SelfTestData_default_instance_);
 }
 inline const ::sentencepiece::SelfTestData& ModelProto::self_test_data() const {
   // @@protoc_insertion_point(field_get:sentencepiece.ModelProto.self_test_data)
@@ -5362,8 +4858,7 @@ inline const ::sentencepiece::SelfTestData& ModelProto::self_test_data() const {
 inline void ModelProto::unsafe_arena_set_allocated_self_test_data(
     ::sentencepiece::SelfTestData* self_test_data) {
   if (GetArena() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(
-        self_test_data_);
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(self_test_data_);
   }
   self_test_data_ = self_test_data;
   if (self_test_data) {
@@ -5382,16 +4877,14 @@ inline ::sentencepiece::SelfTestData* ModelProto::release_self_test_data() {
   }
   return temp;
 }
-inline ::sentencepiece::SelfTestData*
-ModelProto::unsafe_arena_release_self_test_data() {
+inline ::sentencepiece::SelfTestData* ModelProto::unsafe_arena_release_self_test_data() {
   // @@protoc_insertion_point(field_release:sentencepiece.ModelProto.self_test_data)
   _has_bits_[0] &= ~0x00000004u;
   ::sentencepiece::SelfTestData* temp = self_test_data_;
   self_test_data_ = nullptr;
   return temp;
 }
-inline ::sentencepiece::SelfTestData*
-ModelProto::_internal_mutable_self_test_data() {
+inline ::sentencepiece::SelfTestData* ModelProto::_internal_mutable_self_test_data() {
   _has_bits_[0] |= 0x00000004u;
   if (self_test_data_ == nullptr) {
     auto* p = CreateMaybeMessage<::sentencepiece::SelfTestData>(GetArena());
@@ -5403,15 +4896,14 @@ inline ::sentencepiece::SelfTestData* ModelProto::mutable_self_test_data() {
   // @@protoc_insertion_point(field_mutable:sentencepiece.ModelProto.self_test_data)
   return _internal_mutable_self_test_data();
 }
-inline void ModelProto::set_allocated_self_test_data(
-    ::sentencepiece::SelfTestData* self_test_data) {
+inline void ModelProto::set_allocated_self_test_data(::sentencepiece::SelfTestData* self_test_data) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
   if (message_arena == nullptr) {
     delete self_test_data_;
   }
   if (self_test_data) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(self_test_data);
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(self_test_data);
     if (message_arena != submessage_arena) {
       self_test_data = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, self_test_data, submessage_arena);
@@ -5434,29 +4926,22 @@ inline bool ModelProto::has_denormalizer_spec() const {
   return _internal_has_denormalizer_spec();
 }
 inline void ModelProto::clear_denormalizer_spec() {
-  if (denormalizer_spec_ != nullptr) {
-    denormalizer_spec_->Clear();
-  }
+  if (denormalizer_spec_ != nullptr) denormalizer_spec_->Clear();
   _has_bits_[0] &= ~0x00000008u;
 }
-inline const ::sentencepiece::NormalizerSpec&
-ModelProto::_internal_denormalizer_spec() const {
+inline const ::sentencepiece::NormalizerSpec& ModelProto::_internal_denormalizer_spec() const {
   const ::sentencepiece::NormalizerSpec* p = denormalizer_spec_;
-  return p != nullptr
-             ? *p
-             : reinterpret_cast<const ::sentencepiece::NormalizerSpec&>(
-                   ::sentencepiece::_NormalizerSpec_default_instance_);
+  return p != nullptr ? *p : reinterpret_cast<const ::sentencepiece::NormalizerSpec&>(
+      ::sentencepiece::_NormalizerSpec_default_instance_);
 }
-inline const ::sentencepiece::NormalizerSpec& ModelProto::denormalizer_spec()
-    const {
+inline const ::sentencepiece::NormalizerSpec& ModelProto::denormalizer_spec() const {
   // @@protoc_insertion_point(field_get:sentencepiece.ModelProto.denormalizer_spec)
   return _internal_denormalizer_spec();
 }
 inline void ModelProto::unsafe_arena_set_allocated_denormalizer_spec(
     ::sentencepiece::NormalizerSpec* denormalizer_spec) {
   if (GetArena() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(
-        denormalizer_spec_);
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(denormalizer_spec_);
   }
   denormalizer_spec_ = denormalizer_spec;
   if (denormalizer_spec) {
@@ -5466,8 +4951,7 @@ inline void ModelProto::unsafe_arena_set_allocated_denormalizer_spec(
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:sentencepiece.ModelProto.denormalizer_spec)
 }
-inline ::sentencepiece::NormalizerSpec*
-ModelProto::release_denormalizer_spec() {
+inline ::sentencepiece::NormalizerSpec* ModelProto::release_denormalizer_spec() {
   _has_bits_[0] &= ~0x00000008u;
   ::sentencepiece::NormalizerSpec* temp = denormalizer_spec_;
   denormalizer_spec_ = nullptr;
@@ -5476,16 +4960,14 @@ ModelProto::release_denormalizer_spec() {
   }
   return temp;
 }
-inline ::sentencepiece::NormalizerSpec*
-ModelProto::unsafe_arena_release_denormalizer_spec() {
+inline ::sentencepiece::NormalizerSpec* ModelProto::unsafe_arena_release_denormalizer_spec() {
   // @@protoc_insertion_point(field_release:sentencepiece.ModelProto.denormalizer_spec)
   _has_bits_[0] &= ~0x00000008u;
   ::sentencepiece::NormalizerSpec* temp = denormalizer_spec_;
   denormalizer_spec_ = nullptr;
   return temp;
 }
-inline ::sentencepiece::NormalizerSpec*
-ModelProto::_internal_mutable_denormalizer_spec() {
+inline ::sentencepiece::NormalizerSpec* ModelProto::_internal_mutable_denormalizer_spec() {
   _has_bits_[0] |= 0x00000008u;
   if (denormalizer_spec_ == nullptr) {
     auto* p = CreateMaybeMessage<::sentencepiece::NormalizerSpec>(GetArena());
@@ -5493,20 +4975,18 @@ ModelProto::_internal_mutable_denormalizer_spec() {
   }
   return denormalizer_spec_;
 }
-inline ::sentencepiece::NormalizerSpec*
-ModelProto::mutable_denormalizer_spec() {
+inline ::sentencepiece::NormalizerSpec* ModelProto::mutable_denormalizer_spec() {
   // @@protoc_insertion_point(field_mutable:sentencepiece.ModelProto.denormalizer_spec)
   return _internal_mutable_denormalizer_spec();
 }
-inline void ModelProto::set_allocated_denormalizer_spec(
-    ::sentencepiece::NormalizerSpec* denormalizer_spec) {
+inline void ModelProto::set_allocated_denormalizer_spec(::sentencepiece::NormalizerSpec* denormalizer_spec) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
   if (message_arena == nullptr) {
     delete denormalizer_spec_;
   }
   if (denormalizer_spec) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(denormalizer_spec);
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(denormalizer_spec);
     if (message_arena != submessage_arena) {
       denormalizer_spec = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, denormalizer_spec, submessage_arena);
@@ -5520,7 +5000,7 @@ inline void ModelProto::set_allocated_denormalizer_spec(
 }
 
 #ifdef __GNUC__
-#pragma GCC diagnostic pop
+  #pragma GCC diagnostic pop
 #endif  // __GNUC__
 // -------------------------------------------------------------------
 
@@ -5532,18 +5012,15 @@ inline void ModelProto::set_allocated_denormalizer_spec(
 
 // -------------------------------------------------------------------
 
+
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace sentencepiece
 
 PROTOBUF_NAMESPACE_OPEN
 
-template <>
-struct is_proto_enum<::sentencepiece::TrainerSpec_ModelType>
-    : ::std::true_type {};
-template <>
-struct is_proto_enum<::sentencepiece::ModelProto_SentencePiece_Type>
-    : ::std::true_type {};
+template <> struct is_proto_enum< ::sentencepiece::TrainerSpec_ModelType> : ::std::true_type {};
+template <> struct is_proto_enum< ::sentencepiece::ModelProto_SentencePiece_Type> : ::std::true_type {};
 
 PROTOBUF_NAMESPACE_CLOSE
 

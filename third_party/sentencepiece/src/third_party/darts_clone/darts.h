@@ -19,13 +19,11 @@
 #define DARTS_INT_TO_STR(value) #value
 #define DARTS_LINE_TO_STR(line) DARTS_INT_TO_STR(line)
 #define DARTS_LINE_STR DARTS_LINE_TO_STR(__LINE__)
-
 #if DARTS_DISABLE_EXCEPTIONS
-#define DARTS_THROW(msg) ABSL_CHECK(false) << msg
+#define DARTS_THROW(msg) ABSL_CHECK(false) << (msg)
 #else
-#define DARTS_THROW(msg)                                      \
-  throw Darts::Details::Exception(__FILE__ ":" DARTS_LINE_STR \
-                                           ": exception: " msg)
+#define DARTS_THROW(msg) throw Darts::Details::Exception( \
+  __FILE__ ":" DARTS_LINE_STR ": exception: " msg)
 #endif
 
 namespace Darts {
@@ -63,7 +61,9 @@ class DoubleArrayUnit {
 
   // has_leaf() returns whether a leaf unit is immediately derived from the
   // unit (true) or not (false).
-  bool has_leaf() const { return ((unit_ >> 8) & 1) == 1; }
+  bool has_leaf() const {
+    return ((unit_ >> 8) & 1) == 1;
+  }
   // value() returns the value stored in the unit, and thus value() is
   // available when and only when the unit is a leaf unit.
   value_type value() const {
@@ -73,9 +73,13 @@ class DoubleArrayUnit {
   // label() returns the label associted with the unit. Note that a leaf unit
   // always returns an invalid label. For this feature, leaf unit's label()
   // returns an <id_type> that has the MSB of 1.
-  id_type label() const { return unit_ & ((1U << 31) | 0xFF); }
+  id_type label() const {
+    return unit_ & ((1U << 31) | 0xFF);
+  }
   // offset() returns the offset from the unit to its derived units.
-  id_type offset() const { return (unit_ >> 10) << ((unit_ & (1U << 9)) >> 6); }
+  id_type offset() const {
+    return (unit_ >> 10) << ((unit_ & (1U << 9)) >> 6);
+  }
 
  private:
   id_type unit_;
@@ -83,7 +87,6 @@ class DoubleArrayUnit {
   // Copyable.
 };
 
-#if !DARTS_DISABLE_EXCEPTIONS
 // Darts-clone throws an <Exception> for memory allocation failure, invalid
 // arguments or a too large offset. The last case means that there are too many
 // keys in the given set of keys. Note that the `msg' of <Exception> must be a
@@ -91,22 +94,21 @@ class DoubleArrayUnit {
 // that string.
 class Exception : public std::exception {
  public:
-  explicit Exception(const char* msg = NULL) throw() : msg_(msg) {}
-  Exception(const Exception& rhs) throw() : msg_(rhs.msg_) {}
+  explicit Exception(const char *msg = NULL) throw() : msg_(msg) {}
+  Exception(const Exception &rhs) throw() : msg_(rhs.msg_) {}
   virtual ~Exception() throw() {}
 
   // <Exception> overrides what() of <std::exception>.
-  virtual const char* what() const throw() {
+  virtual const char *what() const throw() {
     return (msg_ != NULL) ? msg_ : "";
   }
 
  private:
-  const char* msg_;
+  const char *msg_;
 
   // Disallows operator=.
-  Exception& operator=(const Exception&);
+  Exception &operator=(const Exception &);
 };
-#endif  // !DARTS_DISABLE_EXCEPTIONS
 
 }  // namespace Details
 
@@ -144,7 +146,9 @@ class DoubleArrayImpl {
   DoubleArrayImpl() : size_(0), array_(NULL), buf_(NULL) {}
   // The destructor frees memory allocated for units and then initializes
   // member variables with 0 and NULLs.
-  virtual ~DoubleArrayImpl() { clear(); }
+  virtual ~DoubleArrayImpl() {
+    clear();
+  }
 
   // <DoubleArrayImpl> has 2 kinds of set_result()s. The 1st set_result() is to
   // set a value to a <value_type>. The 2nd set_result() is to set a value and
@@ -155,13 +159,12 @@ class DoubleArrayImpl {
   // The 1st set_result() takes a length as the 3rd argument but it is not
   // used. If a compiler does a good job, codes for getting the length may be
   // removed.
-  void set_result(value_type* result, value_type value, std::size_t) const {
+  void set_result(value_type *result, value_type value, std::size_t) const {
     *result = value;
   }
   // The 2nd set_result() uses both `value' and `length'.
-  void set_result(result_pair_type* result,
-                  value_type value,
-                  std::size_t length) const {
+  void set_result(result_pair_type *result,
+      value_type value, std::size_t length) const {
     result->value = value;
     result->length = length;
   }
@@ -173,13 +176,15 @@ class DoubleArrayImpl {
   // set_array() can also set the size of the new array but the size is not
   // used in search methods. So it works well even if the 2nd argument is 0 or
   // omitted. Remember that size() and total_size() returns 0 in such a case.
-  void set_array(const void* ptr, std::size_t size = 0) {
+  void set_array(const void *ptr, std::size_t size = 0) {
     clear();
-    array_ = static_cast<const unit_type*>(ptr);
+    array_ = static_cast<const unit_type *>(ptr);
     size_ = size;
   }
   // array() returns a pointer to the array of units.
-  const void* array() const { return array_; }
+  const void *array() const {
+    return array_;
+  }
 
   // clear() frees memory allocated to units and then initializes member
   // variables with 0 and NULLs. Note that clear() does not free memory if the
@@ -195,15 +200,23 @@ class DoubleArrayImpl {
   }
 
   // unit_size() returns the size of each unit. The size must be 4 bytes.
-  std::size_t unit_size() const { return sizeof(unit_type); }
+  std::size_t unit_size() const {
+    return sizeof(unit_type);
+  }
   // size() returns the number of units. It can be 0 if set_array() is used.
-  std::size_t size() const { return size_; }
+  std::size_t size() const {
+    return size_;
+  }
   // total_size() returns the number of bytes allocated to the array of units.
   // It can be 0 if set_array() is used.
-  std::size_t total_size() const { return unit_size() * size(); }
+  std::size_t total_size() const {
+    return unit_size() * size();
+  }
   // nonzero_size() exists for compatibility. It always returns the number of
   // units because it takes long time to count the number of non-zero units.
-  std::size_t nonzero_size() const { return size(); }
+  std::size_t nonzero_size() const {
+    return size();
+  }
 
   // build() constructs a dictionary from given key-value pairs. If `lengths'
   // is NULL, `keys' is handled as an array of zero-terminated strings. If
@@ -222,11 +235,9 @@ class DoubleArrayImpl {
   // build() uses another construction algorithm if `values' is not NULL. In
   // this case, Darts-clone uses a Directed Acyclic Word Graph (DAWG) instead
   // of a trie because a DAWG is likely to be more compact than a trie.
-  int build(std::size_t num_keys,
-            const key_type* const* keys,
-            const std::size_t* lengths = NULL,
-            const value_type* values = NULL,
-            Details::progress_func_type progress_func = NULL);
+  int build(std::size_t num_keys, const key_type * const *keys,
+      const std::size_t *lengths = NULL, const value_type *values = NULL,
+      Details::progress_func_type progress_func = NULL);
 
   // open() reads an array of units from the specified file. And if it goes
   // well, the old array will be freed and replaced with the new array read
@@ -236,17 +247,14 @@ class DoubleArrayImpl {
   // open() returns 0 iff the operation succeeds. Otherwise, it returns a
   // non-zero value or throws a <Darts::Exception>. The exception is thrown
   // when and only when a memory allocation fails.
-  int open(const char* file_name,
-           const char* mode = "rb",
-           std::size_t offset = 0,
-           std::size_t size = 0);
+  int open(const char *file_name, const char *mode = "rb",
+      std::size_t offset = 0, std::size_t size = 0);
   // save() writes the array of units into the specified file. `offset'
   // specifies the number of bytes to be skipped before writing the array.
   // open() returns 0 iff the operation succeeds. Otherwise, it returns a
   // non-zero value.
-  int save(const char* file_name,
-           const char* mode = "wb",
-           std::size_t offset = 0) const;
+  int save(const char *file_name, const char *mode = "wb",
+      std::size_t offset = 0) const;
 
   // The 1st exactMatchSearch() tests whether the given key exists or not, and
   // if it exists, its value and length are set to `result'. Otherwise, the
@@ -260,18 +268,15 @@ class DoubleArrayImpl {
   // Note that the length of `result' indicates the length from the `node_pos'.
   // In the above example, the lengths are { 1, 2, 2 }, not { 4, 5, 5 }.
   template <class U>
-  void exactMatchSearch(const key_type* key,
-                        U& result,
-                        std::size_t length = 0,
-                        std::size_t node_pos = 0) const {
+  void exactMatchSearch(const key_type *key, U &result,
+      std::size_t length = 0, std::size_t node_pos = 0) const {
     result = exactMatchSearch<U>(key, length, node_pos);
   }
   // The 2nd exactMatchSearch() returns a result instead of updating the 2nd
   // argument. So, the following exactMatchSearch() has only 3 arguments.
   template <class U>
-  inline U exactMatchSearch(const key_type* key,
-                            std::size_t length = 0,
-                            std::size_t node_pos = 0) const;
+  inline U exactMatchSearch(const key_type *key, std::size_t length = 0,
+      std::size_t node_pos = 0) const;
 
   // commonPrefixSearch() searches for keys which match a prefix of the given
   // string. If `length' is 0, `key' is handled as a zero-terminated string.
@@ -282,11 +287,9 @@ class DoubleArrayImpl {
   // results, allocate more spaces and call commonPrefixSearch() again.
   // `node_pos' works as well as in exactMatchSearch().
   template <class U>
-  inline std::size_t commonPrefixSearch(const key_type* key,
-                                        U* results,
-                                        std::size_t max_num_results,
-                                        std::size_t length = 0,
-                                        std::size_t node_pos = 0) const;
+  inline std::size_t commonPrefixSearch(const key_type *key, U *results,
+      std::size_t max_num_results, std::size_t length = 0,
+      std::size_t node_pos = 0) const;
 
   // In Darts-clone, a dictionary is a deterministic finite-state automaton
   // (DFA) and traverse() tests transitions on the DFA. The initial state is
@@ -299,10 +302,8 @@ class DoubleArrayImpl {
   // associated with the final accept state. That is, traverse() returns the
   // value associated with the given key if it exists. Note that traverse()
   // updates `node_pos' and `key_pos' after each transition.
-  inline value_type traverse(const key_type* key,
-                             std::size_t& node_pos,
-                             std::size_t& key_pos,
-                             std::size_t length = 0) const;
+  inline value_type traverse(const key_type *key, std::size_t &node_pos,
+      std::size_t &key_pos, std::size_t length = 0) const;
 
  private:
   typedef Details::uchar_type uchar_type;
@@ -310,12 +311,12 @@ class DoubleArrayImpl {
   typedef Details::DoubleArrayUnit unit_type;
 
   std::size_t size_;
-  const unit_type* array_;
-  unit_type* buf_;
+  const unit_type *array_;
+  unit_type *buf_;
 
   // Disallows copy and assignment.
-  DoubleArrayImpl(const DoubleArrayImpl&);
-  DoubleArrayImpl& operator=(const DoubleArrayImpl&);
+  DoubleArrayImpl(const DoubleArrayImpl &);
+  DoubleArrayImpl &operator=(const DoubleArrayImpl &);
 };
 
 // <DoubleArray> is the typical instance of <DoubleArrayImpl>. It uses <int>
@@ -331,17 +332,15 @@ typedef DoubleArrayImpl<void, void, int, void> DoubleArray;
 //
 
 template <typename A, typename B, typename T, typename C>
-int DoubleArrayImpl<A, B, T, C>::open(const char* file_name,
-                                      const char* mode,
-                                      std::size_t offset,
-                                      std::size_t size) {
+int DoubleArrayImpl<A, B, T, C>::open(const char *file_name,
+    const char *mode, std::size_t offset, std::size_t size) {
 #ifdef _MSC_VER
-  std::FILE* file;
+  std::FILE *file;
   if (::fopen_s(&file, file_name, mode) != 0) {
     return -1;
   }
 #else
-  std::FILE* file = std::fopen(file_name, mode);
+  std::FILE *file = std::fopen(file_name, mode);
   if (file == NULL) {
     return -1;
   }
@@ -384,10 +383,20 @@ int DoubleArrayImpl<A, B, T, C>::open(const char* file_name,
     }
   }
 
-  unit_type* buf = new unit_type[size];
-  for (id_type i = 0; i < 256; ++i) {
-    buf[i] = units[i];
+  unit_type *buf;
+#if !DARTS_DISABLE_EXCEPTIONS
+  try {
+#endif
+    buf = new unit_type[size];
+    for (id_type i = 0; i < 256; ++i) {
+      buf[i] = units[i];
+    }
+#if !DARTS_DISABLE_EXCEPTIONS
+  } catch (const std::bad_alloc &) {
+    std::fclose(file);
+    DARTS_THROW("failed to open double-array: std::bad_alloc");
   }
+#endif
 
   if (size > 256) {
     if (std::fread(buf + 256, unit_size(), size - 256, file) != size - 256) {
@@ -407,20 +416,19 @@ int DoubleArrayImpl<A, B, T, C>::open(const char* file_name,
 }
 
 template <typename A, typename B, typename T, typename C>
-int DoubleArrayImpl<A, B, T, C>::save(const char* file_name,
-                                      const char* mode,
-                                      std::size_t) const {
+int DoubleArrayImpl<A, B, T, C>::save(const char *file_name,
+    const char *mode, std::size_t) const {
   if (size() == 0) {
     return -1;
   }
 
 #ifdef _MSC_VER
-  std::FILE* file;
+  std::FILE *file;
   if (::fopen_s(&file, file_name, mode) != 0) {
     return -1;
   }
 #else
-  std::FILE* file = std::fopen(file_name, mode);
+  std::FILE *file = std::fopen(file_name, mode);
   if (file == NULL) {
     return -1;
   }
@@ -436,10 +444,8 @@ int DoubleArrayImpl<A, B, T, C>::save(const char* file_name,
 
 template <typename A, typename B, typename T, typename C>
 template <typename U>
-inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(
-    const key_type* key,
-    std::size_t length,
-    std::size_t node_pos) const {
+inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
+    std::size_t length, std::size_t node_pos) const {
   U result;
   set_result(&result, static_cast<value_type>(-1), 0);
 
@@ -453,7 +459,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(
       }
     }
   } else {
-    for (; key[length] != '\0'; ++length) {
+    for ( ; key[length] != '\0'; ++length) {
       node_pos ^= unit.offset() ^ static_cast<uchar_type>(key[length]);
       unit = array_[node_pos];
       if (unit.label() != static_cast<uchar_type>(key[length])) {
@@ -473,11 +479,8 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(
 template <typename A, typename B, typename T, typename C>
 template <typename U>
 inline std::size_t DoubleArrayImpl<A, B, T, C>::commonPrefixSearch(
-    const key_type* key,
-    U* results,
-    std::size_t max_num_results,
-    std::size_t length,
-    std::size_t node_pos) const {
+    const key_type *key, U *results, std::size_t max_num_results,
+    std::size_t length, std::size_t node_pos) const {
   std::size_t num_results = 0;
 
   unit_type unit = array_[node_pos];
@@ -493,14 +496,14 @@ inline std::size_t DoubleArrayImpl<A, B, T, C>::commonPrefixSearch(
       node_pos ^= unit.offset();
       if (unit.has_leaf()) {
         if (num_results < max_num_results) {
-          set_result(&results[num_results],
-                     static_cast<value_type>(array_[node_pos].value()), i + 1);
+          set_result(&results[num_results], static_cast<value_type>(
+              array_[node_pos].value()), i + 1);
         }
         ++num_results;
       }
     }
   } else {
-    for (; key[length] != '\0'; ++length) {
+    for ( ; key[length] != '\0'; ++length) {
       node_pos ^= static_cast<uchar_type>(key[length]);
       unit = array_[node_pos];
       if (unit.label() != static_cast<uchar_type>(key[length])) {
@@ -510,9 +513,8 @@ inline std::size_t DoubleArrayImpl<A, B, T, C>::commonPrefixSearch(
       node_pos ^= unit.offset();
       if (unit.has_leaf()) {
         if (num_results < max_num_results) {
-          set_result(&results[num_results],
-                     static_cast<value_type>(array_[node_pos].value()),
-                     length + 1);
+          set_result(&results[num_results], static_cast<value_type>(
+              array_[node_pos].value()), length + 1);
         }
         ++num_results;
       }
@@ -524,15 +526,13 @@ inline std::size_t DoubleArrayImpl<A, B, T, C>::commonPrefixSearch(
 
 template <typename A, typename B, typename T, typename C>
 inline typename DoubleArrayImpl<A, B, T, C>::value_type
-DoubleArrayImpl<A, B, T, C>::traverse(const key_type* key,
-                                      std::size_t& node_pos,
-                                      std::size_t& key_pos,
-                                      std::size_t length) const {
+DoubleArrayImpl<A, B, T, C>::traverse(const key_type *key,
+    std::size_t &node_pos, std::size_t &key_pos, std::size_t length) const {
   id_type id = static_cast<id_type>(node_pos);
   unit_type unit = array_[id];
 
   if (length != 0) {
-    for (; key_pos < length; ++key_pos) {
+    for ( ; key_pos < length; ++key_pos) {
       id ^= unit.offset() ^ static_cast<uchar_type>(key[key_pos]);
       unit = array_[id];
       if (unit.label() != static_cast<uchar_type>(key[key_pos])) {
@@ -541,7 +541,7 @@ DoubleArrayImpl<A, B, T, C>::traverse(const key_type* key,
       node_pos = id;
     }
   } else {
-    for (; key[key_pos] != '\0'; ++key_pos) {
+    for ( ; key[key_pos] != '\0'; ++key_pos) {
       id ^= unit.offset() ^ static_cast<uchar_type>(key[key_pos]);
       unit = array_[id];
       if (unit.label() != static_cast<uchar_type>(key[key_pos])) {
@@ -567,13 +567,21 @@ namespace Details {
 template <typename T>
 class AutoArray {
  public:
-  explicit AutoArray(T* array = NULL) : array_(array) {}
-  ~AutoArray() { clear(); }
+  explicit AutoArray(T *array = NULL) : array_(array) {}
+  ~AutoArray() {
+    clear();
+  }
 
-  const T& operator[](std::size_t id) const { return array_[id]; }
-  T& operator[](std::size_t id) { return array_[id]; }
+  const T &operator[](std::size_t id) const {
+    return array_[id];
+  }
+  T &operator[](std::size_t id) {
+    return array_[id];
+  }
 
-  bool empty() const { return array_ == NULL; }
+  bool empty() const {
+    return array_ == NULL;
+  }
 
   void clear() {
     if (array_ != NULL) {
@@ -581,19 +589,21 @@ class AutoArray {
       array_ = NULL;
     }
   }
-  void swap(AutoArray* array) {
-    T* temp = array_;
+  void swap(AutoArray *array) {
+    T *temp = array_;
     array_ = array->array_;
     array->array_ = temp;
   }
-  void reset(T* array = NULL) { AutoArray(array).swap(this); }
+  void reset(T *array = NULL) {
+    AutoArray(array).swap(this);
+  }
 
  private:
-  T* array_;
+  T *array_;
 
   // Disallows copy and assignment.
-  AutoArray(const AutoArray&);
-  AutoArray& operator=(const AutoArray&);
+  AutoArray(const AutoArray &);
+  AutoArray &operator=(const AutoArray &);
 };
 
 //
@@ -606,15 +616,19 @@ class AutoPool {
   AutoPool() : buf_(), size_(0), capacity_(0) {}
   ~AutoPool() { clear(); }
 
-  const T& operator[](std::size_t id) const {
-    return *(reinterpret_cast<const T*>(&buf_[0]) + id);
+  const T &operator[](std::size_t id) const {
+    return *(reinterpret_cast<const T *>(&buf_[0]) + id);
   }
-  T& operator[](std::size_t id) {
-    return *(reinterpret_cast<T*>(&buf_[0]) + id);
+  T &operator[](std::size_t id) {
+    return *(reinterpret_cast<T *>(&buf_[0]) + id);
   }
 
-  bool empty() const { return size_ == 0; }
-  std::size_t size() const { return size_; }
+  bool empty() const {
+    return size_ == 0;
+  }
+  std::size_t size() const {
+    return size_;
+  }
 
   void clear() {
     resize(0);
@@ -623,20 +637,22 @@ class AutoPool {
     capacity_ = 0;
   }
 
-  void push_back(const T& value) { append(value); }
-  void pop_back() { (*this)[--size_].~T(); }
+  void push_back(const T &value) {
+    append(value);
+  }
+  void pop_back() {
+    (*this)[--size_].~T();
+  }
 
   void append() {
-    if (size_ == capacity_) {
+    if (size_ == capacity_)
       resize_buf(size_ + 1);
-    }
-    new (&(*this)[size_++]) T;
+    new(&(*this)[size_++]) T;
   }
-  void append(const T& value) {
-    if (size_ == capacity_) {
+  void append(const T &value) {
+    if (size_ == capacity_)
       resize_buf(size_ + 1);
-    }
-    new (&(*this)[size_++]) T(value);
+    new(&(*this)[size_++]) T(value);
   }
 
   void resize(std::size_t size) {
@@ -647,10 +663,10 @@ class AutoPool {
       resize_buf(size);
     }
     while (size_ < size) {
-      new (&(*this)[size_++]) T;
+      new(&(*this)[size_++]) T;
     }
   }
-  void resize(std::size_t size, const T& value) {
+  void resize(std::size_t size, const T &value) {
     while (size_ > size) {
       (*this)[--size_].~T();
     }
@@ -658,7 +674,7 @@ class AutoPool {
       resize_buf(size);
     }
     while (size_ < size) {
-      new (&(*this)[size_++]) T(value);
+      new(&(*this)[size_++]) T(value);
     }
   }
 
@@ -674,8 +690,8 @@ class AutoPool {
   std::size_t capacity_;
 
   // Disallows copy and assignment.
-  AutoPool(const AutoPool&);
-  AutoPool& operator=(const AutoPool&);
+  AutoPool(const AutoPool &);
+  AutoPool &operator=(const AutoPool &);
 
   void resize_buf(std::size_t size);
 };
@@ -693,13 +709,21 @@ void AutoPool<T>::resize_buf(std::size_t size) {
   }
 
   AutoArray<char> buf;
-  buf.reset(new char[sizeof(T) * capacity]);
+#if !DARTS_DISABLE_EXCEPTIONS
+  try {
+#endif
+    buf.reset(new char[sizeof(T) * capacity]);
+#if !DARTS_DISABLE_EXCEPTIONS
+  } catch (const std::bad_alloc &) {
+    DARTS_THROW("failed to resize pool: std::bad_alloc");
+  }
+#endif
 
   if (size_ > 0) {
-    T* src = reinterpret_cast<T*>(&buf_[0]);
-    T* dest = reinterpret_cast<T*>(&buf[0]);
+    T *src = reinterpret_cast<T *>(&buf_[0]);
+    T *dest = reinterpret_cast<T *>(&buf[0]);
     for (std::size_t i = 0; i < size_; ++i) {
-      new (&dest[i]) T(src[i]);
+      new(&dest[i]) T(src[i]);
       src[i].~T();
     }
   }
@@ -716,25 +740,41 @@ template <typename T>
 class AutoStack {
  public:
   AutoStack() : pool_() {}
-  ~AutoStack() { clear(); }
+  ~AutoStack() {
+    clear();
+  }
 
-  const T& top() const { return pool_[size() - 1]; }
-  T& top() { return pool_[size() - 1]; }
+  const T &top() const {
+    return pool_[size() - 1];
+  }
+  T &top() {
+    return pool_[size() - 1];
+  }
 
-  bool empty() const { return pool_.empty(); }
-  std::size_t size() const { return pool_.size(); }
+  bool empty() const {
+    return pool_.empty();
+  }
+  std::size_t size() const {
+    return pool_.size();
+  }
 
-  void push(const T& value) { pool_.push_back(value); }
-  void pop() { pool_.pop_back(); }
+  void push(const T &value) {
+    pool_.push_back(value);
+  }
+  void pop() {
+    pool_.pop_back();
+  }
 
-  void clear() { pool_.clear(); }
+  void clear() {
+    pool_.clear();
+  }
 
  private:
   AutoPool<T> pool_;
 
   // Disallows copy and assignment.
-  AutoStack(const AutoStack&);
-  AutoStack& operator=(const AutoStack&);
+  AutoStack(const AutoStack &);
+  AutoStack &operator=(const AutoStack &);
 };
 
 //
@@ -744,7 +784,9 @@ class AutoStack {
 class BitVector {
  public:
   BitVector() : units_(), ranks_(), num_ones_(0), size_(0) {}
-  ~BitVector() { clear(); }
+  ~BitVector() {
+    clear();
+  }
 
   bool operator[](std::size_t id) const {
     return (units_[id / UNIT_SIZE] >> (id % UNIT_SIZE) & 1) == 1;
@@ -752,9 +794,8 @@ class BitVector {
 
   id_type rank(std::size_t id) const {
     std::size_t unit_id = id / UNIT_SIZE;
-    return ranks_[unit_id] +
-           pop_count(units_[unit_id] &
-                     (~0U >> (UNIT_SIZE - (id % UNIT_SIZE) - 1)));
+    return ranks_[unit_id] + pop_count(units_[unit_id]
+        & (~0U >> (UNIT_SIZE - (id % UNIT_SIZE) - 1)));
   }
 
   void set(std::size_t id, bool bit) {
@@ -765,9 +806,15 @@ class BitVector {
     }
   }
 
-  bool empty() const { return units_.empty(); }
-  std::size_t num_ones() const { return num_ones_; }
-  std::size_t size() const { return size_; }
+  bool empty() const {
+    return units_.empty();
+  }
+  std::size_t num_ones() const {
+    return num_ones_;
+  }
+  std::size_t size() const {
+    return size_;
+  }
 
   void append() {
     if ((size_ % UNIT_SIZE) == 0) {
@@ -791,8 +838,8 @@ class BitVector {
   std::size_t size_;
 
   // Disallows copy and assignment.
-  BitVector(const BitVector&);
-  BitVector& operator=(const BitVector&);
+  BitVector(const BitVector &);
+  BitVector &operator=(const BitVector &);
 
   static id_type pop_count(id_type unit) {
     unit = ((unit & 0xAAAAAAAA) >> 1) + (unit & 0x55555555);
@@ -805,7 +852,15 @@ class BitVector {
 };
 
 inline void BitVector::build() {
-  ranks_.reset(new id_type[units_.size()]);
+#if !DARTS_DISABLE_EXCEPTIONS
+  try {
+#endif
+    ranks_.reset(new id_type[units_.size()]);
+#if !DARTS_DISABLE_EXCEPTIONS
+  } catch (const std::bad_alloc &) {
+    DARTS_THROW("failed to build rank index: std::bad_alloc");
+  }
+#endif
 
   num_ones_ = 0;
   for (std::size_t i = 0; i < units_.size(); ++i) {
@@ -821,22 +876,25 @@ inline void BitVector::build() {
 template <typename T>
 class Keyset {
  public:
-  Keyset(std::size_t num_keys,
-         const char_type* const* keys,
-         const std::size_t* lengths,
-         const T* values)
-      : num_keys_(num_keys), keys_(keys), lengths_(lengths), values_(values) {}
+  Keyset(std::size_t num_keys, const char_type * const *keys,
+      const std::size_t *lengths, const T *values) :
+      num_keys_(num_keys), keys_(keys), lengths_(lengths), values_(values) {}
 
-  std::size_t num_keys() const { return num_keys_; }
-  const char_type* keys(std::size_t id) const { return keys_[id]; }
+  std::size_t num_keys() const {
+    return num_keys_;
+  }
+  const char_type *keys(std::size_t id) const {
+    return keys_[id];
+  }
   uchar_type keys(std::size_t key_id, std::size_t char_id) const {
-    if (has_lengths() && char_id >= lengths_[key_id]) {
+    if (has_lengths() && char_id >= lengths_[key_id])
       return '\0';
-    }
     return keys_[key_id][char_id];
   }
 
-  bool has_lengths() const { return lengths_ != NULL; }
+  bool has_lengths() const {
+    return lengths_ != NULL;
+  }
   std::size_t lengths(std::size_t id) const {
     if (has_lengths()) {
       return lengths_[id];
@@ -848,7 +906,9 @@ class Keyset {
     return length;
   }
 
-  bool has_values() const { return values_ != NULL; }
+  bool has_values() const {
+    return values_ != NULL;
+  }
   const value_type values(std::size_t id) const {
     if (has_values()) {
       return static_cast<value_type>(values_[id]);
@@ -858,13 +918,13 @@ class Keyset {
 
  private:
   std::size_t num_keys_;
-  const char_type* const* keys_;
-  const std::size_t* lengths_;
-  const T* values_;
+  const char_type * const * keys_;
+  const std::size_t *lengths_;
+  const T *values_;
 
   // Disallows copy and assignment.
-  Keyset(const Keyset&);
-  Keyset& operator=(const Keyset&);
+  Keyset(const Keyset &);
+  Keyset &operator=(const Keyset &);
 };
 
 //
@@ -873,26 +933,46 @@ class Keyset {
 
 class DawgNode {
  public:
-  DawgNode()
-      : child_(0),
-        sibling_(0),
-        label_('\0'),
-        is_state_(false),
-        has_sibling_(false) {}
+  DawgNode() : child_(0), sibling_(0), label_('\0'),
+    is_state_(false), has_sibling_(false) {}
 
-  void set_child(id_type child) { child_ = child; }
-  void set_sibling(id_type sibling) { sibling_ = sibling; }
-  void set_value(value_type value) { child_ = value; }
-  void set_label(uchar_type label) { label_ = label; }
-  void set_is_state(bool is_state) { is_state_ = is_state; }
-  void set_has_sibling(bool has_sibling) { has_sibling_ = has_sibling; }
+  void set_child(id_type child) {
+    child_ = child;
+  }
+  void set_sibling(id_type sibling) {
+    sibling_ = sibling;
+  }
+  void set_value(value_type value) {
+    child_ = value;
+  }
+  void set_label(uchar_type label) {
+    label_ = label;
+  }
+  void set_is_state(bool is_state) {
+    is_state_ = is_state;
+  }
+  void set_has_sibling(bool has_sibling) {
+    has_sibling_ = has_sibling;
+  }
 
-  id_type child() const { return child_; }
-  id_type sibling() const { return sibling_; }
-  value_type value() const { return static_cast<value_type>(child_); }
-  uchar_type label() const { return label_; }
-  bool is_state() const { return is_state_; }
-  bool has_sibling() const { return has_sibling_; }
+  id_type child() const {
+    return child_;
+  }
+  id_type sibling() const {
+    return sibling_;
+  }
+  value_type value() const {
+    return static_cast<value_type>(child_);
+  }
+  uchar_type label() const {
+    return label_;
+  }
+  bool is_state() const {
+    return is_state_;
+  }
+  bool has_sibling() const {
+    return has_sibling_;
+  }
 
   id_type unit() const {
     if (label_ == '\0') {
@@ -918,19 +998,29 @@ class DawgNode {
 class DawgUnit {
  public:
   explicit DawgUnit(id_type unit = 0) : unit_(unit) {}
-  DawgUnit(const DawgUnit& unit) : unit_(unit.unit_) {}
+  DawgUnit(const DawgUnit &unit) : unit_(unit.unit_) {}
 
-  DawgUnit& operator=(id_type unit) {
+  DawgUnit &operator=(id_type unit) {
     unit_ = unit;
     return *this;
   }
 
-  id_type unit() const { return unit_; }
+  id_type unit() const {
+    return unit_;
+  }
 
-  id_type child() const { return unit_ >> 2; }
-  bool has_sibling() const { return (unit_ & 1) == 1; }
-  value_type value() const { return static_cast<value_type>(unit_ >> 1); }
-  bool is_state() const { return (unit_ & 2) == 2; }
+  id_type child() const {
+    return unit_ >> 2;
+  }
+  bool has_sibling() const {
+    return (unit_ & 1) == 1;
+  }
+  value_type value() const {
+    return static_cast<value_type>(unit_ >> 1);
+  }
+  bool is_state() const {
+    return (unit_ & 2) == 2;
+  }
 
  private:
   id_type unit_;
@@ -944,41 +1034,52 @@ class DawgUnit {
 
 class DawgBuilder {
  public:
-  DawgBuilder()
-      : nodes_(),
-        units_(),
-        labels_(),
-        is_intersections_(),
-        table_(),
-        node_stack_(),
-        recycle_bin_(),
-        num_states_(0) {}
-  ~DawgBuilder() { clear(); }
+  DawgBuilder() : nodes_(), units_(), labels_(), is_intersections_(),
+    table_(), node_stack_(), recycle_bin_(), num_states_(0) {}
+  ~DawgBuilder() {
+    clear();
+  }
 
-  id_type root() const { return 0; }
+  id_type root() const {
+    return 0;
+  }
 
-  id_type child(id_type id) const { return units_[id].child(); }
+  id_type child(id_type id) const {
+    return units_[id].child();
+  }
   id_type sibling(id_type id) const {
     return units_[id].has_sibling() ? (id + 1) : 0;
   }
-  int value(id_type id) const { return units_[id].value(); }
+  int value(id_type id) const {
+    return units_[id].value();
+  }
 
-  bool is_leaf(id_type id) const { return label(id) == '\0'; }
-  uchar_type label(id_type id) const { return labels_[id]; }
+  bool is_leaf(id_type id) const {
+    return label(id) == '\0';
+  }
+  uchar_type label(id_type id) const {
+    return labels_[id];
+  }
 
-  bool is_intersection(id_type id) const { return is_intersections_[id]; }
+  bool is_intersection(id_type id) const {
+    return is_intersections_[id];
+  }
   id_type intersection_id(id_type id) const {
     return is_intersections_.rank(id) - 1;
   }
 
-  std::size_t num_intersections() const { return is_intersections_.num_ones(); }
+  std::size_t num_intersections() const {
+    return is_intersections_.num_ones();
+  }
 
-  std::size_t size() const { return units_.size(); }
+  std::size_t size() const {
+    return units_.size();
+  }
 
   void init();
   void finish();
 
-  void insert(const char* key, std::size_t length, value_type value);
+  void insert(const char *key, std::size_t length, value_type value);
 
   void clear();
 
@@ -995,15 +1096,15 @@ class DawgBuilder {
   std::size_t num_states_;
 
   // Disallows copy and assignment.
-  DawgBuilder(const DawgBuilder&);
-  DawgBuilder& operator=(const DawgBuilder&);
+  DawgBuilder(const DawgBuilder &);
+  DawgBuilder &operator=(const DawgBuilder &);
 
   void flush(id_type id);
 
   void expand_table();
 
-  id_type find_unit(id_type id, id_type* hash_id) const;
-  id_type find_node(id_type node_id, id_type* hash_id) const;
+  id_type find_unit(id_type id, id_type *hash_id) const;
+  id_type find_node(id_type node_id, id_type *hash_id) const;
 
   bool are_equal(id_type node_id, id_type unit_id) const;
 
@@ -1013,7 +1114,9 @@ class DawgBuilder {
   id_type append_node();
   id_type append_unit();
 
-  void free_node(id_type id) { recycle_bin_.push(id); }
+  void free_node(id_type id) {
+    recycle_bin_.push(id);
+  }
 
   static id_type hash(id_type key) {
     key = ~key + (key << 15);  // key = (key << 15) - key - 1;
@@ -1052,9 +1155,8 @@ inline void DawgBuilder::finish() {
   is_intersections_.build();
 }
 
-inline void DawgBuilder::insert(const char* key,
-                                std::size_t length,
-                                value_type value) {
+inline void DawgBuilder::insert(const char *key, std::size_t length,
+    value_type value) {
   if (value < 0) {
     DARTS_THROW("failed to insert key: negative value");
   } else if (length == 0) {
@@ -1064,7 +1166,7 @@ inline void DawgBuilder::insert(const char* key,
   id_type id = 0;
   std::size_t key_pos = 0;
 
-  for (; key_pos <= length; ++key_pos) {
+  for ( ; key_pos <= length; ++key_pos) {
     id_type child_id = nodes_[id].child();
     if (child_id == 0) {
       break;
@@ -1090,9 +1192,9 @@ inline void DawgBuilder::insert(const char* key,
     return;
   }
 
-  for (; key_pos <= length; ++key_pos) {
-    uchar_type key_label =
-        static_cast<uchar_type>((key_pos < length) ? key[key_pos] : '\0');
+  for ( ; key_pos <= length; ++key_pos) {
+    uchar_type key_label = static_cast<uchar_type>(
+        (key_pos < length) ? key[key_pos] : '\0');
     id_type child_id = append_node();
 
     if (nodes_[id].child() == 0) {
@@ -1177,9 +1279,9 @@ inline void DawgBuilder::expand_table() {
   }
 }
 
-inline id_type DawgBuilder::find_unit(id_type id, id_type* hash_id) const {
+inline id_type DawgBuilder::find_unit(id_type id, id_type *hash_id) const {
   *hash_id = hash_unit(id) % table_.size();
-  for (;; *hash_id = (*hash_id + 1) % table_.size()) {
+  for ( ; ; *hash_id = (*hash_id + 1) % table_.size()) {
     id_type unit_id = table_[*hash_id];
     if (unit_id == 0) {
       break;
@@ -1190,9 +1292,10 @@ inline id_type DawgBuilder::find_unit(id_type id, id_type* hash_id) const {
   return 0;
 }
 
-inline id_type DawgBuilder::find_node(id_type node_id, id_type* hash_id) const {
+inline id_type DawgBuilder::find_node(id_type node_id,
+    id_type *hash_id) const {
   *hash_id = hash_node(node_id) % table_.size();
-  for (;; *hash_id = (*hash_id + 1) % table_.size()) {
+  for ( ; ; *hash_id = (*hash_id + 1) % table_.size()) {
     id_type unit_id = table_[*hash_id];
     if (unit_id == 0) {
       break;
@@ -1206,7 +1309,8 @@ inline id_type DawgBuilder::find_node(id_type node_id, id_type* hash_id) const {
 }
 
 inline bool DawgBuilder::are_equal(id_type node_id, id_type unit_id) const {
-  for (id_type i = nodes_[node_id].sibling(); i != 0; i = nodes_[i].sibling()) {
+  for (id_type i = nodes_[node_id].sibling(); i != 0;
+      i = nodes_[i].sibling()) {
     if (units_[unit_id].has_sibling() == false) {
       return false;
     }
@@ -1227,7 +1331,7 @@ inline bool DawgBuilder::are_equal(id_type node_id, id_type unit_id) const {
 
 inline id_type DawgBuilder::hash_unit(id_type id) const {
   id_type hash_value = 0;
-  for (; id != 0; ++id) {
+  for ( ; id != 0; ++id) {
     id_type unit = units_[id].unit();
     uchar_type label = labels_[id];
     hash_value ^= hash((label << 24) ^ unit);
@@ -1241,7 +1345,7 @@ inline id_type DawgBuilder::hash_unit(id_type id) const {
 
 inline id_type DawgBuilder::hash_node(id_type id) const {
   id_type hash_value = 0;
-  for (; id != 0; id = nodes_[id].sibling()) {
+  for ( ; id != 0; id = nodes_[id].sibling()) {
     id_type unit = nodes_[id].unit();
     uchar_type label = nodes_[id].label();
     hash_value ^= hash((label << 24) ^ unit);
@@ -1285,8 +1389,12 @@ class DoubleArrayBuilderUnit {
       unit_ &= ~(1U << 8);
     }
   }
-  void set_value(value_type value) { unit_ = value | (1U << 31); }
-  void set_label(uchar_type label) { unit_ = (unit_ & ~0xFFU) | label; }
+  void set_value(value_type value) {
+    unit_ = value | (1U << 31);
+  }
+  void set_label(uchar_type label) {
+    unit_ = (unit_ & ~0xFFU) | label;
+  }
   void set_offset(id_type offset) {
     if (offset >= 1U << 29) {
       DARTS_THROW("failed to modify unit: too large offset");
@@ -1311,18 +1419,34 @@ class DoubleArrayBuilderUnit {
 
 class DoubleArrayBuilderExtraUnit {
  public:
-  DoubleArrayBuilderExtraUnit()
-      : prev_(0), next_(0), is_fixed_(false), is_used_(false) {}
+  DoubleArrayBuilderExtraUnit() : prev_(0), next_(0),
+      is_fixed_(false), is_used_(false) {}
 
-  void set_prev(id_type prev) { prev_ = prev; }
-  void set_next(id_type next) { next_ = next; }
-  void set_is_fixed(bool is_fixed) { is_fixed_ = is_fixed; }
-  void set_is_used(bool is_used) { is_used_ = is_used; }
+  void set_prev(id_type prev) {
+    prev_ = prev;
+  }
+  void set_next(id_type next) {
+    next_ = next;
+  }
+  void set_is_fixed(bool is_fixed) {
+    is_fixed_ = is_fixed;
+  }
+  void set_is_used(bool is_used) {
+    is_used_ = is_used;
+  }
 
-  id_type prev() const { return prev_; }
-  id_type next() const { return next_; }
-  bool is_fixed() const { return is_fixed_; }
-  bool is_used() const { return is_used_; }
+  id_type prev() const {
+    return prev_;
+  }
+  id_type next() const {
+    return next_;
+  }
+  bool is_fixed() const {
+    return is_fixed_;
+  }
+  bool is_used() const {
+    return is_used_;
+  }
 
  private:
   id_type prev_;
@@ -1340,27 +1464,25 @@ class DoubleArrayBuilderExtraUnit {
 class DoubleArrayBuilder {
  public:
   explicit DoubleArrayBuilder(progress_func_type progress_func)
-      : progress_func_(progress_func),
-        units_(),
-        extras_(),
-        labels_(),
-        table_(),
-        extras_head_(0) {}
-  ~DoubleArrayBuilder() { clear(); }
+      : progress_func_(progress_func), units_(), extras_(), labels_(),
+        table_(), extras_head_(0) {}
+  ~DoubleArrayBuilder() {
+    clear();
+  }
 
   template <typename T>
-  void build(const Keyset<T>& keyset);
-  void copy(std::size_t* size_ptr, DoubleArrayUnit** buf_ptr) const;
+  void build(const Keyset<T> &keyset);
+  void copy(std::size_t *size_ptr, DoubleArrayUnit **buf_ptr) const;
 
   void clear();
 
  private:
-  enum { BLOCK_SIZE = 256 };
-  enum { NUM_EXTRA_BLOCKS = 16 };
-  enum { NUM_EXTRAS = BLOCK_SIZE * NUM_EXTRA_BLOCKS };
+  static constexpr int BLOCK_SIZE = 256;
+  static constexpr int NUM_EXTRA_BLOCKS = 16;
+  static constexpr int NUM_EXTRAS = BLOCK_SIZE * NUM_EXTRA_BLOCKS;
 
-  enum { UPPER_MASK = 0xFF << 21 };
-  enum { LOWER_MASK = 0xFF };
+  static constexpr int  UPPER_MASK = 0xFF << 21;
+  static constexpr int  LOWER_MASK = 0xFF;
 
   typedef DoubleArrayBuilderUnit unit_type;
   typedef DoubleArrayBuilderExtraUnit extra_type;
@@ -1373,40 +1495,36 @@ class DoubleArrayBuilder {
   id_type extras_head_;
 
   // Disallows copy and assignment.
-  DoubleArrayBuilder(const DoubleArrayBuilder&);
-  DoubleArrayBuilder& operator=(const DoubleArrayBuilder&);
+  DoubleArrayBuilder(const DoubleArrayBuilder &);
+  DoubleArrayBuilder &operator=(const DoubleArrayBuilder &);
 
-  std::size_t num_blocks() const { return units_.size() / BLOCK_SIZE; }
+  std::size_t num_blocks() const {
+    return units_.size() / BLOCK_SIZE;
+  }
 
-  const extra_type& extras(id_type id) const {
+  const extra_type &extras(id_type id) const {
     return extras_[id % NUM_EXTRAS];
   }
-  extra_type& extras(id_type id) { return extras_[id % NUM_EXTRAS]; }
+  extra_type &extras(id_type id) {
+    return extras_[id % NUM_EXTRAS];
+  }
 
   template <typename T>
-  void build_dawg(const Keyset<T>& keyset, DawgBuilder* dawg_builder);
-  void build_from_dawg(const DawgBuilder& dawg);
-  void build_from_dawg(const DawgBuilder& dawg,
-                       id_type dawg_id,
-                       id_type dic_id);
-  id_type arrange_from_dawg(const DawgBuilder& dawg,
-                            id_type dawg_id,
-                            id_type dic_id);
+  void build_dawg(const Keyset<T> &keyset, DawgBuilder *dawg_builder);
+  void build_from_dawg(const DawgBuilder &dawg);
+  void build_from_dawg(const DawgBuilder &dawg,
+      id_type dawg_id, id_type dic_id);
+  id_type arrange_from_dawg(const DawgBuilder &dawg,
+      id_type dawg_id, id_type dic_id);
 
   template <typename T>
-  void build_from_keyset(const Keyset<T>& keyset);
+  void build_from_keyset(const Keyset<T> &keyset);
   template <typename T>
-  void build_from_keyset(const Keyset<T>& keyset,
-                         std::size_t begin,
-                         std::size_t end,
-                         std::size_t depth,
-                         id_type dic_id);
+  void build_from_keyset(const Keyset<T> &keyset, std::size_t begin,
+      std::size_t end, std::size_t depth, id_type dic_id);
   template <typename T>
-  id_type arrange_from_keyset(const Keyset<T>& keyset,
-                              std::size_t begin,
-                              std::size_t end,
-                              std::size_t depth,
-                              id_type dic_id);
+  id_type arrange_from_keyset(const Keyset<T> &keyset, std::size_t begin,
+      std::size_t end, std::size_t depth, id_type dic_id);
 
   id_type find_valid_offset(id_type id) const;
   bool is_valid_offset(id_type id, id_type offset) const;
@@ -1419,7 +1537,7 @@ class DoubleArrayBuilder {
 };
 
 template <typename T>
-void DoubleArrayBuilder::build(const Keyset<T>& keyset) {
+void DoubleArrayBuilder::build(const Keyset<T> &keyset) {
   if (keyset.has_values()) {
     Details::DawgBuilder dawg_builder;
     build_dawg(keyset, &dawg_builder);
@@ -1430,14 +1548,14 @@ void DoubleArrayBuilder::build(const Keyset<T>& keyset) {
   }
 }
 
-inline void DoubleArrayBuilder::copy(std::size_t* size_ptr,
-                                     DoubleArrayUnit** buf_ptr) const {
+inline void DoubleArrayBuilder::copy(std::size_t *size_ptr,
+    DoubleArrayUnit **buf_ptr) const {
   if (size_ptr != NULL) {
     *size_ptr = units_.size();
   }
   if (buf_ptr != NULL) {
     *buf_ptr = new DoubleArrayUnit[units_.size()];
-    unit_type* units = reinterpret_cast<unit_type*>(*buf_ptr);
+    unit_type *units = reinterpret_cast<unit_type *>(*buf_ptr);
     for (std::size_t i = 0; i < units_.size(); ++i) {
       units[i] = units_[i];
     }
@@ -1453,8 +1571,8 @@ inline void DoubleArrayBuilder::clear() {
 }
 
 template <typename T>
-void DoubleArrayBuilder::build_dawg(const Keyset<T>& keyset,
-                                    DawgBuilder* dawg_builder) {
+void DoubleArrayBuilder::build_dawg(const Keyset<T> &keyset,
+    DawgBuilder *dawg_builder) {
   dawg_builder->init();
   for (std::size_t i = 0; i < keyset.num_keys(); ++i) {
     dawg_builder->insert(keyset.keys(i), keyset.lengths(i), keyset.values(i));
@@ -1465,7 +1583,7 @@ void DoubleArrayBuilder::build_dawg(const Keyset<T>& keyset,
   dawg_builder->finish();
 }
 
-inline void DoubleArrayBuilder::build_from_dawg(const DawgBuilder& dawg) {
+inline void DoubleArrayBuilder::build_from_dawg(const DawgBuilder &dawg) {
   std::size_t num_units = 1;
   while (num_units < dawg.size()) {
     num_units <<= 1;
@@ -1495,9 +1613,8 @@ inline void DoubleArrayBuilder::build_from_dawg(const DawgBuilder& dawg) {
   table_.clear();
 }
 
-inline void DoubleArrayBuilder::build_from_dawg(const DawgBuilder& dawg,
-                                                id_type dawg_id,
-                                                id_type dic_id) {
+inline void DoubleArrayBuilder::build_from_dawg(const DawgBuilder &dawg,
+    id_type dawg_id, id_type dic_id) {
   id_type dawg_child_id = dawg.child(dawg_id);
   if (dawg.is_intersection(dawg_child_id)) {
     id_type intersection_id = dawg.intersection_id(dawg_child_id);
@@ -1529,9 +1646,8 @@ inline void DoubleArrayBuilder::build_from_dawg(const DawgBuilder& dawg,
   } while (dawg_child_id != 0);
 }
 
-inline id_type DoubleArrayBuilder::arrange_from_dawg(const DawgBuilder& dawg,
-                                                     id_type dawg_id,
-                                                     id_type dic_id) {
+inline id_type DoubleArrayBuilder::arrange_from_dawg(const DawgBuilder &dawg,
+    id_type dawg_id, id_type dic_id) {
   labels_.resize(0);
 
   id_type dawg_child_id = dawg.child(dawg_id);
@@ -1563,7 +1679,7 @@ inline id_type DoubleArrayBuilder::arrange_from_dawg(const DawgBuilder& dawg,
 }
 
 template <typename T>
-void DoubleArrayBuilder::build_from_keyset(const Keyset<T>& keyset) {
+void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset) {
   std::size_t num_units = 1;
   while (num_units < keyset.num_keys()) {
     num_units <<= 1;
@@ -1588,11 +1704,8 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T>& keyset) {
 }
 
 template <typename T>
-void DoubleArrayBuilder::build_from_keyset(const Keyset<T>& keyset,
-                                           std::size_t begin,
-                                           std::size_t end,
-                                           std::size_t depth,
-                                           id_type dic_id) {
+void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset,
+    std::size_t begin, std::size_t end, std::size_t depth, id_type dic_id) {
   id_type offset = arrange_from_keyset(keyset, begin, end, depth, dic_id);
 
   while (begin < end) {
@@ -1610,8 +1723,8 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T>& keyset,
   while (++begin < end) {
     uchar_type label = keyset.keys(begin, depth);
     if (label != last_label) {
-      build_from_keyset(keyset, last_begin, begin, depth + 1,
-                        offset ^ last_label);
+      build_from_keyset(keyset, last_begin, begin,
+          depth + 1, offset ^ last_label);
       last_begin = begin;
       last_label = keyset.keys(begin, depth);
     }
@@ -1620,11 +1733,8 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T>& keyset,
 }
 
 template <typename T>
-id_type DoubleArrayBuilder::arrange_from_keyset(const Keyset<T>& keyset,
-                                                std::size_t begin,
-                                                std::size_t end,
-                                                std::size_t depth,
-                                                id_type dic_id) {
+id_type DoubleArrayBuilder::arrange_from_keyset(const Keyset<T> &keyset,
+    std::size_t begin, std::size_t end, std::size_t depth, id_type dic_id) {
   labels_.resize(0);
 
   value_type value = -1;
@@ -1632,8 +1742,7 @@ id_type DoubleArrayBuilder::arrange_from_keyset(const Keyset<T>& keyset,
     uchar_type label = keyset.keys(i, depth);
     if (label == '\0') {
       if (keyset.has_lengths() && depth < keyset.lengths(i)) {
-        DARTS_THROW(
-            "failed to build double-array: "
+        DARTS_THROW("failed to build double-array: "
             "invalid null character");
       } else if (keyset.values(i) < 0) {
         DARTS_THROW("failed to build double-array: negative value");
@@ -1693,7 +1802,7 @@ inline id_type DoubleArrayBuilder::find_valid_offset(id_type id) const {
 }
 
 inline bool DoubleArrayBuilder::is_valid_offset(id_type id,
-                                                id_type offset) const {
+    id_type offset) const {
   if (extras(offset).is_used()) {
     return false;
   }
@@ -1802,19 +1911,16 @@ inline void DoubleArrayBuilder::fix_block(id_type block_id) {
 //
 
 template <typename A, typename B, typename T, typename C>
-int DoubleArrayImpl<A, B, T, C>::build(
-    std::size_t num_keys,
-    const key_type* const* keys,
-    const std::size_t* lengths,
-    const value_type* values,
-    Details::progress_func_type progress_func) {
+int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
+    const key_type * const *keys, const std::size_t *lengths,
+    const value_type *values, Details::progress_func_type progress_func) {
   Details::Keyset<value_type> keyset(num_keys, keys, lengths, values);
 
   Details::DoubleArrayBuilder builder(progress_func);
   builder.build(keyset);
 
   std::size_t size = 0;
-  unit_type* buf = NULL;
+  unit_type *buf = NULL;
   builder.copy(&size, &buf);
 
   clear();

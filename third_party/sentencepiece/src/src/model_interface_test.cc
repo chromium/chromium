@@ -14,9 +14,9 @@
 
 #include "model_interface.h"
 
-#include "absl/container/flat_hash_map.h"
 #include "model_factory.h"
 #include "testharness.h"
+#include "absl/container/flat_hash_map.h"
 #include "util.h"
 
 namespace sentencepiece {
@@ -54,8 +54,8 @@ void AddPiece(ModelProto *model_proto, const std::string &piece,
   sp->set_score(score);
 }
 
-void AddBytePiece(ModelProto* model_proto, unsigned char byte) {
-  auto* sp = model_proto->add_pieces();
+void AddBytePiece(ModelProto *model_proto, unsigned char byte) {
+  auto *sp = model_proto->add_pieces();
   sp->set_piece(ByteToPiece(byte));
   sp->set_type(ModelProto::SentencePiece::BYTE);
 }

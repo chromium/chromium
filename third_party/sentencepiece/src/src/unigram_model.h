@@ -37,9 +37,9 @@ class Lattice {
 
   struct Node {
     absl::string_view piece;  // Sentence piece representation.
-    uint32 pos;               // Unicode position in the sentence.
-    uint32 length;            // Unicode length, not UT8 byte.
-    uint32 node_id;           // unique id in the current lattice.
+    uint32_t pos;               // Unicode position in the sentence.
+    uint32_t length;            // Unicode length, not UT8 byte.
+    uint32_t node_id;           // unique id in the current lattice.
     int id;                   // vocab id. (maybe -1 for UNK)
     float score;              // logprob of this sentencepiece.
     float backtrace_score;    // backtrace info used in Viterbi.
@@ -82,7 +82,7 @@ class Lattice {
   // After calling this method, The caller must set Node::score and Node::id.
   Node *Insert(int pos, int length);
 
-  using LatticePathWithScore = std::pair<std::vector<Node*>, float>;
+  using LatticePathWithScore = std::pair<std::vector<Node *>, float>;
 
   // Returns Viterbi path. All nodes must be populated in advance.
   LatticePathWithScore Viterbi();
@@ -93,8 +93,7 @@ class Lattice {
   std::vector<float> BackwardAlgorithm(float theta) const;
 
   // Returns n-best results.
-  std::vector<LatticePathWithScore> NBest(size_t nbest_size,
-                                          bool sample,
+  std::vector<LatticePathWithScore> NBest(size_t nbest_size, bool sample,
                                           float theta);
 
   // Samples one path from the lattice according to the
@@ -140,9 +139,7 @@ class Model : public ModelInterface {
                             float theta) const override;
 
   NBestEncodeResult SampleEncodeAndScore(absl::string_view normalized,
-                                         float theta,
-                                         int samples,
-                                         bool wor,
+                                         float theta, int samples, bool wor,
                                          bool include_best) const override;
 
   float CalculateEntropy(absl::string_view normalized,

@@ -16,13 +16,13 @@
 #include <string>
 #include <vector>
 
-#include "absl/flags/flag.h"
-#include "absl/strings/str_split.h"
 #include "common.h"
 #include "filesystem.h"
 #include "init.h"
 #include "sentencepiece.pb.h"
 #include "sentencepiece_processor.h"
+#include "absl/flags/flag.h"
+#include "absl/strings/str_split.h"
 #include "util.h"
 
 ABSL_FLAG(std::string, model, "", "model file name");
@@ -30,9 +30,7 @@ ABSL_FLAG(std::string, input, "", "input filename");
 ABSL_FLAG(std::string, output, "", "output filename");
 ABSL_FLAG(std::string, input_format, "piece", "choose from piece or id");
 ABSL_FLAG(std::string, output_format, "string", "choose from string or proto");
-ABSL_FLAG(std::string,
-          extra_options,
-          "",
+ABSL_FLAG(std::string, extra_options, "",
           "':' separated encoder extra options, e.g., \"reverse:bos:eos\"");
 
 int main(int argc, char *argv[]) {
@@ -48,19 +46,18 @@ int main(int argc, char *argv[]) {
     rest_args.push_back(absl::GetFlag(FLAGS_input));
   }
 
-  if (rest_args.empty()) {
+  if (rest_args.empty())
     rest_args.push_back("");  // empty means that reading from stdin.
-  }
 
-  CHECK(!absl::GetFlag(FLAGS_model).empty());
+  ABSL_QCHECK(!absl::GetFlag(FLAGS_model).empty());
 
   sentencepiece::SentencePieceProcessor sp;
-  CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
-  CHECK_OK(sp.SetDecodeExtraOptions(absl::GetFlag(FLAGS_extra_options)));
+  ABSL_QCHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
+  ABSL_QCHECK_OK(sp.SetDecodeExtraOptions(absl::GetFlag(FLAGS_extra_options)));
 
   auto output =
       sentencepiece::filesystem::NewWritableFile(absl::GetFlag(FLAGS_output));
-  CHECK_OK(output->status());
+  ABSL_QCHECK_OK(output->status());
 
   std::string detok, line;
   sentencepiece::SentencePieceText spt;
@@ -78,38 +75,38 @@ int main(int argc, char *argv[]) {
   if (absl::GetFlag(FLAGS_input_format) == "piece") {
     if (absl::GetFlag(FLAGS_output_format) == "string") {
       process = [&](const std::vector<std::string> &pieces) {
-        CHECK_OK(sp.Decode(pieces, &detok));
+        ABSL_CHECK_OK(sp.Decode(pieces, &detok));
         output->WriteLine(detok);
       };
     } else if (absl::GetFlag(FLAGS_output_format) == "proto") {
       process = [&](const std::vector<std::string> &pieces) {
-        CHECK_OK(sp.Decode(pieces, &spt));
+        ABSL_CHECK_OK(sp.Decode(pieces, &spt));
       };
     } else {
-      LOG(FATAL) << "Unknown output format: "
+      ABSL_LOG(FATAL) << "Unknown output format: "
                  << absl::GetFlag(FLAGS_output_format);
     }
   } else if (absl::GetFlag(FLAGS_input_format) == "id") {
     if (absl::GetFlag(FLAGS_output_format) == "string") {
       process = [&](const std::vector<std::string> &pieces) {
-        CHECK_OK(sp.Decode(ToIds(pieces), &detok));
+        ABSL_CHECK_OK(sp.Decode(ToIds(pieces), &detok));
         output->WriteLine(detok);
       };
     } else if (absl::GetFlag(FLAGS_output_format) == "proto") {
       process = [&](const std::vector<std::string> &pieces) {
-        CHECK_OK(sp.Decode(ToIds(pieces), &spt));
+        ABSL_CHECK_OK(sp.Decode(ToIds(pieces), &spt));
       };
     } else {
-      LOG(FATAL) << "Unknown output format: "
+      ABSL_LOG(FATAL) << "Unknown output format: "
                  << absl::GetFlag(FLAGS_output_format);
     }
   } else {
-    LOG(FATAL) << "Unknown input format: " << absl::GetFlag(FLAGS_input_format);
+    ABSL_LOG(FATAL) << "Unknown input format: " << absl::GetFlag(FLAGS_input_format);
   }
 
-  for (const auto& filename : rest_args) {
+  for (const auto &filename : rest_args) {
     auto input = sentencepiece::filesystem::NewReadableFile(filename);
-    CHECK_OK(input->status());
+    ABSL_QCHECK_OK(input->status());
     while (input->ReadLine(&line)) {
       const auto pieces = absl::StrSplit(line, " ");
       process(pieces);

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include "trainer_factory.h"
 #include "testharness.h"
+#include "trainer_factory.h"
 
 namespace sentencepiece {
 

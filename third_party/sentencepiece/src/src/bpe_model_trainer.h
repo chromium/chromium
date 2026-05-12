@@ -17,12 +17,12 @@
 
 #include <cstdint>
 #include <limits>
-#include <set>
 #include <string>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
 #include "sentencepiece_model.pb.h"
+#include "absl/container/btree_set.h"
+#include "absl/container/flat_hash_map.h"
 #include "trainer_interface.h"
 
 namespace sentencepiece {
@@ -31,14 +31,21 @@ namespace bpe {
 // Trainer class for BPE model.
 class Trainer : public TrainerInterface {
  public:
-  Trainer(const TrainerSpec& trainer_spec,
-          const NormalizerSpec& normalizer_spec,
-          const NormalizerSpec& denormalizer_spec)
-      : TrainerInterface::TrainerInterface(trainer_spec,
-                                           normalizer_spec,
+  Trainer(const TrainerSpec &trainer_spec,
+          const NormalizerSpec &normalizer_spec,
+          const NormalizerSpec &denormalizer_spec)
+      : TrainerInterface::TrainerInterface(trainer_spec, normalizer_spec,
                                            denormalizer_spec) {}
 
   util::Status Train() override;
+
+#ifdef SPM_NLCODEC_BPE
+  // Fast BPE training using nlcodec's max-heap + linked-list algorithm.
+  // Based on nlcodec by Thamme Gowda (https://github.com/isi-nlp/nlcodec)
+  // "Many-to-English Machine Translation Tools, Data, and Pretrained Models"
+  // Gowda et al., ACL 2021. https://arxiv.org/abs/2104.00290v2
+  util::Status TrainFast();
+#endif  // SPM_NLCODEC_BPE
 
  private:
   // Symbol represents a character or symbol bigram.
@@ -52,7 +59,7 @@ class Trainer : public TrainerInterface {
 
     // Position list. Use set so that we can keep the order of occurrence.
     // See EncodePos/DecodePos.
-    std::set<uint64_t> positions;
+    absl::btree_set<uint64_t> positions;
 
     bool IsBigram() const { return left != nullptr && right != nullptr; }
     std::string ToString() const;
@@ -68,10 +75,10 @@ class Trainer : public TrainerInterface {
   // Encodes sid, left and right bigram index into uint64_t.
   // Encoded value keeps the order of sid, left and right.
   static uint64_t EncodePos(int sid, int l, int r) {
-    CHECK_GE(l, 0);
-    CHECK_GE(r, 0);
-    CHECK_LE(l, std::numeric_limits<uint16_t>::max());
-    CHECK_LE(r, std::numeric_limits<uint16_t>::max());
+    ABSL_CHECK_GE(l, 0);
+    ABSL_CHECK_GE(r, 0);
+    ABSL_CHECK_LE(l, std::numeric_limits<uint16_t>::max());
+    ABSL_CHECK_LE(r, std::numeric_limits<uint16_t>::max());
     const uint64_t n = (static_cast<uint64_t>(sid) << 32) |
                        (static_cast<uint64_t>(l) << 16) | r;
     return n;
@@ -115,10 +122,10 @@ class Trainer : public TrainerInterface {
   void UpdateActiveSymbols();
 
   // All unique symbols. Key is a fingerprint of Symbol.
-  absl::flat_hash_map<uint64_t, Symbol*> symbols_cache_;
+  absl::flat_hash_map<uint64_t, Symbol *> symbols_cache_;
 
   // Set of symbols from which we find the best symbol in each iteration.
-  std::set<Symbol *> active_symbols_;
+  absl::btree_set<Symbol *> active_symbols_;
 
   // Stores symbols allocated in heap so that we can delete them at onece.
   std::vector<Symbol *> allocated_;

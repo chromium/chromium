@@ -18,10 +18,10 @@
 #include <memory>
 #include <string>
 
-#include "absl/strings/string_view.h"
 #include "common.h"
 #include "sentencepiece.pb.h"
 #include "sentencepiece_processor.h"
+#include "absl/strings/string_view.h"
 
 namespace sentencepiece {
 namespace pretokenizer {
@@ -54,7 +54,7 @@ class PretokenizerForTrainingInterface {
 
  private:
   static std::string Preprocess(absl::string_view text);
-  static std::vector<std::string> Postprocess(const SentencePieceText& spt);
+  static std::vector<std::string> Postprocess(const SentencePieceText &spt);
 };
 
 }  // namespace pretokenizer

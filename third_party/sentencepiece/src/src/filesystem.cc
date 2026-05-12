@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include <iostream>
-
-#include "absl/memory/memory.h"
 #include "filesystem.h"
+
+#include <fstream>
+#include <iostream>
+#include <memory>
+
 #include "util.h"
 
 #if defined(OS_WIN) && defined(UNICODE) && defined(_UNICODE)
@@ -35,9 +37,10 @@ class PosixReadableFile : public ReadableFile {
                 : new std::ifstream(WPATH(filename),
                                     is_binary ? std::ios::binary | std::ios::in
                                               : std::ios::in)) {
-    if (!*is_)
+    if (!*is_ || (is_->peek() && is_->fail())) {
       status_ = util::StatusBuilder(util::StatusCode::kNotFound, GTL_LOC)
                 << "\"" << filename.data() << "\": " << util::StrError(errno);
+    }
   }
 
   ~PosixReadableFile() {
@@ -52,7 +55,7 @@ class PosixReadableFile : public ReadableFile {
 
   bool ReadAll(std::string *line) {
     if (is_ == &std::cin) {
-      LOG(ERROR) << "ReadAll is not supported for stdin.";
+      ABSL_LOG(ERROR) << "ReadAll is not supported for stdin.";
       return false;
     }
     line->assign(std::istreambuf_iterator<char>(*is_),
@@ -102,12 +105,12 @@ using DefaultWritableFile = PosixWritableFile;
 
 std::unique_ptr<ReadableFile> NewReadableFile(absl::string_view filename,
                                               bool is_binary) {
-  return absl::make_unique<DefaultReadableFile>(filename, is_binary);
+  return std::make_unique<DefaultReadableFile>(filename, is_binary);
 }
 
 std::unique_ptr<WritableFile> NewWritableFile(absl::string_view filename,
                                               bool is_binary) {
-  return absl::make_unique<DefaultWritableFile>(filename, is_binary);
+  return std::make_unique<DefaultWritableFile>(filename, is_binary);
 }
 
 }  // namespace filesystem

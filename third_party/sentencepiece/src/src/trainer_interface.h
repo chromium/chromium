@@ -22,12 +22,12 @@
 #include <utility>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
 #include "common.h"
 #include "filesystem.h"
 #include "sentencepiece_model.pb.h"
 #include "sentencepiece_processor.h"
 #include "sentencepiece_trainer.h"
+#include "absl/container/flat_hash_map.h"
 #include "util.h"
 
 namespace sentencepiece {
@@ -51,12 +51,12 @@ std::vector<std::pair<K, V>> Sorted(const absl::flat_hash_map<K, V> &m) {
 
 class MultiFileSentenceIterator : public SentenceIterator {
  public:
-  explicit MultiFileSentenceIterator(const std::vector<std::string>& files);
+  explicit MultiFileSentenceIterator(const std::vector<std::string> &files);
   ~MultiFileSentenceIterator() {}
 
   bool done() const override;
   void Next() override;
-  const std::string& value() const override { return value_; }
+  const std::string &value() const override { return value_; }
   util::Status status() const override;
 
  private:
@@ -72,7 +72,7 @@ class MultiFileSentenceIterator : public SentenceIterator {
 // Base trainer class
 class TrainerInterface {
  public:
-  using Sentence = std::pair<std::string, int64>;
+  using Sentence = std::pair<std::string, int64_t>;
   using Sentences = std::vector<Sentence>;
 
   static const char32 kWSChar;
@@ -82,16 +82,16 @@ class TrainerInterface {
   static const char kUNKStr[];
   static const char kUPPBoundaryStr[];
 
-  TrainerInterface(const TrainerSpec& trainer_spec,
-                   const NormalizerSpec& normalizer_spec,
-                   const NormalizerSpec& denormalizer_spec);
+  TrainerInterface(const TrainerSpec &trainer_spec,
+                   const NormalizerSpec &normalizer_spec,
+                   const NormalizerSpec &denormalizer_spec);
 
   virtual ~TrainerInterface();
 
   // Loads sentence from `sentence_iterator` and stores the model
   // to `output_model_proto`.
-  virtual util::Status Train(SentenceIterator* sentence_iterator,
-                             ModelProto* output_model_proto) {
+  virtual util::Status Train(SentenceIterator *sentence_iterator,
+                             ModelProto *output_model_proto) {
     sentence_iterator_ = sentence_iterator;
     output_model_proto_ = output_model_proto;
     return Train();
@@ -129,7 +129,7 @@ class TrainerInterface {
 
   // Set of characters which must be included in the final vocab.
   // The value of this map stores the frequency.
-  absl::flat_hash_map<char32, int64> required_chars_;
+  absl::flat_hash_map<char32, int64_t> required_chars_;
 
   // Final output pieces
   std::vector<std::pair<std::string, float>> final_pieces_;
@@ -155,14 +155,14 @@ class TrainerInterface {
   util::Status status_;
 
   // Loads sentences from SentenceIterator if not null.
-  SentenceIterator* sentence_iterator_ = nullptr;
+  SentenceIterator *sentence_iterator_ = nullptr;
 
   // Emits model to this proto instead of file.
-  ModelProto* output_model_proto_ = nullptr;
+  ModelProto *output_model_proto_ = nullptr;
 
  private:
   // Serialize final_pieces_ to |model_proto|.
-  util::Status Serialize(ModelProto* model_proto) const;
+  util::Status Serialize(ModelProto *model_proto) const;
 
   // Saves the best sentence split with the current model for debugging.
   util::Status SaveSplits(absl::string_view filename) const;

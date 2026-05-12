@@ -1,0 +1,1634 @@
+From 90a7cbeeb84a0792cf6cdc99be734ca9c10cc37e Mon Sep 17 00:00:00 2001
+From: Mike Wittman <wittman@chromium.org>
+Date: Wed, 6 May 2026 23:42:22 -0700
+Subject: [PATCH 5/5] Update absl logging
+
+---
+ .../src/src/bpe_model_trainer.cc              | 16 ++---
+ .../sentencepiece/src/src/bpe_model_trainer.h |  8 +--
+ third_party/sentencepiece/src/src/builder.cc  | 44 ++++++------
+ third_party/sentencepiece/src/src/common.h    | 21 +-----
+ .../src/src/compile_charsmap_main.cc          | 10 +--
+ .../sentencepiece/src/src/filesystem.cc       |  2 +-
+ .../sentencepiece/src/src/model_factory.cc    |  2 +-
+ .../sentencepiece/src/src/model_interface.h   | 60 ++++++++--------
+ .../sentencepiece/src/src/normalizer.cc       |  2 +-
+ .../sentencepiece/src/src/normalizer_test.cc  |  2 +-
+ .../src/src/sentencepiece_processor.cc        | 10 +--
+ .../src/src/sentencepiece_processor.h         | 10 +--
+ .../src/src/sentencepiece_processor_test.cc   |  4 +-
+ .../src/src/sentencepiece_trainer.cc          |  6 +-
+ .../src/src/sentencepiece_trainer_test.cc     |  2 +-
+ .../sentencepiece/src/src/spm_decode_main.cc  | 24 +++----
+ .../sentencepiece/src/src/spm_encode_main.cc  | 34 +++++-----
+ .../src/src/spm_export_vocab_main.cc          |  6 +-
+ .../src/src/spm_normalize_main.cc             | 16 ++---
+ .../sentencepiece/src/src/spm_train_main.cc   | 10 +--
+ .../sentencepiece/src/src/trainer_factory.cc  |  2 +-
+ .../src/src/trainer_interface.cc              | 68 +++++++++----------
+ .../src/src/unicode_script_test.cc            |  2 +-
+ .../sentencepiece/src/src/unigram_model.cc    | 14 ++--
+ .../src/src/unigram_model_trainer.cc          | 48 ++++++-------
+ .../src/src/unigram_model_trainer_test.cc     |  2 +-
+ third_party/sentencepiece/src/src/util.h      |  4 +-
+ .../sentencepiece/src/src/util_test.cc        |  8 +--
+ 28 files changed, 210 insertions(+), 227 deletions(-)
+
+diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer.cc b/third_party/sentencepiece/src/src/bpe_model_trainer.cc
+index e43a701f4e143..45a9ee7add346 100644
+--- a/third_party/sentencepiece/src/src/bpe_model_trainer.cc
++++ b/third_party/sentencepiece/src/src/bpe_model_trainer.cc
+@@ -40,7 +40,7 @@ std::string Trainer::Symbol::ToString() const {
+ 
+ Trainer::Symbol *Trainer::GetCharSymbol(char32 c) {
+   const uint64_t freq = port::FindWithDefault(required_chars_, c, 1);
+-  CHECK_GT(freq, 0);
++  ABSL_CHECK_GT(freq, 0);
+   const auto it = symbols_cache_.find(c);
+   if (it != symbols_cache_.end()) {
+     return it->second;
+@@ -67,8 +67,8 @@ Trainer::Symbol *Trainer::GetPairSymbol(const Symbol *left,
+     return it->second;
+   }
+ 
+-  CHECK(!left->chars.empty());
+-  CHECK(!right->chars.empty());
++  ABSL_CHECK(!left->chars.empty());
++  ABSL_CHECK(!right->chars.empty());
+   string_util::UnicodeText ut;
+   for (const char32 c : left->chars) ut.push_back(c);
+   for (const char32 c : right->chars) ut.push_back(c);
+@@ -92,7 +92,7 @@ void Trainer::ComputeFreq(Symbol *symbol) const {
+   if (symbol->freq > 0) {  // if freq == 0, re-computation is required.
+     return;
+   }
+-  CHECK_EQ(0, symbol->freq);
++  ABSL_CHECK_EQ(0, symbol->freq);
+   for (auto it = symbol->positions.begin(); it != symbol->positions.end();) {
+     const Position pos = DecodePos(*it);
+     // symbols_[sid][left] and symbols_[sid]right] must store
+@@ -162,7 +162,7 @@ void Trainer::UpdateActiveSymbols() {
+ 
+   std::partial_sort(symbols.begin(), symbols.begin() + size, symbols.end(),
+                     [](Symbol *s1, Symbol *s2) { return s1->freq > s2->freq; });
+-  LOG(INFO) << "Updating active symbols. max_freq=" << symbols[0]->freq
++  ABSL_LOG(INFO) << "Updating active symbols. max_freq=" << symbols[0]->freq
+             << " min_freq=" << symbols[size - 1]->freq;
+ 
+   active_symbols_.clear();
+@@ -199,7 +199,7 @@ util::Status Trainer::Train() {
+ 
+   if (pretokenizer || !trainer_spec_.pretokenization_delimiter().empty()) {
+     absl::string_view delimiter = trainer_spec_.pretokenization_delimiter();
+-    LOG(INFO) << "Preprocessing with pretokenizer...";
++    ABSL_LOG(INFO) << "Preprocessing with pretokenizer...";
+     for (auto &w : sentences_) {
+       if (pretokenizer) {
+         w.first = absl::StrJoin(pretokenizer->PreTokenize(w.first),
+@@ -261,7 +261,7 @@ util::Status Trainer::Train() {
+     }
+ 
+     if (best_symbol == nullptr) {
+-      LOG(WARNING) << "No valid symbol found";
++      ABSL_LOG(WARNING) << "No valid symbol found";
+       break;
+     }
+ 
+@@ -277,7 +277,7 @@ util::Status Trainer::Train() {
+                                -static_cast<float>(final_pieces_.size()));
+ 
+     if (final_pieces_.size() % 20 == 0) {
+-      LOG(INFO) << "Added: freq=" << best_symbol->freq
++      ABSL_LOG(INFO) << "Added: freq=" << best_symbol->freq
+                 << " size=" << final_pieces_.size()
+                 << " all=" << symbols_cache_.size()
+                 << " active=" << active_symbols_.size()
+diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer.h b/third_party/sentencepiece/src/src/bpe_model_trainer.h
+index aec8c952c827a..b3fe046493a1c 100644
+--- a/third_party/sentencepiece/src/src/bpe_model_trainer.h
++++ b/third_party/sentencepiece/src/src/bpe_model_trainer.h
+@@ -75,10 +75,10 @@ class Trainer : public TrainerInterface {
+   // Encodes sid, left and right bigram index into uint64_t.
+   // Encoded value keeps the order of sid, left and right.
+   static uint64_t EncodePos(int sid, int l, int r) {
+-    CHECK_GE(l, 0);
+-    CHECK_GE(r, 0);
+-    CHECK_LE(l, std::numeric_limits<uint16_t>::max());
+-    CHECK_LE(r, std::numeric_limits<uint16_t>::max());
++    ABSL_CHECK_GE(l, 0);
++    ABSL_CHECK_GE(r, 0);
++    ABSL_CHECK_LE(l, std::numeric_limits<uint16_t>::max());
++    ABSL_CHECK_LE(r, std::numeric_limits<uint16_t>::max());
+     const uint64_t n = (static_cast<uint64_t>(sid) << 32) |
+                        (static_cast<uint64_t>(l) << 16) | r;
+     return n;
+diff --git a/third_party/sentencepiece/src/src/builder.cc b/third_party/sentencepiece/src/src/builder.cc
+index 3c2b29af1452e..ea9404adc3665 100644
+--- a/third_party/sentencepiece/src/src/builder.cc
++++ b/third_party/sentencepiece/src/src/builder.cc
+@@ -62,14 +62,14 @@ static constexpr absl::string_view kCompileError =
+ Builder::Chars UnicodeNormalize(UNormalizationMode mode,
+                                 const Builder::Chars &input) {
+   const std::string utf8 = string_util::UnicodeTextToUTF8(input);
+-  CHECK(!utf8.empty());
++  ABSL_CHECK(!utf8.empty());
+ 
+   icu::UnicodeString ustr = icu::UnicodeString::fromUTF8(utf8.c_str());
+ 
+   UErrorCode status = U_ZERO_ERROR;
+   icu::UnicodeString dst;
+   icu::Normalizer::normalize(ustr, mode, 0, dst, status);
+-  CHECK(U_SUCCESS(status));
++  ABSL_CHECK(U_SUCCESS(status));
+   std::string normalized;
+   normalized.reserve(dst.length() * 3);
+   dst.toUTF8String(normalized);
+@@ -98,7 +98,7 @@ Builder::Chars ToNFD(const Builder::Chars &input) {
+ std::vector<Builder::Chars> ExpandUnnormalized(
+     const Builder::Chars &nfkd,
+     const std::map<char32, std::set<char32>> &norm2orig) {
+-  CHECK(!nfkd.empty());
++  ABSL_CHECK(!nfkd.empty());
+   std::vector<Builder::Chars> results;
+   for (const auto c : port::FindOrDie(norm2orig, nfkd[0])) {
+     results.push_back({c});
+@@ -114,7 +114,7 @@ std::vector<Builder::Chars> ExpandUnnormalized(
+     }
+     results = std::move(new_results);
+   }
+-  CHECK_EQ(nfkd.size(), results[0].size());
++  ABSL_CHECK_EQ(nfkd.size(), results[0].size());
+   return results;
+ }
+ #endif  // ENABLE_NFKC_COMPILE
+@@ -123,7 +123,7 @@ std::vector<Builder::Chars> ExpandUnnormalized(
+ // `max_len` specifies the maximum length of the key in `chars_map`.
+ Builder::Chars Normalize(const Builder::CharsMap &chars_map,
+                          const Builder::Chars &src, int max_len) {
+-  CHECK_GE(max_len, 1);
++  ABSL_CHECK_GE(max_len, 1);
+   Builder::Chars normalized;
+ 
+   for (size_t i = 0; i < src.size();) {
+@@ -168,7 +168,7 @@ util::Status Builder::CompileCharsMap(const CharsMap &chars_map,
+   CHECK_OR_RETURN(output);
+   CHECK_OR_RETURN(!chars_map.empty());
+ 
+-  LOG(INFO) << "Loading CharsMap of size=" << chars_map.size();
++  ABSL_LOG(INFO) << "Loading CharsMap of size=" << chars_map.size();
+ 
+   // Aggregates the same target strings to save footprint.
+   std::map<Chars, int> normalized2pos;
+@@ -225,7 +225,7 @@ util::Status Builder::CompileCharsMap(const CharsMap &chars_map,
+   *output = Normalizer::EncodePrecompiledCharsMap(trie_blob, normalized);
+   RETURN_IF_ERROR(IsValidNormalizerData(*output));
+ 
+-  LOG(INFO) << "Generated normalizer blob. size=" << output->size();
++  ABSL_LOG(INFO) << "Generated normalizer blob. size=" << output->size();
+ 
+   return util::OkStatus();
+ }
+@@ -388,10 +388,10 @@ util::Status BuildMapInternal(
+ // static
+ util::Status Builder::BuildNFKCMap(CharsMap *chars_map) {
+ #ifdef ENABLE_NFKC_COMPILE
+-  LOG(INFO) << "Running BuildNFKCMap";
++  ABSL_LOG(INFO) << "Running BuildNFKCMap";
+   BuildMapInternal(chars_map, ToNFKC, ToNFKD);
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+ 
+   return util::OkStatus();
+@@ -400,17 +400,17 @@ util::Status Builder::BuildNFKCMap(CharsMap *chars_map) {
+ // static
+ util::Status Builder::BuildNFCMap(CharsMap *chars_map) {
+ #ifdef ENABLE_NFKC_COMPILE
+-  LOG(INFO) << "Running BuildNFCMap";
++  ABSL_LOG(INFO) << "Running BuildNFCMap";
+   BuildMapInternal(chars_map, ToNFC, ToNFD);
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+   return util::OkStatus();
+ }
+ 
+ util::Status Builder::BuildNmtNFKCMap(CharsMap *chars_map) {
+ #ifdef ENABLE_NFKC_COMPILE
+-  LOG(INFO) << "Running BuildNmtNFKCMap";
++  ABSL_LOG(INFO) << "Running BuildNmtNFKCMap";
+ 
+   CharsMap nfkc_map;
+   RETURN_IF_ERROR(BuildNFKCMap(&nfkc_map));
+@@ -419,7 +419,7 @@ util::Status Builder::BuildNmtNFKCMap(CharsMap *chars_map) {
+ 
+   *chars_map = std::move(nfkc_map);
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+ 
+   return util::OkStatus();
+@@ -518,7 +518,7 @@ util::Status Builder::BuildNFKC_CFMap(CharsMap *chars_map) {
+   RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfkc_map));
+   *chars_map = std::move(nfkc_map);
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+ 
+   return util::OkStatus();
+@@ -532,7 +532,7 @@ util::Status Builder::BuildNmtNFKC_CFMap(CharsMap *chars_map) {
+   RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfkc_map));
+   *chars_map = std::move(nfkc_map);
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+ 
+   return util::OkStatus();
+@@ -552,7 +552,7 @@ util::Status Builder::BuildNFKDMap(CharsMap *chars_map) {
+     }
+   }
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+   return util::OkStatus();
+ }
+@@ -572,7 +572,7 @@ util::Status Builder::BuildNFDMap(CharsMap *chars_map) {
+   }
+ 
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+   return util::OkStatus();
+ }
+@@ -585,7 +585,7 @@ util::Status Builder::BuildNFKD_CFMap(CharsMap *chars_map) {
+   RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfkd_map));
+   *chars_map = std::move(nfkd_map);
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+   return util::OkStatus();
+ }
+@@ -598,7 +598,7 @@ util::Status Builder::BuildNFC_CFMap(CharsMap *chars_map) {
+   RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfc_map));
+   *chars_map = std::move(nfc_map);
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+   return util::OkStatus();
+ }
+@@ -611,7 +611,7 @@ util::Status Builder::BuildNFD_CFMap(CharsMap *chars_map) {
+   RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfd_map));
+   *chars_map = std::move(nfd_map);
+ #else
+-  LOG(ERROR) << kCompileError;
++  ABSL_LOG(ERROR) << kCompileError;
+ #endif
+   return util::OkStatus();
+ }
+@@ -619,7 +619,7 @@ util::Status Builder::BuildNFD_CFMap(CharsMap *chars_map) {
+ // static
+ util::Status Builder::LoadCharsMap(absl::string_view filename,
+                                    CharsMap *chars_map) {
+-  LOG(INFO) << "Loading mapping file: " << filename.data();
++  ABSL_LOG(INFO) << "Loading mapping file: " << filename.data();
+   CHECK_OR_RETURN(chars_map);
+ 
+   auto input = filesystem::NewReadableFile(filename);
+@@ -631,7 +631,7 @@ util::Status Builder::LoadCharsMap(absl::string_view filename,
+   while (input->ReadLine(&line)) {
+     std::vector<std::string> fields =
+         absl::StrSplit(line, '\t', absl::AllowEmpty());
+-    CHECK_GE(fields.size(), 1);
++    ABSL_CHECK_GE(fields.size(), 1);
+     if (fields.size() == 1) fields.push_back("");  // Deletion rule.
+     std::vector<char32> src, trg;
+     for (auto s : absl::StrSplit(fields[0], ' ')) {
+diff --git a/third_party/sentencepiece/src/src/common.h b/third_party/sentencepiece/src/src/common.h
+index 5fa3815aa7b4c..7c70c7a41cc39 100644
+--- a/third_party/sentencepiece/src/src/common.h
++++ b/third_party/sentencepiece/src/src/common.h
+@@ -18,9 +18,9 @@
+ #include <cstdint>
+ #include <iostream>
+ 
+-#include "absl/log/check.h"
++#include "absl/log/absl_check.h"
+ #include "absl/log/globals.h"
+-#include "absl/log/log.h"
++#include "absl/log/absl_log.h"
+ #include "absl/strings/string_view.h"
+ 
+ #if defined(_WIN32) && !defined(__CYGWIN__)
+@@ -48,21 +48,4 @@ static constexpr uint32_t kUnicodeError = 0xFFFD;
+     if (!_status.ok()) return _status; \
+   } while (0)
+ 
+-// CHECK_OK must work on util::Status, not absl::Status.
+-#if defined CHECK_OK
+-#undef CHECK_OK
+-#endif  // CHECK_OK
+-
+-#if defined QCHECK_OK
+-#undef QCHECK_OK
+-#endif  // QCHECK_OK
+-
+-#define CHECK_OK(expr)                         \
+-  do {                                         \
+-    const auto _status = expr;                 \
+-    CHECK(_status.ok()) << _status.ToString(); \
+-  } while (0)
+-
+-#define QCHECK_OK CHECK_OK
+-
+ #endif  // COMMON_H_
+diff --git a/third_party/sentencepiece/src/src/compile_charsmap_main.cc b/third_party/sentencepiece/src/src/compile_charsmap_main.cc
+index 371180675252b..5765e0cc4ec65 100644
+--- a/third_party/sentencepiece/src/src/compile_charsmap_main.cc
++++ b/third_party/sentencepiece/src/src/compile_charsmap_main.cc
+@@ -131,7 +131,7 @@ struct BinaryBlob {
+         "{\n";
+   std::vector<size_t> offset;
+   os << ToHexUInt64Array(data, &offset);
+-  CHECK_EQ(offset.size(), data.size());
++  ABSL_CHECK_EQ(offset.size(), data.size());
+   os << "};\n\n";
+   os << "const BinaryBlob kNormalizationRules_blob[] = {\n";
+   for (size_t i = 0; i < data.size(); ++i) {
+@@ -179,14 +179,14 @@ int main(int argc, char **argv) {
+   std::vector<std::pair<std::string, std::string>> data;
+   for (const auto &[name, func] : kRuleList) {
+     Builder::CharsMap normalized_map;
+-    CHECK_OK(func(&normalized_map));
++    ABSL_CHECK_OK(func(&normalized_map));
+ 
+     // Write Header.
+     std::string index;
+-    CHECK_OK(Builder::CompileCharsMap(normalized_map, &index));
++    ABSL_CHECK_OK(Builder::CompileCharsMap(normalized_map, &index));
+ 
+     // Write TSV file.
+-    CHECK_OK(Builder::SaveCharsMap(absl::StrCat(name, ".tsv"), normalized_map));
++    ABSL_CHECK_OK(Builder::SaveCharsMap(absl::StrCat(name, ".tsv"), normalized_map));
+ 
+     // Do not make NFKD map as it is optionally created.
+     if (name == "nfkd" || name == "nfd" || name == "nfc" || name == "nfkd_cf" ||
+@@ -201,7 +201,7 @@ int main(int argc, char **argv) {
+     constexpr char kPrecompiledHeaderFileName[] = "normalization_rule.h";
+     auto output =
+         sentencepiece::filesystem::NewWritableFile(kPrecompiledHeaderFileName);
+-    CHECK_OK(output->status());
++    ABSL_CHECK_OK(output->status());
+     output->Write(sentencepiece::MakeHeader(data));
+   }
+ 
+diff --git a/third_party/sentencepiece/src/src/filesystem.cc b/third_party/sentencepiece/src/src/filesystem.cc
+index e45656787e96c..cfd5f5acf5b6c 100644
+--- a/third_party/sentencepiece/src/src/filesystem.cc
++++ b/third_party/sentencepiece/src/src/filesystem.cc
+@@ -55,7 +55,7 @@ class PosixReadableFile : public ReadableFile {
+ 
+   bool ReadAll(std::string *line) {
+     if (is_ == &std::cin) {
+-      LOG(ERROR) << "ReadAll is not supported for stdin.";
++      ABSL_LOG(ERROR) << "ReadAll is not supported for stdin.";
+       return false;
+     }
+     line->assign(std::istreambuf_iterator<char>(*is_),
+diff --git a/third_party/sentencepiece/src/src/model_factory.cc b/third_party/sentencepiece/src/src/model_factory.cc
+index 59874450d4007..c88d6348a8fab 100644
+--- a/third_party/sentencepiece/src/src/model_factory.cc
++++ b/third_party/sentencepiece/src/src/model_factory.cc
+@@ -40,7 +40,7 @@ std::unique_ptr<ModelInterface> ModelFactory::Create(
+       return std::make_unique<character::Model>(model_proto);
+       break;
+     default:
+-      LOG(ERROR) << "Unknown model_type: " << trainer_spec.model_type();
++      ABSL_LOG(ERROR) << "Unknown model_type: " << trainer_spec.model_type();
+       return nullptr;
+       break;
+   }
+diff --git a/third_party/sentencepiece/src/src/model_interface.h b/third_party/sentencepiece/src/src/model_interface.h
+index 811ab7b71c7c5..48f75690adacb 100644
+--- a/third_party/sentencepiece/src/src/model_interface.h
++++ b/third_party/sentencepiece/src/src/model_interface.h
+@@ -84,13 +84,13 @@ class ModelInterface {
+   // The same as above, but returns nbest result with score.
+   virtual NBestEncodeResult NBestEncode(absl::string_view normalized,
+                                         int nbest_size) const {
+-    LOG(ERROR) << "Not implemented.";
++    ABSL_LOG(ERROR) << "Not implemented.";
+     return NBestEncodeResult();
+   }
+ 
+   virtual EncodeResult SampleEncode(absl::string_view normalized,
+                                     float alpha) const {
+-    LOG(ERROR) << "Not implemented.";
++    ABSL_LOG(ERROR) << "Not implemented.";
+     return EncodeResult();
+   }
+ 
+@@ -105,7 +105,7 @@ class ModelInterface {
+                                                  float alpha, int samples,
+                                                  bool wor,
+                                                  bool include_best) const {
+-    LOG(ERROR) << "Not implemented.";
++    ABSL_LOG(ERROR) << "Not implemented.";
+     return {{EncodeResult(), 0.0}};
+   }
+ 
+@@ -113,7 +113,7 @@ class ModelInterface {
+   // `alpha`. Uses a novel dynamic program to calculate the entropy.
+   virtual float CalculateEntropy(absl::string_view normalized,
+                                  float alpha) const {
+-    LOG(ERROR) << "Not implemented.";
++    ABSL_LOG(ERROR) << "Not implemented.";
+     return 0.0;
+   }
+ 
+@@ -136,8 +136,8 @@ class ModelInterface {
+   // Returns the string representation of vocab with `id`.
+   // id must be 0 <= id < GetPieceSize().
+   virtual const std::string &IdToPiece(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return model_proto_->pieces(id).piece();
+   }
+ 
+@@ -152,47 +152,47 @@ class ModelInterface {
+   // Score represents a log probability of the piece.
+   // We can roughly estimate the unigram frequency of the piece.
+   virtual float GetScore(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return model_proto_->pieces(id).score();
+   }
+ 
+   // Returns true if `id` is unknown symbol.
+   virtual bool IsUnknown(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() ==
+             ModelProto::SentencePiece::UNKNOWN);
+   }
+ 
+   // Returns true if `id` is control symbol.
+   virtual bool IsControl(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() ==
+             ModelProto::SentencePiece::CONTROL);
+   }
+ 
+   // Returns true if `id` is unused symbol.
+   virtual bool IsUnused(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() ==
+             ModelProto::SentencePiece::UNUSED);
+   }
+ 
+   // Returns true if `id` is user defined symbol.
+   virtual bool IsUserDefined(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() ==
+             ModelProto::SentencePiece::USER_DEFINED);
+   }
+ 
+   // Returns true if `id` is byte symbol.
+   virtual bool IsByte(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() == ModelProto::SentencePiece::BYTE);
+   }
+ 
+@@ -215,42 +215,42 @@ class ModelInterface {
+ 
+   // Non-virtual (inlined) implementation for faster execution.
+   inline float GetScoreInlined(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return model_proto_->pieces(id).score();
+   }
+ 
+   inline bool IsUnknownInlined(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() ==
+             ModelProto::SentencePiece::UNKNOWN);
+   }
+ 
+   inline bool IsControlInlined(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() ==
+             ModelProto::SentencePiece::CONTROL);
+   }
+ 
+   inline bool IsUnusedInlined(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() ==
+             ModelProto::SentencePiece::UNUSED);
+   }
+ 
+   inline bool IsUserDefinedInlined(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() ==
+             ModelProto::SentencePiece::USER_DEFINED);
+   }
+ 
+   inline bool IsByteInlined(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     return (model_proto_->pieces(id).type() == ModelProto::SentencePiece::BYTE);
+   }
+ 
+diff --git a/third_party/sentencepiece/src/src/normalizer.cc b/third_party/sentencepiece/src/src/normalizer.cc
+index b3299ebcf9258..ff843fd3b0695 100644
+--- a/third_party/sentencepiece/src/src/normalizer.cc
++++ b/third_party/sentencepiece/src/src/normalizer.cc
+@@ -330,7 +330,7 @@ PrefixMatcher::PrefixMatcher(const std::set<absl::string_view> &dic) {
+   trie_ = std::make_unique<Darts::DoubleArray>();
+   if (trie_->build(key.size(), const_cast<char **>(key.data()),
+                    const_cast<size_t *>(lengths.data()), nullptr) != 0) {
+-    LOG(ERROR) << "Failed to build the TRIE for PrefixMatcher";
++    ABSL_LOG(ERROR) << "Failed to build the TRIE for PrefixMatcher";
+     trie_.reset();
+   }
+ }
+diff --git a/third_party/sentencepiece/src/src/normalizer_test.cc b/third_party/sentencepiece/src/src/normalizer_test.cc
+index 15faf6480948a..76696db3c1b6e 100644
+--- a/third_party/sentencepiece/src/src/normalizer_test.cc
++++ b/third_party/sentencepiece/src/src/normalizer_test.cc
+@@ -301,7 +301,7 @@ TEST(NormalizerTest, NormalizeFullTest) {
+   {
+     const std::string input = " I   saw a　 　girl　　";
+     EXPECT_TRUE(normalizer.Normalize(input, &output, &n2i).ok());
+-    LOG(INFO) << output;
++    ABSL_LOG(INFO) << output;
+     EXPECT_EQ(WS "I" WS "saw" WS "a" WS "girl", output);
+     const std::vector<size_t> expected = {1,  1,  1,       // WS (3byte)
+                                           1,               // I
+diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.cc b/third_party/sentencepiece/src/src/sentencepiece_processor.cc
+index 36b5a3ea5d9f5..f1478abd66cc0 100644
+--- a/third_party/sentencepiece/src/src/sentencepiece_processor.cc
++++ b/third_party/sentencepiece/src/src/sentencepiece_processor.cc
+@@ -224,7 +224,7 @@ util::Status SentencePieceProcessor::Load(absl::string_view filename) {
+ }
+ 
+ void SentencePieceProcessor::LoadOrDie(absl::string_view filename) {
+-  CHECK_OK(Load(filename));
++  ABSL_CHECK_OK(Load(filename));
+ }
+ 
+ util::Status SentencePieceProcessor::Load(const ModelProto &model_proto) {
+@@ -270,13 +270,13 @@ util::Status SentencePieceProcessor::Load(
+   }
+ 
+   if (!errors.empty()) {
+-    LOG(INFO) << errors.size() << "/"
++    ABSL_LOG(INFO) << errors.size() << "/"
+               << model_proto_->self_test_data().samples_size()
+               << " samples did not pass the test.";
+     for (const auto &e : errors) {
+-      LOG(INFO) << e;
++      ABSL_LOG(INFO) << e;
+     }
+-    return util::InternalError("Self-test failures. See LOG(INFO).");
++    return util::InternalError("Self-test failures. See ABSL_LOG(INFO).");
+   }
+ 
+   return util::OkStatus();
+@@ -933,7 +933,7 @@ util::Status SentencePieceProcessor::Decode(const std::vector<int> &ids,
+ 
+ #define CHECK_STATUS_OR_RETURN_DEFAULT(value)                                \
+   if (!status().ok()) {                                                      \
+-    LOG(ERROR) << status().message() << "\nReturns default value " << value; \
++    ABSL_LOG(ERROR) << status().message() << "\nReturns default value " << value; \
+     return value;                                                            \
+   }
+ 
+diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.h b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+index bffe3ff89053d..0520657f9e7bc 100644
+--- a/third_party/sentencepiece/src/src/sentencepiece_processor.h
++++ b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+@@ -74,10 +74,10 @@ using Status = absl::Status;
+ //
+ //   string detok;
+ //   sp.Decode(sps, &detok);
+-//   CHECK_EQ("hello world.", detok).IgnoreError();
++//   ABSL_CHECK_EQ("hello world.", detok).IgnoreError();
+ //
+ //   sp.Decode(ids, &detok);
+-//   CHECK_EQ("hello world.", detok).IgnoreError();
++//   ABSL_CHECK_EQ("hello world.", detok).IgnoreError();
+ //
+ //  We can also use SentencePieceText which manages the byte-offsets
+ //  between user input (output) and internal sentence pieces.
+@@ -86,12 +86,12 @@ using Status = absl::Status;
+ //   sp.Encode("hello world.", &spt);
+ //   // Emits the byte range of each piece.
+ //   for (const auto &piece : spt.pieces()) {
+-//      LOG(INFO) << piece.begin() << " " << piece.end();
++//      ABSL_LOG(INFO) << piece.begin() << " " << piece.end();
+ //   }
+ //
+ //   sp.Decode({0, 1, 2, 3..}, &spt);
+ //   for (const auto &piece : spt.pieces()) {
+-//      LOG(INFO) << piece.begin() << " " << piece.end();
++//      ABSL_LOG(INFO) << piece.begin() << " " << piece.end();
+ //   }
+ //
+ 
+@@ -707,7 +707,7 @@ namespace io {
+ //  auto model_proto = absl::make_unique<ModelProto>();
+ //  io::LoadModelProto("//path/spm.model", model_proto.get());
+ //  SentencePieceProcessor sp;
+-//  CHECK_OK(sp.Load(std::move(model_proto)));
++//  ABSL_CHECK_OK(sp.Load(std::move(model_proto)));
+ util::Status LoadModelProto(absl::string_view, ModelProto *model_proto);
+ 
+ // Saves `model_proto` as `filename`.
+diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc b/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
+index e6e9a2ff245ec..f7da14d4299d3 100644
+--- a/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
++++ b/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
+@@ -527,7 +527,7 @@ TEST(SentencepieceProcessorTest, SampleEncodeTest) {
+     else if (GetSpVec(nbest_result[1].first) == output)
+       freq[1]++;
+     else
+-      LOG(FATAL) << "Invalid result.";
++      ABSL_LOG(FATAL) << "Invalid result.";
+   }
+ 
+   const float expected_prob =
+@@ -1398,7 +1398,7 @@ TEST(SentencePieceProcessorTest, SkipNormalizationTest) {
+ 
+   std::vector<std::string> pieces;
+   EXPECT_TRUE(sp.Encode("AB<USER>C<uSEr>", &pieces).ok());
+-  for (const auto &sp : pieces) LOG(INFO) << sp;
++  for (const auto &sp : pieces) ABSL_LOG(INFO) << sp;
+   EXPECT_EQ(std::vector<std::string>(
+                 {WS, "a", "b", "<USER>", "c", "<", "u", "s", "e", "r", ">"}),
+             pieces);
+diff --git a/third_party/sentencepiece/src/src/sentencepiece_trainer.cc b/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
+index c520dac744a70..5937d6fef87d4 100644
+--- a/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
++++ b/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
+@@ -75,7 +75,7 @@ util::Status SentencePieceTrainer::Train(
+     info += "denormalizer_spec {}";
+   }
+ 
+-  LOG(INFO) << "Starts training with : \n" << info;
++  ABSL_LOG(INFO) << "Starts training with : \n" << info;
+ 
+   if (serialized_model_proto) {
+     ModelProto model_proto;
+@@ -92,7 +92,7 @@ util::Status SentencePieceTrainer::Train(
+ NormalizerSpec SentencePieceTrainer::GetNormalizerSpec(absl::string_view name) {
+   NormalizerSpec spec;
+   spec.set_name(name.data(), name.size());
+-  CHECK_OK(normalizer::Builder::GetPrecompiledCharsMap(
++  ABSL_CHECK_OK(normalizer::Builder::GetPrecompiledCharsMap(
+       spec.name(), spec.mutable_precompiled_charsmap()));
+   return spec;
+ }
+@@ -175,7 +175,7 @@ util::Status SentencePieceTrainer::MergeSpecsFromArgs(
+ util::Status SentencePieceTrainer::Train(absl::string_view args,
+                                          SentenceIterator *sentence_iterator,
+                                          std::string *serialized_model_proto) {
+-  LOG(INFO) << "Running command: " << args.data();
++  ABSL_LOG(INFO) << "Running command: " << args.data();
+   TrainerSpec trainer_spec;
+   NormalizerSpec normalizer_spec;
+   NormalizerSpec denormalizer_spec;
+diff --git a/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc b/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
+index 09f493df91196..f607268934854 100644
+--- a/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
++++ b/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
+@@ -121,7 +121,7 @@ TEST(SentencePieceTrainerTest, TrainFromIterator) {
+   std::vector<std::string> sentences;
+   {
+     auto fs = filesystem::NewReadableFile(input);
+-    CHECK_OK(fs->status());
++    ABSL_CHECK_OK(fs->status());
+     std::string line;
+     while (fs->ReadLine(&line)) sentences.emplace_back(line);
+   }
+diff --git a/third_party/sentencepiece/src/src/spm_decode_main.cc b/third_party/sentencepiece/src/src/spm_decode_main.cc
+index 37874db4c9175..85e4b3d1f8909 100644
+--- a/third_party/sentencepiece/src/src/spm_decode_main.cc
++++ b/third_party/sentencepiece/src/src/spm_decode_main.cc
+@@ -49,15 +49,15 @@ int main(int argc, char *argv[]) {
+   if (rest_args.empty())
+     rest_args.push_back("");  // empty means that reading from stdin.
+ 
+-  QCHECK(!absl::GetFlag(FLAGS_model).empty());
++  ABSL_QCHECK(!absl::GetFlag(FLAGS_model).empty());
+ 
+   sentencepiece::SentencePieceProcessor sp;
+-  QCHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
+-  QCHECK_OK(sp.SetDecodeExtraOptions(absl::GetFlag(FLAGS_extra_options)));
++  ABSL_QCHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
++  ABSL_QCHECK_OK(sp.SetDecodeExtraOptions(absl::GetFlag(FLAGS_extra_options)));
+ 
+   auto output =
+       sentencepiece::filesystem::NewWritableFile(absl::GetFlag(FLAGS_output));
+-  QCHECK_OK(output->status());
++  ABSL_QCHECK_OK(output->status());
+ 
+   std::string detok, line;
+   sentencepiece::SentencePieceText spt;
+@@ -75,38 +75,38 @@ int main(int argc, char *argv[]) {
+   if (absl::GetFlag(FLAGS_input_format) == "piece") {
+     if (absl::GetFlag(FLAGS_output_format) == "string") {
+       process = [&](const std::vector<std::string> &pieces) {
+-        CHECK_OK(sp.Decode(pieces, &detok));
++        ABSL_CHECK_OK(sp.Decode(pieces, &detok));
+         output->WriteLine(detok);
+       };
+     } else if (absl::GetFlag(FLAGS_output_format) == "proto") {
+       process = [&](const std::vector<std::string> &pieces) {
+-        CHECK_OK(sp.Decode(pieces, &spt));
++        ABSL_CHECK_OK(sp.Decode(pieces, &spt));
+       };
+     } else {
+-      LOG(FATAL) << "Unknown output format: "
++      ABSL_LOG(FATAL) << "Unknown output format: "
+                  << absl::GetFlag(FLAGS_output_format);
+     }
+   } else if (absl::GetFlag(FLAGS_input_format) == "id") {
+     if (absl::GetFlag(FLAGS_output_format) == "string") {
+       process = [&](const std::vector<std::string> &pieces) {
+-        CHECK_OK(sp.Decode(ToIds(pieces), &detok));
++        ABSL_CHECK_OK(sp.Decode(ToIds(pieces), &detok));
+         output->WriteLine(detok);
+       };
+     } else if (absl::GetFlag(FLAGS_output_format) == "proto") {
+       process = [&](const std::vector<std::string> &pieces) {
+-        CHECK_OK(sp.Decode(ToIds(pieces), &spt));
++        ABSL_CHECK_OK(sp.Decode(ToIds(pieces), &spt));
+       };
+     } else {
+-      LOG(FATAL) << "Unknown output format: "
++      ABSL_LOG(FATAL) << "Unknown output format: "
+                  << absl::GetFlag(FLAGS_output_format);
+     }
+   } else {
+-    LOG(FATAL) << "Unknown input format: " << absl::GetFlag(FLAGS_input_format);
++    ABSL_LOG(FATAL) << "Unknown input format: " << absl::GetFlag(FLAGS_input_format);
+   }
+ 
+   for (const auto &filename : rest_args) {
+     auto input = sentencepiece::filesystem::NewReadableFile(filename);
+-    QCHECK_OK(input->status());
++    ABSL_QCHECK_OK(input->status());
+     while (input->ReadLine(&line)) {
+       const auto pieces = absl::StrSplit(line, " ");
+       process(pieces);
+diff --git a/third_party/sentencepiece/src/src/spm_encode_main.cc b/third_party/sentencepiece/src/src/spm_encode_main.cc
+index e2a2dcc085b73..af77ede42e81c 100644
+--- a/third_party/sentencepiece/src/src/spm_encode_main.cc
++++ b/third_party/sentencepiece/src/src/spm_encode_main.cc
+@@ -73,20 +73,20 @@ int main(int argc, char *argv[]) {
+   if (rest_args.empty())
+     rest_args.push_back("");  // empty means that reading from stdin.
+ 
+-  QCHECK(!absl::GetFlag(FLAGS_model).empty());
++  ABSL_QCHECK(!absl::GetFlag(FLAGS_model).empty());
+ 
+   sentencepiece::SentencePieceProcessor sp;
+-  CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
+-  CHECK_OK(sp.SetEncodeExtraOptions(absl::GetFlag(FLAGS_extra_options)));
++  ABSL_CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
++  ABSL_CHECK_OK(sp.SetEncodeExtraOptions(absl::GetFlag(FLAGS_extra_options)));
+ 
+   if (!absl::GetFlag(FLAGS_vocabulary).empty()) {
+-    QCHECK_OK(sp.LoadVocabulary(absl::GetFlag(FLAGS_vocabulary),
++    ABSL_QCHECK_OK(sp.LoadVocabulary(absl::GetFlag(FLAGS_vocabulary),
+                                 absl::GetFlag(FLAGS_vocabulary_threshold)));
+   }
+ 
+   auto output =
+       sentencepiece::filesystem::NewWritableFile(absl::GetFlag(FLAGS_output));
+-  CHECK_OK(output->status());
++  ABSL_CHECK_OK(output->status());
+ 
+   std::string line;
+   std::vector<std::string> sps;
+@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
+ 
+   if (absl::GetFlag(FLAGS_generate_vocabulary)) {
+     process = [&](absl::string_view line) {
+-      CHECK_OK(sp.Encode(line, &spt));
++      ABSL_CHECK_OK(sp.Encode(line, &spt));
+       for (const auto &piece : spt.pieces()) {
+         if (!sp.IsUnknown(piece.id()) && !sp.IsControl(piece.id()))
+           vocab[piece.piece()]++;
+@@ -111,56 +111,56 @@ int main(int argc, char *argv[]) {
+     };
+   } else if (absl::GetFlag(FLAGS_output_format) == "piece") {
+     process = [&](absl::string_view line) {
+-      CHECK_OK(sp.Encode(line, &sps));
++      ABSL_CHECK_OK(sp.Encode(line, &sps));
+       output->WriteLine(absl::StrJoin(sps, " "));
+     };
+   } else if (absl::GetFlag(FLAGS_output_format) == "id") {
+     process = [&](absl::string_view line) {
+-      CHECK_OK(sp.Encode(line, &ids));
++      ABSL_CHECK_OK(sp.Encode(line, &ids));
+       output->WriteLine(absl::StrJoin(ids, " "));
+     };
+   } else if (absl::GetFlag(FLAGS_output_format) == "proto") {
+-    process = [&](absl::string_view line) { CHECK_OK(sp.Encode(line, &spt)); };
++    process = [&](absl::string_view line) { ABSL_CHECK_OK(sp.Encode(line, &spt)); };
+   } else if (absl::GetFlag(FLAGS_output_format) == "sample_piece") {
+     process = [&](absl::string_view line) {
+-      CHECK_OK(sp.SampleEncode(line, nbest_size, alpha, &sps));
++      ABSL_CHECK_OK(sp.SampleEncode(line, nbest_size, alpha, &sps));
+       output->WriteLine(absl::StrJoin(sps, " "));
+     };
+   } else if (absl::GetFlag(FLAGS_output_format) == "sample_id") {
+     process = [&](absl::string_view line) {
+-      CHECK_OK(sp.SampleEncode(line, nbest_size, alpha, &ids));
++      ABSL_CHECK_OK(sp.SampleEncode(line, nbest_size, alpha, &ids));
+       output->WriteLine(absl::StrJoin(ids, " "));
+     };
+   } else if (absl::GetFlag(FLAGS_output_format) == "sample_proto") {
+     process = [&](absl::string_view line) {
+-      CHECK_OK(sp.SampleEncode(line, nbest_size, alpha, &spt));
++      ABSL_CHECK_OK(sp.SampleEncode(line, nbest_size, alpha, &spt));
+     };
+   } else if (absl::GetFlag(FLAGS_output_format) == "nbest_piece") {
+     process = [&](absl::string_view line) {
+-      CHECK_OK(sp.NBestEncode(line, nbest_size, &nbest_sps));
++      ABSL_CHECK_OK(sp.NBestEncode(line, nbest_size, &nbest_sps));
+       for (const auto &result : nbest_sps) {
+         output->WriteLine(absl::StrJoin(result, " "));
+       }
+     };
+   } else if (absl::GetFlag(FLAGS_output_format) == "nbest_id") {
+     process = [&](absl::string_view line) {
+-      CHECK_OK(sp.NBestEncode(line, nbest_size, &nbest_ids));
++      ABSL_CHECK_OK(sp.NBestEncode(line, nbest_size, &nbest_ids));
+       for (const auto &result : nbest_ids) {
+         output->WriteLine(absl::StrJoin(result, " "));
+       }
+     };
+   } else if (absl::GetFlag(FLAGS_output_format) == "nbest_proto") {
+     process = [&](absl::string_view line) {
+-      CHECK_OK(sp.NBestEncode(line, nbest_size, &nbest_spt));
++      ABSL_CHECK_OK(sp.NBestEncode(line, nbest_size, &nbest_spt));
+     };
+   } else {
+-    LOG(FATAL) << "Unknown output format: "
++    ABSL_LOG(FATAL) << "Unknown output format: "
+                << absl::GetFlag(FLAGS_output_format);
+   }
+ 
+   for (const auto &filename : rest_args) {
+     auto input = sentencepiece::filesystem::NewReadableFile(filename);
+-    QCHECK_OK(input->status());
++    ABSL_QCHECK_OK(input->status());
+     while (input->ReadLine(&line)) {
+       process(line);
+     }
+diff --git a/third_party/sentencepiece/src/src/spm_export_vocab_main.cc b/third_party/sentencepiece/src/src/spm_export_vocab_main.cc
+index 480c6397db39b..7ae3ba6a5db74 100644
+--- a/third_party/sentencepiece/src/src/spm_export_vocab_main.cc
++++ b/third_party/sentencepiece/src/src/spm_export_vocab_main.cc
+@@ -32,11 +32,11 @@ int main(int argc, char *argv[]) {
+   sentencepiece::ParseCommandLineFlags(argv[0], &argc, &argv, true);
+ 
+   sentencepiece::SentencePieceProcessor sp;
+-  CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
++  ABSL_CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
+ 
+   auto output =
+       sentencepiece::filesystem::NewWritableFile(absl::GetFlag(FLAGS_output));
+-  CHECK_OK(output->status());
++  ABSL_CHECK_OK(output->status());
+ 
+   if (absl::GetFlag(FLAGS_output_format) == "vocab") {
+     for (const auto &piece : sp.model_proto().pieces()) {
+@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
+       output->WriteLine(os.str());
+     }
+   } else {
+-    LOG(FATAL) << "Unsupported output format: "
++    ABSL_LOG(FATAL) << "Unsupported output format: "
+                << absl::GetFlag(FLAGS_output_format);
+   }
+ 
+diff --git a/third_party/sentencepiece/src/src/spm_normalize_main.cc b/third_party/sentencepiece/src/src/spm_normalize_main.cc
+index a2d8a3a68566d..2b2d72357fcb0 100644
+--- a/third_party/sentencepiece/src/src/spm_normalize_main.cc
++++ b/third_party/sentencepiece/src/src/spm_normalize_main.cc
+@@ -63,17 +63,17 @@ int main(int argc, char *argv[]) {
+   if (!absl::GetFlag(FLAGS_model).empty()) {
+     ModelProto model_proto;
+     SentencePieceProcessor sp;
+-    QCHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
++    ABSL_QCHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
+     spec = sp.model_proto().normalizer_spec();
+   } else if (!absl::GetFlag(FLAGS_normalization_rule_tsv).empty()) {
+     spec.set_normalization_rule_tsv(
+         absl::GetFlag(FLAGS_normalization_rule_tsv));
+-    QCHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
++    ABSL_QCHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
+   } else if (!absl::GetFlag(FLAGS_normalization_rule_name).empty()) {
+     spec.set_name(absl::GetFlag(FLAGS_normalization_rule_name));
+-    QCHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
++    ABSL_QCHECK_OK(SentencePieceTrainer::PopulateNormalizerSpec(&spec));
+   } else {
+-    LOG(FATAL) << "Sets --model, normalization_rule_tsv, or "
++    ABSL_LOG(FATAL) << "Sets --model, normalization_rule_tsv, or "
+                   "normalization_rule_name flag.";
+   }
+ 
+@@ -87,14 +87,14 @@ int main(int argc, char *argv[]) {
+ 
+   if (absl::GetFlag(FLAGS_decompile)) {
+     Builder::CharsMap chars_map;
+-    QCHECK_OK(
++    ABSL_QCHECK_OK(
+         Builder::DecompileCharsMap(spec.precompiled_charsmap(), &chars_map));
+-    QCHECK_OK(Builder::SaveCharsMap(absl::GetFlag(FLAGS_output), chars_map));
++    ABSL_QCHECK_OK(Builder::SaveCharsMap(absl::GetFlag(FLAGS_output), chars_map));
+   } else {
+     const Normalizer normalizer(spec);
+     auto output =
+         sentencepiece::filesystem::NewWritableFile(absl::GetFlag(FLAGS_output));
+-    QCHECK_OK(output->status());
++    ABSL_QCHECK_OK(output->status());
+ 
+     if (rest_args.empty()) {
+       rest_args.push_back("");  // empty means that read from stdin.
+@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
+     std::string line;
+     for (const auto &filename : rest_args) {
+       auto input = sentencepiece::filesystem::NewReadableFile(filename);
+-      CHECK_OK(input->status());
++      ABSL_CHECK_OK(input->status());
+       while (input->ReadLine(&line)) {
+         output->WriteLine(normalizer.Normalize(line));
+       }
+diff --git a/third_party/sentencepiece/src/src/spm_train_main.cc b/third_party/sentencepiece/src/src/spm_train_main.cc
+index a7ecf669b28f2..d8dfc23cfd28a 100644
+--- a/third_party/sentencepiece/src/src/spm_train_main.cc
++++ b/third_party/sentencepiece/src/src/spm_train_main.cc
+@@ -170,8 +170,8 @@ int main(int argc, char *argv[]) {
+   sentencepiece::NormalizerSpec normalizer_spec;
+   NormalizerSpec denormalizer_spec;
+ 
+-  QCHECK(!absl::GetFlag(FLAGS_input).empty());
+-  QCHECK(!absl::GetFlag(FLAGS_model_prefix).empty());
++  ABSL_QCHECK(!absl::GetFlag(FLAGS_input).empty());
++  ABSL_QCHECK(!absl::GetFlag(FLAGS_model_prefix).empty());
+ 
+   if (absl::GetFlag(FLAGS_random_seed) !=
+       std::numeric_limits<uint32_t>::max()) {
+@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
+   auto load_lines = [](absl::string_view filename) {
+     std::vector<std::string> lines;
+     auto input = sentencepiece::filesystem::NewReadableFile(filename);
+-    CHECK_OK(input->status());
++    ABSL_CHECK_OK(input->status());
+     std::string line;
+     while (input->ReadLine(&line)) lines.emplace_back(line);
+     return lines;
+@@ -278,10 +278,10 @@ int main(int argc, char *argv[]) {
+     denormalizer_spec.set_escape_whitespaces(false);
+   }
+ 
+-  CHECK_OK(sentencepiece::SentencePieceTrainer::PopulateModelTypeFromString(
++  ABSL_CHECK_OK(sentencepiece::SentencePieceTrainer::PopulateModelTypeFromString(
+       absl::GetFlag(FLAGS_model_type), &trainer_spec));
+ 
+-  CHECK_OK(sentencepiece::SentencePieceTrainer::Train(
++  ABSL_CHECK_OK(sentencepiece::SentencePieceTrainer::Train(
+       trainer_spec, normalizer_spec, denormalizer_spec));
+ 
+   return 0;
+diff --git a/third_party/sentencepiece/src/src/trainer_factory.cc b/third_party/sentencepiece/src/src/trainer_factory.cc
+index 6fe73c36e9ddd..757fec0a7c704 100644
+--- a/third_party/sentencepiece/src/src/trainer_factory.cc
++++ b/third_party/sentencepiece/src/src/trainer_factory.cc
+@@ -43,7 +43,7 @@ std::unique_ptr<TrainerInterface> TrainerFactory::Create(
+                                                   denormalizer_spec);
+       break;
+     default:
+-      LOG(FATAL) << "Unknown model_type: " << trainer_spec.model_type();
++      ABSL_LOG(FATAL) << "Unknown model_type: " << trainer_spec.model_type();
+       break;
+   }
+ 
+diff --git a/third_party/sentencepiece/src/src/trainer_interface.cc b/third_party/sentencepiece/src/src/trainer_interface.cc
+index e68853854d051..5c5ab2eabd104 100644
+--- a/third_party/sentencepiece/src/src/trainer_interface.cc
++++ b/third_party/sentencepiece/src/src/trainer_interface.cc
+@@ -113,7 +113,7 @@ class SentenceSelector {
+         sampler_ = std::make_unique<Sampler>(
+             sentences, spec_->input_sentence_size(), kSeed);
+       } else {
+-        LOG(INFO)
++        ABSL_LOG(INFO)
+             << "First " << spec_->input_sentence_size()
+             << " sentences are selected. Remaining sentences are discarded.";
+       }
+@@ -122,12 +122,12 @@ class SentenceSelector {
+ 
+   void Finish() const {
+     if (sentences_->size() > kTooBigSentencesSize) {
+-      LOG(WARNING) << "Too many sentences are loaded! (" << sentences_->size()
++      ABSL_LOG(WARNING) << "Too many sentences are loaded! (" << sentences_->size()
+                    << "), which may slow down training.";
+-      LOG(WARNING) << "Consider using "
++      ABSL_LOG(WARNING) << "Consider using "
+                       "--input_sentence_size=<size> and "
+                       "--shuffle_input_sentence=true.";
+-      LOG(WARNING) << "They allow to randomly sample <size> sentences from "
++      ABSL_LOG(WARNING) << "They allow to randomly sample <size> sentences from "
+                       "the entire corpus.";
+     }
+   }
+@@ -145,7 +145,7 @@ class SentenceSelector {
+     }
+ 
+     if (total_size() > 0 && total_size() % kTooBigSentencesSize == 0) {
+-      LOG(INFO) << "Loaded " << total_size() << " lines";
++      ABSL_LOG(INFO) << "Loaded " << total_size() << " lines";
+     }
+ 
+     return true;
+@@ -183,7 +183,7 @@ void MultiFileSentenceIterator::Next() {
+   if (!read_done_ && file_index_ < files_.size()) {
+     const auto &filename = files_[file_index_++];
+     fp_ = filesystem::NewReadableFile(filename);
+-    LOG(INFO) << "Loading corpus: " << filename;
++    ABSL_LOG(INFO) << "Loading corpus: " << filename;
+     if (fp_->status() != util::OkStatus()) {
+       file_index_ = files_.size();
+       read_done_ = false;
+@@ -240,7 +240,7 @@ bool TrainerInterface::IsValidSentencePiece(
+       return false;
+     }
+     if (c == 0x0020) {
+-      LOG(WARNING) << "space must not be included in normalized string.";
++      ABSL_LOG(WARNING) << "space must not be included in normalized string.";
+       return false;
+     }
+     if (!string_util::IsValidCodepoint(c)) {
+@@ -352,7 +352,7 @@ util::Status TrainerInterface::LoadSentences() {
+ 
+   std::unique_ptr<SentenceIterator> sentence_iterator_impl;
+   if (sentence_iterator_ == nullptr) {
+-    LOG(INFO) << "SentenceIterator is not specified. Using "
++    ABSL_LOG(INFO) << "SentenceIterator is not specified. Using "
+                  "MultiFileSentenceIterator.";
+     sentence_iterator_impl =
+         std::make_unique<MultiFileSentenceIterator>(std::vector<std::string>(
+@@ -379,10 +379,10 @@ util::Status TrainerInterface::LoadSentences() {
+     if (static_cast<int>(sentence.size()) >
+         trainer_spec_.max_sentence_length()) {
+       if (too_long_lines == 0) {
+-        LOG(WARNING) << "Found too long line (" << sentence.size() << " > "
++        ABSL_LOG(WARNING) << "Found too long line (" << sentence.size() << " > "
+                      << trainer_spec_.max_sentence_length() << ").";
+-        LOG(WARNING) << "Too long lines are skipped in the training.";
+-        LOG(WARNING) << "The maximum length can be changed with "
++        ABSL_LOG(WARNING) << "Too long lines are skipped in the training.";
++        ABSL_LOG(WARNING) << "The maximum length can be changed with "
+                         "--max_sentence_length=<size> flag.";
+       }
+       ++too_long_lines;
+@@ -390,7 +390,7 @@ util::Status TrainerInterface::LoadSentences() {
+     }
+ 
+     if (sentence.find(kUNKStr) != std::string::npos) {
+-      LOG(INFO) << "Reserved chars are found. Skipped: " << sentence;
++      ABSL_LOG(INFO) << "Reserved chars are found. Skipped: " << sentence;
+       continue;
+     }
+ 
+@@ -408,28 +408,28 @@ END:
+   selector.Finish();
+ 
+   if (sentences_.size() == selector.total_size()) {
+-    LOG(INFO) << "Loaded all " << sentences_.size() << " sentences";
++    ABSL_LOG(INFO) << "Loaded all " << sentences_.size() << " sentences";
+   } else {
+-    LOG(INFO) << "Sampled " << sentences_.size() << " sentences from "
++    ABSL_LOG(INFO) << "Sampled " << sentences_.size() << " sentences from "
+               << selector.total_size() << " sentences.";
+   }
+ 
+   if (too_long_lines > 0)
+-    LOG(INFO) << "Skipped " << too_long_lines << " too long sentences.";
++    ABSL_LOG(INFO) << "Skipped " << too_long_lines << " too long sentences.";
+   if (self_test_samples_.size() > 0)
+-    LOG(INFO) << "Loaded " << self_test_samples_.size() << " test sentences";
++    ABSL_LOG(INFO) << "Loaded " << self_test_samples_.size() << " test sentences";
+ 
+   // Normalize and removes empty string.
+   {
+     const normalizer::Normalizer normalizer(normalizer_spec_, trainer_spec_);
+     std::set<absl::string_view> meta_pieces_set;
+     for (const auto &it : meta_pieces_) {
+-      LOG(INFO) << "Adding meta_piece: " << it.second.first;
++      ABSL_LOG(INFO) << "Adding meta_piece: " << it.second.first;
+       meta_pieces_set.insert(it.second.first);
+     }
+     const normalizer::PrefixMatcher meta_pieces_matcher(meta_pieces_set);
+ 
+-    LOG(INFO) << "Normalizing sentences...";
++    ABSL_LOG(INFO) << "Normalizing sentences...";
+     CHECK_OR_RETURN(!sentences_.empty());
+     {
+       auto pool = std::make_unique<ThreadPool>(trainer_spec_.num_threads());
+@@ -460,15 +460,15 @@ END:
+   // If DP is required, add the noise/clip the input.
+   if (trainer_spec_.enable_differential_privacy()) {
+     if (trainer_spec_.input_format() != "tsv") {
+-      LOG(ERROR)
++      ABSL_LOG(ERROR)
+           << "Dp version will not work correctly with text input format.";
+     }
+     if (trainer_spec_.differential_privacy_noise_level() <= 0) {
+-      LOG(WARNING) << "Private version with <=0 noise level will give "
++      ABSL_LOG(WARNING) << "Private version with <=0 noise level will give "
+                       "infinity epsilon guarantees.";
+     }
+     if (trainer_spec_.differential_privacy_clipping_threshold() <= 0) {
+-      LOG(WARNING) << "Private version with <=0 clipping threshold will give "
++      ABSL_LOG(WARNING) << "Private version with <=0 clipping threshold will give "
+                       "infinity epsilon guarantees.";
+     }
+ 
+@@ -501,7 +501,7 @@ END:
+     const int num_erased = before_size - new_size;
+     sentences_.erase(it, sentences_.end());
+ 
+-    LOG(INFO) << "DP noise resulted in " << 1.0 * num_erased / before_size
++    ABSL_LOG(INFO) << "DP noise resulted in " << 1.0 * num_erased / before_size
+               << " fraction of sentences removed.";
+   }
+ 
+@@ -513,7 +513,7 @@ END:
+        string_util::UTF8ToUnicodeText(trainer_spec_.required_chars())) {
+     CHECK_OR_RETURN(string_util::IsValidCodepoint(c));
+     if (c == 0x0000) {
+-      LOG(INFO) << "Found null character. The required_chars field must be "
++      ABSL_LOG(INFO) << "Found null character. The required_chars field must be "
+                    "encoded in utf-8.";
+       continue;
+     }
+@@ -523,7 +523,7 @@ END:
+     for (const char32 c : string_util::UTF8ToUnicodeText(w.first)) {
+       if (!string_util::IsValidCodepoint(c)) continue;
+       if (c == 0x0000) {
+-        LOG(INFO)
++        ABSL_LOG(INFO)
+             << "Found null character. The corpus must be encoded in utf-8.";
+         continue;
+       }
+@@ -538,7 +538,7 @@ END:
+       all_chars_count += w.second;
+     }
+   }
+-  LOG(INFO) << "all chars count=" << all_chars_count;
++  ABSL_LOG(INFO) << "all chars count=" << all_chars_count;
+ 
+   // Determines required_chars which must be included in the vocabulary.
+   int64_t accumulated_chars_count = 0;
+@@ -549,7 +549,7 @@ END:
+     const float coverage = 1.0 * accumulated_chars_count / all_chars_count;
+     if (!trainer_spec_.use_all_vocab() &&
+         coverage >= trainer_spec_.character_coverage()) {
+-      LOG(INFO) << "Done: " << 100.0 * coverage << "% characters are covered.";
++      ABSL_LOG(INFO) << "Done: " << 100.0 * coverage << "% characters are covered.";
+       break;
+     }
+     accumulated_chars_count += w.second.second;
+@@ -559,8 +559,8 @@ END:
+     required_chars_.emplace(w.first, w.second.second);
+   }
+ 
+-  LOG(INFO) << "Alphabet size=" << required_chars_.size();
+-  LOG(INFO) << "Final character coverage="
++  ABSL_LOG(INFO) << "Alphabet size=" << required_chars_.size();
++  ABSL_LOG(INFO) << "Final character coverage="
+             << 1.0 * accumulated_chars_count / all_chars_count;
+ 
+   CHECK_OR_RETURN(!port::ContainsKey(required_chars_, kUNKChar));
+@@ -591,13 +591,13 @@ END:
+         << "--character_coverage option.";
+   }
+ 
+-  LOG(INFO) << "Done! preprocessed " << sentences_.size() << " sentences.";
++  ABSL_LOG(INFO) << "Done! preprocessed " << sentences_.size() << " sentences.";
+ 
+   return util::OkStatus();
+ }
+ 
+ void TrainerInterface::SplitSentencesByWhitespace() {
+-  LOG(INFO) << "Tokenizing input sentences with whitespace: "
++  ABSL_LOG(INFO) << "Tokenizing input sentences with whitespace: "
+             << sentences_.size();
+   absl::flat_hash_map<std::string, int64_t> tokens;
+   for (const auto &s : sentences_) {
+@@ -608,7 +608,7 @@ void TrainerInterface::SplitSentencesByWhitespace() {
+     }
+   }
+   sentences_ = Sorted(tokens);
+-  LOG(INFO) << "Done! " << sentences_.size();
++  ABSL_LOG(INFO) << "Done! " << sentences_.size();
+ }
+ 
+ util::Status TrainerInterface::Serialize(ModelProto *model_proto) const {
+@@ -686,7 +686,7 @@ util::Status TrainerInterface::Serialize(ModelProto *model_proto) const {
+ }
+ 
+ util::Status TrainerInterface::SaveModel(absl::string_view filename) const {
+-  LOG(INFO) << "Saving model: " << filename;
++  ABSL_LOG(INFO) << "Saving model: " << filename;
+   ModelProto model_proto;
+ 
+   RETURN_IF_ERROR(Serialize(&model_proto));
+@@ -698,7 +698,7 @@ util::Status TrainerInterface::SaveModel(absl::string_view filename) const {
+ }
+ 
+ util::Status TrainerInterface::SaveVocab(absl::string_view filename) const {
+-  LOG(INFO) << "Saving vocabs: " << filename;
++  ABSL_LOG(INFO) << "Saving vocabs: " << filename;
+   ModelProto model_proto;
+   RETURN_IF_ERROR(Serialize(&model_proto));
+   auto output = filesystem::NewWritableFile(filename);
+@@ -706,7 +706,7 @@ util::Status TrainerInterface::SaveVocab(absl::string_view filename) const {
+ 
+   for (const auto &piece : model_proto.pieces()) {
+     if (piece.piece().find_first_of(" \t\r\n") != std::string::npos) {
+-      LOG(WARNING) << "The piece [" << piece.piece()
++      ABSL_LOG(WARNING) << "The piece [" << piece.piece()
+                    << "] contains escaped characters that break the format of "
+                    << filename;
+     }
+diff --git a/third_party/sentencepiece/src/src/unicode_script_test.cc b/third_party/sentencepiece/src/src/unicode_script_test.cc
+index e0b1c4d4d50df..d17e9dd80732d 100644
+--- a/third_party/sentencepiece/src/src/unicode_script_test.cc
++++ b/third_party/sentencepiece/src/src/unicode_script_test.cc
+@@ -22,7 +22,7 @@ namespace sentencepiece {
+ namespace unicode_script {
+ ScriptType GetScriptType(absl::string_view s) {
+   const auto ut = string_util::UTF8ToUnicodeText(s);
+-  CHECK_EQ(1, ut.size());
++  ABSL_CHECK_EQ(1, ut.size());
+   return GetScript(ut[0]);
+ }
+ 
+diff --git a/third_party/sentencepiece/src/src/unigram_model.cc b/third_party/sentencepiece/src/src/unigram_model.cc
+index 35986ee6d3f81..7e11f95420511 100644
+--- a/third_party/sentencepiece/src/src/unigram_model.cc
++++ b/third_party/sentencepiece/src/src/unigram_model.cc
+@@ -174,7 +174,7 @@ Lattice::LatticePathWithScore Lattice::Viterbi() {
+         }
+       }
+       if (best_node == nullptr) {
+-        LOG(ERROR) << "Failed to find the best path in Viterbi.";
++        ABSL_LOG(ERROR) << "Failed to find the best path in Viterbi.";
+         return {};
+       }
+       rnode->prev = best_node;
+@@ -346,7 +346,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
+                                                           bool sample,
+                                                           float inv_theta) {
+   if (nbest_size < 1) {
+-    LOG(WARNING) << "nbest_size >= 1. Returns empty result.";
++    ABSL_LOG(WARNING) << "nbest_size >= 1. Returns empty result.";
+     return {};
+   }
+ 
+@@ -470,7 +470,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
+     if (hypothesis_allocator.size() >= kOneBillion) {
+       if (!printed_memory_warning) {
+         printed_memory_warning = true;
+-        LOG(WARNING) << "Allocator size exceeds " << kOneBillion
++        ABSL_LOG(WARNING) << "Allocator size exceeds " << kOneBillion
+                      << " with an example of length " << this->size();
+       }
+     }
+@@ -490,7 +490,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
+ 
+       const int size = std::min<int>(kMinAgendaSize, nbest_size * 10);
+       shrink_count++;
+-      LOG(WARNING) << "Too big agenda size " << agenda.size()
++      ABSL_LOG(WARNING) << "Too big agenda size " << agenda.size()
+                    << ". Shrinking (round " << shrink_count << ") down to "
+                    << size << ".";
+       for (int i = 0; i < size; ++i) {
+@@ -567,7 +567,7 @@ void Model::PopulateNodes(Lattice *lattice) const {
+     const size_t num_nodes = trie_->commonPrefixSearch(
+         begin, trie_results.data(), trie_results.size(),
+         static_cast<int>(end - begin));
+-    CHECK_LT(num_nodes, trie_results.size());
++    ABSL_CHECK_LT(num_nodes, trie_results.size());
+ 
+     bool has_single_node = false;
+ 
+@@ -757,7 +757,7 @@ NBestEncodeResult Model::SampleEncodeAndScore(absl::string_view normalized,
+ 
+   if (include_best) {
+     if (!wor) {
+-      LOG(ERROR) << "include_best not supported for wor false";
++      ABSL_LOG(ERROR) << "include_best not supported for wor false";
+       return {};
+     }
+     EncodeResult result;
+@@ -880,7 +880,7 @@ bool Model::VerifyOutputsEquivalent(absl::string_view expected,
+   const auto actual_score =
+       compute_unigram_model_score(absl::StrSplit(actual, ' '));
+   if (std::abs(expected_score - actual_score) > kEpsilon) {
+-    LOG(WARNING) << "Two sentence piece sequences are not equivalent! Left: "
++    ABSL_LOG(WARNING) << "Two sentence piece sequences are not equivalent! Left: "
+                  << expected << ", Score: " << expected_score
+                  << ". Right: " << actual << ", Score: " << actual_score << ".";
+     return false;
+diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer.cc b/third_party/sentencepiece/src/src/unigram_model_trainer.cc
+index f2d5ad8058e79..a4eabc6d305bd 100644
+--- a/third_party/sentencepiece/src/src/unigram_model_trainer.cc
++++ b/third_party/sentencepiece/src/src/unigram_model_trainer.cc
+@@ -114,7 +114,7 @@ const TrainerModel::SentencePieces &TrainerModel::GetSentencePieces() const {
+ 
+ void TrainerModel::SetSentencePieces(SentencePieces &&sentencepieces) {
+   sentencepieces_ = std::move(sentencepieces);
+-  CHECK(!sentencepieces_.empty());
++  ABSL_CHECK(!sentencepieces_.empty());
+ 
+   min_score_ = FLT_MAX;
+   model_proto_data_.Clear();
+@@ -124,7 +124,7 @@ void TrainerModel::SetSentencePieces(SentencePieces &&sentencepieces) {
+   for (size_t i = 0; i < sentencepieces_.size(); ++i) {
+     const absl::string_view w = sentencepieces_[i].first;  // piece
+     const float score = sentencepieces_[i].second;         // score.
+-    CHECK(!std::isnan(score));
++    ABSL_CHECK(!std::isnan(score));
+     pieces.emplace_back(w, i);
+     min_score_ = std::min(min_score_, score);
+     auto *piece = model_proto_data_.add_pieces();
+@@ -133,7 +133,7 @@ void TrainerModel::SetSentencePieces(SentencePieces &&sentencepieces) {
+   }
+ 
+   BuildTrie(&pieces);
+-  CHECK(status().ok());
++  ABSL_CHECK(status().ok());
+ }
+ 
+ TrainerModel::SentencePieces Trainer::MakeSeedSentencePieces() {
+@@ -145,8 +145,8 @@ TrainerModel::SentencePieces Trainer::MakeSeedSentencePieces() {
+ // Returns seed sentencepieces for EM training.
+ template <typename node_int_type>
+ TrainerModel::SentencePieces Trainer::MakeSeedSentencePiecesInternal() {
+-  CHECK(!sentences_.empty());
+-  CHECK(!required_chars_.empty());
++  ABSL_CHECK(!sentences_.empty());
++  ABSL_CHECK(!required_chars_.empty());
+ 
+   // Pretokenizer applied only in training time.
+   // Pretokenizer is used as a constraint of piece extractions.
+@@ -221,9 +221,9 @@ TrainerModel::SentencePieces Trainer::MakeSeedSentencePiecesInternal() {
+     int skipped_sentencepieces = 0;
+     while (seed_sentencepieces_file->ReadLine(&line)) {
+       const std::vector<std::string> fields = absl::StrSplit(line, '\t');
+-      CHECK_GE(fields.size(), 2);
++      ABSL_CHECK_GE(fields.size(), 2);
+       const auto &seed_sentencepiece = fields[0];
+-      CHECK(absl::SimpleAtoi(fields[1], &freq))
++      ABSL_CHECK(absl::SimpleAtoi(fields[1], &freq))
+           << "Could not parse the frequency; line: " << line;
+       const UnicodeText uw = string_util::UTF8ToUnicodeText(seed_sentencepiece);
+       if (!IsValidSentencePiece(uw)) {
+@@ -233,22 +233,22 @@ TrainerModel::SentencePieces Trainer::MakeSeedSentencePiecesInternal() {
+       // Initialise score of a piece by character coverage.
+       seed_sentencepieces.emplace_back(seed_sentencepiece, freq * uw.size());
+       if (seed_sentencepieces.size() % 1000000 == 0) {
+-        LOG(INFO) << "loaded " << seed_sentencepieces.size()
++        ABSL_LOG(INFO) << "loaded " << seed_sentencepieces.size()
+                   << " seed sentencepieces";
+       }
+     }
+ 
+-    LOG(INFO) << "skipped " << skipped_sentencepieces << " seed sentencepieces";
++    ABSL_LOG(INFO) << "skipped " << skipped_sentencepieces << " seed sentencepieces";
+ 
+     // Take highest scoring pieces as initial vocab.
+     seed_sentencepieces = Sorted(seed_sentencepieces);
+     seed_sentencepieces.resize(std::min<size_t>(
+         trainer_spec_.seed_sentencepiece_size(), seed_sentencepieces.size()));
+ 
+-    LOG(INFO) << "Initialized " << seed_sentencepieces.size()
++    ABSL_LOG(INFO) << "Initialized " << seed_sentencepieces.size()
+               << " seed sentencepieces from file.";
+   } else {
+-    CHECK_LE(array.size(),
++    ABSL_CHECK_LE(array.size(),
+              static_cast<size_t>(std::numeric_limits<node_int_type>::max()))
+         << "Input corpus too large, try with train_extremely_large_corpus=true";
+     const node_int_type n = array.size();
+@@ -262,11 +262,11 @@ TrainerModel::SentencePieces Trainer::MakeSeedSentencePiecesInternal() {
+     // more than 2 times in the sentence.
+     constexpr node_int_type kAlphabetSize = 0x110000;  // All UCS4 range.
+     node_int_type node_num = 0;
+-    LOG(INFO) << "Making suffix array...";
+-    CHECK_EQ(0, esaxx(array.begin(), SA.begin(), L.begin(), R.begin(),
++    ABSL_LOG(INFO) << "Making suffix array...";
++    ABSL_CHECK_EQ(0, esaxx(array.begin(), SA.begin(), L.begin(), R.begin(),
+                       D.begin(), n, kAlphabetSize, node_num));
+ 
+-    LOG(INFO) << "Extracting frequent sub strings... node_num=" << node_num;
++    ABSL_LOG(INFO) << "Extracting frequent sub strings... node_num=" << node_num;
+     BoundedPriorityQueue<node_int_type> queue(
+         static_cast<size_t>(trainer_spec_.seed_sentencepiece_size()));
+ 
+@@ -296,20 +296,20 @@ TrainerModel::SentencePieces Trainer::MakeSeedSentencePiecesInternal() {
+     for (const auto &p : queue.get()) {
+       const node_int_type offset = SA[L[p.first]];
+       const node_int_type len = D[p.first];
+-      CHECK_GT(len, 0);
++      ABSL_CHECK_GT(len, 0);
+       const char32 *begin = &array[offset];
+       const char32 *end = &array[offset + len];
+       const UnicodeText uw(begin, end);
+       const std::string w = string_util::UnicodeTextToUTF8(uw);
+-      CHECK(IsValidSentencePiece(uw));  // just in case.
+-      CHECK(!port::ContainsKey(all_chars, w));
++      ABSL_CHECK(IsValidSentencePiece(uw));  // just in case.
++      ABSL_CHECK(!port::ContainsKey(all_chars, w));
+       seed_sentencepieces.emplace_back(w, p.second);
+     }
+   }
+ 
+   ToLogProb(seed_sentencepieces.begin(), seed_sentencepieces.end());
+ 
+-  LOG(INFO) << "Initialized " << seed_sentencepieces.size()
++  ABSL_LOG(INFO) << "Initialized " << seed_sentencepieces.size()
+             << " seed sentencepieces";
+ 
+   return seed_sentencepieces;
+@@ -342,7 +342,7 @@ std::vector<float> Trainer::RunEStep(const TrainerModel &model, float *obj,
+         model.PopulateNodes(&lattice);
+         const float Z = lattice.PopulateMarginal(freq, &expected[n]);
+         ntokens[n] += lattice.Viterbi().first.size() * freq;
+-        CHECK(!std::isnan(Z))
++        ABSL_CHECK(!std::isnan(Z))
+             << "likelihood is NAN. Input sentence may be too long";
+         objs[n] -= Z / all_sentence_freq;
+       }
+@@ -361,7 +361,7 @@ std::vector<float> Trainer::RunEStep(const TrainerModel &model, float *obj,
+ 
+   *obj = objs[0];
+   *num_tokens = ntokens[0];
+-  CHECK(!std::isnan(*obj));
++  ABSL_CHECK(!std::isnan(*obj));
+ 
+   return expected[0];
+ }
+@@ -369,7 +369,7 @@ std::vector<float> Trainer::RunEStep(const TrainerModel &model, float *obj,
+ TrainerModel::SentencePieces Trainer::RunMStep(
+     const TrainerModel &model, const std::vector<float> &expected) const {
+   const auto &sentencepieces = model.GetSentencePieces();
+-  CHECK_EQ(sentencepieces.size(), expected.size());
++  ABSL_CHECK_EQ(sentencepieces.size(), expected.size());
+   TrainerModel::SentencePieces new_sentencepieces;
+ 
+   float sum = 0.0;
+@@ -548,7 +548,7 @@ TrainerModel::SentencePieces Trainer::FinalizeSentencePieces(
+   }
+ 
+   const int vocab_size_size = trainer_spec_.vocab_size() - meta_pieces_.size();
+-  CHECK_GT(vocab_size_size, 0);
++  ABSL_CHECK_GT(vocab_size_size, 0);
+ 
+   // Then keeps sentencepieces with higher scores.
+   for (const auto &w : Sorted(sentencepieces)) {
+@@ -582,7 +582,7 @@ util::Status Trainer::Train() {
+     SplitSentencesByWhitespace();
+   }
+ 
+-  LOG(INFO) << "Using " << sentences_.size() << " sentences for EM training";
++  ABSL_LOG(INFO) << "Using " << sentences_.size() << " sentences for EM training";
+ 
+   desired_vocab_size_ = static_cast<size_t>(trainer_spec_.vocab_size() * 1.1);
+ 
+@@ -598,7 +598,7 @@ util::Status Trainer::Train() {
+       auto new_sentencepieces = RunMStep(model, expected);
+       model.SetSentencePieces(std::move(new_sentencepieces));
+ 
+-      LOG(INFO) << "EM sub_iter=" << iter << " size=" << model.GetPieceSize()
++      ABSL_LOG(INFO) << "EM sub_iter=" << iter << " size=" << model.GetPieceSize()
+                 << " obj=" << objective << " num_tokens=" << num_tokens
+                 << " num_tokens/piece="
+                 << 1.0 * num_tokens / model.GetPieceSize();
+diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc b/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
+index 831fa2d1aea2c..ba48df930563b 100644
+--- a/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
++++ b/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
+@@ -192,7 +192,7 @@ TEST(UnigramTrainerTest, EndToEndTest) {
+                   .ok());
+   // TODO(taku): Temporally disable this test on Windows.
+ #ifndef OS_WIN
+-  LOG(INFO) << "[" << absl::StrJoin(tok, " ") << std::endl;
++  ABSL_LOG(INFO) << "[" << absl::StrJoin(tok, " ") << std::endl;
+   EXPECT_EQ(
+       WS
+       " 吾輩 《 わが はい 》 は猫である 。 名前はまだ 無 い 。 どこ で 生 れた "
+diff --git a/third_party/sentencepiece/src/src/util.h b/third_party/sentencepiece/src/src/util.h
+index bcf56258ceb63..c2c26b615db44 100644
+--- a/third_party/sentencepiece/src/src/util.h
++++ b/third_party/sentencepiece/src/src/util.h
+@@ -217,7 +217,7 @@ const typename Collection::value_type::second_type &FindOrDie(
+     const typename Collection::value_type::first_type &key) {
+   const auto it = collection.find(key);
+   //  if (it == collection.end()) {
+-  //    LOG(FATAL) << "Map key not found: " << key;
++  //    ABSL_LOG(FATAL) << "Map key not found: " << key;
+   //  }
+   return it->second;
+ }
+@@ -252,7 +252,7 @@ template <class Collection>
+ void InsertOrDie(Collection *const collection,
+                  const typename Collection::value_type::first_type &key,
+                  const typename Collection::value_type::second_type &data) {
+-  CHECK(InsertIfNotPresent(collection, key, data)) << "duplicate key";
++  ABSL_CHECK(InsertIfNotPresent(collection, key, data)) << "duplicate key";
+ }
+ 
+ // hash
+diff --git a/third_party/sentencepiece/src/src/util_test.cc b/third_party/sentencepiece/src/src/util_test.cc
+index efa3abf42d418..85f654cb18455 100644
+--- a/third_party/sentencepiece/src/src/util_test.cc
++++ b/third_party/sentencepiece/src/src/util_test.cc
+@@ -53,12 +53,12 @@ TEST(UtilTest, LexicalCastTest) {
+ TEST(UtilTest, Hex) {
+   for (char32 a = 0; a < 100000; ++a) {
+     const std::string s = string_util::IntToHex<char32>(a);
+-    CHECK_EQ(a, string_util::HexToInt<char32>(s));
++    ABSL_CHECK_EQ(a, string_util::HexToInt<char32>(s));
+   }
+ 
+   const int n = 151414;
+-  CHECK_EQ("24F76", string_util::IntToHex(n));
+-  CHECK_EQ(n, string_util::HexToInt<int>("24F76"));
++  ABSL_CHECK_EQ("24F76", string_util::IntToHex(n));
++  ABSL_CHECK_EQ(n, string_util::HexToInt<int>("24F76"));
+ }
+ 
+ TEST(UtilTest, StringViewTest) {
+@@ -369,7 +369,7 @@ TEST(UtilTest, STLDeleteELementsTest) {
+     data.push_back(new Item(&counter));
+   }
+   port::STLDeleteElements(&data);
+-  CHECK_EQ(10, counter);
++  ABSL_CHECK_EQ(10, counter);
+   EXPECT_EQ(0, data.size());
+ }
+ 
+-- 
+2.54.0.545.g6539524ca2-goog
+

@@ -19,16 +19,16 @@
 #error regenerate this file with a newer version of protoc.
 #endif
 
+#include <google/protobuf/port_undef.inc>
+#include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/arenastring.h>
-#include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/generated_message_table_driven.h>
 #include <google/protobuf/generated_message_util.h>
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/message_lite.h>
 #include <google/protobuf/metadata_lite.h>
+#include <google/protobuf/message_lite.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
-#include <google/protobuf/port_undef.inc>
+#include <google/protobuf/extension_set.h>  // IWYU pragma: export
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_sentencepiece_2eproto
@@ -40,75 +40,55 @@ PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
 struct TableStruct_sentencepiece_2eproto {
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTableField
-      entries[] PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField
-      aux[] PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable
-      schema[3] PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata
-      field_metadata[];
-  static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable
-      serialization_table[];
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTableField entries[]
+    PROTOBUF_SECTION_VARIABLE(protodesc_cold);
+  static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
+    PROTOBUF_SECTION_VARIABLE(protodesc_cold);
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[3]
+    PROTOBUF_SECTION_VARIABLE(protodesc_cold);
+  static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
+  static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
   static const ::PROTOBUF_NAMESPACE_ID::uint32 offsets[];
 };
 namespace sentencepiece {
 class NBestSentencePieceText;
 class NBestSentencePieceTextDefaultTypeInternal;
-extern NBestSentencePieceTextDefaultTypeInternal
-    _NBestSentencePieceText_default_instance_;
+extern NBestSentencePieceTextDefaultTypeInternal _NBestSentencePieceText_default_instance_;
 class SentencePieceText;
 class SentencePieceTextDefaultTypeInternal;
-extern SentencePieceTextDefaultTypeInternal
-    _SentencePieceText_default_instance_;
+extern SentencePieceTextDefaultTypeInternal _SentencePieceText_default_instance_;
 class SentencePieceText_SentencePiece;
 class SentencePieceText_SentencePieceDefaultTypeInternal;
-extern SentencePieceText_SentencePieceDefaultTypeInternal
-    _SentencePieceText_SentencePiece_default_instance_;
+extern SentencePieceText_SentencePieceDefaultTypeInternal _SentencePieceText_SentencePiece_default_instance_;
 }  // namespace sentencepiece
 PROTOBUF_NAMESPACE_OPEN
-template <>
-::sentencepiece::NBestSentencePieceText*
-Arena::CreateMaybeMessage<::sentencepiece::NBestSentencePieceText>(Arena*);
-template <>
-::sentencepiece::SentencePieceText*
-Arena::CreateMaybeMessage<::sentencepiece::SentencePieceText>(Arena*);
-template <>
-::sentencepiece::SentencePieceText_SentencePiece*
-Arena::CreateMaybeMessage<::sentencepiece::SentencePieceText_SentencePiece>(
-    Arena*);
+template<> ::sentencepiece::NBestSentencePieceText* Arena::CreateMaybeMessage<::sentencepiece::NBestSentencePieceText>(Arena*);
+template<> ::sentencepiece::SentencePieceText* Arena::CreateMaybeMessage<::sentencepiece::SentencePieceText>(Arena*);
+template<> ::sentencepiece::SentencePieceText_SentencePiece* Arena::CreateMaybeMessage<::sentencepiece::SentencePieceText_SentencePiece>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace sentencepiece {
 
 // ===================================================================
 
-class SentencePieceText_SentencePiece PROTOBUF_FINAL
-    : public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.SentencePieceText.SentencePiece)
-                                                   */
-{
+class SentencePieceText_SentencePiece PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.SentencePieceText.SentencePiece) */ {
  public:
-  inline SentencePieceText_SentencePiece()
-      : SentencePieceText_SentencePiece(nullptr) {}
+  inline SentencePieceText_SentencePiece() : SentencePieceText_SentencePiece(nullptr) {}
   virtual ~SentencePieceText_SentencePiece();
 
   SentencePieceText_SentencePiece(const SentencePieceText_SentencePiece& from);
-  SentencePieceText_SentencePiece(
-      SentencePieceText_SentencePiece&& from) noexcept
-      : SentencePieceText_SentencePiece() {
+  SentencePieceText_SentencePiece(SentencePieceText_SentencePiece&& from) noexcept
+    : SentencePieceText_SentencePiece() {
     *this = ::std::move(from);
   }
 
-  inline SentencePieceText_SentencePiece& operator=(
-      const SentencePieceText_SentencePiece& from) {
+  inline SentencePieceText_SentencePiece& operator=(const SentencePieceText_SentencePiece& from) {
     CopyFrom(from);
     return *this;
   }
-  inline SentencePieceText_SentencePiece& operator=(
-      SentencePieceText_SentencePiece&& from) noexcept {
+  inline SentencePieceText_SentencePiece& operator=(SentencePieceText_SentencePiece&& from) noexcept {
     if (GetArena() == from.GetArena()) {
-      if (this != &from) {
-        InternalSwap(&from);
-      }
+      if (this != &from) InternalSwap(&from);
     } else {
       CopyFrom(from);
     }
@@ -116,8 +96,7 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
   }
 
   inline const std::string& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<std::string>(
-        ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
+    return _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
   }
   inline std::string* mutable_unknown_fields() {
     return _internal_metadata_.mutable_unknown_fields<std::string>();
@@ -125,21 +104,18 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
 
   static const SentencePieceText_SentencePiece& default_instance();
 
-  static inline const SentencePieceText_SentencePiece*
-  internal_default_instance() {
+  static inline const SentencePieceText_SentencePiece* internal_default_instance() {
     return reinterpret_cast<const SentencePieceText_SentencePiece*>(
-        &_SentencePieceText_SentencePiece_default_instance_);
+               &_SentencePieceText_SentencePiece_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 0;
+  static constexpr int kIndexInFileMessages =
+    0;
 
-  friend void swap(SentencePieceText_SentencePiece& a,
-                   SentencePieceText_SentencePiece& b) {
+  friend void swap(SentencePieceText_SentencePiece& a, SentencePieceText_SentencePiece& b) {
     a.Swap(&b);
   }
   inline void Swap(SentencePieceText_SentencePiece* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
     } else {
@@ -147,9 +123,7 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
     }
   }
   void UnsafeArenaSwap(SentencePieceText_SentencePiece* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
   }
@@ -160,28 +134,24 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
     return CreateMaybeMessage<SentencePieceText_SentencePiece>(nullptr);
   }
 
-  SentencePieceText_SentencePiece* New(
-      ::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+  SentencePieceText_SentencePiece* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
     return CreateMaybeMessage<SentencePieceText_SentencePiece>(arena);
   }
-  void CheckTypeAndMergeFrom(
-      const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) final;
+  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)
+    final;
   void CopyFrom(const SentencePieceText_SentencePiece& from);
   void MergeFrom(const SentencePieceText_SentencePiece& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
   size_t ByteSizeLong() const final;
-  const char* _InternalParse(
-      const char* ptr,
-      ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
   ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target,
-      ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
   void DiscardUnknownFields();
   int GetCachedSize() const final { return _cached_size_.Get(); }
 
- private:
+  private:
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const;
@@ -190,16 +160,13 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
     return "sentencepiece.SentencePieceText.SentencePiece";
   }
-
- protected:
-  explicit SentencePieceText_SentencePiece(
-      ::PROTOBUF_NAMESPACE_ID::Arena* arena);
-
- private:
+  protected:
+  explicit SentencePieceText_SentencePiece(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
 
- public:
   std::string GetTypeName() const final;
 
   // nested types ----------------------------------------------------
@@ -215,11 +182,9 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
   };
   // optional string piece = 1;
   bool has_piece() const;
-
- private:
+  private:
   bool _internal_has_piece() const;
-
- public:
+  public:
   void clear_piece();
   const std::string& piece() const;
   void set_piece(const std::string& value);
@@ -229,20 +194,17 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
   std::string* mutable_piece();
   std::string* release_piece();
   void set_allocated_piece(std::string* piece);
-
- private:
+  private:
   const std::string& _internal_piece() const;
   void _internal_set_piece(const std::string& value);
   std::string* _internal_mutable_piece();
+  public:
 
- public:
   // optional string surface = 3;
   bool has_surface() const;
-
- private:
+  private:
   bool _internal_has_surface() const;
-
- public:
+  public:
   void clear_surface();
   const std::string& surface() const;
   void set_surface(const std::string& value);
@@ -252,61 +214,51 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
   std::string* mutable_surface();
   std::string* release_surface();
   void set_allocated_surface(std::string* surface);
-
- private:
+  private:
   const std::string& _internal_surface() const;
   void _internal_set_surface(const std::string& value);
   std::string* _internal_mutable_surface();
+  public:
 
- public:
   // optional uint32 id = 2;
   bool has_id() const;
-
- private:
+  private:
   bool _internal_has_id() const;
-
- public:
+  public:
   void clear_id();
   ::PROTOBUF_NAMESPACE_ID::uint32 id() const;
   void set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::uint32 _internal_id() const;
   void _internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
 
- public:
   // optional uint32 begin = 4;
   bool has_begin() const;
-
- private:
+  private:
   bool _internal_has_begin() const;
-
- public:
+  public:
   void clear_begin();
   ::PROTOBUF_NAMESPACE_ID::uint32 begin() const;
   void set_begin(::PROTOBUF_NAMESPACE_ID::uint32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::uint32 _internal_begin() const;
   void _internal_set_begin(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
 
- public:
   // optional uint32 end = 5;
   bool has_end() const;
-
- private:
+  private:
   bool _internal_has_end() const;
-
- public:
+  public:
   void clear_end();
   ::PROTOBUF_NAMESPACE_ID::uint32 end() const;
   void set_end(::PROTOBUF_NAMESPACE_ID::uint32 value);
-
- private:
+  private:
   ::PROTOBUF_NAMESPACE_ID::uint32 _internal_end() const;
   void _internal_set_end(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
 
- public:
   GOOGLE_PROTOBUF_EXTENSION_ACCESSORS(SentencePieceText_SentencePiece)
   // @@protoc_insertion_point(class_scope:sentencepiece.SentencePieceText.SentencePiece)
  private:
@@ -314,8 +266,7 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
 
   ::PROTOBUF_NAMESPACE_ID::internal::ExtensionSet _extensions_;
 
-  template <typename T>
-  friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
@@ -329,16 +280,15 @@ class SentencePieceText_SentencePiece PROTOBUF_FINAL
 };
 // -------------------------------------------------------------------
 
-class SentencePieceText PROTOBUF_FINAL
-    : public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.SentencePieceText)
-                                                   */
-{
+class SentencePieceText PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.SentencePieceText) */ {
  public:
   inline SentencePieceText() : SentencePieceText(nullptr) {}
   virtual ~SentencePieceText();
 
   SentencePieceText(const SentencePieceText& from);
-  SentencePieceText(SentencePieceText&& from) noexcept : SentencePieceText() {
+  SentencePieceText(SentencePieceText&& from) noexcept
+    : SentencePieceText() {
     *this = ::std::move(from);
   }
 
@@ -348,9 +298,7 @@ class SentencePieceText PROTOBUF_FINAL
   }
   inline SentencePieceText& operator=(SentencePieceText&& from) noexcept {
     if (GetArena() == from.GetArena()) {
-      if (this != &from) {
-        InternalSwap(&from);
-      }
+      if (this != &from) InternalSwap(&from);
     } else {
       CopyFrom(from);
     }
@@ -358,8 +306,7 @@ class SentencePieceText PROTOBUF_FINAL
   }
 
   inline const std::string& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<std::string>(
-        ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
+    return _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
   }
   inline std::string* mutable_unknown_fields() {
     return _internal_metadata_.mutable_unknown_fields<std::string>();
@@ -369,15 +316,16 @@ class SentencePieceText PROTOBUF_FINAL
 
   static inline const SentencePieceText* internal_default_instance() {
     return reinterpret_cast<const SentencePieceText*>(
-        &_SentencePieceText_default_instance_);
+               &_SentencePieceText_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 1;
+  static constexpr int kIndexInFileMessages =
+    1;
 
-  friend void swap(SentencePieceText& a, SentencePieceText& b) { a.Swap(&b); }
+  friend void swap(SentencePieceText& a, SentencePieceText& b) {
+    a.Swap(&b);
+  }
   inline void Swap(SentencePieceText* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
     } else {
@@ -385,9 +333,7 @@ class SentencePieceText PROTOBUF_FINAL
     }
   }
   void UnsafeArenaSwap(SentencePieceText* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
   }
@@ -401,24 +347,21 @@ class SentencePieceText PROTOBUF_FINAL
   SentencePieceText* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
     return CreateMaybeMessage<SentencePieceText>(arena);
   }
-  void CheckTypeAndMergeFrom(
-      const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) final;
+  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)
+    final;
   void CopyFrom(const SentencePieceText& from);
   void MergeFrom(const SentencePieceText& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
   size_t ByteSizeLong() const final;
-  const char* _InternalParse(
-      const char* ptr,
-      ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
   ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target,
-      ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
   void DiscardUnknownFields();
   int GetCachedSize() const final { return _cached_size_.Get(); }
 
- private:
+  private:
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const;
@@ -427,15 +370,13 @@ class SentencePieceText PROTOBUF_FINAL
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
     return "sentencepiece.SentencePieceText";
   }
-
- protected:
+  protected:
   explicit SentencePieceText(::PROTOBUF_NAMESPACE_ID::Arena* arena);
-
- private:
+  private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
 
- public:
   std::string GetTypeName() const final;
 
   // nested types ----------------------------------------------------
@@ -451,37 +392,27 @@ class SentencePieceText PROTOBUF_FINAL
   };
   // repeated .sentencepiece.SentencePieceText.SentencePiece pieces = 2;
   int pieces_size() const;
-
- private:
+  private:
   int _internal_pieces_size() const;
-
- public:
+  public:
   void clear_pieces();
   ::sentencepiece::SentencePieceText_SentencePiece* mutable_pieces(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::SentencePieceText_SentencePiece>*
-  mutable_pieces();
-
- private:
-  const ::sentencepiece::SentencePieceText_SentencePiece& _internal_pieces(
-      int index) const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText_SentencePiece >*
+      mutable_pieces();
+  private:
+  const ::sentencepiece::SentencePieceText_SentencePiece& _internal_pieces(int index) const;
   ::sentencepiece::SentencePieceText_SentencePiece* _internal_add_pieces();
-
- public:
-  const ::sentencepiece::SentencePieceText_SentencePiece& pieces(
-      int index) const;
+  public:
+  const ::sentencepiece::SentencePieceText_SentencePiece& pieces(int index) const;
   ::sentencepiece::SentencePieceText_SentencePiece* add_pieces();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::SentencePieceText_SentencePiece>&
-  pieces() const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText_SentencePiece >&
+      pieces() const;
 
   // optional string text = 1;
   bool has_text() const;
-
- private:
+  private:
   bool _internal_has_text() const;
-
- public:
+  public:
   void clear_text();
   const std::string& text() const;
   void set_text(const std::string& value);
@@ -491,29 +422,25 @@ class SentencePieceText PROTOBUF_FINAL
   std::string* mutable_text();
   std::string* release_text();
   void set_allocated_text(std::string* text);
-
- private:
+  private:
   const std::string& _internal_text() const;
   void _internal_set_text(const std::string& value);
   std::string* _internal_mutable_text();
+  public:
 
- public:
   // optional float score = 3;
   bool has_score() const;
-
- private:
+  private:
   bool _internal_has_score() const;
-
- public:
+  public:
   void clear_score();
   float score() const;
   void set_score(float value);
-
- private:
+  private:
   float _internal_score() const;
   void _internal_set_score(float value);
+  public:
 
- public:
   GOOGLE_PROTOBUF_EXTENSION_ACCESSORS(SentencePieceText)
   // @@protoc_insertion_point(class_scope:sentencepiece.SentencePieceText)
  private:
@@ -521,32 +448,27 @@ class SentencePieceText PROTOBUF_FINAL
 
   ::PROTOBUF_NAMESPACE_ID::internal::ExtensionSet _extensions_;
 
-  template <typename T>
-  friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::SentencePieceText_SentencePiece>
-      pieces_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText_SentencePiece > pieces_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr text_;
   float score_;
   friend struct ::TableStruct_sentencepiece_2eproto;
 };
 // -------------------------------------------------------------------
 
-class NBestSentencePieceText PROTOBUF_FINAL
-    : public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.NBestSentencePieceText)
-                                                   */
-{
+class NBestSentencePieceText PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:sentencepiece.NBestSentencePieceText) */ {
  public:
   inline NBestSentencePieceText() : NBestSentencePieceText(nullptr) {}
   virtual ~NBestSentencePieceText();
 
   NBestSentencePieceText(const NBestSentencePieceText& from);
   NBestSentencePieceText(NBestSentencePieceText&& from) noexcept
-      : NBestSentencePieceText() {
+    : NBestSentencePieceText() {
     *this = ::std::move(from);
   }
 
@@ -554,12 +476,9 @@ class NBestSentencePieceText PROTOBUF_FINAL
     CopyFrom(from);
     return *this;
   }
-  inline NBestSentencePieceText& operator=(
-      NBestSentencePieceText&& from) noexcept {
+  inline NBestSentencePieceText& operator=(NBestSentencePieceText&& from) noexcept {
     if (GetArena() == from.GetArena()) {
-      if (this != &from) {
-        InternalSwap(&from);
-      }
+      if (this != &from) InternalSwap(&from);
     } else {
       CopyFrom(from);
     }
@@ -567,8 +486,7 @@ class NBestSentencePieceText PROTOBUF_FINAL
   }
 
   inline const std::string& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<std::string>(
-        ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
+    return _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString);
   }
   inline std::string* mutable_unknown_fields() {
     return _internal_metadata_.mutable_unknown_fields<std::string>();
@@ -578,17 +496,16 @@ class NBestSentencePieceText PROTOBUF_FINAL
 
   static inline const NBestSentencePieceText* internal_default_instance() {
     return reinterpret_cast<const NBestSentencePieceText*>(
-        &_NBestSentencePieceText_default_instance_);
+               &_NBestSentencePieceText_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 2;
+  static constexpr int kIndexInFileMessages =
+    2;
 
   friend void swap(NBestSentencePieceText& a, NBestSentencePieceText& b) {
     a.Swap(&b);
   }
   inline void Swap(NBestSentencePieceText* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
     } else {
@@ -596,9 +513,7 @@ class NBestSentencePieceText PROTOBUF_FINAL
     }
   }
   void UnsafeArenaSwap(NBestSentencePieceText* other) {
-    if (other == this) {
-      return;
-    }
+    if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
   }
@@ -609,28 +524,24 @@ class NBestSentencePieceText PROTOBUF_FINAL
     return CreateMaybeMessage<NBestSentencePieceText>(nullptr);
   }
 
-  NBestSentencePieceText* New(
-      ::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+  NBestSentencePieceText* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
     return CreateMaybeMessage<NBestSentencePieceText>(arena);
   }
-  void CheckTypeAndMergeFrom(
-      const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) final;
+  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)
+    final;
   void CopyFrom(const NBestSentencePieceText& from);
   void MergeFrom(const NBestSentencePieceText& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
   size_t ByteSizeLong() const final;
-  const char* _InternalParse(
-      const char* ptr,
-      ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
   ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target,
-      ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
   void DiscardUnknownFields();
   int GetCachedSize() const final { return _cached_size_.Get(); }
 
- private:
+  private:
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const;
@@ -639,15 +550,13 @@ class NBestSentencePieceText PROTOBUF_FINAL
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
     return "sentencepiece.NBestSentencePieceText";
   }
-
- protected:
+  protected:
   explicit NBestSentencePieceText(::PROTOBUF_NAMESPACE_ID::Arena* arena);
-
- private:
+  private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
 
- public:
   std::string GetTypeName() const final;
 
   // nested types ----------------------------------------------------
@@ -659,47 +568,41 @@ class NBestSentencePieceText PROTOBUF_FINAL
   };
   // repeated .sentencepiece.SentencePieceText nbests = 1;
   int nbests_size() const;
-
- private:
+  private:
   int _internal_nbests_size() const;
-
- public:
+  public:
   void clear_nbests();
   ::sentencepiece::SentencePieceText* mutable_nbests(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<::sentencepiece::SentencePieceText>*
-  mutable_nbests();
-
- private:
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText >*
+      mutable_nbests();
+  private:
   const ::sentencepiece::SentencePieceText& _internal_nbests(int index) const;
   ::sentencepiece::SentencePieceText* _internal_add_nbests();
-
- public:
+  public:
   const ::sentencepiece::SentencePieceText& nbests(int index) const;
   ::sentencepiece::SentencePieceText* add_nbests();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-      ::sentencepiece::SentencePieceText>&
-  nbests() const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText >&
+      nbests() const;
 
   // @@protoc_insertion_point(class_scope:sentencepiece.NBestSentencePieceText)
  private:
   class _Internal;
 
-  template <typename T>
-  friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<::sentencepiece::SentencePieceText>
-      nbests_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText > nbests_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_sentencepiece_2eproto;
 };
 // ===================================================================
 
+
 // ===================================================================
 
 #ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
 // SentencePieceText_SentencePiece
 
@@ -719,8 +622,7 @@ inline const std::string& SentencePieceText_SentencePiece::piece() const {
   // @@protoc_insertion_point(field_get:sentencepiece.SentencePieceText.SentencePiece.piece)
   return _internal_piece();
 }
-inline void SentencePieceText_SentencePiece::set_piece(
-    const std::string& value) {
+inline void SentencePieceText_SentencePiece::set_piece(const std::string& value) {
   _internal_set_piece(value);
   // @@protoc_insertion_point(field_set:sentencepiece.SentencePieceText.SentencePiece.piece)
 }
@@ -728,42 +630,35 @@ inline std::string* SentencePieceText_SentencePiece::mutable_piece() {
   // @@protoc_insertion_point(field_mutable:sentencepiece.SentencePieceText.SentencePiece.piece)
   return _internal_mutable_piece();
 }
-inline const std::string& SentencePieceText_SentencePiece::_internal_piece()
-    const {
+inline const std::string& SentencePieceText_SentencePiece::_internal_piece() const {
   return piece_.Get();
 }
-inline void SentencePieceText_SentencePiece::_internal_set_piece(
-    const std::string& value) {
+inline void SentencePieceText_SentencePiece::_internal_set_piece(const std::string& value) {
   _has_bits_[0] |= 0x00000001u;
-  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             value, GetArena());
+  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void SentencePieceText_SentencePiece::set_piece(std::string&& value) {
   _has_bits_[0] |= 0x00000001u;
-  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             ::std::move(value), GetArena());
+  piece_.Set(
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.SentencePieceText.SentencePiece.piece)
 }
 inline void SentencePieceText_SentencePiece::set_piece(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000001u;
-  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             ::std::string(value), GetArena());
+  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.SentencePieceText.SentencePiece.piece)
 }
 inline void SentencePieceText_SentencePiece::set_piece(const char* value,
-                                                       size_t size) {
+    size_t size) {
   _has_bits_[0] |= 0x00000001u;
-  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-             ::std::string(reinterpret_cast<const char*>(value), size),
-             GetArena());
+  piece_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.SentencePieceText.SentencePiece.piece)
 }
 inline std::string* SentencePieceText_SentencePiece::_internal_mutable_piece() {
   _has_bits_[0] |= 0x00000001u;
-  return piece_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return piece_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* SentencePieceText_SentencePiece::release_piece() {
   // @@protoc_insertion_point(field_release:sentencepiece.SentencePieceText.SentencePiece.piece)
@@ -771,19 +666,15 @@ inline std::string* SentencePieceText_SentencePiece::release_piece() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000001u;
-  return piece_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return piece_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void SentencePieceText_SentencePiece::set_allocated_piece(
-    std::string* piece) {
+inline void SentencePieceText_SentencePiece::set_allocated_piece(std::string* piece) {
   if (piece != nullptr) {
     _has_bits_[0] |= 0x00000001u;
   } else {
     _has_bits_[0] &= ~0x00000001u;
   }
-  piece_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), piece,
+  piece_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), piece,
       GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.SentencePieceText.SentencePiece.piece)
 }
@@ -800,22 +691,18 @@ inline void SentencePieceText_SentencePiece::clear_id() {
   id_ = 0u;
   _has_bits_[0] &= ~0x00000004u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32
-SentencePieceText_SentencePiece::_internal_id() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 SentencePieceText_SentencePiece::_internal_id() const {
   return id_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32 SentencePieceText_SentencePiece::id()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 SentencePieceText_SentencePiece::id() const {
   // @@protoc_insertion_point(field_get:sentencepiece.SentencePieceText.SentencePiece.id)
   return _internal_id();
 }
-inline void SentencePieceText_SentencePiece::_internal_set_id(
-    ::PROTOBUF_NAMESPACE_ID::uint32 value) {
+inline void SentencePieceText_SentencePiece::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _has_bits_[0] |= 0x00000004u;
   id_ = value;
 }
-inline void SentencePieceText_SentencePiece::set_id(
-    ::PROTOBUF_NAMESPACE_ID::uint32 value) {
+inline void SentencePieceText_SentencePiece::set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_id(value);
   // @@protoc_insertion_point(field_set:sentencepiece.SentencePieceText.SentencePiece.id)
 }
@@ -836,8 +723,7 @@ inline const std::string& SentencePieceText_SentencePiece::surface() const {
   // @@protoc_insertion_point(field_get:sentencepiece.SentencePieceText.SentencePiece.surface)
   return _internal_surface();
 }
-inline void SentencePieceText_SentencePiece::set_surface(
-    const std::string& value) {
+inline void SentencePieceText_SentencePiece::set_surface(const std::string& value) {
   _internal_set_surface(value);
   // @@protoc_insertion_point(field_set:sentencepiece.SentencePieceText.SentencePiece.surface)
 }
@@ -845,46 +731,35 @@ inline std::string* SentencePieceText_SentencePiece::mutable_surface() {
   // @@protoc_insertion_point(field_mutable:sentencepiece.SentencePieceText.SentencePiece.surface)
   return _internal_mutable_surface();
 }
-inline const std::string& SentencePieceText_SentencePiece::_internal_surface()
-    const {
+inline const std::string& SentencePieceText_SentencePiece::_internal_surface() const {
   return surface_.Get();
 }
-inline void SentencePieceText_SentencePiece::_internal_set_surface(
-    const std::string& value) {
+inline void SentencePieceText_SentencePiece::_internal_set_surface(const std::string& value) {
   _has_bits_[0] |= 0x00000002u;
-  surface_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value,
-      GetArena());
+  surface_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void SentencePieceText_SentencePiece::set_surface(std::string&& value) {
   _has_bits_[0] |= 0x00000002u;
   surface_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::move(value), GetArena());
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.SentencePieceText.SentencePiece.surface)
 }
 inline void SentencePieceText_SentencePiece::set_surface(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000002u;
-  surface_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(value), GetArena());
+  surface_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.SentencePieceText.SentencePiece.surface)
 }
 inline void SentencePieceText_SentencePiece::set_surface(const char* value,
-                                                         size_t size) {
+    size_t size) {
   _has_bits_[0] |= 0x00000002u;
-  surface_.Set(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      ::std::string(reinterpret_cast<const char*>(value), size), GetArena());
+  surface_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.SentencePieceText.SentencePiece.surface)
 }
-inline std::string*
-SentencePieceText_SentencePiece::_internal_mutable_surface() {
+inline std::string* SentencePieceText_SentencePiece::_internal_mutable_surface() {
   _has_bits_[0] |= 0x00000002u;
-  return surface_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return surface_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* SentencePieceText_SentencePiece::release_surface() {
   // @@protoc_insertion_point(field_release:sentencepiece.SentencePieceText.SentencePiece.surface)
@@ -892,20 +767,16 @@ inline std::string* SentencePieceText_SentencePiece::release_surface() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000002u;
-  return surface_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return surface_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void SentencePieceText_SentencePiece::set_allocated_surface(
-    std::string* surface) {
+inline void SentencePieceText_SentencePiece::set_allocated_surface(std::string* surface) {
   if (surface != nullptr) {
     _has_bits_[0] |= 0x00000002u;
   } else {
     _has_bits_[0] &= ~0x00000002u;
   }
-  surface_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      surface, GetArena());
+  surface_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), surface,
+      GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.SentencePieceText.SentencePiece.surface)
 }
 
@@ -921,22 +792,18 @@ inline void SentencePieceText_SentencePiece::clear_begin() {
   begin_ = 0u;
   _has_bits_[0] &= ~0x00000008u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32
-SentencePieceText_SentencePiece::_internal_begin() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 SentencePieceText_SentencePiece::_internal_begin() const {
   return begin_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32 SentencePieceText_SentencePiece::begin()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 SentencePieceText_SentencePiece::begin() const {
   // @@protoc_insertion_point(field_get:sentencepiece.SentencePieceText.SentencePiece.begin)
   return _internal_begin();
 }
-inline void SentencePieceText_SentencePiece::_internal_set_begin(
-    ::PROTOBUF_NAMESPACE_ID::uint32 value) {
+inline void SentencePieceText_SentencePiece::_internal_set_begin(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _has_bits_[0] |= 0x00000008u;
   begin_ = value;
 }
-inline void SentencePieceText_SentencePiece::set_begin(
-    ::PROTOBUF_NAMESPACE_ID::uint32 value) {
+inline void SentencePieceText_SentencePiece::set_begin(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_begin(value);
   // @@protoc_insertion_point(field_set:sentencepiece.SentencePieceText.SentencePiece.begin)
 }
@@ -953,22 +820,18 @@ inline void SentencePieceText_SentencePiece::clear_end() {
   end_ = 0u;
   _has_bits_[0] &= ~0x00000010u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32
-SentencePieceText_SentencePiece::_internal_end() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 SentencePieceText_SentencePiece::_internal_end() const {
   return end_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32 SentencePieceText_SentencePiece::end()
-    const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 SentencePieceText_SentencePiece::end() const {
   // @@protoc_insertion_point(field_get:sentencepiece.SentencePieceText.SentencePiece.end)
   return _internal_end();
 }
-inline void SentencePieceText_SentencePiece::_internal_set_end(
-    ::PROTOBUF_NAMESPACE_ID::uint32 value) {
+inline void SentencePieceText_SentencePiece::_internal_set_end(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _has_bits_[0] |= 0x00000010u;
   end_ = value;
 }
-inline void SentencePieceText_SentencePiece::set_end(
-    ::PROTOBUF_NAMESPACE_ID::uint32 value) {
+inline void SentencePieceText_SentencePiece::set_end(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_end(value);
   // @@protoc_insertion_point(field_set:sentencepiece.SentencePieceText.SentencePiece.end)
 }
@@ -1006,34 +869,30 @@ inline const std::string& SentencePieceText::_internal_text() const {
 }
 inline void SentencePieceText::_internal_set_text(const std::string& value) {
   _has_bits_[0] |= 0x00000001u;
-  text_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-            value, GetArena());
+  text_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
 inline void SentencePieceText::set_text(std::string&& value) {
   _has_bits_[0] |= 0x00000001u;
-  text_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-            ::std::move(value), GetArena());
+  text_.Set(
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
   // @@protoc_insertion_point(field_set_rvalue:sentencepiece.SentencePieceText.text)
 }
 inline void SentencePieceText::set_text(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   _has_bits_[0] |= 0x00000001u;
-  text_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-            ::std::string(value), GetArena());
+  text_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
   // @@protoc_insertion_point(field_set_char:sentencepiece.SentencePieceText.text)
 }
-inline void SentencePieceText::set_text(const char* value, size_t size) {
+inline void SentencePieceText::set_text(const char* value,
+    size_t size) {
   _has_bits_[0] |= 0x00000001u;
-  text_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-            ::std::string(reinterpret_cast<const char*>(value), size),
-            GetArena());
+  text_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
   // @@protoc_insertion_point(field_set_pointer:sentencepiece.SentencePieceText.text)
 }
 inline std::string* SentencePieceText::_internal_mutable_text() {
   _has_bits_[0] |= 0x00000001u;
-  return text_.Mutable(
-      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{},
-      GetArena());
+  return text_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
 inline std::string* SentencePieceText::release_text() {
   // @@protoc_insertion_point(field_release:sentencepiece.SentencePieceText.text)
@@ -1041,9 +900,7 @@ inline std::string* SentencePieceText::release_text() {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000001u;
-  return text_.ReleaseNonDefault(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
+  return text_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 inline void SentencePieceText::set_allocated_text(std::string* text) {
   if (text != nullptr) {
@@ -1051,8 +908,7 @@ inline void SentencePieceText::set_allocated_text(std::string* text) {
   } else {
     _has_bits_[0] &= ~0x00000001u;
   }
-  text_.SetAllocated(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), text,
+  text_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), text,
       GetArena());
   // @@protoc_insertion_point(field_set_allocated:sentencepiece.SentencePieceText.text)
 }
@@ -1067,37 +923,30 @@ inline int SentencePieceText::pieces_size() const {
 inline void SentencePieceText::clear_pieces() {
   pieces_.Clear();
 }
-inline ::sentencepiece::SentencePieceText_SentencePiece*
-SentencePieceText::mutable_pieces(int index) {
+inline ::sentencepiece::SentencePieceText_SentencePiece* SentencePieceText::mutable_pieces(int index) {
   // @@protoc_insertion_point(field_mutable:sentencepiece.SentencePieceText.pieces)
   return pieces_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-    ::sentencepiece::SentencePieceText_SentencePiece>*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText_SentencePiece >*
 SentencePieceText::mutable_pieces() {
   // @@protoc_insertion_point(field_mutable_list:sentencepiece.SentencePieceText.pieces)
   return &pieces_;
 }
-inline const ::sentencepiece::SentencePieceText_SentencePiece&
-SentencePieceText::_internal_pieces(int index) const {
+inline const ::sentencepiece::SentencePieceText_SentencePiece& SentencePieceText::_internal_pieces(int index) const {
   return pieces_.Get(index);
 }
-inline const ::sentencepiece::SentencePieceText_SentencePiece&
-SentencePieceText::pieces(int index) const {
+inline const ::sentencepiece::SentencePieceText_SentencePiece& SentencePieceText::pieces(int index) const {
   // @@protoc_insertion_point(field_get:sentencepiece.SentencePieceText.pieces)
   return _internal_pieces(index);
 }
-inline ::sentencepiece::SentencePieceText_SentencePiece*
-SentencePieceText::_internal_add_pieces() {
+inline ::sentencepiece::SentencePieceText_SentencePiece* SentencePieceText::_internal_add_pieces() {
   return pieces_.Add();
 }
-inline ::sentencepiece::SentencePieceText_SentencePiece*
-SentencePieceText::add_pieces() {
+inline ::sentencepiece::SentencePieceText_SentencePiece* SentencePieceText::add_pieces() {
   // @@protoc_insertion_point(field_add:sentencepiece.SentencePieceText.pieces)
   return _internal_add_pieces();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-    ::sentencepiece::SentencePieceText_SentencePiece>&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText_SentencePiece >&
 SentencePieceText::pieces() const {
   // @@protoc_insertion_point(field_list:sentencepiece.SentencePieceText.pieces)
   return pieces_;
@@ -1145,48 +994,42 @@ inline int NBestSentencePieceText::nbests_size() const {
 inline void NBestSentencePieceText::clear_nbests() {
   nbests_.Clear();
 }
-inline ::sentencepiece::SentencePieceText*
-NBestSentencePieceText::mutable_nbests(int index) {
+inline ::sentencepiece::SentencePieceText* NBestSentencePieceText::mutable_nbests(int index) {
   // @@protoc_insertion_point(field_mutable:sentencepiece.NBestSentencePieceText.nbests)
   return nbests_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-    ::sentencepiece::SentencePieceText>*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText >*
 NBestSentencePieceText::mutable_nbests() {
   // @@protoc_insertion_point(field_mutable_list:sentencepiece.NBestSentencePieceText.nbests)
   return &nbests_;
 }
-inline const ::sentencepiece::SentencePieceText&
-NBestSentencePieceText::_internal_nbests(int index) const {
+inline const ::sentencepiece::SentencePieceText& NBestSentencePieceText::_internal_nbests(int index) const {
   return nbests_.Get(index);
 }
-inline const ::sentencepiece::SentencePieceText& NBestSentencePieceText::nbests(
-    int index) const {
+inline const ::sentencepiece::SentencePieceText& NBestSentencePieceText::nbests(int index) const {
   // @@protoc_insertion_point(field_get:sentencepiece.NBestSentencePieceText.nbests)
   return _internal_nbests(index);
 }
-inline ::sentencepiece::SentencePieceText*
-NBestSentencePieceText::_internal_add_nbests() {
+inline ::sentencepiece::SentencePieceText* NBestSentencePieceText::_internal_add_nbests() {
   return nbests_.Add();
 }
-inline ::sentencepiece::SentencePieceText*
-NBestSentencePieceText::add_nbests() {
+inline ::sentencepiece::SentencePieceText* NBestSentencePieceText::add_nbests() {
   // @@protoc_insertion_point(field_add:sentencepiece.NBestSentencePieceText.nbests)
   return _internal_add_nbests();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<
-    ::sentencepiece::SentencePieceText>&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::sentencepiece::SentencePieceText >&
 NBestSentencePieceText::nbests() const {
   // @@protoc_insertion_point(field_list:sentencepiece.NBestSentencePieceText.nbests)
   return nbests_;
 }
 
 #ifdef __GNUC__
-#pragma GCC diagnostic pop
+  #pragma GCC diagnostic pop
 #endif  // __GNUC__
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 

@@ -1,65 +1,62 @@
-From 187a01a68fa8adbb99552c227bb531c68276287b Mon Sep 17 00:00:00 2001
-From: Clark DuVall <cduvall@chromium.org>
-Date: Wed, 16 Aug 2023 16:02:45 -0700
-Subject: [PATCH 2/4] Fix absl includes
+From 4152e07da70157533f137f80dace5e55d52d4711 Mon Sep 17 00:00:00 2001
+From: Mike Wittman <wittman@chromium.org>
+Date: Thu, 30 Apr 2026 16:23:01 -0700
+Subject: [PATCH 2/5] Fix absl includes
 
 ---
- third_party/sentencepiece/src/src/bpe_model.cc |  2 +-
- .../sentencepiece/src/src/bpe_model_trainer.cc |  6 +++---
- .../sentencepiece/src/src/bpe_model_trainer.h  |  2 +-
- .../src/src/bpe_model_trainer_test.cc          |  4 ++--
- third_party/sentencepiece/src/src/builder.cc   |  8 ++++----
- third_party/sentencepiece/src/src/builder.h    |  2 +-
- .../sentencepiece/src/src/builder_test.cc      |  2 +-
- .../src/src/char_model_trainer_test.cc         |  4 ++--
- third_party/sentencepiece/src/src/common.h     |  2 +-
- .../src/src/compile_charsmap_main.cc           |  4 ++--
- third_party/sentencepiece/src/src/error.cc     |  4 ++--
- .../sentencepiece/src/src/filesystem.cc        |  2 +-
- third_party/sentencepiece/src/src/filesystem.h |  2 +-
- .../sentencepiece/src/src/filesystem_test.cc   |  2 +-
- third_party/sentencepiece/src/src/init.h       |  4 ++--
- .../sentencepiece/src/src/model_factory.cc     |  2 +-
- .../sentencepiece/src/src/model_interface.cc   |  4 ++--
- .../sentencepiece/src/src/model_interface.h    |  4 ++--
- .../src/src/model_interface_test.cc            |  2 +-
- .../sentencepiece/src/src/normalizer.cc        |  8 ++++----
- third_party/sentencepiece/src/src/normalizer.h |  2 +-
- .../src/src/pretokenizer_for_training.cc       |  2 +-
- .../src/src/pretokenizer_for_training.h        |  2 +-
- .../src/src/pretokenizer_for_training_test.cc  |  6 +++---
- .../src/src/sentencepiece_processor.cc         | 16 ++++++++--------
- .../src/src/sentencepiece_processor_test.cc    |  8 ++++----
- .../src/src/sentencepiece_trainer.cc           | 12 ++++++------
- .../src/src/sentencepiece_trainer_test.cc      |  2 +-
- .../sentencepiece/src/src/spec_parser.h        |  4 ++--
- .../sentencepiece/src/src/spm_decode_main.cc   |  4 ++--
- .../sentencepiece/src/src/spm_encode_main.cc   |  8 ++++----
- .../src/src/spm_export_vocab_main.cc           |  2 +-
- .../src/src/spm_normalize_main.cc              |  2 +-
- .../sentencepiece/src/src/spm_train_main.cc    |  8 ++++----
- .../sentencepiece/src/src/testharness.cc       |  2 +-
- .../sentencepiece/src/src/testharness.h        |  6 +++---
- .../sentencepiece/src/src/trainer_factory.cc   |  2 +-
- .../sentencepiece/src/src/trainer_interface.cc | 18 +++++++++---------
- .../sentencepiece/src/src/trainer_interface.h  |  2 +-
- .../src/src/trainer_interface_test.cc          |  4 ++--
- .../sentencepiece/src/src/unicode_script.cc    |  2 +-
- .../sentencepiece/src/src/unicode_script_map.h |  2 +-
- .../src/src/unicode_script_test.cc             |  2 +-
- .../sentencepiece/src/src/unigram_model.cc     |  8 ++++----
- .../src/src/unigram_model_test.cc              |  4 ++--
- .../src/src/unigram_model_trainer.cc           |  8 ++++----
- .../src/src/unigram_model_trainer.h            |  2 +-
- .../src/src/unigram_model_trainer_test.cc      |  4 ++--
- third_party/sentencepiece/src/src/util.h       |  2 +-
- third_party/sentencepiece/src/src/util_test.cc |  2 +-
- .../src/src/word_model_trainer.cc              |  4 ++--
- .../src/src/word_model_trainer_test.cc         |  4 ++--
- 52 files changed, 113 insertions(+), 113 deletions(-)
+ third_party/sentencepiece/src/src/bpe_model.cc     |  2 +-
+ .../sentencepiece/src/src/bpe_model_trainer.cc     |  8 ++++----
+ .../sentencepiece/src/src/bpe_model_trainer.h      |  4 ++--
+ .../src/src/bpe_model_trainer_test.cc              |  4 ++--
+ third_party/sentencepiece/src/src/builder.cc       | 10 +++++-----
+ third_party/sentencepiece/src/src/builder.h        |  2 +-
+ third_party/sentencepiece/src/src/builder_test.cc  |  2 +-
+ .../src/src/char_model_trainer_test.cc             |  4 ++--
+ third_party/sentencepiece/src/src/common.h         |  8 ++++----
+ .../sentencepiece/src/src/compile_charsmap_main.cc |  6 +++---
+ third_party/sentencepiece/src/src/filesystem.h     |  2 +-
+ .../sentencepiece/src/src/filesystem_test.cc       |  2 +-
+ third_party/sentencepiece/src/src/init.cc          | 10 +++++-----
+ .../sentencepiece/src/src/model_interface.cc       |  2 +-
+ .../sentencepiece/src/src/model_interface.h        |  4 ++--
+ .../sentencepiece/src/src/model_interface_test.cc  |  2 +-
+ third_party/sentencepiece/src/src/normalizer.cc    |  6 +++---
+ third_party/sentencepiece/src/src/normalizer.h     |  2 +-
+ .../src/src/pretokenizer_for_training.cc           |  2 +-
+ .../src/src/pretokenizer_for_training.h            |  2 +-
+ .../src/src/pretokenizer_for_training_test.cc      |  6 +++---
+ .../src/src/sentencepiece_processor.cc             | 14 +++++++-------
+ .../src/src/sentencepiece_processor.h              |  2 +-
+ .../src/src/sentencepiece_processor_test.cc        |  6 +++---
+ .../sentencepiece/src/src/sentencepiece_trainer.cc | 12 ++++++------
+ .../src/src/sentencepiece_trainer_test.cc          |  2 +-
+ third_party/sentencepiece/src/src/spec_parser.h    |  4 ++--
+ .../sentencepiece/src/src/spm_decode_main.cc       |  4 ++--
+ .../sentencepiece/src/src/spm_encode_main.cc       |  8 ++++----
+ .../sentencepiece/src/src/spm_export_vocab_main.cc |  2 +-
+ .../sentencepiece/src/src/spm_normalize_main.cc    |  2 +-
+ .../sentencepiece/src/src/spm_train_main.cc        |  8 ++++----
+ third_party/sentencepiece/src/src/testharness.cc   |  2 +-
+ third_party/sentencepiece/src/src/testharness.h    |  6 +++---
+ .../sentencepiece/src/src/trainer_interface.cc     | 12 ++++++------
+ .../sentencepiece/src/src/trainer_interface.h      |  2 +-
+ .../src/src/trainer_interface_test.cc              |  4 ++--
+ .../sentencepiece/src/src/unicode_script.cc        |  2 +-
+ .../sentencepiece/src/src/unicode_script_map.h     |  2 +-
+ .../sentencepiece/src/src/unicode_script_test.cc   |  2 +-
+ third_party/sentencepiece/src/src/unigram_model.cc |  6 +++---
+ .../sentencepiece/src/src/unigram_model_test.cc    |  4 ++--
+ .../sentencepiece/src/src/unigram_model_trainer.cc |  8 ++++----
+ .../sentencepiece/src/src/unigram_model_trainer.h  |  2 +-
+ .../src/src/unigram_model_trainer_test.cc          |  4 ++--
+ third_party/sentencepiece/src/src/util.h           |  2 +-
+ third_party/sentencepiece/src/src/util_test.cc     |  2 +-
+ .../sentencepiece/src/src/word_model_trainer.cc    |  4 ++--
+ .../src/src/word_model_trainer_test.cc             |  4 ++--
+ 49 files changed, 111 insertions(+), 111 deletions(-)
 
 diff --git a/third_party/sentencepiece/src/src/bpe_model.cc b/third_party/sentencepiece/src/src/bpe_model.cc
-index bc7ada13a7848..bc9124dd7c44c 100644
+index 889fc624b8367..f78e5b77a2d6d 100644
 --- a/third_party/sentencepiece/src/src/bpe_model.cc
 +++ b/third_party/sentencepiece/src/src/bpe_model.cc
 @@ -22,7 +22,7 @@
@@ -72,37 +69,41 @@ index bc7ada13a7848..bc9124dd7c44c 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer.cc b/third_party/sentencepiece/src/src/bpe_model_trainer.cc
-index de86f14a2db0d..60d03745e8a39 100644
+index 9a3616584037a..e43a701f4e143 100644
 --- a/third_party/sentencepiece/src/src/bpe_model_trainer.cc
 +++ b/third_party/sentencepiece/src/src/bpe_model_trainer.cc
-@@ -20,9 +20,9 @@
+@@ -20,10 +20,10 @@
  #include <vector>
  
  #include "pretokenizer_for_training.h"
 -#include "third_party/absl/container/flat_hash_set.h"
+-#include "third_party/absl/flags/flag.h"
 -#include "third_party/absl/strings/str_join.h"
 -#include "third_party/absl/strings/str_replace.h"
 +#include "absl/container/flat_hash_set.h"
++#include "absl/flags/flag.h"
 +#include "absl/strings/str_join.h"
 +#include "absl/strings/str_replace.h"
  #include "util.h"
  
- namespace sentencepiece {
+ #ifdef SPM_NLCODEC_BPE
 diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer.h b/third_party/sentencepiece/src/src/bpe_model_trainer.h
-index 2879d29e2d4b3..4a37ac291b627 100644
+index 8cf0834e1a7ad..aec8c952c827a 100644
 --- a/third_party/sentencepiece/src/src/bpe_model_trainer.h
 +++ b/third_party/sentencepiece/src/src/bpe_model_trainer.h
-@@ -22,7 +22,7 @@
+@@ -21,8 +21,8 @@
  #include <vector>
  
  #include "sentencepiece_model.pb.h"
+-#include "third_party/absl/container/btree_set.h"
 -#include "third_party/absl/container/flat_hash_map.h"
++#include "absl/container/btree_set.h"
 +#include "absl/container/flat_hash_map.h"
  #include "trainer_interface.h"
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer_test.cc b/third_party/sentencepiece/src/src/bpe_model_trainer_test.cc
-index 173eb9cf53137..2a43c3acca6bb 100644
+index c65f07faa8947..9090614b08930 100644
 --- a/third_party/sentencepiece/src/src/bpe_model_trainer_test.cc
 +++ b/third_party/sentencepiece/src/src/bpe_model_trainer_test.cc
 @@ -20,8 +20,8 @@
@@ -117,17 +118,19 @@ index 173eb9cf53137..2a43c3acca6bb 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/builder.cc b/third_party/sentencepiece/src/src/builder.cc
-index 822f6fcbf1940..45c5ebaa31059 100644
+index 55f69b362cbdb..3c2b29af1452e 100644
 --- a/third_party/sentencepiece/src/src/builder.cc
 +++ b/third_party/sentencepiece/src/src/builder.cc
-@@ -19,10 +19,10 @@
+@@ -19,11 +19,11 @@
  #include <utility>
  
  #include "filesystem.h"
+-#include "third_party/absl/strings/str_cat.h"
 -#include "third_party/absl/strings/str_join.h"
 -#include "third_party/absl/strings/str_replace.h"
 -#include "third_party/absl/strings/str_split.h"
 -#include "third_party/absl/strings/strip.h"
++#include "absl/strings/str_cat.h"
 +#include "absl/strings/str_join.h"
 +#include "absl/strings/str_replace.h"
 +#include "absl/strings/str_split.h"
@@ -136,7 +139,7 @@ index 822f6fcbf1940..45c5ebaa31059 100644
  #ifdef ENABLE_NFKC_COMPILE
  #include <unicode/errorcode.h>
 diff --git a/third_party/sentencepiece/src/src/builder.h b/third_party/sentencepiece/src/src/builder.h
-index 094da7266fd72..ea5171e564f8c 100644
+index 2e844b2324889..d14a64e059b75 100644
 --- a/third_party/sentencepiece/src/src/builder.h
 +++ b/third_party/sentencepiece/src/src/builder.h
 @@ -22,7 +22,7 @@
@@ -149,10 +152,10 @@ index 094da7266fd72..ea5171e564f8c 100644
  namespace sentencepiece {
  namespace normalizer {
 diff --git a/third_party/sentencepiece/src/src/builder_test.cc b/third_party/sentencepiece/src/src/builder_test.cc
-index 4acb7b3bddf62..1dee5c7df77d7 100644
+index 400bcfce6a74d..f33a915588560 100644
 --- a/third_party/sentencepiece/src/src/builder_test.cc
 +++ b/third_party/sentencepiece/src/src/builder_test.cc
-@@ -18,7 +18,7 @@
+@@ -19,7 +19,7 @@
  #include "normalizer.h"
  #include "sentencepiece_trainer.h"
  #include "testharness.h"
@@ -162,7 +165,7 @@ index 4acb7b3bddf62..1dee5c7df77d7 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/char_model_trainer_test.cc b/third_party/sentencepiece/src/src/char_model_trainer_test.cc
-index 8c2e4b7a2f385..e8b4979673bfd 100644
+index 337aeca37d369..3049ac201de8c 100644
 --- a/third_party/sentencepiece/src/src/char_model_trainer_test.cc
 +++ b/third_party/sentencepiece/src/src/char_model_trainer_test.cc
 @@ -19,8 +19,8 @@
@@ -177,61 +180,41 @@ index 8c2e4b7a2f385..e8b4979673bfd 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/common.h b/third_party/sentencepiece/src/src/common.h
-index 9bfb3884b068f..7347ff44362c6 100644
+index aca50b13b0b5e..5fa3815aa7b4c 100644
 --- a/third_party/sentencepiece/src/src/common.h
 +++ b/third_party/sentencepiece/src/src/common.h
-@@ -25,7 +25,7 @@
- #include <utility>
- #include <vector>
+@@ -18,10 +18,10 @@
+ #include <cstdint>
+ #include <iostream>
  
+-#include "third_party/absl/log/check.h"
+-#include "third_party/absl/log/globals.h"
+-#include "third_party/absl/log/log.h"
 -#include "third_party/absl/strings/string_view.h"
++#include "absl/log/check.h"
++#include "absl/log/globals.h"
++#include "absl/log/log.h"
 +#include "absl/strings/string_view.h"
  
  #if defined(_WIN32) && !defined(__CYGWIN__)
  #define OS_WIN
 diff --git a/third_party/sentencepiece/src/src/compile_charsmap_main.cc b/third_party/sentencepiece/src/src/compile_charsmap_main.cc
-index da15328ddbf17..b806319c45bcb 100644
+index dac341af54209..371180675252b 100644
 --- a/third_party/sentencepiece/src/src/compile_charsmap_main.cc
 +++ b/third_party/sentencepiece/src/src/compile_charsmap_main.cc
-@@ -22,8 +22,8 @@
+@@ -22,9 +22,9 @@
  #include "filesystem.h"
  #include "init.h"
  #include "sentencepiece_processor.h"
 -#include "third_party/absl/flags/flag.h"
+-#include "third_party/absl/strings/str_cat.h"
 -#include "third_party/absl/strings/string_view.h"
 +#include "absl/flags/flag.h"
++#include "absl/strings/str_cat.h"
 +#include "absl/strings/string_view.h"
  
  using sentencepiece::normalizer::Builder;
  
-diff --git a/third_party/sentencepiece/src/src/error.cc b/third_party/sentencepiece/src/src/error.cc
-index d3792dc3d6a37..19ef6f35b822e 100644
---- a/third_party/sentencepiece/src/src/error.cc
-+++ b/third_party/sentencepiece/src/src/error.cc
-@@ -21,8 +21,8 @@
- #ifdef _USE_EXTERNAL_ABSL
- // Naive workaround to define minloglevel on external absl package.
- // We want to define them in other cc file.
--#include "third_party/absl/flags/flag.h"
--#include "third_party/absl/flags/parse.h"
-+#include "absl/flags/flag.h"
-+#include "absl/flags/parse.h"
- ABSL_FLAG(int32, minloglevel, 0,
-           "Messages logged at a lower level than this don't actually.");
- #endif
-diff --git a/third_party/sentencepiece/src/src/filesystem.cc b/third_party/sentencepiece/src/src/filesystem.cc
-index 833c8f78c4a24..6a169d90b87ac 100644
---- a/third_party/sentencepiece/src/src/filesystem.cc
-+++ b/third_party/sentencepiece/src/src/filesystem.cc
-@@ -15,7 +15,7 @@
- #include <iostream>
- 
- #include "filesystem.h"
--#include "third_party/absl/memory/memory.h"
-+#include "absl/memory/memory.h"
- #include "util.h"
- 
- #if defined(OS_WIN) && defined(UNICODE) && defined(_UNICODE)
 diff --git a/third_party/sentencepiece/src/src/filesystem.h b/third_party/sentencepiece/src/src/filesystem.h
 index e572b4b694d3a..dbcce4810f037 100644
 --- a/third_party/sentencepiece/src/src/filesystem.h
@@ -246,7 +229,7 @@ index e572b4b694d3a..dbcce4810f037 100644
  namespace sentencepiece {
  namespace filesystem {
 diff --git a/third_party/sentencepiece/src/src/filesystem_test.cc b/third_party/sentencepiece/src/src/filesystem_test.cc
-index 790e756aacd18..39ece9952f362 100644
+index 3f716057d78da..13d23d87d573a 100644
 --- a/third_party/sentencepiece/src/src/filesystem_test.cc
 +++ b/third_party/sentencepiece/src/src/filesystem_test.cc
 @@ -14,7 +14,7 @@
@@ -258,51 +241,42 @@ index 790e756aacd18..39ece9952f362 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/init.h b/third_party/sentencepiece/src/src/init.h
-index 6ae047e8a4cd6..14edb8c75f431 100644
---- a/third_party/sentencepiece/src/src/init.h
-+++ b/third_party/sentencepiece/src/src/init.h
-@@ -16,8 +16,8 @@
- #define INIT_H_
+diff --git a/third_party/sentencepiece/src/src/init.cc b/third_party/sentencepiece/src/src/init.cc
+index 804f1a1c947ab..adbd5b47d3fe4 100644
+--- a/third_party/sentencepiece/src/src/init.cc
++++ b/third_party/sentencepiece/src/src/init.cc
+@@ -16,11 +16,11 @@
  
  #include "common.h"
+ #include "config.h"
 -#include "third_party/absl/flags/flag.h"
 -#include "third_party/absl/flags/parse.h"
+-#include "third_party/absl/flags/usage.h"
+-#include "third_party/absl/flags/usage_config.h"
+-#include "third_party/absl/strings/str_cat.h"
 +#include "absl/flags/flag.h"
 +#include "absl/flags/parse.h"
++#include "absl/flags/usage.h"
++#include "absl/flags/usage_config.h"
++#include "absl/strings/str_cat.h"
+ #include "util.h"
  
  #ifdef _USE_EXTERNAL_PROTOBUF
- #include "google/protobuf/message_lite.h"
-diff --git a/third_party/sentencepiece/src/src/model_factory.cc b/third_party/sentencepiece/src/src/model_factory.cc
-index be995010a5d9b..040c00c7ea6fe 100644
---- a/third_party/sentencepiece/src/src/model_factory.cc
-+++ b/third_party/sentencepiece/src/src/model_factory.cc
-@@ -15,7 +15,7 @@
- #include "bpe_model.h"
- #include "char_model.h"
- #include "model_factory.h"
--#include "third_party/absl/memory/memory.h"
-+#include "absl/memory/memory.h"
- #include "unigram_model.h"
- #include "word_model.h"
- 
 diff --git a/third_party/sentencepiece/src/src/model_interface.cc b/third_party/sentencepiece/src/src/model_interface.cc
-index c49be1ebf9ab9..22c6378e700a7 100644
+index bb52f9affc515..7c52398ca7fa2 100644
 --- a/third_party/sentencepiece/src/src/model_interface.cc
 +++ b/third_party/sentencepiece/src/src/model_interface.cc
-@@ -16,8 +16,8 @@
+@@ -17,7 +17,7 @@
+ #include <algorithm>
  
- #include "model_interface.h"
  #include "sentencepiece_model.pb.h"
--#include "third_party/absl/memory/memory.h"
 -#include "third_party/absl/strings/str_format.h"
-+#include "absl/memory/memory.h"
 +#include "absl/strings/str_format.h"
  #include "util.h"
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/model_interface.h b/third_party/sentencepiece/src/src/model_interface.h
-index 06e924302dd89..1365c64503845 100644
+index c48f4f602d806..811ab7b71c7c5 100644
 --- a/third_party/sentencepiece/src/src/model_interface.h
 +++ b/third_party/sentencepiece/src/src/model_interface.h
 @@ -25,8 +25,8 @@
@@ -330,18 +304,16 @@ index 09e41d34812d9..725bfa4d7798f 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/normalizer.cc b/third_party/sentencepiece/src/src/normalizer.cc
-index 53e43c4d2927f..a6152bfb0ad82 100644
+index 8259528a70632..b3299ebcf9258 100644
 --- a/third_party/sentencepiece/src/src/normalizer.cc
 +++ b/third_party/sentencepiece/src/src/normalizer.cc
-@@ -18,10 +18,10 @@
+@@ -19,9 +19,9 @@
  #include <vector>
  
  #include "common.h"
--#include "third_party/absl/memory/memory.h"
 -#include "third_party/absl/strings/match.h"
 -#include "third_party/absl/strings/string_view.h"
 -#include "third_party/absl/strings/strip.h"
-+#include "absl/memory/memory.h"
 +#include "absl/strings/match.h"
 +#include "absl/strings/string_view.h"
 +#include "absl/strings/strip.h"
@@ -349,7 +321,7 @@ index 53e43c4d2927f..a6152bfb0ad82 100644
  #include "util.h"
  
 diff --git a/third_party/sentencepiece/src/src/normalizer.h b/third_party/sentencepiece/src/src/normalizer.h
-index c79813c76ceea..5a60ef760147a 100644
+index a99ca80df3740..aac484247a1d4 100644
 --- a/third_party/sentencepiece/src/src/normalizer.h
 +++ b/third_party/sentencepiece/src/src/normalizer.h
 @@ -24,7 +24,7 @@
@@ -405,14 +377,13 @@ index 99db0c51025cc..25e8aef5983fd 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.cc b/third_party/sentencepiece/src/src/sentencepiece_processor.cc
-index f0df2f601a2d4..9b9157181281e 100644
+index 7b149ffe3ff0f..36b5a3ea5d9f5 100644
 --- a/third_party/sentencepiece/src/src/sentencepiece_processor.cc
 +++ b/third_party/sentencepiece/src/src/sentencepiece_processor.cc
-@@ -24,14 +24,14 @@
+@@ -30,13 +30,13 @@
  #include "model_interface.h"
  #include "normalizer.h"
  #include "sentencepiece.pb.h"
--#include "third_party/absl/memory/memory.h"
 -#include "third_party/absl/strings/numbers.h"
 -#include "third_party/absl/strings/str_cat.h"
 -#include "third_party/absl/strings/str_join.h"
@@ -420,7 +391,6 @@ index f0df2f601a2d4..9b9157181281e 100644
 -#include "third_party/absl/strings/str_split.h"
 -#include "third_party/absl/strings/string_view.h"
 -#include "third_party/absl/strings/strip.h"
-+#include "absl/memory/memory.h"
 +#include "absl/strings/numbers.h"
 +#include "absl/strings/str_cat.h"
 +#include "absl/strings/str_join.h"
@@ -431,32 +401,43 @@ index f0df2f601a2d4..9b9157181281e 100644
  #include "unigram_model.h"
  #include "util.h"
  
+diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.h b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+index a259828356fad..0edee1b2428be 100644
+--- a/third_party/sentencepiece/src/src/sentencepiece_processor.h
++++ b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+@@ -24,7 +24,7 @@
+ #include <vector>
+ 
+ #ifdef _USE_EXTERNAL_ABSL
+-#include "third_party/absl/strings/string_view.h"
++#include "absl/strings/string_view.h"
+ #else  // _USE_EXTERNAL_ABSL
+ #ifndef SWIG
+ namespace absl {
 diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc b/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
-index f05dc5d183237..4f2f33befc074 100644
+index bb7540130922f..e6e9a2ff245ec 100644
 --- a/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
 +++ b/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
-@@ -24,10 +24,10 @@
+@@ -24,9 +24,9 @@
  #include "sentencepiece_model.pb.h"
  #include "sentencepiece_trainer.h"
  #include "testharness.h"
 -#include "third_party/absl/container/flat_hash_map.h"
--#include "third_party/absl/memory/memory.h"
 -#include "third_party/absl/strings/str_cat.h"
 -#include "third_party/absl/strings/string_view.h"
 +#include "absl/container/flat_hash_map.h"
-+#include "absl/memory/memory.h"
 +#include "absl/strings/str_cat.h"
 +#include "absl/strings/string_view.h"
  #include "util.h"
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/sentencepiece_trainer.cc b/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
-index b9fe64f2bb859..47ef33c0f5384 100644
+index 959ff0e0b9d5a..c520dac744a70 100644
 --- a/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
 +++ b/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
-@@ -22,12 +22,12 @@
+@@ -23,12 +23,12 @@
+ #include "sentencepiece.pb.h"
  #include "sentencepiece_model.pb.h"
- #include "sentencepiece_trainer.h"
  #include "spec_parser.h"
 -#include "third_party/absl/flags/flag.h"
 -#include "third_party/absl/strings/numbers.h"
@@ -474,12 +455,12 @@ index b9fe64f2bb859..47ef33c0f5384 100644
  #include "util.h"
  
 diff --git a/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc b/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
-index e44e66ba5ce54..fc73b1d422d3b 100644
+index 2480911ca012b..09f493df91196 100644
 --- a/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
 +++ b/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
-@@ -16,7 +16,7 @@
+@@ -17,7 +17,7 @@
+ #include "filesystem.h"
  #include "sentencepiece_model.pb.h"
- #include "sentencepiece_trainer.h"
  #include "testharness.h"
 -#include "third_party/absl/strings/str_cat.h"
 +#include "absl/strings/str_cat.h"
@@ -487,7 +468,7 @@ index e44e66ba5ce54..fc73b1d422d3b 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/spec_parser.h b/third_party/sentencepiece/src/src/spec_parser.h
-index c5f05829beb70..c7684ed9fc752 100644
+index 06679762be002..ad0c672cd7bd9 100644
 --- a/third_party/sentencepiece/src/src/spec_parser.h
 +++ b/third_party/sentencepiece/src/src/spec_parser.h
 @@ -19,8 +19,8 @@
@@ -502,7 +483,7 @@ index c5f05829beb70..c7684ed9fc752 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/spm_decode_main.cc b/third_party/sentencepiece/src/src/spm_decode_main.cc
-index bc49bd3829da3..ed80939f02e67 100644
+index 43f8609bd23ec..37874db4c9175 100644
 --- a/third_party/sentencepiece/src/src/spm_decode_main.cc
 +++ b/third_party/sentencepiece/src/src/spm_decode_main.cc
 @@ -21,8 +21,8 @@
@@ -517,10 +498,10 @@ index bc49bd3829da3..ed80939f02e67 100644
  
  ABSL_FLAG(std::string, model, "", "model file name");
 diff --git a/third_party/sentencepiece/src/src/spm_encode_main.cc b/third_party/sentencepiece/src/src/spm_encode_main.cc
-index 2fbb850fa145d..7f93be0d27285 100644
+index 0bd6fca3610d0..e2a2dcc085b73 100644
 --- a/third_party/sentencepiece/src/src/spm_encode_main.cc
 +++ b/third_party/sentencepiece/src/src/spm_encode_main.cc
-@@ -21,10 +21,10 @@
+@@ -22,10 +22,10 @@
  #include "init.h"
  #include "sentencepiece.pb.h"
  #include "sentencepiece_processor.h"
@@ -549,7 +530,7 @@ index e5b97dfe4e631..480c6397db39b 100644
  ABSL_FLAG(std::string, output, "", "Output filename");
  ABSL_FLAG(std::string, model, "", "input model file name");
 diff --git a/third_party/sentencepiece/src/src/spm_normalize_main.cc b/third_party/sentencepiece/src/src/spm_normalize_main.cc
-index 39f3ef904d72c..b2b7562003a86 100644
+index 910e1fddacc7b..a2d8a3a68566d 100644
 --- a/third_party/sentencepiece/src/src/spm_normalize_main.cc
 +++ b/third_party/sentencepiece/src/src/spm_normalize_main.cc
 @@ -21,7 +21,7 @@
@@ -562,7 +543,7 @@ index 39f3ef904d72c..b2b7562003a86 100644
  ABSL_FLAG(std::string, model, "", "Model file name");
  ABSL_FLAG(bool, use_internal_normalization, false,
 diff --git a/third_party/sentencepiece/src/src/spm_train_main.cc b/third_party/sentencepiece/src/src/spm_train_main.cc
-index 34369cdfc730b..d8ffeb6dfb335 100644
+index 8512b5303ea86..a7ecf669b28f2 100644
 --- a/third_party/sentencepiece/src/src/spm_train_main.cc
 +++ b/third_party/sentencepiece/src/src/spm_train_main.cc
 @@ -18,10 +18,10 @@
@@ -581,7 +562,7 @@ index 34369cdfc730b..d8ffeb6dfb335 100644
  
  using sentencepiece::NormalizerSpec;
 diff --git a/third_party/sentencepiece/src/src/testharness.cc b/third_party/sentencepiece/src/src/testharness.cc
-index f6b1efee5c8c6..daf2d141b8e5d 100644
+index c8cd4c2c2475c..0ad01dc0e1104 100644
 --- a/third_party/sentencepiece/src/src/testharness.cc
 +++ b/third_party/sentencepiece/src/src/testharness.cc
 @@ -26,7 +26,7 @@
@@ -594,7 +575,7 @@ index f6b1efee5c8c6..daf2d141b8e5d 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/testharness.h b/third_party/sentencepiece/src/src/testharness.h
-index 9879b06ec575e..98317add65bb7 100644
+index e3cae271edb8e..7f2d6ce7e97ac 100644
 --- a/third_party/sentencepiece/src/src/testharness.h
 +++ b/third_party/sentencepiece/src/src/testharness.h
 @@ -21,9 +21,9 @@
@@ -610,40 +591,21 @@ index 9879b06ec575e..98317add65bb7 100644
  
  ABSL_DECLARE_FLAG(std::string, test_tmpdir);
  ABSL_DECLARE_FLAG(std::string, test_srcdir);
-diff --git a/third_party/sentencepiece/src/src/trainer_factory.cc b/third_party/sentencepiece/src/src/trainer_factory.cc
-index d1d25412a1b2f..ff594d0590e99 100644
---- a/third_party/sentencepiece/src/src/trainer_factory.cc
-+++ b/third_party/sentencepiece/src/src/trainer_factory.cc
-@@ -14,7 +14,7 @@
- 
- #include "bpe_model_trainer.h"
- #include "char_model_trainer.h"
--#include "third_party/absl/memory/memory.h"
-+#include "absl/memory/memory.h"
- #include "trainer_factory.h"
- #include "unigram_model_trainer.h"
- #include "word_model_trainer.h"
 diff --git a/third_party/sentencepiece/src/src/trainer_interface.cc b/third_party/sentencepiece/src/src/trainer_interface.cc
-index 968f7b9ce8f39..47b9c2be5f409 100644
+index 9e064713b11ed..e68853854d051 100644
 --- a/third_party/sentencepiece/src/src/trainer_interface.cc
 +++ b/third_party/sentencepiece/src/src/trainer_interface.cc
-@@ -28,15 +28,15 @@
+@@ -29,12 +29,12 @@
  #include "normalizer.h"
  #include "sentencepiece_processor.h"
  #include "sentencepiece_trainer.h"
 -#include "third_party/absl/container/flat_hash_map.h"
--#include "third_party/absl/memory/memory.h"
--#include "third_party/absl/random/distributions.h"
--#include "third_party/absl/random/random.h"
 -#include "third_party/absl/strings/numbers.h"
 -#include "third_party/absl/strings/str_cat.h"
 -#include "third_party/absl/strings/str_format.h"
 -#include "third_party/absl/strings/str_join.h"
 -#include "third_party/absl/strings/str_split.h"
 +#include "absl/container/flat_hash_map.h"
-+#include "absl/memory/memory.h"
-+#include "absl/random/distributions.h"
-+#include "absl/random/random.h"
 +#include "absl/strings/numbers.h"
 +#include "absl/strings/str_cat.h"
 +#include "absl/strings/str_format.h"
@@ -653,7 +615,7 @@ index 968f7b9ce8f39..47b9c2be5f409 100644
  #include "util.h"
  
 diff --git a/third_party/sentencepiece/src/src/trainer_interface.h b/third_party/sentencepiece/src/src/trainer_interface.h
-index 8d625a953985f..0c003b655b1bb 100644
+index 748d0883ee662..ab039fd93fe36 100644
 --- a/third_party/sentencepiece/src/src/trainer_interface.h
 +++ b/third_party/sentencepiece/src/src/trainer_interface.h
 @@ -27,7 +27,7 @@
@@ -666,7 +628,7 @@ index 8d625a953985f..0c003b655b1bb 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/trainer_interface_test.cc b/third_party/sentencepiece/src/src/trainer_interface_test.cc
-index feb970f2b5098..ce22bac19b21c 100644
+index 11be8e73e03ed..358f7b7af744b 100644
 --- a/third_party/sentencepiece/src/src/trainer_interface_test.cc
 +++ b/third_party/sentencepiece/src/src/trainer_interface_test.cc
 @@ -18,8 +18,8 @@
@@ -720,19 +682,17 @@ index ab33565a88eb6..e0b1c4d4d50df 100644
  #include "util.h"
  
 diff --git a/third_party/sentencepiece/src/src/unigram_model.cc b/third_party/sentencepiece/src/src/unigram_model.cc
-index d9f1ce9d521fc..bb559587f93e9 100644
+index 06d74e0be154c..35986ee6d3f81 100644
 --- a/third_party/sentencepiece/src/src/unigram_model.cc
 +++ b/third_party/sentencepiece/src/src/unigram_model.cc
-@@ -24,10 +24,10 @@
+@@ -24,9 +24,9 @@
  #include <utility>
  #include <vector>
  
 -#include "third_party/absl/container/flat_hash_map.h"
--#include "third_party/absl/memory/memory.h"
 -#include "third_party/absl/strings/str_split.h"
 -#include "third_party/absl/strings/string_view.h"
 +#include "absl/container/flat_hash_map.h"
-+#include "absl/memory/memory.h"
 +#include "absl/strings/str_split.h"
 +#include "absl/strings/string_view.h"
  #include "util.h"
@@ -754,26 +714,26 @@ index bf22da30b83ea..21cbec34a350f 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer.cc b/third_party/sentencepiece/src/src/unigram_model_trainer.cc
-index d58c408066aea..7fd081d77991c 100644
+index b5f9adc549677..f2d5ad8058e79 100644
 --- a/third_party/sentencepiece/src/src/unigram_model_trainer.cc
 +++ b/third_party/sentencepiece/src/src/unigram_model_trainer.cc
-@@ -27,10 +27,10 @@
+@@ -28,10 +28,10 @@
  #include "normalizer.h"
  #include "pretokenizer_for_training.h"
  #include "sentencepiece_trainer.h"
 -#include "third_party/absl/container/flat_hash_map.h"
--#include "third_party/absl/memory/memory.h"
+-#include "third_party/absl/strings/numbers.h"
 -#include "third_party/absl/strings/str_replace.h"
 -#include "third_party/absl/strings/str_split.h"
 +#include "absl/container/flat_hash_map.h"
-+#include "absl/memory/memory.h"
++#include "absl/strings/numbers.h"
 +#include "absl/strings/str_replace.h"
 +#include "absl/strings/str_split.h"
  #include "third_party/esaxx/esa.hxx"  // Suffix array library.
+ #include "trainer_interface.h"
  #include "unicode_script.h"
- #include "util.h"
 diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer.h b/third_party/sentencepiece/src/src/unigram_model_trainer.h
-index c6562e65e8190..2d24eebc73c3c 100644
+index 3f57e310a033e..58abff066f81d 100644
 --- a/third_party/sentencepiece/src/src/unigram_model_trainer.h
 +++ b/third_party/sentencepiece/src/src/unigram_model_trainer.h
 @@ -21,7 +21,7 @@
@@ -786,7 +746,7 @@ index c6562e65e8190..2d24eebc73c3c 100644
  #include "unigram_model.h"
  #include "util.h"
 diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc b/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
-index 31da90ba5b879..d7198da475955 100644
+index ab8bfaf171abc..831fa2d1aea2c 100644
 --- a/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
 +++ b/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
 @@ -22,8 +22,8 @@
@@ -801,33 +761,33 @@ index 31da90ba5b879..d7198da475955 100644
  
  namespace sentencepiece {
 diff --git a/third_party/sentencepiece/src/src/util.h b/third_party/sentencepiece/src/src/util.h
-index 5110291925180..fc09e12f2d529 100644
+index 1d3397e806a78..bcf56258ceb63 100644
 --- a/third_party/sentencepiece/src/src/util.h
 +++ b/third_party/sentencepiece/src/src/util.h
-@@ -30,7 +30,7 @@
- 
+@@ -31,7 +31,7 @@
  #include "common.h"
+ #include "config.h"
  #include "sentencepiece_processor.h"
 -#include "third_party/absl/strings/string_view.h"
 +#include "absl/strings/string_view.h"
  
- #ifdef SPM_NO_THREADLOCAL
- #include <pthread.h>
+ namespace sentencepiece {
+ template <typename T>
 diff --git a/third_party/sentencepiece/src/src/util_test.cc b/third_party/sentencepiece/src/src/util_test.cc
-index 71d006f81ec55..231fc96992e2f 100644
+index a1b2b607dbe17..efa3abf42d418 100644
 --- a/third_party/sentencepiece/src/src/util_test.cc
 +++ b/third_party/sentencepiece/src/src/util_test.cc
-@@ -16,7 +16,7 @@
+@@ -18,7 +18,7 @@
  
  #include "filesystem.h"
  #include "testharness.h"
 -#include "third_party/absl/strings/str_cat.h"
 +#include "absl/strings/str_cat.h"
- #include "util.h"
  
  namespace sentencepiece {
+ namespace {
 diff --git a/third_party/sentencepiece/src/src/word_model_trainer.cc b/third_party/sentencepiece/src/src/word_model_trainer.cc
-index 0b8b0622f009b..b057843d45261 100644
+index 77522a3fcb536..e4039f667b8c5 100644
 --- a/third_party/sentencepiece/src/src/word_model_trainer.cc
 +++ b/third_party/sentencepiece/src/src/word_model_trainer.cc
 @@ -15,8 +15,8 @@
@@ -842,7 +802,7 @@ index 0b8b0622f009b..b057843d45261 100644
  #include "word_model.h"
  #include "word_model_trainer.h"
 diff --git a/third_party/sentencepiece/src/src/word_model_trainer_test.cc b/third_party/sentencepiece/src/src/word_model_trainer_test.cc
-index c4a8bc6798a3e..366810f4e8469 100644
+index 16a45e34bb6ce..2af28fb1e4d04 100644
 --- a/third_party/sentencepiece/src/src/word_model_trainer_test.cc
 +++ b/third_party/sentencepiece/src/src/word_model_trainer_test.cc
 @@ -18,8 +18,8 @@
@@ -857,5 +817,5 @@ index c4a8bc6798a3e..366810f4e8469 100644
  #include "word_model_trainer.h"
  
 -- 
-2.42.0.rc1.204.g551eb34607-goog
+2.54.0.545.g6539524ca2-goog
 

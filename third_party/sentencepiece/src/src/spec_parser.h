@@ -18,9 +18,9 @@
 #include <string>
 #include <vector>
 
+#include "sentencepiece_processor.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_split.h"
-#include "sentencepiece_processor.h"
 #include "util.h"
 
 namespace sentencepiece {
@@ -33,7 +33,7 @@ namespace sentencepiece {
 
 #define PARSE_REPEATED_STRING(param_name)                       \
   if (name == #param_name) {                                    \
-    for (const std::string& val : util::StrSplitAsCSV(value)) { \
+    for (const std::string &val : util::StrSplitAsCSV(value)) { \
       message->add_##param_name(val);                           \
     }                                                           \
     return util::OkStatus();                                    \
@@ -47,7 +47,7 @@ namespace sentencepiece {
 
 #define PARSE_INT32(param_name)                                               \
   if (name == #param_name) {                                                  \
-    int32 v;                                                                  \
+    int32_t v;                                                                  \
     if (!string_util::lexical_cast(value, &v))                                \
       return util::StatusBuilder(util::StatusCode::kInvalidArgument, GTL_LOC) \
              << "cannot parse \"" << value << "\" as int.";                   \
@@ -57,7 +57,7 @@ namespace sentencepiece {
 
 #define PARSE_UINT64(param_name)                                              \
   if (name == #param_name) {                                                  \
-    uint64 v;                                                                 \
+    uint64_t v;                                                                 \
     if (!string_util::lexical_cast(value, &v))                                \
       return util::StatusBuilder(util::StatusCode::kInvalidArgument, GTL_LOC) \
              << "cannot parse \"" << value << "\" as int.";                   \
@@ -110,7 +110,7 @@ namespace sentencepiece {
   else                                                 \
     os << "  " << #param_name << ": " << it->second << "\n";
 
-inline std::string PrintProto(const TrainerSpec& message,
+inline std::string PrintProto(const TrainerSpec &message,
                               absl::string_view name) {
   std::ostringstream os;
 
@@ -153,6 +153,7 @@ inline std::string PrintProto(const TrainerSpec& message,
   PRINT_PARAM(byte_fallback);
   PRINT_PARAM(vocabulary_output_piece_score);
   PRINT_PARAM(train_extremely_large_corpus);
+  PRINT_PARAM(seed_sentencepieces_file);
   PRINT_PARAM(hard_vocab_limit);
   PRINT_PARAM(use_all_vocab);
   PRINT_PARAM(unk_id);
@@ -173,7 +174,7 @@ inline std::string PrintProto(const TrainerSpec& message,
   return os.str();
 }
 
-inline std::string PrintProto(const NormalizerSpec& message,
+inline std::string PrintProto(const NormalizerSpec &message,
                               absl::string_view name) {
   std::ostringstream os;
 
@@ -192,7 +193,7 @@ inline std::string PrintProto(const NormalizerSpec& message,
 
 util::Status SentencePieceTrainer::SetProtoField(absl::string_view name,
                                                  absl::string_view value,
-                                                 TrainerSpec* message) {
+                                                 TrainerSpec *message) {
   CHECK_OR_RETURN(message);
 
   PARSE_REPEATED_STRING(input);
@@ -233,6 +234,7 @@ util::Status SentencePieceTrainer::SetProtoField(absl::string_view name,
   PARSE_BOOL(hard_vocab_limit);
   PARSE_BOOL(vocabulary_output_piece_score);
   PARSE_BOOL(train_extremely_large_corpus);
+  PARSE_STRING(seed_sentencepieces_file);
   PARSE_BOOL(use_all_vocab);
   PARSE_INT32(unk_id);
   PARSE_INT32(bos_id);
@@ -253,7 +255,7 @@ util::Status SentencePieceTrainer::SetProtoField(absl::string_view name,
 
 util::Status SentencePieceTrainer::SetProtoField(absl::string_view name,
                                                  absl::string_view value,
-                                                 NormalizerSpec* message) {
+                                                 NormalizerSpec *message) {
   CHECK_OR_RETURN(message);
 
   PARSE_STRING(name);

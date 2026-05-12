@@ -12,10 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
-#include <cstring>
+#include "init.h"
 
 #include "common.h"
-#include "sentencepiece_processor.h"
+#include "util.h"
+
+#ifdef _USE_EXTERNAL_PROTOBUF
+#include "google/protobuf/message_lite.h"
+#else
+#include "third_party/protobuf-lite/google/protobuf/message_lite.h"
+#endif
 
 namespace sentencepiece {
+
+void ShutdownLibrary() { google::protobuf::ShutdownProtobufLibrary(); }
+
 }  // namespace sentencepiece

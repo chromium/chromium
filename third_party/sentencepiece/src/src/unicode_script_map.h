@@ -18,7 +18,7 @@
 namespace sentencepiece {
 namespace unicode_script {
 namespace {
-void InitTable(absl::flat_hash_map<char32, ScriptType>* smap) {
+void InitTable(absl::flat_hash_map<char32, ScriptType> *smap) {
   for (char32 c = 0x0000; c <= 0x001F; ++c) (*smap)[c] = U_Common;
   (*smap)[0x0020] = U_Common;
   for (char32 c = 0x0021; c <= 0x0023; ++c) (*smap)[c] = U_Common;

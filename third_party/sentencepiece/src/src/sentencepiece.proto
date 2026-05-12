@@ -57,7 +57,9 @@ message SentencePieceText {
   // text. Meta symbols for whitespaces are not included.
   optional string text = 1;
 
-  // A sequence of sentence pieces.
+  // A sequence of sentence pieces. These `pieces` are guaranteed to be ordered
+  // in increasing order of `begin` field. Except for the last piece, `end` of
+  // each piece is always equal to `begin` of the next piece.
   repeated SentencePiece pieces = 2;
 
   // Score (usually log probability) for MultiSentencePieceText.

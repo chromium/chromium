@@ -32,7 +32,7 @@ util::Status Trainer::Train() {
 
   RETURN_IF_ERROR(LoadSentences());
 
-  absl::flat_hash_map<std::string, uint64> freq;
+  absl::flat_hash_map<std::string, uint64_t> freq;
   for (const auto &it : sentences_) {
     for (const auto &s : SplitIntoWords(it.first)) {
       freq[std::string(s)] += it.second;
@@ -42,7 +42,7 @@ util::Status Trainer::Train() {
   const int vocab_size = trainer_spec_.vocab_size() - meta_pieces_.size();
   CHECK_GE_OR_RETURN(vocab_size, 0);
 
-  uint64 sum = 0;
+  uint64_t sum = 0;
   for (const auto &it : freq) {
     sum += it.second;
   }

@@ -28,13 +28,10 @@
 #include <utility>
 #include <vector>
 
-#include "absl/strings/string_view.h"
 #include "common.h"
+#include "config.h"
 #include "sentencepiece_processor.h"
-
-#ifdef SPM_NO_THREADLOCAL
-#include <pthread.h>
-#endif
+#include "absl/strings/string_view.h"
 
 namespace sentencepiece {
 template <typename T>
@@ -45,7 +42,13 @@ std::ostream &operator<<(std::ostream &out, const std::vector<T> &v) {
   return out;
 }
 
-uint32 GetRandomGeneratorSeed();
+uint32_t GetRandomGeneratorSeed();
+
+// Sets data dir containing the global resources, e.g., pre-compiled
+// normalization data.
+void SetDataDir(absl::string_view data_dir);
+
+std::string GetDataDir();
 
 // String utilities
 namespace string_util {
@@ -157,7 +160,7 @@ inline size_t OneCharLen(const char *src) {
 inline bool IsTrailByte(char x) { return static_cast<signed char>(x) < -0x40; }
 
 inline bool IsValidCodepoint(char32 c) {
-  return (static_cast<uint32>(c) < 0xD800) || (c >= 0xE000 && c <= 0x10FFFF);
+  return (static_cast<uint32_t>(c) < 0xD800) || (c >= 0xE000 && c <= 0x10FFFF);
 }
 
 bool IsStructurallyValid(absl::string_view str);
@@ -176,6 +179,21 @@ inline bool IsValidDecodeUTF8(absl::string_view input, size_t *mblen) {
 }
 
 size_t EncodeUTF8(char32 c, char *output);
+
+// Return the length of the UTF-8 character in bytes.
+inline size_t UTF8Length(char32 c) {
+  if (c <= 0x7F) {
+    return 1;
+  }
+  if (c <= 0x7FF) {
+    return 2;
+  }
+  // If `c` is out of range, we consider it as kUnicodeError, which is 3 bytes.
+  if (c <= 0xFFFF || c > 0x10FFFF) {
+    return 3;
+  }
+  return 4;
+}
 
 std::string UnicodeCharToUTF8(const char32 c);
 
@@ -197,8 +215,10 @@ template <class Collection>
 const typename Collection::value_type::second_type &FindOrDie(
     const Collection &collection,
     const typename Collection::value_type::first_type &key) {
-  typename Collection::const_iterator it = collection.find(key);
-  CHECK(it != collection.end()) << "Map key not found: " << key;
+  const auto it = collection.find(key);
+  //  if (it == collection.end()) {
+  //    ABSL_LOG(FATAL) << "Map key not found: " << key;
+  //  }
   return it->second;
 }
 
@@ -207,11 +227,10 @@ const typename Collection::value_type::second_type &FindWithDefault(
     const Collection &collection,
     const typename Collection::value_type::first_type &key,
     const typename Collection::value_type::second_type &value) {
-  typename Collection::const_iterator it = collection.find(key);
-  if (it == collection.end()) {
-    return value;
+  if (const auto it = collection.find(key); it != collection.end()) {
+    return it->second;
   }
-  return it->second;
+  return value;
 }
 
 template <class Collection>
@@ -233,11 +252,11 @@ template <class Collection>
 void InsertOrDie(Collection *const collection,
                  const typename Collection::value_type::first_type &key,
                  const typename Collection::value_type::second_type &data) {
-  CHECK(InsertIfNotPresent(collection, key, data)) << "duplicate key";
+  ABSL_CHECK(InsertIfNotPresent(collection, key, data)) << "duplicate key";
 }
 
 // hash
-inline void mix(uint64 &a, uint64 &b, uint64 &c) {  // 64bit version
+inline void mix(uint64_t &a, uint64_t &b, uint64_t &c) {  // 64bit version
   a -= b;
   a -= c;
   a ^= (c >> 43);
@@ -276,8 +295,8 @@ inline void mix(uint64 &a, uint64 &b, uint64 &c) {  // 64bit version
   c ^= (b >> 22);
 }
 
-inline uint64 FingerprintCat(uint64 x, uint64 y) {
-  uint64 b = 0xe08c1d668b756f82;  // more of the golden ratio
+inline uint64_t FingerprintCat(uint64_t x, uint64_t y) {
+  uint64_t b = 0xe08c1d668b756f82;  // more of the golden ratio
   mix(x, b, y);
   return y;
 }
@@ -291,9 +310,10 @@ std::mt19937 *GetRandomGenerator();
 template <typename T>
 class ReservoirSampler {
  public:
-  explicit ReservoirSampler(std::vector<T>* sampled, uint64 size)
+  explicit ReservoirSampler(std::vector<T> *sampled, uint64_t size)
       : sampled_(sampled), size_(size), engine_(GetRandomGeneratorSeed()) {}
-  explicit ReservoirSampler(std::vector<T>* sampled, uint64 size, uint64 seed)
+  explicit ReservoirSampler(std::vector<T> *sampled, uint64_t size,
+                            uint64_t seed)
       : sampled_(sampled), size_(size), engine_(seed) {}
   virtual ~ReservoirSampler() {}
 
@@ -304,18 +324,18 @@ class ReservoirSampler {
     if (sampled_->size() < size_) {
       sampled_->push_back(item);
     } else {
-      std::uniform_int_distribution<uint64> dist(0, total_ - 1);
-      const uint64 n = dist(engine_);
+      std::uniform_int_distribution<uint64_t> dist(0, total_ - 1);
+      const uint64_t n = dist(engine_);
       if (n < sampled_->size()) (*sampled_)[n] = item;
     }
   }
 
-  uint64 total_size() const { return total_; }
+  uint64_t total_size() const { return total_; }
 
  private:
   std::vector<T> *sampled_ = nullptr;
-  uint64 size_ = 0;
-  uint64 total_ = 0;
+  uint64_t size_ = 0;
+  uint64_t total_ = 0;
   std::mt19937 engine_;
 };
 
@@ -323,12 +343,43 @@ class ReservoirSampler {
 
 namespace util {
 
+#if defined(_FREEBSD)
+#include <sys/endian.h>
+#endif
+#if !defined(__APPLE__) && !defined(_WIN32) && !defined(_FREEBSD) && \
+    !defined(_AIX)
+#include <endian.h>
+#if BYTE_ORDER == __BIG_ENDIAN
+#define IS_BIG_ENDIAN
+#endif
+#endif
+
+#if defined(_AIX) && BYTE_ORDER == BIG_ENDIAN
+#define IS_BIG_ENDIAN
+#endif
+
+constexpr bool is_bigendian() {
+#ifdef IS_BIG_ENDIAN
+  return true;
+#else   // IS_BIG_ENDIAN
+  return false;
+#endif  // IS_BIG_ENDIAN
+}
+
+inline uint32_t Swap32(uint32_t x) {
+#ifdef OS_WIN
+  return _byteswap_ulong(x);
+#else   // OS_WIN
+  return __builtin_bswap32(x);
+#endif  // OS_WIN
+}
+
 inline std::string JoinPath(absl::string_view path) {
   return std::string(path.data(), path.size());
 }
 
 template <typename... T>
-inline std::string JoinPath(absl::string_view first, const T&... rest) {
+inline std::string JoinPath(absl::string_view first, const T &...rest) {
 #ifdef OS_WIN
   return JoinPath(first) + "\\" + JoinPath(rest...);
 #else
@@ -344,15 +395,13 @@ std::vector<std::string> StrSplitAsCSV(absl::string_view text);
 std::wstring Utf8ToWide(const absl::string_view input);
 #endif
 
-inline Status OkStatus() {
-  return Status();
-}
+inline Status OkStatus() { return Status(); }
 
 #define DECLARE_ERROR(FUNC)                                \
   inline util::Status FUNC##Error(absl::string_view str) { \
     return util::Status(StatusCode::k##FUNC, str.data());  \
   }                                                        \
-  inline bool Is##FUNC(const util::Status& status) {       \
+  inline bool Is##FUNC(const util::Status &status) {       \
     return status.code() == StatusCode::k##FUNC;           \
   }
 
@@ -381,7 +430,7 @@ class StatusBuilder {
   explicit StatusBuilder(StatusCode code, int loc) : code_(code) {}
 
   template <typename T>
-  StatusBuilder& operator<<(const T& value) {
+  StatusBuilder &operator<<(const T &value) {
     os_ << value;
     return *this;
   }
@@ -411,7 +460,7 @@ class StatusBuilder {
 
 namespace port {
 template <typename T>
-void STLDeleteElements(std::vector<T*>* vec) {
+void STLDeleteElements(std::vector<T *> *vec) {
   for (auto item : *vec) {
     delete item;
   }
@@ -421,9 +470,9 @@ void STLDeleteElements(std::vector<T*>* vec) {
 
 class ThreadPool {
  public:
-  ThreadPool(int32 n) {}
+  ThreadPool(int32_t n) {}
   virtual ~ThreadPool() {
-    for (auto& task : tasks_) {
+    for (auto &task : tasks_) {
       task.join();
     }
   }
@@ -434,5 +483,11 @@ class ThreadPool {
  private:
   std::vector<std::thread> tasks_;
 };
+
+namespace log_domain {
+
+double LogSum(const std::vector<double> &xs);
+
+}  // namespace log_domain
 }  // namespace sentencepiece
 #endif  // UTIL_H_

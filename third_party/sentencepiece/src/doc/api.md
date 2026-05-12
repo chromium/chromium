@@ -15,7 +15,7 @@ if (!status.ok()) {
 }
 
 // You can also load a serialized model from std::string.
-// const std::stirng str = // Load blob contents from a file.
+// const std::string str = // Load blob contents from a file.
 // auto status = processor.LoadFromSerializedProto(str);
 ```
 
@@ -45,7 +45,7 @@ Calls `SentencePieceProcessor::Decode` method to detokenize a sequence of pieces
 
 ```C++
 std::vector<std::string> pieces = { "▁This", "▁is", "▁a", "▁", "te", "st", "." };   // sequence of pieces
-std::string text
+std::string text;
 processor.Decode(pieces, &text);
 std::cout << text << std::endl;
 
@@ -64,7 +64,7 @@ processor.SampleEncode("This is a test.", &pieces, -1, 0.2);
 std::vector<int> ids;
 processor.SampleEncode("This is a test.", &ids, -1, 0.2);
 ```
-SampleEncode has two sampling parameters, `nbest_size` and `alpha`, which correspond to `l` and `alpha` in the [original paper](https://arxiv.org/abs/1804.10959). When `nbest_size` is -1, one segmentation is sampled from all hypothesis with forward-filtering and backward sampling algorithm.
+SampleEncode has two sampling parameters, `nbest_size` and `alpha`, which correspond to `l` and `alpha` in the [original paper](https://arxiv.org/abs/1804.10959). When `nbest_size` is -1, one segmentation is sampled from all hypotheses with forward-filtering and backward sampling algorithm.
 
 ## Training
 Calls `SentencePieceTrainer::Train` function to train sentencepiece model. You can pass the same parameters of [spm_train](https://github.com/google/sentencepiece#train-sentencepiece-model) as a single string.

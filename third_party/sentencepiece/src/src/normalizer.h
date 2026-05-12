@@ -21,10 +21,10 @@
 #include <utility>
 #include <vector>
 
-#include "absl/strings/string_view.h"
 #include "common.h"
 #include "sentencepiece_model.pb.h"
 #include "sentencepiece_processor.h"
+#include "absl/strings/string_view.h"
 #include "third_party/darts_clone/darts.h"
 
 namespace sentencepiece {
@@ -86,8 +86,8 @@ class Normalizer {
   // - Replaces a space with a meta symbol.
   // - Removing heading, tailing and other redundant spaces.
   virtual util::Status Normalize(absl::string_view input,
-                                 std::string* normalized,
-                                 std::vector<size_t>* norm_to_orig) const;
+                                 std::string *normalized,
+                                 std::vector<size_t> *norm_to_orig) const;
 
   // Returns a normalized string without alignments.
   // This function is used in sentencepiece training.
@@ -121,9 +121,9 @@ class Normalizer {
 
   // Decodes blob into trie_blob and normalized string.
   static util::Status DecodePrecompiledCharsMap(absl::string_view blob,
-                                                absl::string_view* trie_blob,
-                                                absl::string_view* normalized,
-                                                std::string* buffer = nullptr);
+                                                absl::string_view *trie_blob,
+                                                absl::string_view *normalized,
+                                                std::string *buffer);
 
   // Maximum size of the return value of Trie, which corresponds
   // to the maximum size of shared common prefix in the chars map.
@@ -134,7 +134,7 @@ class Normalizer {
 
   // "\0" delimitered output string.
   // the value of |trie_| stores pointers to this string.
-  const char *normalized_ = nullptr;
+  absl::string_view normalized_;
 
   // Spec for normalization.
   const NormalizerSpec *spec_;
@@ -146,10 +146,8 @@ class Normalizer {
   // "_hello" and "_world".
   const bool treat_whitespace_as_suffix_ = false;
 
-#ifdef IS_BIG_ENDIAN
   // Stores the blob for TRIE encoded in big-endian.
   std::string precompiled_charsmap_buffer_;
-#endif
 
   // Normalizer's status.
   util::Status status_;

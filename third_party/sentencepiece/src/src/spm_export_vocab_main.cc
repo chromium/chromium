@@ -14,18 +14,16 @@
 
 #include <sstream>
 
-#include "absl/flags/flag.h"
 #include "common.h"
 #include "filesystem.h"
 #include "init.h"
 #include "sentencepiece_model.pb.h"
 #include "sentencepiece_processor.h"
+#include "absl/flags/flag.h"
 
 ABSL_FLAG(std::string, output, "", "Output filename");
 ABSL_FLAG(std::string, model, "", "input model file name");
-ABSL_FLAG(std::string,
-          output_format,
-          "vocab",
+ABSL_FLAG(std::string, output_format, "vocab",
           "output format. choose from vocab or syms. vocab outputs pieces "
           "and scores, syms outputs pieces and indices.");
 
@@ -34,11 +32,11 @@ int main(int argc, char *argv[]) {
   sentencepiece::ParseCommandLineFlags(argv[0], &argc, &argv, true);
 
   sentencepiece::SentencePieceProcessor sp;
-  CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
+  ABSL_CHECK_OK(sp.Load(absl::GetFlag(FLAGS_model)));
 
   auto output =
       sentencepiece::filesystem::NewWritableFile(absl::GetFlag(FLAGS_output));
-  CHECK_OK(output->status());
+  ABSL_CHECK_OK(output->status());
 
   if (absl::GetFlag(FLAGS_output_format) == "vocab") {
     for (const auto &piece : sp.model_proto().pieces()) {
@@ -53,7 +51,7 @@ int main(int argc, char *argv[]) {
       output->WriteLine(os.str());
     }
   } else {
-    LOG(FATAL) << "Unsupported output format: "
+    ABSL_LOG(FATAL) << "Unsupported output format: "
                << absl::GetFlag(FLAGS_output_format);
   }
 

@@ -1,35 +1,49 @@
-From f3351c5574d5bcd8b4f49baea9d8d654f27dfd3a Mon Sep 17 00:00:00 2001
-From: Clark DuVall <cduvall@chromium.org>
-Date: Wed, 16 Aug 2023 16:05:14 -0700
-Subject: [PATCH 3/4] Remove absl flags
+From d6cabbc93e8de22546b12a9fe920ab7a8324bbb9 Mon Sep 17 00:00:00 2001
+From: Mike Wittman <wittman@chromium.org>
+Date: Thu, 30 Apr 2026 17:04:57 -0700
+Subject: [PATCH 3/5] Remove absl flags
 
 ---
- third_party/sentencepiece/src/src/init.h | 18 +-----------------
- 1 file changed, 1 insertion(+), 17 deletions(-)
+ third_party/sentencepiece/src/src/init.cc | 33 -----------------------
+ third_party/sentencepiece/src/src/init.h  |  3 ---
+ 2 files changed, 36 deletions(-)
 
-diff --git a/third_party/sentencepiece/src/src/init.h b/third_party/sentencepiece/src/src/init.h
-index 14edb8c75f431..c5f6d9cc52472 100644
---- a/third_party/sentencepiece/src/src/init.h
-+++ b/third_party/sentencepiece/src/src/init.h
-@@ -16,31 +16,15 @@
- #define INIT_H_
+diff --git a/third_party/sentencepiece/src/src/init.cc b/third_party/sentencepiece/src/src/init.cc
+index adbd5b47d3fe4..fc7cc2d4bc6b1 100644
+--- a/third_party/sentencepiece/src/src/init.cc
++++ b/third_party/sentencepiece/src/src/init.cc
+@@ -15,12 +15,6 @@
+ #include "init.h"
  
  #include "common.h"
+-#include "config.h"
 -#include "absl/flags/flag.h"
 -#include "absl/flags/parse.h"
+-#include "absl/flags/usage.h"
+-#include "absl/flags/usage_config.h"
+-#include "absl/strings/str_cat.h"
+ #include "util.h"
  
  #ifdef _USE_EXTERNAL_PROTOBUF
- #include "google/protobuf/message_lite.h"
- #else
--#include "third_party/protobuf-lite/google/protobuf/message_lite.h"
-+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
+@@ -29,34 +23,7 @@
+ #include "third_party/protobuf-lite/google/protobuf/message_lite.h"
  #endif
  
--ABSL_DECLARE_FLAG(int32, minloglevel);
- 
+-ABSL_FLAG(bool, quiet, false, "Suppress logging message.");
+-
  namespace sentencepiece {
--inline void ParseCommandLineFlags(const char *usage, int *argc, char ***argv,
--                                  bool remove_arg = true) {
+-void ParseCommandLineFlags(const char *usage, int *argc, char ***argv,
+-                           bool remove_arg) {
+-  absl::SetProgramUsageMessage(absl::StrCat(PACKAGE_STRING, " ", VERSION,
+-                                            "\n\n", "Usage: ", *argv[0],
+-                                            " [options] files"));
+-
+-  absl::FlagsUsageConfig usage_config;
+-  usage_config.version_string = [&]() {
+-    return absl::StrCat(PACKAGE_STRING, " ", VERSION, "\n");
+-  };
+-  absl::SetFlagsUsageConfig(usage_config);
+-
 -  const auto unused_args = absl::ParseCommandLine(*argc, *argv);
 -
 -  if (remove_arg) {
@@ -39,11 +53,27 @@ index 14edb8c75f431..c5f6d9cc52472 100644
 -    *argc = static_cast<int>(unused_args.size());
 -  }
 -
--  logging::SetMinLogLevel(absl::GetFlag(FLAGS_minloglevel));
+-  if (absl::GetFlag(FLAGS_quiet)) {
+-    absl::SetMinLogLevel(static_cast<absl::LogSeverityAtLeast>(100));
+-  }
 -}
  
- inline void ShutdownLibrary() {
-   google::protobuf::ShutdownProtobufLibrary();
+ void ShutdownLibrary() { google::protobuf::ShutdownProtobufLibrary(); }
+ 
+diff --git a/third_party/sentencepiece/src/src/init.h b/third_party/sentencepiece/src/src/init.h
+index 7357121e196a2..7c35f4cd8c971 100644
+--- a/third_party/sentencepiece/src/src/init.h
++++ b/third_party/sentencepiece/src/src/init.h
+@@ -19,9 +19,6 @@
+ 
+ namespace sentencepiece {
+ 
+-void ParseCommandLineFlags(const char *usage, int *argc, char ***argv,
+-                           bool remove_arg = true);
+-
+ void ShutdownLibrary();
+ 
+ class ScopedResourceDestructor {
 -- 
-2.42.0.rc1.204.g551eb34607-goog
+2.54.0.545.g6539524ca2-goog
 

@@ -18,19 +18,20 @@
 #include <sstream>
 #include <string>
 
-#include "absl/flags/flag.h"
-#include "absl/strings/string_view.h"
 #include "builder.h"
 #include "filesystem.h"
 #include "init.h"
 #include "sentencepiece_processor.h"
+#include "absl/flags/flag.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
 
 using sentencepiece::normalizer::Builder;
 
-ABSL_FLAG(bool,
-          output_precompiled_header,
-          false,
+ABSL_FLAG(bool, output_precompiled_header, false,
           "make normalization_rule.h file");
+ABSL_FLAG(bool, output_precompiled_data, false,
+          "make pre-compiled <name>.bin file");
 
 namespace sentencepiece {
 namespace {
@@ -126,16 +127,16 @@ struct BinaryBlob {
   os << kHeader;
 
   os << "#if defined(_WIN32) && !defined(__CYGWIN__)\n";
-  os << "constexpr unsigned long long int kNormalizationRules_blob_uint64[] = "
+  os << "constexpr unsigned long long int kNormalizationRules_blob_uint64_t[] = "
         "{\n";
   std::vector<size_t> offset;
   os << ToHexUInt64Array(data, &offset);
-  CHECK_EQ(offset.size(), data.size());
+  ABSL_CHECK_EQ(offset.size(), data.size());
   os << "};\n\n";
   os << "const BinaryBlob kNormalizationRules_blob[] = {\n";
   for (size_t i = 0; i < data.size(); ++i) {
     os << "{ \"" << data[i].first << "\", " << data[i].second.size() << ", ";
-    os << "reinterpret_cast<const char *>(kNormalizationRules_blob_uint64 + "
+    os << "reinterpret_cast<const char *>(kNormalizationRules_blob_uint64_t + "
        << offset[i] << ") },\n";
   }
   os << "};\n";
@@ -161,41 +162,56 @@ int main(int argc, char **argv) {
   sentencepiece::ScopedResourceDestructor cleaner;
   sentencepiece::ParseCommandLineFlags(argv[0], &argc, &argv, true);
 
-  const std::vector<
-      std::pair<std::string,
-                std::function<sentencepiece::util::Status(Builder::CharsMap*)>>>
+  const std::vector<std::pair<
+      std::string,
+      std::function<sentencepiece::util::Status(Builder::CharsMap *)>>>
       kRuleList = {{"nfkc", Builder::BuildNFKCMap},
                    {"nmt_nfkc", Builder::BuildNmtNFKCMap},
                    {"nfkc_cf", Builder::BuildNFKC_CFMap},
                    {"nmt_nfkc_cf", Builder::BuildNmtNFKC_CFMap},
-                   {"nfkd", Builder::BuildNFKDMap}};
+                   {"nfkd", Builder::BuildNFKDMap},
+                   {"nfc", Builder::BuildNFCMap},
+                   {"nfd", Builder::BuildNFDMap},
+                   {"nfkd_cf", Builder::BuildNFKD_CFMap},
+                   {"nfc_cf", Builder::BuildNFC_CFMap},
+                   {"nfd_cf", Builder::BuildNFD_CFMap}};
 
   std::vector<std::pair<std::string, std::string>> data;
-  for (const auto &p : kRuleList) {
+  for (const auto &[name, func] : kRuleList) {
     Builder::CharsMap normalized_map;
-    CHECK_OK(p.second(&normalized_map));
+    ABSL_CHECK_OK(func(&normalized_map));
 
     // Write Header.
     std::string index;
-    CHECK_OK(Builder::CompileCharsMap(normalized_map, &index));
+    ABSL_CHECK_OK(Builder::CompileCharsMap(normalized_map, &index));
 
     // Write TSV file.
-    CHECK_OK(Builder::SaveCharsMap(p.first + ".tsv", normalized_map));
+    ABSL_CHECK_OK(Builder::SaveCharsMap(absl::StrCat(name, ".tsv"), normalized_map));
 
     // Do not make NFKD map as it is optionally created.
-    if (p.first.find("nfkd") != std::string::npos) {
+    if (name == "nfkd" || name == "nfd" || name == "nfc" || name == "nfkd_cf" ||
+        name == "nfd_cf" || name == "nfc_cf") {
       continue;
     }
 
-    data.emplace_back(p.first, index);
+    data.emplace_back(name, index);
   }
 
   if (absl::GetFlag(FLAGS_output_precompiled_header)) {
     constexpr char kPrecompiledHeaderFileName[] = "normalization_rule.h";
     auto output =
         sentencepiece::filesystem::NewWritableFile(kPrecompiledHeaderFileName);
-    CHECK_OK(output->status());
+    ABSL_CHECK_OK(output->status());
     output->Write(sentencepiece::MakeHeader(data));
+  }
+
+  if (absl::GetFlag(FLAGS_output_precompiled_data)) {
+    for (const auto &[name, index] : data) {
+      const auto filename = absl::StrCat(name, ".bin");
+      auto output = sentencepiece::filesystem::NewWritableFile(
+          filename, true /* is_binary */);
+      output->Write(index);
+    }
   }
 
   return 0;

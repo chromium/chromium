@@ -21,12 +21,12 @@
 #include <utility>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
-#include "absl/strings/string_view.h"
 #include "common.h"
 #include "normalizer.h"
 #include "sentencepiece_model.pb.h"
 #include "sentencepiece_processor.h"
+#include "absl/container/flat_hash_map.h"
+#include "absl/strings/string_view.h"
 #include "third_party/darts_clone/darts.h"
 #include "util.h"
 
@@ -34,8 +34,7 @@ namespace sentencepiece {
 
 // "_this_is_a_pen" => ["_this", "_is", "_a", "_pen"]
 std::vector<absl::string_view> SplitIntoWords(
-    absl::string_view text,
-    bool treat_ws_as_suffix = false,
+    absl::string_view text, bool treat_ws_as_suffix = false,
     bool allow_ws_only_pieces = false);
 
 // Converts byte (0-255) to piece (e.g., 58 -> "<0x3A>").
@@ -85,13 +84,13 @@ class ModelInterface {
   // The same as above, but returns nbest result with score.
   virtual NBestEncodeResult NBestEncode(absl::string_view normalized,
                                         int nbest_size) const {
-    LOG(ERROR) << "Not implemented.";
+    ABSL_LOG(ERROR) << "Not implemented.";
     return NBestEncodeResult();
   }
 
   virtual EncodeResult SampleEncode(absl::string_view normalized,
                                     float alpha) const {
-    LOG(ERROR) << "Not implemented.";
+    ABSL_LOG(ERROR) << "Not implemented.";
     return EncodeResult();
   }
 
@@ -103,11 +102,10 @@ class ModelInterface {
   // If `include_best` is true, the best tokenisation is always included in the
   // sample, and the remaining elements are sampled excluding the best.
   virtual NBestEncodeResult SampleEncodeAndScore(absl::string_view normalized,
-                                                 float alpha,
-                                                 int samples,
+                                                 float alpha, int samples,
                                                  bool wor,
                                                  bool include_best) const {
-    LOG(ERROR) << "Not implemented.";
+    ABSL_LOG(ERROR) << "Not implemented.";
     return {{EncodeResult(), 0.0}};
   }
 
@@ -115,7 +113,7 @@ class ModelInterface {
   // `alpha`. Uses a novel dynamic program to calculate the entropy.
   virtual float CalculateEntropy(absl::string_view normalized,
                                  float alpha) const {
-    LOG(ERROR) << "Not implemented.";
+    ABSL_LOG(ERROR) << "Not implemented.";
     return 0.0;
   }
 
@@ -138,15 +136,15 @@ class ModelInterface {
   // Returns the string representation of vocab with `id`.
   // id must be 0 <= id < GetPieceSize().
   virtual const std::string &IdToPiece(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return model_proto_->pieces(id).piece();
   }
 
   // Returns the size of sentence pieces, which is the same
   // as the size of vocabulary for NMT.
   virtual int GetPieceSize() const {
-    if (!model_proto_) {
-      return 0;
-    }
+    if (!model_proto_) return 0;
     return model_proto_->pieces_size();
   }
 
@@ -154,35 +152,47 @@ class ModelInterface {
   // Score represents a log probability of the piece.
   // We can roughly estimate the unigram frequency of the piece.
   virtual float GetScore(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return model_proto_->pieces(id).score();
   }
 
   // Returns true if `id` is unknown symbol.
   virtual bool IsUnknown(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() ==
             ModelProto::SentencePiece::UNKNOWN);
   }
 
   // Returns true if `id` is control symbol.
   virtual bool IsControl(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() ==
             ModelProto::SentencePiece::CONTROL);
   }
 
   // Returns true if `id` is unused symbol.
   virtual bool IsUnused(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() ==
             ModelProto::SentencePiece::UNUSED);
   }
 
   // Returns true if `id` is user defined symbol.
   virtual bool IsUserDefined(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() ==
             ModelProto::SentencePiece::USER_DEFINED);
   }
 
   // Returns true if `id` is byte symbol.
   virtual bool IsByte(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() == ModelProto::SentencePiece::BYTE);
   }
 
@@ -205,30 +215,42 @@ class ModelInterface {
 
   // Non-virtual (inlined) implementation for faster execution.
   inline float GetScoreInlined(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return model_proto_->pieces(id).score();
   }
 
   inline bool IsUnknownInlined(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() ==
             ModelProto::SentencePiece::UNKNOWN);
   }
 
   inline bool IsControlInlined(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() ==
             ModelProto::SentencePiece::CONTROL);
   }
 
   inline bool IsUnusedInlined(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() ==
             ModelProto::SentencePiece::UNUSED);
   }
 
   inline bool IsUserDefinedInlined(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() ==
             ModelProto::SentencePiece::USER_DEFINED);
   }
 
   inline bool IsByteInlined(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() == ModelProto::SentencePiece::BYTE);
   }
 

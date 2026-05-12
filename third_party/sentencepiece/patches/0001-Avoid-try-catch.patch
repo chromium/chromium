@@ -1,0 +1,29 @@
+From 76da648604d8629608ebddecd54b24f312a272ad Mon Sep 17 00:00:00 2001
+From: Mike Wittman <wittman@chromium.org>
+Date: Thu, 30 Apr 2026 16:41:11 -0700
+Subject: [PATCH 1/5] Avoid try/catch
+
+---
+ third_party/sentencepiece/src/src/util.cc | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/third_party/sentencepiece/src/src/util.cc b/third_party/sentencepiece/src/src/util.cc
+index 980852e470bad..94d9a55133ec2 100644
+--- a/third_party/sentencepiece/src/src/util.cc
++++ b/third_party/sentencepiece/src/src/util.cc
+@@ -31,11 +31,7 @@ void SetRandomGeneratorSeed(uint32_t seed) {
+ }
+ 
+ uint32_t GetRandomGeneratorSeed() {
+-  try {
+-    return g_seed == kDefaultSeed ? std::random_device{}() : g_seed.load();
+-  } catch (...) {
+-    return g_seed.load();
+-  }
++  return g_seed == kDefaultSeed ? std::random_device{}() : g_seed.load();
+ }
+ 
+ namespace {
+-- 
+2.54.0.545.g6539524ca2-goog
+

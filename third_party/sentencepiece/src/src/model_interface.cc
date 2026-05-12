@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.!
 
+#include "model_interface.h"
+
 #include <algorithm>
 
-#include "absl/memory/memory.h"
-#include "absl/strings/str_format.h"
-#include "model_interface.h"
 #include "sentencepiece_model.pb.h"
+#include "absl/strings/str_format.h"
 #include "util.h"
 
 namespace sentencepiece {
 
-ModelInterface::ModelInterface(const ModelProto& model_proto)
+ModelInterface::ModelInterface(const ModelProto &model_proto)
     : model_proto_(&model_proto), status_(util::OkStatus()) {}
 ModelInterface::~ModelInterface() {}
 
@@ -67,6 +67,23 @@ void ModelInterface::InitializePieces() {
 
   std::set<absl::string_view> user_defined_symbols;
   std::vector<bool> byte_found(256, false);
+
+  int pieces_size = 0;
+  int reserved_id_map_size = 0;
+  for (int i = 0; i < model_proto_->pieces_size(); ++i) {
+    const auto &sp = model_proto_->pieces(i);
+    const bool is_normal_piece =
+        (sp.type() == ModelProto::SentencePiece::NORMAL ||
+         sp.type() == ModelProto::SentencePiece::USER_DEFINED ||
+         sp.type() == ModelProto::SentencePiece::UNUSED);
+    if (is_normal_piece) {
+      ++pieces_size;
+    } else {
+      ++reserved_id_map_size;
+    }
+  }
+  pieces_.reserve(pieces_size);
+  reserved_id_map_.reserve(reserved_id_map_size);
 
   for (int i = 0; i < model_proto_->pieces_size(); ++i) {
     const auto &sp = model_proto_->pieces(i);
@@ -130,7 +147,7 @@ void ModelInterface::InitializePieces() {
     }
   }
 
-  matcher_ = absl::make_unique<normalizer::PrefixMatcher>(user_defined_symbols);
+  matcher_ = std::make_unique<normalizer::PrefixMatcher>(user_defined_symbols);
 }
 
 std::vector<absl::string_view> SplitIntoWords(absl::string_view text,
@@ -154,9 +171,7 @@ std::vector<absl::string_view> SplitIntoWords(absl::string_view text,
       if (is_ws) {  // keep track of sequences consecutive ws tokens.
         in_ws_sequence = true;
       } else if (in_ws_sequence) {
-        if (allow_ws_only_pieces) {
-          result.emplace_back(begin, 0);
-        }
+        if (allow_ws_only_pieces) result.emplace_back(begin, 0);
 
         in_ws_sequence = false;
       }
@@ -165,9 +180,8 @@ std::vector<absl::string_view> SplitIntoWords(absl::string_view text,
           absl::string_view(result.back().data(), result.back().size() + mblen);
       begin += mblen;
 
-      if (begin < end && is_ws && !allow_ws_only_pieces) {
+      if (begin < end && is_ws && !allow_ws_only_pieces)
         result.emplace_back(begin, 0);
-      }
     }
   } else {
     while (begin < end) {
@@ -182,9 +196,7 @@ std::vector<absl::string_view> SplitIntoWords(absl::string_view text,
         in_ws_sequence = true;
       }
 
-      if (in_ws_sequence && !is_ws) {
-        in_ws_sequence = false;
-      }
+      if (in_ws_sequence && !is_ws) in_ws_sequence = false;
 
       result.back() =
           absl::string_view(result.back().data(), result.back().size() + mblen);
@@ -201,8 +213,8 @@ std::string ByteToPiece(unsigned char c) {
 
 int PieceToByte(absl::string_view piece) {
   using PieceToByteMap = absl::flat_hash_map<std::string, unsigned char>;
-  static const auto* const kMap = []() -> PieceToByteMap* {
-    auto* m = new PieceToByteMap();
+  static const auto *const kMap = []() -> PieceToByteMap * {
+    auto *m = new PieceToByteMap();
     for (int i = 0; i < 256; ++i) {
       (*m)[ByteToPiece(i)] = i;
     }

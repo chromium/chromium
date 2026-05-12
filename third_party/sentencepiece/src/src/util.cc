@@ -15,42 +15,46 @@
 #include "util.h"
 
 #include <atomic>
+#include <cstddef>
 #include <iostream>
+#include <memory>
 
 namespace sentencepiece {
 
 namespace {
-constexpr unsigned int kDefaultSeed = static_cast<unsigned int>(-1);
-static std::atomic<unsigned int> g_seed = kDefaultSeed;
-static std::atomic<int> g_minloglevel = 0;
+constexpr uint32_t kDefaultSeed = static_cast<uint32_t>(-1);
+static std::atomic<uint32_t> g_seed = kDefaultSeed;
 }  // namespace
 
-void SetRandomGeneratorSeed(unsigned int seed) {
-  if (seed != kDefaultSeed) {
-    g_seed.store(seed);
-  }
+void SetRandomGeneratorSeed(uint32_t seed) {
+  if (seed != kDefaultSeed) g_seed.store(seed);
 }
 
-uint32 GetRandomGeneratorSeed() {
-#if !SENTENCEPIECE_DISABLE_EXCEPTIONS
-  try {
-#endif
-    return g_seed == kDefaultSeed ? std::random_device{}() : g_seed.load();
-#if !SENTENCEPIECE_DISABLE_EXCEPTIONS
-  } catch (...) {
-    return g_seed.load();
-  }
-#endif
+uint32_t GetRandomGeneratorSeed() {
+  return g_seed == kDefaultSeed ? std::random_device{}() : g_seed.load();
 }
 
-namespace logging {
-int GetMinLogLevel() {
-  return g_minloglevel.load();
+namespace {
+std::shared_ptr<const std::string> *GetSharedDataDir() {
+  static auto g_data_dir = std::make_shared<const std::string>(INSTALL_DATADIR);
+  return &g_data_dir;
 }
+}  // namespace
+
+std::string GetDataDir() {
+  auto shared_data_dir = std::atomic_load(GetSharedDataDir());
+  return *shared_data_dir;
+}
+
+void SetDataDir(absl::string_view data_dir) {
+  auto shared_data_dir =
+      std::make_shared<const std::string>(std::string(data_dir));
+  std::atomic_store(GetSharedDataDir(), std::move(shared_data_dir));
+}
+
 void SetMinLogLevel(int v) {
-  g_minloglevel.store(v);
+  absl::SetMinLogLevel(static_cast<absl::LogSeverityAtLeast>(v));
 }
-}  // namespace logging
 
 namespace string_util {
 
@@ -167,40 +171,20 @@ std::string UnicodeTextToUTF8(const UnicodeText &utext) {
 }  // namespace string_util
 
 namespace random {
-#ifdef SPM_NO_THREADLOCAL
-namespace {
-class RandomGeneratorStorage {
- public:
-  RandomGeneratorStorage() {
-    pthread_key_create(&key_, &RandomGeneratorStorage::Delete);
-  }
-  virtual ~RandomGeneratorStorage() { pthread_key_delete(key_); }
-
-  std::mt19937 *Get() {
-    auto *result = static_cast<std::mt19937 *>(pthread_getspecific(key_));
-    if (result == nullptr) {
-      result = new std::mt19937(GetRandomGeneratorSeed());
-      pthread_setspecific(key_, result);
-    }
-    return result;
-  }
-
- private:
-  static void Delete(void *value) { delete static_cast<std::mt19937 *>(value); }
-  pthread_key_t key_;
-};
-}  // namespace
-
 std::mt19937 *GetRandomGenerator() {
-  static RandomGeneratorStorage *storage = new RandomGeneratorStorage;
-  return storage->Get();
+  // Thread-locals occupy stack space in every thread ever created by the
+  // program, even if that thread never uses the thread-local variable.
+  //
+  // https://maskray.me/blog/2021-02-14-all-about-thread-local-storage
+  //
+  // sizeof(std::mt19937) is several kilobytes, so it is safer to put that on
+  // the heap, leaving only a pointer to it in thread-local storage.  This must
+  // be a unique_ptr, not a raw pointer, so that the generator is not leaked on
+  // thread exit.
+  thread_local static auto mt =
+      std::make_unique<std::mt19937>(GetRandomGeneratorSeed());
+  return mt.get();
 }
-#else
-std::mt19937 *GetRandomGenerator() {
-  thread_local static std::mt19937 mt(GetRandomGeneratorSeed());
-  return &mt;
-}
-#endif
 }  // namespace random
 
 namespace util {
@@ -225,10 +209,10 @@ std::string StrError(int errnum) {
 
 std::vector<std::string> StrSplitAsCSV(absl::string_view text) {
   std::string buf = std::string(text);
-  char* str = const_cast<char*>(buf.data());
-  char* eos = str + text.size();
-  char* start = nullptr;
-  char* end = nullptr;
+  char *str = const_cast<char *>(buf.data());
+  char *eos = str + text.size();
+  char *start = nullptr;
+  char *end = nullptr;
 
   std::vector<std::string> result;
   for (; str < eos; ++str) {
@@ -238,9 +222,7 @@ std::vector<std::string> StrSplitAsCSV(absl::string_view text) {
       for (; str < eos; ++str) {
         if (*str == '"') {
           str++;
-          if (*str != '"') {
-            break;
-          }
+          if (*str != '"') break;
         }
         *end++ = *str;
       }
@@ -259,7 +241,7 @@ std::vector<std::string> StrSplitAsCSV(absl::string_view text) {
 
 #ifdef OS_WIN
 std::wstring Utf8ToWide(absl::string_view input) {
-  int output_length = ::MultiByteToWideChar(
+  const int output_length = ::MultiByteToWideChar(
       CP_UTF8, 0, input.data(), static_cast<int>(input.size()), nullptr, 0);
   if (output_length == 0) {
     return L"";
@@ -272,4 +254,24 @@ std::wstring Utf8ToWide(absl::string_view input) {
 }
 #endif
 }  // namespace util
+
+namespace log_domain {
+double LogSum(const std::vector<double> &xs) {
+  if (xs.empty()) {
+    return -1.0 * std::numeric_limits<double>::max();
+  }
+  double sum = xs.front();
+
+  auto log_add = [](double xa, double xb) {
+    if (xa > xb) {
+      std::swap(xa, xb);
+    }
+    return xb + std::log1p(std::exp(xa - xb));
+  };
+  for (int i = 1; i < xs.size(); ++i) {
+    sum = log_add(sum, xs[i]);
+  }
+  return sum;
+}
+}  // namespace log_domain
 }  // namespace sentencepiece

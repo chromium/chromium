@@ -12,22 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.!
 
-if (SPM_USE_EXTERNAL_ABSL)
+if (SPM_ABSL_PROVIDER STREQUAL "module" OR SPM_ABSL_PROVIDER STREQUAL "package")
   set(ABSL_FLAGS_SRCS "")
   set(ABSL_STRINGS_SRCS "")
   list(APPEND SPM_LIBS absl::strings)
   list(APPEND SPM_LIBS absl::flags)
   list(APPEND SPM_LIBS absl::flags_parse)
-  if (MSVC)
-   add_definitions("/D_USE_EXTERNAL_ABSL")
-  else()
-   add_definitions("-D_USE_EXTERNAL_ABSL")
-  endif()
-else()
-  set(ABSL_FLAGS_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/absl/flags/flag.cc)
+  list(APPEND SPM_LIBS absl::log)
+  list(APPEND SPM_LIBS absl::check)
+  add_compile_definitions(_USE_EXTERNAL_ABSL)
+elseif (SPM_ABSL_PROVIDER STREQUAL "internal")
+ set(ABSL_FLAGS_SRCS
+    ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/absl/flags/flag.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/absl/log/log.cc)
 endif()
 
-if (SPM_USE_BUILTIN_PROTOBUF)
+if (SPM_PROTOBUF_PROVIDER STREQUAL "internal")
   set(SPM_PROTO_HDRS builtin_pb/sentencepiece.pb.h)
   set(SPM_PROTO_SRCS builtin_pb/sentencepiece.pb.cc)
   set(SPM_MODEL_PROTO_HDRS builtin_pb/sentencepiece_model.pb.h)
@@ -67,28 +67,18 @@ if (SPM_USE_BUILTIN_PROTOBUF)
   endif()
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party/protobuf-lite)
   include_directories(builtin_pb)
-else()
+elseif (SPM_PROTOBUF_PROVIDER STREQUAL "package")
   find_package(Protobuf REQUIRED)
   include_directories(${Protobuf_INCLUDE_DIRS})
   protobuf_generate_cpp(SPM_PROTO_SRCS SPM_PROTO_HDRS sentencepiece.proto)
   protobuf_generate_cpp(SPM_MODEL_PROTO_SRCS SPM_MODEL_PROTO_HDRS sentencepiece_model.proto)
   set(PROTOBUF_LITE_SRCS "")
   include_directories(${PROTOBUF_INCLUDE_DIR})
-  if (MSVC)
-    add_definitions("/D_USE_EXTERNAL_PROTOBUF")
-  else()
-    add_definitions("-D_USE_EXTERNAL_PROTOBUF")
-  endif()
+  add_compile_definitions(_USE_EXTERNAL_PROTOBUF)
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party)
-
-if (MSVC)
-  add_definitions("/D_USE_INTERNAL_STRING_VIEW")
-else()
-  add_definitions("-D_USE_INTERNAL_STRING_VIEW")
-endif()
 
 set(SPM_SRCS
   ${PROTOBUF_LITE_SRCS}
@@ -114,6 +104,7 @@ set(SPM_SRCS
   char_model.cc
   error.cc
   filesystem.cc
+  init.cc
   model_factory.cc
   model_interface.cc
   normalizer.cc
@@ -178,6 +169,15 @@ set(SPM_TEST_SRCS
   word_model_trainer_test.cc
   pretokenizer_for_training_test.cc)
 
+if (SPM_NLCODEC_BPE)
+  set(NLCODEC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../contrib/nlcodec)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+  add_compile_definitions(SPM_NLCODEC_BPE)
+  list(APPEND SPM_TRAIN_SRCS ${NLCODEC_DIR}/bpe_model_trainer_nlcodec.cc)
+  list(APPEND SPM_TEST_SRCS ${NLCODEC_DIR}/bpe_model_trainer_nlcodec_test.cc)
+endif()
+
 find_package(Threads REQUIRED)
 
 list(APPEND SPM_LIBS ${PROTOBUF_LITE_LIBRARY} Threads::Threads)
@@ -185,8 +185,12 @@ list(APPEND SPM_LIBS ${PROTOBUF_LITE_LIBRARY} Threads::Threads)
 if (SPM_ENABLE_NFKC_COMPILE)
   find_package(ICU 4.4 COMPONENTS i18n data uc REQUIRED)
   include_directories(${ICU_INCLUDE_DIRS})
-  add_definitions(-DENABLE_NFKC_COMPILE)
+  add_compile_definitions(ENABLE_NFKC_COMPILE)
   list(APPEND SPM_LIBS ICU::i18n ICU::data ICU::uc)
+endif()
+
+if (SPM_DISABLE_EMBEDDED_DATA)
+  add_compile_definitions(DISABLE_EMBEDDED_DATA)
 endif()
 
 if (SPM_ENABLE_TCMALLOC)
@@ -222,6 +226,10 @@ endif()
 if (SPM_ENABLE_SHARED)
   add_library(sentencepiece SHARED ${SPM_SRCS})
   add_library(sentencepiece_train SHARED ${SPM_TRAIN_SRCS})
+  if (ANDROID)
+    target_link_libraries(sentencepiece log)
+    target_link_libraries(sentencepiece_train log)
+  endif()
 endif()
 
 add_library(sentencepiece-static STATIC ${SPM_SRCS})
@@ -254,18 +262,7 @@ set_target_properties(sentencepiece-static PROPERTIES OUTPUT_NAME "sentencepiece
 set_target_properties(sentencepiece_train-static PROPERTIES OUTPUT_NAME "sentencepiece_train")
 
 if (NOT MSVC)
-  if (SPM_COVERAGE)
-    set(CMAKE_CXX_FLAGS "-O0 -Wall -fPIC -coverage ${CMAKE_CXX_FLAGS}")
-  else()
-    set(CMAKE_CXX_FLAGS "-O3 -Wall -fPIC ${CMAKE_CXX_FLAGS}")
-  endif()
-  if (SPM_ENABLE_TENSORFLOW_SHARED)
-    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-  endif()
-  if (SPM_NO_THREADLOCAL)
-    add_definitions(-DSPM_NO_THREADLOCAL=1)
-    add_definitions(-DGOOGLE_PROTOBUF_NO_THREADLOCAL=1)
-  endif()
+  set(CMAKE_CXX_FLAGS "-O3 -Wall -fPIC ${CMAKE_CXX_FLAGS}")
   set_source_files_properties(
     sentencepiece.pb.cc sentencepiece_model.pb.cc
     PROPERTIES COMPILE_FLAGS "-Wno-misleading-indentation")
@@ -311,40 +308,24 @@ install(TARGETS ${SPM_INSTALLTARGETS}
 endif()
 
 install(FILES sentencepiece_trainer.h sentencepiece_processor.h
-  DESTINATION ${CMAKE_INSTALL_INCDIR})
-if (NOT SPM_USE_BUILTIN_PROTOBUF)
-  install(FILES ${SPM_PROTO_HDRS} DESTINATION ${CMAKE_INSTALL_INCDIR})
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+if (NOT SPM_PROTOBUF_PROVIDER STREQUAL "internal")
+  install(FILES ${SPM_PROTO_HDRS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
 file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/data" data_dir)
 
-if (SPM_BUILD_TEST OR SPM_COVERAGE)
+if (SPM_BUILD_TEST)
   enable_testing()
   add_executable(spm_test test_main.cc ${SPM_TEST_SRCS})
 
-  if (SPM_COVERAGE)
-    target_link_libraries(spm_test sentencepiece sentencepiece_train "-lgcov")
-  else()
-    target_link_libraries(spm_test sentencepiece sentencepiece_train)
-  endif()
+  target_link_libraries(spm_test sentencepiece sentencepiece_train)
 
   set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --show-leak-kinds=definite,possible --error-exitcode=1")
   find_program(CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
-  include(Dart)
 
   add_test(NAME sentencepiece_test
     COMMAND $<TARGET_FILE:spm_test> --test_srcdir=${data_dir})
-endif()
-
-if (SPM_COVERAGE)
-  add_custom_target(coverage
-    COMMAND mkdir -p coverage
-    COMMAND $<TARGET_FILE:spm_test> --test_srcdir=${data_dir}
-    COMMAND lcov -c -d . -o coverage.info
-    COMMAND lcov --remove coverage.info "include*" "/c++" "_test*" "testharness*" "third_party*" ".pb.*" -o coverage.info
-    COMMAND mkdir -p lcov_html
-    COMMAND genhtml -o lcov_html coverage.info)
-  add_dependencies(coverage spm_test)
 endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "iOS")

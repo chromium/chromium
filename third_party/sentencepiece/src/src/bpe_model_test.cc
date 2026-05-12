@@ -266,12 +266,10 @@ TEST(SampleModelTest, EncodeTest) {
   }
 
   {
-    auto get_tokens = [](const EncodeResult& result) {
+    auto get_tokens = [](const EncodeResult &result) {
       std::string out;
-      for (const auto& r : result) {
-        if (!result.empty()) {
-          out += ' ';
-        }
+      for (const auto &r : result) {
+        if (!result.empty()) out += ' ';
         out += std::string(r.first);
       }
       return out;
@@ -282,19 +280,15 @@ TEST(SampleModelTest, EncodeTest) {
     for (const auto alpha : kAlpha) {
       constexpr int kTrial = 100000;
       std::map<std::string, int> freq;
-      for (int n = 0; n < kTrial; ++n) {
+      for (int n = 0; n < kTrial; ++n)
         freq[get_tokens(
             model.SampleEncode("abcd", static_cast<float>(alpha)))]++;
-      }
       int num = 0;
-      if (alpha == 0.0) {
+      if (alpha == 0.0)
         EXPECT_EQ(1, freq.size());
-      } else {
+      else
         EXPECT_GT(freq.size(), 1);
-      }
-      for (const auto& it : freq) {
-        num += it.second;
-      }
+      for (const auto &it : freq) num += it.second;
       EXPECT_EQ(num, kTrial);
     }
   }

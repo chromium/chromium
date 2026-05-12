@@ -17,20 +17,9 @@
 
 #include "common.h"
 
-#ifdef _USE_EXTERNAL_PROTOBUF
-#include "google/protobuf/message_lite.h"
-#else
-#include "third_party/protobuf/src/google/protobuf/message_lite.h"
-#endif
-
 namespace sentencepiece {
 
-inline void ShutdownLibrary() {
-  google::protobuf::ShutdownProtobufLibrary();
-#ifdef HAS_ABSL_CLEANUP_FLAGS
-  absl::CleanupFlags();
-#endif
-}
+void ShutdownLibrary();
 
 class ScopedResourceDestructor {
  public:

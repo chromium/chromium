@@ -19,11 +19,11 @@
 #include <string>
 #include <vector>
 
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_join.h"
 #include "sentencepiece_model.pb.h"
 #include "sentencepiece_processor.h"
 #include "testharness.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_join.h"
 #include "util.h"
 
 namespace sentencepiece {
@@ -259,21 +259,17 @@ TEST(LatticeTest, NBestSampleTest) {
     probs["A BC"] = std::exp(inv_theta * (0.0 + 0.5));
     probs["A B C"] = std::exp(inv_theta * (0.0 + 0.0 + 0.1));
 
-    for (const auto& it : strings) {
+    for (const auto &it : strings) {
       EXPECT_EQ(1, probs.count(it));
     }
 
     double Z = 0.0;
-    for (const auto& it : probs) {
-      Z += it.second;
-    }
-    for (auto& it : probs) {
-      it.second /= Z;
-    }
+    for (const auto &it : probs) Z += it.second;
+    for (auto &it : probs) it.second /= Z;
 
     std::map<std::pair<std::string, std::string>, float> pair_probs;
-    for (const auto& first : strings) {
-      for (const auto& second : strings) {
+    for (const auto &first : strings) {
+      for (const auto &second : strings) {
         if (first == second) {
           pair_probs[std::make_pair(first, second)] = 0;
         } else {
@@ -285,12 +281,12 @@ TEST(LatticeTest, NBestSampleTest) {
     }
 
     std::map<std::string, float> inclusion_probs;
-    for (const auto& string : strings) {
+    for (const auto &string : strings) {
       float inclusion_prob = 0.0;
-      for (const auto& other_string : strings) {
+      for (const auto &other_string : strings) {
         inclusion_prob += pair_probs[std::make_pair(string, other_string)];
       }
-      for (const auto& other_string : strings) {
+      for (const auto &other_string : strings) {
         inclusion_prob += pair_probs[std::make_pair(other_string, string)];
       }
       inclusion_probs[string] = inclusion_prob / 2;
@@ -304,7 +300,7 @@ TEST(LatticeTest, NBestSampleTest) {
       std::map<std::string, int> counts;
       for (int i = 0; i < kTrials; i++) {
         auto nbests = lattice.NBest(num_samples, true, inv_theta);
-        for (const auto& nbest : nbests) {
+        for (const auto &nbest : nbests) {
           counts[GetTokenized(nbest.first)]++;
         }
       }
@@ -314,7 +310,7 @@ TEST(LatticeTest, NBestSampleTest) {
       std::map<std::string, float> probs_to_use =
           (num_samples == 1 ? probs : inclusion_probs);
 
-      for (const auto& it : probs_to_use) {
+      for (const auto &it : probs_to_use) {
         EXPECT_NEAR(it.second, 1.0 * counts[it.first] / (kTrials * num_samples),
                     0.02);
       }
@@ -344,18 +340,14 @@ TEST(LatticeTest, CalculateEntropyTest) {
     probs["A B C"] = std::exp(inv_theta * (0.0 + 0.0 + 0.1));
 
     double Z = 0.0;
-    for (const auto& it : probs) {
-      Z += it.second;
-    }
-    for (auto& it : probs) {
-      it.second /= Z;
-    }
+    for (const auto &it : probs) Z += it.second;
+    for (auto &it : probs) it.second /= Z;
 
-    for (const auto& it : strings) {
+    for (const auto &it : strings) {
       EXPECT_EQ(1, probs.count(it));
     }
     float entropy = 0.0;
-    for (const auto& it : probs) {
+    for (const auto &it : probs) {
       entropy += (it.second * std::log(it.second));
     }
     EXPECT_NEAR(-entropy, lattice.CalculateEntropy(inv_theta), 0.02);
@@ -379,7 +371,7 @@ TEST(LatticeTest, ForwardAlgorithmTest) {
     EXPECT_EQ(alpha.size(), 8);  // 6 nodes, plus BOS, EOS
     // only alpha[C], alpha[EOS] have non-zero alpha
     for (int i : {0, 1, 2, 3}) {
-      for (const auto& node : lattice.begin_nodes(i)) {
+      for (const auto &node : lattice.begin_nodes(i)) {
         if (i < 2) {
           EXPECT_EQ(alpha[node->node_id], 0.0);
         } else if (i == 2) {
@@ -490,8 +482,8 @@ ModelProto MakeBaseModelProto() {
 }
 
 // Returns model protos in parameterized tests.
-const std::vector<Model::EncoderVersion>& GetEncoderVersions() {
-  static const std::vector<Model::EncoderVersion>& v =
+const std::vector<Model::EncoderVersion> &GetEncoderVersions() {
+  static const std::vector<Model::EncoderVersion> &v =
       *new std::vector<Model::EncoderVersion>{Model::kOptimized,
                                               Model::kOriginal};
   return v;
@@ -550,21 +542,17 @@ TEST(UnigramModelTest, SampleEncodeAndScoreTest) {
     probs["A BC"] = std::exp(inv_theta * (0.0 + 0.5));
     probs["A B C"] = std::exp(inv_theta * (0.0 + 0.0 + 0.1));
 
-    for (const auto& it : strings) {
+    for (const auto &it : strings) {
       EXPECT_EQ(1, probs.count(it));
     }
 
     double Z = 0.0;
-    for (const auto& it : probs) {
-      Z += it.second;
-    }
-    for (auto& it : probs) {
-      it.second /= Z;
-    }
+    for (const auto &it : probs) Z += it.second;
+    for (auto &it : probs) it.second /= Z;
 
     std::map<std::pair<std::string, std::string>, float> pair_probs;
-    for (const auto& first : strings) {
-      for (const auto& second : strings) {
+    for (const auto &first : strings) {
+      for (const auto &second : strings) {
         if (first == second) {
           pair_probs[std::make_pair(first, second)] = 0;
         } else {
@@ -576,12 +564,12 @@ TEST(UnigramModelTest, SampleEncodeAndScoreTest) {
     }
 
     std::map<std::string, float> inclusion_probs;
-    for (const auto& string : strings) {
+    for (const auto &string : strings) {
       float inclusion_prob = 0.0;
-      for (const auto& other_string : strings) {
+      for (const auto &other_string : strings) {
         inclusion_prob += pair_probs[std::make_pair(string, other_string)];
       }
-      for (const auto& other_string : strings) {
+      for (const auto &other_string : strings) {
         inclusion_prob += pair_probs[std::make_pair(other_string, string)];
       }
       inclusion_probs[string] = inclusion_prob / 2;
@@ -596,9 +584,9 @@ TEST(UnigramModelTest, SampleEncodeAndScoreTest) {
         NBestEncodeResult sample = model.SampleEncodeAndScore(
             "ABC", inv_theta, num_samples, true, false);
 
-        for (const auto& it : sample) {
+        for (const auto &it : sample) {
           std::vector<std::string> tokens;
-          for (const auto& inner_it : it.first) {
+          for (const auto &inner_it : it.first) {
             tokens.push_back(std::string(inner_it.first));
           }
           std::string sample_string = absl::StrJoin(tokens, " ");
@@ -613,10 +601,8 @@ TEST(UnigramModelTest, SampleEncodeAndScoreTest) {
       std::map<std::string, float> probs_to_use =
           (num_samples == 1 ? probs : inclusion_probs);
 
-      for (const auto& it : scores) {
-        Z += it.second;
-      }
-      for (const auto& it : probs_to_use) {
+      for (const auto &it : scores) Z += it.second;
+      for (const auto &it : probs_to_use) {
         EXPECT_NEAR(it.second, 1.0 * counts[it.first] / (kTrials * num_samples),
                     0.02);
         // The expectation is quite loose, use a higher tolerance
@@ -964,8 +950,7 @@ TEST_P(UnigramModelTest, VerifyOutputsEquivalent) {
   EXPECT_FALSE(model.VerifyOutputsEquivalent("ab", "a b"));
 }
 
-INSTANTIATE_TEST_SUITE_P(ParametrizedUnigramModelTests,
-                         UnigramModelTest,
+INSTANTIATE_TEST_SUITE_P(ParametrizedUnigramModelTests, UnigramModelTest,
                          test::ValuesIn(GetEncoderVersions()));
 
 }  // namespace unigram

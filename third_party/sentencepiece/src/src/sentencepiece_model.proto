@@ -20,7 +20,7 @@ option optimize_for = LITE_RUNTIME;
 package sentencepiece;
 
 // TrainerSpec encodes a various parameters for SentencePiece training.
-// Next id: 54
+// Next id: 55
 message TrainerSpec {
   ///////////////////////////////////////////////////////////////////
   // General parameters
@@ -162,7 +162,7 @@ message TrainerSpec {
   // in the vocab. Then the delimiter string is virtually ignored
   // during the training. This field can allows constraints on the vocabulary
   // selection. Note that this field is available on unigram mode.
-  optional string pretokenization_delimiter = 53 [default = ""];
+  optional string pretokenization_delimiter = 53 [ default = ""];
 
   ///////////////////////////////////////////////////////////////////
   // Vocabulary management
@@ -231,6 +231,10 @@ message TrainerSpec {
   // (>10M sentences) corpora. A Side-effect of enabling this flag
   // is increased memory usage.
   optional bool train_extremely_large_corpus = 49 [default = false];
+
+ // Path to a seed sentencepieces file, with one tab-separated
+  // seed sentencepiece <tab> frequency per line.
+  optional string seed_sentencepieces_file = 54 [default = ""];
 
   // Customized extensions: the range of field numbers
   // are open to third-party extensions.

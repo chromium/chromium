@@ -21,8 +21,8 @@
 #include <utility>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
 #include "freelist.h"
+#include "absl/container/flat_hash_map.h"
 #include "util.h"
 
 namespace sentencepiece {
@@ -36,8 +36,7 @@ Model::Model(const ModelProto &model_proto) {
 Model::~Model() {}
 
 std::vector<std::pair<absl::string_view, int>> Model::SampleEncode(
-    absl::string_view normalized,
-    float alpha) const {
+    absl::string_view normalized, float alpha) const {
   if (!status().ok() || normalized.empty()) {
     return {};
   }
@@ -130,17 +129,11 @@ std::vector<std::pair<absl::string_view, int>> Model::SampleEncode(
   }
 
   // BPE-dropout: https://arxiv.org/pdf/1910.13267.pdf
-  std::mt19937* rand_gen = nullptr;
+  std::mt19937 *rand_gen = nullptr;
   auto skip_merge = [&]() {
-    if (alpha <= 0.0) {
-      return false;
-    }
-    if (alpha >= 1.0) {
-      return true;
-    }
-    if (rand_gen == nullptr) {
-      rand_gen = random::GetRandomGenerator();
-    }
+    if (alpha <= 0.0) return false;
+    if (alpha >= 1.0) return true;
+    if (rand_gen == nullptr) rand_gen = random::GetRandomGenerator();
     std::uniform_real_distribution<> gen(0.0, 1.0);
     return gen(*rand_gen) < alpha;
   };
@@ -160,9 +153,7 @@ std::vector<std::pair<absl::string_view, int>> Model::SampleEncode(
     // Note that orignal BPE-dropout paper assumes that all merged symbols are
     // pre computed, but here we randomly skip merge opration inside this loop.
     // This implemenation is theoretically equivalent to the original one.
-    if (skip_merge()) {
-      continue;
-    }
+    if (skip_merge()) continue;
 
     // Replaces symbols with `top` rule.
     symbols[top->left].piece = absl::string_view(
@@ -203,9 +194,9 @@ std::vector<std::pair<absl::string_view, int>> Model::SampleEncode(
 
   EncodeResult output;
   for (int index = 0; index != -1; index = symbols[index].next) {
-    CHECK_GE(index, 0);
-    CHECK_LT(index, static_cast<int>(symbols.size()));
-    resegment(symbols[index].piece, &output);
+    if (index >= 0 && index < static_cast<int>(symbols.size())) {
+      resegment(symbols[index].piece, &output);
+    }
   }
 
   return output;
