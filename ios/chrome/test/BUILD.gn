@@ -409,7 +409,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ntp/ui_bundled:unit_tests",
     "//ios/chrome/browser/ntp/ui_bundled/feed_top_section:unit_tests",
     "//ios/chrome/browser/omaha/model:unit_tests",
-    "//ios/chrome/browser/omnibox/coordinator:unit_tests",
     "//ios/chrome/browser/omnibox/coordinator/popup:unit_tests",
     "//ios/chrome/browser/omnibox/eg_tests:unit_tests",
     "//ios/chrome/browser/omnibox/model:unit_tests",
