@@ -161,8 +161,11 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
 
   if ([self canUserInjectInPasswordField:passwordField
                            requiresHTTPS:requiresHTTPS]) {
+    // Store the current frame ID to make sure it isn't modified during the
+    // reauthentication process.
+    const std::string frameID = self.lastFocusedElementFrameIdentifier;
     if (!passwordField) {
-      [self fillLastSelectedFieldWithString:content];
+      [self fillLastSelectedFieldWithString:content frameId:frameID];
       return;
     }
 
@@ -173,7 +176,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
         if (result != ReauthenticationResult::kFailure) {
           UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
                                   ReauthenticationEvent::kSuccess);
-          [weakSelf fillLastSelectedFieldWithString:content];
+          [weakSelf fillLastSelectedFieldWithString:content frameId:frameID];
         } else {
           UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
                                   ReauthenticationEvent::kFailure);
@@ -187,7 +190,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
     } else {
       UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
                               ReauthenticationEvent::kMissingPasscode);
-      [self fillLastSelectedFieldWithString:content];
+      [self fillLastSelectedFieldWithString:content frameId:frameID];
     }
   }
 }
@@ -263,9 +266,12 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
     return url::Origin();
   }
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  web::WebFrame* frame = activeWebState
-                             ? [self activeWebFrameFromWebState:activeWebState]
-                             : nullptr;
+  if (!activeWebState) {
+    return url::Origin();
+  }
+  web::WebFrame* frame =
+      [self activeWebFrameFromWebState:activeWebState
+                               frameId:self.lastFocusedElementFrameIdentifier];
   return frame ? frame->GetSecurityOrigin() : url::Origin();
 }
 
@@ -292,17 +298,18 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
 
 #pragma mark - Private
 
-// Returns the last focused web frame associated with the given `webState`.
-- (web::WebFrame*)activeWebFrameFromWebState:(web::WebState*)webState {
+// Returns the web frame with `frameId` associated with the given `webState`.
+- (web::WebFrame*)activeWebFrameFromWebState:(web::WebState*)webState
+                                     frameId:(const std::string&)frameId {
   autofill::AutofillJavaScriptFeature* feature =
       autofill::AutofillJavaScriptFeature::GetInstance();
 
-  return feature->GetWebFramesManager(webState)->GetFrameWithId(
-      self.lastFocusedElementFrameIdentifier);
+  return feature->GetWebFramesManager(webState)->GetFrameWithId(frameId);
 }
 
 // Injects the passed string to the active field and jumps to the next field.
-- (void)fillLastSelectedFieldWithString:(NSString*)string {
+- (void)fillLastSelectedFieldWithString:(NSString*)string
+                                frameId:(const std::string&)frameId {
   if (!_webStateList) {
     return;
   }
@@ -312,7 +319,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
   }
 
   web::WebFrame* activeWebFrame =
-      [self activeWebFrameFromWebState:activeWebState];
+      [self activeWebFrameFromWebState:activeWebState frameId:frameId];
   if (!activeWebFrame) {
     return;
   }
@@ -383,7 +390,9 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
       tabHelper->GetPasswordManager();
   CHECK(passwordManager);
 
-  web::WebFrame* frame = [self activeWebFrameFromWebState:webState];
+  web::WebFrame* frame =
+      [self activeWebFrameFromWebState:webState
+                               frameId:self.lastFocusedElementFrameIdentifier];
   if (!frame) {
     return nil;
   }
@@ -415,7 +424,9 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
 - (void)fillFormWithFillData:(FillData)fillData
                     webState:(web::WebState*)webState
                   formHelper:(PasswordFormHelper*)formHelper {
-  web::WebFrame* activeWebFrame = [self activeWebFrameFromWebState:webState];
+  web::WebFrame* activeWebFrame =
+      [self activeWebFrameFromWebState:webState
+                               frameId:self.lastFocusedElementFrameIdentifier];
   if (!activeWebFrame) {
     return;
   }
