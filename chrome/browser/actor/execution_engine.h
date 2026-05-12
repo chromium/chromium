@@ -400,10 +400,12 @@ class ExecutionEngine : public ToolDelegate,
       base::ScopedUmaHistogramTimer timer,
       ExecutionEngine::NavigationDecisionCallback callback);
 
-  void SendNavigationConfirmationRequest(const url::Origin& destination,
-                                         ukm::SourceId ukm_source_id,
-                                         base::ScopedUmaHistogramTimer timer,
-                                         NavigationDecisionCallback callback);
+  using NavigationConfirmationCallback =
+      base::OnceCallback<void(webui::mojom::NavigationConfirmationResponsePtr)>;
+  void SendNavigationConfirmationRequest(
+      const url::Origin& destination,
+      NavigationConfirmationCallback callback);
+
   void OnNavigationConfirmationDecision(
       const url::Origin& destination,
       ukm::SourceId ukm_source_id,
@@ -468,6 +470,9 @@ class ExecutionEngine : public ToolDelegate,
   // Manages the sets of origins that have been allowed for navigations and that
   // the user has been prompted about.
   OriginChecker origin_checker_;
+  // This will allow us to store already-recorded origins to avoid duplication
+  // of dark launch metrics.
+  OriginChecker dark_launch_origin_checker_;
 
   // Manages the container config settings that have been sent by the server.
   ActorContainerConfig actor_container_config_;

@@ -85,6 +85,25 @@ constexpr char kHandleNavigationConfirmationTempl[] =
   })();
 )js";
 
+constexpr char kSetUpDelayedNavigationConfirmationRequestHandler[] =
+    R"js(
+  (() => {
+    client.browser
+      .selectNavigationConfirmationRequestHandler()
+      .subscribe(
+        request => {
+          window.pendingRequest = request;
+          // Respond to any pending checks
+          if (window.signalRequestIsPending) {
+            const temp = window.signalRequestIsPending;
+            temp(request);
+            window.signalRequestIsPending = null;
+          }
+        }
+      );
+  })();
+)js";
+
 constexpr std::string_view kSameOriginSourceHistogram =
     "Actor.NavigationGating.SameOriginSource";
 constexpr std::string_view kSameSiteSourceHistogram =
@@ -181,6 +200,56 @@ class ExecutionEngineOriginGatingBrowserTestBase
         )js";
     return VerifyWebClientRequest(kGetNavigationConfirmationRequestData,
                                   expected_request, location);
+  }
+
+  [[nodiscard]] InteractiveTestApi::MultiStep
+  WaitUntilPendingNavigationConfirmationRequest(
+      const base::DictValue& expected_request,
+      const base::Location& location = FROM_HERE) {
+    static constexpr char kGetNavigationConfirmationRequestData[] =
+        R"js(
+  (() => {
+    if (window.pendingRequest) {
+      return window.pendingRequest;
+    }
+    // Request might have not came yet. Make pending check.
+    return new Promise(resolve => {
+      window.signalRequestIsPending = resolve;
+    });
+  })();
+)js";
+    return VerifyWebClientRequest(kGetNavigationConfirmationRequestData,
+                                  expected_request, location);
+  }
+
+  [[nodiscard]] InteractiveTestApi::MultiStep RespondToPendingRequest(
+      bool permission_granted,
+      const base::Location& location = FROM_HERE) {
+    return InAnyContext(WithElement(
+        glic::test::kGlicContentsElementId,
+        [permission_granted, location](::ui::TrackedElement* el) {
+          content::WebContents* glic_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          ASSERT_TRUE(content::ExecJs(glic_contents, content::JsReplace(
+                                                         R"js(
+                    (async () => {
+                      let request = window.pendingRequest;
+                      if (!request) {
+                        const {promise, resolve} = Promise.withResolvers();
+                        window.signalRequestIsPending = resolve;
+                        request = await promise;
+                      }
+                      request.onConfirmationDecision({
+                        response: {
+                          permissionGranted: $1,
+                        },
+                      });
+                      window.pendingRequest = null;
+                    })();
+                  )js",
+                                                         permission_granted)))
+              << ", expected at " << location.ToString();
+        }));
   }
 
   content::RenderFrameHost* main_frame() {
@@ -1290,8 +1359,7 @@ class ExecutionEngineOriginGatingParamBrowserTest
           /*prompt_user_for_sensitive_navigations_enabled=*/bool,
           /*confirm_navigation_to_new_origins_enabled=*/bool,
           /*prompt_user_for_navigation_to_new_origins_enabled=*/bool,
-          /*allow_implicit_tool_origin_grants=*/bool,
-          /*confirm_navigation_to_new_origins_dark_launch*/ bool>> {
+          /*allow_implicit_tool_origin_grants=*/bool>> {
  public:
   ExecutionEngineOriginGatingParamBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -1311,9 +1379,6 @@ class ExecutionEngineOriginGatingParamBrowserTest
                       : "false"},
                  {"allow_implicit_tool_origin_grants",
                   allow_implicit_tool_origin_grants() ? "true" : "false"},
-                 {"confirm_navigation_to_new_origins_dark_launch",
-                  confirm_navigation_to_new_origins_dark_launch() ? "true"
-                                                                  : "false"},
              }}},
         },
         /*disabled_features=*/{});
@@ -1330,9 +1395,6 @@ class ExecutionEngineOriginGatingParamBrowserTest
     return std::get<2>(GetParam());
   }
   bool allow_implicit_tool_origin_grants() { return std::get<3>(GetParam()); }
-  bool confirm_navigation_to_new_origins_dark_launch() {
-    return std::get<4>(GetParam());
-  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1392,8 +1454,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", second_url)));
-  if (confirm_navigation_to_new_origins_enabled() &&
-      !confirm_navigation_to_new_origins_dark_launch()) {
+  if (confirm_navigation_to_new_origins_enabled()) {
     ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   } else {
     ClickTarget("#link", mojom::ActionResultCode::kOk);
@@ -1564,16 +1625,14 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
 // (prompt_user_for_sensitive_navigations,
 //  confirm_navigation_to_new_origins,
 //  prompt_user_for_navigation_to_new_origins,
-//  allow_implicit_tool_origin_grants,
-//  confirm_navigation_to_new_origins_dark_launch).
+//  allow_implicit_tool_origin_grants).
 INSTANTIATE_TEST_SUITE_P(
     All,
     ExecutionEngineOriginGatingParamBrowserTest,
-    testing::Values(std::make_tuple(false, true, false, true, false),
-                    std::make_tuple(true, false, false, true, false),
-                    std::make_tuple(true, true, true, true, false),
-                    std::make_tuple(true, true, false, false, false),
-                    std::make_tuple(true, true, false, true, true)),
+    testing::Values(std::make_tuple(false, true, false, true),
+                    std::make_tuple(true, false, false, true),
+                    std::make_tuple(true, true, true, true),
+                    std::make_tuple(true, true, false, false)),
     [](auto& info) {
       if (!std::get<0>(info.param)) {
         return "UserConfirmDisabled";
@@ -1586,9 +1645,6 @@ INSTANTIATE_TEST_SUITE_P(
       }
       if (!std::get<3>(info.param)) {
         return "ImplicitToolOriginGrantsDisabled";
-      }
-      if (std::get<4>(info.param)) {
-        return "NavigationConfirmDarkLaunch";
       }
       NOTREACHED();
     });
@@ -1805,8 +1861,7 @@ class ExecutionEngineGatingConfirmationMetricBrowserTest
   ExecutionEngineGatingConfirmationMetricBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {kGlicCrossOriginNavigationGating,
-         {{"confirm_navigation_to_new_origins", "true"},
-          {"confirm_navigation_to_new_origins_dark_launch", "true"}}}};
+         {{"confirm_navigation_to_new_origins", "true"}}}};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (recording_metrics_enabled()) {
@@ -1927,7 +1982,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", novel_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kOk);
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
 
   StopAllTasks();
   if (recording_metrics_enabled()) {
@@ -2218,5 +2273,112 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBlocklistDisabledBrowserTest,
   actor_task().Act(ToRequestList(click_on_page), result.GetCallback());
   ExpectOkResult(result);
 }
+
+class ExecutionEngineOriginGatingDarkLaunchBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExecutionEngineOriginGatingDarkLaunchBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {features::kGlic, {}},
+            {features::kGlicActor,
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {kGlicCrossOriginNavigationGating,
+             {
+                 {"confirm_navigation_to_new_origins",
+                  BlockingConfirmationsEnabled() ? "true" : "false"},
+                 {"confirm_navigation_to_new_origins_dark_launch", "true"},
+             }},
+        },
+        /*disabled_features=*/{
+            features::kGlicWarming,
+            kGlicRecordNavigationConfirmationRequestMetrics});
+  }
+  ~ExecutionEngineOriginGatingDarkLaunchBrowserTest() override = default;
+
+  bool BlockingConfirmationsEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingDarkLaunchBrowserTest,
+                       NavigationConfirmation_DelayedResponse) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL second_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      kSetUpDelayedNavigationConfirmationRequestHandler));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", second_url)));
+
+  // Trigger navigation.
+  std::optional<int> dom_node_id =
+      content::GetDOMNodeId(*main_frame(), "#link");
+  ASSERT_TRUE(dom_node_id);
+  std::unique_ptr<ToolRequest> click =
+      MakeClickRequest(*main_frame(), dom_node_id.value());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click), result.GetCallback());
+
+  if (BlockingConfirmationsEnabled()) {
+    // In active gating mode, the click action is deferred and not completed
+    // yet.
+    EXPECT_FALSE(result.IsReady());
+    EXPECT_NE(web_contents()->GetLastCommittedURL(), second_url);
+  } else {
+    // In dark launch mode, the click action completes immediately.
+    ExpectOkResult(result);
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), second_url);
+  }
+
+  // Verify the background navigation confirmation request was sent to the
+  // client.
+  RunTestSequence(WaitUntilPendingNavigationConfirmationRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "taskId": $2})",
+          url::Origin::Create(second_url), actor_task().id().value()))));
+
+  // Explicitly verify that the confirmation has NOT responded yet (no histogram
+  // recorded).
+  histogram_tester.ExpectTotalCount("Actor.NavigationGating.PermissionGranted",
+                                    0);
+
+  // Respond to the pending request to unblock/clean up.
+  RunTestSequence(RespondToPendingRequest(true));
+
+  if (BlockingConfirmationsEnabled()) {
+    // In active gating mode, the click action now unblocks and completes
+    // successfully.
+    ExpectOkResult(result);
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), second_url);
+  }
+
+  // Wait and verify that the confirmation has now responded successfully.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester
+               .GetAllSamples("Actor.NavigationGating.PermissionGranted")
+               .size() == 1;
+  }));
+  histogram_tester.ExpectUniqueSample(
+      "Actor.NavigationGating.PermissionGranted", true, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineOriginGatingDarkLaunchBrowserTest,
+                         testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "ConfirmOriginsEnabled"
+                                             : "ConfirmOriginsDisabled";
+                         });
 
 }  // namespace actor

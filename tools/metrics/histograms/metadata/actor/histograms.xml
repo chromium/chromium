@@ -382,6 +382,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.NavigationGating.DarkLaunchConfirmationRequestLatency"
+    units="ms" expires_after="2026-10-04">
+  <owner>masnoble@google.com</owner>
+  <owner>dylancutler@google.com</owner>
+  <summary>
+    Records the latency of the dark launch navigation confirmation request.
+    Recorded when the browser receives the response from the confirmation
+    request in dark launch mode.
+  </summary>
+</histogram>
+
 <histogram name="Actor.NavigationGating.GatingDecision2" enum="GatingDecision"
     expires_after="2026-08-23">
   <owner>tquintanilla@google.com</owner>
