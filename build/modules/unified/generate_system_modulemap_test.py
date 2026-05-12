@@ -27,14 +27,6 @@ module root {
   private header "../../libc++/private.h"
 }
 
-module "missing.h" {
-  private textual header "../../libc++/subdir/bits/missing.h"
-  export *
-}
-module "missing.h_2" {
-  private textual header "../../libc++/subdir/missing.h"
-  export *
-}
 module "public_root.h" {
   header "../../sysroot/usr/include/public_root.h"
   export *
@@ -45,10 +37,6 @@ module "sysroot.h" {
 }
 module "public_subdir.h" {
   textual header "../../sysroot/usr/include/x86_64-linux-gnu/bits/public_subdir.h"
-  export *
-}
-module "sysroot.h_2" {
-  private textual header "../../sysroot/usr/include/x86_64-linux-gnu/bits/sysroot.h"
   export *
 }
 }
@@ -88,7 +76,10 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
                     str(_LIBCXX), f'--sysroot={_SYSROOT}'],
         include_dirs=[(common_dir, headers)],
         sysroot=_SYSROOT,
-        extra_public_headers=['public_root.h', 'bits/public_subdir.h'],
+        extra_public_headers={
+            'public_root.h': None,
+            'bits/public_subdir.h': None
+        },
         target_os='linux',
         target_cpu='x64',
     )
