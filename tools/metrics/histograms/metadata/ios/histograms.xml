@@ -3154,6 +3154,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.HomeCustomization.Background.Ntp.CacheCleanupEvent"
+    enum="NtpBackgroundCacheCleanupEvent" expires_after="2027-01-19">
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records events related to the NTP background image fetcher cache cleanup.
+    Logged once, the first time the NTP is loaded for a user requiring the
+    migration, and never again.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.Background.Ntp.ImageDownloadErrorCode"
     enum="HttpResponseCode" expires_after="2027-01-19">
   <owner>cheickcisse@google.com</owner>
