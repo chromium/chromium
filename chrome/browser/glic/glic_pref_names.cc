@@ -107,6 +107,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetProd, "");
   registry->RegisterStringPref(
       prefs::kGlicWebContinuityOriginatingHostUrlPreset, "");
+#if BUILDFLAG(IS_MAC)
+  registry->RegisterBooleanPref(prefs::kGlicUseAltOSIcon, false);
+#endif
 }
 
 }  // namespace glic::prefs

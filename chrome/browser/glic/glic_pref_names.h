@@ -166,6 +166,10 @@ inline constexpr char kGlicActuationOnWebBlockedForURLs[] =
 inline constexpr char kGlicPartitionNeedsCookieSync[] =
     "glic.partition_needs_cookie_sync";
 
+#if BUILDFLAG(IS_MAC)
+inline constexpr char kGlicUseAltOSIcon[] = "glic.use_alt_os_icon";
+#endif
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

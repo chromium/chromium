@@ -2367,6 +2367,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.SetAltOSIcon.OnChromeStart" enum="BooleanEnabled"
+    expires_after="2026-10-04">
+  <owner>iwells@chromium.org</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records whether the Mac alternative toolbar icon became enabled on Chrome
+    startup. Only emitted if the other app was running during Chrome startup.
+    True means the icon changed and false means the alt icon was already set.
+  </summary>
+</histogram>
+
+<histogram name="Glic.SetAltOSIcon.OnOtherAppStart" enum="BooleanEnabled"
+    expires_after="2026-10-04">
+  <owner>iwells@chromium.org</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records whether the Mac alternative toolbar icon became enabled due to
+    another app starting. Logged when the other app starts. True means the icon
+    changed and false means the alt icon was already set.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Sharing.TabPinnedForSharing"
     enum="GlicTabPinnedForSharingResult" expires_after="2026-11-04">
   <owner>wry@chromium.org</owner>
