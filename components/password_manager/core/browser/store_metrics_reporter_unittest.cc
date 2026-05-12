@@ -54,101 +54,101 @@ password_manager::StoredCredential CreateForm(const std::string& signon_realm,
 }
 
 void AddMetricsTestData(TestPasswordStore* store) {
-  password_manager::StoredCredential password_form;
-  password_form.url = GURL("http://example.com");
-  password_form.username_value = u"test1@gmail.com";
-  password_form.password_value = u"test";
-  password_form.signon_realm = "http://example.com/";
-  password_form.times_used_in_html_form = 0;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  password_manager::StoredCredential credential;
+  credential.url = GURL("http://example.com");
+  credential.username_value = u"test1@gmail.com";
+  credential.password_value = u"test";
+  credential.signon_realm = "http://example.com/";
+  credential.times_used_in_html_form = 0;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.username_value = u"test2@gmail.com";
-  password_form.times_used_in_html_form = 1;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.username_value = u"test2@gmail.com";
+  credential.times_used_in_html_form = 1;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("http://second.example.com");
-  password_form.signon_realm = "http://second.example.com";
-  password_form.times_used_in_html_form = 3;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("http://second.example.com");
+  credential.signon_realm = "http://second.example.com";
+  credential.times_used_in_html_form = 3;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.username_value = u"test3@gmail.com";
-  password_form.type = PasswordForm::Type::kGenerated;
-  password_form.times_used_in_html_form = 2;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.username_value = u"test3@gmail.com";
+  credential.type = PasswordForm::Type::kGenerated;
+  credential.times_used_in_html_form = 2;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("ftp://third.example.com/");
-  password_form.signon_realm = "ftp://third.example.com/";
-  password_form.times_used_in_html_form = 4;
-  password_form.scheme = PasswordForm::Scheme::kOther;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("ftp://third.example.com/");
+  credential.signon_realm = "ftp://third.example.com/";
+  credential.times_used_in_html_form = 4;
+  credential.scheme = PasswordForm::Scheme::kOther;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("http://second.example.com");
-  password_form.username_value = u"shared@gmail.com";
-  password_form.type = PasswordForm::Type::kReceivedViaSharing;
-  password_form.scheme = PasswordForm::Scheme::kHtml;
-  password_form.times_used_in_html_form = 20;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("http://second.example.com");
+  credential.username_value = u"shared@gmail.com";
+  credential.type = PasswordForm::Type::kReceivedViaSharing;
+  credential.scheme = PasswordForm::Scheme::kHtml;
+  credential.times_used_in_html_form = 20;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("http://imported.via.cx.example.com");
-  password_form.username_value = u"imported-via-cx@gmail.com";
-  password_form.type = PasswordForm::Type::kImportedViaCredentialExchange;
-  password_form.scheme = PasswordForm::Scheme::kHtml;
-  password_form.times_used_in_html_form = 23;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("http://imported.via.cx.example.com");
+  credential.username_value = u"imported-via-cx@gmail.com";
+  credential.type = PasswordForm::Type::kImportedViaCredentialExchange;
+  credential.scheme = PasswordForm::Scheme::kHtml;
+  credential.times_used_in_html_form = 23;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("http://fourth.example.com/");
-  password_form.signon_realm = "http://fourth.example.com/";
-  password_form.type = PasswordForm::Type::kFormSubmission;
-  password_form.username_value = u"";
-  password_form.times_used_in_html_form = 10;
-  password_form.scheme = PasswordForm::Scheme::kHtml;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("http://fourth.example.com/");
+  credential.signon_realm = "http://fourth.example.com/";
+  credential.type = PasswordForm::Type::kFormSubmission;
+  credential.username_value = u"";
+  credential.times_used_in_html_form = 10;
+  credential.scheme = PasswordForm::Scheme::kHtml;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("https://fifth.example.com/");
-  password_form.signon_realm = "https://fifth.example.com/";
-  password_form.username_value = u"";
-  password_form.password_value = u"";
-  password_form.blocked_by_user = true;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("https://fifth.example.com/");
+  credential.signon_realm = "https://fifth.example.com/";
+  credential.username_value = u"";
+  credential.password_value = u"";
+  credential.blocked_by_user = true;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("https://sixth.example.com/");
-  password_form.signon_realm = "https://sixth.example.com/";
-  password_form.username_value = u"my_username";
-  password_form.password_value = u"my_password";
-  password_form.blocked_by_user = false;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("https://sixth.example.com/");
+  credential.signon_realm = "https://sixth.example.com/";
+  credential.username_value = u"my_username";
+  credential.password_value = u"my_password";
+  credential.blocked_by_user = false;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL();
-  password_form.signon_realm = "android://hash@com.example.android/";
-  password_form.username_value = u"JohnDoe";
-  password_form.password_value = u"my_password";
-  password_form.blocked_by_user = false;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL();
+  credential.signon_realm = "android://hash@com.example.android/";
+  credential.username_value = u"JohnDoe";
+  credential.password_value = u"my_password";
+  credential.blocked_by_user = false;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.username_value = u"JaneDoe";
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.username_value = u"JaneDoe";
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("http://rsolomakhin.github.io/autofill/");
-  password_form.signon_realm = "http://rsolomakhin.github.io/";
-  password_form.username_value = u"";
-  password_form.password_value = u"";
-  password_form.blocked_by_user = true;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("http://rsolomakhin.github.io/autofill/");
+  credential.signon_realm = "http://rsolomakhin.github.io/";
+  credential.username_value = u"";
+  credential.password_value = u"";
+  credential.blocked_by_user = true;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("https://rsolomakhin.github.io/autofill/");
-  password_form.signon_realm = "https://rsolomakhin.github.io/";
-  password_form.blocked_by_user = true;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("https://rsolomakhin.github.io/autofill/");
+  credential.signon_realm = "https://rsolomakhin.github.io/";
+  credential.blocked_by_user = true;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("http://rsolomakhin.github.io/autofill/123");
-  password_form.signon_realm = "http://rsolomakhin.github.io/";
-  password_form.blocked_by_user = true;
-  store->AddLogin(password_manager::CloneStoredCredential(password_form));
+  credential.url = GURL("http://rsolomakhin.github.io/autofill/123");
+  credential.signon_realm = "http://rsolomakhin.github.io/";
+  credential.blocked_by_user = true;
+  store->AddLogin(password_manager::CloneStoredCredential(credential));
 
-  password_form.url = GURL("https://rsolomakhin.github.io/autofill/1234");
-  password_form.signon_realm = "https://rsolomakhin.github.io/";
-  password_form.blocked_by_user = true;
-  store->AddLogin(std::move(password_form));
+  credential.url = GURL("https://rsolomakhin.github.io/autofill/1234");
+  credential.signon_realm = "https://rsolomakhin.github.io/";
+  credential.blocked_by_user = true;
+  store->AddLogin(std::move(credential));
 }
 
 class StoreMetricsReporterTest : public SyncUsernameTestBase {
@@ -1256,32 +1256,32 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_NoDuplicates) {
   profile_store->Init(/*affiliated_match_helper=*/nullptr);
 
   // No duplicate.
-  PasswordForm password_form;
-  password_form.signon_realm = "http://example1.com/";
-  password_form.url = GURL("http://example1.com/");
-  password_form.username_element = u"userelem_1";
-  password_form.username_value = u"username_1";
-  password_form.password_value = u"password_1";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  StoredCredential credential;
+  credential.signon_realm = "http://example1.com/";
+  credential.url = GURL("http://example1.com/");
+  credential.username_element = u"userelem_1";
+  credential.username_value = u"username_1";
+  credential.password_value = u"password_1";
+  profile_store->AddLogin(CloneStoredCredential(credential));
 
   // Different username -> no duplicate.
-  password_form.signon_realm = "http://example2.com/";
-  password_form.url = GURL("http://example2.com/");
-  password_form.username_value = u"username_1";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
-  password_form.username_value = u"username_2";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.signon_realm = "http://example2.com/";
+  credential.url = GURL("http://example2.com/");
+  credential.username_value = u"username_1";
+  profile_store->AddLogin(CloneStoredCredential(credential));
+  credential.username_value = u"username_2";
+  profile_store->AddLogin(CloneStoredCredential(credential));
 
   // Blocklisted forms don't count as duplicates (neither against other
   // blocklisted forms nor against actual saved credentials).
-  password_form.signon_realm = "http://example3.com/";
-  password_form.url = GURL("http://example3.com/");
-  password_form.username_value = u"username_1";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
-  password_form.blocked_by_user = true;
-  password_form.username_value = u"";
-  password_form.password_value = u"";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.signon_realm = "http://example3.com/";
+  credential.url = GURL("http://example3.com/");
+  credential.username_value = u"username_1";
+  profile_store->AddLogin(CloneStoredCredential(credential));
+  credential.blocked_by_user = true;
+  credential.username_value = u"";
+  credential.password_value = u"";
+  profile_store->AddLogin(CloneStoredCredential(credential));
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(
@@ -1318,25 +1318,25 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_ExactDuplicates) {
 
   // Add some PasswordForms that are "exact" duplicates (only the
   // username_element is different, which doesn't matter).
-  PasswordForm password_form;
-  password_form.signon_realm = "http://example1.com/";
-  password_form.url = GURL("http://example1.com/");
-  password_form.username_element = u"userelem_1";
-  password_form.username_value = u"username_1";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
-  password_form.username_element = u"userelem_2";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  StoredCredential credential;
+  credential.signon_realm = "http://example1.com/";
+  credential.url = GURL("http://example1.com/");
+  credential.username_element = u"userelem_1";
+  credential.username_value = u"username_1";
+  profile_store->AddLogin(CloneStoredCredential(credential));
+  credential.username_element = u"userelem_2";
+  profile_store->AddLogin(CloneStoredCredential(credential));
   // The number of "identical" credentials doesn't matter; we count the *sets*
   // of duplicates.
-  password_form.username_element = u"userelem_3";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.username_element = u"userelem_3";
+  profile_store->AddLogin(CloneStoredCredential(credential));
 
   // Similarly, origin doesn't make forms "different" either.
-  password_form.signon_realm = "http://example2.com/";
-  password_form.url = GURL("http://example2.com/path1");
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
-  password_form.url = GURL("http://example2.com/path2");
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.signon_realm = "http://example2.com/";
+  credential.url = GURL("http://example2.com/path1");
+  profile_store->AddLogin(CloneStoredCredential(credential));
+  credential.url = GURL("http://example2.com/path2");
+  profile_store->AddLogin(CloneStoredCredential(credential));
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(
@@ -1373,24 +1373,24 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
   profile_store->Init(/*affiliated_match_helper=*/nullptr);
 
   // Mismatched duplicates: Identical except for the password.
-  PasswordForm password_form;
-  password_form.signon_realm = "http://example1.com/";
-  password_form.url = GURL("http://example1.com/");
-  password_form.username_element = u"userelem_1";
-  password_form.username_value = u"username_1";
-  password_form.password_element = u"passelem_1";
-  password_form.password_value = u"password_1";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  StoredCredential credential;
+  credential.signon_realm = "http://example1.com/";
+  credential.url = GURL("http://example1.com/");
+  credential.username_element = u"userelem_1";
+  credential.username_value = u"username_1";
+  credential.password_element = u"passelem_1";
+  credential.password_value = u"password_1";
+  profile_store->AddLogin(CloneStoredCredential(credential));
   // Note: password_value is not part of the unique key, so we need to change
   // some other value to be able to insert the duplicate into the DB.
-  password_form.password_element = u"passelem_2";
-  password_form.password_value = u"password_2";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.password_element = u"passelem_2";
+  credential.password_value = u"password_2";
+  profile_store->AddLogin(CloneStoredCredential(credential));
   // The number of "identical" credentials doesn't matter; we count the *sets*
   // of duplicates.
-  password_form.password_element = u"passelem_3";
-  password_form.password_value = u"password_3";
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.password_element = u"passelem_3";
+  credential.password_value = u"password_3";
+  profile_store->AddLogin(CloneStoredCredential(credential));
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(
@@ -1595,50 +1595,50 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordNoteMetrics) {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   profile_store->Init(/*affiliated_match_helper=*/nullptr);
 
-  PasswordForm password_form;
-  password_form.url = GURL("http://example.com");
-  password_form.username_value = u"test1@gmail.com";
-  password_form.notes = {PasswordNote(u"note", base::Time::Now())};
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  StoredCredential credential;
+  credential.url = GURL("http://example.com");
+  credential.username_value = u"test1@gmail.com";
+  credential.notes = {PasswordNote(u"note", base::Time::Now())};
+  profile_store->AddLogin(CloneStoredCredential(credential));
   // ProfileStore - CountCredentialsWithNonEmptyNotes2: 1
 
-  password_form.username_value = u"test2@gmail.com";
-  password_form.notes = {PasswordNote(u"another note", base::Time::Now()),
-                         PasswordNote(std::u16string(), base::Time::Now())};
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.username_value = u"test2@gmail.com";
+  credential.notes = {PasswordNote(u"another note", base::Time::Now()),
+                      PasswordNote(std::u16string(), base::Time::Now())};
+  profile_store->AddLogin(CloneStoredCredential(credential));
   // ProfileStore - CountCredentialsWithNonEmptyNotes2: 2
 
-  password_form.username_value = u"test3@gmail.com";
-  password_form.notes = {PasswordNote(std::u16string(), base::Time::Now()),
-                         PasswordNote(u"some note", base::Time::Now())};
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.username_value = u"test3@gmail.com";
+  credential.notes = {PasswordNote(std::u16string(), base::Time::Now()),
+                      PasswordNote(u"some note", base::Time::Now())};
+  profile_store->AddLogin(CloneStoredCredential(credential));
   // ProfileStore -  CountCredentialsWithNonEmptyNotes2: 3
 
-  password_form.username_value = u"test4@gmail.com";
-  password_form.notes = {PasswordNote(std::u16string(), base::Time::Now())};
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.username_value = u"test4@gmail.com";
+  credential.notes = {PasswordNote(std::u16string(), base::Time::Now())};
+  profile_store->AddLogin(CloneStoredCredential(credential));
   // ProfileStore - CountCredentialsWithNonEmptyNotes2: 3
 
-  password_form.username_value = u"test5@gmail.com";
-  password_form.notes = {};
-  profile_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.username_value = u"test5@gmail.com";
+  credential.notes = {};
+  profile_store->AddLogin(CloneStoredCredential(credential));
   // ProfileStore - CountCredentialsWithNonEmptyNotes2: 3
 
   auto account_store =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
   account_store->Init(/*affiliated_match_helper=*/nullptr);
 
-  account_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  account_store->AddLogin(CloneStoredCredential(credential));
   // AccountStore - CountCredentialsWithNonEmptyNotes2: 0
 
-  password_form.username_value = u"test6@gmail.com";
-  password_form.notes = {PasswordNote(std::u16string(), base::Time::Now())};
-  account_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.username_value = u"test6@gmail.com";
+  credential.notes = {PasswordNote(std::u16string(), base::Time::Now())};
+  account_store->AddLogin(CloneStoredCredential(credential));
   // AccountStore - CountCredentialsWithNonEmptyNotes2: 0
 
-  password_form.username_value = u"test7@gmail.com";
-  password_form.notes = {PasswordNote(u"note", base::Time::Now())};
-  account_store->AddLogin(password_manager::FromPasswordForm(password_form));
+  credential.username_value = u"test7@gmail.com";
+  credential.notes = {PasswordNote(u"note", base::Time::Now())};
+  account_store->AddLogin(CloneStoredCredential(credential));
   // AccountStore - CountCredentialsWithNonEmptyNotes2: 1
 
   base::HistogramTester histogram_tester;
