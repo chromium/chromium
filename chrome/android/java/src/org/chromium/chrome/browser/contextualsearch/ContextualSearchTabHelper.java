@@ -8,12 +8,15 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.UserData;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
@@ -47,8 +50,13 @@ import java.util.Map;
 /** Manages the enabling and disabling and gesture listeners for ContextualSearch on a given Tab. */
 @NullMarked
 public class ContextualSearchTabHelper extends EmptyTabObserver
-        implements NetworkChangeNotifier.ConnectionTypeObserver, TemplateUrlServiceObserver {
+        implements NetworkChangeNotifier.ConnectionTypeObserver,
+                TemplateUrlServiceObserver,
+                UserData {
     private static final String TAG = "ContextualSearch";
+
+    private static final Class<ContextualSearchTabHelper> USER_DATA_KEY =
+            ContextualSearchTabHelper.class;
 
     // A map of native helper objects to their Java counterparts allows unlimited scaling in number
     // of tabs.
@@ -96,19 +104,36 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     private @Nullable NullableObservableSupplier<Tab> mReadAloudActivePlaybackTab;
 
     /**
-     * Creates a contextual search tab helper for the given tab.
+     * Retrieves the {@link ContextualSearchTabHelper} for the given {@link Tab}, creating it if it
+     * doesn't already exist.
      *
-     * @param tab The tab whose contextual search actions will be handled by this helper.
+     * @param tab The Tab to get the helper for.
+     * @return The {@link ContextualSearchTabHelper}, or null if UserDataHost is null.
      */
-    public static void createForTab(Tab tab) {
-        new ContextualSearchTabHelper(tab);
+    public static @Nullable ContextualSearchTabHelper from(Tab tab) {
+        if (tab.getUserDataHost() == null || tab.getWebContents() == null) return null;
+        ContextualSearchTabHelper helper = get(tab);
+        if (helper == null) {
+            helper =
+                    tab.getUserDataHost()
+                            .setUserData(USER_DATA_KEY, new ContextualSearchTabHelper(tab));
+        }
+        return helper;
+    }
+
+    /** Returns the ContextualSearchTabHelper for the given tab if it exists. */
+    public static @Nullable ContextualSearchTabHelper get(Tab tab) {
+        if (tab.getUserDataHost() == null) return null;
+        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
     /**
      * Constructs a Tab helper that can enable and disable Contextual Search based on Tab activity.
+     *
      * @param tab The {@link Tab} to track with this helper.
      */
-    private ContextualSearchTabHelper(Tab tab) {
+    @VisibleForTesting
+    ContextualSearchTabHelper(Tab tab) {
         mTab = tab;
         tab.addObserver(this);
         // Connect to a network, unless under test.
@@ -197,6 +222,12 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (supplier != null) {
             supplier.removeObserver(mManagerCallback);
         }
+    }
+
+    @Override
+    public void destroy() {
+        onDestroyed(mTab);
+        mTab.removeObserver(this);
     }
 
     @Override

@@ -675,6 +675,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContextTest.java",
       "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInternalStateTest.java",
       "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchSelectionControllerTest.java",
+      "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTabHelperTest.java",
       "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTranslationImplTest.java",
       "src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesListTest.java",
       "src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesStampTest.java",
