@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -40,7 +41,6 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -94,21 +94,20 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 assertNonNull(findPreference(PREFERENCE_BUTTON_TOGGLE));
 
         var context = getContext();
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+        // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar Glic
+        // supported on LFF
+        if (AndroidSidePanelEnabledFn.isEnabled()) {
             buttonPref.setVisible(false); // Hide the phone UI.
-            int currentSetting = AdaptiveToolbarPrefs.getCustomizationSetting();
-            buttonTogglePref.setChecked(currentSetting == AdaptiveToolbarButtonVariant.GLIC);
+            boolean isPinned = GlicUtils.isButtonPinnedToTabStrip(getProfile());
+            buttonTogglePref.setChecked(isPinned);
             buttonTogglePref.setOnPreferenceChangeListener(
                     (preference, newValue) -> {
                         boolean enabled = (boolean) newValue;
-                        AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(
-                                enabled
-                                        ? AdaptiveToolbarButtonVariant.GLIC
-                                        : AdaptiveToolbarButtonVariant.AUTO);
+                        GlicUtils.setButtonPinnedToTabStrip(getProfile(), enabled);
                         return true;
                     });
         } else {
-            buttonTogglePref.setVisible(false); // Hide the LFF toggle.
+            buttonTogglePref.setVisible(false); // Hide the toggle.
 
             // If the bottom bar is enabled there is a permanent entry point elsewhere remove all
             // the settings here.
@@ -220,11 +219,13 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+        // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar Glic
+        // supported on LFF
+        if (AndroidSidePanelEnabledFn.isEnabled()) {
             ChromeSwitchPreference buttonTogglePref = findPreference(PREFERENCE_BUTTON_TOGGLE);
             if (buttonTogglePref != null) {
-                int currentSetting = AdaptiveToolbarPrefs.getCustomizationSetting();
-                buttonTogglePref.setChecked(currentSetting == AdaptiveToolbarButtonVariant.GLIC);
+                boolean isPinned = GlicUtils.isButtonPinnedToTabStrip(getProfile());
+                buttonTogglePref.setChecked(isPinned);
             }
         } else {
             Preference buttonPref = findPreference(PREFERENCE_BUTTON);
@@ -400,7 +401,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 @Override
                 public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
                     String prefFrag = GlicSettings.class.getName();
-                    if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+                    // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar
+                    // Glic supported on LFF
+                    if (AndroidSidePanelEnabledFn.isEnabled()) {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON);
                     } else {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON_TOGGLE);

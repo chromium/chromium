@@ -36,7 +36,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -57,7 +56,10 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link GlicSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_BOTTOM_BAR,
+    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
+})
 public class GlicSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -178,53 +180,43 @@ public class GlicSettingsUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "sw600dp")
-    public void testGlicButtonPreference_Tablet_Glic() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
-                        AdaptiveToolbarButtonVariant.GLIC);
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testGlicButtonPreference_SidePanel_Pinned() {
+        when(mPrefServiceMock.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
         GlicSettings fragment = launchFragment();
 
         Preference preference = fragment.findPreference("glic_button");
-        assertFalse("Preference glic_button should be invisible on tablet", preference.isVisible());
+        assertFalse(
+                "Preference glic_button should be invisible with side panel FF enabled",
+                preference.isVisible());
 
         ChromeSwitchPreference togglePreference = fragment.findPreference("glic_button_toggle");
         assertTrue(
-                "Preference glic_button_toggle should be visible on tablet",
+                "Preference glic_button_toggle should be visible with side panel FF enabled",
                 togglePreference.isVisible());
-        assertTrue("Toggle should be checked when Glic is selected", togglePreference.isChecked());
+        assertTrue("Toggle should be checked when Glic is pinned", togglePreference.isChecked());
     }
 
     @Test
-    @Config(qualifiers = "sw600dp")
-    public void testGlicButtonPreference_Tablet_Toggle() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
-                        AdaptiveToolbarButtonVariant.AUTO);
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testGlicButtonPreference_SidePanel_Toggle() {
+        when(mPrefServiceMock.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(false);
         GlicSettings fragment = launchFragment();
 
         ChromeSwitchPreference togglePreference = fragment.findPreference("glic_button_toggle");
         assertFalse(
-                "Toggle should not be checked when Glic is not selected",
+                "Toggle should not be checked when Glic is not pinned",
                 togglePreference.isChecked());
 
         // Test toggling on
         togglePreference.getOnPreferenceChangeListener().onPreferenceChange(togglePreference, true);
-        assertEquals(
-                AdaptiveToolbarButtonVariant.GLIC,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, -1));
+        verify(mPrefServiceMock).setBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, true);
 
         // Test toggling off
         togglePreference
                 .getOnPreferenceChangeListener()
                 .onPreferenceChange(togglePreference, false);
-        assertEquals(
-                AdaptiveToolbarButtonVariant.AUTO,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, -1));
+        verify(mPrefServiceMock).setBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, false);
     }
 
     @Test
