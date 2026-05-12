@@ -45,8 +45,7 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioStreamHandler {
   // uncompressed WAVE data which will be sent to the audio output device.
   AudioStreamHandler(SoundsManager::StreamFactoryBinder stream_factory_binder,
                      std::string_view audio_data,
-                     media::AudioCodec codec,
-                     bool loop = false);
+                     media::AudioCodec codec);
 
   AudioStreamHandler(const AudioStreamHandler&) = delete;
   AudioStreamHandler& operator=(const AudioStreamHandler&) = delete;

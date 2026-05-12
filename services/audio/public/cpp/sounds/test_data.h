@@ -11,10 +11,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_renderer_sink.h"
 #include "services/audio/public/cpp/sounds/audio_stream_handler.h"
@@ -31,8 +29,7 @@ const size_t kTestAudioDataSize = std::size(kTestAudioData) - 1;
 
 class TestObserver : public AudioStreamHandler::TestObserver {
  public:
-  explicit TestObserver(base::RepeatingClosure quit,
-                        base::RepeatingClosure render = base::DoNothing());
+  explicit TestObserver(const base::RepeatingClosure& quit);
 
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
@@ -52,14 +49,12 @@ class TestObserver : public AudioStreamHandler::TestObserver {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::RepeatingClosure quit_;
-  base::RepeatingClosure render_;
 
   int num_play_requests_;
   int num_stop_requests_;
   int is_playing;
   raw_ptr<media::AudioRendererSink::RenderCallback> callback_;
   std::unique_ptr<media::AudioBus> bus_;
-  base::WeakPtrFactory<TestObserver> weak_factory_{this};
 };
 
 }  // namespace audio

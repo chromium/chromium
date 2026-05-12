@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/simple_sources.h"
@@ -76,16 +75,16 @@ class AudioStreamHandlerTest : public ::testing::TestWithParam<TestParams> {
     DCHECK(audio_stream_handler_);
   }
 
-  void CreateHandler(bool loop = false) {
+  void CreateHandler() {
     if (is_file_) {
       const base::FilePath file_path = media::GetTestDataFilePath(source_);
       EXPECT_TRUE(base::ReadFileToString(file_path, &bitstream_));
       audio_stream_handler_ = std::make_unique<AudioStreamHandler>(
-          base::DoNothing(), bitstream_, codec_, loop);
+          base::DoNothing(), bitstream_, codec_);
     } else {
       std::string_view data(source_, data_size_);
-      audio_stream_handler_ = std::make_unique<AudioStreamHandler>(
-          base::DoNothing(), data, codec_, loop);
+      audio_stream_handler_ =
+          std::make_unique<AudioStreamHandler>(base::DoNothing(), data, codec_);
     }
   }
 
@@ -152,46 +151,6 @@ TEST_P(AudioStreamHandlerTest, ConsecutivePlayRequests) {
 
   ASSERT_EQ(1, observer.num_play_requests());
   ASSERT_EQ(1, observer.num_stop_requests());
-}
-
-TEST_P(AudioStreamHandlerTest, PlayWithLoop) {
-  if (is_bad()) {
-    return;
-  }
-
-  // Create a new handler with looping enabled.
-  CreateHandler(/*loop=*/true);
-
-  base::RunLoop quit_run_loop;
-  base::RunLoop render_run_loop;
-  int render_count = 0;
-  TestObserver observer(
-      quit_run_loop.QuitClosure(),
-      /*render=*/base::BindLambdaForTesting([&render_run_loop, &render_count] {
-        // Quit after 10 render callbacks, the test uses a
-        // small source audio data (exhausted after the first
-        // render), 10 is enough then to test the loop.
-        if (++render_count >= 10) {
-          render_run_loop.Quit();
-        }
-      }));
-  SetObserverForTesting(&observer);
-
-  ASSERT_TRUE(handler()->IsInitialized());
-  ASSERT_TRUE(handler()->Play());
-
-  render_run_loop.Run();
-
-  handler()->Stop();
-  // Wait until the playback is stopped before teardown.
-  quit_run_loop.Run();
-
-  SetObserverForTesting(nullptr);
-
-  // The render callback is called 10 times (looping), but the play callback is
-  // called only once.
-  EXPECT_EQ(observer.num_play_requests(), 1);
-  EXPECT_EQ(observer.num_stop_requests(), 1);
 }
 
 TEST_P(AudioStreamHandlerTest, BadDataDoesNotInitialize) {

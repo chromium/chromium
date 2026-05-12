@@ -38,8 +38,7 @@ class SoundsManagerImpl : public SoundsManager {
   // SoundsManager implementation:
   bool Initialize(SoundKey key,
                   std::string_view data,
-                  media::AudioCodec codec,
-                  bool loop) override;
+                  media::AudioCodec codec) override;
   bool Play(SoundKey key) override;
   bool Stop(SoundKey key) override;
   base::TimeDelta GetDuration(SoundKey key) override;
@@ -58,15 +57,14 @@ class SoundsManagerImpl : public SoundsManager {
 
 bool SoundsManagerImpl::Initialize(SoundKey key,
                                    std::string_view data,
-                                   media::AudioCodec codec,
-                                   bool loop) {
+                                   media::AudioCodec codec) {
   if (AudioStreamHandler* handler = GetHandler(key)) {
     DCHECK(handler->IsInitialized());
     return true;
   }
 
   std::unique_ptr<AudioStreamHandler> handler(
-      new AudioStreamHandler(stream_factory_binder_, data, codec, loop));
+      new AudioStreamHandler(stream_factory_binder_, data, codec));
   if (!handler->IsInitialized()) {
     LOG(WARNING) << "Can't initialize AudioStreamHandler for key=" << key;
     return false;
