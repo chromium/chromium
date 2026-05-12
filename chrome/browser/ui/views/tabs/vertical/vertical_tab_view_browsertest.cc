@@ -123,7 +123,9 @@ class VerticalTabViewTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
+// TODO(crbug.com/512187713): Re-enable this test once flakiness issue is
+// resolved.
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, DISABLED_IconDataChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* icon = BrowserElementsViews::From(browser())->GetViewAs<TabIcon>(
