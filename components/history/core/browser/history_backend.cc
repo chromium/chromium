@@ -2730,9 +2730,14 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
     db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
     url_result.set_content_annotations(content_annotations);
 
-    const auto visit_source = sources.count(visit.visit_id) == 0
-                                  ? VisitSource::SOURCE_BROWSED
-                                  : sources[visit.visit_id];
+    VisitSource visit_source;
+    if (visit.source.has_value()) {
+      visit_source = visit.source.value();
+    } else if (sources.count(visit.visit_id) == 0) {
+      visit_source = VisitSource::SOURCE_BROWSED;
+    } else {
+      visit_source = sources[visit.visit_id];
+    }
     url_result.set_actor_source(visit_source == VisitSource::SOURCE_ACTOR);
 
     // Set whether the visit was blocked for a managed user by looking at the
@@ -2779,9 +2784,14 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
       db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
       url_result.set_content_annotations(content_annotations);
 
-      const auto visit_source = sources.count(visit.visit_id) == 0
-                                    ? VisitSource::SOURCE_BROWSED
-                                    : sources[visit.visit_id];
+      VisitSource visit_source;
+      if (visit.source.has_value()) {
+        visit_source = visit.source.value();
+      } else if (sources.count(visit.visit_id) == 0) {
+        visit_source = VisitSource::SOURCE_BROWSED;
+      } else {
+        visit_source = sources[visit.visit_id];
+      }
       url_result.set_actor_source(visit_source == VisitSource::SOURCE_ACTOR);
 
       matching_visits.push_back(url_result);
