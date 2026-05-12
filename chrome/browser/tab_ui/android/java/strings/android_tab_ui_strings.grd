@@ -247,12 +247,6 @@
       <message name="IDS_REMOVE_FROM_GROUP_DESCRIPTION" desc="Description of the action of removing all tabs in a group, shown in a confirmation dialog.">
         This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
       </message>
-      <message name="IDS_STOP_ACTOR_TASK_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to stop the actor task.">
-        Leave site?
-      </message>
-      <message name="IDS_STOP_ACTOR_TASK_DIALOG_DESCRIPTION" desc="Description of the action of stopping an actor task, shown in a confirmation dialog.">
-        If you leave this site, your task will end. To keep the task while you visit other sites, open a new tab.
-      </message>
     </messages>
   </release>
 </grit>

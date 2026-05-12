@@ -136,4 +136,13 @@
   <message name="IDS_PEEK_STATE_VIEW_BUTTON_LABEL" desc="Button text for the actor control button in the waiting state." formatter_data="android_java">
     View
   </message>
+  <message name="IDS_ACTOR_LEAVE_SITE_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to stop the actor task." formatter_data="android_java">
+    Leave site?
+  </message>
+  <message name="IDS_ACTOR_LEAVE_SITE_DIALOG_DESCRIPTION" desc="Description of the action of stopping an actor task, shown in a confirmation dialog." formatter_data="android_java">
+    Leaving this site stops your task. Open a new tab to let Gemini keep working.
+  </message>
+  <message name="IDS_ACTOR_LEAVE_SITE_DIALOG_LEAVE_SITE" desc="Button text to confirm leaving the site and stopping the task." formatter_data="android_java">
+    Leave site
+  </message>
 </grit-part>

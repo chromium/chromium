@@ -39,6 +39,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//chrome/app:java_strings_grd",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/collaboration:messaging_factory_java",
     "//chrome/browser/flags:java",

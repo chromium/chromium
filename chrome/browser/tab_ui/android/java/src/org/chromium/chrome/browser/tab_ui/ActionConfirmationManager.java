@@ -225,9 +225,9 @@ public class ActionConfirmationManager {
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
                 new ConfirmationDialogParams.Builder(mContext)
-                        .withTitle(R.string.stop_actor_task_dialog_title)
-                        .withDescription(R.string.stop_actor_task_dialog_description)
-                        .withPositiveButton(R.string.leave_tab_group_menu_item)
+                        .withTitle(R.string.actor_leave_site_dialog_title)
+                        .withDescription(R.string.actor_leave_site_dialog_description)
+                        .withPositiveButton(R.string.actor_leave_site_dialog_leave_site)
                         .withNegativeButton(R.string.cancel)
                         .withSupportStopShowing(false)
                         .build(),
