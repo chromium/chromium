@@ -506,6 +506,7 @@
     case AccountMenuAccessPoint::kAppBar:
       break;
     case AccountMenuAccessPoint::kPageActionMenu:
+    case AccountMenuAccessPoint::kGeminiEntryFlow:
       continuation = CreateChangeProfileOpensURLContinuation(_url);
       break;
   }

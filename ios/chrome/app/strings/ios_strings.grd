@@ -389,6 +389,9 @@
       <message name="IDS_IOS_AI_HUB_OPEN_TRANSLATE_SETTINGS_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to open translate settings in the AI hub.">
         Open Translate settings
       </message>
+      <message name="IDS_IOS_AI_HUB_PAGE_INELIGIBLE_SNACKBAR" desc="Snackbar message shown when a user tries to use Gemini on a page where it is not available.">
+        Gemini is not available on this page
+      </message>
       <message name="IDS_IOS_AI_HUB_PERMISSION_SITE_EXPLANATION" desc="Explanation text for site permissions in the AI hub showing which site the permissions apply to.">
         "<ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph>" permissions will reset to off when you leave this site
       </message>
