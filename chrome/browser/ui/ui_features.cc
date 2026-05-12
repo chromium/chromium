@@ -487,14 +487,4 @@ BASE_FEATURE_PARAM(bool,
                    "vertical_tab_grab_handle_remove_always",
                    true);
 
-// Support for configurable tab glow hover delay. If the feature is disabled
-// we use a zero delay. The default value is 200ms.
-BASE_FEATURE(kTabGlowHoverDelayEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kTabGlowHoverFadeInDelay,
-                   &kTabGlowHoverDelayEnabled,
-                   "tab_glow_hover_fade_in_delay",
-                   base::Milliseconds(200));
-
 }  // namespace features

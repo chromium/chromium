@@ -10,6 +10,10 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace views {
 class View;
 }
@@ -24,7 +28,8 @@ class View;
 // invokes SchedulePaint() back on the View as necessary.
 class GlowHoverController : public views::AnimationDelegateViews {
  public:
-  explicit GlowHoverController(views::View* view);
+  GlowHoverController(views::View* view,
+                      base::TimeDelta duration = base::Milliseconds(200));
   GlowHoverController(const GlowHoverController&) = delete;
   GlowHoverController& operator=(const GlowHoverController&) = delete;
   ~GlowHoverController() override;
@@ -62,6 +67,9 @@ class GlowHoverController : public views::AnimationDelegateViews {
 
   // Opacity of the glow ramps up over time.
   gfx::SlideAnimation animation_;
+
+  // The opacity animation duration.
+  base::TimeDelta animation_duration_;
 
   double opacity_scale_;
   double subtle_opacity_scale_;
