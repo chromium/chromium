@@ -2105,21 +2105,6 @@ void WebContentsAccessibilityAndroid::Blur(JNIEnv* env) {
   }
 }
 
-int32_t WebContentsAccessibilityAndroid::GetFocus(JNIEnv* env) {
-  BrowserAccessibilityManagerAndroid* root_manager =
-      GetRootBrowserAccessibilityManager();
-  if (!root_manager) {
-    return ui::kInvalidAXNodeID;
-  }
-
-  ui::BrowserAccessibility* current_focus = root_manager->GetFocus();
-  if (!current_focus) {
-    return ui::kInvalidAXNodeID;
-  }
-  return static_cast<BrowserAccessibilityAndroid*>(current_focus)
-      ->GetUniqueId();
-}
-
 void WebContentsAccessibilityAndroid::ScrollToMakeNodeVisible(
     JNIEnv* env,
     int32_t unique_id) {

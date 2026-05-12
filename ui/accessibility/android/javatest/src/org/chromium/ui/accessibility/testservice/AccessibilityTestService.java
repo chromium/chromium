@@ -192,20 +192,6 @@ public class AccessibilityTestService extends AccessibilityService {
                 return "Error: Root node is null";
             }
 
-            AccessibilityNodeInfoCompat a11yFocusNode = null;
-            AccessibilityNodeInfo a11yFocus =
-                    instance.findFocus(AccessibilityNodeInfo.FOCUS_ACCESSIBILITY);
-            if (a11yFocus != null) {
-                a11yFocusNode = AccessibilityNodeInfoCompat.wrap(a11yFocus);
-            }
-
-            AccessibilityNodeInfoCompat inputFocusNode = null;
-            AccessibilityNodeInfo inputFocus =
-                    instance.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
-            if (inputFocus != null) {
-                inputFocusNode = AccessibilityNodeInfoCompat.wrap(inputFocus);
-            }
-
             // Find the WebView node.
             AccessibilityNodeInfo webViewNode =
                     findNodeRecursive(root, "android.webkit.WebView", null);
@@ -215,31 +201,16 @@ public class AccessibilityTestService extends AccessibilityService {
             }
 
             // Use the dumper utility to serialize the tree.
-            return dumpSubtreeRecursive(
-                    AccessibilityNodeInfoCompat.wrap(webViewNode),
-                    "",
-                    a11yFocusNode,
-                    inputFocusNode);
+            return dumpSubtreeRecursive(AccessibilityNodeInfoCompat.wrap(webViewNode), "");
         }
     }
 
-    private static String dumpSubtreeRecursive(
-            AccessibilityNodeInfoCompat node,
-            String indent,
-            AccessibilityNodeInfoCompat a11yFocusNode,
-            AccessibilityNodeInfoCompat inputFocusNode) {
+    private static String dumpSubtreeRecursive(AccessibilityNodeInfoCompat node, String indent) {
         if (node == null) return "";
 
         StringBuilder builder = new StringBuilder();
         builder.append(indent);
         builder.append(AccessibilityNodeInfoCompatDumper.toString(node));
-
-        if (a11yFocusNode != null && node.equals(a11yFocusNode)) {
-            builder.append(" isAccessibilityFocusedViaFindFocus");
-        }
-        if (inputFocusNode != null && node.equals(inputFocusNode)) {
-            builder.append(" isInputFocusedViaFindFocus");
-        }
 
         // Append extended selection information if available by checking ancestors.
         // Note that we can't stop at the first found selection, as content editables that are
@@ -287,7 +258,7 @@ public class AccessibilityTestService extends AccessibilityService {
         String childIndent = indent + "  ";
         for (int i = 0; i < node.getChildCount(); i++) {
             AccessibilityNodeInfoCompat child = node.getChild(i);
-            builder.append(dumpSubtreeRecursive(child, childIndent, a11yFocusNode, inputFocusNode));
+            builder.append(dumpSubtreeRecursive(child, childIndent));
         }
 
         return builder.toString();

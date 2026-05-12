@@ -591,25 +591,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return mNativeObj != 0;
     }
 
-    @Override
-    @Nullable
-    public AccessibilityNodeInfoCompat findFocus(int focus) {
-        if (!isAccessibilityEnabled()) return null;
-
-        if (focus == AccessibilityNodeInfoCompat.FOCUS_ACCESSIBILITY) {
-            if (mAccessibilityFocusId != View.NO_ID) {
-                return createAccessibilityNodeInfo(mAccessibilityFocusId);
-            }
-        } else if (focus == AccessibilityNodeInfoCompat.FOCUS_INPUT) {
-            int id = WebContentsAccessibilityImplJni.get().getFocus(mNativeObj);
-            if (id != 0) {
-                return createAccessibilityNodeInfo(id);
-            }
-        }
-
-        return null;
-    }
-
     private boolean isRootManagerConnected() {
         return isNativeInitialized()
                 && WebContentsAccessibilityImplJni.get().isRootManagerConnected(mNativeObj);
@@ -2101,8 +2082,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
     }
 
-    @VisibleForTesting
-    protected void sendAccessibilityEvent(int virtualViewId, int eventType) {
+    private void sendAccessibilityEvent(int virtualViewId, int eventType) {
         mDidSendAnyEvent = true;
 
         // The container view is indicated by a virtualViewId of NO_ID; post these events directly
@@ -2842,8 +2822,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         void focus(long nativeWebContentsAccessibilityAndroid, int id);
 
         void blur(long nativeWebContentsAccessibilityAndroid);
-
-        int getFocus(long nativeWebContentsAccessibilityAndroid);
 
         void scrollToMakeNodeVisible(long nativeWebContentsAccessibilityAndroid, int id);
 
