@@ -104,6 +104,8 @@ class CrossbenchResultConverterTest(unittest.TestCase):
                       'ms_smallerIsBetter', sample_size=50)
     self.check_result(result, 'TraceDerivedMetric', 72.699335,
                       'ms_smallerIsBetter', sample_size=50)
+    self.check_result(result, 'Memory_bytes', 1024,
+                      'sizeInBytes_smallerIsBetter', sample_size=50)
 
 
 if __name__ == '__main__':

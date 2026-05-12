@@ -109,6 +109,8 @@ def convert(crossbench_out_dir: pathlib.Path,
       metric = key
       if 'score' in lower_key:
         unit = 'unitless_biggerIsBetter'
+      elif lower_key.endswith('_bytes'):
+        unit = 'sizeInBytes_smallerIsBetter'
       else:
         unit = 'ms_smallerIsBetter'
     elif len(key_parts) == 2:
