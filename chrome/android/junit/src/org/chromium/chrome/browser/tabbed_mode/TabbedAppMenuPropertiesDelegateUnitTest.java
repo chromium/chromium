@@ -515,7 +515,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 expectedItems,
                 (item, expectedId) -> {
                     if (item.type != AppMenuHandler.AppMenuItemType.BUTTON_ROW
-                            && item.type != AppMenuHandler.AppMenuItemType.DIVIDER) {
+                            && item.type != AppMenuHandler.AppMenuItemType.DIVIDER
+                            && item.type != AppMenuHandler.AppMenuItemType.EMPTY) {
                         boolean hasIcon =
                                 item.model.containsKey(AppMenuItemProperties.ICON)
                                         && item.model.get(AppMenuItemProperties.ICON) != null;
@@ -669,7 +670,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)))));
+                                                item(R.id.bookmark_menu_id)),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.bookmark_folder_menu_id,
+                                                item(R.id.bookmark_folder_menu_id, item(0))),
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -738,7 +744,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)))));
+                                                item(R.id.bookmark_menu_id)),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.bookmark_folder_menu_id,
+                                                item(R.id.bookmark_folder_menu_id, item(0))),
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -835,7 +846,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(
                                 R.id.bookmark_folder_menu_id,
                                 item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id))));
+                                item(R.id.bookmark_menu_id)),
+                        item(R.id.divider_line_id),
+                        item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_folder_menu_id, item(0))),
+                        item(R.id.bookmark_folder_menu_id, item(0))));
         expectedTitles.add(
                 item(
                         R.string.menu_bookmarks,
@@ -853,7 +869,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(
                                 "Folder 1",
                                 item("Bookmark in folder 1"),
-                                item("Bookmark in folder 2"))));
+                                item("Bookmark in folder 2")),
+                        item(0),
+                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
+                        item(R.string.menu_other_bookmarks, item(0))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1000,7 +1019,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(
                                 R.id.bookmark_folder_menu_id,
                                 item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id))));
+                                item(R.id.bookmark_menu_id)),
+                        item(R.id.divider_line_id),
+                        item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_folder_menu_id, item(0))),
+                        item(R.id.bookmark_folder_menu_id, item(0))));
         expectedTitles.add(
                 item(
                         R.string.menu_bookmarks,
@@ -1018,7 +1042,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(
                                 "Folder 1",
                                 item("Bookmark in folder 1"),
-                                item("Bookmark in folder 2"))));
+                                item("Bookmark in folder 2")),
+                        item(0),
+                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
+                        item(R.string.menu_other_bookmarks, item(0))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1169,7 +1196,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(
                                 R.id.bookmark_folder_menu_id,
                                 item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id))));
+                                item(R.id.bookmark_menu_id)),
+                        item(R.id.divider_line_id),
+                        item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_folder_menu_id, item(0))),
+                        item(R.id.bookmark_folder_menu_id, item(0))));
         expectedTitles.add(
                 item(
                         R.string.menu_bookmarks,
@@ -1187,7 +1219,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(
                                 "Folder 1",
                                 item("Bookmark in folder 1"),
-                                item("Bookmark in folder 2"))));
+                                item("Bookmark in folder 2")),
+                        item(0),
+                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
+                        item(R.string.menu_other_bookmarks, item(0))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1306,7 +1341,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)))));
+                                                item(R.id.bookmark_menu_id)),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.bookmark_folder_menu_id,
+                                                item(R.id.bookmark_folder_menu_id, item(0))),
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1382,7 +1422,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)))));
+                                                item(R.id.bookmark_menu_id)),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.bookmark_folder_menu_id,
+                                                item(R.id.bookmark_folder_menu_id, item(0))),
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1704,7 +1749,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)))));
+                                                item(R.id.bookmark_menu_id)),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.bookmark_folder_menu_id,
+                                                item(R.id.bookmark_folder_menu_id, item(0))),
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1813,7 +1863,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)))));
+                                                item(R.id.bookmark_menu_id)),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.bookmark_folder_menu_id,
+                                                item(R.id.bookmark_folder_menu_id, item(0))),
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1896,7 +1951,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_menu_id),
-                                                item(R.id.bookmark_menu_id)))));
+                                                item(R.id.bookmark_menu_id)),
+                                        item(R.id.divider_line_id),
+                                        item(
+                                                R.id.bookmark_folder_menu_id,
+                                                item(R.id.bookmark_folder_menu_id, item(0))),
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -3378,7 +3438,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(
                                 R.id.reading_list_parent_menu_id,
                                 item(R.id.add_to_reading_list_menu_id),
-                                item(R.id.show_reading_list_menu_id)));
+                                item(R.id.show_reading_list_menu_id)),
+                        item(R.id.divider_line_id),
+                        item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_folder_menu_id, item(0))),
+                        item(R.id.bookmark_folder_menu_id, item(0)));
 
         assertMenuItemsAreEqual(subItems, expectedSubItems);
     }
@@ -3422,7 +3487,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(
                                 R.id.bookmark_folder_menu_id,
                                 item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_folder_menu_id, item(R.id.bookmark_menu_id))));
+                                item(R.id.bookmark_folder_menu_id, item(R.id.bookmark_menu_id))),
+                        item(R.id.divider_line_id),
+                        item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_folder_menu_id, item(0))),
+                        item(R.id.bookmark_folder_menu_id, item(0)));
 
         assertMenuItemsAreEqual(subItems, expectedSubItems);
 
@@ -3446,7 +3516,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(
                                 "Folder 2",
                                 item("Bookmark 1"),
-                                item("Nested Folder", item("Nested Bookmark"))));
+                                item("Nested Folder", item("Nested Bookmark"))),
+                        item(0),
+                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
+                        item(R.string.menu_other_bookmarks, item(0)));
         assertMenuTitlesAreEqual(subItems, expectedTitles);
     }
 
@@ -3482,6 +3555,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.bookmark_folder_menu_id,
                                 item(R.id.bookmark_menu_id),
                                 item(R.id.bookmark_menu_id)),
+                        item(R.id.bookmark_folder_menu_id, item(0)),
+                        item(R.id.divider_line_id),
+                        item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_folder_menu_id, item(0))),
                         item(R.id.bookmark_folder_menu_id, item(0)));
 
         assertMenuItemsAreEqual(subItems, expectedSubItems);

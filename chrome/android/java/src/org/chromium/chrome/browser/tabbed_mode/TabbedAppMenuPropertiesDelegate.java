@@ -104,6 +104,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -804,6 +805,25 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                             buildModelForDivider(R.id.divider_line_id)));
                             submenuItems.addAll(bookmarksBarItems);
                         }
+
+                        submenuItems.add(
+                                new ListItem(
+                                        AppMenuHandler.AppMenuItemType.DIVIDER,
+                                        buildModelForDivider(R.id.divider_line_id)));
+
+                        submenuItems.add(
+                                buildBookmarkFolderParentItem(
+                                        R.string.menu_mobile_bookmarks,
+                                        Arrays.asList(
+                                                bookmarkModel.getAccountMobileFolderId(),
+                                                bookmarkModel.getMobileFolderId())));
+
+                        submenuItems.add(
+                                buildBookmarkFolderParentItem(
+                                        R.string.menu_other_bookmarks,
+                                        Arrays.asList(
+                                                bookmarkModel.getAccountOtherFolderId(),
+                                                bookmarkModel.getOtherFolderId())));
                     }
 
                     return submenuItems;
@@ -816,6 +836,43 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.string.menu_bookmarks,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_star_filled_24dp
+                                : Resources.ID_NULL,
+                        submenuItemsSupplier));
+    }
+
+    private ListItem buildBookmarkFolderParentItem(
+            @StringRes int titleRes, List<BookmarkId> folderIds) {
+        Supplier<List<ListItem>> submenuItemsSupplier =
+                () -> {
+                    List<ListItem> items = new ArrayList<>();
+                    BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
+                    if (bookmarkModel != null && bookmarkModel.isBookmarkModelLoaded()) {
+                        List<BookmarkId> childIds = new ArrayList<>();
+                        for (BookmarkId folderId : folderIds) {
+                            if (folderId != null) {
+                                childIds.addAll(bookmarkModel.getChildIds(folderId));
+                            }
+                        }
+                        items.addAll(getBookmarkItemList(childIds, bookmarkModel));
+                    }
+                    if (items.size() == 0) {
+                        items.add(
+                                new ListItem(
+                                        AppMenuHandler.AppMenuItemType.EMPTY,
+                                        new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                                                .with(AppMenuItemProperties.ENABLED, false)
+                                                .build()));
+                    }
+                    return items;
+                };
+
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.bookmark_folder_menu_id,
+                        titleRes,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.ic_folder_outline_24dp
                                 : Resources.ID_NULL,
                         submenuItemsSupplier));
     }
@@ -1739,7 +1796,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return profile;
     }
 
-    @VisibleForTesting
     public void setImageFetcherForTesting(BookmarkImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
     }
