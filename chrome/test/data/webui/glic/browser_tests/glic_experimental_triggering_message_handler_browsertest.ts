@@ -56,11 +56,11 @@ class TriggeringUpdatesTest extends ApiTestFixtureBase {
     });
   }
 
-  async testHandlesStopActuationRequestSuccessfulSendsStopped() {
-    // No-op.
+  async testHandlesStartAndStopActuationRequestsSuccessfully() {
+    await runUntil(() => client.isSubscribed);
   }
 
-  async testHandlesStopActuationRequestMissingMetadataSendsFailed() {
+  async testHandlesStopActuationRequestNoMatchingUpdatesHandler() {
     // No-op.
   }
 }

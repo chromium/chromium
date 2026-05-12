@@ -110,4 +110,7 @@ message GlicExperimentalTriggering {
     ExperimentalTriggeringRequest request = 2;
     ExperimentalTriggeringResponse response = 3;
   }
+
+  // An identifier to support actuation requests for the same glic instance.
+  optional string context_id = 4;
 }

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
@@ -69,41 +70,181 @@ glic::GlicInvokeOptions CreateInvokeOptions(
   return options;
 }
 
-class UpdatesListener
+}  // namespace
+
+class ExperimentalTriggeringUpdatesHandler
     : public glic::mojom::ExperimentalTriggeringUpdatesHandler {
  public:
-  UpdatesListener(
+  using TaskUpdate = components_sharing_message::GlicExperimentalTriggering::
+      ExperimentalTriggeringResponse::TaskUpdate;
+
+  ExperimentalTriggeringUpdatesHandler(
       SharingMessageSender* message_sender,
       components_sharing_message::ServerChannelConfiguration server_channel,
-      std::optional<int64_t> last_seen_sequence_number)
+      const std::string& context_id,
+      glic::InvokeWithAutoSubmitPasskey passkey,
+      base::WeakPtr<GlicExperimentalTriggeringMessageHandler> message_handler)
       : message_sender_(message_sender),
         server_channel_(std::move(server_channel)),
-        last_seen_sequence_number_(last_seen_sequence_number) {}
+        context_id_(context_id),
+        passkey_(std::move(passkey)),
+        message_handler_(std::move(message_handler)),
+        receiver_(this) {}
+
+  void OnRequest(
+      const components_sharing_message::GlicExperimentalTriggering& request) {
+    if (request.has_task_metadata() &&
+        request.task_metadata().has_sender_sequence_number()) {
+      last_seen_sequence_number_ =
+          request.task_metadata().sender_sequence_number();
+    }
+
+    switch (request.request().payload_case()) {
+      case components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringRequest::kTriggerActuationRequest: {
+        ProcessTriggerActuationRequest(request);
+        return;
+      }
+
+      case components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringRequest::kStopActuationRequest: {
+        ProcessStopActuationRequest();
+        return;
+      }
+
+      case components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringRequest::PAYLOAD_NOT_SET: {
+        DLOG(WARNING) << "Received GlicExperimentalTriggering message with no "
+                         "actionable request.";
+        return;
+      }
+
+      default:
+        DLOG(WARNING)
+            << "Ignoring unexpected GlicExperimentalTriggering  request";
+        return;
+    }
+  }
+
+  // Checks if experimental triggering is allowed for the profile. If NOT
+  // allowed, handles the rejection by logging metrics, sending a FAILED
+  // response back to the server (if FCM is configured),  and returning true to
+  // indicate the message has been fully handled. If allowed, returns false to
+  // indicate that normal handling should proceed.
+  bool HandleUnavailableExperimentalTriggering(
+      glic::GlicKeyedService* glic_service,
+      const components_sharing_message::GlicExperimentalTriggering& request) {
+    auto state = glic_service->enabling().GetExperimentalTriggeringState();
+    base::UmaHistogramEnumeration(
+        "Glic.ExperimentalTriggering.StateOnActuationRequest", state);
+
+    if (state == syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady) {
+      return false;
+    }
+
+    DLOG(WARNING) << "Rejecting remote request: Glic not opted-in for "
+                     "experimental triggering.";
+    SendTaskUpdateMessage(TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
+                          "User is not opted in to experimental triggering.");
+    return true;
+  }
+
+  void SubscribeForTriggeringUpdates(
+      base::WeakPtr<glic::GlicInstance> instance) {
+    instance_ = std::move(instance);
+    if (instance_ && !receiver_.is_bound()) {
+      mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
+          remote;
+      receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+      receiver_.set_disconnect_handler(base::BindOnce(
+          [](base::WeakPtr<GlicExperimentalTriggeringMessageHandler>
+                 message_handler,
+             std::string context_id) {
+            if (message_handler) {
+              message_handler->OnUpdatesHandlerCleanup(context_id);
+            }
+          },
+          message_handler_, context_id_));
+      instance_->GetExperimentalTriggeringUpdates(std::move(remote),
+                                                  base::DoNothing());
+    }
+  }
+
+  void ProcessTriggerActuationRequest(
+      const components_sharing_message::GlicExperimentalTriggering& request) {
+    if (!message_handler_) {
+      return;
+    }
+
+    glic::GlicKeyedService* glic_service =
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+            message_handler_->profile_, /*create=*/false);
+    CHECK(glic_service);
+
+    if (HandleUnavailableExperimentalTriggering(glic_service, request)) {
+      message_handler_->OnUpdatesHandlerCleanup(context_id_);
+      return;
+    }
+
+    tabs::TabInterface* active_tab = message_handler_->GetActiveTab();
+    if (!active_tab) {
+      DLOG(ERROR)
+          << "No active tab found for Profile for GlicExperimentalTriggering";
+      message_handler_->OnUpdatesHandlerCleanup(context_id_);
+      return;
+    }
+
+    auto options = CreateInvokeOptions(request, active_tab);
+    options.on_client_connected = base::BindOnce(
+        [](base::WeakPtr<ExperimentalTriggeringUpdatesHandler> updates_handler,
+           base::WeakPtr<glic::GlicInstance> instance) {
+          if (updates_handler) {
+            updates_handler->SubscribeForTriggeringUpdates(std::move(instance));
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr());
+    options.on_error = base::BindOnce(
+        [](base::WeakPtr<GlicExperimentalTriggeringMessageHandler>
+               message_handler,
+           const std::string& context_id, glic::GlicInvokeError error) {
+          // TODO(b/505825633): Propagate the error to the actuation
+          // request sender.
+          DLOG(WARNING) << "Glic invocation failed with error: "
+                        << static_cast<int>(error);
+
+          if (message_handler) {
+            message_handler->OnUpdatesHandlerCleanup(context_id);
+          }
+        },
+        message_handler_, context_id_);
+
+    instance_ =
+        glic_service->InvokeWithAutoSubmit(passkey_, std::move(options));
+  }
+
+  void ProcessStopActuationRequest() {
+    if (!instance_) {
+      SendTaskUpdateMessage(
+          TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
+          "Failed to stop task due to missing glic instance.");
+    } else {
+      instance_->CancelTask();
+      SendTaskUpdateMessage(TaskUpdate::STOPPED);
+    }
+
+    if (message_handler_) {
+      message_handler_->OnUpdatesHandlerCleanup(context_id_);
+    }
+  }
 
   void OnUpdate(glic::mojom::ExperimentalTriggeringUpdatePtr update,
                 glic::mojom::SubscriberObservationType observation) override {
-    components_sharing_message::SharingMessage message;
-    auto* glic_experimental_triggering =
-        message.mutable_glic_experimental_triggering();
-    auto* glic_response = glic_experimental_triggering->mutable_response();
-    auto* task_update = glic_response->mutable_task_update();
-
-    auto* task_metadata = glic_experimental_triggering->mutable_task_metadata();
-    task_metadata->set_sender_sequence_number(++sequence_number_);
-    if (last_seen_sequence_number_.has_value()) {
-      task_metadata->set_last_seen_sequence_number(*last_seen_sequence_number_);
-    }
-
     switch (observation) {
       case glic::mojom::SubscriberObservationType::kComplete:
-        task_update->set_state(
-            components_sharing_message::GlicExperimentalTriggering::
-                ExperimentalTriggeringResponse::TaskUpdate::COMPLETE);
+        SendTaskUpdateMessage(TaskUpdate::COMPLETE);
         break;
       case glic::mojom::SubscriberObservationType::kError:
-        task_update->set_state(
-            components_sharing_message::GlicExperimentalTriggering::
-                ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+        SendTaskUpdateMessage(TaskUpdate::FAILED);
         break;
       case glic::mojom::SubscriberObservationType::kUpdate:
         if (!update) {
@@ -112,76 +253,93 @@ class UpdatesListener
         }
         switch (update->type) {
           case glic::mojom::ExperimentalTriggeringUpdateType::kWorklog:
-            task_update->set_state(
-                components_sharing_message::GlicExperimentalTriggering::
-                    ExperimentalTriggeringResponse::TaskUpdate::RUNNING);
-            task_update->set_data_type(
-                components_sharing_message::GlicExperimentalTriggering::
-                    ExperimentalTriggeringResponse::TaskUpdate::WORKLOG);
+            SendTaskUpdateMessage(TaskUpdate::RUNNING, TaskUpdate::WORKLOG,
+                                  std::move(update->data));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kPaused:
-            task_update->set_state(
-                components_sharing_message::GlicExperimentalTriggering::
-                    ExperimentalTriggeringResponse::TaskUpdate::PAUSED);
+            SendTaskUpdateMessage(TaskUpdate::PAUSED, std::nullopt,
+                                  std::move(update->data));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::
               kTerminalCompletion:
-            task_update->set_state(
-                components_sharing_message::GlicExperimentalTriggering::
-                    ExperimentalTriggeringResponse::TaskUpdate::COMPLETE);
-            task_update->set_data_type(
-                components_sharing_message::GlicExperimentalTriggering::
-                    ExperimentalTriggeringResponse::TaskUpdate::FINAL_RESPONSE);
+            SendTaskUpdateMessage(TaskUpdate::COMPLETE,
+                                  TaskUpdate::FINAL_RESPONSE,
+                                  std::move(update->data));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalStopped:
-            task_update->set_state(
-                components_sharing_message::GlicExperimentalTriggering::
-                    ExperimentalTriggeringResponse::TaskUpdate::STOPPED);
+            SendTaskUpdateMessage(TaskUpdate::STOPPED, std::nullopt,
+                                  std::move(update->data));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalFailed:
-            task_update->set_state(
-                components_sharing_message::GlicExperimentalTriggering::
-                    ExperimentalTriggeringResponse::TaskUpdate::FAILED);
-            task_update->set_data_type(
-                components_sharing_message::GlicExperimentalTriggering::
-                    ExperimentalTriggeringResponse::TaskUpdate::ERROR_MESSAGE);
+            SendTaskUpdateMessage(TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
+                                  std::move(update->data));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kUnknown:
-            task_update->set_state(
-                components_sharing_message::GlicExperimentalTriggering::
-                    ExperimentalTriggeringResponse::TaskUpdate::UNKNOWN_STATE);
+            SendTaskUpdateMessage(TaskUpdate::UNKNOWN_STATE, std::nullopt,
+                                  std::move(update->data));
             break;
         }
         break;
     }
-
-    if (update) {
-      task_update->set_data(update->data);
-    }
-
-    message_sender_->SendMessageToServerTarget(
-        server_channel_, kUpdateMessageTimeout, std::move(message),
-        SharingMessageSender::DelegateType::kFCM,
-        base::BindOnce([](SharingSendMessageResult result,
-                          std::unique_ptr<
-                              components_sharing_message::ResponseMessage>
-                              response) {
-          if (result != SharingSendMessageResult::kSuccessful) {
-            DLOG(ERROR)
-                << "Failed to send experimental triggering update to server: "
-                << static_cast<int>(result);
-          }
-        }));
   }
 
  private:
+  void SendTaskUpdateMessage(
+      TaskUpdate::State state,
+      std::optional<TaskUpdate::DataType> data_type = std::nullopt,
+      std::optional<std::string> data = std::nullopt) {
+    components_sharing_message::SharingMessage message;
+    auto* triggering = message.mutable_glic_experimental_triggering();
+    triggering->set_context_id(context_id_);
+
+    auto* task_metadata = triggering->mutable_task_metadata();
+    task_metadata->set_sender_sequence_number(++sequence_number_);
+    if (last_seen_sequence_number_.has_value()) {
+      task_metadata->set_last_seen_sequence_number(*last_seen_sequence_number_);
+    }
+
+    auto* task_update = triggering->mutable_response()->mutable_task_update();
+    task_update->set_state(state);
+    if (data_type.has_value()) {
+      task_update->set_data_type(*data_type);
+    }
+    if (data.has_value()) {
+      task_update->set_data(std::move(*data));
+    }
+
+    if (message_sender_) {
+      message_sender_->SendMessageToServerTarget(
+          server_channel_, kUpdateMessageTimeout, std::move(message),
+          SharingMessageSender::DelegateType::kFCM,
+          base::BindOnce([](SharingSendMessageResult result,
+                            std::unique_ptr<
+                                components_sharing_message::ResponseMessage>
+                                response) {
+            if (result != SharingSendMessageResult::kSuccessful) {
+              DLOG(ERROR)
+                  << "Failed to send experimental triggering update to server: "
+                  << static_cast<int>(result);
+            }
+          }));
+    }
+  }
+
   raw_ptr<SharingMessageSender> message_sender_;
   const components_sharing_message::ServerChannelConfiguration server_channel_;
+  // Tracks the highest sequence number received from the server for actuation
+  // on a specific glic instance.
   std::optional<int64_t> last_seen_sequence_number_;
+  // Identifier that may be used for follow-up server actuation requests to a
+  // specific glic instance.
+  std::string context_id_;
+  glic::InvokeWithAutoSubmitPasskey passkey_;
+  base::WeakPtr<GlicExperimentalTriggeringMessageHandler> message_handler_;
+  base::WeakPtr<glic::GlicInstance> instance_;
+  mojo::Receiver<glic::mojom::ExperimentalTriggeringUpdatesHandler> receiver_;
   int64_t sequence_number_ = -1;
+  base::WeakPtrFactory<ExperimentalTriggeringUpdatesHandler> weak_ptr_factory_{
+      this};
 };
-
-}  // namespace
 
 GlicExperimentalTriggeringMessageHandler::
     GlicExperimentalTriggeringMessageHandler(
@@ -209,54 +367,6 @@ tabs::TabInterface* GlicExperimentalTriggeringMessageHandler::GetActiveTab()
   return browser ? TabListInterface::From(browser)->GetActiveTab() : nullptr;
 }
 
-bool GlicExperimentalTriggeringMessageHandler::
-    HandleUnavailableExperimentalTriggering(
-        glic::GlicKeyedService* glic_service,
-        const components_sharing_message::SharingMessage& message,
-        SharingMessageHandler::DoneCallback& done_callback) {
-  auto state = glic_service->enabling().GetExperimentalTriggeringState();
-  base::UmaHistogramEnumeration(
-      "Glic.ExperimentalTriggering.StateOnActuationRequest", state);
-
-  if (state == syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady) {
-    return false;
-  }
-
-  DLOG(WARNING) << "Rejecting remote request: Glic not opted-in for "
-                   "experimental triggering.";
-  if (message.has_server_channel_configuration() && message_sender_) {
-    components_sharing_message::SharingMessage response_message;
-    auto* triggering_response =
-        response_message.mutable_glic_experimental_triggering();
-    auto* response = triggering_response->mutable_response();
-    auto* task_update = response->mutable_task_update();
-
-    task_update->set_state(
-        components_sharing_message::GlicExperimentalTriggering::
-            ExperimentalTriggeringResponse::TaskUpdate::FAILED);
-    task_update->set_data_type(
-        components_sharing_message::GlicExperimentalTriggering::
-            ExperimentalTriggeringResponse::TaskUpdate::ERROR_MESSAGE);
-    task_update->set_data("User is not opted in to experimental triggering.");
-
-    message_sender_->SendMessageToServerTarget(
-        message.server_channel_configuration(), kUpdateMessageTimeout,
-        std::move(response_message), SharingMessageSender::DelegateType::kFCM,
-        base::BindOnce(
-            [](SharingSendMessageResult result,
-               std::unique_ptr<components_sharing_message::ResponseMessage>
-                   response) {
-              if (result != SharingSendMessageResult::kSuccessful) {
-                DLOG(WARNING) << "Failed to send rejection response to server. "
-                                 "Result: "
-                              << static_cast<int>(result);
-              }
-            }));
-  }
-  std::move(done_callback).Run(nullptr);
-  return true;
-}
-
 // TODO(b/505825633): Refine ResponseMessage errors for experimental triggering.
 void GlicExperimentalTriggeringMessageHandler::OnMessage(
     components_sharing_message::SharingMessage message,
@@ -264,16 +374,14 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   CHECK(base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering));
   CHECK(message.has_glic_experimental_triggering());
 
-  const auto& request = message.glic_experimental_triggering();
-
-  tabs::TabInterface* active_tab = GetActiveTab();
-  if (!active_tab) {
-    DLOG(ERROR) << "No active tab found for Profile for "
-                   "GlicExperimentalTriggering";
+  if (!message.has_server_channel_configuration()) {
+    DLOG(WARNING) << "Received GlicExperimentalTriggering message with no "
+                     "server configuration channel data.";
     std::move(done_callback).Run(nullptr);
     return;
   }
 
+  const auto& request = message.glic_experimental_triggering();
   if (!request.has_request()) {
     DLOG(WARNING) << "Received GlicExperimentalTriggering message with no "
                      "request payload.";
@@ -282,80 +390,61 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   }
 
   if (request.request().has_device_opt_in_request()) {
-    ProcessDeviceOptInRequest(std::move(message), active_tab,
-                              std::move(done_callback));
-    return;
-  }
-
-  glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
-                                                         /*create=*/false);
-  CHECK(glic_service);
-
-  if (request.request().has_stop_actuation_request()) {
-    ProcessStopActionRequest(std::move(message), active_tab, glic_service,
-                             std::move(done_callback));
-    return;
-  }
-
-  if (request.request().has_trigger_actuation_request()) {
-    if (HandleUnavailableExperimentalTriggering(glic_service, message,
-                                                done_callback)) {
-      return;
+    tabs::TabInterface* active_tab = GetActiveTab();
+    if (active_tab) {
+      ProcessDeviceOptInRequest(active_tab);
+    } else {
+      DLOG(ERROR) << "No active tab found for Profile for "
+                     "GlicExperimentalTriggering";
     }
-
-    auto options = CreateInvokeOptions(request, active_tab);
-    if (message.has_server_channel_configuration()) {
-      std::optional<int64_t> last_seen_sequence_number;
-      if (request.has_task_metadata() &&
-          request.task_metadata().has_sender_sequence_number()) {
-        last_seen_sequence_number =
-            request.task_metadata().sender_sequence_number();
-      }
-
-      options.on_client_connected = base::BindOnce(
-          &GlicExperimentalTriggeringMessageHandler::
-              OnClientConnectedForUpdates,
-          weak_ptr_factory_.GetWeakPtr(),
-          std::move(*message.mutable_server_channel_configuration()),
-          last_seen_sequence_number);
-    }
-
-    glic_service->InvokeWithAutoSubmit(
-        glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-        std::move(options));
-
     std::move(done_callback).Run(nullptr);
     return;
   }
 
-  DLOG(WARNING) << "Received GlicExperimentalTriggering message with no "
-                   "actionable request.";
+  // If no `context_id` is present in the request, we generate one that
+  // may be used by the sender in follow up actuation requests.
+  const std::string context_id =
+      (request.has_context_id() && !request.context_id().empty())
+          ? request.context_id()
+          : base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  auto it = context_id_to_updates_handler_map_.find(context_id);
+  ExperimentalTriggeringUpdatesHandler* handler = nullptr;
+  if (it != context_id_to_updates_handler_map_.end()) {
+    handler = it->second.get();
+  } else {
+    using ExperimentalTriggeringRequest = components_sharing_message::
+        GlicExperimentalTriggering::ExperimentalTriggeringRequest;
+    const auto payload_case = request.request().payload_case();
+    if (payload_case ==
+        ExperimentalTriggeringRequest::kTriggerActuationRequest) {
+      handler =
+          context_id_to_updates_handler_map_
+              .emplace(
+                  context_id,
+                  std::make_unique<ExperimentalTriggeringUpdatesHandler>(
+                      message_sender_,
+                      std::move(
+                          *message.mutable_server_channel_configuration()),
+                      context_id,
+                      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+                      weak_ptr_factory_.GetWeakPtr()))
+              .first->second.get();
+    }
+  }
+
+  if (!handler) {
+    DLOG(WARNING) << "No updates handler for request.";
+    std::move(done_callback).Run(nullptr);
+    return;
+  }
+
+  handler->OnRequest(request);
   std::move(done_callback).Run(nullptr);
 }
 
-void GlicExperimentalTriggeringMessageHandler::OnClientConnectedForUpdates(
-    components_sharing_message::ServerChannelConfiguration server_channel,
-    std::optional<int64_t> last_seen_sequence_number,
-    base::WeakPtr<glic::GlicInstance> instance) {
-  CHECK(instance);
-
-  mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler> remote;
-  auto listener_receiver = remote.InitWithNewPipeAndPassReceiver();
-
-  instance->GetExperimentalTriggeringUpdates(std::move(remote),
-                                             base::DoNothing());
-
-  listeners_.Add(std::make_unique<UpdatesListener>(message_sender_,
-                                                   std::move(server_channel),
-                                                   last_seen_sequence_number),
-                 std::move(listener_receiver));
-}
-
 void GlicExperimentalTriggeringMessageHandler::ProcessDeviceOptInRequest(
-    components_sharing_message::SharingMessage message,
-    tabs::TabInterface* active_tab,
-    DoneCallback done_callback) {
+    tabs::TabInterface* active_tab) {
 #if !BUILDFLAG(IS_ANDROID)
   if (!opt_in_controller_) {
     opt_in_controller_ =
@@ -364,75 +453,9 @@ void GlicExperimentalTriggeringMessageHandler::ProcessDeviceOptInRequest(
 
   opt_in_controller_->ShowDialog(active_tab->GetContents());
 #endif
-
-  std::move(done_callback).Run(nullptr);
 }
 
-void GlicExperimentalTriggeringMessageHandler::ProcessStopActionRequest(
-    components_sharing_message::SharingMessage message,
-    tabs::TabInterface* active_tab,
-    glic::GlicKeyedService* glic_service,
-    DoneCallback done_callback) {
-  const auto& request = message.glic_experimental_triggering();
-
-  glic::GlicInstance* instance = glic_service->GetInstanceForTab(active_tab);
-  if (!instance) {
-    DLOG(WARNING) << "GlicInstance not found for active tab, cannot stop task.";
-    std::move(done_callback).Run(nullptr);
-    return;
-  }
-
-  bool stopped = false;
-  if (!request.has_task_metadata() || !request.task_metadata().has_task_id()) {
-    DLOG(WARNING)
-        << "Missing task metadata or task ID in StopActuationRequest.";
-  } else {
-    int task_id_int = 0;
-    if (!base::StringToInt(request.task_metadata().task_id(), &task_id_int)) {
-      DLOG(WARNING) << "Invalid task ID format: "
-                    << request.task_metadata().task_id();
-    } else if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
-      actor_service->StopTask(actor::TaskId(task_id_int),
-                              actor::ActorTask::StoppedReason::kStoppedByUser);
-      stopped = true;
-    }
-  }
-
-  if (message.has_server_channel_configuration() && message_sender_) {
-    components_sharing_message::SharingMessage response_message;
-    auto* triggering_response =
-        response_message.mutable_glic_experimental_triggering();
-    auto* response = triggering_response->mutable_response();
-    auto* task_update = response->mutable_task_update();
-
-    if (stopped) {
-      task_update->set_state(
-          components_sharing_message::GlicExperimentalTriggering::
-              ExperimentalTriggeringResponse::TaskUpdate::STOPPED);
-    } else {
-      task_update->set_state(
-          components_sharing_message::GlicExperimentalTriggering::
-              ExperimentalTriggeringResponse::TaskUpdate::FAILED);
-      task_update->set_data_type(
-          components_sharing_message::GlicExperimentalTriggering::
-              ExperimentalTriggeringResponse::TaskUpdate::ERROR_MESSAGE);
-      task_update->set_data(
-          "Failed to stop task due to missing or invalid metadata.");
-    }
-
-    message_sender_->SendMessageToServerTarget(
-        message.server_channel_configuration(), kUpdateMessageTimeout,
-        std::move(response_message), SharingMessageSender::DelegateType::kFCM,
-        base::BindOnce(
-            [](SharingSendMessageResult result,
-               std::unique_ptr<components_sharing_message::ResponseMessage>
-                   response) {
-              if (result != SharingSendMessageResult::kSuccessful) {
-                DLOG(WARNING) << "Failed to send response to server. Result: "
-                              << static_cast<int>(result);
-              }
-            }));
-  }
-
-  std::move(done_callback).Run(nullptr);
+void GlicExperimentalTriggeringMessageHandler::OnUpdatesHandlerCleanup(
+    std::string context_id) {
+  context_id_to_updates_handler_map_.erase(context_id);
 }
