@@ -110,8 +110,7 @@ class BrowserFrameViewChromeOS
                                intptr_t old) override;
 
   // ImmersiveModeController::Observer:
-  void OnImmersiveRevealStarted() override;
-  void OnImmersiveRevealEnded() override;
+  void OnImmersiveFullscreenEntered() override;
   void OnImmersiveFullscreenExited() override;
 
   // apps::AppRegistryCache::Observer:

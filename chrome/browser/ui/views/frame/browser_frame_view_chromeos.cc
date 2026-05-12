@@ -792,34 +792,16 @@ void BrowserFrameViewChromeOS::OnWindowPropertyChanged(aura::Window* window,
   }
 }
 
-void BrowserFrameViewChromeOS::OnImmersiveRevealStarted() {
+void BrowserFrameViewChromeOS::OnImmersiveFullscreenEntered() {
   ResetWindowControls();
-  // The frame caption buttons use ink drop highlights and flood fill effects.
-  // They make those buttons paint_to_layer. On immersive mode, the browser's
-  // TopContainerView is also converted to paint_to_layer (see
-  // ImmersiveModeControllerAsh::OnImmersiveRevealStarted()). In this mode, the
-  // TopContainerView is responsible for painting this
-  // BrowserFrameViewChromeOS (see TopContainerView::PaintChildren()).
-  // However, BrowserFrameViewChromeOS is a sibling of TopContainerView
-  // not a child. As a result, when the frame caption buttons are set to
-  // paint_to_layer as a result of an ink drop effect, they will disappear.
-  // https://crbug.com/40575107. To fix this, we'll make the caption buttons
-  // temporarily children of the TopContainerView while they're all painting to
-  // their layers.
   auto* container = GetBrowserView()->top_container();
   container->AddChildViewAt(caption_button_container_.get(), 0);
-
-  container->DeprecatedLayoutImmediately();
-}
-
-void BrowserFrameViewChromeOS::OnImmersiveRevealEnded() {
-  ResetWindowControls();
-  AddChildViewAt(caption_button_container_.get(), 0);
-
-  DeprecatedLayoutImmediately();
 }
 
 void BrowserFrameViewChromeOS::OnImmersiveFullscreenExited() {
+  ResetWindowControls();
+  AddChildViewAt(caption_button_container_.get(), 0);
+
   OnImmersiveRevealEnded();
 }
 
