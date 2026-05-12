@@ -8811,6 +8811,7 @@
                         "DeviceBoundSessionsForRestrictedSites",
                         "EnableChromeRefreshTokenBinding",
                         "EnableOAuthMultiloginStandardCookiesBinding",
+                        "EnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions",
                         "PersistDeviceBoundSessions",
                         "UnexportableKeyDeletion",
                         "UseUnexportableKeyServiceInBrowserProcess"
