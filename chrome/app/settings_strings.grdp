@@ -4698,4 +4698,41 @@
       </message>
     </else>
   </if>
+
+  <!-- Experimental settings - CPU Performance Override -->
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_OVERRIDE_TITLE" desc="Title for the CPU performance override setting.">
+    Override CPU performance tier
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_OVERRIDE_DESCRIPTION" desc="Description for the CPU performance override setting.">
+    Manually set the CPU performance tier reported to websites
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_NOMINAL_TIER" desc="Label showing the nominal hardware CPU performance tier.">
+    The nominal performance tier is: <ph name="CPU_TIER">$1<ex>Tier 3: HIGH</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_MODEL" desc="Label showing the CPU model and number of cores.">
+    CPU: <ph name="CPU_MODEL">$1<ex>Intel Core i7</ex></ph> (<ph name="CPU_CORES">$2<ex>8 cores</ex></ph>)
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_CORES" desc="Label showing number of CPU cores.">
+    {CORE_COUNT, plural,
+      =1 {1 core}
+      other {{CORE_COUNT} cores}}
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_TIER_DEFAULT" desc="Label for the default (no override) option in the CPU performance tier setting.">
+    Don't override
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_TIER_UNKNOWN" desc="Label for the 'Unknown' CPU performance tier.">
+    Tier 0: UNKNOWN
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_TIER_LOW" desc="Label for the 'Low' CPU performance tier.">
+    Tier 1: LOW
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_TIER_MID" desc="Label for the 'Mid' CPU performance tier.">
+    Tier 2: MID
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_TIER_HIGH" desc="Label for the 'High' CPU performance tier.">
+    Tier 3: HIGH
+  </message>
+  <message name="IDS_SETTINGS_CPU_PERFORMANCE_TIER_ULTRA" desc="Label for the 'Ultra' CPU performance tier.">
+    Tier 4: ULTRA
+  </message>
 </grit-part>

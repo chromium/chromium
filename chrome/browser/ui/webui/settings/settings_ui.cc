@@ -478,6 +478,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString(
       "batchUploadPromoLabel", IDS_BATCH_UPLOAD_PROMO_SUBTITLE_ITEMS_WITH_LINK);
 #endif
+  plural_string_handler->AddLocalizedString("cpuPerformanceCores",
+                                            IDS_SETTINGS_CPU_PERFORMANCE_CORES);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   // Add the metrics handler to write uma stats.

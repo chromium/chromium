@@ -6,11 +6,14 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement, SpeedPageElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {SettingsDropdownMenuElement, SettingsPrefsElement, SpeedPageElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, PerformanceBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 
 suite('SpeedPage', function() {
   function getFakePrefs() {
@@ -139,5 +142,149 @@ suite('SpeedPage', function() {
     await expandButton.updateComplete;
 
     assertFalse(speedPage.$.preloadingExtended.expanded);
+  });
+});
+
+suite('CpuPerformanceOverride', function() {
+  let speedPage: SpeedPageElement;
+  let performanceBrowserProxy: TestPerformanceBrowserProxy;
+
+  setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      cpuPerformanceEnabled: true,
+    });
+
+    performanceBrowserProxy = new TestPerformanceBrowserProxy();
+    performanceBrowserProxy.setCpuPerformanceInfo({
+      hardwareTier: 2,
+      model: 'Intel Core i7',
+      cores: 8,
+    });
+    PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
+
+    speedPage = document.createElement('settings-speed-page');
+    speedPage.prefs = {
+      net: {
+        network_prediction_options: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: NetworkPredictionOptions.STANDARD,
+        },
+      },
+      cpu_performance_tier_override: {
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: -1,  // no override
+      },
+    };
+    document.body.appendChild(speedPage);
+    await performanceBrowserProxy.whenCalled('getCpuPerformanceInfo');
+    await flushTasks();
+  });
+
+  test('HardwareInfoPresent', function() {
+    const secondary =
+        speedPage.shadowRoot!.querySelector('#cpuPerformanceInfo');
+
+    assertTrue(!!secondary);
+    const text = secondary.textContent || '';
+    assertStringContains(text, 'Intel Core i7');
+    assertStringContains(text, '8 cores');
+    assertStringContains(text, 'Tier 2: MID');
+  });
+
+  test('DropdownSelectionUpdatesPref', function() {
+    const dropdown =
+        speedPage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#cpuPerformanceOverrideDropdown');
+    assertTrue(!!dropdown);
+
+    // Verify that the dropdown is enabled and both the dropdown and the pref
+    // are initially -1.
+    assertFalse(dropdown.disabled);
+    assertEquals('-1', dropdown.$.dropdownMenu.value);
+    assertEquals(
+        -1,  // no override
+        speedPage.getPref('cpu_performance_tier_override').value);
+
+    // Select 'High' (value 3).
+    dropdown.$.dropdownMenu.value = '3';
+    dropdown.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
+
+    // Verify that the pref changed.
+    assertEquals(
+        3,  // 'High'
+        speedPage.getPref('cpu_performance_tier_override').value);
+  });
+
+  test('DropdownDisabledWhenPolicyActive', async function() {
+    speedPage.prefs = {
+      net: {
+        network_prediction_options: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: NetworkPredictionOptions.STANDARD,
+        },
+      },
+      cpu_performance_tier_override: {
+        key: 'cpu_performance_tier_override',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: 4,  // Ultra
+        controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      },
+    };
+    flush();
+
+    const dropdown =
+        speedPage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#cpuPerformanceOverrideDropdown');
+    assertTrue(!!dropdown);
+
+    await flushTasks();
+    await microtasksFinished();
+
+    // Verify that the dropdown is disabled and shows the policy indicator.
+    assertTrue(dropdown.shadowRoot!.querySelector('select')!.disabled);
+    assertTrue(
+        !!dropdown.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+
+    // Verify the component respects the enforced preference value.
+    assertEquals(4, speedPage.getPref('cpu_performance_tier_override').value);
+
+    // Verify the UI displays the enforced value.
+    assertEquals('4', dropdown.$.dropdownMenu.value);
+  });
+});
+
+suite('CpuPerformanceOverrideFeatureDisabled', function() {
+  let speedPage: SpeedPageElement;
+  let performanceBrowserProxy: TestPerformanceBrowserProxy;
+
+  setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      cpuPerformanceEnabled: false,
+    });
+
+    performanceBrowserProxy = new TestPerformanceBrowserProxy();
+    PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
+
+    speedPage = document.createElement('settings-speed-page');
+    speedPage.prefs = {
+      net: {
+        network_prediction_options: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: NetworkPredictionOptions.STANDARD,
+        },
+      },
+    };
+    document.body.appendChild(speedPage);
+    await flushTasks();
+  });
+
+  test('FeatureDisabled', function() {
+    // Verify that the setting is missing.
+    const section =
+        speedPage.shadowRoot!.querySelector('#cpuPerformanceOverrideDropdown');
+    assertNull(section);
   });
 });

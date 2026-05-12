@@ -54,6 +54,12 @@ class PerformanceHandler : public SettingsPageUIHandler,
   void HandleGetDeviceHasBattery(const base::ListValue& args);
   void HandleOpenFeedbackDialog(const base::ListValue& args);
   void HandleValidateTabDiscardExceptionRule(const base::ListValue& args);
+
+  /**
+   * This function is called from the frontend in order to get the information
+   * shown in the CPU Performance Tier Override settings page.
+   */
+  void HandleGetCpuPerformanceInfo(const base::ListValue& args);
 };
 
 }  // namespace settings

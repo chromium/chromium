@@ -3336,8 +3336,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // the destination.
   virtual bool ShouldAnimateBackForwardTransitions();
 
-  // Returns the enterprise policy override for the CPU performance tier,
-  // if one is configured.
+  // Returns the enterprise policy or user setting override for the CPU
+  // performance tier, if one is configured.
   virtual std::optional<int> GetCpuPerformanceTierOverride(
       BrowserContext* browser_context);
 

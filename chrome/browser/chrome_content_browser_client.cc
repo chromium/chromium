@@ -1637,7 +1637,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kPrefetchWithServiceWorkerEnabled, true);
   registry->RegisterBooleanPref(prefs::kServiceWorkerAutoPreloadEnabled, true);
 
-  registry->RegisterIntegerPref(prefs::kCpuPerformanceTierPolicyOverride,
+  registry->RegisterIntegerPref(prefs::kCpuPerformanceTierOverride,
                                 prefs::kCpuPerformanceTierOverrideNone);
 }
 
@@ -9209,7 +9209,7 @@ std::optional<int> ChromeContentBrowserClient::GetCpuPerformanceTierOverride(
   if (browser_context) {
     const PrefService* prefs =
         Profile::FromBrowserContext(browser_context)->GetPrefs();
-    if (int value = prefs->GetInteger(prefs::kCpuPerformanceTierPolicyOverride);
+    if (int value = prefs->GetInteger(prefs::kCpuPerformanceTierOverride);
         value != prefs::kCpuPerformanceTierOverrideNone) {
       return value;
     }

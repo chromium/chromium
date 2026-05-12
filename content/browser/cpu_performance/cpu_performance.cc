@@ -153,8 +153,6 @@ std::pair<Manufacturer, std::string> SplitCpuModel(std::string_view cpu_model) {
   return {manufacturer, text};
 }
 
-namespace cached_cpu_info {
-
 namespace {
 struct CpuInfoState {
   base::Lock lock;
@@ -167,7 +165,6 @@ CpuInfoState& GetCpuInfoState() {
   static base::NoDestructor<CpuInfoState> state;
   return *state;
 }
-}  // anonymous namespace
 
 void InitializeFromCores() {
   int cores = base::SysInfo::NumberOfProcessors();
@@ -189,6 +186,8 @@ void InitializeFromCpuInfo() {
   GetCpuInfoState().tier = tier;
 }
 
+}  // anonymous namespace
+
 Tier GetTier() {
   base::AutoLock auto_lock(GetCpuInfoState().lock);
   return GetCpuInfoState().tier;
@@ -204,14 +203,12 @@ int GetCores() {
   return GetCpuInfoState().cores;
 }
 
-}  // namespace cached_cpu_info
-
 void Initialize() {
   if (base::FeatureList::IsEnabled(blink::features::kCpuPerformance)) {
     // Use a simple, default implementation which is non-blocking, so that we
     // have a reasonable computed value in the unlikely case that the tier is
     // fetched by renderer initialization before the task executes.
-    cached_cpu_info::InitializeFromCores();
+    InitializeFromCores();
 
     // Post the task that will update the tier asynchronously, using the more
     // accurate (but potentially blocking) implementation. Note that this task
@@ -219,12 +216,8 @@ void Initialize() {
     // reads /proc/cpuinfo.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&cached_cpu_info::InitializeFromCpuInfo));
+        base::BindOnce(&InitializeFromCpuInfo));
   }
-}
-
-Tier GetTier() {
-  return cached_cpu_info::GetTier();
 }
 
 Tier GetTierFromCores(int cores) {

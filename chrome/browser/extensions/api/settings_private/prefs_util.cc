@@ -1299,6 +1299,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[performance_manager::user_tuning::prefs::
                      kPerformanceInterventionNotificationEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[prefs::kCpuPerformanceTierOverride] =
+      settings_api::PrefType::kNumber;
 
   // AI settings.
   (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/performance_manager/public/features.h"
 #include "components/url_matcher/url_util.h"
+#include "content/public/browser/cpu_performance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -45,6 +46,10 @@ void PerformanceHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getCurrentOpenSites",
       base::BindRepeating(&PerformanceHandler::HandleGetCurrentOpenSites,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getCpuPerformanceInfo",
+      base::BindRepeating(&PerformanceHandler::HandleGetCpuPerformanceInfo,
                           base::Unretained(this)));
 }
 
@@ -146,6 +151,24 @@ void PerformanceHandler::HandleValidateTabDiscardExceptionRule(
       &components.port, &components.path, &components.query);
 
   ResolveJavascriptCallback(callback_id, base::Value(is_valid));
+}
+
+void PerformanceHandler::HandleGetCpuPerformanceInfo(
+    const base::ListValue& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  AllowJavascript();
+
+  // The dictionary keys here must match the properties in
+  // chrome/browser/resources/settings/performance_page/performance_page.ts.
+  base::DictValue info;
+  info.Set("hardwareTier",
+           base::Value(static_cast<int>(content::cpu_performance::GetTier())));
+  info.Set("model", base::Value(content::cpu_performance::GetModel()));
+  info.Set("cores", base::Value(content::cpu_performance::GetCores()));
+
+  ResolveJavascriptCallback(callback_id, std::move(info));
 }
 
 }  // namespace settings

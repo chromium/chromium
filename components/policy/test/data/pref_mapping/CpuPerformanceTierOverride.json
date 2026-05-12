@@ -9,7 +9,7 @@
       "desktop_android"
     ],
     "simple_policy_pref_mapping_test": {
-      "pref_name": "cpu_performance_tier_policy_override",
+      "pref_name": "cpu_performance_tier_override",
       "default_value": -1,
       "values_to_test": [0, 1, 2, 3, 4]
     }

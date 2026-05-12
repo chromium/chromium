@@ -3775,7 +3775,7 @@ if (!is_android) {
       "../browser/performance_manager/policies/transient_keep_alive_policy_browsertest.cc",
       "../browser/performance_manager/user_tuning/performance_detection_manager_browsertest.cc",
       "../browser/performance_timeline_browsertest.cc",
-      "../browser/policy/cpu_performance_policy_browsertest.cc",
+      "../browser/policy/cpu_performance_override_browsertest.cc",
       "../browser/policy/policy_initialization_browsertest.cc",
       "../browser/policy/test/cast_policy_browsertest.cc",
       "../browser/policy/test/content_settings_policy_browsertest.cc",

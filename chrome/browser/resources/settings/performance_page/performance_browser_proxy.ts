@@ -11,7 +11,14 @@ export enum PerformanceFeedbackCategory {
   SPEED = 'performance_speed',
 }
 
+export interface CpuPerformanceInfo {
+  hardwareTier: number;
+  model: string;
+  cores: number;
+}
+
 export interface PerformanceBrowserProxy {
+  getCpuPerformanceInfo(): Promise<CpuPerformanceInfo>;
   getCurrentOpenSites(): Promise<string[]>;
   getDeviceHasBattery(): Promise<boolean>;
   openFeedbackDialog(categoryTag: PerformanceFeedbackCategory): void;
@@ -19,6 +26,10 @@ export interface PerformanceBrowserProxy {
 }
 
 export class PerformanceBrowserProxyImpl implements PerformanceBrowserProxy {
+  getCpuPerformanceInfo() {
+    return sendWithPromise<CpuPerformanceInfo>('getCpuPerformanceInfo');
+  }
+
   getCurrentOpenSites() {
     return sendWithPromise<string[]>('getCurrentOpenSites');
   }

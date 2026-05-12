@@ -307,7 +307,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kComponentUpdatesEnabled,
     base::Value::Type::BOOLEAN },
   { key::kCpuPerformanceTierOverride,
-    prefs::kCpuPerformanceTierPolicyOverride,
+    prefs::kCpuPerformanceTierOverride,
     base::Value::Type::INTEGER },
   { key::kDataURLWhitespacePreservationEnabled,
     prefs::kDataURLWhitespacePreservationEnabled,

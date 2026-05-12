@@ -2,21 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PerformanceBrowserProxy} from 'chrome://settings/settings.js';
+import type {CpuPerformanceInfo, PerformanceBrowserProxy} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
     PerformanceBrowserProxy {
   private currentSites_: string[] = [];
   private validationResults_: Record<string, boolean> = {};
+  private cpuPerformanceInfo_: CpuPerformanceInfo = {
+    hardwareTier: 0,
+    model: '',
+    cores: 0,
+  };
 
   constructor() {
     super([
+      'getCpuPerformanceInfo',
       'getCurrentOpenSites',
       'getDeviceHasBattery',
       'openFeedbackDialog',
       'validateTabDiscardExceptionRule',
     ]);
+  }
+
+  setCpuPerformanceInfo(info: CpuPerformanceInfo) {
+    this.cpuPerformanceInfo_ = info;
+  }
+
+  getCpuPerformanceInfo() {
+    this.methodCalled('getCpuPerformanceInfo');
+    return Promise.resolve(this.cpuPerformanceInfo_);
   }
 
   setCurrentOpenSites(currentSites: string[]) {

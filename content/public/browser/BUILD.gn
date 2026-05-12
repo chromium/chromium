@@ -129,6 +129,7 @@ source_set("browser_sources") {
     "cookie_store_factory.h",
     "cors_origin_pattern_setter.cc",
     "cors_origin_pattern_setter.h",
+    "cpu_performance.h",
     "cross_device_request_info.h",
     "dedicated_worker_creator.h",
     "dedicated_worker_service.h",

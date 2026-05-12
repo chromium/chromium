@@ -10,6 +10,14 @@
   settings-collapse-radio-button:not(:first-of-type) {
     --settings-collapse-separator-line: var(--cr-separator-line);
   }
+
+  .cpu-performance-override-header,
+  #cpuPerformanceInfo {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+  }
 </style>
 <settings-section
 <if expr="_google_chrome">
@@ -110,4 +118,31 @@
       </settings-radio-group>
     </div>
   </cr-collapse>
+
+  <template is="dom-if" if="[[cpuPerformanceEnabled_]]">
+    <div class="hr"></div>
+    <div class="cr-row">
+      <div class="cpu-performance-override-header cr-padded-text">
+        <div>$i18n{cpuPerformanceOverrideTitle}</div>
+        <div class="cr-secondary-text">
+          $i18n{cpuPerformanceOverrideDescription}
+        </div>
+      </div>
+    </div>
+    <div class="cr-row continuation">
+      <div id="cpuPerformanceInfo" class="cr-padded-text">
+        <template is="dom-if" if="[[cpuPerformanceInfo_]]">
+          <div class="cr-secondary-text">[[cpuPerformanceModelLabel_]]</div>
+          <div class="cr-secondary-text">
+            [[getCpuPerformanceNominalTierLabel_(
+                cpuPerformanceInfo_.hardwareTier)]]
+          </div>
+        </template>
+      </div>
+      <settings-dropdown-menu id="cpuPerformanceOverrideDropdown"
+          pref="{{prefs.cpu_performance_tier_override}}"
+          menu-options="[[cpuPerformanceTierOptions_]]">
+      </settings-dropdown-menu>
+    </div>
+  </template>
 </settings-section>

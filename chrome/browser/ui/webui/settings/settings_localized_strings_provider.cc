@@ -1135,6 +1135,19 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_HOVER_PREVIEW_CARD_LINK_SUBTITLE},
       {"performanceInterventionEnabledLabel",
        IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_LABEL},
+      {"cpuPerformanceOverrideTitle",
+       IDS_SETTINGS_CPU_PERFORMANCE_OVERRIDE_TITLE},
+      {"cpuPerformanceOverrideDescription",
+       IDS_SETTINGS_CPU_PERFORMANCE_OVERRIDE_DESCRIPTION},
+      {"cpuPerformanceNominalTier", IDS_SETTINGS_CPU_PERFORMANCE_NOMINAL_TIER},
+      {"cpuPerformanceModel", IDS_SETTINGS_CPU_PERFORMANCE_MODEL},
+      {"cpuPerformanceCores", IDS_SETTINGS_CPU_PERFORMANCE_CORES},
+      {"cpuPerformanceTierDefault", IDS_SETTINGS_CPU_PERFORMANCE_TIER_DEFAULT},
+      {"cpuPerformanceTierUnknown", IDS_SETTINGS_CPU_PERFORMANCE_TIER_UNKNOWN},
+      {"cpuPerformanceTierLow", IDS_SETTINGS_CPU_PERFORMANCE_TIER_LOW},
+      {"cpuPerformanceTierMid", IDS_SETTINGS_CPU_PERFORMANCE_TIER_MID},
+      {"cpuPerformanceTierHigh", IDS_SETTINGS_CPU_PERFORMANCE_TIER_HIGH},
+      {"cpuPerformanceTierUltra", IDS_SETTINGS_CPU_PERFORMANCE_TIER_ULTRA},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -1237,6 +1250,10 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
                              chromeos::settings::mojom::kPowerSubpagePath)
                              .spec());
 #endif
+
+  html_source->AddBoolean(
+      "cpuPerformanceEnabled",
+      base::FeatureList::IsEnabled(blink::features::kCpuPerformance));
 }
 
 void AddLanguagesStrings(content::WebUIDataSource* html_source,

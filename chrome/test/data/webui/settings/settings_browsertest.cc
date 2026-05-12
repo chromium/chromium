@@ -1178,7 +1178,17 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SmartCardReadersPage) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SpeedPage) {
-  RunTest("settings/speed_page_test.js", "mocha.run()");
+  RunTest("settings/speed_page_test.js", "runMochaSuite('SpeedPage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, CpuPerformanceOverride) {
+  RunTest("settings/speed_page_test.js",
+          "runMochaSuite('CpuPerformanceOverride')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, CpuPerformanceOverrideFeatureDisabled) {
+  RunTest("settings/speed_page_test.js",
+          "runMochaSuite('CpuPerformanceOverrideFeatureDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, OnStartupPage) {
