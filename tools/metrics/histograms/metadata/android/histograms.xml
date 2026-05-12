@@ -126,6 +126,11 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
+<variants name="HandoffEnableTrigger">
+  <variant name="TabSwitch" summary="First tab init and tab switch"/>
+  <variant name="UrlNavigation" summary="URL navigation"/>
+</variants>
+
 <variants name="HubSwipeDirection">
   <variant name=".Left" summary="left"/>
   <variant name=".Right" summary="right"/>
@@ -2466,6 +2471,18 @@ chromium-metrics-reviews@google.com.
     state was already initialized. Recorded at most once per session once the
     tab state is initialized.
   </summary>
+</histogram>
+
+<histogram name="Android.Handoff.Enabled.{UpdateType}" enum="Boolean"
+    expires_after="2026-10-07">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether Handoff is enabled for the current activity during
+    {UpdateType}. Handoff is enabled if the user is in a normal tab (not
+    incognito) and there is an active tab.
+  </summary>
+  <token key="UpdateType" variants="HandoffEnableTrigger"/>
 </histogram>
 
 <histogram name="Android.Hub.PaneFocused" enum="HubPaneId"

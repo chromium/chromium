@@ -16282,6 +16282,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="HandoffDataRequested">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Recorded on the sender device when the Android OS requests Handoff data (the
+    active URL) from Chrome.
+  </description>
+</action>
+
+<action name="HandoffDisabled">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Recorded when Handoff is disabled (e.g. switched to incognito, tab becomes
+    null, or policy disallowed).
+  </description>
+</action>
+
 <action name="HarmfulInterstitial.Advanced">
   <owner>carlosil@chromium.org</owner>
   <description>
