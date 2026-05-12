@@ -111,11 +111,27 @@ class AgentInvoker:
                         file_handle.write('')
         return True
 
+def get_tracked_files(base_dir):
+    """Returns a set of all files in base_dir, excluding .temp and
+    __pycache__."""
+    tracked_files = set()
+    for root, dirs, files in os.walk(base_dir):
+        if ".temp" in dirs:
+            dirs.remove(".temp")
+        if "__pycache__" in dirs:
+            dirs.remove("__pycache__")
+        for f in files:
+            tracked_files.add(os.path.join(root, f))
+    return tracked_files
+
+
 def run_test_case(case, base_inputs, invoker, original_test_dir):
     """Runs a single test case."""
     print(f"Running test case: {case['name']}")
 
-    with tempfile.TemporaryDirectory() as temp_dir:
+    temp_base = os.path.join(original_test_dir, "..", ".temp")
+    os.makedirs(temp_base, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=temp_base) as temp_dir:
         # Copy testdata to temp dir
         src_testdata = os.path.join(original_test_dir, 'testdata')
         dst_testdata = os.path.join(temp_dir, 'testdata')
@@ -153,10 +169,22 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
         if not expected_files:
             expected_files = [full_output_path]
 
+        # Record files before
+        files_before = get_tracked_files(os.path.join(original_test_dir, ".."))
+
         # Invoke agent
         success = invoker.invoke(
             prompt, expected_files, expected_outputs, cwd=temp_dir
         )
+
+        # Record files after
+        files_after = get_tracked_files(os.path.join(original_test_dir, ".."))
+
+        leaked_files = files_after - files_before
+        if leaked_files:
+            print(f"FAIL: Leaked files detected outside .temp/: {leaked_files}")
+            return False
+
         if not success:
             print(f"FAIL: Agent invocation failed for {case['name']}")
             return False
