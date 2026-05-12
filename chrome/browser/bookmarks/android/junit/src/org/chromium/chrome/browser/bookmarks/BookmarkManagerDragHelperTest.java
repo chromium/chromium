@@ -89,9 +89,8 @@ public class BookmarkManagerDragHelperTest {
 
     @Test
     public void testTouch_Scenario1_LongPressSelectsAndDrags() {
-        // Scenario 1: None of the items in the list are selected.
+        // Scenario 1: Item is not selected.
         doReturn(false).when(mSelectionDelegate).isItemSelected(mBookmarkId);
-        doReturn(false).when(mSelectionDelegate).isSelectionEnabled();
 
         // Perform action down.
         boolean consumed =
@@ -125,9 +124,8 @@ public class BookmarkManagerDragHelperTest {
 
     @Test
     public void testTouch_Scenario2_AlreadySelectedStartsDragQuickly() {
-        // Scenario 2: Selection Active, item is already selected.
+        // Scenario 2: Item is already selected.
         doReturn(true).when(mSelectionDelegate).isItemSelected(mBookmarkId);
-        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
 
         // Perform action down.
         mDragHelper.onRowBodyTouch(
@@ -141,34 +139,6 @@ public class BookmarkManagerDragHelperTest {
         // Verify drag starts quickly (100ms) without toggling selection.
         ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
         verify(mItemTouchHelper).startDrag(mViewHolder);
-        verify(mSelectionDelegate, never()).toggleSelectionForItem(any());
-    }
-
-    @Test
-    public void testTouch_Scenario3_SelectionActiveButNotThisItem() {
-        // Scenario 3: Selection Active (other items are selected), but this item is not.
-        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
-        doReturn(false).when(mSelectionDelegate).isItemSelected(mBookmarkId);
-
-        // Perform action down.
-        mDragHelper.onRowBodyTouch(
-                mItemView,
-                obtainEvent(
-                        /* action= */ MotionEvent.ACTION_DOWN,
-                        /* x= */ 50f,
-                        /* y= */ 50f,
-                        /* toolType= */ MotionEvent.TOOL_TYPE_FINGER));
-
-        // Verify that we long-press for 500ms. Drag should not have started at 499ms.
-        ShadowLooper.idleMainLooper(499, TimeUnit.MILLISECONDS);
-        verify(mItemTouchHelper, never()).startDrag(any());
-
-        // Advance to 599ms.
-        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
-
-        // Verify that drag has started.
-        verify(mItemTouchHelper).startDrag(mViewHolder);
-        // Verify that selection toggle has never happened.
         verify(mSelectionDelegate, never()).toggleSelectionForItem(any());
     }
 

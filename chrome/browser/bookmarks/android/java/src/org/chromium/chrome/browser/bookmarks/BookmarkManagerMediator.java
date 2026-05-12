@@ -273,10 +273,7 @@ class BookmarkManagerMediator
                 @Override
                 public void onSelectionStateChange(List<BookmarkId> selectedBookmarks) {
                     clearHighlight();
-
-                    if (mIsSelectionEnabled != mSelectionDelegate.isSelectionEnabled()) {
-                        changeSelectionMode(mSelectionDelegate.isSelectionEnabled());
-                    }
+                    changeSelectionMode(mSelectionDelegate.isSelectionEnabled());
                 }
             };
 

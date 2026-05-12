@@ -26,7 +26,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
  */
 @NullMarked
 public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListener {
-    private static final int DEFAULT_DRAG_START_DELAY_MS = 500;
     private static final int DRAG_START_DELAY_MS = 100;
     private static final int SELECTION_START_DELAY_MS = 500;
     private static final int HIDE_HANDLE_DELAY_MS = 50;
@@ -122,18 +121,13 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
             mIsLongPressTriggered = false;
 
             boolean isSelected = mSelectionDelegate.isItemSelected(mBookmarkId);
-            boolean selectionEnabled = mSelectionDelegate.isSelectionEnabled();
 
             if (isSelected) {
-                // Scenario 2: Row is selected. -> 100ms drag timer.
+                // Row is selected. -> 100ms drag timer.
                 mHandler.postDelayed(mStartDragRunnable, DRAG_START_DELAY_MS);
-            } else if (selectionEnabled) {
-                // Scenario 3: Row is unselected but there is another row that is selected. -> 500ms
-                // drag timer (no selection toggle).
-                mHandler.postDelayed(mStartDragRunnable, DEFAULT_DRAG_START_DELAY_MS);
             } else {
-                // Scenario 1: No rows currently selected. -> 500ms select timer -> 100ms drag
-                // timer.
+                // If the row is unselected (regardless of whether selection mode is already active
+                // due to another item being selected): -> 500ms select timer -> 100ms drag timer.
                 mHandler.postDelayed(mSelectRunnable, SELECTION_START_DELAY_MS);
             }
             // Consume event.
