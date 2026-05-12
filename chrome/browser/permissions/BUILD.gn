@@ -173,6 +173,10 @@ source_set("permissions") {
     deps += [ "//chrome/browser/clipboard" ]
   }
 
+  if (enable_extensions && !is_android) {
+    deps += [ "//extensions/browser/mime_handler" ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/app_mode/isolated_web_app",
@@ -339,6 +343,14 @@ if (!is_android) {
       "//components/passage_embeddings/core:test_support",
       "//components/permissions/prediction_service",
     ]
+
+    if (enable_extensions) {
+      deps += [
+        "//chrome/browser/extensions",
+        "//extensions:test_support",
+        "//extensions/browser/mime_handler",
+      ]
+    }
 
     if (is_chromeos) {
       sources += [ "system/system_permission_settings_chromeos_unittest.cc" ]
