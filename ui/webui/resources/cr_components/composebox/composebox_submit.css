@@ -115,9 +115,13 @@
 }
 
 :host-context([energy-effect-animation-enabled_])
-  #submitContainer:active #submitEnergy,
+  #submitContainer:active:hover #submitEnergy,
 :host-context([energy-effect-animation-enabled_])
-  #submitContainer:active #submitOverlay {
+  #submitContainer:active:focus-visible #submitEnergy,
+:host-context([energy-effect-animation-enabled_])
+  #submitContainer:active:hover #submitOverlay,
+:host-context([energy-effect-animation-enabled_])
+  #submitContainer:active:focus-visible #submitOverlay {
   scale: var(--button-scale-x) 1;
   transition-duration: var(--on-press-duration);
 }
@@ -127,7 +131,9 @@
  * multiply the button's X-scale by the icon's X-scale to mimic
  * the icon being stretched by a scaling parent before squishing. */
 :host-context([energy-effect-animation-enabled_])
-  #submitContainer:active #submitIcon {
+  #submitContainer:active:hover #submitIcon,
+:host-context([energy-effect-animation-enabled_])
+  #submitContainer:active:focus-visible #submitIcon {
   scale: calc(var(--button-scale-x) * var(--icon-scale-x)) var(--icon-scale-y);
   transition-duration: var(--on-press-duration);
 }
@@ -184,7 +190,9 @@
 }
 
 :host-context([energy-effect-animation-enabled_])
-  #submitContainer:active #submitEnergy::after {
+  #submitContainer:active:hover #submitEnergy::after,
+:host-context([energy-effect-animation-enabled_])
+  #submitContainer:active:focus-visible #submitEnergy::after {
   opacity: 1;
   transform: translate(0, 0);
   transition:
