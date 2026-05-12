@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Verify the unbounded IDL reflection.
+  assert_true: The unbounded IDL attribute should be exposed on HTMLElement. expected true got false
+[FAIL] Verify the default user-agent styling for [unbounded].
+  assert_equals: Element with unbounded attribute should default to visibility: hidden. expected "hidden" but got "visible"
+Harness: the test ran to completion.
+

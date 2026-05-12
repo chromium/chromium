@@ -6439,5 +6439,26 @@
       "dom@chromium.org"
     ],
     "expires": "never"
+  },
+  "This is for the Unbounded Element API. See crbug.com/508672616.",
+  "This virtual suite just ensures nothing breaks when the flag is disabled.",
+  {
+    "prefix": "unbounded-element-disabled",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "ChromeOS"
+    ],
+    "bases": [
+      "wpt_internal/html/rendering/unbounded_element"
+    ],
+    "args": [
+      "--disable-blink-features=UnboundedElement"
+    ],
+    "owners": [
+      "masonf@chromium.org"
+    ],
+    "expires": "Dec 1, 2026"
   }
 ]

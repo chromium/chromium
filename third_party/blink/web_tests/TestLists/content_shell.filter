@@ -25,6 +25,7 @@ virtual/unload-allowed/wpt_internal/*
 virtual/indexeddb_leveldb/wpt_internal/*
 virtual/cpu-compositing/wpt_internal/*
 virtual/gpu/wpt_internal/*
+virtual/unbounded-element-disabled/wpt_internal/*
 
 # Blocklisted tests fail unexpectedly on headless shell for at least one
 # platform, so continue running them on content shell.

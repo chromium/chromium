@@ -976,6 +976,11 @@ noframes, param, rp, script, style, template, title {
 input[type="hidden" i] {
   display: none !important;
 }
+@supports blink-feature(UnboundedElement) {
+  [unbounded] {
+    visibility: hidden;
+  }
+}
 
 area:-webkit-any-link {
     cursor: pointer;

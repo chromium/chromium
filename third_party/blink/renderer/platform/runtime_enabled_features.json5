@@ -6084,6 +6084,11 @@
       status: "experimental",
     },
     {
+      // The Unbounded Element API. See crbug.com/508672616.
+      name: "UnboundedElement",
+      status: "test",
+    },
+    {
       name: "UnclosedFormControlIsInvalid",
       status: "experimental",
     },

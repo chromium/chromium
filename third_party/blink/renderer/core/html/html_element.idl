@@ -77,6 +77,9 @@
     [RuntimeEnabled=OverscrollGestures,CEReactions,Reflect,ReflectOnly=("auto", "overlay"),ReflectEmpty="auto",ReflectInvalid="auto"] attribute DOMString? overscrollcontainer;
     [RuntimeEnabled=OverscrollGestures,CEReactions,Reflect,ReflectOnly=("auto"),ReflectEmpty="auto",ReflectInvalid="auto"] attribute DOMString? overscrollarea;
 
+    // Unbounded Element API
+    [RuntimeEnabled=UnboundedElement,CEReactions,Reflect] attribute boolean unbounded;
+
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([LegacyNullToEmptyString] DOMString or TrustedScript) innerText;
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [LegacyNullToEmptyString] DOMString outerText;

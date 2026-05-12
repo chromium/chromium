@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://github.com/masonfreed/unbounded-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="target"></div>
+
+<script>
+test(() => {
+  const element = document.getElementById('target');
+  assert_true('unbounded' in element, 'The unbounded IDL attribute should be exposed on HTMLElement.');
+  assert_false(element.unbounded, 'The default unbounded IDL attribute value should be false.');
+
+  element.setAttribute('unbounded', '');
+  assert_true(element.unbounded, 'The unbounded IDL attribute value should be true when content attribute is present.');
+
+  element.unbounded = false;
+  assert_false(element.hasAttribute('unbounded'), 'Setting the unbounded IDL attribute to false should remove the content attribute.');
+
+  element.unbounded = true;
+  assert_true(element.hasAttribute('unbounded'), 'Setting the unbounded IDL attribute to true should add the content attribute.');
+}, 'Verify the unbounded IDL reflection.');
+
+test(() => {
+  const element = document.getElementById('target');
+  element.unbounded = false;
+  assert_equals(getComputedStyle(element).visibility, 'visible', 'Default element without unbounded attribute should be visible.');
+
+  element.unbounded = true;
+  assert_equals(getComputedStyle(element).visibility, 'hidden', 'Element with unbounded attribute should default to visibility: hidden.');
+}, 'Verify the default user-agent styling for [unbounded].');
+</script>
