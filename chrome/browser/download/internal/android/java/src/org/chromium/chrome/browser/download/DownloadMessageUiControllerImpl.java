@@ -996,8 +996,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 && info.iconType != IconType.ANIMATED_VECTOR_DRAWABLE) {
             mPropertyModel.set(
                     MessageBannerProperties.ICON_TINT_COLOR,
-                    AppCompatResources.getColorStateList(getContext(), info.iconColorTintList)
-                            .getDefaultColor());
+                    getContext().getColorStateList(info.iconColorTintList).getDefaultColor());
         }
         mPropertyModel.set(MessageBannerProperties.TITLE, info.message);
 

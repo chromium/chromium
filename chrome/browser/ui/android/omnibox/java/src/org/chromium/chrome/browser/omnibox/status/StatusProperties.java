@@ -108,8 +108,7 @@ public class StatusProperties {
             if (mBitmap != null) {
                 Drawable drawable = new BitmapDrawable(context.getResources(), mBitmap);
                 if (mTint != 0) {
-                    DrawableCompat.setTintList(
-                            drawable, AppCompatResources.getColorStateList(context, mTint));
+                    DrawableCompat.setTintList(drawable, context.getColorStateList(mTint));
                 }
                 return drawable;
             } else if (mIconRes != null) {

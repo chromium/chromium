@@ -30,7 +30,6 @@ import android.view.animation.Interpolator;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -1880,8 +1879,7 @@ public class StripLayoutHelperManager
         Context context = mContext;
         @ColorInt
         int iconDefaultColor =
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_tint_list)
-                        .getDefaultColor();
+                context.getColorStateList(R.color.default_icon_color_tint_list).getDefaultColor();
         @ColorInt
         int iconIncognitoColor = context.getColor(R.color.default_icon_color_secondary_light);
 

@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.widget.ImageViewCompat;
 import androidx.test.core.app.ApplicationProvider;
@@ -484,9 +483,8 @@ public class TrustedCdnPublisherUrlTest {
                         res.getResourceName(locationBar.getSecurityIconResourceForTesting()));
             } else {
                 ColorStateList colorStateList =
-                        AppCompatResources.getColorStateList(
-                                ApplicationProvider.getApplicationContext(),
-                                R.color.default_icon_color_light_tint_list);
+                        ApplicationProvider.getApplicationContext()
+                                .getColorStateList(R.color.default_icon_color_light_tint_list);
                 ImageView expectedSecurityButton =
                         new ImageView(ApplicationProvider.getApplicationContext());
                 expectedSecurityButton.setImageResource(expectedSecurityIcon);

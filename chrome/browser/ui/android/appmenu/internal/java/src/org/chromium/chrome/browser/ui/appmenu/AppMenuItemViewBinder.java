@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.Px;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -129,8 +128,8 @@ class AppMenuItemViewBinder {
                 checkbox.setChecked(buttonModel.get(AppMenuItemProperties.CHECKED));
                 ImageViewCompat.setImageTintList(
                         checkbox,
-                        AppCompatResources.getColorStateList(
-                                checkbox.getContext(), R.color.selection_control_button_tint_list));
+                        checkbox.getContext()
+                                .getColorStateList(R.color.selection_control_button_tint_list));
                 setupMenuButton(checkbox, buttonModel, appMenuClickHandler);
             } else if (buttonModel.get(AppMenuItemProperties.ICON) != null) {
                 // Display an icon alongside the MenuItem.
@@ -142,9 +141,9 @@ class AppMenuItemViewBinder {
                     Drawable icon = buttonModel.get(AppMenuItemProperties.ICON);
                     DrawableCompat.setTintList(
                             icon,
-                            AppCompatResources.getColorStateList(
-                                    button.getContext(),
-                                    R.color.default_icon_color_secondary_tint_list));
+                            button.getContext()
+                                    .getColorStateList(
+                                            R.color.default_icon_color_secondary_tint_list));
                     buttonModel.set(AppMenuItemProperties.ICON, icon);
                 }
                 setupImageButton(button, buttonModel, appMenuClickHandler);
@@ -220,8 +219,7 @@ class AppMenuItemViewBinder {
                                 isChecked
                                         ? R.color.default_icon_color_accent1_tint_list
                                         : R.color.default_icon_color_tint_list;
-                        button.setIconTint(
-                                AppCompatResources.getColorStateList(button.getContext(), resId));
+                        button.setIconTint(button.getContext().getColorStateList(resId));
                     } else {
                         button.setCheckable(true);
                         button.setChecked(isChecked);
@@ -359,10 +357,10 @@ class AppMenuItemViewBinder {
         } else if (colorResId == 0) {
             // If there is no color assigned to the icon, use the default color.
             colorResId = R.color.default_icon_color_secondary_tint_list;
-            tintList = AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
+            tintList = imageView.getContext().getColorStateList(colorResId);
         } else {
             // User the specific color requested.
-            tintList = AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
+            tintList = imageView.getContext().getColorStateList(colorResId);
         }
 
         if (model.get(AppMenuItemProperties.ICON_SHOW_BADGE)) {
@@ -404,8 +402,8 @@ class AppMenuItemViewBinder {
         if (model.get(AppMenuItemProperties.CHECKED)) {
             ImageViewCompat.setImageTintList(
                     button,
-                    AppCompatResources.getColorStateList(
-                            button.getContext(), R.color.default_icon_color_accent1_tint_list));
+                    button.getContext()
+                            .getColorStateList(R.color.default_icon_color_accent1_tint_list));
         }
 
         setupMenuButton(button, model, appMenuClickHandler);

@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.StyleRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.Callback;
@@ -191,8 +190,8 @@ public class TabListEditorMenuItem {
         // the action view shown state is toggled.
         mListItem.model.set(
                 TabListEditorActionProperties.ICON_TINT,
-                AppCompatResources.getColorStateList(
-                        mContext, BrowserUiListMenuUtils.getDefaultIconTintColorStateListId()));
+                mContext.getColorStateList(
+                        BrowserUiListMenuUtils.getDefaultIconTintColorStateListId()));
         mIconTint = colorStateList;
         if (mActionView != null && mActionViewShowing) {
             TextViewCompat.setCompoundDrawableTintList(mActionView, colorStateList);

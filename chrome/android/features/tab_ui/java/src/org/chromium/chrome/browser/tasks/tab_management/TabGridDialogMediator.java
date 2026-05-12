@@ -20,7 +20,6 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
@@ -856,10 +855,8 @@ public class TabGridDialogMediator
                 TabUiThemeProvider.getTabGroupDialogBackgroundColor(context, isIncognito);
         ColorStateList tintList =
                 isIncognito
-                        ? AppCompatResources.getColorStateList(
-                                mActivity, R.color.default_icon_color_light_tint_list)
-                        : AppCompatResources.getColorStateList(
-                                mActivity, R.color.default_icon_color_tint_list);
+                        ? mActivity.getColorStateList(R.color.default_icon_color_light_tint_list)
+                        : mActivity.getColorStateList(R.color.default_icon_color_tint_list);
         @ColorInt
         int ungroupBarBackgroundColor =
                 TabUiThemeProvider.getTabGridDialogUngroupBarBackgroundColor(context, isIncognito);

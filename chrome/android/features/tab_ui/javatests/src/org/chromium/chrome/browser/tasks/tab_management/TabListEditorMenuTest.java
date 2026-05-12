@@ -25,7 +25,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
@@ -254,13 +253,11 @@ public class TabListEditorMenuTest {
             action.getPropertyModel()
                     .set(
                             TabListEditorActionProperties.TEXT_TINT,
-                            AppCompatResources.getColorStateList(
-                                    sActivity, R.color.default_text_color_list));
+                            sActivity.getColorStateList(R.color.default_text_color_list));
             action.getPropertyModel()
                     .set(
                             TabListEditorActionProperties.ICON_TINT,
-                            AppCompatResources.getColorStateList(
-                                    sActivity, R.color.default_icon_color_tint_list));
+                            sActivity.getColorStateList(R.color.default_icon_color_tint_list));
             action.configure(
                     () -> mTabModel,
                     mSelectionDelegate,

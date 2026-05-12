@@ -13,7 +13,6 @@ import android.graphics.Color;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -125,7 +124,7 @@ public class ThemeUtils {
      * @return The {@link ColorStateList} for the icon tint of themed toolbar.
      */
     public static ColorStateList getThemedToolbarIconTint(Context context, boolean useLight) {
-        return AppCompatResources.getColorStateList(context, getThemedToolbarIconTintRes(useLight));
+        return context.getColorStateList(getThemedToolbarIconTintRes(useLight));
     }
 
     /**
@@ -184,8 +183,7 @@ public class ThemeUtils {
             Context context,
             @BrandedColorScheme int brandedColorScheme,
             boolean isActivityFocused) {
-        return AppCompatResources.getColorStateList(
-                context,
+        return context.getColorStateList(
                 getThemedToolbarIconTintResForActivityState(brandedColorScheme, isActivityFocused));
     }
 

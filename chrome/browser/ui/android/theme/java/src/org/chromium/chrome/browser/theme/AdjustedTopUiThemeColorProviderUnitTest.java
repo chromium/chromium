@@ -20,7 +20,6 @@ import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -98,8 +97,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
     public void testUpdateColor() {
         @ColorInt int themeColor = mContext.getColor(R.color.default_icon_color_tint_list);
         ColorStateList adjustedTint =
-                AppCompatResources.getColorStateList(
-                        mContext, R.color.default_icon_color_white_tint_list);
+                mContext.getColorStateList(R.color.default_icon_color_white_tint_list);
         @BrandedColorScheme int adjustedBrandedColorScheme = BrandedColorScheme.DARK_BRANDED_THEME;
         assertNotEquals(themeColor, adjustedTint.getDefaultColor());
 
@@ -155,8 +153,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
     @Test
     public void testOnCustomBackgroundChanged_Ntp() {
         ColorStateList adjustedTint =
-                AppCompatResources.getColorStateList(
-                        mContext, R.color.default_icon_color_white_tint_list);
+                mContext.getColorStateList(R.color.default_icon_color_white_tint_list);
         @BrandedColorScheme int adjustedBrandedColorScheme = BrandedColorScheme.DARK_BRANDED_THEME;
         when(mNativePage.supportsEdgeToEdge()).thenReturn(true);
 

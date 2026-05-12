@@ -57,9 +57,7 @@ class UpdateMenuItemViewBinder {
             text.setContentDescription(model.get(AppMenuItemProperties.TITLE));
         } else if (key == TITLE_COLOR_ID) {
             TextView text = view.findViewById(R.id.menu_item_text);
-            text.setTextColor(
-                    AppCompatResources.getColorStateList(
-                            view.getContext(), model.get(TITLE_COLOR_ID)));
+            text.setTextColor(view.getContext().getColorStateList(model.get(TITLE_COLOR_ID)));
         } else if (key == AppMenuItemProperties.ICON) {
             ImageView image = view.findViewById(R.id.menu_item_icon);
             Drawable icon = model.get(AppMenuItemProperties.ICON);

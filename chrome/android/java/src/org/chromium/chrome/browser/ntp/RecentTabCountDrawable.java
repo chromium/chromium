@@ -15,8 +15,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.DrawableWrapper;
 import android.text.TextPaint;
 
-import androidx.appcompat.content.res.AppCompatResources;
-
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -50,9 +48,7 @@ public class RecentTabCountDrawable extends DrawableWrapper {
                         R.color.default_icon_color_tint_list));
 
         mTextPaint = new TextPaint();
-        setTint(
-                AppCompatResources.getColorStateList(
-                        context, R.color.default_icon_color_tint_list));
+        setTint(context.getColorStateList(R.color.default_icon_color_tint_list));
 
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Align.CENTER);

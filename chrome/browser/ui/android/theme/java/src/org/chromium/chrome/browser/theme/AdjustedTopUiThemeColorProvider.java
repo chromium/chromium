@@ -11,7 +11,6 @@ import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -79,8 +78,7 @@ public class AdjustedTopUiThemeColorProvider extends TopUiThemeColorProvider {
 
         // Only light tint color is used if adjustTintColor is true.
         ColorStateList iconTint =
-                AppCompatResources.getColorStateList(
-                        mContext, R.color.default_icon_color_white_tint_list);
+                mContext.getColorStateList(R.color.default_icon_color_white_tint_list);
         super.updateTint(iconTint, iconTint, BrandedColorScheme.DARK_BRANDED_THEME);
     }
 

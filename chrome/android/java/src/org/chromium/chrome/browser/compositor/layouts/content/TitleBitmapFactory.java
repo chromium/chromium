@@ -19,7 +19,6 @@ import android.view.InflateException;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Log;
 import org.chromium.base.Token;
@@ -82,8 +81,7 @@ public class TitleBitmapFactory {
         mTabTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         if (mIncognito) {
             int incognitoTabTextColor =
-                    AppCompatResources.getColorStateList(
-                                    context, R.color.compositor_tab_title_bar_text_incognito)
+                    context.getColorStateList(R.color.compositor_tab_title_bar_text_incognito)
                             .getDefaultColor();
             mTabTextPaint.setColor(incognitoTabTextColor);
         }

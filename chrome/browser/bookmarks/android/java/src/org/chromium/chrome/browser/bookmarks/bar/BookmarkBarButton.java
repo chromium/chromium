@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.StyleRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.CallbackController;
@@ -170,9 +169,7 @@ class BookmarkBarButton extends LinearLayout {
      */
     public void setIconTintList(@ColorRes int id) {
         final ColorStateList tintList =
-                id != Resources.ID_NULL
-                        ? AppCompatResources.getColorStateList(getContext(), id)
-                        : null;
+                id != Resources.ID_NULL ? getContext().getColorStateList(id) : null;
 
         if (ImageViewCompat.getImageTintList(mIcon) != tintList) {
             ImageViewCompat.setImageTintList(mIcon, tintList);

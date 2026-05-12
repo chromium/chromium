@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
@@ -207,8 +206,9 @@ public class MessageCardViewBinderTest {
         assertThat(
                 description.getCurrentTextColor(),
                 equalTo(
-                        AppCompatResources.getColorStateList(
-                                        mItemView.getContext(), R.color.default_text_color_list)
+                        mItemView
+                                .getContext()
+                                .getColorStateList(R.color.default_text_color_list)
                                 .getDefaultColor()));
         assertThat(
                 actionButton.getCurrentTextColor(),

@@ -568,8 +568,7 @@ public class BookmarkBarCoordinatorTest {
                 ContextCompat.getColor(mView.getContext(), R.color.divider_color_light);
 
         ColorStateList expectedLightTint =
-                ContextCompat.getColorStateList(
-                        mView.getContext(), R.color.default_icon_color_light_tint_list);
+                mView.getContext().getColorStateList(R.color.default_icon_color_light_tint_list);
 
         mCoordinator.updateBackgroundColor(mCurrentTab);
 
@@ -604,12 +603,11 @@ public class BookmarkBarCoordinatorTest {
                 ThemeUtils.getToolbarHairlineColor(
                         mView.getContext(), Color.WHITE, /* isIncognito= */ false);
         ColorStateList expectedDarkTint =
-                ContextCompat.getColorStateList(
-                        mView.getContext(), R.color.default_icon_color_tint_list);
+                mView.getContext().getColorStateList(R.color.default_icon_color_tint_list);
 
         mCoordinator.updateBackgroundColor(mCurrentTab);
 
-        // Verify the the colors for the regular light theme mode.
+        // Verify the colors for the regular light theme mode.
         assertEquals(
                 "Hairline color should be set for regular light theme.",
                 expectedDarkHairline,

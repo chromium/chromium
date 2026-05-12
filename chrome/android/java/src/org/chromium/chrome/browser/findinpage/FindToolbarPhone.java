@@ -9,7 +9,6 @@ import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -62,8 +61,7 @@ public class FindToolbarPhone extends FindToolbar {
             queryHintTextColorId = R.color.find_in_page_query_default_hint_color;
             mDivider.setBackgroundColor(SemanticColorUtils.getDividerColor(getContext()));
         }
-        mFindQuery.setTextColor(
-                AppCompatResources.getColorStateList(getContext(), queryTextColorId));
+        mFindQuery.setTextColor(getContext().getColorStateList(queryTextColorId));
         mFindQuery.setHintTextColor(getContext().getColor(queryHintTextColorId));
     }
 

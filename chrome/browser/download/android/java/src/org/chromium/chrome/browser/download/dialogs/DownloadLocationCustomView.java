@@ -19,7 +19,6 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
@@ -166,8 +165,7 @@ public class DownloadLocationCustomView extends ScrollView implements OnCheckedC
         if (mDialogType != DownloadLocationDialogType.LOCATION_SUGGESTION) return;
         String locationAvailableSpaceText =
                 StringUtils.getAvailableBytesForUi(getContext(), availableSpace);
-        ColorStateList textColor =
-                AppCompatResources.getColorStateList(getContext(), R.color.default_text_color_list);
+        ColorStateList textColor = getContext().getColorStateList(R.color.default_text_color_list);
         int barColor = ContextCompat.getColor(getContext(), R.color.explanation_text_color);
 
         // Show not enough space and change color to error.

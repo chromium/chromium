@@ -29,7 +29,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
@@ -695,8 +694,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         // Set incognito style.
         if (isIncognito) {
             mGroupTitleEditText.setBackgroundTintList(
-                    AppCompatResources.getColorStateList(
-                            context, R.color.menu_edit_text_bg_tint_list_baseline));
+                    context.getColorStateList(R.color.menu_edit_text_bg_tint_list_baseline));
             mGroupTitleEditText.setTextAppearance(
                     R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
         }

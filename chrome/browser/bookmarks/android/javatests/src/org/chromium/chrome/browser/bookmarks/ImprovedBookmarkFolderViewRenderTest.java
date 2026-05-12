@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
@@ -162,9 +161,10 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                     mActivityTestRule.getActivity()));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_TINT,
-                            AppCompatResources.getColorStateList(
-                                    mActivityTestRule.getActivity(),
-                                    R.color.default_icon_color_secondary_tint_list));
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getColorStateList(
+                                            R.color.default_icon_color_secondary_tint_list));
                 });
         mRenderTestRule.render(mFolderView, "no_image");
     }

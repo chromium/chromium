@@ -9,7 +9,6 @@ import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
@@ -54,8 +53,7 @@ public class TabUiThemeProvider {
     public static ColorStateList getToggleActionButtonCheckedDrawableTintList(
             Context context, boolean isIncognito) {
         if (isIncognito) {
-            return AppCompatResources.getColorStateList(
-                    context, R.color.incognito_tab_bg_selected_color);
+            return context.getColorStateList(R.color.incognito_tab_bg_selected_color);
         }
         return ColorStateList.valueOf(MaterialColors.getColor(context, R.attr.colorPrimary, TAG));
     }
@@ -104,7 +102,7 @@ public class TabUiThemeProvider {
                     isSelected
                             ? R.color.incognito_tab_group_hovered_bg_selected_color
                             : R.color.incognito_tab_group_hovered_bg_color;
-            return AppCompatResources.getColorStateList(context, colorRes);
+            return context.getColorStateList(colorRes);
         } else {
             if (isSelected) {
                 @ColorInt
@@ -320,12 +318,11 @@ public class TabUiThemeProvider {
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @return The {@link ColorStateList} for icons on the toolbar when tab switcher is in selection
-     *         edit mode.
+     *     edit mode.
      */
     public static ColorStateList getTabSelectionToolbarIconTintList(
             Context context, boolean isIncognito) {
-        return AppCompatResources.getColorStateList(
-                context,
+        return context.getColorStateList(
                 isIncognito
                         ? R.color.default_text_color_light_list
                         : R.color.default_text_color_list);
@@ -458,8 +455,7 @@ public class TabUiThemeProvider {
      */
     public static ColorStateList getMessageCardCloseButtonTintList(
             Context context, boolean isIncognito) {
-        return AppCompatResources.getColorStateList(
-                context,
+        return context.getColorStateList(
                 isIncognito
                         ? R.color.default_icon_color_light
                         : R.color.default_icon_color_tint_list);

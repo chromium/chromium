@@ -15,7 +15,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -165,7 +164,7 @@ public class PeekViewUiState {
      */
     public @Nullable ColorStateList getIconTint(Context context) {
         return (iconTintResId != Resources.ID_NULL)
-                ? AppCompatResources.getColorStateList(context, iconTintResId)
+                ? context.getColorStateList(iconTintResId)
                 : null;
     }
 

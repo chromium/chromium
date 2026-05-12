@@ -82,8 +82,8 @@ class ContextMenuItemViewBinder {
             if (tintColorId != Resources.ID_NULL) {
                 ImageViewCompat.setImageTintList(
                         startIconView,
-                        AppCompatResources.getColorStateList(
-                                view.getContext(), model.get(ICON_TINT_COLOR_STATE_LIST_ID)));
+                        view.getContext()
+                                .getColorStateList(model.get(ICON_TINT_COLOR_STATE_LIST_ID)));
             } else {
                 // No tint.
                 ImageViewCompat.setImageTintList(startIconView, null);

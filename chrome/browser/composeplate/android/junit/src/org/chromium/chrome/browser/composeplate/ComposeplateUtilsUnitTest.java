@@ -20,7 +20,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -121,7 +120,7 @@ public class ComposeplateUtilsUnitTest {
     public void testGetSearchBoxIconColorTint() {
         // Verifies the color tint for customized background images.
         assertEquals(
-                AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_dark),
+                mContext.getColorStateList(R.color.default_icon_color_dark),
                 ComposeplateUtils.getSearchBoxIconColorTint(
                         mContext, /* shouldApplyWhiteBackgroundOnSearchBox= */ true));
 

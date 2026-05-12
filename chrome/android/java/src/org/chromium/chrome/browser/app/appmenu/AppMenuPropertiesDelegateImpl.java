@@ -803,9 +803,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         0);
         Drawable icon = AppCompatResources.getDrawable(mContext, R.drawable.btn_reload_stop);
         DrawableCompat.setTintList(
-                icon,
-                AppCompatResources.getColorStateList(
-                        mContext, R.color.default_icon_color_tint_list));
+                icon, mContext.getColorStateList(R.color.default_icon_color_tint_list));
         reloadButton.set(AppMenuItemProperties.ICON, icon);
         reloadButton.set(AppMenuItemProperties.ENABLED, currentTab != null);
         if (currentTab != null) updateReloadPropertyModel(reloadButton, currentTab.isLoading());

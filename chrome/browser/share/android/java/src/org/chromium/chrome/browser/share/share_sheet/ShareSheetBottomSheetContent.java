@@ -465,8 +465,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         }
 
         ImageView linkToggleView = getContentView().findViewById(R.id.link_toggle_view);
-        linkToggleView.setColorFilter(
-                AppCompatResources.getColorStateList(mActivity, skillColor).getDefaultColor());
+        linkToggleView.setColorFilter(mActivity.getColorStateList(skillColor).getDefaultColor());
         linkToggleView.setVisibility(View.VISIBLE);
         linkToggleView.setImageDrawable(AppCompatResources.getDrawable(mActivity, drawable));
         // This is necessary in order to prevent voice over announcing the content description

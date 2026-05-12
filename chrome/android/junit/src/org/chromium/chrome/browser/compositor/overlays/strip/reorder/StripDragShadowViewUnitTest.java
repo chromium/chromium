@@ -28,7 +28,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -338,8 +337,8 @@ public class StripDragShadowViewUnitTest {
         // Verify text color
         @ColorRes
         int expectedTextColor =
-                AppCompatResources.getColorStateList(
-                                mActivity,
+                mActivity
+                        .getColorStateList(
                                 incognito
                                         ? R.color.compositor_tab_title_bar_text_incognito
                                         : R.color.compositor_tab_title_bar_text)

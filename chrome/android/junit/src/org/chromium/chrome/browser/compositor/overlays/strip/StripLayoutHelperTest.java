@@ -60,7 +60,6 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -1587,8 +1586,7 @@ public class StripLayoutHelperTest {
 
         assertEquals(
                 "Unexpected incognito button color.",
-                AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_tint_list)
-                        .getDefaultColor(),
+                mContext.getColorStateList(R.color.default_icon_color_tint_list).getDefaultColor(),
                 ((TintedCompositorButton) mStripLayoutHelper.getNewTabButton()).getTint());
     }
 

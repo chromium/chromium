@@ -1460,8 +1460,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private void showBrandingIconAndText() {
             ColorStateList colorStateList =
-                    AppCompatResources.getColorStateList(
-                            getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
+                    getContext()
+                            .getColorStateList(
+                                    mLocationBarDataProvider.getSecurityIconColorStateList());
             ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
             mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16);
 
@@ -1501,9 +1502,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
             if (securityIconResource != 0) {
                 ColorStateList colorStateList =
-                        AppCompatResources.getColorStateList(
-                                getContext(),
-                                mLocationBarDataProvider.getSecurityIconColorStateList());
+                        getContext()
+                                .getColorStateList(
+                                        mLocationBarDataProvider.getSecurityIconColorStateList());
                 ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
             }
             mAnimDelegate.updateSecurityButton(securityIconResource);

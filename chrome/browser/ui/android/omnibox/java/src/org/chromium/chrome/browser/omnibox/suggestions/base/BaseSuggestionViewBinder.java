@@ -24,7 +24,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -345,7 +344,7 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         ColorStateList tint = null;
         if (sds.allowTint) {
-            tint = AppCompatResources.getColorStateList(view.getContext(), tintRes);
+            tint = view.getContext().getColorStateList(tintRes);
         }
 
         view.setImageDrawable(isIncognito(model) ? sds.incognitoDrawable : sds.drawable);

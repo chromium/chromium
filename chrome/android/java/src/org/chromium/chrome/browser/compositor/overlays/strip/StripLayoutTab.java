@@ -21,7 +21,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
@@ -270,8 +269,7 @@ public class StripLayoutTab extends StripLayoutView {
 
         int iconColor =
                 incognito ? R.color.default_icon_color_light : R.color.default_icon_color_tint_list;
-        int iconColorInt =
-                AppCompatResources.getColorStateList(context, iconColor).getDefaultColor();
+        int iconColorInt = context.getColorStateList(iconColor).getDefaultColor();
         mCloseButton.setTint(iconColorInt);
         @ColorInt
         int backgroundHoverTint =

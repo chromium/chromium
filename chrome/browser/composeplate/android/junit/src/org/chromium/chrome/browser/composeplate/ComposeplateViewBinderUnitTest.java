@@ -24,7 +24,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.StyleRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -137,8 +136,7 @@ public class ComposeplateViewBinderUnitTest {
         // Bind PropertyModel with mView.
         PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
 
-        ColorStateList colorStateList =
-                AppCompatResources.getColorStateList(mContext, R.color.default_red);
+        ColorStateList colorStateList = mContext.getColorStateList(R.color.default_red);
         mPropertyModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
 
         ImageView composeplateIconView = mView.findViewById(R.id.composeplate_button_icon);

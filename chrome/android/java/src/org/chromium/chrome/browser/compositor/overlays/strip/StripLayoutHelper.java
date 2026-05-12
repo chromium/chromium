@@ -41,7 +41,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.DeviceInfo;
@@ -847,7 +846,7 @@ public class StripLayoutHelper
 
         // No pressed state color change for new tab button icon.
         int iconTint = incognito ? R.color.modern_white : R.color.default_icon_color_tint_list;
-        int iconColor = AppCompatResources.getColorStateList(context, iconTint).getDefaultColor();
+        int iconColor = context.getColorStateList(iconTint).getDefaultColor();
         mNewTabButton.setTint(iconColor);
 
         // y-offset  = lowered tab container + (tab container size - bg size)/2 -

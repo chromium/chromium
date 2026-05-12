@@ -11,7 +11,6 @@ import android.content.res.ColorStateList;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
@@ -275,8 +274,7 @@ public class TabCardThemeUtilUnitTest {
                 actualColor);
 
         ColorStateList expectedIncognitoColor =
-                AppCompatResources.getColorStateList(
-                        mContext, R.color.incognito_tab_action_button_selected_color);
+                mContext.getColorStateList(R.color.incognito_tab_action_button_selected_color);
         ColorStateList actualIncognitoColor =
                 TabCardThemeUtil.getActionButtonTintList(
                         mContext, /* isIncognito= */ true, /* isSelected= */ true, null);

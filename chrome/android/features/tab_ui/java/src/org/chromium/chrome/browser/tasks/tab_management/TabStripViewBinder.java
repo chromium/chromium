@@ -149,8 +149,7 @@ class TabStripViewBinder {
         final ColorStateList backgroundTint;
         if (model.get(TabProperties.IS_INCOGNITO)) {
             backgroundTint =
-                    AppCompatResources.getColorStateList(
-                            view.getContext(), R.color.tab_strip_favicon_bg_incognito);
+                    view.getContext().getColorStateList(R.color.tab_strip_favicon_bg_incognito);
         } else {
             @ColorInt
             int faviconBgColor = SemanticColorUtils.getColorSurfaceContainer(button.getContext());
