@@ -14,6 +14,7 @@
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/extension_control_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -694,6 +695,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       base::FeatureList::IsEnabled(switches::kPasswordUploadUiUpdate);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("passwordUploadUiUpdate", passwordUploadUiUpdateEnabled);
+
+  source->AddString("webuiRefresh2026",
+                    base::FeatureList::IsEnabled(features::kWebuiRefresh2026)
+                        ? "webui-refresh-2026"
+                        : "");
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

@@ -24,6 +24,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, App) {
   RunTest("password_manager/password_manager_app_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, WebuiRefresh2026) {
+  RunTest("password_manager/password_manager_app_test.js",
+          "runMochaSuite('WebuiRefresh2026')");
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, CheckupSection) {
   RunTest("password_manager/checkup_section_test.js", "mocha.run()");
 }
