@@ -44,18 +44,24 @@ namespace page_load_metrics {
 namespace {
 using testing::EndsWith;
 using testing::UnorderedElementsAre;
+using ukm::TestUkmRecorder;
+using ukm::UkmSource;
 using ukm::builders::HistoryNavigation;
+using ukm::builders::PageLoad;
 using ukm::builders::PrerenderPageLoad;
+using ukm::builders::SoftNavigation;
+using ukm::mojom::UkmEntry;
+using ukm::mojom::UkmEntryPtr;
 using ukm::testing::HasMetric;
 using ukm::testing::HasMetricWithValue;
 
 std::map<int64_t, double> GetSoftNavigationMetrics(
-    const ukm::TestUkmRecorder& ukm_recorder,
+    const TestUkmRecorder& ukm_recorder,
     std::string_view metric_name) {
   std::map<int64_t, double> source_id_to_metric_name;
-  for (const ukm::mojom::UkmEntry* entry : ukm_recorder.GetEntriesByName(
-           ukm::builders::SoftNavigation::kEntryName)) {
-    const ukm::UkmSource* source =
+  for (const UkmEntry* entry :
+       ukm_recorder.GetEntriesByName(SoftNavigation::kEntryName)) {
+    const UkmSource* source =
         ukm_recorder.GetSourceForSourceId(entry->source_id);
     if (MetricIntegrationTest::IsWebUISource(source)) {
       continue;
@@ -69,14 +75,14 @@ std::map<int64_t, double> GetSoftNavigationMetrics(
 
 // Similar to UkmRecorder::GetMergedEntriesByName(), but returned map is keyed
 // by source URL.
-std::map<GURL, ukm::mojom::UkmEntryPtr> GetMergedUkmEntries(
-    const ukm::TestUkmRecorder& ukm_recorder,
+std::map<GURL, UkmEntryPtr> GetMergedUkmEntries(
+    const TestUkmRecorder& ukm_recorder,
     const std::string& entry_name) {
   auto entries = ukm_recorder.GetMergedEntriesByName(entry_name);
-  std::map<GURL, ukm::mojom::UkmEntryPtr> result;
+  std::map<GURL, UkmEntryPtr> result;
   for (auto& kv : entries) {
-    const ukm::mojom::UkmEntry* entry = kv.second.get();
-    const ukm::UkmSource* source =
+    const UkmEntry* entry = kv.second.get();
+    const UkmSource* source =
         ukm_recorder.GetSourceForSourceId(entry->source_id);
     if (!source) {
       continue;
@@ -128,6 +134,48 @@ void TriggerSoftNavigationAndWait(content::WebContents* web_contents,
   waiter->Wait();
 }
 
+// Returns soft navigation data with its corresponding soft LCPs. While
+// soft navigations are ordered by navigationId, their soft LCP is
+// associated by interactionId.
+std::string JsSnippetGetPerformanceEntries() {
+  return R"(
+    (() => {
+      const byNavigationId = new Map();
+      const byInteractionId = new Map();
+      {
+        const observer = new PerformanceObserver(() => {});
+        observer.observe({type: 'soft-navigation',
+                          buffered: true});
+        for (const record of observer.takeRecords()) {
+          const obj = {
+            softNavigation: {
+              navigationId: record.navigationId,
+              startTime: record.startTime,
+              interactionId: record.interactionId,
+            },
+          };
+          byNavigationId.set(record.navigationId, obj);
+          byInteractionId.set(record.interactionId, obj);
+        }
+      }
+      {
+        const observer = new PerformanceObserver(() => {});
+        observer.observe({type: 'interaction-contentful-paint',
+                          buffered: true});
+        for (const record of observer.takeRecords()) {
+          const obj = byInteractionId.get(record.interactionId);
+          if (obj) {
+            obj.interactionContentfulPaint = {
+              renderTime: record.renderTime,
+            }
+          }
+        }
+      }
+      return Array.from(byNavigationId.values());
+    })();
+    )";
+}
+
 class SoftNavigationTest : public MetricIntegrationTest,
                            public testing::WithParamInterface<bool> {
  public:
@@ -166,14 +214,14 @@ class SoftNavigationTest : public MetricIntegrationTest,
     int64_t INP_98th_value;
 
     bool extract_num_of_interaction = ExtractUKMPageLoadMetric(
-        ukm::builders::PageLoad::kInteractiveTiming_NumInteractionsName,
+        PageLoad::kInteractiveTiming_NumInteractionsName,
         &INP_numOfInteraction_value);
     bool extract_worst_interaction = ExtractUKMPageLoadMetric(
-        ukm::builders::PageLoad::
+        PageLoad::
             kInteractiveTiming_WorstUserInteractionLatency_MaxEventDurationName,
         &INP_worst_value);
     bool extract_98th_interaction = ExtractUKMPageLoadMetric(
-        ukm::builders::PageLoad::
+        PageLoad::
             kInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDurationName,
         &INP_98th_value);
 
@@ -208,8 +256,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // Verify there are 2 soft nav num_of_interactions and the 1st is 2 and the
     // 2nd is 1.
     auto soft_nav_source_id_to_num_of_interactions = GetSoftNavigationMetrics(
-        ukm_recorder(),
-        ukm::builders::SoftNavigation::kInteractiveTiming_NumInteractionsName);
+        ukm_recorder(), SoftNavigation::kInteractiveTiming_NumInteractionsName);
     EXPECT_EQ(soft_nav_source_id_to_num_of_interactions.size(), 2u);
     EXPECT_EQ(soft_nav_source_id_to_num_of_interactions.begin()->second, 2);
     EXPECT_EQ(
@@ -219,8 +266,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // Verify there are 2 soft nav offsets; the first could be 1 or two; the
     // second should be one.
     auto soft_nav_source_id_to_offsets = GetSoftNavigationMetrics(
-        ukm_recorder(),
-        ukm::builders::SoftNavigation::kInteractiveTiming_INPOffsetName);
+        ukm_recorder(), SoftNavigation::kInteractiveTiming_INPOffsetName);
     EXPECT_EQ(soft_nav_source_id_to_offsets.size(), 2u);
     EXPECT_GT(soft_nav_source_id_to_offsets.begin()->second, 0);
     EXPECT_LT(soft_nav_source_id_to_offsets.begin()->second, 3);
@@ -228,15 +274,13 @@ class SoftNavigationTest : public MetricIntegrationTest,
 
     // Verify there are 2 soft nav times.
     auto soft_nav_source_id_to_times = GetSoftNavigationMetrics(
-        ukm_recorder(),
-        ukm::builders::SoftNavigation::kInteractiveTiming_INPOffsetName);
+        ukm_recorder(), SoftNavigation::kInteractiveTiming_INPOffsetName);
     EXPECT_EQ(soft_nav_source_id_to_times.size(), 2u);
 
     // Verify that num_of_interactions before soft nav is 2.
     int64_t INP_numOfInteraction_value_before_soft_nav;
     bool extract_num_of_interaction_before_soft_nav = ExtractUKMPageLoadMetric(
-        ukm::builders::PageLoad::
-            kInteractiveTimingBeforeSoftNavigation_NumInteractionsName,
+        PageLoad::kInteractiveTimingBeforeSoftNavigation_NumInteractionsName,
         &INP_numOfInteraction_value_before_soft_nav);
     EXPECT_TRUE(extract_num_of_interaction_before_soft_nav);
 
@@ -245,7 +289,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // Verify that INP before soft nav exists.
     int64_t INP_before_soft_nav;
     bool extract_INP_before_soft_nav = ExtractUKMPageLoadMetric(
-        ukm::builders::PageLoad::
+        PageLoad::
             kInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDurationName,
         &INP_before_soft_nav);
     EXPECT_TRUE(extract_INP_before_soft_nav);
@@ -253,12 +297,13 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // Verify that 2 soft nav INP exist.
     auto soft_nav_source_id_to_INP = GetSoftNavigationMetrics(
         ukm_recorder(),
-        ukm::builders::SoftNavigation::
+        SoftNavigation::
             kInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDurationName);
     EXPECT_EQ(soft_nav_source_id_to_INP.size(), 2u);
 
     return true;
   }
+
   int64_t ExtractMaxInteractionDurationFromTrace(
       trace_analyzer::TraceEventVector events) {
     int64_t max_duration = 0;
@@ -348,57 +393,33 @@ class SoftNavigationTest : public MetricIntegrationTest,
   void VerifySoftNavigationCount(int64_t expected_count) {
     int64_t soft_navigation_count;
     bool extract_soft_navigation_count = ExtractUKMPageLoadMetric(
-        ukm::builders::PageLoad::kSoftNavigationCountName,
-        &soft_navigation_count);
+        PageLoad::kSoftNavigationCountName, &soft_navigation_count);
     EXPECT_TRUE(extract_soft_navigation_count);
     EXPECT_EQ(soft_navigation_count, expected_count);
   }
 
-  std::string JsSnippetGetSoftLcpStartTimes() {
-    return R"(
-      (() => {
-        const observer = new PerformanceObserver(() => {});
-        observer.observe({type: 'interaction-contentful-paint',
-                          buffered: true});
-        const lcpCandidates = observer.takeRecords();
-        // For each soft navigation, report the last LCP candidate's timing.
-        const timingByNavigationId = new Map();
-        for (c of lcpCandidates) {
-          timingByNavigationId.set(c.navigationId,
-                                   {startTime: c.startTime,
-                                    renderTime: c.renderTime});
-        }
-        return Array.from(timingByNavigationId.values());
-      })();
-    )";
-  }
-
   void VerifySoftNavIdsAndSoftLcpStartTimes(
-      const base::ListValue& soft_nav_lcp_list,
+      const base::ListValue& performance_entries,
       uint32_t expected_soft_nav_count) {
     bool soft_nav_heuristics_enabled = GetParam();
 
     // Soft navigation start times.
     auto source_id_to_start_time = GetSoftNavigationMetrics(
-        ukm_recorder(), ukm::builders::SoftNavigation::kStartTimeName);
+        ukm_recorder(), SoftNavigation::kStartTimeName);
     EXPECT_EQ(source_id_to_start_time.size(), expected_soft_nav_count);
 
     // Soft navigation LCP.
     auto source_id_to_lcp = GetSoftNavigationMetrics(
         ukm_recorder(),
-        ukm::builders::SoftNavigation::kPaintTiming_LargestContentfulPaintName);
+        SoftNavigation::kPaintTiming_LargestContentfulPaintName);
     EXPECT_EQ(source_id_to_lcp.size(), expected_soft_nav_count);
 
-    std::vector<ukm::SourceId> source_ids;
     std::vector<double> soft_nav_start_times;
     for (const auto& [source_id, start_time] : source_id_to_start_time) {
-      source_ids.push_back(source_id);
       soft_nav_start_times.push_back(start_time);
     }
 
     // Verify that the soft navigation start times are sorted and unique.
-    EXPECT_EQ(source_ids.size(), expected_soft_nav_count);
-
     EXPECT_EQ(soft_nav_start_times.size(), expected_soft_nav_count);
     EXPECT_TRUE(std::is_sorted(soft_nav_start_times.begin(),
                                soft_nav_start_times.end()));
@@ -422,15 +443,17 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // If the SoftNavigationHeuristics flag is enabled, we verify exact values
     // in UKM against the web exposed values.
     if (soft_nav_heuristics_enabled) {
-      EXPECT_EQ(soft_nav_lcp_list.size(), expected_soft_nav_count);
-      ASSERT_EQ(soft_nav_lcp_list.size(), soft_nav_lcp.size());
-      ASSERT_EQ(soft_nav_lcp_list.size(), soft_nav_start_times.size());
-      for (uint32_t i = 0; i < soft_nav_lcp_list.size(); ++i) {
-        SCOPED_TRACE(base::StringPrintf("soft_nav_lcp_list[%d]", i));
-        const base::DictValue& timing = soft_nav_lcp_list[i].GetDict();
+      EXPECT_EQ(performance_entries.size(), expected_soft_nav_count);
+      ASSERT_EQ(performance_entries.size(), soft_nav_lcp.size());
+      ASSERT_EQ(performance_entries.size(), soft_nav_start_times.size());
+      for (uint32_t i = 0; i < performance_entries.size(); ++i) {
+        SCOPED_TRACE(base::StringPrintf("performance_entries[%d]", i));
+        const base::DictValue& timing = performance_entries[i].GetDict();
         double expected_lcp = soft_nav_lcp[i] + soft_nav_start_times[i];
-        EXPECT_NEAR(timing.FindDouble("renderTime").value(), expected_lcp, 6);
-        EXPECT_NEAR(timing.FindDouble("startTime").value(),
+        EXPECT_NEAR(*timing.FindDoubleByDottedPath(
+                        "interactionContentfulPaint.renderTime"),
+                    expected_lcp, 6);
+        EXPECT_NEAR(*timing.FindDoubleByDottedPath("softNavigation.startTime"),
                     soft_nav_start_times[i], 6);
       }
     }
@@ -439,9 +462,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // navigation.
     int64_t lcp;
     bool extract_lcp = ExtractUKMPageLoadMetric(
-        ukm::builders::PageLoad::
-            kPaintTiming_NavigationToLargestContentfulPaint2Name,
-        &lcp);
+        PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name, &lcp);
     EXPECT_TRUE(extract_lcp);
     EXPECT_GT(lcp, 0);
     // The hard navigation LCP should be smaller than the first soft navigation
@@ -454,7 +475,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // page load is complete.
     int64_t lcp_before_first_soft_nav;
     bool extract_lcp_before_first_soft_nav = ExtractUKMPageLoadMetric(
-        ukm::builders::PageLoad::
+        PageLoad::
             kPaintTimingBeforeSoftNavigation_NavigationToLargestContentfulPaint2Name,  // NOLINT
         &lcp_before_first_soft_nav);
     EXPECT_TRUE(extract_lcp_before_first_soft_nav);
@@ -493,13 +514,13 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
   TriggerSoftNavigationAndWait(web_contents(), &waiter, 2,
                                /*element_id=*/"next-page");
 
-  base::ListValue soft_nav_lcp_list;
+  base::ListValue performance_entries;
   if (GetParam()) {
-    soft_nav_lcp_list = EvalJs(web_contents()->GetPrimaryMainFrame(),
-                               JsSnippetGetSoftLcpStartTimes())
-                            .TakeValue()
-                            .TakeList();
-    EXPECT_EQ(soft_nav_lcp_list.size(), 2ul);
+    performance_entries = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                                 JsSnippetGetPerformanceEntries())
+                              .TakeValue()
+                              .TakeList();
+    EXPECT_EQ(performance_entries.size(), 2ul);
   }
 
   // Navigate to about:blank (untracked) to ensure all UKM are recorded.
@@ -507,13 +528,13 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
 
   VerifySoftNavigationCount(/*expected_count=*/2);
 
-  VerifySoftNavIdsAndSoftLcpStartTimes(soft_nav_lcp_list,
+  VerifySoftNavIdsAndSoftLcpStartTimes(performance_entries,
                                        /*expected_soft_nav_count=*/2);
 
   // Verify 2 LCP discovery time timings are reported.
   auto source_id_to_lcp_discovery_time = GetSoftNavigationMetrics(
       ukm_recorder(),
-      ukm::builders::SoftNavigation::
+      SoftNavigation::
           kPaintTiming_LargestContentfulPaintImageDiscoveryTimeName);
 
   EXPECT_EQ(source_id_to_lcp_discovery_time.size(), 2u);
@@ -521,22 +542,21 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
   // Verify 2 LCP load start timings are reported.
   auto source_id_to_lcp_image_load_start = GetSoftNavigationMetrics(
       ukm_recorder(),
-      ukm::builders::SoftNavigation::
-          kPaintTiming_LargestContentfulPaintImageLoadStartName);
+      SoftNavigation::kPaintTiming_LargestContentfulPaintImageLoadStartName);
 
   EXPECT_EQ(source_id_to_lcp_image_load_start.size(), 2u);
 
   // Verify 2 LCP load end timings are reported.
   auto source_id_to_lcp_image_load_end = GetSoftNavigationMetrics(
-      ukm_recorder(), ukm::builders::SoftNavigation::
-                          kPaintTiming_LargestContentfulPaintImageLoadEndName);
+      ukm_recorder(),
+      SoftNavigation::kPaintTiming_LargestContentfulPaintImageLoadEndName);
 
   EXPECT_EQ(source_id_to_lcp_image_load_end.size(), 2u);
 
   // Verify LCP types.
   auto source_id_to_lcp_type = GetSoftNavigationMetrics(
-      ukm_recorder(), ukm::builders::SoftNavigation::
-                          kPaintTiming_LargestContentfulPaintTypeName);
+      ukm_recorder(),
+      SoftNavigation::kPaintTiming_LargestContentfulPaintTypeName);
 
   EXPECT_EQ(source_id_to_lcp_type.size(), 2u);
 
@@ -554,8 +574,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
 
   // Verify LCP BPP.
   auto source_id_to_lcp_bpp = GetSoftNavigationMetrics(
-      ukm_recorder(), ukm::builders::SoftNavigation::
-                          kPaintTiming_LargestContentfulPaintBPPName);
+      ukm_recorder(),
+      SoftNavigation::kPaintTiming_LargestContentfulPaintBPPName);
   // Bpp value is fixed for a given image.
   EXPECT_EQ(source_id_to_lcp_bpp.cbegin()->second, 23u);
 
@@ -564,8 +584,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
   // Verify LCP priority.
   auto source_id_to_lcp_request_priority = GetSoftNavigationMetrics(
       ukm_recorder(),
-      ukm::builders::SoftNavigation::
-          kPaintTiming_LargestContentfulPaintRequestPriorityName);
+      SoftNavigation::kPaintTiming_LargestContentfulPaintRequestPriorityName);
 
   // https://source.chromium.org/chromium/chromium/src/+/main:net/base/request_priority.h
   // 4 is MEDIUM request priority.
@@ -598,13 +617,13 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
   TriggerSoftNavigationAndWait(web_contents(), &waiter, 2,
                                /*element_id=*/"next-page");
 
-  base::ListValue soft_nav_lcp_list;
+  base::ListValue performance_entries;
   if (GetParam()) {
-    soft_nav_lcp_list = EvalJs(web_contents()->GetPrimaryMainFrame(),
-                               JsSnippetGetSoftLcpStartTimes())
-                            .TakeValue()
-                            .TakeList();
-    EXPECT_EQ(soft_nav_lcp_list.size(), 2ul);
+    performance_entries = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                                 JsSnippetGetPerformanceEntries())
+                              .TakeValue()
+                              .TakeList();
+    EXPECT_EQ(performance_entries.size(), 2ul);
   }
 
   // Navigate to about:blank (untracked) to ensure all UKM are recorded.
@@ -612,13 +631,13 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
 
   VerifySoftNavigationCount(/*expected_count=*/2);
 
-  VerifySoftNavIdsAndSoftLcpStartTimes(soft_nav_lcp_list,
+  VerifySoftNavIdsAndSoftLcpStartTimes(performance_entries,
                                        /*expected_soft_nav_count=*/2);
 
   // Verify LCP types.
   auto source_id_to_lcp_type = GetSoftNavigationMetrics(
-      ukm_recorder(), ukm::builders::SoftNavigation::
-                          kPaintTiming_LargestContentfulPaintTypeName);
+      ukm_recorder(),
+      SoftNavigation::kPaintTiming_LargestContentfulPaintTypeName);
 
   EXPECT_EQ(source_id_to_lcp_type.size(), 2u);
 
@@ -685,7 +704,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
   base::ListValue soft_nav_lcp_list;
   if (GetParam()) {
     soft_nav_lcp_list = EvalJs(web_contents()->GetPrimaryMainFrame(),
-                               JsSnippetGetSoftLcpStartTimes())
+                               JsSnippetGetPerformanceEntries())
                             .TakeValue()
                             .TakeList();
     EXPECT_EQ(soft_nav_lcp_list.size(), 4ul);
@@ -700,14 +719,14 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
                                        /*expected_soft_nav_count=*/4);
 
   // Verify the UKM recorded URLs for the soft navigations.
-  auto source_id_to_start_time = GetSoftNavigationMetrics(
-      ukm_recorder(), ukm::builders::SoftNavigation::kStartTimeName);
+  auto source_id_to_start_time =
+      GetSoftNavigationMetrics(ukm_recorder(), SoftNavigation::kStartTimeName);
   EXPECT_EQ(source_id_to_start_time.size(), 4);
 
   std::vector<std::string> urls;
   int port = 0;
   for (const auto& [source_id, start_time] : source_id_to_start_time) {
-    const ukm::UkmSource* s = ukm_recorder().GetSourceForSourceId(source_id);
+    const UkmSource* s = ukm_recorder().GetSourceForSourceId(source_id);
     port = s->url().IntPort();
     urls.push_back(s->url().spec());
   }
@@ -728,8 +747,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
 
   std::vector<int> navigation_types;
   for (const auto& [source_id, type] : GetSoftNavigationMetrics(
-           ukm_recorder(),
-           ukm::builders::SoftNavigation::kNavigationTypeName)) {
+           ukm_recorder(), SoftNavigation::kNavigationTypeName)) {
     navigation_types.push_back(type);
   }
   EXPECT_THAT(
@@ -756,7 +774,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, NoSoftNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Verify that no soft navigation metric is recorded.
-  ExpectUkmEventNotRecorded(ukm::builders::SoftNavigation::kEntryName);
+  ExpectUkmEventNotRecorded(SoftNavigation::kEntryName);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -902,14 +920,14 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
   // Check UKM with CLS Normalization value, and it should be the same as the
   // layout shift score.
   ExpectUKMPageLoadMetricNear(
-      ukm::builders::PageLoad::
+      PageLoad::
           kLayoutInstabilityBeforeSoftNavigation_MaxCumulativeShiftScore_MainFrame_SessionWindow_Gap1000ms_Max5000msName,
       LayoutShiftUkmValue(cls_before_soft_nav), 1);
 
   // Verify soft nav CLS records exist.
   auto source_id_to_soft_nav_cls = GetSoftNavigationMetrics(
       ukm_recorder(),
-      ukm::builders::SoftNavigation::
+      SoftNavigation::
           kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName);
 
   EXPECT_EQ(source_id_to_soft_nav_cls.size(), 2u);
@@ -955,6 +973,10 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationPrerenderTest, SoftNavigationCount) {
   GURL prerender_url =
       embedded_test_server()->GetURL("/soft_navigation_basics.html#image");
   prerender_helper_.AddPrerender(prerender_url);
+  GURL prerender_url_after_softnav1 =
+      embedded_test_server()->GetURL("/soft_navigation_basics.html?id=1#image");
+  GURL prerender_url_after_softnav2 =
+      embedded_test_server()->GetURL("/soft_navigation_basics.html?id=2#image");
 
   PageLoadMetricsTestWaiter waiter(web_contents());
   waiter.AddPageExpectation(PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
@@ -978,42 +1000,46 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationPrerenderTest, SoftNavigationCount) {
   TriggerSoftNavigationAndWait(web_contents(), &waiter, 2,
                                /*element_id=*/"next-page");
 
+  // Before navigating to about:blank, collect the soft navigation data
+  // from the JavaScript PerformanceObserver API.
+  base::ListValue performance_entries =
+      EvalJs(web_contents()->GetPrimaryMainFrame(),
+             JsSnippetGetPerformanceEntries())
+          .TakeValue()
+          .TakeList();
+  EXPECT_EQ(performance_entries.size(), 2ul);
+
   // Navigate to about:blank (untracked) to ensure all UKM are recorded.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  // TODO(crbug.com/496664486): For now, the only soft navigation related
-  // metric that we support (and test) is PrerenderPageLoad::SoftNavigationCount
-  // which we expect to be 2.
-
-  // For the test scenario, there are two PrerenderPageLoad entries, one for the
-  // prerendered page (prerender_url), and another for the initiator
-  // (initial_url) of the prerendering. There's no SoftNavigation event yet,
-  // since we don't support that yet.
-  EXPECT_EQ(0u, GetMergedUkmEntries(ukm_recorder(),
-                                    ukm::builders::SoftNavigation::kEntryName)
-                    .size());
-  auto entries =
+  // There are two PrerenderPageLoad entries:
+  // 1. The prerendered page, which was activated and saw 2 soft navigations.
+  // 2. The initiator page, which triggered the prerender.
+  auto prerender_entries =
       GetMergedUkmEntries(ukm_recorder(), PrerenderPageLoad::kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(2u, prerender_entries.size());
 
-  const ukm::mojom::UkmEntry* prerendered_page_entry =
-      entries[prerender_url].get();
-  ASSERT_TRUE(prerendered_page_entry);
-  EXPECT_THAT(prerendered_page_entry,
+  const UkmEntry* prerendered_page = prerender_entries[prerender_url].get();
+  ASSERT_TRUE(prerendered_page);
+  EXPECT_THAT(prerendered_page,
               HasMetricWithValue(PrerenderPageLoad::kWasPrerenderedName, 1));
-  EXPECT_THAT(prerendered_page_entry,
+  EXPECT_THAT(prerendered_page,
               Not(HasMetric(PrerenderPageLoad::kTriggeredPrerenderName)));
   EXPECT_THAT(
-      prerendered_page_entry,
+      prerendered_page,
       HasMetricWithValue(PrerenderPageLoad::kSoftNavigationCountName, 2));
+  EXPECT_THAT(prerendered_page,
+              HasMetric(PrerenderPageLoad::kTiming_NavigationToActivationName));
 
-  const ukm::mojom::UkmEntry* initiator_page_entry = entries[initial_url].get();
-  ASSERT_TRUE(initiator_page_entry);
+  const UkmEntry* initiator_page = prerender_entries[initial_url].get();
+  ASSERT_TRUE(initiator_page);
   EXPECT_THAT(
-      initiator_page_entry,
+      initiator_page,
       HasMetricWithValue(PrerenderPageLoad::kTriggeredPrerenderName, 1));
-  EXPECT_THAT(initiator_page_entry,
+  EXPECT_THAT(initiator_page,
               Not(HasMetric(PrerenderPageLoad::kWasPrerenderedName)));
+  EXPECT_THAT(initiator_page,
+              Not(HasMetric(PrerenderPageLoad::kSoftNavigationCountName)));
 }
 
 //
@@ -1026,11 +1052,15 @@ class SoftNavigationBackForwardCacheTest : public MetricIntegrationTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MetricIntegrationTest::SetUpCommandLine(command_line);
-    feature_list_for_bfcache_.InitWithFeaturesAndParameters(
+    auto bfcache_features =
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{page_load_metrics::features::
-                  kBackForwardCacheEmitZeroSamplesForKeyMetrics,
-              {{}}}}),
+            {{features::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}}});
+    bfcache_features.push_back(
+        base::test::FeatureRefAndParams(blink::features::kNavigationId, {{}}));
+    bfcache_features.push_back(base::test::FeatureRefAndParams(
+        blink::features::kSoftNavigationHeuristics, {{}}));
+    feature_list_for_bfcache_.InitWithFeaturesAndParameters(
+        bfcache_features,
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
@@ -1047,8 +1077,12 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationBackForwardCacheTest,
   Start();
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/soft_navigation_basics.html#image"));
-  GURL url_a_after_softnavs(embedded_test_server()->GetURL(
+  GURL url_a_after_softnav1(embedded_test_server()->GetURL(
+      "a.com", "/soft_navigation_basics.html?id=1#image"));
+  GURL url_a_after_softnav2(embedded_test_server()->GetURL(
       "a.com", "/soft_navigation_basics.html?id=2#image"));
+  GURL url_a_after_softnav3(embedded_test_server()->GetURL(
+      "a.com", "/soft_navigation_basics.html?id=3#image"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/empty.html"));
 
   // Navigate to A.
@@ -1076,11 +1110,13 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationBackForwardCacheTest,
     waiter.Wait();
     // 1st soft navigation: click on the next page button and wait for soft
     // navigation count and image lcp.
+    // The expected URL is url_a_after_softnav1 (with ?id=1).
     TriggerSoftNavigationAndWait(web_contents(), &waiter,
                                  /*expected_soft_nav_count=*/1,
                                  /*element_id=*/"next-page");
     // 2nd soft navigation: click on the next page button and wait for soft
     // navigation count and image lcp.
+    // The expected URL is url_a_after_softnav2 (with ?id=2).
     TriggerSoftNavigationAndWait(web_contents(), &waiter,
                                  /*expected_soft_nav_count=*/2,
                                  /*element_id=*/"next-page");
@@ -1092,6 +1128,9 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationBackForwardCacheTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A again - this will be the 2nd bfcache restore.
+  // The expected URL is url_a_after_softnav2 (with ?id=2), just like it was
+  // before we navigated to B.
+  base::ListValue performance_entries;
   {
     PageLoadMetricsTestWaiter waiter(web_contents());
     waiter.AddPageBackForwardCacheRestoreExpectation(
@@ -1107,48 +1146,62 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationBackForwardCacheTest,
     waiter.Wait();
     // 1st soft navigation for this bfcache restore: click on the next page
     // button and wait for soft navigation count and image lcp.
+    // The expected URL is url_a_after_softnav3 (with ?id=3).
     TriggerSoftNavigationAndWait(web_contents(), &waiter,
                                  /*expected_soft_nav_count=*/1,
                                  /*element_id=*/"next-page");
+    performance_entries = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                                 JsSnippetGetPerformanceEntries())
+                              .TakeValue()
+                              .TakeList();
+    EXPECT_EQ(performance_entries.size(), 3ul);
 
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-    auto entries =
-        GetMergedUkmEntries(ukm_recorder(), HistoryNavigation::kEntryName);
-    std::vector<GURL> urls;
-    for (const auto& entry : entries) {
-      urls.push_back(entry.first);
-    }
-    // url_a is the URL from the 1st bfcache restore, which means it's
-    // the URL that we originally (hard) navigated to.
-    EXPECT_THAT(url_a.spec(), EndsWith("/soft_navigation_basics.html#image"));
-    // url_a_after_softnavs is the URL from the 2nd bfcache restore, which
-    // means it's the URL that we soft navigated to after the 1st bfcache
-    // restore. Since there were 2 soft navigations before the 2nd bfcache
-    // restore, the id is 2.
-    EXPECT_THAT(url_a_after_softnavs.spec(),
-                EndsWith("/soft_navigation_basics.html?id=2#image"));
-    EXPECT_THAT(urls, UnorderedElementsAre(url_a, url_a_after_softnavs));
-    ASSERT_TRUE(entries[url_a].get());
-    const ukm::mojom::UkmEntry* bfcache_restore_1 = entries[url_a].get();
-    EXPECT_THAT(
-        bfcache_restore_1,
-        HasMetric(HistoryNavigation::
-                      kNavigationToFirstPaintAfterBackForwardCacheRestoreName));
-    EXPECT_THAT(
-        bfcache_restore_1,
-        HasMetricWithValue(HistoryNavigation::kSoftNavigationCountName, 2));
-
-    EXPECT_TRUE(entries[url_a_after_softnavs].get());
-    const ukm::mojom::UkmEntry* bfcache_restore_2 =
-        entries[url_a_after_softnavs].get();
-    EXPECT_THAT(
-        bfcache_restore_2,
-        HasMetric(HistoryNavigation::
-                      kNavigationToFirstPaintAfterBackForwardCacheRestoreName));
-    EXPECT_THAT(
-        bfcache_restore_2,
-        HasMetricWithValue(HistoryNavigation::kSoftNavigationCountName, 1));
   }
+
+  //
+  // We recorded UKMs for two bfcache restores, for url_a and
+  // url_a_after_softnav2.
+  //
+  auto bfcache_restores =
+      GetMergedUkmEntries(ukm_recorder(), HistoryNavigation::kEntryName);
+  std::vector<GURL> bfcache_restore_urls;
+  for (const auto& entry : bfcache_restores) {
+    bfcache_restore_urls.push_back(entry.first);
+  }
+  // url_a is the URL from the 1st bfcache restore, which means it's
+  // the URL that we originally (hard) navigated to.
+  // Note: This EndsWith assertion is just for readability of the test.
+  EXPECT_THAT(url_a.spec(), EndsWith("/soft_navigation_basics.html#image"));
+  // url_a_after_softnavs is the URL from the 2nd bfcache restore, which
+  // means it's the URL that we soft navigated to after the 1st bfcache
+  // restore. Since there were 2 soft navigations before the 2nd bfcache
+  // restore, the id is 2.
+  // Note: This EndsWith assertion is just for readability of the test.
+  EXPECT_THAT(url_a_after_softnav2.spec(),
+              EndsWith("/soft_navigation_basics.html?id=2#image"));
+  EXPECT_THAT(bfcache_restore_urls,
+              UnorderedElementsAre(url_a, url_a_after_softnav2));
+
+  // The first bfcache restore saw first paint, followed by two soft
+  // navigations.
+  EXPECT_THAT(
+      bfcache_restores[url_a].get(),
+      HasMetric(HistoryNavigation::
+                    kNavigationToFirstPaintAfterBackForwardCacheRestoreName));
+  EXPECT_THAT(
+      bfcache_restores[url_a].get(),
+      HasMetricWithValue(HistoryNavigation::kSoftNavigationCountName, 2));
+
+  // The second bfcache restore saw first paint, followed by one soft
+  // navigation.
+  EXPECT_THAT(
+      bfcache_restores[url_a_after_softnav2].get(),
+      HasMetric(HistoryNavigation::
+                    kNavigationToFirstPaintAfterBackForwardCacheRestoreName));
+  EXPECT_THAT(
+      bfcache_restores[url_a_after_softnav2].get(),
+      HasMetricWithValue(HistoryNavigation::kSoftNavigationCountName, 1));
 }
 }  // namespace
 }  // namespace page_load_metrics
