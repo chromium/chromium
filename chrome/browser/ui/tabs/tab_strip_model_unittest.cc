@@ -7183,6 +7183,8 @@ TEST_F(TabStripModelCallbackTest, MoveTabToNewGroupThenCloseTab) {
   tabstrip()->AppendWebContents(CreateWebContents(), true);
   tabstrip()->AddToNewGroup({0});
   tabstrip()->SelectTabAt(0);
+  EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToNewGroupFromMenuItem));
   tabstrip()->ExecuteContextMenuCommand(
       0, TabStripModel::CommandAddToNewGroupFromMenuItem);
   tabstrip()->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);

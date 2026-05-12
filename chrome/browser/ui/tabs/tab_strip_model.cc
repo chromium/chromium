@@ -2456,8 +2456,7 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       return true;
 
     case CommandAddToNewGroup:
-      return SupportsTabGroups();
-
+    case CommandAddToNewGroupFromMenuItem:
     case CommandAddToExistingGroup:
       return SupportsTabGroups();
 
