@@ -147,41 +147,38 @@ public class TabStripContextMenuCoordinator {
     }
 
     private void configureMenuItems(ModelList itemList, boolean isIncognito) {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID)) {
-            // Add "New tab" option.
+        // Add "New tab" option.
+        itemList.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.menu_new_tab)
+                        .withMenuId(R.id.new_tab_menu_id)
+                        .withIsIncognito(isIncognito)
+                        .build());
+        // Add "Reopen closed tab/tabs/group" option.
+        @RecentlyClosedEntryType
+        int recentlyClosedEntryType = mTabModel.getMostRecentlyClosedEntryType();
+        if (recentlyClosedEntryType != RecentlyClosedEntryType.NONE) {
+            int titleRes = R.string.menu_reopen_closed_tab;
+            if (recentlyClosedEntryType == RecentlyClosedEntryType.TABS) {
+                titleRes = R.string.menu_reopen_closed_tabs;
+            } else if (recentlyClosedEntryType == RecentlyClosedEntryType.GROUP) {
+                titleRes = R.string.menu_reopen_closed_group;
+            }
             itemList.add(
                     new ListItemBuilder()
-                            .withTitleRes(R.string.menu_new_tab)
-                            .withMenuId(R.id.new_tab_menu_id)
-                            .withIsIncognito(isIncognito)
+                            .withTitleRes(titleRes)
+                            .withMenuId(R.id.reopen_closed_entry)
+                            .withIsIncognito(false)
                             .build());
-            // Add "Reopen closed tab/tabs/group" option.
-            @RecentlyClosedEntryType
-            int recentlyClosedEntryType = mTabModel.getMostRecentlyClosedEntryType();
-            if (recentlyClosedEntryType != RecentlyClosedEntryType.NONE) {
-                int titleRes = R.string.menu_reopen_closed_tab;
-                if (recentlyClosedEntryType == RecentlyClosedEntryType.TABS) {
-                    titleRes = R.string.menu_reopen_closed_tabs;
-                } else if (recentlyClosedEntryType == RecentlyClosedEntryType.GROUP) {
-                    titleRes = R.string.menu_reopen_closed_group;
-                }
-                itemList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(titleRes)
-                                .withMenuId(R.id.reopen_closed_entry)
-                                .withIsIncognito(false)
-                                .build());
-            }
-            // Add "Bookmark all tabs" option.
-            if (!isIncognito && mTabModel.getCount() > 1) {
-                itemList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(R.string.menu_bookmark_all_tabs)
-                                .withMenuId(R.id.bookmark_all_tabs)
-                                .withIsIncognito(false)
-                                .build());
-            }
+        }
+        // Add "Bookmark all tabs" option.
+        if (!isIncognito && mTabModel.getCount() > 1) {
+            itemList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.menu_bookmark_all_tabs)
+                            .withMenuId(R.id.bookmark_all_tabs)
+                            .withIsIncognito(false)
+                            .build());
         }
         // Add "Name window" option.
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
@@ -193,9 +190,7 @@ public class TabStripContextMenuCoordinator {
                             .build());
         }
         // Add "Pin Gemini" option with divider
-        if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID)
-                && ChromeFeatureList.sGlic.isEnabled()) {
+        if (ChromeFeatureList.sGlic.isEnabled()) {
             if (!isIncognito) {
                 itemList.add(BasicListMenu.buildMenuDivider(/* isIncognito= */ false));
 

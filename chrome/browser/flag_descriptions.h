@@ -6073,10 +6073,6 @@ inline constexpr char kTabStripDensityChangeAndroidDescription[] =
     "mouse, touchpad, etc.) is connected, including reducing minimum tab "
     "width and button touch target to better support click-first interactions.";
 
-inline constexpr char kTabStripEmptySpaceContextMenuAndroidName[] =
-    "Tab Strip Empty Space Context Menu";
-inline constexpr char kTabStripEmptySpaceContextMenuAndroidDescription[] =
-    "Enables the context menu on the empty space of the tab strip.";
 
 inline constexpr char kThreeDotMenuBackButtonName[] =
     "Three Dot Menu Back Button";

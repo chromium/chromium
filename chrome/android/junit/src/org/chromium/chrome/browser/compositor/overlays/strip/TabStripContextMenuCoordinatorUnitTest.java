@@ -59,7 +59,6 @@ import java.util.Collections;
 /** Unit tests for {@link TabStripContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID)
 @DisableFeatures(ChromeFeatureList.GLIC)
 public class TabStripContextMenuCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

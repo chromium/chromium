@@ -9406,12 +9406,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripDensityChangeAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripDensityChangeAndroid)},
 
-    {"tab-strip-empty-space-context-menu-android",
-     flag_descriptions::kTabStripEmptySpaceContextMenuAndroidName,
-     flag_descriptions::kTabStripEmptySpaceContextMenuAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kTabStripEmptySpaceContextMenuAndroid)},
 
     {"tab-switcher-group-suggestions-android",
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidName,

@@ -183,11 +183,7 @@ import java.util.stream.IntStream;
         manifest = Config.NONE,
         qualifiers = "sw600dp",
         shadows = {ShadowAppCompatResources.class})
-@DisableFeatures({
-    ChromeFeatureList.DATA_SHARING,
-    ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID,
-    ChromeFeatureList.GLIC
-})
+@DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.GLIC})
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
 public class StripLayoutHelperTest {
     private static final Token TAB_GROUP_ID_1 = new Token(1L, 1L);
@@ -4246,7 +4242,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID)
     public void testRightClickingClearsTabHoverState() {
         // Initialize hover card, then hover on a tab.
         initializeTabHoverTest();
