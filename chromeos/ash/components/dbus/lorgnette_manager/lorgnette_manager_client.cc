@@ -218,7 +218,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     state.page_callback = std::move(page_callback);
 
     lorgnette_daemon_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, kSlowOperationTimeout.InMilliseconds(),
         base::BindOnce(&LorgnetteManagerClientImpl::OnStartScanResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(state)));
   }

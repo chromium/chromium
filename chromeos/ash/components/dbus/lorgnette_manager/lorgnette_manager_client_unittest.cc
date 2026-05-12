@@ -575,8 +575,7 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetStartScanExpectation(dbus::Response* response) {
     start_scan_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                CallMethod(HasMember(lorgnette::kStartScanMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(lorgnette::kStartScanMethod), _, _))
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnCallStartScan));
   }
 
