@@ -3758,6 +3758,10 @@ void MenuController::SetHotTrackedButton(Button* new_hot_button) {
         submenu->GetViewAccessibility().SetActiveDescendant(*hot_button_);
       }
     }
+
+    // TODO(crbug.com/40672441): Handle this manually fired event for ViewsAX.
+    hot_button_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelection, true);
   } else {
     // When clearing the hot button, restore active descendant to the selected
     // menu item if one exists.
