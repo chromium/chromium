@@ -947,7 +947,9 @@ if (is_clang_or_gcc) {
 
         # allocator_shim cannot depend on libc++ objects because they use malloc()
         # internally.
-        no_default_deps = true
+        if (build_with_chromium) {
+          no_default_deps = true
+        }
       }
     }
 
