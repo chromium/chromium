@@ -13,15 +13,8 @@ BASE_FEATURE(kIOSEnablePasscodeSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPasswordCheckupUIDoubleStartMitigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSuggestStrongPasswordInAddPassword,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsPasscodeSettingsEnabled() {
   return base::FeatureList::IsEnabled(kIOSEnablePasscodeSettings);
-}
-
-bool IsSuggestStrongPasswordInAddPasswordEnabled() {
-  return base::FeatureList::IsEnabled(kSuggestStrongPasswordInAddPassword);
 }
 
 }  // namespace password_manager::features

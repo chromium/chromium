@@ -11,7 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/generation/password_generator.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_requirements_service.h"
@@ -146,8 +145,6 @@ class AddPasswordViewControllerTest
   }
 
   FakeAddPasswordDelegate* delegate_ = nil;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kSuggestStrongPasswordInAddPassword};
 };
 
 // Tests that password is shown/hidden.

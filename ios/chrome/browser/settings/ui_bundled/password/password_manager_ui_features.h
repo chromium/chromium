@@ -21,16 +21,8 @@ BASE_DECLARE_FEATURE(kIOSEnablePasscodeSettings);
 // default, act as a kill switch.
 BASE_DECLARE_FEATURE(kPasswordCheckupUIDoubleStartMitigation);
 
-// Feature switch for adding or not Suggest Strong Password field in the add
-// password page.
-BASE_DECLARE_FEATURE(kSuggestStrongPasswordInAddPassword);
-
 // Helper function returning the status of `kIOSEnablePasscodeSettings`.
 bool IsPasscodeSettingsEnabled();
-
-// Helper function returning the status of
-// `kSuggestStrongPasswordInAddPassword`.
-bool IsSuggestStrongPasswordInAddPasswordEnabled();
 
 }  // namespace password_manager::features
 

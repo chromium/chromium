@@ -207,13 +207,10 @@ const int kMinNoteCharAmountForWarning = 901;
   [model addItem:_passwordTextItem
       toSectionWithIdentifier:SectionIdentifierPassword];
 
-  if (password_manager::features::
-          IsSuggestStrongPasswordInAddPasswordEnabled()) {
-    if ([self.delegate shouldShowSuggestPasswordItem]) {
-      _suggestPasswordTextItem = [self suggestPasswordItem];
-      [model addItem:_suggestPasswordTextItem
-          toSectionWithIdentifier:SectionIdentifierPassword];
-    }
+  if ([self.delegate shouldShowSuggestPasswordItem]) {
+    _suggestPasswordTextItem = [self suggestPasswordItem];
+    [model addItem:_suggestPasswordTextItem
+        toSectionWithIdentifier:SectionIdentifierPassword];
   }
 
   _noteTextItem = [self noteItem];

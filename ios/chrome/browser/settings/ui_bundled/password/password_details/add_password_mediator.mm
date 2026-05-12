@@ -145,12 +145,9 @@ bool CheckForDuplicates(
   credential.username = SysNSStringToUTF16(username);
   credential.password = SysNSStringToUTF16(password);
 
-  if (password_manager::features::
-          IsSuggestStrongPasswordInAddPasswordEnabled()) {
-    base::UmaHistogramBoolean(
-        kPasswordManagerPasswordSettingsiOSSavedPasswordIsGenerated,
-        [password isEqualToString:_suggestedPassword]);
-  }
+  base::UmaHistogramBoolean(
+      kPasswordManagerPasswordSettingsiOSSavedPasswordIsGenerated,
+      [password isEqualToString:_suggestedPassword]);
 
   credential.note = SysNSStringToUTF16(note);
   credential.stored_in = {
