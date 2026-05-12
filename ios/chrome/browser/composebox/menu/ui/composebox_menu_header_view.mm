@@ -9,8 +9,6 @@
 namespace {
 // Vertical constant for the header label.
 const CGFloat kHeaderLabelVerticalPadding = 10.0f;
-// Font size for the header label.
-const CGFloat kHeaderLabelFontSize = 16.0f;
 }  // namespace
 
 @implementation ComposeboxMenuHeaderView
@@ -20,8 +18,8 @@ const CGFloat kHeaderLabelFontSize = 16.0f;
   if (self) {
     self.accessibilityTraits |= UIAccessibilityTraitHeader;
     _label = [[UILabel alloc] init];
-    _label.font = [UIFont systemFontOfSize:kHeaderLabelFontSize
-                                    weight:UIFontWeightBold];
+    _label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    _label.adjustsFontForContentSizeCategory = YES;
     _label.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _label.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_label];

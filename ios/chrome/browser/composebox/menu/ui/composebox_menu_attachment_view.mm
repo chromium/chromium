@@ -21,6 +21,12 @@ const CGFloat kIconSize = 24.0f;
 // The height of the image background view.
 const CGFloat kImageBackgroundHeight = 60.0f;
 
+// The base font size for the title label.
+const CGFloat kTitleBaseFontSize = 13.0f;
+
+// The maximum point size for the title label.
+const CGFloat kTitleMaxPointSize = 24.0f;
+
 }  // namespace
 
 @implementation ComposeboxMenuAttachmentView {
@@ -86,7 +92,15 @@ const CGFloat kImageBackgroundHeight = 60.0f;
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _titleLabel.textAlignment = NSTextAlignmentCenter;
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  _titleLabel.numberOfLines = 2;
+  _titleLabel.adjustsFontForContentSizeCategory = YES;
+  _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  UIFont* baseFont = [UIFont systemFontOfSize:kTitleBaseFontSize
+                                       weight:UIFontWeightRegular];
+  _titleLabel.font =
+      [[UIFontMetrics metricsForTextStyle:UIFontTextStyleFootnote]
+          scaledFontForFont:baseFont
+           maximumPointSize:kTitleMaxPointSize];
   [self addSubview:_titleLabel];
 }
 

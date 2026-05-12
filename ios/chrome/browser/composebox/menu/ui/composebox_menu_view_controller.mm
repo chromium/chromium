@@ -349,8 +349,9 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
         sizeWithWidthDimension:[NSCollectionLayoutDimension
                                    absoluteDimension:itemWidth]
-               heightDimension:[NSCollectionLayoutDimension
-                                   fractionalHeightDimension:1.0]];
+               heightDimension:
+                   [NSCollectionLayoutDimension
+                       estimatedDimension:kAttachmentGroupEstimatedHeight]];
 
     NSCollectionLayoutItem* item =
         [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
