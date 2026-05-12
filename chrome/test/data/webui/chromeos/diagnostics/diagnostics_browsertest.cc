@@ -173,8 +173,7 @@ class DiagnosticsAppWithInputBrowserTest : public DiagnosticsAppBrowserTest {
  public:
   DiagnosticsAppWithInputBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEnableTouchpadsInDiagnosticsApp,
-                              features::kEnableTouchscreensInDiagnosticsApp},
+        /*enabled_features=*/{features::kEnableTouchpadsInDiagnosticsApp},
         /*disabled_features=*/{});
     set_test_loader_host(ash::kChromeUIDiagnosticsAppHost);
   }
@@ -182,10 +181,6 @@ class DiagnosticsAppWithInputBrowserTest : public DiagnosticsAppBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(DiagnosticsAppWithInputBrowserTest, AppForInputHiding) {
-  RunTestAtPath("diagnostics_app_input_hiding_test.js");
-}
 
 IN_PROC_BROWSER_TEST_F(DiagnosticsAppWithInputBrowserTest, InputCard) {
   RunTestAtPath("input_card_test.js");

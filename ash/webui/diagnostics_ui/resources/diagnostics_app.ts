@@ -176,13 +176,6 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
     // returns no keyboards as it's possible |onKeyboardConnected| was called
     // prior.
     this.numKeyboards = devices.keyboards.length || this.numKeyboards;
-    const isTouchPadOrTouchScreenEnabled =
-        loadTimeData.getBoolean('isTouchpadEnabled') ||
-        loadTimeData.getBoolean('isTouchscreenEnabled');
-    if (this.numKeyboards === 0 && !isTouchPadOrTouchScreenEnabled) {
-      pages.pop();
-    }
-
     return pages;
   }
 

@@ -604,11 +604,6 @@ BASE_FEATURE(kEnableTouchscreenMappingExperience,
 BASE_FEATURE(kEnableTouchpadsInDiagnosticsApp,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, touchscreen cards will be shown in the diagnostics app's input
-// section.
-BASE_FEATURE(kEnableTouchscreensInDiagnosticsApp,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, touchscreen calibration will be shown in settings.
 BASE_FEATURE(kEnableTouchscreenCalibration, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3264,10 +3259,6 @@ bool IsTouchscreenMappingExperienceEnabled() {
 
 bool IsTouchpadInDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableTouchpadsInDiagnosticsApp);
-}
-
-bool IsTouchscreenInDiagnosticsAppEnabled() {
-  return base::FeatureList::IsEnabled(kEnableTouchscreensInDiagnosticsApp);
 }
 
 bool IsTouchscreenCalibrationEnabled() {

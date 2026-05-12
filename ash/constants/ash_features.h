@@ -271,8 +271,6 @@ BASE_DECLARE_FEATURE(kEnableTouchscreenMappingExperience);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableTouchpadsInDiagnosticsApp);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kEnableTouchscreensInDiagnosticsApp);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableTouchCalibrationSetting);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableWifiQos);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableWifiQosEnterprise);
@@ -1307,7 +1305,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTimeOfDayWallpaperEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsToggleCameraShortcutEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTouchscreenMappingExperienceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTouchpadInDiagnosticsAppEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTouchscreenInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTouchscreenCalibrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrafficCountersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrafficCountersForWiFiTestingEnabled();

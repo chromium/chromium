@@ -7239,12 +7239,6 @@ inline constexpr char kEnableTouchpadsInDiagnosticsAppDescription[] =
     "Shows touchpad cards in the Diagnostics App's input section. Requires "
     "#enable-input-in-diagnostics-app to be enabled.";
 
-inline constexpr char kEnableTouchscreensInDiagnosticsAppName[] =
-    "Enable touchscreen cards in the Diagnostics App";
-inline constexpr char kEnableTouchscreensInDiagnosticsAppDescription[] =
-    "Shows touchscreen cards in the Diagnostics App's input section. Requires "
-    "#enable-input-in-diagnostics-app to be enabled.";
-
 inline constexpr char kEnableWifiQosName[] = "Enable WiFi QoS";
 inline constexpr char kEnableWifiQosDescription[] =
     "If enabled the system will start automatic prioritization of egress "

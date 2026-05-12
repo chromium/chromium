@@ -388,8 +388,6 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("isLoggedIn", LoginState::Get()->IsUserLoggedIn());
   source->AddBoolean("isTouchpadEnabled",
                      features::IsTouchpadInDiagnosticsAppEnabled());
-  source->AddBoolean("isTouchscreenEnabled",
-                     features::IsTouchscreenInDiagnosticsAppEnabled());
 }
 
 void SetUpPluralStringHandler(content::WebUI* web_ui) {

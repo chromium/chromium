@@ -25,7 +25,6 @@ build_webui_tests("build_webui_tests") {
     "connectivity_card_test.ts",
     "cpu_card_test.ts",
     "data_point_test.ts",
-    "diagnostics_app_input_hiding_test.ts",
     "diagnostics_app_test.ts",
     "diagnostics_network_icon_test.ts",
     "diagnostics_sticky_banner_test.ts",

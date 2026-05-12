@@ -115,8 +115,7 @@ export class InputListElement extends InputListElementBase {
   }
 
   private computeShowTouchscreens(numTouchscreens: number): boolean {
-    return numTouchscreens > 0 &&
-        loadTimeData.getBoolean('isTouchscreenEnabled');
+    return numTouchscreens > 0;
   }
 
   constructor() {
