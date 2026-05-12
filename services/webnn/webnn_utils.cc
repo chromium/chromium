@@ -426,4 +426,15 @@ webnn::ReduceKind FromMojoReduceType(mojom::Reduce::Kind kind) {
   }
 }
 
+webnn::PaddingMode FromMojoPaddingMode(mojom::PaddingMode::Tag tag) {
+  switch (tag) {
+    case mojom::PaddingMode::Tag::kConstant:
+      return webnn::PaddingMode::kConstant;
+    case mojom::PaddingMode::Tag::kEdge:
+      return webnn::PaddingMode::kEdge;
+    case mojom::PaddingMode::Tag::kReflection:
+      return webnn::PaddingMode::kReflection;
+  }
+}
+
 }  // namespace webnn

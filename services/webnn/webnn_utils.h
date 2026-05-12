@@ -70,6 +70,9 @@ webnn::Pool2dKind COMPONENT_EXPORT(WEBNN_SERVICE)
 webnn::ReduceKind COMPONENT_EXPORT(WEBNN_SERVICE)
     FromMojoReduceType(mojom::Reduce::Kind kind);
 
+webnn::PaddingMode COMPONENT_EXPORT(WEBNN_SERVICE)
+    FromMojoPaddingMode(mojom::PaddingMode::Tag tag);
+
 }  // namespace webnn
 
 #endif  // SERVICES_WEBNN_WEBNN_UTILS_H_
