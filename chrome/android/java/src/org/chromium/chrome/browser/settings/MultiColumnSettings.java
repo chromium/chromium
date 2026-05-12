@@ -16,6 +16,8 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -262,7 +264,13 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         }
         if (focusable != null) {
             focusable.requestFocus();
-            KeyboardVisibilityDelegate.getInstance().showKeyboard(focusable);
+            if (getActivity() != null && getActivity().getWindow() != null) {
+                WindowInsetsControllerCompat controller =
+                        new WindowInsetsControllerCompat(getActivity().getWindow(), detailView);
+                controller.show(WindowInsetsCompat.Type.ime());
+            } else {
+                KeyboardVisibilityDelegate.getInstance().showKeyboard(focusable);
+            }
         }
     }
 
