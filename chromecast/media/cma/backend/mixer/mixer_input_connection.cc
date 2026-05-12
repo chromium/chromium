@@ -374,7 +374,7 @@ MixerInputConnection::MixerInputConnection(
       focus_type_(params.has_focus_type()
                       ? audio_service::ConvertContentType(params.focus_type())
                       : content_type_),
-      playout_channel_(params.channel_selection()),
+      playout_channel_(std::max(params.channel_selection(), kChannelAll)),
       pts_is_timestamp_(params.has_timestamped_audio_config()),
       max_timestamp_error_(GetMaxTimestampError(params)),
       never_crop_(params.timestamped_audio_config().never_crop()),
