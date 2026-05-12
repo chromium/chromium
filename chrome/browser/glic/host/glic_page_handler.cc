@@ -179,13 +179,15 @@ mojom::FormFactor GetGlicFormFactor(ui::DeviceFormFactor form_factor) {
   switch (form_factor) {
     case ui::DEVICE_FORM_FACTOR_DESKTOP:
       return mojom::FormFactor::kDesktop;
+    // TODO(b/512144892): Foldable is currently grouped with phone. We need
+    // transition between bottom sheet and side panel, to match tablet UI.
+    case ui::DEVICE_FORM_FACTOR_FOLDABLE:
     case ui::DEVICE_FORM_FACTOR_PHONE:
       return mojom::FormFactor::kPhone;
     case ui::DEVICE_FORM_FACTOR_TABLET:
       return mojom::FormFactor::kTablet;
     case ui::DEVICE_FORM_FACTOR_TV:
     case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
-    case ui::DEVICE_FORM_FACTOR_FOLDABLE:
     case ui::DEVICE_FORM_FACTOR_XR:
       return mojom::FormFactor::kUnknown;
   }
