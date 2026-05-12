@@ -349,7 +349,7 @@ bool AudioSocket::OnMessageBuffer(scoped_refptr<net::IOBuffer> buffer,
 bool AudioSocket::ParseAudio(char* data, size_t size) {
   int64_t timestamp;
   if (size < sizeof(timestamp)) {
-    LOG(ERROR) << "Invalid audio packet size " << size << " from " << this;
+    LOG(ERROR) << "Invalid audio buffer size " << size << " from " << this;
     delegate_->OnConnectionError();
     return false;
   }
@@ -359,6 +359,11 @@ bool AudioSocket::ParseAudio(char* data, size_t size) {
   size -= sizeof(timestamp);
 
   // Handle padding bytes.
+  if (size < sizeof(int32_t)) {
+    LOG(ERROR) << "Invalid audio buffer size " << size << " from " << this;
+    delegate_->OnConnectionError();
+    return false;
+  }
   UNSAFE_TODO(data += sizeof(int32_t));
   size -= sizeof(int32_t);
 
@@ -380,6 +385,11 @@ bool AudioSocket::ParseAudioBuffer(scoped_refptr<net::IOBuffer> buffer,
   size -= sizeof(timestamp);
 
   // Handle padding bytes.
+  if (size < sizeof(int32_t)) {
+    LOG(ERROR) << "Invalid audio buffer size " << size << " from " << this;
+    delegate_->OnConnectionError();
+    return false;
+  }
   UNSAFE_TODO(data += sizeof(int32_t));
   size -= sizeof(int32_t);
 
