@@ -789,7 +789,12 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
   // with the web contents.
   const bool base_on_top_controls = TopControlsHeight();
   const float controls_animated_height = ControlsAnimatedHeight();
-  DCHECK_GE(controls_animated_height, 0.0f);
+
+  // Return early if the controls have no height to animate.
+  if (controls_animated_height == 0.0f) {
+    return;
+  }
+  DCHECK_GT(controls_animated_height, 0.0f);
 
   const float shown_ratio = base_on_top_controls ? TopControlsShownRatio()
                                                  : BottomControlsShownRatio();
