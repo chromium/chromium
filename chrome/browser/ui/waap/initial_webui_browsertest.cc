@@ -10,7 +10,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -24,6 +28,8 @@
 #include "chrome/common/webui_url_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/mapping/metrics_mapping_features.h"
 #include "components/metrics/mapping/metrics_name_mapping.pb.h"
@@ -37,6 +43,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "url/gurl.h"
 
 namespace waap {
@@ -587,5 +594,134 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsDropBrowserTest,
 // `metrics::BeginFirstWebContentsProfiling()` is skipped, and the startup
 // metrics, such as `Startup.FirstWebContents.NonEmptyPaint3`, are never
 // recorded.
+
+// TODO(crbug.com/507317176): The following two tests are disabled on Linux
+// because they fail due to a timeout waiting for the window to be minimized in
+// xvfb or a crash in `WaapUIMetricsService` due to static state persistence
+// across calls.
+
+// Tests that the duration metrics are not recorded for windows created as
+// minimized.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_InitiallyMinimizedWindowSkipsMetrics \
+  DISABLED_InitiallyMinimizedWindowSkipsMetrics
+#else
+#define MAYBE_InitiallyMinimizedWindowSkipsMetrics \
+  InitiallyMinimizedWindowSkipsMetrics
+#endif
+IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
+                       MAYBE_InitiallyMinimizedWindowSkipsMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Create a minimized browser window.
+  Browser::CreateParams params(browser()->profile(), true);
+  params.initial_show_state = ui::mojom::WindowShowState::kMinimized;
+  Browser* new_browser = Browser::Create(params);
+
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
+    manager->SkipStartupForTesting();
+    manager->SetWindowCreationInfo(
+        waap::NewWindowCreationSource::kBrowserInitiated,
+        base::TimeTicks::Now());
+  }
+
+  // Show the window which should be shown minimized, and verify it.
+  new_browser->window()->Show();
+  EXPECT_TRUE(new_browser->window()->IsMinimized());
+
+  // Restore (open) the window.
+  new_browser->window()->Restore();
+  EXPECT_FALSE(new_browser->window()->IsMinimized());
+
+  // Simulate presentation and paint events (which now happen after the window
+  // is opened).
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
+    base::TimeTicks t1 = base::TimeTicks::Now();
+    manager->OnBrowserWindowFirstPresentation(t1);
+    manager->OnReloadButtonFirstPaint(t1 + base::Milliseconds(50));
+  }
+
+  // Verify ShowRequestedToFirstPaint was not recorded.
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
+      "ShowRequestedToFirstPaint.FromConstructor",
+      0);
+
+  // Verify FirstPaintGap was not recorded.
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
+      "BrowserWindowToReloadButton.FirstPaintGap",
+      0);
+}
+
+// Tests that the duration metrics should be skipped for the windows that are
+// restored as minimized.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SessionRestoreMinimizedWindow \
+  DISABLED_SessionRestoreMinimizedWindow
+#else
+#define MAYBE_SessionRestoreMinimizedWindow SessionRestoreMinimizedWindow
+#endif
+IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
+                       MAYBE_SessionRestoreMinimizedWindow) {
+  Profile* profile = browser()->profile();
+
+  // Enable session restore and minimize the current window.
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile, pref);
+  browser()->window()->Minimize();
+  EXPECT_TRUE(browser()->window()->IsMinimized());
+
+  // Keep the profile and process alive when we close the window.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Close the browser and reset the static state of the metrics manager so the
+  // next window restored is treated as startup, which allows us to test the
+  // startup metric paths.
+  CloseBrowserSynchronously(browser());
+  InitialWebUIWindowMetricsManager::ResetForTesting();
+
+  // Create a new window, which should trigger session restore.
+  base::HistogramTester histogram_tester;
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+
+  chrome::NewEmptyWindow(profile);
+
+  Browser* restored_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(restored_browser);
+
+  // Verify the restored window is minimized.
+  EXPECT_TRUE(restored_browser->window()->IsMinimized());
+
+  // Restore (open) the window.
+  restored_browser->window()->Restore();
+  EXPECT_FALSE(restored_browser->window()->IsMinimized());
+
+  // Simulate paint events (which now happen after the window is opened).
+  if (auto* manager =
+          InitialWebUIWindowMetricsManager::From(restored_browser)) {
+    base::TimeTicks t1 = base::TimeTicks::Now();
+    manager->OnBrowserWindowFirstPresentation(t1);
+    manager->OnReloadButtonFirstPaint(t1 + base::Milliseconds(50));
+  }
+
+  // Verify no metrics were recorded, since it is treated as startup as we
+  // reset for testing, we should check startup metrics.
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.Startup.SessionRestore.WithoutExistingWindow."
+      "BrowserWindow.ShowRequestedToFirstPaint",
+      0);
+
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.Startup.SessionRestore.WithoutExistingWindow."
+      "BrowserWindowToReloadButton.FirstPaintGap",
+      0);
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
 
 }  // namespace waap
