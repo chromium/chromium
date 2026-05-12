@@ -20,7 +20,6 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:paddingTop="24dp"
         android:paddingBottom="24dp"
-        android:background="@color/signin_header_animation_background"
         android:contentDescription="@string/adaptive_toolbar_edit_shortcut"
         android:importantForAccessibility="no"
         android:scaleType="center"

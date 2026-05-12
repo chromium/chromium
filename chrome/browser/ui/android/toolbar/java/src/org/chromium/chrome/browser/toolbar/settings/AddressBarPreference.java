@@ -220,24 +220,6 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
                             HIGHLIGHT_ANIMATION_DELAY_MS);
         }
 
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            // TODO(crbug.com/439911511): Set the value directly in the layout instead.
-            int verticalPadding =
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.settings_item_default_padding);
-            mTopButton.setPadding(
-                    mTopButton.getPaddingLeft(),
-                    verticalPadding,
-                    mTopButton.getPaddingRight(),
-                    verticalPadding);
-            mBottomButton.setPadding(
-                    mBottomButton.getPaddingLeft(),
-                    verticalPadding,
-                    mBottomButton.getPaddingRight(),
-                    verticalPadding);
-        }
-
         initializeRadioButtonSelection();
     }
 

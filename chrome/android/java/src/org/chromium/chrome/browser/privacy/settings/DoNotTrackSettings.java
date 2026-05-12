@@ -9,18 +9,15 @@ import android.os.Bundle;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -29,7 +26,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 public class DoNotTrackSettings extends ChromeBaseSettingsFragment {
     // Must match key in do_not_track_preferences.xml.
     private static final String PREF_DO_NOT_TRACK_SWITCH = "do_not_track_switch";
-    private static final String PREF_DO_NOT_TRACK_DESCRIPTION = "do_not_track_description";
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -51,15 +47,6 @@ public class DoNotTrackSettings extends ChromeBaseSettingsFragment {
                     prefService.setBoolean(Pref.ENABLE_DO_NOT_TRACK, (boolean) newValue);
                     return true;
                 });
-
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            // TODO(crbug.com/439911511): Set the summary instead of the title in the layout file.
-            TextMessagePreference doNotTrackDescription =
-                    findPreference(PREF_DO_NOT_TRACK_DESCRIPTION);
-            NullUtil.assertNonNull(doNotTrackDescription)
-                    .setSummary(doNotTrackDescription.getTitle());
-            doNotTrackDescription.setTitle(null);
-        }
     }
 
     @Override

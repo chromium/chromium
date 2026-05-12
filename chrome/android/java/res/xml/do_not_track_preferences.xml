@@ -16,7 +16,7 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="do_not_track_description"
-        android:title="@string/do_not_track_description"
+        android:summary="@string/do_not_track_description"
         app:allowDividerBelow="false" />
 
 </PreferenceScreen>

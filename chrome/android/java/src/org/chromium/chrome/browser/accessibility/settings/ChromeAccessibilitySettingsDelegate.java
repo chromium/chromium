@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.accessibility.settings;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerServiceFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -124,7 +123,7 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
      */
     @Override
     public boolean shouldUseSlider() {
-        return ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
+        return true;
     }
 
     /**

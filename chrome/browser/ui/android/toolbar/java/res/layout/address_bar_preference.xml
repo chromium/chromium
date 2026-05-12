@@ -23,8 +23,8 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:minHeight="@dimen/min_touch_target_size"
-          android:paddingTop="8dp"
-          android:paddingBottom="8dp"
+          android:paddingTop="@dimen/settings_item_default_padding"
+          android:paddingBottom="@dimen/settings_item_default_padding"
           app:primaryText="@string/address_bar_settings_top" />
 
       <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
@@ -32,8 +32,8 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:minHeight="@dimen/min_touch_target_size"
-          android:paddingTop="8dp"
-          android:paddingBottom="8dp"
+          android:paddingTop="@dimen/settings_item_default_padding"
+          android:paddingBottom="@dimen/settings_item_default_padding"
           app:primaryText="@string/address_bar_settings_bottom" />
 
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>

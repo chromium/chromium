@@ -22,7 +22,6 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.ButtonCompat;
@@ -106,22 +105,20 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         }
 
         View container = holder.itemView;
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            int bottomPadding =
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.safety_hub_expandable_preference_vertical_padding);
-            // remove any additional bottom padding in expanded view
-            if (isExpanded()) {
-                bottomPadding = 0;
-            }
-            container.setPadding(
-                    container.getPaddingStart(),
-                    container.getPaddingTop(),
-                    container.getPaddingEnd(),
-                    bottomPadding);
+        int bottomPadding =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.safety_hub_expandable_preference_vertical_padding);
+        // remove any additional bottom padding in expanded view
+        if (isExpanded()) {
+            bottomPadding = 0;
         }
+        container.setPadding(
+                container.getPaddingStart(),
+                container.getPaddingTop(),
+                container.getPaddingEnd(),
+                bottomPadding);
 
         updatePreferenceContentDescription(container);
     }
