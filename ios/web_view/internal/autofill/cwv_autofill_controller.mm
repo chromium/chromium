@@ -427,11 +427,17 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                              atIndex:(NSInteger)index
                    completionHandler:
                        (nullable void (^)(void))completionHandler {
+  if (!card) {
+    return;
+  }
+  autofill::SuggestionType type =
+      card.isVirtual ? autofill::SuggestionType::kVirtualCreditCardEntry
+                     : autofill::SuggestionType::kCreditCardEntry;
   FormSuggestion* suggestion = [FormSuggestion
       suggestionWithValue:nil
        displayDescription:nil
                      icon:nil
-                     type:autofill::SuggestionType::kCreditCardEntry
+                     type:type
                   payload:autofill::Suggestion::Guid(card.internalCard->guid())
            requiresReauth:NO];
 

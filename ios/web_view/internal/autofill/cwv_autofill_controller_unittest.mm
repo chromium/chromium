@@ -187,6 +187,41 @@ class CWVAutofillControllerTest : public web::WebTest {
     web_frames_manager_->AddWebFrame(std::move(frame));
   }
 
+  void PrepareFormActivity() {
+    OCMExpect([password_controller_
+        checkIfSuggestionsAvailableForForm:[OCMArg any]
+                            hasUserGesture:YES
+                                  webState:&web_state_
+                         completionHandler:[OCMArg checkWithBlock:^(void (
+                                               ^suggestionsAvailable)(BOOL)) {
+                           suggestionsAvailable(NO);
+                           return YES;
+                         }]]);
+
+    base::test::TestFuture<NSArray<CWVAutofillSuggestion*>*> suggestions_future;
+
+    base::OnceCallback<void(NSArray<CWVAutofillSuggestion*>*)> cpp_callback =
+        suggestions_future.GetCallback();
+
+    __block base::OnceCallback<void(NSArray<CWVAutofillSuggestion*>*)>*
+        block_safe_callback = &cpp_callback;
+
+    void (^completion_block)(NSArray<CWVAutofillSuggestion*>*) =
+        ^(NSArray<CWVAutofillSuggestion*>* suggestions) {
+          if (*block_safe_callback) {
+            std::move(*block_safe_callback).Run(suggestions);
+          }
+        };
+
+    [autofill_controller_ fetchSuggestionsForFormWithName:kTestFormName
+                                          fieldIdentifier:kTestFieldIdentifier
+                                                fieldType:@""
+                                                  frameID:frame_id_
+                                        completionHandler:completion_block];
+
+    EXPECT_TRUE(suggestions_future.Wait());
+  }
+
   TestingPrefServiceSimple pref_service_;
   web::FakeBrowserState browser_state_;
   autofill::TestPersonalDataManager personal_data_manager_;
@@ -342,6 +377,8 @@ TEST_F(CWVAutofillControllerTest, AcceptCreditCardAsSuggestion) {
   CWVCreditCard* cwv_credit_card =
       [[CWVCreditCard alloc] initWithCreditCard:credit_card];
 
+  PrepareFormActivity();
+
   __block BOOL accept_completion_was_called = NO;
   [autofill_controller_ acceptCreditCardAsSuggestion:cwv_credit_card
                                              atIndex:0
@@ -353,6 +390,45 @@ TEST_F(CWVAutofillControllerTest, AcceptCreditCardAsSuggestion) {
                                           /*run_message_loop=*/true, ^bool {
                                             return accept_completion_was_called;
                                           }));
+
+  FormSuggestion* recorded_suggestion =
+      [autofill_agent_ selectedSuggestionForFormName:kTestFormName
+                                     fieldIdentifier:kTestFieldIdentifier
+                                             frameID:frame_id_];
+  EXPECT_TRUE(recorded_suggestion);
+  EXPECT_EQ(recorded_suggestion.type,
+            autofill::SuggestionType::kCreditCardEntry);
+  EXPECT_OCMOCK_VERIFY(password_controller_);
+}
+
+TEST_F(CWVAutofillControllerTest, AcceptVirtualCreditCardAsSuggestion) {
+  autofill::CreditCard credit_card = autofill::test::GetCreditCard();
+  credit_card.set_record_type(autofill::CreditCard::RecordType::kVirtualCard);
+  CWVCreditCard* cwv_credit_card =
+      [[CWVCreditCard alloc] initWithCreditCard:credit_card];
+
+  PrepareFormActivity();
+
+  __block BOOL accept_completion_was_called = NO;
+  [autofill_controller_ acceptCreditCardAsSuggestion:cwv_credit_card
+                                             atIndex:0
+                                   completionHandler:^{
+                                     accept_completion_was_called = YES;
+                                   }];
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout,
+                                          /*run_message_loop=*/true, ^bool {
+                                            return accept_completion_was_called;
+                                          }));
+
+  FormSuggestion* recorded_suggestion =
+      [autofill_agent_ selectedSuggestionForFormName:kTestFormName
+                                     fieldIdentifier:kTestFieldIdentifier
+                                             frameID:frame_id_];
+  EXPECT_TRUE(recorded_suggestion);
+  EXPECT_EQ(recorded_suggestion.type,
+            autofill::SuggestionType::kVirtualCreditCardEntry);
+  EXPECT_OCMOCK_VERIFY(password_controller_);
 }
 
 // Tests CWVAutofillController delegate focus callback is invoked.
