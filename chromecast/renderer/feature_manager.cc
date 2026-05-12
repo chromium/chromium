@@ -84,9 +84,10 @@ void FeatureManager::ConfigureFeaturesInternal() {
         (features_map_.find(feature::kEnableDevMode)->second)->config;
     const std::string* dev_mode_origin =
         dev_mode_config.FindString(feature::kDevModeOrigin);
-    DCHECK(dev_mode_origin);
-    dev_origin_ = GURL(*dev_mode_origin);
-    DCHECK(dev_origin_.is_valid());
+    if (dev_mode_origin) {
+      dev_origin_ = GURL(*dev_mode_origin);
+      DCHECK(dev_origin_.is_valid());
+    }
   }
 
   if (FeatureEnabled(feature::kDisableBackgroundSuspend)) {
