@@ -90,7 +90,7 @@ CGFloat const kSheetCornerRadius = 30;
       ImageFetcherServiceFactory::GetForProfile(self.profile);
   image_fetcher::ImageFetcher* imageFetcher =
       imageFetcherService->GetImageFetcher(
-          image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+          image_fetcher::ImageFetcherConfig::kReducedMode);
   HomeBackgroundImageService* homeBackgroundImageService =
       HomeBackgroundImageServiceFactory::GetForProfile(self.profile);
   HomeBackgroundCustomizationService* homeBackgroundCustomizationService =

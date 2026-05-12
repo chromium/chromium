@@ -61,13 +61,13 @@ std::unique_ptr<KeyedService> CreateUserUploadedImageManager(
       base::SequencedTaskRunner::GetCurrentDefault());
 }
 
-// Post reply to image fetch. `p0` represents the image to return. `p1`
+// Post reply to image data fetch. `p0` represents the data to return. `p1`
 // represents the HTTP response code.
-ACTION_P(PostFetchReply, image, http_response_code) {
+ACTION_P(PostFetchDataReply, data, http_response_code) {
   image_fetcher::RequestMetadata metadata;
   metadata.http_response_code = http_response_code;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(*arg2), image, metadata));
+      FROM_HERE, base::BindOnce(std::move(*arg1), data, metadata));
 }
 
 }  // namespace
@@ -653,10 +653,12 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   // Set up call.
   GURL url("https://www.google.com/image");
   gfx::Image expected_image = gfx::test::CreateImage(20, 20);
+  NSData* data = UIImagePNGRepresentation(expected_image.ToUIImage());
+  std::string png_data((const char*)[data bytes], [data length]);
 
   EXPECT_CALL(*mock_image_fetcher_.get(),
               FetchImageAndData_(url, testing::_, testing::_, testing::_))
-      .WillOnce(PostFetchReply(expected_image, 200));
+      .WillOnce(PostFetchDataReply(png_data, 200));
 
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
@@ -686,13 +688,12 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 // works correctly.
 TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
        FetchThumbnailImage_Failure) {
-  // Set up call with empty image to indicate failure.
+  // Set up call with empty data to indicate failure.
   GURL url("https://www.google.com/image");
-  gfx::Image empty_image;
 
   EXPECT_CALL(*mock_image_fetcher_.get(),
               FetchImageAndData_(url, testing::_, testing::_, testing::_))
-      .WillOnce(PostFetchReply(empty_image, 404));
+      .WillOnce(PostFetchDataReply("", 404));
 
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
