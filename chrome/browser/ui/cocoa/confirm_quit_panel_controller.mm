@@ -32,6 +32,17 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 // Time to wait between KeyUp events before checking the keyboard state again.
 constexpr NSTimeInterval kEventQueueWaitTime = 0.1;
 
+namespace {
+
+CGFloat ConfirmQuitFrameCornerRadius() {
+  if (@available(macOS 26, *)) {
+    return 20.0;
+  }
+  return 9.0;
+}
+
+}  // namespace
+
 // Custom Content View /////////////////////////////////////////////////////////
 
 // The content view of the window that draws a custom frame.
@@ -61,10 +72,10 @@ constexpr NSTimeInterval kEventQueueWaitTime = 0.1;
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-  const CGFloat kCornerRadius = 5.0;
+  const CGFloat cornerRadius = ConfirmQuitFrameCornerRadius();
   NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:self.bounds
-                                                       xRadius:kCornerRadius
-                                                       yRadius:kCornerRadius];
+                                                       xRadius:cornerRadius
+                                                       yRadius:cornerRadius];
 
   NSColor* fillColor = [NSColor colorWithCalibratedWhite:0.2 alpha:0.75];
   [fillColor set];
