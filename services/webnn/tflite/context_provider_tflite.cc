@@ -8,13 +8,39 @@
 
 #include "base/check.h"
 #include "base/task/thread_pool.h"
+#include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/tflite/context_impl_tflite.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 
+#if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
+#include "services/on_device_model/ml/chrome_ml.h"      // nogncheck
+#include "services/on_device_model/ml/chrome_ml_api.h"  // nogncheck
+#endif
+
 namespace webnn::tflite {
+
+bool ShouldUseInProcessTflite(const mojom::CreateContextOptions& options) {
+  // GPU device requests still are served by the GPU-process TFLite backend when
+  // the ChromeML GPU delegate is available there that will be also moved to
+  // renderer process.
+#if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
+  if (options.device == mojom::Device::kGpu) {
+    auto* chrome_ml = ml::ChromeML::Get();
+    if (chrome_ml && chrome_ml->HasCreateGpuDelegate() &&
+        chrome_ml->HasDestroyGpuDelegate()) {
+      return false;
+    }
+  }
+#endif
+
+  // CPU and NPU requests, and GPU requests without a usable GPU delegate in
+  // the GPU process, are all served by the renderer-process TFLite backend.
+  return true;
+}
 
 ContextProviderTflite::ContextProviderTflite(
     mojo::PendingRemote<mojom::WebNNWeightsFileCreator>
@@ -31,10 +57,10 @@ ContextProviderTflite::~ContextProviderTflite() = default;
 void ContextProviderTflite::CreateWebNNContext(
     mojom::CreateContextOptionsPtr options,
     CreateWebNNContextCallback callback) {
-  if (options->device != mojom::Device::kCpu) {
+  if (!ShouldUseInProcessTflite(*options)) {
     std::move(callback).Run(ToError<mojom::CreateContextResult>(
         mojom::Error::Code::kNotSupportedError,
-        "Only CPU device is supported for TFLite backend in this process."));
+        "This request is not supported by the in-process TFLite backend."));
     return;
   }
 

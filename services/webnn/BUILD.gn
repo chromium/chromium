@@ -273,6 +273,12 @@ source_set("webnn_test_support") {
     "//services/webnn/public/mojom",
   ]
 
+  public_deps = [ ":buildflags" ]
+
+  if (webnn_use_tflite || webnn_use_litert) {
+    deps += [ "//services/webnn/public/cpp:in_process_context_provider" ]
+  }
+
   if (is_win) {
     deps += [
       "//services/webnn/host",
