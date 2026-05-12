@@ -185,16 +185,10 @@ void LockedSessionWindowTracker::OnPauseModeChanged(bool paused) {
   }
 
   // Immersive mode is disabled when in pause mode to ensure users cannot switch
-  // tabs.
-  if (paused) {
-    browser_->GetBrowser().GetWindow()->GetNativeWindow()->SetProperty(
-        chromeos::kUseImmersiveInTrustedPinned, false);
-  } else {
-    bool enable_immersive_mode =
-        platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser());
-    browser_->GetBrowser().GetWindow()->GetNativeWindow()->SetProperty(
-        chromeos::kUseImmersiveInTrustedPinned, enable_immersive_mode);
-  }
+  // tabs. We keep the window property always set to restore the window to its
+  // previously intended state.
+  browser_->GetBrowser().GetWindow()->GetNativeWindow()->SetProperty(
+      chromeos::kUseImmersiveInTrustedPinned, !paused);
   browser_->GetBrowser().GetBrowserView().FullscreenStateChanged();
 }
 
