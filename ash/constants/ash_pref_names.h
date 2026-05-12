@@ -3129,6 +3129,16 @@ inline constexpr char kCertificateProvisioningStateForUser[] =
 inline constexpr char kCertificateProvisioningStateForDevice[] =
     "cert_provisioning_device_state";
 
+// A boolean preference that will be registered in local_state prefs to track
+// migration of permissions on device-wide key pairs and will be registered in
+// Profile prefs to track migration of permissions on user-owned key pairs.
+inline constexpr char kKeyPermissionsOneTimeMigrationDone[] =
+    "key_permissions_one_time_migration_done";
+
+// A dictionary pref mapping public keys that identify platform keys to its
+// properties like whether it's meant for corporate usage.
+inline constexpr char kPlatformKeys[] = "platform_keys";
+
 //-----------------------------------------------------------------------------
 // TPM related Prefs
 //-----------------------------------------------------------------------------

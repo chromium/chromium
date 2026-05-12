@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/no_destructor.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_util.h"
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/kcer/key_permissions.pb.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -64,7 +64,7 @@ class KeyPermissionsManagerTest : public testing::Test {
   void SetUp() override {
     KeyPermissionsManagerImpl::RegisterLocalStatePrefs(
         pref_service_.registry());
-    pref_service_.registry()->RegisterDictionaryPref(prefs::kPlatformKeys);
+    pref_service_.registry()->RegisterDictionaryPref(ash::prefs::kPlatformKeys);
     InitPlatformKeysService(kDefaultToken);
 
     previous_log_handler_ = logging::GetLogMessageHandler();
@@ -385,8 +385,8 @@ TEST_F(KeyPermissionsManagerTest, IsKeyAllowedForUsageFailsToParsePermissions) {
 // Test that KeyPermissionsManager completes the one-time migration if it was
 // not done yet.
 TEST_F(KeyPermissionsManagerTest, OneTimeMigrationSucceeds) {
-  EXPECT_FALSE(
-      pref_service_.GetBoolean(prefs::kKeyPermissionsOneTimeMigrationDone));
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      ash::prefs::kKeyPermissionsOneTimeMigrationDone));
 
   get_all_keys_result_ = {key_0_};
   internal::MarkUserKeyCorporateInPref(key_0_, &pref_service_);
@@ -394,15 +394,15 @@ TEST_F(KeyPermissionsManagerTest, OneTimeMigrationSucceeds) {
   InitKeyPermissionsManager();
   MakeACallAndWaitForResult(permissions_manager_);
 
-  EXPECT_TRUE(
-      pref_service_.GetBoolean(prefs::kKeyPermissionsOneTimeMigrationDone));
+  EXPECT_TRUE(pref_service_.GetBoolean(
+      ash::prefs::kKeyPermissionsOneTimeMigrationDone));
 }
 
 // Verify that it becomes available even if KeyPermissionsManager fails to read
 // some permissions for the one-time migration.
 TEST_F(KeyPermissionsManagerTest, OneTimeMigrationFailsAndManagerBecomesReady) {
-  EXPECT_FALSE(
-      pref_service_.GetBoolean(prefs::kKeyPermissionsOneTimeMigrationDone));
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      ash::prefs::kKeyPermissionsOneTimeMigrationDone));
 
   get_all_keys_result_ = {key_0_};
   internal::MarkUserKeyCorporateInPref(key_0_, &pref_service_);
@@ -444,7 +444,8 @@ TEST_F(KeyPermissionsManagerTest, OneTimeMigrationFailed) {
 // Test that KeyPermissionsManager successfully completes initialization when
 // the one-time migration was already done before.
 TEST_F(KeyPermissionsManagerTest, MigrationIsDoneFromTheBeginning) {
-  pref_service_.SetBoolean(prefs::kKeyPermissionsOneTimeMigrationDone, true);
+  pref_service_.SetBoolean(ash::prefs::kKeyPermissionsOneTimeMigrationDone,
+                           true);
 
   InitKeyPermissionsManager();
 

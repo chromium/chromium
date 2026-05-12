@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/kcer/key_permissions.pb.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -271,7 +271,7 @@ KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager(
 // static
 void KeyPermissionsManagerImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kKeyPermissionsOneTimeMigrationDone,
+  registry->RegisterBooleanPref(ash::prefs::kKeyPermissionsOneTimeMigrationDone,
                                 /*default_value=*/false);
 }
 
@@ -494,7 +494,8 @@ void KeyPermissionsManagerImpl::OnOneTimeMigrationDone(
   base::UmaHistogramEnumeration(kMigrationStatusHistogramName,
                                 MigrationStatus::kSucceeded);
 
-  pref_service_->SetBoolean(prefs::kKeyPermissionsOneTimeMigrationDone, true);
+  pref_service_->SetBoolean(ash::prefs::kKeyPermissionsOneTimeMigrationDone,
+                            true);
 
   OnReadyForQueries();
 
@@ -504,7 +505,8 @@ void KeyPermissionsManagerImpl::OnOneTimeMigrationDone(
 }
 
 bool KeyPermissionsManagerImpl::IsOneTimeMigrationDone() const {
-  return pref_service_->GetBoolean(prefs::kKeyPermissionsOneTimeMigrationDone);
+  return pref_service_->GetBoolean(
+      ash::prefs::kKeyPermissionsOneTimeMigrationDone);
 }
 
 void KeyPermissionsManagerImpl::OnArcUsageAllowanceForCorporateKeysChanged(

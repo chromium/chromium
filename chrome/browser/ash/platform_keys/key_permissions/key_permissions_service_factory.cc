@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {
@@ -66,9 +66,9 @@ KeyPermissionsServiceFactory::BuildServiceInstanceForBrowserContext(
 
 void KeyPermissionsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  // For the format of the dictionary see prefs::kPlatformKeys documentation in
-  // key_permissions_service.cc
-  registry->RegisterDictionaryPref(prefs::kPlatformKeys);
+  // For the format of the dictionary see ash::prefs::kPlatformKeys
+  // documentation in key_permissions_util.cc
+  registry->RegisterDictionaryPref(ash::prefs::kPlatformKeys);
 }
 
 }  // namespace platform_keys

@@ -501,16 +501,6 @@ inline constexpr char kTouchVirtualKeyboardEnabled[] =
 inline constexpr char kVirtualKeyboardSmartVisibilityEnabled[] =
     "ui.virtual_keyboard_smart_visibility_enabled";
 
-// A dictionary pref mapping public keys that identify platform keys to its
-// properties like whether it's meant for corporate usage.
-inline constexpr char kPlatformKeys[] = "platform_keys";
-
-// A boolean preference that will be registered in local_state prefs to track
-// migration of permissions on device-wide key pairs and will be registered in
-// Profile prefs to track migration of permissions on user-owned key pairs.
-inline constexpr char kKeyPermissionsOneTimeMigrationDone[] =
-    "key_permissions_one_time_migration_done";
-
 // A boolean preference that is registered in user prefs to tracks that at least
 // one PKCS#12 certificate+key pair was dual written into NSS software-backed
 // slot and Chaps. This is a part of the experiment to import PKCS#12 files into
