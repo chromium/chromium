@@ -10968,11 +10968,6 @@ const FeatureEntry kFeatureEntries[] = {
          "DefaultBrowserPromptSurfaces")},
 #endif  // !BUILDFLAG(IS_ANDROID) && ! BUILDFLAG(IS_CHROMEOS)
 
-    {"privacy-sandbox-ad-topics-content-parity",
-     flag_descriptions::kPrivacySandboxAdTopicsContentParityName,
-     flag_descriptions::kPrivacySandboxAdTopicsContentParityDescription, kOsAll,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdTopicsContentParity)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-android-document-picture-in-picture",
      flag_descriptions::kAndroidDocumentPictureInPictureName,

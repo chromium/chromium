@@ -134,9 +134,6 @@ BASE_DECLARE_FEATURE(kPsDualWritePrefsToNoticeStorage);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivateStateTokensDevUI);
 
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxAdTopicsContentParity);
-
 #if BUILDFLAG(IS_ANDROID)
 // The delay in milliseconds between the first click and the next accepted
 // click.

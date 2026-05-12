@@ -3913,14 +3913,6 @@ inline constexpr char kNtpComposeboxUsesChromeComposeClientDescription[] =
     "Composebox will use chrome-compose client when querying suggest for "
     "unimodal typed inputs instead of chrome-omni.";
 
-inline constexpr char kPrivacySandboxAdTopicsContentParityName[] =
-    "Privacy Sandbox Ad Topics Content Parity";
-inline constexpr char kPrivacySandboxAdTopicsContentParityDescription[] =
-    "Enables the Ad Topics card in the Privacy Guide to be displayed. This "
-    "flag also updates UI and text of the Ad Topics settings page and Topics "
-    "Consent Dialog. All of these changes are subject to regional "
-    "availability.";
-
 inline constexpr char kPrivacySandboxEnrollmentOverridesName[] =
     "Privacy Sandbox Enrollment Overrides";
 inline constexpr char kPrivacySandboxEnrollmentOverridesDescription[] =
