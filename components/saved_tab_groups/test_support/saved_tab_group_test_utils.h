@@ -16,7 +16,6 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "components/sync_device_info/device_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -57,12 +56,6 @@ SavedTabGroup CreateTestSavedTabGroup(
     std::optional<base::Time> creation_date = std::nullopt);
 SavedTabGroup CreateTestSavedTabGroupWithNoTabs();
 TabGroupVisualData CreateTabGroupVisualData();
-
-// Helper method to create a device info.
-std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
-    const std::string& guid,
-    syncer::DeviceInfo::OsType os_type,
-    syncer::DeviceInfo::FormFactor form_factor);
 
 }  // namespace tab_groups::test
 

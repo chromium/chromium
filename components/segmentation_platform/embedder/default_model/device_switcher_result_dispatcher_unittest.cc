@@ -18,6 +18,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -31,37 +32,8 @@ using testing::NiceMock;
 using OsType = syncer::DeviceInfo::OsType;
 using DeviceCountByOsTypeMap = std::map<OsType, int>;
 using syncer::FakeDeviceInfoTracker;
-using DeviceType = DeviceInfo::DeviceType;
 
-const DeviceInfo::DeviceType kLocalDeviceType = DeviceInfo::DeviceType::kLinux;
 const DeviceInfo::OsType kLocalDeviceOS = DeviceInfo::OsType::kLinux;
-const DeviceInfo::FormFactor kLocalDeviceFormFactor =
-    DeviceInfo::FormFactor::kDesktop;
-
-std::unique_ptr<DeviceInfo> CreateDeviceInfo(
-    const std::string& guid,
-    DeviceType device_type,
-    OsType os_type,
-    base::Time last_updated = base::Time::Now()) {
-  return std::make_unique<DeviceInfo>(
-      guid, "name", "chrome_version", "user_agent", device_type, os_type,
-      kLocalDeviceFormFactor, "device_id", "manufacturer_name", "model_name",
-      "full_hardware_class", last_updated,
-      syncer::DeviceInfoUtil::GetPulseInterval(),
-      /*send_tab_to_self_receiving_enabled=*/
-      false,
-      /*send_tab_to_self_receiving_type=*/
-      DeviceInfo::SendTabReceivingType::kChromeOrUnspecified, std::nullopt,
-      /*paask_info=*/std::nullopt,
-      /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::DataTypeSet(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      /*desktop_to_ios_promo_receiving_enabled=*/false,
-      /*desktop_to_ios_promo_receiving_types=*/
-      MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_state=*/
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
-}
 
 class MockFieldTrialRegister : public FieldTrialRegister {
  public:
@@ -107,8 +79,9 @@ class DeviceSwitcherResultDispatcherTest : public testing::Test {
 
   void MakeDeviceInfoAvailable() {
     ASSERT_FALSE(local_device_info_);
-    local_device_info_ =
-        CreateDeviceInfo("local_device", kLocalDeviceType, kLocalDeviceOS);
+    local_device_info_ = syncer::TestDeviceInfoBuilder(kLocalDeviceOS)
+                             .WithGuid("local_device")
+                             .Build();
     device_info_tracker_->Add(local_device_info_.get());
   }
 

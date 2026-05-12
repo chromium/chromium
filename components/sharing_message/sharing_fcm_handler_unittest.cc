@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
-#include "components/sharing_message/fake_device_info.h"
 #include "components/sharing_message/fake_sharing_handler_registry.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/mock_sharing_message_handler.h"
@@ -21,6 +20,7 @@
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,12 +86,15 @@ class SharingFCMHandlerTest : public testing::Test {
         &fake_gcm_driver_,
         fake_device_info_sync_service_.GetDeviceInfoTracker(),
         &mock_sharing_fcm_sender_, &handler_registry_);
-    fake_device_info_ = CreateFakeDeviceInfo(
-        kSenderGuid, kSenderName,
-        syncer::DeviceInfo::SharingInfo(
-            {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
-            /*chime_representative_target_id=*/std::string(),
-            std::set<syncer::DeviceInfo::SharingFeature>()));
+    fake_device_info_ =
+        syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
+            .WithGuid(kSenderGuid)
+            .WithClientName(kSenderName)
+            .WithSharingInfo(
+                {{kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
+                 /*chime_representative_target_id=*/std::string(),
+                 std::set<syncer::DeviceInfo::SharingFeature>()})
+            .Build();
   }
 
   // Creates a gcm::IncomingMessage with SharingMessage and defaults.

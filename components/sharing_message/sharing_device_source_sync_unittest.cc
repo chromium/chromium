@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/sharing_message/fake_device_info.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_utils.h"
@@ -26,6 +25,7 @@
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_device_info/fake_local_device_info_provider.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,14 +46,14 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
     syncer::DeviceInfo::SharingTargetInfo sender_id_target_info =
         {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
     const std::string& chime_rep_id = kChimeRepresentativeTargetId) {
-  syncer::DeviceInfo::SharingInfo sharing_info(std::move(sender_id_target_info),
-                                               chime_rep_id, {enabled_feature});
-
-  return CreateFakeDeviceInfo(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), client_name,
-      std::move(sharing_info), syncer::DeviceInfo::DeviceType::kLinux,
-      syncer::DeviceInfo::OsType::kLinux,
-      syncer::DeviceInfo::FormFactor::kDesktop, manufacturer_name, model_name);
+  return syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
+      .WithGuid(base::Uuid::GenerateRandomV4().AsLowercaseString())
+      .WithClientName(client_name)
+      .WithSharingInfo(
+          {{std::move(sender_id_target_info), chime_rep_id, {enabled_feature}}})
+      .WithManufacturerName(manufacturer_name)
+      .WithModelName(model_name)
+      .Build();
 }
 
 class SharingDeviceSourceSyncTest : public testing::Test {

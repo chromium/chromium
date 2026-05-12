@@ -12,6 +12,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,15 +54,21 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
   }
 
   void SetUpDeviceInfo() {
-    device_info1_ = test::CreateDeviceInfo(
-        kDeviceGuid1, syncer::DeviceInfo::OsType::kAndroid,
-        syncer::DeviceInfo::FormFactor::kPhone);
-    device_info2_ = test::CreateDeviceInfo(
-        kDeviceGuid2, syncer::DeviceInfo::OsType::kWindows,
-        syncer::DeviceInfo::FormFactor::kDesktop);
-    device_info3_ = test::CreateDeviceInfo(
-        kDeviceGuid3, syncer::DeviceInfo::OsType::kAndroid,
-        syncer::DeviceInfo::FormFactor::kTablet);
+    device_info1_ =
+        syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+            .WithGuid(kDeviceGuid1)
+            .WithFormFactor(syncer::DeviceInfo::FormFactor::kPhone)
+            .Build();
+    device_info2_ =
+        syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kWindows)
+            .WithGuid(kDeviceGuid2)
+            .WithFormFactor(syncer::DeviceInfo::FormFactor::kDesktop)
+            .Build();
+    device_info3_ =
+        syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+            .WithGuid(kDeviceGuid3)
+            .WithFormFactor(syncer::DeviceInfo::FormFactor::kTablet)
+            .Build();
     device_info_tracker_->Add(device_info1_.get());
     device_info_tracker_->Add(device_info2_.get());
     device_info_tracker_->Add(device_info3_.get());
@@ -69,8 +76,14 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
   }
 
   DeviceType GetDeviceType(syncer::DeviceInfo::OsType os_type,
-                           syncer::DeviceInfo::FormFactor form_factor) {
-    auto device_info = test::CreateDeviceInfo("test", os_type, form_factor);
+                           std::optional<syncer::DeviceInfo::FormFactor>
+                               form_factor = std::nullopt) {
+    syncer::TestDeviceInfoBuilder builder(os_type);
+    builder.WithGuid("test");
+    if (form_factor) {
+      builder.WithFormFactor(*form_factor);
+    }
+    auto device_info = builder.Build();
     return metrics_logger_->GetDeviceTypeFromDeviceInfo(*device_info);
   }
 

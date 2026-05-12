@@ -103,6 +103,8 @@ static_library("test_support") {
     "fake_device_info_tracker.h",
     "fake_local_device_info_provider.cc",
     "fake_local_device_info_provider.h",
+    "test_device_info_builder.cc",
+    "test_device_info_builder.h",
   ]
 
   public_deps = [ ":sync_device_info" ]

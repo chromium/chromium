@@ -7,7 +7,6 @@
 #include "base/rand_util.h"
 #include "base/token.h"
 #include "build/build_config.h"
-#include "components/sync_device_info/device_info.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -105,32 +104,6 @@ TabGroupVisualData CreateTabGroupVisualData() {
   const tab_groups::TabGroupColorId& color =
       tab_groups::TabGroupColorId::kOrange;
   return TabGroupVisualData(title, color);
-}
-
-std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
-    const std::string& guid,
-    syncer::DeviceInfo::OsType os_type,
-    syncer::DeviceInfo::FormFactor form_factor) {
-  return std::make_unique<syncer::DeviceInfo>(
-      guid, "name", "chrome_version", "user_agent",
-      syncer::DeviceInfo::DeviceType::kLinux, os_type, form_factor, "scoped_id",
-      "manufacturer", "model", "full_hardware_class",
-      /*last_updated_timestamp=*/base::Time::Now(),
-      /*pulse_interval=*/base::Days(1),
-      /*send_tab_to_self_receiving_enabled=*/
-      false,
-      /*send_tab_to_self_receiving_type=*/
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      /*sharing_info=*/std::nullopt,
-      /*paask_info=*/std::nullopt,
-      /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      /*desktop_to_ios_promo_receiving_enabled=*/false,
-      /*desktop_to_ios_promo_receiving_types=*/
-      MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_state=*/
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 }
 
 }  // namespace tab_groups::test

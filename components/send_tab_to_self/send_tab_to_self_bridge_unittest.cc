@@ -41,6 +41,7 @@
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -97,24 +98,14 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
     bool send_tab_to_self_receiving_enabled = true,
     syncer::DeviceInfo::SendTabReceivingType send_tab_to_self_receiving_type =
         syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified) {
-  return std::make_unique<syncer::DeviceInfo>(
-      guid, name, "chrome_version", "user_agent",
-      syncer::DeviceInfo::DeviceType::kLinux,
-      syncer::DeviceInfo::OsType::kLinux,
-      syncer::DeviceInfo::FormFactor::kDesktop, "scoped_id", "manufacturer",
-      model, "full_hardware_class", last_updated_timestamp,
-      syncer::DeviceInfoUtil::GetPulseInterval(),
-      send_tab_to_self_receiving_enabled, send_tab_to_self_receiving_type,
-      /*sharing_info=*/std::nullopt,
-      /*paask_info=*/std::nullopt,
-      /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::DataTypeSet(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      /*desktop_to_ios_promo_receiving_enabled=*/false,
-      /*desktop_to_ios_promo_receiving_types=*/
-      MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_state=*/
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+  return syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
+      .WithGuid(guid)
+      .WithClientName(name)
+      .WithModelName(model)
+      .WithLastUpdatedTimestamp(last_updated_timestamp)
+      .WithSendTabToSelfReceivingEnabled(send_tab_to_self_receiving_enabled)
+      .WithSendTabToSelfReceivingType(send_tab_to_self_receiving_type)
+      .Build();
 }
 
 sync_pb::DataTypeState StateWithEncryption(
@@ -1299,24 +1290,13 @@ TEST_F(SendTabToSelfBridgeTest,
   // different models. This should result in the same short name but different
   // full names.
   std::unique_ptr<syncer::DeviceInfo> device1 =
-      std::make_unique<syncer::DeviceInfo>(
-          "guid1", "model1", "chrome_version", "user_agent",
-          syncer::DeviceInfo::DeviceType::kLinux,
-          syncer::DeviceInfo::OsType::kLinux,
-          syncer::DeviceInfo::FormFactor::kPhone, "scoped_id", "manufacturer",
-          "model1", "full_hardware_class", clock()->Now(),
-          syncer::DeviceInfoUtil::GetPulseInterval(),
-          /*send_tab_to_self_receiving_enabled=*/true,
-          syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-          /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
-          /*fcm_registration_token=*/std::string(),
-          /*interested_data_types=*/syncer::DataTypeSet(),
-          /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-          /*desktop_to_ios_promo_receiving_enabled=*/false,
-          /*desktop_to_ios_promo_receiving_types=*/
-          MobilePromoOnDesktopPromoTypeSet{},
-          /*glic_experimental_triggering_state=*/
-          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid("guid1")
+          .WithClientName("model1")
+          .WithModelName("model1")
+          .WithLastUpdatedTimestamp(clock()->Now())
+          .WithSendTabToSelfReceivingEnabled(true)
+          .Build();
   syncer::DeviceDisplayNames names1 =
       syncer::GetDeviceDisplayNames(device1.get());
   ASSERT_EQ("Manufacturer Phone model1", names1.full_name);
@@ -1324,24 +1304,13 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(device1.get());
 
   std::unique_ptr<syncer::DeviceInfo> device2 =
-      std::make_unique<syncer::DeviceInfo>(
-          "guid2", "model2", "chrome_version", "user_agent",
-          syncer::DeviceInfo::DeviceType::kLinux,
-          syncer::DeviceInfo::OsType::kLinux,
-          syncer::DeviceInfo::FormFactor::kPhone, "scoped_id", "manufacturer",
-          "model2", "full_hardware_class", clock()->Now() - base::Seconds(1),
-          syncer::DeviceInfoUtil::GetPulseInterval(),
-          /*send_tab_to_self_receiving_enabled=*/true,
-          syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-          /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
-          /*fcm_registration_token=*/std::string(),
-          /*interested_data_types=*/syncer::DataTypeSet(),
-          /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-          /*desktop_to_ios_promo_receiving_enabled=*/false,
-          /*desktop_to_ios_promo_receiving_types=*/
-          MobilePromoOnDesktopPromoTypeSet{},
-          /*glic_experimental_triggering_state=*/
-          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid("guid2")
+          .WithClientName("model2")
+          .WithModelName("model2")
+          .WithLastUpdatedTimestamp(clock()->Now() - base::Seconds(1))
+          .WithSendTabToSelfReceivingEnabled(true)
+          .Build();
   syncer::DeviceDisplayNames names2 =
       syncer::GetDeviceDisplayNames(device2.get());
   ASSERT_EQ("Manufacturer Phone model2", names2.full_name);
@@ -1480,44 +1449,20 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
   InitializeBridge();
 
   std::unique_ptr<syncer::DeviceInfo> desktop =
-      std::make_unique<syncer::DeviceInfo>(
-          "desktop_guid", "desktop", "chrome_version", "user_agent",
-          syncer::DeviceInfo::DeviceType::kLinux,
-          syncer::DeviceInfo::OsType::kLinux,
-          syncer::DeviceInfo::FormFactor::kDesktop, "scoped_id", "manufacturer",
-          "model", "full_hardware_class", clock()->Now(),
-          syncer::DeviceInfoUtil::GetPulseInterval(),
-          /*send_tab_to_self_receiving_enabled=*/true,
-          syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-          /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
-          /*fcm_registration_token=*/std::string(),
-          /*interested_data_types=*/syncer::DataTypeSet(),
-          /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-          /*desktop_to_ios_promo_receiving_enabled=*/false,
-          /*desktop_to_ios_promo_receiving_types=*/
-          MobilePromoOnDesktopPromoTypeSet{},
-          /*glic_experimental_triggering_state=*/
-          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
+          .WithGuid("desktop_guid")
+          .WithClientName("desktop")
+          .WithLastUpdatedTimestamp(clock()->Now())
+          .WithSendTabToSelfReceivingEnabled(true)
+          .Build();
 
   std::unique_ptr<syncer::DeviceInfo> phone =
-      std::make_unique<syncer::DeviceInfo>(
-          "phone_guid", "phone", "chrome_version", "user_agent",
-          syncer::DeviceInfo::DeviceType::kLinux,
-          syncer::DeviceInfo::OsType::kLinux,
-          syncer::DeviceInfo::FormFactor::kPhone, "scoped_id", "manufacturer",
-          "model", "full_hardware_class", clock()->Now() - base::Seconds(1),
-          syncer::DeviceInfoUtil::GetPulseInterval(),
-          /*send_tab_to_self_receiving_enabled=*/true,
-          syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-          /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
-          /*fcm_registration_token=*/std::string(),
-          /*interested_data_types=*/syncer::DataTypeSet(),
-          /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-          /*desktop_to_ios_promo_receiving_enabled=*/false,
-          /*desktop_to_ios_promo_receiving_types=*/
-          MobilePromoOnDesktopPromoTypeSet{},
-          /*glic_experimental_triggering_state=*/
-          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid("phone_guid")
+          .WithClientName("phone")
+          .WithLastUpdatedTimestamp(clock()->Now() - base::Seconds(1))
+          .WithSendTabToSelfReceivingEnabled(true)
+          .Build();
 
   AddTestDevice(desktop.get());
   AddTestDevice(phone.get());

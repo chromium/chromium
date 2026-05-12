@@ -31,6 +31,7 @@
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_device_info/fake_local_device_info_provider.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_provider.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -267,49 +268,18 @@ class CrossDevicePrefTrackerTest : public testing::Test {
     return dict.FindDict(cache_guid);
   }
 
-  std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
-      const std::string& guid,
-      const std::string& name = "name",
-      const std::optional<syncer::DeviceInfo::SharingInfo>& sharing_info =
-          std::nullopt,
-      syncer::DeviceInfo::DeviceType device_type =
-          syncer::DeviceInfo::DeviceType::kLinux,
-      syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kLinux,
-      syncer::DeviceInfo::FormFactor form_factor =
-          syncer::DeviceInfo::FormFactor::kDesktop,
-      const std::string& manufacturer_name = "manufacturer",
-      const std::string& model_name = "model",
-      const std::string& full_hardware_class = std::string(),
-      base::Time last_updated_timestamp = base::Time::Now()) {
-    return std::make_unique<syncer::DeviceInfo>(
-        guid, name, "chrome_version", "user_agent", device_type, os_type,
-        form_factor, "device_id", manufacturer_name, model_name,
-        full_hardware_class, last_updated_timestamp,
-        syncer::DeviceInfoUtil::GetPulseInterval(),
-        /*send_tab_to_self_receiving_enabled=*/
-        false, syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-        sharing_info,
-        /*paask_info=*/std::nullopt,
-        /*fcm_registration_token=*/std::string(),
-        /*interested_data_types=*/syncer::DataTypeSet(),
-        /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-        /*desktop_to_ios_promo_receiving_enabled=*/false,
-        /*desktop_to_ios_promo_receiving_types=*/
-        MobilePromoOnDesktopPromoTypeSet{},
-        /*glic_experimental_triggering_state=*/
-        syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
-  }
-
   // Helper to create a fake `DeviceInfo` for testing filters.
   std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       const std::string& guid,
       syncer::DeviceInfo::OsType os_type,
-      syncer::DeviceInfo::FormFactor form_factor,
+      std::optional<syncer::DeviceInfo::FormFactor> form_factor = std::nullopt,
       base::Time last_updated_timestamp = base::Time::Now()) {
-    return CreateFakeDeviceInfo(guid, "Device Name", std::nullopt,
-                                syncer::DeviceInfo::DeviceType::kUnset, os_type,
-                                form_factor, "manufacturer", "model",
-                                std::string(), last_updated_timestamp);
+    syncer::TestDeviceInfoBuilder builder(os_type);
+    builder.WithGuid(guid).WithLastUpdatedTimestamp(last_updated_timestamp);
+    if (form_factor) {
+      builder.WithFormFactor(*form_factor);
+    }
+    return builder.Build();
   }
 
   // Helper to manually populate the cross-device dictionary pref.

@@ -29,6 +29,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_preferences/features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,31 +56,16 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 }
 
 std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
-    const std::string& guid,
-    syncer::DeviceInfo::OsType os_type,
-    syncer::DeviceInfo::FormFactor form_factor,
     bool desktop_to_ios_promo_receiving_enabled,
     const MobilePromoOnDesktopPromoTypeSet&
         desktop_to_ios_promo_receiving_types = {}) {
-  auto device_info = std::make_unique<syncer::DeviceInfo>(
-      guid, "name", "chrome_version", "user_agent",
-      syncer::DeviceInfo::DeviceType::kPhone, os_type, form_factor, "scoped_id",
-      "manufacturer", "model", "full_hardware_class",
-      /*last_updated_timestamp=*/base::Time::Now(),
-      /*pulse_interval=*/base::Days(1),
-      /*send_tab_to_self_receiving_enabled=*/
-      false,
-      /*send_tab_to_self_receiving_type=*/
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      /*sharing_info=*/std::nullopt,
-      /*paask_info=*/std::nullopt,
-      /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      desktop_to_ios_promo_receiving_enabled,
-      desktop_to_ios_promo_receiving_types,
-      /*glic_experimental_triggering_state=*/
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+  auto device_info =
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kIOS)
+          .WithDesktopToIosPromoReceivingEnabled(
+              desktop_to_ios_promo_receiving_enabled)
+          .WithDesktopToIosPromoReceivingTypes(
+              desktop_to_ios_promo_receiving_types)
+          .Build();
   return device_info;
 }
 
@@ -150,8 +136,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
                        ShowPromo_ReceivingEnabled) {
   // Add a device with receiving enabled.
   device_info_tracker()->Add(
-      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, true,
+      CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true,
                        {MobilePromoOnDesktopPromoType::kAllPromos}));
 
   views::Widget* widget =
@@ -172,8 +157,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
                        ShowPromo_ReceivingDisabled) {
   // Add a device with receiving disabled.
   device_info_tracker()->Add(
-      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, false));
+      CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/false));
 
   views::Widget* widget =
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
@@ -193,8 +177,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
                        ShowPromo_BlockedByCooldown) {
   // Add a device with receiving enabled.
   device_info_tracker()->Add(
-      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, true,
+      CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true,
                        {MobilePromoOnDesktopPromoType::kAllPromos}));
 
   // Set the last impression timestamp to now.
@@ -220,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
                        ShowPromo_BlockedByImpressionLimit) {
   // Add a device with receiving enabled.
   device_info_tracker()->Add(
-      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, true,
+      CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true,
                        {MobilePromoOnDesktopPromoType::kAllPromos}));
 
   // Set the impression count to the maximum.
@@ -248,8 +230,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   // Note: An iOS client with only specific promos enabled (and not kAllPromos)
   // will populate the legacy boolean as false.
   device_info_tracker()->Add(
-      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, false,
+      CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/false,
                        {MobilePromoOnDesktopPromoType::kLensPromo}));
 
   views::Widget* widget =
@@ -272,8 +253,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   // Add a device where legacy receiving is true (because ESBPromo is enabled),
   // but AutofillPromo (Password) is not in the types list.
   device_info_tracker()->Add(
-      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, true,
+      CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true,
                        {MobilePromoOnDesktopPromoType::kESBPromo}));
 
   views::Widget* widget =
@@ -294,8 +274,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
                        ShowPromo_ReceivingEnabled_LegacyClient) {
   // Add a device with legacy receiving enabled, and an empty types list.
   device_info_tracker()->Add(
-      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, true, {}));
+      CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true, {}));
 
   views::Widget* widget =
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
@@ -316,8 +295,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   // Add a device with legacy receiving enabled (because AutofillPromo is
   // enabled), and the specific type (kAutofillPromo) is in the types list.
   device_info_tracker()->Add(
-      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone, true,
+      CreateDeviceInfo(/*desktop_to_ios_promo_receiving_enabled=*/true,
                        {MobilePromoOnDesktopPromoType::kAutofillPromo}));
 
   views::Widget* widget =

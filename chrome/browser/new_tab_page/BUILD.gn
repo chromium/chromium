@@ -201,6 +201,7 @@ source_set("unit_tests") {
     "//components/signin/core/browser",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
+    "//components/sync_device_info:test_support",
     "//components/visited_url_ranking/public:test_support",
     "//content/test:test_support",
     "//google_apis/common:test_support",

@@ -27,6 +27,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -386,29 +387,6 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
     return groups;
   }
 
-  std::unique_ptr<syncer::DeviceInfo> BuildDeviceInfo(std::string cache_guid,
-                                                      std::string device_name) {
-    return std::make_unique<syncer::DeviceInfo>(
-        cache_guid, device_name, "chrome_version", "user_agent",
-        syncer::DeviceInfo::DeviceType::kUnset,
-        syncer::DeviceInfo::OsType::kUnknown,
-        syncer::DeviceInfo::FormFactor::kUnknown, "device_id",
-        "manufacturer_name", "model_name", "full_hardware_class",
-        base::Time::Now(), base::Minutes(60),
-        /*send_tab_to_self_receiving_enabled=*/false,
-        /*send_tab_to_self_receiving_type=*/
-        syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-        /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
-        "fcm_registration_token", /*interested_data_types=*/
-        Difference(syncer::ProtocolTypes(), syncer::CommitOnlyTypes()),
-        /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-        /*desktop_to_ios_promo_receiving_enabled=*/false,
-        /*desktop_to_ios_promo_receiving_types=*/
-        MobilePromoOnDesktopPromoTypeSet{},
-        /*glic_experimental_triggering_state=*/
-        syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
-  }
-
   tab_groups::MockTabGroupSyncService* service() { return mock_service_; }
   TabGroupsPageHandler* handler() { return handler_.get(); }
   std::vector<const tab_groups::SavedTabGroup*> saved_tab_groups() {
@@ -452,7 +430,10 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_WithDeviceInfo) {
   groups_ptr.push_back(&groups[0]);
 
   // Set up the mock tracker to return a specific DeviceInfo for the given guid.
-  auto device_info = BuildDeviceInfo(kCacheGuid, kDeviceName);
+  auto device_info = syncer::TestDeviceInfoBuilder()
+                         .WithGuid(kCacheGuid)
+                         .WithClientName(kDeviceName)
+                         .Build();
   ON_CALL(*mock_device_info_tracker(), GetDeviceInfo(kCacheGuid))
       .WillByDefault(testing::Return(device_info.get()));
   EXPECT_CALL(*service(), ReadAllGroups())

@@ -5,7 +5,6 @@
 #include "components/sharing_message/sharing_utils.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "components/sharing_message/fake_device_info.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_constants.h"
@@ -13,6 +12,7 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -94,12 +94,15 @@ TEST_F(SharingUtilsTest, SyncDisabled_Configuring) {
 }
 
 TEST_F(SharingUtilsTest, GetFCMChannel) {
-  std::unique_ptr<syncer::DeviceInfo> device_info = CreateFakeDeviceInfo(
-      kDeviceGuid, kDeviceName,
-      syncer::DeviceInfo::SharingInfo(
-          {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
-          /*chime_representative_target_id=*/std::string(),
-          std::set<syncer::DeviceInfo::SharingFeature>()));
+  std::unique_ptr<syncer::DeviceInfo> device_info =
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
+          .WithGuid(kDeviceGuid)
+          .WithClientName(kDeviceName)
+          .WithSharingInfo(
+              {{kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
+               /*chime_representative_target_id=*/std::string(),
+               std::set<syncer::DeviceInfo::SharingFeature>()})
+          .Build();
 
   auto fcm_channel = GetFCMChannel(*device_info);
 
@@ -110,72 +113,73 @@ TEST_F(SharingUtilsTest, GetFCMChannel) {
 }
 
 TEST_F(SharingUtilsTest, GetDevicePlatform) {
-  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
-                kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                syncer::DeviceInfo::DeviceType::kChromeOS,
-                syncer::DeviceInfo::OsType::kChromeOsAsh,
-                syncer::DeviceInfo::FormFactor::kDesktop)),
+  EXPECT_EQ(GetDevicePlatform(*syncer::TestDeviceInfoBuilder(
+                                   syncer::DeviceInfo::OsType::kChromeOsAsh)
+                                   .WithGuid(kDeviceGuid)
+                                   .WithClientName(kDeviceName)
+                                   .Build()),
             SharingDevicePlatform::kChromeOS);
 
-  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
-                kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                syncer::DeviceInfo::DeviceType::kLinux,
-                syncer::DeviceInfo::OsType::kLinux,
-                syncer::DeviceInfo::FormFactor::kDesktop)),
+  EXPECT_EQ(GetDevicePlatform(*syncer::TestDeviceInfoBuilder(
+                                   syncer::DeviceInfo::OsType::kLinux)
+                                   .WithGuid(kDeviceGuid)
+                                   .WithClientName(kDeviceName)
+                                   .Build()),
             SharingDevicePlatform::kLinux);
 
-  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
-                kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                syncer::DeviceInfo::DeviceType::kMac,
-                syncer::DeviceInfo::OsType::kMac,
-                syncer::DeviceInfo::FormFactor::kDesktop)),
+  EXPECT_EQ(GetDevicePlatform(
+                *syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kMac)
+                     .WithGuid(kDeviceGuid)
+                     .WithClientName(kDeviceName)
+                     .Build()),
             SharingDevicePlatform::kMac);
 
-  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
-                kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                syncer::DeviceInfo::DeviceType::kWindows,
-                syncer::DeviceInfo::OsType::kWindows,
-                syncer::DeviceInfo::FormFactor::kDesktop)),
+  EXPECT_EQ(GetDevicePlatform(*syncer::TestDeviceInfoBuilder(
+                                   syncer::DeviceInfo::OsType::kWindows)
+                                   .WithGuid(kDeviceGuid)
+                                   .WithClientName(kDeviceName)
+                                   .Build()),
             SharingDevicePlatform::kWindows);
 
-  EXPECT_EQ(
-      GetDevicePlatform(*CreateFakeDeviceInfo(
-          kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-          syncer::DeviceInfo::DeviceType::kPhone,
-          syncer::DeviceInfo::OsType::kIOS,
-          syncer::DeviceInfo::FormFactor::kPhone, "Apple Inc.", "iPhone 50")),
-      SharingDevicePlatform::kIOS);
-  EXPECT_EQ(
-      GetDevicePlatform(*CreateFakeDeviceInfo(
-          kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-          syncer::DeviceInfo::DeviceType::kTablet,
-          syncer::DeviceInfo::OsType::kIOS,
-          syncer::DeviceInfo::FormFactor::kTablet, "Apple Inc.", "iPad 99")),
-      SharingDevicePlatform::kIOS);
+  EXPECT_EQ(GetDevicePlatform(
+                *syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kIOS)
+                     .WithGuid(kDeviceGuid)
+                     .WithClientName(kDeviceName)
+                     .Build()),
+            SharingDevicePlatform::kIOS);
+  EXPECT_EQ(GetDevicePlatform(
+                *syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kIOS)
+                     .WithGuid(kDeviceGuid)
+                     .WithClientName(kDeviceName)
+                     .WithFormFactor(syncer::DeviceInfo::FormFactor::kTablet)
+                     .Build()),
+            SharingDevicePlatform::kIOS);
 
-  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
-                kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                syncer::DeviceInfo::DeviceType::kPhone,
-                syncer::DeviceInfo::OsType::kAndroid,
-                syncer::DeviceInfo::FormFactor::kPhone, "Google", "Pixel 777")),
+  EXPECT_EQ(GetDevicePlatform(*syncer::TestDeviceInfoBuilder(
+                                   syncer::DeviceInfo::OsType::kAndroid)
+                                   .WithGuid(kDeviceGuid)
+                                   .WithClientName(kDeviceName)
+                                   .Build()),
             SharingDevicePlatform::kAndroid);
-  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
-                kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                syncer::DeviceInfo::DeviceType::kTablet,
-                syncer::DeviceInfo::OsType::kAndroid,
-                syncer::DeviceInfo::FormFactor::kTablet, "Google", "Pixel Z")),
-            SharingDevicePlatform::kAndroid);
+  EXPECT_EQ(
+      GetDevicePlatform(
+          *syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+               .WithGuid(kDeviceGuid)
+               .WithClientName(kDeviceName)
+               .WithFormFactor(syncer::DeviceInfo::FormFactor::kTablet)
+               .Build()),
+      SharingDevicePlatform::kAndroid);
 
-  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
-                kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                syncer::DeviceInfo::DeviceType::kUnset,
-                syncer::DeviceInfo::OsType::kUnknown,
-                syncer::DeviceInfo::FormFactor::kUnknown)),
+  EXPECT_EQ(GetDevicePlatform(*syncer::TestDeviceInfoBuilder(
+                                   syncer::DeviceInfo::OsType::kUnknown)
+                                   .WithGuid(kDeviceGuid)
+                                   .WithClientName(kDeviceName)
+                                   .Build()),
             SharingDevicePlatform::kUnknown);
-  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
-                kDeviceGuid, kDeviceName, /*sharing_info=*/std::nullopt,
-                syncer::DeviceInfo::DeviceType::kOther,
-                syncer::DeviceInfo::OsType::kUnknown,
-                syncer::DeviceInfo::FormFactor::kUnknown)),
+  EXPECT_EQ(GetDevicePlatform(*syncer::TestDeviceInfoBuilder(
+                                   syncer::DeviceInfo::OsType::kUnknown)
+                                   .WithGuid(kDeviceGuid)
+                                   .WithClientName(kDeviceName)
+                                   .Build()),
             SharingDevicePlatform::kUnknown);
 }

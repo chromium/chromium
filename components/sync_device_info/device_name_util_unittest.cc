@@ -13,6 +13,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -31,44 +32,31 @@ class DeviceNameUtilTest : public testing::Test {
 static std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
     const std::string& id,
     const std::string& name,
-    DeviceInfo::DeviceType device_type,
     DeviceInfo::OsType os_type,
-    DeviceInfo::FormFactor form_factor,
     const std::string& manufacturer_name,
-    const std::string& model_name) {
-  return std::make_unique<DeviceInfo>(
-      id, name, "chrome_version", "user_agent", device_type, os_type,
-      form_factor, "device_id", manufacturer_name, model_name,
-      /*full_hardware_class=*/std::string(),
-      /*last_updated_timestamp=*/base::Time::Now(),
-      DeviceInfoUtil::GetPulseInterval(),
-      /*send_tab_to_self_receiving_enabled=*/
-      false,
-      /*send_tab_to_self_receiving_type=*/
-      DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      DeviceInfo::SharingInfo(
-          {"sender_id_fcm_token", "sender_id_p256dh", "sender_id_auth_secret"},
-          "chime_representative_target_id",
-          std::set<DeviceInfo::SharingFeature>{
-              DeviceInfo::SharingFeature::kClickToCallV2}),
-      /*paask_info=*/std::nullopt,
-      /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/DataTypeSet(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      /*desktop_to_ios_promo_receiving_enabled=*/false,
-      /*desktop_to_ios_promo_receiving_types=*/
-      MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_state=*/
-      DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+    const std::string& model_name,
+    std::optional<DeviceInfo::DeviceType> device_type = std::nullopt,
+    std::optional<DeviceInfo::FormFactor> form_factor = std::nullopt) {
+  TestDeviceInfoBuilder builder(os_type);
+  builder.WithGuid(id)
+      .WithClientName(name)
+      .WithManufacturerName(manufacturer_name)
+      .WithModelName(model_name);
+  if (device_type) {
+    builder.WithDeviceType(*device_type);
+  }
+  if (form_factor) {
+    builder.WithFormFactor(*form_factor);
+  }
+  return builder.Build();
 }
 
 }  // namespace
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_AppleDevices_SigninOnly) {
-  std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "MacbookPro1,1", DeviceInfo::DeviceType::kMac,
-      DeviceInfo::OsType::kMac, DeviceInfo::FormFactor::kDesktop, "Apple Inc.",
-      "MacbookPro1,1");
+  std::unique_ptr<DeviceInfo> device =
+      CreateFakeDeviceInfo("guid", "MacbookPro1,1", DeviceInfo::OsType::kMac,
+                           "Apple Inc.", "MacbookPro1,1");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("MacbookPro1,1", names.full_name);
@@ -76,10 +64,9 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_AppleDevices_SigninOnly) {
 }
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_AppleDevices_FullySynced) {
-  std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "Bobs-iMac", DeviceInfo::DeviceType::kMac,
-      DeviceInfo::OsType::kMac, DeviceInfo::FormFactor::kDesktop, "Apple Inc.",
-      "MacbookPro1,1");
+  std::unique_ptr<DeviceInfo> device =
+      CreateFakeDeviceInfo("guid", "Bobs-iMac", DeviceInfo::OsType::kMac,
+                           "Apple Inc.", "MacbookPro1,1");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Bobs-iMac", names.full_name);
@@ -88,9 +75,7 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_AppleDevices_FullySynced) {
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_IOS_GenericName) {
   std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "iPhone", DeviceInfo::DeviceType::kPhone,
-      DeviceInfo::OsType::kIOS, DeviceInfo::FormFactor::kPhone, "Apple Inc.",
-      "iPhone14,5");
+      "guid", "iPhone", DeviceInfo::OsType::kIOS, "Apple Inc.", "iPhone14,5");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("iPhone14,5", names.full_name);
@@ -98,10 +83,9 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_IOS_GenericName) {
 }
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_IOS_CustomName) {
-  std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "John's iPhone", DeviceInfo::DeviceType::kPhone,
-      DeviceInfo::OsType::kIOS, DeviceInfo::FormFactor::kPhone, "Apple Inc.",
-      "iPhone14,5");
+  std::unique_ptr<DeviceInfo> device =
+      CreateFakeDeviceInfo("guid", "John's iPhone", DeviceInfo::OsType::kIOS,
+                           "Apple Inc.", "iPhone14,5");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("John's iPhone", names.full_name);
@@ -109,10 +93,8 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_IOS_CustomName) {
 }
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_EmptyClientName) {
-  std::unique_ptr<DeviceInfo> device =
-      CreateFakeDeviceInfo("guid", "", DeviceInfo::DeviceType::kWindows,
-                           DeviceInfo::OsType::kWindows,
-                           DeviceInfo::FormFactor::kDesktop, "Dell", "XPS 13");
+  std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
+      "guid", "", DeviceInfo::OsType::kWindows, "Dell", "XPS 13");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Dell Computer XPS 13", names.full_name);
@@ -121,9 +103,8 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_EmptyClientName) {
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_ChromeOSDevices) {
   std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "Chromebook", DeviceInfo::DeviceType::kChromeOS,
-      DeviceInfo::OsType::kChromeOsAsh, DeviceInfo::FormFactor::kDesktop,
-      "Google", "Chromebook");
+      "guid", "Chromebook", DeviceInfo::OsType::kChromeOsAsh, "Google",
+      "Chromebook");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Google Chromebook", names.full_name);
@@ -131,10 +112,8 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_ChromeOSDevices) {
 }
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_AndroidPhones) {
-  std::unique_ptr<DeviceInfo> device =
-      CreateFakeDeviceInfo("guid", "Pixel 2", DeviceInfo::DeviceType::kPhone,
-                           DeviceInfo::OsType::kAndroid,
-                           DeviceInfo::FormFactor::kPhone, "Google", "Pixel 2");
+  std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
+      "guid", "Pixel 2", DeviceInfo::OsType::kAndroid, "Google", "Pixel 2");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Google Phone Pixel 2", names.full_name);
@@ -143,9 +122,8 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_AndroidPhones) {
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_AndroidTablets) {
   std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "Pixel C", DeviceInfo::DeviceType::kTablet,
-      DeviceInfo::OsType::kAndroid, DeviceInfo::FormFactor::kTablet, "Google",
-      "Pixel C");
+      "guid", "Pixel C", DeviceInfo::OsType::kAndroid, "Google", "Pixel C",
+      DeviceInfo::DeviceType::kTablet, DeviceInfo::FormFactor::kTablet);
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Google Tablet Pixel C", names.full_name);
@@ -153,10 +131,8 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_AndroidTablets) {
 }
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_Windows_SigninOnly) {
-  std::unique_ptr<DeviceInfo> device =
-      CreateFakeDeviceInfo("guid", "BX123", DeviceInfo::DeviceType::kWindows,
-                           DeviceInfo::OsType::kWindows,
-                           DeviceInfo::FormFactor::kDesktop, "Dell", "BX123");
+  std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
+      "guid", "BX123", DeviceInfo::OsType::kWindows, "Dell", "BX123");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Dell Computer BX123", names.full_name);
@@ -165,9 +141,7 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_Windows_SigninOnly) {
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_Windows_FullySynced) {
   std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "BOBS-WINDOWS-1", DeviceInfo::DeviceType::kWindows,
-      DeviceInfo::OsType::kWindows, DeviceInfo::FormFactor::kDesktop, "Dell",
-      "BX123");
+      "guid", "BOBS-WINDOWS-1", DeviceInfo::OsType::kWindows, "Dell", "BX123");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("BOBS-WINDOWS-1", names.full_name);
@@ -176,9 +150,7 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_Windows_FullySynced) {
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_Linux_SigninOnly) {
   std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "30BDS0RA0G", DeviceInfo::DeviceType::kLinux,
-      DeviceInfo::OsType::kLinux, DeviceInfo::FormFactor::kDesktop, "LENOVO",
-      "30BDS0RA0G");
+      "guid", "30BDS0RA0G", DeviceInfo::OsType::kLinux, "LENOVO", "30BDS0RA0G");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("LENOVO Computer 30BDS0RA0G", names.full_name);
@@ -186,10 +158,9 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_Linux_SigninOnly) {
 }
 
 TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_Linux_FullySynced) {
-  std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "bob.chromium.org", DeviceInfo::DeviceType::kLinux,
-      DeviceInfo::OsType::kLinux, DeviceInfo::FormFactor::kDesktop, "LENOVO",
-      "30BDS0RA0G");
+  std::unique_ptr<DeviceInfo> device =
+      CreateFakeDeviceInfo("guid", "bob.chromium.org",
+                           DeviceInfo::OsType::kLinux, "LENOVO", "30BDS0RA0G");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("bob.chromium.org", names.full_name);
@@ -198,36 +169,28 @@ TEST_F(DeviceNameUtilTest, GetDeviceDisplayNames_Linux_FullySynced) {
 
 TEST_F(DeviceNameUtilTest, CheckManufacturerNameCapitalization) {
   std::unique_ptr<DeviceInfo> device = CreateFakeDeviceInfo(
-      "guid", "model", DeviceInfo::DeviceType::kWindows,
-      DeviceInfo::OsType::kWindows, DeviceInfo::FormFactor::kDesktop, "foo bar",
-      "model");
+      "guid", "model", DeviceInfo::OsType::kWindows, "foo bar", "model");
   DeviceDisplayNames names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Foo Bar Computer model", names.full_name);
   EXPECT_EQ("Foo Bar Computer", names.short_name);
 
-  device = CreateFakeDeviceInfo(
-      "guid", "model", DeviceInfo::DeviceType::kWindows,
-      DeviceInfo::OsType::kWindows, DeviceInfo::FormFactor::kDesktop, "foo1bar",
-      "model");
+  device = CreateFakeDeviceInfo("guid", "model", DeviceInfo::OsType::kWindows,
+                                "foo1bar", "model");
   names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Foo1Bar Computer model", names.full_name);
   EXPECT_EQ("Foo1Bar Computer", names.short_name);
 
-  device = CreateFakeDeviceInfo(
-      "guid", "model", DeviceInfo::DeviceType::kWindows,
-      DeviceInfo::OsType::kWindows, DeviceInfo::FormFactor::kDesktop,
-      "foo_bar-FOO", "model");
+  device = CreateFakeDeviceInfo("guid", "model", DeviceInfo::OsType::kWindows,
+                                "foo_bar-FOO", "model");
   names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Foo_Bar-FOO Computer model", names.full_name);
   EXPECT_EQ("Foo_Bar-FOO Computer", names.short_name);
 
-  device = CreateFakeDeviceInfo(
-      "guid", "model", DeviceInfo::DeviceType::kWindows,
-      DeviceInfo::OsType::kWindows, DeviceInfo::FormFactor::kDesktop,
-      "foo&bar foo", "model");
+  device = CreateFakeDeviceInfo("guid", "model", DeviceInfo::OsType::kWindows,
+                                "foo&bar foo", "model");
   names = GetDeviceDisplayNames(device.get());
 
   EXPECT_EQ("Foo&Bar Foo Computer model", names.full_name);
@@ -236,32 +199,24 @@ TEST_F(DeviceNameUtilTest, CheckManufacturerNameCapitalization) {
 
 TEST_F(DeviceNameUtilTest, DetermineDisplayNamesAndDeduplicate) {
   std::unique_ptr<DeviceInfo> local_device = CreateFakeDeviceInfo(
-      "local_guid", "XPS 13", DeviceInfo::DeviceType::kWindows,
-      DeviceInfo::OsType::kWindows, DeviceInfo::FormFactor::kDesktop, "Dell",
-      "XPS 13");
+      "local_guid", "XPS 13", DeviceInfo::OsType::kWindows, "Dell", "XPS 13");
   ASSERT_EQ("Dell Computer XPS 13",
             GetDeviceDisplayNames(local_device.get()).full_name);
 
-  std::unique_ptr<DeviceInfo> device1 =
-      CreateFakeDeviceInfo("guid1", "Pixel 6", DeviceInfo::DeviceType::kPhone,
-                           DeviceInfo::OsType::kAndroid,
-                           DeviceInfo::FormFactor::kPhone, "Google", "Pixel 6");
+  std::unique_ptr<DeviceInfo> device1 = CreateFakeDeviceInfo(
+      "guid1", "Pixel 6", DeviceInfo::OsType::kAndroid, "Google", "Pixel 6");
   DeviceDisplayNames names1 = GetDeviceDisplayNames(device1.get());
   ASSERT_EQ("Google Phone Pixel 6", names1.full_name);
   ASSERT_EQ("Google Phone", names1.short_name);
 
-  std::unique_ptr<DeviceInfo> device2 =
-      CreateFakeDeviceInfo("guid2", "Pixel 7", DeviceInfo::DeviceType::kPhone,
-                           DeviceInfo::OsType::kAndroid,
-                           DeviceInfo::FormFactor::kPhone, "Google", "Pixel 7");
+  std::unique_ptr<DeviceInfo> device2 = CreateFakeDeviceInfo(
+      "guid2", "Pixel 7", DeviceInfo::OsType::kAndroid, "Google", "Pixel 7");
   DeviceDisplayNames names2 = GetDeviceDisplayNames(device2.get());
   ASSERT_EQ("Google Phone Pixel 7", names2.full_name);
   ASSERT_EQ("Google Phone", names2.short_name);
 
-  std::unique_ptr<DeviceInfo> device3 =
-      CreateFakeDeviceInfo("guid3", "XPS 13", DeviceInfo::DeviceType::kWindows,
-                           DeviceInfo::OsType::kWindows,
-                           DeviceInfo::FormFactor::kDesktop, "Dell", "XPS 13");
+  std::unique_ptr<DeviceInfo> device3 = CreateFakeDeviceInfo(
+      "guid3", "XPS 13", DeviceInfo::OsType::kWindows, "Dell", "XPS 13");
   ASSERT_EQ("Dell Computer XPS 13",
             GetDeviceDisplayNames(device3.get()).full_name);
 
@@ -284,16 +239,12 @@ TEST_F(DeviceNameUtilTest, DetermineDisplayNamesAndDeduplicate) {
 
 TEST_F(DeviceNameUtilTest,
        DetermineDisplayNamesAndDeduplicate_UniqueShortNames) {
-  std::unique_ptr<DeviceInfo> device1 =
-      CreateFakeDeviceInfo("guid1", "Pixel 6", DeviceInfo::DeviceType::kPhone,
-                           DeviceInfo::OsType::kAndroid,
-                           DeviceInfo::FormFactor::kPhone, "Google", "Pixel 6");
+  std::unique_ptr<DeviceInfo> device1 = CreateFakeDeviceInfo(
+      "guid1", "Pixel 6", DeviceInfo::OsType::kAndroid, "Google", "Pixel 6");
   ASSERT_EQ("Google Phone", GetDeviceDisplayNames(device1.get()).short_name);
 
-  std::unique_ptr<DeviceInfo> device2 =
-      CreateFakeDeviceInfo("guid2", "XPS 13", DeviceInfo::DeviceType::kWindows,
-                           DeviceInfo::OsType::kWindows,
-                           DeviceInfo::FormFactor::kDesktop, "Dell", "XPS 13");
+  std::unique_ptr<DeviceInfo> device2 = CreateFakeDeviceInfo(
+      "guid2", "XPS 13", DeviceInfo::OsType::kWindows, "Dell", "XPS 13");
   ASSERT_EQ("Dell Computer", GetDeviceDisplayNames(device2.get()).short_name);
 
   std::vector<const DeviceInfo*> devices = {device1.get(), device2.get()};

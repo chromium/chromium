@@ -10,7 +10,6 @@
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_test_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/sharing_message/fake_device_info.h"
 #include "components/sharing_message/mock_sharing_device_source.h"
 #include "components/sharing_message/mock_sharing_service.h"
 #include "components/sharing_message/proto/shared_clipboard_message.pb.h"

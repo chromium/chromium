@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/sharing_message/fake_device_info.h"
 #include "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_fcm_sender.h"
@@ -22,6 +21,7 @@
 #include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_local_device_info_provider.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -192,8 +192,11 @@ class SharingMessageSenderTest : public testing::Test {
 
   SharingTargetDeviceInfo SetupReceiverDevice() {
     fake_device_info_sync_service_.GetDeviceInfoTracker()->Add(
-        CreateFakeDeviceInfo(kReceiverGUID, kReceiverDeviceName,
-                             CreateSharingInfo()));
+        syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
+            .WithGuid(kReceiverGUID)
+            .WithClientName(kReceiverDeviceName)
+            .WithSharingInfo(CreateSharingInfo())
+            .Build());
 
     return CreateFakeSharingTargetDeviceInfo(kReceiverGUID,
                                              kReceiverDeviceName);

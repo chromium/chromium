@@ -91,8 +91,6 @@ source_set("sharing_message") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "fake_device_info.cc",
-    "fake_device_info.h",
     "fake_sharing_handler_registry.cc",
     "fake_sharing_handler_registry.h",
     "mock_sharing_message_sender.cc",

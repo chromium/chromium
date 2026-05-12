@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/sharing_message/fake_device_info.h"
 #include "components/sharing_message/sharing_app.h"
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_target_device_info.h"

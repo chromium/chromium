@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sharing_message/fake_device_info.h"
 #include "components/sharing_message/pref_names.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"

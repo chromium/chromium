@@ -16,6 +16,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 #include "components/sync_preferences/cross_device_pref_tracker/prefs/cross_device_pref_names.h"
 #include "components/sync_preferences/features.h"
@@ -37,58 +38,6 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 std::unique_ptr<KeyedService> CreateTestDeviceInfoSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::FakeDeviceInfoSyncService>();
-}
-
-std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
-    const std::string& guid,
-    syncer::DeviceInfo::OsType os_type,
-    syncer::DeviceInfo::FormFactor form_factor) {
-  return std::make_unique<syncer::DeviceInfo>(
-      guid, "name", "chrome_version", "user_agent",
-      syncer::DeviceInfo::DeviceType::kLinux, os_type, form_factor, "scoped_id",
-      "manufacturer", "model", "full_hardware_class",
-      /*last_updated_timestamp=*/base::Time::Now(),
-      /*pulse_interval=*/base::Days(1),
-      /*send_tab_to_self_receiving_enabled=*/
-      false,
-      /*send_tab_to_self_receiving_type=*/
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      /*sharing_info=*/std::nullopt,
-      /*paask_info=*/std::nullopt,
-      /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      /*desktop_to_ios_promo_receiving_enabled=*/false,
-      /*desktop_to_ios_promo_receiving_types=*/
-      MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_state=*/
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
-}
-
-std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfoWithTime(
-    const std::string& guid,
-    syncer::DeviceInfo::OsType os_type,
-    base::Time last_updated) {
-  return std::make_unique<syncer::DeviceInfo>(
-      guid, "name", "chrome_version", "user_agent",
-      syncer::DeviceInfo::DeviceType::kPhone, os_type,
-      syncer::DeviceInfo::FormFactor::kPhone, "scoped_id", "manufacturer",
-      "model", "full_hardware_class", last_updated,
-      /*pulse_interval=*/base::Days(1),
-      /*send_tab_to_self_receiving_enabled=*/
-      false,
-      /*send_tab_to_self_receiving_type=*/
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      /*sharing_info=*/std::nullopt,
-      /*paask_info=*/std::nullopt,
-      /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      /*desktop_to_ios_promo_receiving_enabled=*/false,
-      /*desktop_to_ios_promo_receiving_types=*/
-      MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_state=*/
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 }
 
 class IOSPromosUtilsTest : public testing::Test {
@@ -157,8 +106,9 @@ TEST_F(IOSPromosUtilsTest, IsUserActive16OnIOS_Recent) {
 
   // Fake an iOS device.
   device_info_tracker()->Add(
-      CreateDeviceInfo(kIOSDevice, syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone));
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kIOS)
+          .WithGuid(kIOSDevice)
+          .Build());
 
   EXPECT_TRUE(ios_promos_utils::IsUserActive16OnIOS(profile()));
 }
@@ -172,8 +122,9 @@ TEST_F(IOSPromosUtilsTest, IsUserActive16OnIOS_Old) {
 
   // Fake an iOS device.
   device_info_tracker()->Add(
-      CreateDeviceInfo(kIOSDevice, syncer::DeviceInfo::OsType::kIOS,
-                       syncer::DeviceInfo::FormFactor::kPhone));
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kIOS)
+          .WithGuid(kIOSDevice)
+          .Build());
 
   EXPECT_FALSE(ios_promos_utils::IsUserActive16OnIOS(profile()));
 }
@@ -186,8 +137,9 @@ TEST_F(IOSPromosUtilsTest, IsUserActive16OnIOS_NoIOSDevice) {
 
   // Fake a non-iOS device.
   device_info_tracker()->Add(
-      CreateDeviceInfo(kAndroidDevice, syncer::DeviceInfo::OsType::kAndroid,
-                       syncer::DeviceInfo::FormFactor::kPhone));
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid(kAndroidDevice)
+          .Build());
 
   EXPECT_FALSE(ios_promos_utils::IsUserActive16OnIOS(profile()));
 }
@@ -195,9 +147,11 @@ TEST_F(IOSPromosUtilsTest, IsUserActive16OnIOS_NoIOSDevice) {
 // Tests that HasUserBeenActiveOnOS returns true when a recent Android device
 // exists.
 TEST_F(IOSPromosUtilsTest, HasUserBeenActiveOnOS_Recent) {
-  device_info_tracker()->Add(CreateDeviceInfoWithTime(
-      kAndroidDevice, syncer::DeviceInfo::OsType::kAndroid,
-      base::Time::Now() - base::Days(1)));
+  device_info_tracker()->Add(
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid(kAndroidDevice)
+          .WithLastUpdatedTimestamp(base::Time::Now() - base::Days(1))
+          .Build());
 
   EXPECT_TRUE(ios_promos_utils::HasUserBeenActiveOnOS(
       profile(), syncer::DeviceInfo::OsType::kAndroid));
@@ -206,9 +160,11 @@ TEST_F(IOSPromosUtilsTest, HasUserBeenActiveOnOS_Recent) {
 // Tests that HasUserBeenActiveOnOS returns false when only an old Android
 // device exists.
 TEST_F(IOSPromosUtilsTest, HasUserBeenActiveOnOS_Old) {
-  device_info_tracker()->Add(CreateDeviceInfoWithTime(
-      kAndroidDevice, syncer::DeviceInfo::OsType::kAndroid,
-      base::Time::Now() - base::Days(30)));
+  device_info_tracker()->Add(
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid(kAndroidDevice)
+          .WithLastUpdatedTimestamp(base::Time::Now() - base::Days(30))
+          .Build());
 
   EXPECT_FALSE(ios_promos_utils::HasUserBeenActiveOnOS(
       profile(), syncer::DeviceInfo::OsType::kAndroid));
@@ -217,8 +173,10 @@ TEST_F(IOSPromosUtilsTest, HasUserBeenActiveOnOS_Old) {
 // Tests that HasUserBeenActiveOnOS returns false when no Android device exists.
 TEST_F(IOSPromosUtilsTest, HasUserBeenActiveOnOS_NoDevice) {
   device_info_tracker()->Add(
-      CreateDeviceInfoWithTime(kIOSDevice, syncer::DeviceInfo::OsType::kIOS,
-                               base::Time::Now() - base::Days(1)));
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kIOS)
+          .WithGuid(kIOSDevice)
+          .WithLastUpdatedTimestamp(base::Time::Now() - base::Days(1))
+          .Build());
 
   EXPECT_FALSE(ios_promos_utils::HasUserBeenActiveOnOS(
       profile(), syncer::DeviceInfo::OsType::kAndroid));
