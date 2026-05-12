@@ -101,7 +101,7 @@ void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
   proto::GenerateContentRequest request;
   if (feature_name ==
       proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT) {
-    request.set_model("dev_v3xs");
+    request.set_model("models/dev-v3-xs-sc-text");
   }
   auto* content = request.add_contents();
   content->set_role("user");
