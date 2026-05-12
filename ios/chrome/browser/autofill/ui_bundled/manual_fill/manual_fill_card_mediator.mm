@@ -347,7 +347,7 @@ std::vector<CreditCard> FetchCards(
     // CreateForWebState ensures the cache exists (lazy initialization).
     ManualFillVirtualCardCache::CreateForWebState(webState);
     url::Origin origin = ManualFillVirtualCardCache::FromWebState(webState)
-                             ->GetUnmaskingOrigin();
+                             ->ConsumeUnmaskingOrigin();
     ManualFillVirtualCardCache::FromWebState(webState)->CacheUnmaskedCard(
         card, origin);
   }

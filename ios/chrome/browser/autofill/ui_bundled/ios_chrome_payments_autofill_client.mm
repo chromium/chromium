@@ -275,7 +275,7 @@ void IOSChromePaymentsAutofillClient::OnCardDataAvailable(
 
     ManualFillVirtualCardCache::CreateForWebState(web_state_);
     url::Origin origin = ManualFillVirtualCardCache::FromWebState(web_state_)
-                             ->GetUnmaskingOrigin();
+                             ->ConsumeUnmaskingOrigin();
     ManualFillVirtualCardCache::FromWebState(web_state_)
         ->CacheUnmaskedCard(card, origin);
   }
@@ -301,7 +301,8 @@ void IOSChromePaymentsAutofillClient::ShowAutofillProgressDialog(
     base::OnceClosure cancel_callback) {
   progress_dialog_controller_ =
       std::make_unique<AutofillProgressDialogControllerImpl>(
-          autofill_progress_dialog_type, std::move(cancel_callback));
+          autofill_progress_dialog_type,
+          WrapClosureWithUnmaskingOriginCleanup(std::move(cancel_callback)));
   progress_dialog_controller_weak_ =
       progress_dialog_controller_->GetImplWeakPtr();
   [client_->commands_handler() showAutofillProgressDialog];
@@ -346,7 +347,8 @@ void IOSChromePaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
   auto controller = std::make_unique<
       autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>(
       challenge_options, std::move(confirm_unmask_challenge_option_callback),
-      std::move(cancel_unmasking_closure));
+      WrapClosureWithUnmaskingOriginCleanup(
+          std::move(cancel_unmasking_closure)));
   card_unmask_authentication_selection_controller_ = controller->GetWeakPtr();
   bottom_sheet_tab_helper->ShowCardUnmaskAuthenticationSelection(
       std::move(controller));
@@ -379,6 +381,7 @@ IOSChromePaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
 
 void IOSChromePaymentsAutofillClient::ShowAutofillErrorDialog(
     AutofillErrorDialogContext error_context) {
+  ClearUnmaskingOrigin();
   [client_->commands_handler()
       showAutofillErrorDialog:std::move(error_context)];
 }
@@ -400,6 +403,9 @@ void IOSChromePaymentsAutofillClient::ShowUnmaskPrompt(
 
 void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
     PaymentsRpcResult result) {
+  if (result != PaymentsRpcResult::kSuccess) {
+    ClearUnmaskingOrigin();
+  }
   if (unmask_controller_) {
     unmask_controller_->OnVerificationResult(result);
   }
@@ -707,6 +713,28 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCard(
       std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
           std::move(ui_info), std::move(save_card_delegate)),
       infobar_type));
+}
+
+void IOSChromePaymentsAutofillClient::ClearUnmaskingOrigin() {
+  if (auto* cache = ManualFillVirtualCardCache::FromWebState(web_state_)) {
+    cache->ClearUnmaskingOrigin();
+  }
+}
+
+base::OnceClosure
+IOSChromePaymentsAutofillClient::WrapClosureWithUnmaskingOriginCleanup(
+    base::OnceClosure closure) {
+  base::OnceClosure cleanup_closure = base::BindOnce(
+      [](base::WeakPtr<web::WebState> weak_web_state) {
+        if (weak_web_state) {
+          if (auto* cache = ManualFillVirtualCardCache::FromWebState(
+                  weak_web_state.get())) {
+            cache->ClearUnmaskingOrigin();
+          }
+        }
+      },
+      web_state_->GetWeakPtr());
+  return std::move(cleanup_closure).Then(std::move(closure));
 }
 
 }  // namespace autofill::payments

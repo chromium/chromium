@@ -15,6 +15,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
@@ -134,6 +135,17 @@ TEST_F(ManualFillVirtualCardCacheTest, OriginIsolated) {
 
   // Verify retrieval with Origin B returns null (isolated).
   EXPECT_EQ(nullptr, cache()->GetUnmaskedCard("test_server_id", origin_b));
+}
+
+// Tests that SetUnmaskingOrigin asserts (crashes) if called multiple times
+// without the transient state being consumed first.
+TEST_F(ManualFillVirtualCardCacheTest, SetUnmaskingOriginMultipleTimesCrashes) {
+  url::Origin origin_a = url::Origin::Create(GURL("https://a.com"));
+  url::Origin origin_b = url::Origin::Create(GURL("https://b.com"));
+
+  cache()->SetUnmaskingOrigin(origin_a);
+  // Calling it a second time without consuming should fail the CHECK and crash.
+  EXPECT_DEATH_IF_SUPPORTED(cache()->SetUnmaskingOrigin(origin_b), "");
 }
 
 }  // namespace

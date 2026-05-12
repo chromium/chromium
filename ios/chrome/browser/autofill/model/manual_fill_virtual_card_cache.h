@@ -27,8 +27,11 @@ class ManualFillVirtualCardCache
   // Sets the origin of the frame that initiated the active unmasking request.
   void SetUnmaskingOrigin(const url::Origin& origin);
 
-  // Returns the stored unmasking origin, and clears it.
-  url::Origin GetUnmaskingOrigin();
+  // Consumes the stored unmasking origin, and clears it.
+  url::Origin ConsumeUnmaskingOrigin();
+
+  // Resets/clears the stored unmasking origin.
+  void ClearUnmaskingOrigin();
 
   // Returns the cached card only if the server_id matches and the current
   // origin matches the origin where the card was unmasked.

@@ -112,7 +112,7 @@ class CreditCard;
                 if (weakWebStatePtr) {
                   if (auto* cache = ManualFillVirtualCardCache::FromWebState(
                           weakWebStatePtr.get())) {
-                    cache->GetUnmaskingOrigin();
+                    cache->ClearUnmaskingOrigin();
                   }
                 }
               },

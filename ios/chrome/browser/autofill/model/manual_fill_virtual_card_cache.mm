@@ -35,10 +35,14 @@ void ManualFillVirtualCardCache::SetUnmaskingOrigin(const url::Origin& origin) {
   unmasking_origin_ = origin;
 }
 
-url::Origin ManualFillVirtualCardCache::GetUnmaskingOrigin() {
-  url::Origin origin = unmasking_origin_.value_or(url::Origin());
+url::Origin ManualFillVirtualCardCache::ConsumeUnmaskingOrigin() {
+  url::Origin origin = std::move(unmasking_origin_).value_or(url::Origin());
   unmasking_origin_.reset();
   return origin;
+}
+
+void ManualFillVirtualCardCache::ClearUnmaskingOrigin() {
+  unmasking_origin_.reset();
 }
 
 void ManualFillVirtualCardCache::DidFinishNavigation(
