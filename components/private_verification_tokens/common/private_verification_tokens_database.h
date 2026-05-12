@@ -41,6 +41,15 @@ class PrivateVerificationTokensDatabase {
   // Store given keys in the database.
   bool StoreKeys(const std::vector<PrivateVerificationTokensPublicKey>& keys);
 
+  // Remove all Keys for the given etld_plus_one.
+  bool RemoveKeysFor(const std::string& etld_plus_one);
+
+  // Remove the key with the given key_id for the specified etld_plus_one.
+  bool RemoveKey(const std::string& etld_plus_one, uint32_t key_id);
+
+  // Get all keys stored.
+  std::vector<PrivateVerificationTokensPublicKey> GetKeys();
+
   const base::FilePath& PathToDatabase() const;
 
  private:

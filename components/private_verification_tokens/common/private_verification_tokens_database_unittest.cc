@@ -23,6 +23,13 @@
 
 namespace private_verification_tokens {
 
+bool operator==(const PrivateVerificationTokensPublicKey& lhs,
+                const PrivateVerificationTokensPublicKey& rhs) {
+  return lhs.etld_plus_one() == rhs.etld_plus_one() &&
+         lhs.public_key() == rhs.public_key() && lhs.key_id() == rhs.key_id() &&
+         lhs.expiration() == rhs.expiration() && lhs.version() == rhs.version();
+}
+
 namespace {
 
 static constexpr base::FilePath::CharType kDatabaseFileName[] =
@@ -36,7 +43,10 @@ class PrivateVerificationTokensDatabaseTest : public testing::Test {
     db_path_ = temp_dir_.GetPath().Append(kDatabaseFileName);
   }
 
-  void TearDown() override { EXPECT_TRUE(temp_dir_.Delete()); }
+  void TearDown() override {
+    pvt_database_.reset();
+    EXPECT_TRUE(temp_dir_.Delete());
+  }
 
   void VerifyTableRowCount(sql::Database& db, const char* table, size_t count) {
     size_t got_count = 0;
@@ -92,7 +102,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
 
   std::vector<uint8_t> key_a = {1, 2, 3};
   std::vector<uint8_t> key_b = {4, 5, 6};
-  const auto exp = base::Time::FromTimeT(static_cast<time_t>(5));
+  const auto exp = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5));
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey("a.com", key_a, /*key_id=*/3,
                                          /*expiration=*/exp, /*version=*/1),
@@ -101,13 +111,170 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
 
+  std::vector<PrivateVerificationTokensPublicKey> got_keys =
+      pvt_database_->GetKeys();
+  EXPECT_THAT(got_keys, testing::UnorderedElementsAreArray(keys));
   pvt_database_.reset();
 
   EXPECT_TRUE(base::PathExists(db_path_));
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(6u, sql::test::CountTableColumns(&database, kKeyTableName));
+  EXPECT_EQ(5u, sql::test::CountTableColumns(&database, kKeyTableName));
   VerifyTableRowCount(database, kKeyTableName, 2u);
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       StoreKeys_DuplicateKeys_Overwrites) {
+  EXPECT_FALSE(base::PathExists(db_path_));
+  CreateDatabase(db_path_);
+  EXPECT_FALSE(base::PathExists(db_path_));
+
+  std::vector<uint8_t> key_a = {1, 2, 3};
+  const auto exp = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5));
+  std::vector<PrivateVerificationTokensPublicKey> keys{
+      PrivateVerificationTokensPublicKey("a.com", key_a, /*key_id=*/3,
+                                         /*expiration=*/exp, /*version=*/1),
+  };
+  EXPECT_TRUE(pvt_database_->StoreKeys(keys));
+
+  std::vector<uint8_t> key_a_new = {7, 8, 9};
+  const auto exp_new =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(10));
+  std::vector<PrivateVerificationTokensPublicKey> keys_new{
+      PrivateVerificationTokensPublicKey("a.com", key_a_new, /*key_id=*/3,
+                                         /*expiration=*/exp_new, /*version=*/2),
+  };
+  EXPECT_TRUE(pvt_database_->StoreKeys(keys_new));
+
+  std::vector<PrivateVerificationTokensPublicKey> got_keys =
+      pvt_database_->GetKeys();
+  EXPECT_THAT(got_keys, testing::UnorderedElementsAreArray(keys_new));
+
+  pvt_database_.reset();
+  EXPECT_TRUE(base::PathExists(db_path_));
+  sql::Database database(sql::test::kTestTag);
+  EXPECT_TRUE(database.Open(db_path_));
+  EXPECT_EQ(5u, sql::test::CountTableColumns(&database, kKeyTableName));
+  VerifyTableRowCount(database, kKeyTableName, 1u);
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       RemoveKeysFor_ExistingETLD_KeysRemoved) {
+  EXPECT_FALSE(base::PathExists(db_path_));
+  CreateDatabase(db_path_);
+  EXPECT_FALSE(base::PathExists(db_path_));
+
+  std::vector<uint8_t> key_a = {1, 2, 3};
+  std::vector<uint8_t> key_b_1 = {4, 5, 6};
+  std::vector<uint8_t> key_c = {7, 8, 9};
+  std::vector<uint8_t> key_b_2 = {10, 11, 12};
+  std::vector<uint8_t> key_b_3 = {13, 14, 15};
+  // b.tri has 3 keys
+  std::vector<PrivateVerificationTokensPublicKey> keys{
+      PrivateVerificationTokensPublicKey(
+          "a.com", key_a, /*key_id=*/3,
+          /*expiration=*/
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5)),
+          /*version=*/1),
+      PrivateVerificationTokensPublicKey(
+          "b.tri", key_b_1, /*key_id=*/4,
+          /*expiration=*/
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          /*version=*/2),
+      PrivateVerificationTokensPublicKey(
+          "c.eee", key_c, /*key_id=*/4,
+          /*expiration=*/
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          /*version=*/2),
+      PrivateVerificationTokensPublicKey(
+          "b.tri", key_b_2, /*key_id=*/5,
+          /*expiration=*/
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          /*version=*/2),
+      PrivateVerificationTokensPublicKey(
+          "b.tri", key_b_3, /*key_id=*/6,
+          /*expiration=*/
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          /*version=*/2),
+  };
+  EXPECT_TRUE(pvt_database_->StoreKeys(keys));
+  // this should remove all three keys for b.tri
+  EXPECT_TRUE(pvt_database_->RemoveKeysFor("b.tri"));
+  std::vector<PrivateVerificationTokensPublicKey> got_keys =
+      pvt_database_->GetKeys();
+  EXPECT_THAT(got_keys, testing::UnorderedElementsAre(keys[0], keys[2]));
+  pvt_database_.reset();
+
+  EXPECT_TRUE(base::PathExists(db_path_));
+  sql::Database database(sql::test::kTestTag);
+  EXPECT_TRUE(database.Open(db_path_));
+  EXPECT_EQ(5u, sql::test::CountTableColumns(&database, kKeyTableName));
+  VerifyTableRowCount(database, kKeyTableName, 2u);
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest, RemoveKey_ExistingId_KeyRemoved) {
+  EXPECT_FALSE(base::PathExists(db_path_));
+  CreateDatabase(db_path_);
+  EXPECT_FALSE(base::PathExists(db_path_));
+
+  std::vector<uint8_t> key_a = {1, 2, 3};
+  std::vector<uint8_t> key_b = {4, 5, 6};
+  std::vector<uint8_t> key_c = {7, 8, 9};
+  std::vector<PrivateVerificationTokensPublicKey> keys{
+      PrivateVerificationTokensPublicKey(
+          "a.com", key_a, /*key_id=*/3,
+          /*expiration=*/
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5)),
+          /*version=*/1),
+      PrivateVerificationTokensPublicKey(
+          "b.tri", key_b, /*key_id=*/4,
+          /*expiration=*/
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          /*version=*/2),
+      PrivateVerificationTokensPublicKey(
+          "c.eee", key_c, /*key_id=*/5,
+          /*expiration=*/
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(6)),
+          /*version=*/2),
+  };
+  EXPECT_TRUE(pvt_database_->StoreKeys(keys));
+  EXPECT_TRUE(pvt_database_->RemoveKey("b.tri", 4));
+  std::vector<PrivateVerificationTokensPublicKey> got_keys =
+      pvt_database_->GetKeys();
+  EXPECT_THAT(got_keys, testing::UnorderedElementsAre(keys[0], keys[2]));
+  pvt_database_.reset();
+
+  EXPECT_TRUE(base::PathExists(db_path_));
+  sql::Database database(sql::test::kTestTag);
+  EXPECT_TRUE(database.Open(db_path_));
+  EXPECT_EQ(5u, sql::test::CountTableColumns(&database, kKeyTableName));
+  VerifyTableRowCount(database, kKeyTableName, 2u);
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest, RemoveKey_NonExistentId_NoOp) {
+  CreateDatabase(db_path_);
+
+  std::vector<uint8_t> key_a = {1, 2, 3};
+  std::vector<PrivateVerificationTokensPublicKey> keys{
+      PrivateVerificationTokensPublicKey(
+          "a.com", key_a, /*key_id=*/3,
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5)), 1),
+  };
+  EXPECT_TRUE(pvt_database_->StoreKeys(keys));
+
+  EXPECT_TRUE(pvt_database_->RemoveKey("a.com", 4));
+
+  std::vector<PrivateVerificationTokensPublicKey> got_keys =
+      pvt_database_->GetKeys();
+  EXPECT_EQ(got_keys, keys);
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       GetKeys_EmptyTable_ReturnsEmptyVector) {
+  CreateDatabase(db_path_);
+  std::vector<PrivateVerificationTokensPublicKey> keys =
+      pvt_database_->GetKeys();
+  EXPECT_TRUE(keys.empty());
 }
 
 TEST_F(PrivateVerificationTokensDatabaseTest,
@@ -130,7 +297,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
 
   // Trigger the lazy-initialization by attempting to store a key.
   std::vector<uint8_t> key_a = {1, 2, 3};
-  const auto exp = base::Time::FromTimeT(static_cast<time_t>(5));
+  const auto exp = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5));
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey("a.com", key_a, /*key_id=*/3,
                                          /*expiration=*/exp, /*version=*/1),
@@ -143,7 +310,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   // database has one key.
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(6u, sql::test::CountTableColumns(&database, kKeyTableName));
+  EXPECT_EQ(5u, sql::test::CountTableColumns(&database, kKeyTableName));
   VerifyTableRowCount(database, kKeyTableName, 1u);
 }
 
@@ -206,7 +373,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   CreateDatabase(db_path_);
 
   std::vector<uint8_t> key_a = {1, 2, 3};
-  const auto exp = base::Time::FromTimeT(static_cast<time_t>(5));
+  const auto exp = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(5));
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey("a.com", key_a, 3, exp, 1),
   };
@@ -215,7 +382,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
 
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(6u, sql::test::CountTableColumns(&database, kKeyTableName));
+  EXPECT_EQ(5u, sql::test::CountTableColumns(&database, kKeyTableName));
   VerifyTableRowCount(database, kKeyTableName, 1u);
 }
 

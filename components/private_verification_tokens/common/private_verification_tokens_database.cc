@@ -28,17 +28,27 @@ static constexpr char kDatabaseTag[] = "PrivateVerificationTokens";
 
 static constexpr char kCreatePublicKeyTableSql[] =
   "CREATE TABLE IF NOT EXISTS keys("
-      "id INTEGER PRIMARY KEY,"
       "etld_plus_one TEXT NOT NULL,"
       "public_key BLOB NOT NULL,"
       "key_id INTEGER NOT NULL,"
       "expiration INTEGER NOT NULL,"
-      "version INTEGER NOT NULL)";
+      "version INTEGER NOT NULL,"
+      "PRIMARY KEY(etld_plus_one, key_id))";
 
 static constexpr char kInsertPublicKeySql[] =
-  "INSERT INTO keys("
+  "INSERT OR REPLACE INTO keys("
       "etld_plus_one,public_key,key_id,expiration,version) "
       "VALUES(?,?,?,?,?)";
+
+static constexpr char kGetAllKeysSql[] =
+    "SELECT etld_plus_one,public_key,key_id,expiration,version "
+    "FROM keys";
+
+static constexpr char kDeleteKeysForSql[] =
+    "DELETE FROM keys WHERE etld_plus_one = ?";
+
+static constexpr char kDeleteKeySql[] =
+    "DELETE FROM keys WHERE etld_plus_one = ? AND key_id = ?";
 
 // clang-format on
 
@@ -104,6 +114,58 @@ bool PrivateVerificationTokensDatabase::StoreKeys(
   }
 
   return transaction.Commit();
+}
+
+std::vector<PrivateVerificationTokensPublicKey>
+PrivateVerificationTokensDatabase::GetKeys() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return {};
+  }
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kGetAllKeysSql));
+  DCHECK(statement.is_valid());
+  std::vector<PrivateVerificationTokensPublicKey> keys;
+  while (statement.Step()) {
+    std::string etld_plus_one = statement.ColumnString(0);
+    std::vector<uint8_t> public_key = statement.ColumnBlobAsVector(1);
+    uint32_t key_id = static_cast<uint32_t>(statement.ColumnInt64(2));
+    int64_t expiration = statement.ColumnInt64(3);
+    uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(4));
+    keys.emplace_back(
+        std::move(etld_plus_one), std::move(public_key), key_id,
+        base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(expiration)),
+        version);
+  }
+  return keys;
+}
+
+bool PrivateVerificationTokensDatabase::RemoveKeysFor(
+    const std::string& etld_plus_one) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return false;
+  }
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteKeysForSql));
+  DCHECK(statement.is_valid());
+  statement.BindString(0, etld_plus_one);
+  return statement.Run();
+}
+
+bool PrivateVerificationTokensDatabase::RemoveKey(
+    const std::string& etld_plus_one,
+    uint32_t key_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return false;
+  }
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteKeySql));
+  DCHECK(statement.is_valid());
+  statement.BindString(0, etld_plus_one);
+  statement.BindInt64(1, key_id);
+  return statement.Run();
 }
 
 bool PrivateVerificationTokensDatabase::EnsureDBInitialized() {
