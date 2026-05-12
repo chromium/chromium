@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_objc_class_swizzler.h"
@@ -190,6 +191,18 @@ class ProfileDestructionWaiter {
 
 @end
 
+@interface AppController (ConfirmQuitPanelTesting)
+- (BOOL)test_runConfirmQuitPanel;
+@end
+
+@implementation AppController (ConfirmQuitPanelTesting)
+
+- (BOOL)test_runConfirmQuitPanel {
+  return NO;
+}
+
+@end
+
 namespace {
 
 using AppControllerBrowserTest = InProcessBrowserTest;
@@ -240,6 +253,28 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, CommandDuringShutdown) {
                          withObject:cmd_n
                          afterDelay:0];
   // Let the run loop get flushed, during process cleanup and try not to crash.
+}
+
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
+                       CancelConfirmQuitResetsClosingAllBrowsers) {
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      [AppController class], @selector(runConfirmQuitPanel),
+      @selector(test_runConfirmQuitPanel));
+
+  std::vector<bool> closing_all_browsers_notifications;
+  base::CallbackListSubscription subscription =
+      chrome::AddClosingAllBrowsersCallback(base::BindRepeating(
+          [](std::vector<bool>* notifications, bool closing) {
+            notifications->push_back(closing);
+          },
+          base::Unretained(&closing_all_browsers_notifications)));
+
+  chrome::AttemptUserExit();
+
+  ASSERT_EQ(2u, closing_all_browsers_notifications.size());
+  EXPECT_TRUE(closing_all_browsers_notifications[0]);
+  EXPECT_FALSE(closing_all_browsers_notifications[1]);
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 class AppControllerKeepAliveBrowserTest : public InProcessBrowserTest {

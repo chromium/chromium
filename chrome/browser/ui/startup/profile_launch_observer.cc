@@ -135,6 +135,8 @@ void ProfileLaunchObserver::MaybeActivateProfile() {
       FROM_HERE, base::BindOnce(&ProfileLaunchObserver::ActivateProfile,
                                 base::Unretained(this)));
   // Avoid posting more than once before ActivateProfile gets called.
+  launched_profiles_.clear();
+  opened_profiles_.clear();
   observed_profiles_.RemoveAllObservations();
   browser_collection_observation_.Reset();
 }

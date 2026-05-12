@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
+#include "chrome/browser/ui/startup/profile_launch_observer.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
@@ -425,6 +426,31 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupURLsOnNewWindow) {
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             tab_strip->GetWebContentsAt(0)->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       ClearsProfileSetsAfterActivation) {
+  Profile* profile = browser()->profile();
+  StartupBrowserCreator::ClearLaunchedProfilesForTesting();
+
+  ProfileLaunchObserver* observer = ProfileLaunchObserver::GetInstance();
+  ASSERT_TRUE(observer->launched_profiles_.empty());
+  ASSERT_TRUE(observer->opened_profiles_.empty());
+
+  StartupBrowserCreator::Profiles last_opened_profiles = {profile};
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  StartupBrowserCreator browser_creator;
+  browser_creator.LaunchBrowserForLastProfiles(
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+      chrome::startup::IsFirstRun::kNo,
+      {profile, StartupProfileMode::kBrowserWindow}, last_opened_profiles,
+      /*restore_tabbed_browser=*/true);
+
+  // Once activation has been scheduled, ProfileLaunchObserver has finished
+  // waiting for launched profiles to open. Do not keep raw Profile pointers
+  // around after it stops observing Profile destruction.
+  EXPECT_TRUE(observer->launched_profiles_.empty());
+  EXPECT_TRUE(observer->opened_profiles_.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {

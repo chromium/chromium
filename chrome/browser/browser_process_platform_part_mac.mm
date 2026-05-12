@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart() = default;
@@ -37,6 +38,7 @@ void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {
   if (!try_to_quit_application) {
     // A keyboard menu invocation.
     if (![AppController.sharedController runConfirmQuitPanel]) {
+      chrome::OnClosingAllBrowsers(false);
       return;
     }
   }

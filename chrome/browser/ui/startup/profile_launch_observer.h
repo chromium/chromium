@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/gtest_prod_util.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -35,6 +36,9 @@ class ProfileLaunchObserver : public ProfileObserver,
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
+                           ClearsProfileSetsAfterActivation);
+
   friend class StartupBrowserCreator;
   friend bool HasPendingUncleanExit(Profile*);
 
