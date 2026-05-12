@@ -405,7 +405,7 @@ class MultiContentsViewWebContentsReLayoutBrowserTest
     const int active_index = tab_strip_model->active_index();
 
     RunScheduledLayouts();
-    chrome::NewSplitTab(browser(),
+    chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
                         split_tabs::SplitTabCreatedSource::kToolbarButton);
     EXPECT_TRUE(content::WaitForLoadStop(
         tab_strip_model->GetWebContentsAt(active_index + 1)));
@@ -584,11 +584,11 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, OnlyFocusTabsInSplitView) {
 
   EXPECT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  chrome::NewSplitTab(browser(),
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
   EXPECT_TRUE(
       AddTabAtIndex(3, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  chrome::NewSplitTab(browser(),
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   ASSERT_EQ(5, browser()->tab_strip_model()->count());

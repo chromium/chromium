@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   // Create three tabs with the first two in a split view.
   chrome::NewTab(browser());
   tab_strip_model()->ActivateTabAt(0);
-  chrome::NewSplitTab(browser(),
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Open a alert dialog from the third tab.

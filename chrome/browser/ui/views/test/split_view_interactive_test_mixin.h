@@ -57,6 +57,7 @@ class SplitViewInteractiveTestMixin : public SplitViewBrowserTestMixin<T> {
           } else {
             chrome::NewSplitTab(
                 SplitViewBrowserTestMixin<T>::browser(),
+                split_tabs::SplitTabLayout::kVertical,
                 split_tabs::SplitTabCreatedSource::kToolbarButton);
           }
         }),

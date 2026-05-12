@@ -756,7 +756,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_NEW_SPLIT_TAB:
       if (!browser_->tab_strip_model()->GetActiveTab()->IsSplit()) {
-        NewSplitTab(browser_,
+        NewSplitTab(browser_, split_tabs::SplitTabLayout::kVertical,
                     split_tabs::SplitTabCreatedSource::kKeyboardShortcut);
       }
       break;

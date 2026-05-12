@@ -420,6 +420,7 @@ void BrowserCommandHandler::OpenSplitView() {
       tabs::TabInterface::MaybeGetFromContents(web_contents_);
   if (tab && !tab->IsSplit()) {
     chrome::NewSplitTab(tab->GetBrowserWindowInterface(),
+                        split_tabs::SplitTabLayout::kVertical,
                         split_tabs::SplitTabCreatedSource::kWhatsNew);
   }
 }

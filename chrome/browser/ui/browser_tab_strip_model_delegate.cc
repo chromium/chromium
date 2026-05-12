@@ -343,8 +343,7 @@ void BrowserTabStripModelDelegate::NewSplitTab(
     split_tabs::SplitTabLayout layout,
     split_tabs::SplitTabCreatedSource source) {
   if (indices.empty()) {
-    // TODO(crbug.com/512137830): Update chrome::NewSplitTab to use layout.
-    chrome::NewSplitTab(browser_, source);
+    chrome::NewSplitTab(browser_, layout, source);
   } else {
     split_tabs::SplitTabVisualData visual_data =
         split_tabs::SplitTabVisualData();

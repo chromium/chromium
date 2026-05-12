@@ -59,7 +59,7 @@ void BrowserControlsAdapterImpl::BackButtonHovered() {
 }
 
 void BrowserControlsAdapterImpl::CreateNewSplitTab() {
-  chrome::NewSplitTab(&browser_.get(),
+  chrome::NewSplitTab(&browser_.get(), split_tabs::SplitTabLayout::kVertical,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
 }
 

@@ -171,6 +171,7 @@ void MuteSite(BrowserWindowInterface* browser);
 void PinTab(BrowserWindowInterface* browser);
 void GroupTab(BrowserWindowInterface* browser);
 void NewSplitTab(BrowserWindowInterface* browser,
+                 split_tabs::SplitTabLayout layout,
                  split_tabs::SplitTabCreatedSource source);
 
 // Tab group commands

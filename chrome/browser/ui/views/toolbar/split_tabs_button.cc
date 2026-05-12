@@ -153,7 +153,7 @@ void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {
         GetAnchorBoundsInScreen(), views::MenuAnchorPosition::kTopLeft,
         ui::GetMenuSourceTypeForEvent(event));
   } else {
-    chrome::NewSplitTab(browser_,
+    chrome::NewSplitTab(browser_, split_tabs::SplitTabLayout::kVertical,
                         split_tabs::SplitTabCreatedSource::kToolbarButton);
   }
 }

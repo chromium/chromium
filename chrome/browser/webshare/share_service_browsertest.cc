@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, InactiveWebContents) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Create a split and verify there are now 2 tabs
-  chrome::NewSplitTab(browser(),
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(0)->IsSplit());

@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
                        MAYBE_NewTabButtonContextMenuSplitViewDisabled) {
-  chrome::NewSplitTab(browser(),
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
                       split_tabs::SplitTabCreatedSource::kNewTabButton);
   RunTestSequence(
       FinishTabstripAnimations(), EnsurePresent(kNewTabButtonElementId),
