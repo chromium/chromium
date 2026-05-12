@@ -1,1 +1,4 @@
-jonathanjlee@google.com
+# The split between `wpt/tools/` and the rest of the test suite is an artificial
+# one. Conceptually, the same active GitHub contributors should own both parts,
+# so prefer adding to the following OWNERS file.
+file://third_party/blink/web_tests/external/OWNERS
