@@ -91,7 +91,8 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override {
     if (old_host && guest_->owner_rfh_id_ == old_host->GetGlobalId() &&
-        new_host && guest_->element_instance_id_ == kInstanceIDNone) {
+        new_host && guest_->element_instance_id_ == kInstanceIDNone &&
+        old_host->GetProcess() == new_host->GetProcess()) {
       // TODO(crbug.com/40202416): Do something similar for MPArch.
       guest_->owner_rfh_id_ = new_host->GetGlobalId();
     }
