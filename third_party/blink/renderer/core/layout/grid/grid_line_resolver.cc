@@ -31,7 +31,7 @@ static inline String ImplicitNamedGridLineForSide(const String& line_name,
 GridLineResolver::GridLineResolver(const ComputedStyle& parent_style,
                                    wtf_size_t auto_repetitions)
     : style_(&parent_style) {
-  DCHECK(parent_style.IsDisplayGridLanesBox());
+  DCHECK(parent_style.IsDisplayGridLanes());
 
   (parent_style.GridLanesTrackSizingDirection() == kForColumns)
       ? column_auto_repetitions_ = auto_repetitions

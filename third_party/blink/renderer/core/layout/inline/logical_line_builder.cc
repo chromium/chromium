@@ -129,7 +129,7 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
   // strut, for *every* line. This matches other browsers. The intention may
   // have been to make sure that there's always room for the list item marker,
   // but that doesn't explain why it's done for every line...
-  if (quirks_mode_ && ComputedStyle::IsDisplayListItem(line_style.Display())) {
+  if (quirks_mode_ && line_style.IsDisplayListItem()) {
     auto text_scale = FindTextScale(should_scale_line_height_, *line_items,
                                     /* start_index */ 0,
                                     /* initial_nesting_level */ 0);

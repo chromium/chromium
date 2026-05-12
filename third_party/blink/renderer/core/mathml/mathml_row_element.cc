@@ -20,10 +20,8 @@ MathMLRowElement::MathMLRowElement(const QualifiedName& tagName,
 }
 
 LayoutObject* MathMLRowElement::CreateLayoutObject(const ComputedStyle& style) {
-  if (!style.IsDisplayMathType()) {
-    return MathMLElement::CreateLayoutObject(style);
-  }
-  return MakeGarbageCollected<LayoutMathMLBlock>(this);
+  return style.IsDisplayMath() ? MakeGarbageCollected<LayoutMathMLBlock>(this)
+                               : MathMLElement::CreateLayoutObject(style);
 }
 
 void MathMLRowElement::ChildrenChanged(const ChildrenChange& change) {

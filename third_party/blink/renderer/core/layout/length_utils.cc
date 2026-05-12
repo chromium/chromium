@@ -1519,7 +1519,7 @@ BoxStrut ComputePadding(const ConstraintSpace& constraint_space,
     return BoxStrut();
 
   // Tables with collapsed borders don't have any padding.
-  if (style.IsDisplayTableBox() &&
+  if (style.IsDisplayTable() &&
       style.BorderCollapse() == EBorderCollapse::kCollapse) {
     return BoxStrut();
   }

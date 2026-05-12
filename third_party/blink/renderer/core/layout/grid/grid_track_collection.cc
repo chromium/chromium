@@ -1042,7 +1042,7 @@ void GridSizingTrackCollection::BuildSets(
 
   BuildSets(container_style.TemplateTracks(track_direction_).GetTrackList(),
             container_style.AutoTracks(track_direction_),
-            container_style.IsDisplayGridLanesBox(),
+            container_style.IsDisplayGridLanes(),
             available_size == kIndefiniteSize);
   InitializeSets(available_size);
 }

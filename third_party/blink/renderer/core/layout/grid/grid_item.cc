@@ -49,7 +49,7 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
   *is_overflow_safe = alignment.Overflow() == OverflowAlignment::kSafe;
 
   const bool applies_alignment = ([&]() {
-    if (!parent_grid_style.IsDisplayGridLanesBox()) {
+    if (!parent_grid_style.IsDisplayGridLanes()) {
       return true;
     }
 
@@ -199,7 +199,7 @@ GridItemData::GridItemData(
 
     // If the parent grid is a grid-lanes container, then we only consider
     // subgrids in the grid axis.
-    if (parent_grid_style.IsDisplayGridLanesBox()) {
+    if (parent_grid_style.IsDisplayGridLanes()) {
       if (parent_grid_style.GridLanesTrackSizingDirection() == kForColumns) {
         has_subgridded_rows = false;
       } else {

@@ -3909,7 +3909,7 @@ const CSSValue* Display::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.IsDisplayLayoutCustomBox()) {
+  if (style.IsDisplayLayoutCustom()) {
     return MakeGarbageCollected<cssvalue::CSSLayoutFunctionValue>(
         MakeGarbageCollected<CSSCustomIdentValue>(
             style.DisplayLayoutCustomName()),

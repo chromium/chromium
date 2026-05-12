@@ -1090,8 +1090,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsGapDecorationsContainer() const {
     // `SpecifiesColumns()` signifies we are in a multicol context. Return false
     // if we are not in a multicol, grid, or flex context.
-    return SpecifiesColumns() || IsDisplayFlexibleBox(Display()) ||
-           IsDisplayGridBox(Display());
+    return SpecifiesColumns() || IsDisplayFlex() || IsDisplayGrid();
   }
 
   // Flex utility functions.
@@ -1227,10 +1226,10 @@ class ComputedStyle final : public ComputedStyleBase {
   // For grid, both axes always have grid tracks. For grid-lanes, only the grid
   // axis has grid tracks (the stacking axis does not).
   bool HasGridTrackAxis(GridTrackSizingDirection track_direction) const {
-    if (IsDisplayGridBox()) {
+    if (IsDisplayGrid()) {
       return true;
     }
-    DCHECK(IsDisplayGridLanesBox());
+    DCHECK(IsDisplayGridLanes());
     return GridLanesTrackSizingDirection() == track_direction;
   }
 
@@ -1774,32 +1773,22 @@ class ComputedStyle final : public ComputedStyleBase {
     return IsDisplayBlockContainer(Display());
   }
   bool IsDisplayListItem() const { return IsDisplayListItem(Display()); }
-  static bool IsDisplayListItem(EDisplay display) {
-    return display == EDisplay::kListItem ||
-           display == EDisplay::kInlineListItem ||
-           display == EDisplay::kFlowRootListItem ||
-           display == EDisplay::kInlineFlowRootListItem;
-  }
-  bool IsDisplayTableBox() const { return IsDisplayTableBox(Display()); }
-  bool IsDisplayFlexibleBox() const { return IsDisplayFlexibleBox(Display()); }
-  bool IsDisplayGridBox() const { return IsDisplayGridBox(Display()); }
-  bool IsDisplayGridLanesBox() const {
-    return IsDisplayGridLanesBox(Display());
-  }
-  bool IsDisplayFlexibleOrGridBox() const {
-    return IsDisplayFlexibleBox(Display()) || IsDisplayGridBox(Display());
-  }
-  bool IsDisplayLayoutCustomBox() const {
-    return IsDisplayLayoutCustomBox(Display());
+  bool IsDisplayTable() const { return IsDisplayTable(Display()); }
+  bool IsDisplayFlex() const { return IsDisplayFlex(Display()); }
+  bool IsDisplayWebkitBox() const { return IsDisplayWebkitBox(Display()); }
+  bool IsDisplayGrid() const { return IsDisplayGrid(Display()); }
+  bool IsDisplayGridLanes() const { return IsDisplayGridLanes(Display()); }
+  bool IsDisplayLayoutCustom() const {
+    return IsDisplayLayoutCustom(Display());
   }
 
   bool IsDisplayTableType() const { return IsDisplayTableType(Display()); }
 
-  bool IsDisplayMathType() const { return IsDisplayMathBox(Display()); }
+  bool IsDisplayMath() const { return IsDisplayMath(Display()); }
 
   bool BlockifiesChildren() const {
-    return IsDisplayFlexibleOrGridBox() || IsDisplayGridLanesBox() ||
-           IsDisplayMathType() || IsDisplayLayoutCustomBox() ||
+    return IsDisplayFlex() || IsDisplayGrid() || IsDisplayGridLanes() ||
+           IsDisplayMath() || IsDisplayLayoutCustom() ||
            (Display() == EDisplay::kContents && IsInBlockifyingDisplay());
   }
 
@@ -1816,12 +1805,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return IsInInlinifyingDisplay() &&
            (display == EDisplay::kContents || display == EDisplay::kInline ||
             display == EDisplay::kInlineListItem);
-  }
-
-  // Return true if an element with this computed style requires LayoutNG
-  // (i.e. has no legacy layout implementation).
-  bool DisplayTypeRequiresLayoutNG() const {
-    return IsDisplayMathType() || IsDisplayLayoutCustomBox();
   }
 
   // Isolation utility functions.
@@ -2694,28 +2677,40 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kTableCaption;
   }
 
-  static bool IsDisplayTableBox(EDisplay display) {
+  static bool IsDisplayListItem(EDisplay display) {
+    return display == EDisplay::kListItem ||
+           display == EDisplay::kInlineListItem ||
+           display == EDisplay::kFlowRootListItem ||
+           display == EDisplay::kInlineFlowRootListItem;
+  }
+
+  static bool IsDisplayTable(EDisplay display) {
     return display == EDisplay::kTable || display == EDisplay::kInlineTable;
   }
 
-  static bool IsDisplayFlexibleBox(EDisplay display) {
+  static bool IsDisplayFlex(EDisplay display) {
     return display == EDisplay::kFlex || display == EDisplay::kInlineFlex;
   }
 
-  static bool IsDisplayGridBox(EDisplay display) {
+  static bool IsDisplayWebkitBox(EDisplay display) {
+    return display == EDisplay::kWebkitBox ||
+           display == EDisplay::kWebkitInlineBox;
+  }
+
+  static bool IsDisplayGrid(EDisplay display) {
     return display == EDisplay::kGrid || display == EDisplay::kInlineGrid;
   }
 
-  static bool IsDisplayGridLanesBox(EDisplay display) {
+  static bool IsDisplayGridLanes(EDisplay display) {
     return display == EDisplay::kGridLanes ||
            display == EDisplay::kInlineGridLanes;
   }
 
-  static bool IsDisplayMathBox(EDisplay display) {
+  static bool IsDisplayMath(EDisplay display) {
     return display == EDisplay::kMath || display == EDisplay::kBlockMath;
   }
 
-  static bool IsDisplayLayoutCustomBox(EDisplay display) {
+  static bool IsDisplayLayoutCustom(EDisplay display) {
     return display == EDisplay::kLayoutCustom ||
            display == EDisplay::kInlineLayoutCustom;
   }
@@ -3257,11 +3252,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   bool IsAtomicInlineDisplayType() const {
     return ComputedStyle::IsAtomicInlineDisplayType(Display());
   }
-  bool IsDisplayMathType() const {
-    return ComputedStyle::IsDisplayMathBox(Display());
-  }
-  bool IsDisplayTableBox() const {
-    return ComputedStyle::IsDisplayTableBox(Display());
+  bool IsDisplayMath() const { return ComputedStyle::IsDisplayMath(Display()); }
+  bool IsDisplayTable() const {
+    return ComputedStyle::IsDisplayTable(Display());
   }
   bool IsDisplayTableRowOrColumnType() const {
     return Display() == EDisplay::kTableRow ||

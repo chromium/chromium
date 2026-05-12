@@ -18,7 +18,7 @@ bool MathMLRadicalElement::HasIndex() const {
 
 LayoutObject* MathMLRadicalElement::CreateLayoutObject(
     const ComputedStyle& style) {
-  if (!style.IsDisplayMathType()) {
+  if (!style.IsDisplayMath()) {
     return MathMLElement::CreateLayoutObject(style);
   }
   if (HasTagName(mathml_names::kMsqrtTag))

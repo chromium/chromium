@@ -616,8 +616,9 @@ bool LayoutBlockFlow::AllowsColumns() const {
   // We don't allow custom layout and multicol on the same object. This is
   // similar to not allowing it for flexbox, grids and tables (although those
   // don't create LayoutBlockFlow, so we don't need to check for those here).
-  if (StyleRef().IsDisplayLayoutCustomBox())
+  if (StyleRef().IsDisplayLayoutCustom()) {
     return false;
+  }
 
   // MathML layout objects don't support multicol.
   if (IsMathML())

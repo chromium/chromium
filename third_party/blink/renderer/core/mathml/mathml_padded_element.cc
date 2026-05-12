@@ -87,10 +87,9 @@ void MathMLPaddedElement::CollectStyleForPresentationAttribute(
 
 LayoutObject* MathMLPaddedElement::CreateLayoutObject(
     const ComputedStyle& style) {
-  if (!style.IsDisplayMathType()) {
-    return MathMLElement::CreateLayoutObject(style);
-  }
-  return MakeGarbageCollected<LayoutMathMLBlockWithAnonymousMrow>(this);
+  return style.IsDisplayMath()
+             ? MakeGarbageCollected<LayoutMathMLBlockWithAnonymousMrow>(this)
+             : MathMLElement::CreateLayoutObject(style);
 }
 
 }  // namespace blink

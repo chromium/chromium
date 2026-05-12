@@ -390,8 +390,9 @@ static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
 
 static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
     const ComputedStyle& layout_parent_style) {
-  return layout_parent_style.IsDisplayFlexibleOrGridBox() ||
-         layout_parent_style.IsDisplayGridLanesBox();
+  return layout_parent_style.IsDisplayFlex() ||
+         layout_parent_style.IsDisplayGrid() ||
+         layout_parent_style.IsDisplayGridLanes();
 }
 
 void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder,
@@ -657,7 +658,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
   bool overflow_is_clip_or_visible =
       IsOverflowClipOrVisible(builder.OverflowY()) &&
       IsOverflowClipOrVisible(builder.OverflowX());
-  if (!overflow_is_clip_or_visible && builder.IsDisplayTableBox()) {
+  if (!overflow_is_clip_or_visible && builder.IsDisplayTable()) {
     // Tables only support overflow:hidden and overflow:visible and ignore
     // anything else, see https://drafts.csswg.org/css2/visufx.html#overflow. As
     // a table is not a block container box the rules for resolving conflicting
@@ -768,9 +769,10 @@ void StyleAdjuster::AdjustStyleForDisplay(
         builder.SetIsFlexOrGridOrCustomItem();
       }
     }
-    if (layout_parent_style.IsDisplayFlexibleOrGridBox() ||
-        layout_parent_style.IsDisplayGridLanesBox() ||
-        layout_parent_style.IsDisplayMathType() ||
+    if (layout_parent_style.IsDisplayFlex() ||
+        layout_parent_style.IsDisplayGrid() ||
+        layout_parent_style.IsDisplayGridLanes() ||
+        layout_parent_style.IsDisplayMath() ||
         force_canvas_child_layout_subtree_styles) {
       builder.SetIsInsideDisplayIgnoringFloatingChildren();
     }
@@ -1174,7 +1176,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // math display values on non-MathML elements compute to flow display
     // values.
-    if (!IsA<MathMLElement>(element) && builder.IsDisplayMathType()) {
+    if (!IsA<MathMLElement>(element) && builder.IsDisplayMath()) {
       builder.SetDisplay(builder.Display() == EDisplay::kBlockMath
                              ? EDisplay::kBlock
                              : EDisplay::kInline);
@@ -1203,7 +1205,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // If this is a child of a LayoutCustom, we need the name of the parent
     // layout function for invalidation purposes.
-    if (layout_parent_style.IsDisplayLayoutCustomBox()) {
+    if (layout_parent_style.IsDisplayLayoutCustom()) {
       builder.SetDisplayLayoutCustomParentName(
           layout_parent_style.DisplayLayoutCustomName());
     }

@@ -24,9 +24,10 @@ void PendingLayoutRegistry::NotifyLayoutReady(const AtomicString& name) {
       // doesn't need a layout tree reattachment.
       if (node && node->GetLayoutObject()) {
         const ComputedStyle& style = node->GetLayoutObject()->StyleRef();
-        if (style.IsDisplayLayoutCustomBox() &&
-            style.DisplayLayoutCustomName() == name)
+        if (style.IsDisplayLayoutCustom() &&
+            style.DisplayLayoutCustomName() == name) {
           node->SetForceReattachLayoutTree();
+        }
       }
     }
   }

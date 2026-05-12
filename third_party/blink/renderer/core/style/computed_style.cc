@@ -1013,7 +1013,7 @@ bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
     }
   }
 
-  if (IsDisplayLayoutCustomBox() &&
+  if (IsDisplayLayoutCustom() &&
       DiffNeedsFullLayoutForLayoutCustom(document, other)) {
     return true;
   }
@@ -1049,7 +1049,7 @@ bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
 bool ComputedStyle::DiffNeedsFullLayoutForLayoutCustom(
     const Document& document,
     const ComputedStyle& other) const {
-  DCHECK(IsDisplayLayoutCustomBox());
+  DCHECK(IsDisplayLayoutCustom());
 
   LayoutWorklet* worklet = LayoutWorklet::From(*document.domWindow());
   const AtomicString& name = DisplayLayoutCustomName();
@@ -2885,7 +2885,7 @@ bool ComputedStyle::ShouldApplyAnyContainment(const Element& element,
     return true;
   }
   return (effective_containment & (kContainsLayout | kContainsPaint)) &&
-         (!IsDisplayTableType(display) || IsDisplayTableBox(display) ||
+         (!IsDisplayTableType(display) || IsDisplayTable(display) ||
           display == EDisplay::kTableCell ||
           display == EDisplay::kTableCaption);
 }

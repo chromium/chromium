@@ -179,7 +179,7 @@ static bool IsSpecialHTMLElement(const Node& n) {
   if (!layout_object)
     return false;
 
-  if (layout_object->StyleRef().IsDisplayTableBox()) {
+  if (layout_object->StyleRef().IsDisplayTable()) {
     return true;
   }
 

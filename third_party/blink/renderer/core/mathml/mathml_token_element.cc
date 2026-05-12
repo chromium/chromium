@@ -91,10 +91,9 @@ void MathMLTokenElement::ChildrenChanged(
 
 LayoutObject* MathMLTokenElement::CreateLayoutObject(
     const ComputedStyle& style) {
-  if (!style.IsDisplayMathType()) {
-    return MathMLElement::CreateLayoutObject(style);
-  }
-  return MakeGarbageCollected<LayoutMathMLBlockFlow>(this);
+  return style.IsDisplayMath()
+             ? MakeGarbageCollected<LayoutMathMLBlockFlow>(this)
+             : MathMLElement::CreateLayoutObject(style);
 }
 
 }  // namespace blink

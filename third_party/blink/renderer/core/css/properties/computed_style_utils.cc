@@ -2096,7 +2096,7 @@ ValueForGridTrackList(GridTrackSizingDirection direction,
   const bool is_for_columns = direction == kForColumns;
   const ComputedGridTrackList& computed_grid_track_list =
       is_for_columns ? style.GridTemplateColumns() : style.GridTemplateRows();
-  const bool is_grid_lanes = style.IsDisplayGridLanesBox();
+  const bool is_grid_lanes = style.IsDisplayGridLanes();
   auto* container = DynamicTo<T>(layout_object);
 
   // Handle the 'none' case.
@@ -2214,7 +2214,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     const LayoutObject* layout_object,
     const ComputedStyle& style,
     bool force_computed_value) {
-  if (style.IsDisplayGridLanesBox()) {
+  if (style.IsDisplayGridLanes()) {
     return blink::ValueForGridTrackList<LayoutGridLanes>(
         direction, layout_object, style, force_computed_value);
   }

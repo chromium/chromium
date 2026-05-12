@@ -949,7 +949,7 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
 }
 
 bool IsLayoutNGFlexibleBox(const LayoutObject& layout_object) {
-  return layout_object.StyleRef().IsDisplayFlexibleBox() &&
+  return layout_object.StyleRef().IsDisplayFlex() &&
          layout_object.IsFlexibleBox();
 }
 
