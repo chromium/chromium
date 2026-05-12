@@ -40,6 +40,7 @@ source_set("browser_tests") {
 
   sources = [
     "android_tab_strip_api_browsertest.cc",
+    "android_tab_strip_api_events_browsertest.cc",
     "android_translation_adapter_browsertest.cc",
   ]
 

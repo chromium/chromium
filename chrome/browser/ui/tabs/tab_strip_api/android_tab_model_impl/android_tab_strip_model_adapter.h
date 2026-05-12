@@ -73,6 +73,7 @@ class AndroidTabStripModelAdapter : public TabStripModelAdapter {
 
  private:
   friend class AndroidTabStripApiBrowserTest;
+  friend class AndroidTabStripApiEventsBrowserTest;
   static base::PassKey<AndroidTabStripModelAdapter> GetPassKey();
 
   raw_ref<TabModel> model_;
