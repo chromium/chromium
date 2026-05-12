@@ -52,8 +52,6 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_IDLE_DETECTION;
     case RequestType::kLocalNetwork:
       return IDR_ANDROID_INFOBAR_LOCAL_NETWORK;
-    case RequestType::kLocalNetworkAccess:
-      return IDR_ANDROID_INFOBAR_LOCAL_NETWORK_ACCESS;
     case RequestType::kLoopbackNetwork:
       return IDR_ANDROID_INFOBAR_LOOPBACK_NETWORK;
     case RequestType::kMicStream:
@@ -109,7 +107,6 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kLocalFonts:
       return vector_icons::kFontDownloadChromeRefreshIcon;
     case RequestType::kLocalNetwork:
-    case RequestType::kLocalNetworkAccess:
       return vector_icons::kRouterIcon;
     case RequestType::kLoopbackNetwork:
       return vector_icons::kDesktopWindowsIcon;
@@ -176,7 +173,6 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kIdleDetection:
       return vector_icons::kDevicesOffIcon;
     case RequestType::kLocalNetwork:
-    case RequestType::kLocalNetworkAccess:
       return vector_icons::kRouterOffIcon;
     case RequestType::kLoopbackNetwork:
       return vector_icons::kDesktopAccessDisabledIcon;
@@ -265,8 +261,6 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kVrSession;
     case ContentSettingsType::WINDOW_MANAGEMENT:
       return RequestType::kWindowManagement;
-    case ContentSettingsType::LOCAL_NETWORK_ACCESS:
-      return RequestType::kLocalNetworkAccess;
     case ContentSettingsType::LOCAL_NETWORK:
       return RequestType::kLocalNetwork;
     case ContentSettingsType::LOOPBACK_NETWORK:
@@ -323,8 +317,6 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     case RequestType::kLocalFonts:
       return ContentSettingsType::LOCAL_FONTS;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    case RequestType::kLocalNetworkAccess:
-      return ContentSettingsType::LOCAL_NETWORK_ACCESS;
     case RequestType::kLocalNetwork:
       return ContentSettingsType::LOCAL_NETWORK;
     case RequestType::kLoopbackNetwork:
@@ -455,8 +447,6 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
     case permissions::RequestType::kLocalFonts:
       return "local_fonts";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    case permissions::RequestType::kLocalNetworkAccess:
-      return "local_network_access";
     case permissions::RequestType::kLocalNetwork:
       return "local_network";
     case permissions::RequestType::kLoopbackNetwork:

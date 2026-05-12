@@ -130,9 +130,6 @@ PermissionRequest::GetDialogAnnotatedMessageText(
     case RequestType::kIdleDetection:
       message_id = IDS_IDLE_DETECTION_INFOBAR_TEXT;
       break;
-    case RequestType::kLocalNetworkAccess:
-      message_id = IDS_LOCAL_NETWORK_ACCESS_INFOBAR_TEXT;
-      break;
     case RequestType::kLocalNetwork:
       message_id = IDS_LOCAL_NETWORK_INFOBAR_TEXT;
       break;
@@ -423,9 +420,6 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       break;
     case RequestType::kLocalFonts:
       message_id = IDS_FONT_ACCESS_PERMISSION_FRAGMENT;
-      break;
-    case RequestType::kLocalNetworkAccess:
-      message_id = IDS_LOCAL_NETWORK_ACCESS_PERMISSION_FRAGMENT;
       break;
     case RequestType::kLocalNetwork:
       message_id = IDS_LOCAL_NETWORK_PERMISSION_FRAGMENT;

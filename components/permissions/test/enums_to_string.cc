@@ -56,7 +56,6 @@ std::string_view ToString(permissions::RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
           {RequestType::kLocalFonts, "LocalFonts"},
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-          {RequestType::kLocalNetworkAccess, "LocalNetworkAccess"},
           {RequestType::kMicStream, "MicStream"},
           {RequestType::kMidiSysex, "MidiSysex"},
           {RequestType::kMultipleDownloads, "MultipleDownloads"},

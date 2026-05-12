@@ -140,8 +140,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".KeyboardLock" summary="Keyboard lock permission"/>
   <variant name=".LocalFonts" summary="Local fonts permission"/>
   <variant name=".LocalNetwork" summary="Local network permission"/>
-  <variant name=".LocalNetworkAccess"
-      summary="Local network access permission"/>
   <variant name=".LoopbackNetwork" summary="Loopback network permission"/>
   <variant name=".MidiSysEx" summary="Midi SysEx permission"/>
   <variant name=".MultipleDownload" summary="Multiple downloads permission"/>

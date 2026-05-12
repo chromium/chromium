@@ -141,10 +141,6 @@ public class PageInfoDiscoverabilityTest {
                                     false));
             parameters.add(
                     new ParameterSet()
-                            .name("RequestType.kLocalNetworkAccess")
-                            .value(ContentSettingsType.LOCAL_NETWORK_ACCESS, true));
-            parameters.add(
-                    new ParameterSet()
                             .name("RequestType.kLocalNetwork")
                             .value(ContentSettingsType.LOCAL_NETWORK, true));
             parameters.add(

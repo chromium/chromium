@@ -33,9 +33,6 @@
     <message name="IDS_IDLE_DETECTION_INFOBAR_TEXT" desc="Text requesting permission for a site to know when the user is idle.">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to know when you're actively using this device
     </message>
-    <message name="IDS_LOCAL_NETWORK_ACCESS_INFOBAR_TEXT" desc="Text requesting permission for a site to access the user's local network.">
-      <ph name="URL">$1<ex>google.com</ex></ph> wants to look for and connect to any device on your local network
-    </message>
     <message name="IDS_LOCAL_NETWORK_INFOBAR_TEXT" desc="Text requesting permission for a site to access devices on the user's local network.">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to access other devices on your local network
     </message>
@@ -215,9 +212,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_WEB_APP_INSTALLATION_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to install a web app.">
     Be able to install web apps
-  </message>
-  <message name="IDS_LOCAL_NETWORK_ACCESS_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to access the devices on the user's local network.">
-    Look for and connect to any device on your local network
   </message>
   <message name="IDS_LOCAL_NETWORK_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to access other devices on the user's local network.">
     Access other devices on your local network

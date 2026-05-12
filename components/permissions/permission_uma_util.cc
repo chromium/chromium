@@ -184,8 +184,6 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "KeyboardAndPointerLock";
     case RequestTypeForUma::PERMISSION_WEB_APP_INSTALLATION:
       return "WebAppInstallation";
-    case RequestTypeForUma::PERMISSION_LOCAL_NETWORK_ACCESS:
-      return "LocalNetworkAccess";
     case RequestTypeForUma::PERMISSION_LOCAL_NETWORK:
       return "LocalNetwork";
     case RequestTypeForUma::PERMISSION_LOOPBACK_NETWORK:

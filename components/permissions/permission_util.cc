@@ -149,8 +149,6 @@ RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
     case RequestType::kLocalFonts:
       return RequestTypeForUma::PERMISSION_LOCAL_FONTS;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    case RequestType::kLocalNetworkAccess:
-      return RequestTypeForUma::PERMISSION_LOCAL_NETWORK_ACCESS;
     case RequestType::kLocalNetwork:
       return RequestTypeForUma::PERMISSION_LOCAL_NETWORK;
     case RequestType::kLoopbackNetwork:

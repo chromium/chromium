@@ -106,7 +106,6 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER:
             case ContentSettingsType.SENSORS:
             case ContentSettingsType.VR:
-            case ContentSettingsType.LOCAL_NETWORK_ACCESS:
             case ContentSettingsType.LOCAL_NETWORK:
             case ContentSettingsType.LOOPBACK_NETWORK:
             case ContentSettingsType.WINDOW_MANAGEMENT:
