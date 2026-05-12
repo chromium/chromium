@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_combobox_model.h"
@@ -26,6 +27,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -71,6 +73,8 @@ class EditablePasswordComboboxTest : public ViewsTestBase {
     return static_cast<EditablePasswordCombobox*>(
         widget_->GetContentsView()->GetViewByID(kComboboxId));
   }
+
+  Textfield& GetTextfield() { return combobox()->GetTextfield(); }
 
   base::MockCallback<Button::PressedCallback::Callback>* eye_mock_callback() {
     return &eye_callback_;
@@ -150,11 +154,15 @@ TEST_F(EditablePasswordComboboxTest, PasswordCanBeHiddenAndRevealed) {
   EXPECT_TRUE(combobox()->ArePasswordsRevealed());
   EXPECT_EQ(u"item0", GetItemAt(0));
   EXPECT_EQ(u"item1", GetItemAt(1));
+  EXPECT_TRUE(GetTextfield().GetTextInputFlags() &
+              ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
 
   combobox()->RevealPasswords(/*revealed=*/false);
   EXPECT_FALSE(combobox()->ArePasswordsRevealed());
   EXPECT_EQ(kObscuredPassword, GetItemAt(0));
   EXPECT_EQ(kObscuredPassword, GetItemAt(1));
+  EXPECT_TRUE(GetTextfield().GetTextInputFlags() &
+              ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
 }
 
 TEST_F(EditablePasswordComboboxTest, EyeButtonClickInvokesCallback) {

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -137,6 +138,8 @@ void EditablePasswordCombobox::RevealPasswords(bool revealed) {
   are_passwords_revealed_ = revealed;
   GetTextfield().SetTextInputType(revealed ? ui::TEXT_INPUT_TYPE_TEXT
                                            : ui::TEXT_INPUT_TYPE_PASSWORD);
+  GetTextfield().SetTextInputFlags(GetTextfield().GetTextInputFlags() |
+                                   ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
   eye_->SetToggled(revealed);
   UpdateMenu();
 }
