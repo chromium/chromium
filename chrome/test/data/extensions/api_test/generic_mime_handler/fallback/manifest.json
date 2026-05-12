@@ -5,7 +5,7 @@
   "mime_types_handler": {
     "application/pdf": {
       "handler_url": "handler.html",
-      "can_embed": false
+      "can_embed": true
     }
   }
 }

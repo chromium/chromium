@@ -6892,8 +6892,8 @@ bool ChromeContentBrowserClient::ShouldForceDownloadResource(
     bool force_download = profile->GetPrefs()->GetBoolean(
         quickoffice::kQuickOfficeForceFileDownloadEnabled);
     if (force_download) {
-      std::string extension_id =
-          PluginUtils::GetExtensionIdForMimeType(browser_context, mime_type);
+      std::string extension_id = PluginUtils::GetExtensionIdForMimeType(
+          browser_context, mime_type, /*embedded=*/false);
 
       if (extension_misc::IsQuickOfficeExtension(extension_id)) {
         return true;

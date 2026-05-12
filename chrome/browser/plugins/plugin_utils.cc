@@ -19,10 +19,12 @@
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/manifest_handlers/mime_types_handler.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -39,6 +41,33 @@ bool IsExtensionAllowedInProfile(Profile* profile,
     return false;
   }
   return true;
+}
+
+bool IsExtensionAllowedForMimeType(Profile* profile,
+                                   const extensions::ExtensionId& extension_id,
+                                   const std::string& mime_type,
+                                   bool embedded) {
+  if (!IsExtensionAllowedInProfile(profile, extension_id)) {
+    return false;
+  }
+
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          extension_id);
+  if (!extension) {
+    return false;
+  }
+
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
+  if (!handler) {
+    return false;
+  }
+
+  if (!embedded) {
+    return true;
+  }
+
+  return handler->IsPluginExtension() || handler->CanEmbedMimeType(mime_type);
 }
 
 }  // namespace
@@ -63,7 +92,8 @@ void PluginUtils::GetPluginContentSetting(
 // static
 std::string PluginUtils::GetExtensionIdForMimeType(
     content::BrowserContext* browser_context,
-    const std::string& mime_type) {
+    const std::string& mime_type,
+    bool embedded) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (extensions::ChromeContentBrowserClientExtensionsPart::
@@ -74,7 +104,8 @@ std::string PluginUtils::GetExtensionIdForMimeType(
   CHECK(registry);
   for (const extensions::ExtensionId& extension_id :
        registry->GetHandlersForMimeType(mime_type)) {
-    if (IsExtensionAllowedInProfile(profile, extension_id)) {
+    if (IsExtensionAllowedForMimeType(profile, extension_id, mime_type,
+                                      embedded)) {
       return extension_id;
     }
   }

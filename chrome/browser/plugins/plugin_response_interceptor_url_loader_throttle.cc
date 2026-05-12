@@ -121,6 +121,9 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     return;
   }
 
+  const bool embedded =
+      request_destination_ != network::mojom::RequestDestination::kDocument;
+
   std::string extension_id;
   if (response_head->mime_type == pdf::kPDFMimeType) {
     // A generic MIME handler extension called
@@ -141,7 +144,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   if (extension_id.empty()) {
     extension_id = PluginUtils::GetExtensionIdForMimeType(
-        web_contents->GetBrowserContext(), response_head->mime_type);
+        web_contents->GetBrowserContext(), response_head->mime_type, embedded);
   }
 
   if (extension_id.empty()) {
@@ -280,8 +283,6 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   transferrable_loader->head->intercepted_by_plugin = true;
   transferrable_loader->body = std::move(consumer_handle);
 
-  bool embedded =
-      request_destination_ != network::mojom::RequestDestination::kDocument;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(

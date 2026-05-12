@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/version_info/channel.h"
@@ -70,6 +71,23 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
   // The handler.js in the extension calls chrome.test.succeed() after
   // verifying getStreamInfo fields and fetching the stream data.
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// Verifies that a generic MIME handler with `can_embed: false` is selected
+// for top-level navigations but bypassed for embedded loads.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       EmbeddedLoadHonorsCanEmbed) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("generic_mime_handler"));
+  ASSERT_TRUE(extension);
+
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  EXPECT_EQ(extension->id(),
+            PluginUtils::GetExtensionIdForMimeType(profile, "application/pdf",
+                                                   /*embedded=*/false));
+  EXPECT_NE(extension->id(),
+            PluginUtils::GetExtensionIdForMimeType(profile, "application/pdf",
+                                                   /*embedded=*/true));
 }
 
 }  // namespace extensions

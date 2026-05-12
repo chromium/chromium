@@ -20,6 +20,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/plugins",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//components/version_info:channel",
