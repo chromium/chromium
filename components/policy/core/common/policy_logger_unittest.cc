@@ -16,9 +16,9 @@
 #include "testing/platform_test.h"
 
 #if !BUILDFLAG(IS_IOS)
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/test/browser_task_environment.h"
+#include "content/public/browser/browser_task_traits.h"    // nogncheck
+#include "content/public/browser/browser_thread.h"         // nogncheck
+#include "content/public/test/browser_task_environment.h"  // nogncheck
 #else
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"

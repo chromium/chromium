@@ -37,7 +37,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "media/capture/video/apple/video_capture_device_factory_apple.h"
+#include "media/capture/video/apple/video_capture_device_factory_apple.h"  // nogncheck
 #endif
 
 namespace capture_mode {
