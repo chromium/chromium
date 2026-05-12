@@ -1294,10 +1294,10 @@ Canvas2DResourceProviderSharedImage::CreateWithClear(
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     Delegate* delegate) {
-  return CreateSharedImageProviderBase<Canvas2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, ShouldInitialize::kCallClear,
-      context_provider_wrapper, raster_mode, shared_image_usage_flags,
-      delegate);
+  return CreateSharedImageProviderBase(size, format, alpha_type, color_space,
+                                       ShouldInitialize::kCallClear,
+                                       context_provider_wrapper, raster_mode,
+                                       shared_image_usage_flags, delegate);
 }
 
 std::unique_ptr<Canvas2DResourceProviderSharedImage>
@@ -1440,8 +1440,8 @@ CanvasNon2DResourceProviderSharedImage::Create(
                 std::move(context_provider_wrapper), shared_image_usage_flags);
 }
 
-template <class T>
-std::unique_ptr<T> CanvasResourceProvider::CreateSharedImageProviderBase(
+std::unique_ptr<Canvas2DResourceProviderSharedImage>
+CanvasResourceProvider::CreateSharedImageProviderBase(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -1544,9 +1544,9 @@ std::unique_ptr<T> CanvasResourceProvider::CreateSharedImageProviderBase(
   }
 #endif
 
-  auto provider = std::make_unique<T>(size, format, alpha_type, color_space,
-                                      context_provider_wrapper, is_accelerated,
-                                      shared_image_usage_flags, delegate);
+  auto provider = std::make_unique<Canvas2DResourceProviderSharedImage>(
+      size, format, alpha_type, color_space, context_provider_wrapper,
+      is_accelerated, shared_image_usage_flags, delegate);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear) {

@@ -245,8 +245,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
-  template <class T>
-  static std::unique_ptr<T> CreateSharedImageProviderBase(
+  static std::unique_ptr<Canvas2DResourceProviderSharedImage>
+  CreateSharedImageProviderBase(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
