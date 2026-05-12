@@ -181,8 +181,9 @@ enum class PrerenderFinalStatus {
   kPrerenderHostReused = 88,
   // Submitting form when prerender is not allowed.
   kFormSubmitWhenPrerendering = 89,
+  kCrossDocumentRestart = 90,
 
-  kMaxValue = kFormSubmitWhenPrerendering,
+  kMaxValue = kCrossDocumentRestart,
 };
 // LINT.ThenChange(
 //     //third_party/blink/public/devtools_protocol/domains/Preload.pdl,

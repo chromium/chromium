@@ -191,6 +191,7 @@ experimental domain Preload
       BrowsingDataRemoved
       PrerenderHostReused
       FormSubmitWhenPrerendering
+      CrossDocumentRestart
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated
