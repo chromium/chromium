@@ -3,6 +3,14 @@
 # found in the LICENSE file.
 
 source_set("model") {
-  sources = [ "backend_promo_service.h" ]
-  deps = [ "//components/keyed_service/core" ]
+  sources = [
+    "backend_promo_service.h",
+    "backend_promo_service_factory.h",
+    "backend_promo_service_factory.mm",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
 }

@@ -12,6 +12,7 @@ group("providers") {
     "//ios/chrome/test/providers/app_store_bundle",
     "//ios/chrome/test/providers/app_utils",
     "//ios/chrome/test/providers/application_mode_fetcher",
+    "//ios/chrome/test/providers/backend_promo",
     "//ios/chrome/test/providers/branded_images",
     "//ios/chrome/test/providers/bwg",
     "//ios/chrome/test/providers/cobalt",

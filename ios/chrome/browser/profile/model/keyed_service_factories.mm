@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
+#import "ios/chrome/browser/backend_promo/model/backend_promo_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
@@ -289,6 +290,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   AcceptLanguagesServiceFactory::GetInstance();
   AppStoreBundleServiceFactory::GetInstance();
   AuthenticationServiceFactory::GetInstance();
+  BackendPromoServiceFactory::GetInstance();
   BackgroundDownloadServiceFactory::GetInstance();
   BookmarkModelMetricsServiceFactory::GetInstance();
   BreadcrumbManagerKeyedServiceFactory::GetInstance();
