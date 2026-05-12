@@ -129,7 +129,7 @@ def _RunGitLsFiles(cwd=None):
   return output.decode('utf-8').splitlines()
 
 
-def _GetFilesFromGit(paths=None):
+def GetFilesFromGit(paths=None):
   """Gets the list of files in the git repository if |paths| includes prefix
   path filters or is empty. All complete filenames in |paths| are also included
   in the output.
@@ -410,7 +410,7 @@ def main():
     # compile_commands.json.
     source_filenames = None
   else:
-    git_filenames = set(_GetFilesFromGit(args.path_filter))
+    git_filenames = set(GetFilesFromGit(args.path_filter))
     # Filter out files that aren't C/C++/Obj-C/Obj-C++.
     extensions = frozenset(('.c', '.cc', '.cpp', '.m', '.mm'))
     source_filenames = [

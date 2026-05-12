@@ -31,29 +31,10 @@ tool_dir = os.path.abspath(os.path.join(script_dir, '../pylib'))
 sys.path.insert(0, tool_dir)
 
 from clang import compile_db
+import run_tool
 
 Edit = collections.namedtuple('Edit',
                               ('edit_type', 'offset', 'length', 'replacement'))
-
-
-def _GetFilesFromGit(paths=None):
-  """Gets the list of files in the git repository.
-
-  Args:
-    paths: Prefix filter for the returned paths. May contain multiple entries.
-  """
-  args = []
-  if sys.platform == 'win32':
-    args.append('git.bat')
-  else:
-    args.append('git')
-  args.append('ls-files')
-  if paths:
-    args.extend(paths)
-  command = subprocess.Popen(args, stdout=subprocess.PIPE)
-  output, _ = command.communicate()
-  output = output.decode('utf-8')
-  return [os.path.realpath(p) for p in output.splitlines()]
 
 
 def _ParseEditsFromStdin(build_directory):
@@ -463,7 +444,7 @@ suppress this behavior is to replace the text with a single space or similar
       help='optional paths to filter what files the tool is run on')
   args = parser.parse_args()
 
-  filenames = set(_GetFilesFromGit(args.path_filter))
+  filenames = set(run_tool.GetFilesFromGit(args.path_filter))
   edits = _ParseEditsFromStdin(args.p)
   return _ApplyEdits({
       k: v
