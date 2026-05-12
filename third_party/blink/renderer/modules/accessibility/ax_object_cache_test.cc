@@ -558,4 +558,69 @@ TEST_F(AccessibilityTest, ValidationMessageIncludedInRootChildren) {
   EXPECT_TRUE(root->CachedChildrenIncludingIgnored().Contains(message));
 }
 
+TEST_F(AccessibilityTest, RestoreAriaOwnsAfterAriaHiddenRemoved) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="container">
+        <ul id="list" aria-owns="item1 item2"></ul>
+      </div>
+      <li id="item1">Item 1</li>
+      <li id="item2">Item 2</li>
+  )HTML");
+
+  AXObject* list = GetAXObjectByElementId("list");
+  ASSERT_NE(nullptr, list);
+
+  AXObject* item1 = GetAXObjectByElementId("item1");
+  ASSERT_NE(nullptr, item1);
+
+  AXObject* item2 = GetAXObjectByElementId("item2");
+  ASSERT_NE(nullptr, item2);
+
+  // Initial state: list owns item1 and item2.
+  EXPECT_EQ(2u, list->ChildrenIncludingIgnored().size());
+  EXPECT_EQ(list, item1->ParentObject());
+  EXPECT_EQ(list, item2->ParentObject());
+
+  // Set aria-hidden on container.
+  Element* container = GetElementById("container");
+  ASSERT_NE(nullptr, container);
+  container->setAttribute(html_names::kAriaHiddenAttr, AtomicString("true"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // list should now be hidden/ignored, and the items should not be owned by it.
+  list = GetAXObjectByElementId("list");
+  if (list) {
+    EXPECT_TRUE(list->IsIgnored());
+    EXPECT_EQ(0u, list->ChildrenIncludingIgnored().size());
+  }
+
+  // item1 and item2 should have their parent restored.
+  item1 = GetAXObjectByElementId("item1");
+  ASSERT_NE(nullptr, item1);
+  EXPECT_NE(list, item1->ParentObject());
+
+  item2 = GetAXObjectByElementId("item2");
+  ASSERT_NE(nullptr, item2);
+  EXPECT_NE(list, item2->ParentObject());
+
+  // Remove aria-hidden from container.
+  container->removeAttribute(html_names::kAriaHiddenAttr);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // list should be restored and own the items again.
+  list = GetAXObjectByElementId("list");
+  ASSERT_NE(nullptr, list);
+  EXPECT_FALSE(list->IsIgnored());
+
+  item1 = GetAXObjectByElementId("item1");
+  ASSERT_NE(nullptr, item1);
+
+  item2 = GetAXObjectByElementId("item2");
+  ASSERT_NE(nullptr, item2);
+
+  EXPECT_EQ(2u, list->ChildrenIncludingIgnored().size());
+  EXPECT_EQ(list, item1->ParentObject());
+  EXPECT_EQ(list, item2->ParentObject());
+}
+
 }  // namespace blink

@@ -1615,8 +1615,13 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   new_obj->Init(parent);
   MaybeDisallowImplicitSelectionWithCleanLayout(new_obj);
 
-#if AX_FAIL_FAST_BUILD()
   Element* element = DynamicTo<Element>(node);
+  if (element && !element->IsPseudoElement() &&
+      AXObject::HasARIAOwns(element)) {
+    relation_cache_->QueueOwnerToUpdate(new_obj);
+  }
+
+#if AX_FAIL_FAST_BUILD()
   if (element && !element->IsPseudoElement()) {
     // Ensure that the relation cache is properly initialized with information
     // from this element.

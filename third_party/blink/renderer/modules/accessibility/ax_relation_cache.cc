@@ -264,6 +264,12 @@ void AXRelationCache::ProcessUpdatesWithCleanLayout() {
   owner_axids_to_update_.clear();
 }
 
+void AXRelationCache::QueueOwnerToUpdate(AXObject* owner) {
+  DCHECK(owner);
+  DCHECK(!owner->IsDetached());
+  owner_axids_to_update_.insert(owner->AXObjectID());
+}
+
 bool AXRelationCache::IsDirty() const {
   return !owner_axids_to_update_.empty();
 }
