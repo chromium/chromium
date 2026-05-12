@@ -19,14 +19,6 @@ public class BrowserControlsUtils {
 
     private static @Nullable Boolean sSyncMinHeightWithTotalHeightForTesting;
 
-    // Disallow top browser controls from scrolling off on large tablets by setting min height
-    // equal to overall height.
-    // TODO(https://crbug.com/450970998): Replace with doSyncMinHeightWithTotalHeightV2.
-    public static boolean doSyncMinHeightWithTotalHeight(Context context) {
-        return ChromeFeatureList.sLockTopControlsOnLargeTablets.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(context);
-    }
-
     /**
      * Disallow top browser controls from scrolling off by setting min height equal to overall
      * height. This method checks the form factors internally.

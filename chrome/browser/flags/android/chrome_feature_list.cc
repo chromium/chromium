@@ -381,7 +381,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLoadAllTabsAtStartup,
     &kLoadNativeEarly,
     &kLockBackPressHandlerAtStart,
-    &kLockTopControlsOnLargeTablets,
     &kLockTopControlsOnLargeTabletsV2,
     &kLogoViewRefactor,
     &kLongScreenshotsLenientMemoryCheck,
@@ -738,7 +737,6 @@ BASE_FEATURE(kLinkHoverStatusBar, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLoadAllTabsAtStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLoadNativeEarly, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLockBackPressHandlerAtStart, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kLockTopControlsOnLargeTablets, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLockTopControlsOnLargeTabletsV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLogoViewRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLongScreenshotsLenientMemoryCheck, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -6356,14 +6356,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "lock-controls-on-tablets",
-    "owners": [
-      "twellington@chromium.org",
-      "skavuluru@google.com"
-    ],
-    "expiry_milestone": 152
-  },
-  {
     "name": "lock-controls-on-tablets-v2",
     "owners": [
       "twellington@chromium.org",

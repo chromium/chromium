@@ -508,7 +508,6 @@ public abstract class ChromeFeatureList {
     public static final String LOAD_NATIVE_EARLY = "LoadNativeEarly";
     public static final String LOCAL_NETWORK_ACCESS = "LocalNetworkAccessChecks";
     public static final String LOCK_BACK_PRESS_HANDLER_AT_START = "LockBackPressHandlerAtStart";
-    public static final String LOCK_TOP_CONTROLS_ON_LARGE_TABLETS = "LockTopControlsOnLargeTablets";
     public static final String LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2 =
             "LockTopControlsOnLargeTabletsV2";
     public static final String LOGO_VIEW_REFACTOR = "LogoViewRefactor";
@@ -1471,8 +1470,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sInlinePdfV2 =
             newMutableFlagWithSafeDefault(INLINE_PDF_V2, false);
-    public static final MutableFlagWithSafeDefault sLockTopControlsOnLargeTablets =
-            newMutableFlagWithSafeDefault(LOCK_TOP_CONTROLS_ON_LARGE_TABLETS, true);
     public static final MutableFlagWithSafeDefault sMediaIndicatorsAndroid =
             newMutableFlagWithSafeDefault(MEDIA_INDICATORS_ANDROID, true);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =

@@ -177,10 +177,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors.
   feature_overrides.EnableFeature(
       autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty);
-  // TODO(crbug.com/436900619): Remove when the long term solution is
-  // implemented.
-  feature_overrides.EnableFeature(
-      chrome::android::kLockTopControlsOnLargeTablets);
   // TODO(crbug.com/445446479): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(

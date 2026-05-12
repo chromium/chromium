@@ -132,8 +132,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private boolean mHasTopControlsHeightAnimation;
     private boolean mHasBottomControlsHeightAnimation;
 
-    private boolean mDisableSyncMinHeightWithTotalHeight;
-
     private final Runnable mUpdateVisibilityRunnable =
             new Runnable() {
                 @Override
@@ -352,11 +350,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 mBottomControlsHeight = controlContainerHeight;
                 break;
         }
-
-        if (doSyncMinHeightWithTotalHeight()) {
-            mTopControlsMinHeight = mTopControlsHeight;
-        }
-
         mRendererTopContentOffset = mTopControlsHeight;
         updateControlOffset();
         scheduleVisibilityUpdate();
@@ -530,10 +523,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     @Override
     public void setTopControlsHeight(int topControlsHeight, int topControlsMinHeight) {
-        if (doSyncMinHeightWithTotalHeight()) {
-            topControlsMinHeight = topControlsHeight;
-        }
-
         if (mTopControlsHeight == topControlsHeight
                 && mTopControlsMinHeight == topControlsMinHeight) {
             return;
@@ -1384,22 +1373,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mActiveTabObserver != null) mActiveTabObserver.destroy();
         mBrowserVisibilityDelegate.destroy();
         if (mTabControlsObserver != null) mTabControlsObserver.destroy();
-    }
-
-    /**
-     * Disables locking the top control height. Used in TWAs with display modes that want
-     * flexibility on whether to show a custom tab bar (notably MINIMAL_UI and
-     * WINDOW_CONTROLS_OVERLAY).
-     */
-    public void disableSyncMinHeightWithTotalHeight() {
-        mDisableSyncMinHeightWithTotalHeight = true;
-    }
-
-    private boolean doSyncMinHeightWithTotalHeight() {
-        // When V2 flag is enabled, this logic is coordinated in TopControlsStacker.
-        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mActivity)) return false;
-        if (mDisableSyncMinHeightWithTotalHeight) return false;
-        return BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mActivity);
     }
 
     @NullUnmarked

@@ -2955,11 +2955,6 @@ inline constexpr char kLoadAllTabsAtStartupDescription[] =
     "Creates WebContents without renderers for all tabs at startup. Warning: "
     "this may have significant overhead and degrade performance.";
 
-inline constexpr char kLockTopControlsOnLargeTabletsName[] =
-    "Lock top controls on tablets";
-inline constexpr char kLockTopControlsOnLargeTabletsDescription[] =
-    "Disallow scrolling off the top browser controls on large tablets";
-
 inline constexpr char kLockTopControlsOnLargeTabletsV2Name[] =
     "Lock top controls on tablets - v2";
 inline constexpr char kLockTopControlsOnLargeTabletsV2Description[] =

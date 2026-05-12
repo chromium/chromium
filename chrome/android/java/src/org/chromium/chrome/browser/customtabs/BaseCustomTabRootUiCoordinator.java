@@ -33,7 +33,6 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -788,11 +787,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             },
                             mClientPackageName);
             mBrowserControlsManager.addObserver(mWebAppHeaderLayoutCoordinator);
-            if (intentDataProvider.getResolvedDisplayMode() == DisplayMode.MINIMAL_UI
-                    || intentDataProvider.getResolvedDisplayMode()
-                            == DisplayMode.WINDOW_CONTROLS_OVERLAY) {
-                mBrowserControlsManager.disableSyncMinHeightWithTotalHeight();
-            }
         }
         if (DesktopPopupHeaderUtils.isDesktopPopupHeaderEnabled(intentDataProvider)) {
             final var desktopWindowStateManager = getDesktopWindowStateManager();
