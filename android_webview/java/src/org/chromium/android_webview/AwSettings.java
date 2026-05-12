@@ -17,7 +17,6 @@ import android.os.Message;
 import android.webkit.WebSettings;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -465,11 +464,11 @@ public class AwSettings {
 
     /** Get the AwSettings for the WebView with the given WebContents */
     @Nullable
-    public static AwSettings fromWebContents(@NonNull WebContents webContents) {
+    public static AwSettings fromWebContents(WebContents webContents) {
         return AwSettingsJni.get().fromWebContents(webContents);
     }
 
-    public void runUnderLock(@NonNull Runnable runnable) {
+    public void runUnderLock(Runnable runnable) {
         synchronized (mAwSettingsLock) {
             runnable.run();
         }

@@ -3549,9 +3549,9 @@ public class AwSettingsTest {
         mOverriddenFactory = new EmptyDocumentPersistenceTestDependencyFactory(allow);
 
         final TestAwContentsClient client = new TestAwContentsClient();
-        final AwTestContainerView mContainerView =
+        final AwTestContainerView containerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-        final AwContents awContents = mContainerView.getAwContents();
+        final AwContents awContents = containerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         JSUtils.executeJavaScriptAndWaitForResult(
                 InstrumentationRegistry.getInstrumentation(),
@@ -3633,9 +3633,9 @@ public class AwSettingsTest {
         mOverriddenFactory = new SelectionRangeTestDependencyFactory(doNotUpdate);
 
         final TestAwContentsClient client = new TestAwContentsClient();
-        final AwTestContainerView mContainerView =
+        final AwTestContainerView containerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-        final AwContents awContents = mContainerView.getAwContents();
+        final AwContents awContents = containerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         final String testPageHtml =
                 "<html><head></head><body><div id='a' contenteditable></div><script>"
