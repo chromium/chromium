@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/actor_task_metadata.h"
 
+#include "base/test/protobuf_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -69,6 +70,37 @@ TEST_F(ActorTaskMetadataTest, AddedWritableMainframeOrigins) {
                     url::Origin::Create(GURL("https://a.foo.com")),
                     url::Origin::Create(GURL("https://b.bar.com"))));
   }
+}
+
+TEST_F(ActorTaskMetadataTest, AgentContainerConfig) {
+  optimization_guide::proto::Actions actions;
+  optimization_guide::proto::TaskMetadata* task_metadata =
+      actions.mutable_task_metadata();
+  EXPECT_TRUE(task_metadata);
+  optimization_guide::proto::SecurityMetadata* security =
+      task_metadata->mutable_security();
+  EXPECT_TRUE(security);
+  optimization_guide::proto::AgentContainerConfig* config =
+      security->mutable_agent_container_config();
+  EXPECT_TRUE(config);
+  optimization_guide::proto::LocationRule* rule = config->add_location_rules();
+  optimization_guide::proto::Site* site =
+      rule->mutable_location()->mutable_site();
+  EXPECT_TRUE(site);
+  site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
+  site->set_domain("example.com");
+  config->mutable_location_rules(0)->mutable_metadata()->add_capabilities(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
+  config->mutable_location_rules(0)
+      ->mutable_metadata()
+      ->add_accessible_resources(
+          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
+
+  ActorTaskMetadata metadata(actions);
+  EXPECT_TRUE(metadata.actor_container_config().IsActive());
+  EXPECT_TRUE(metadata.actor_container_config().IsNavigationAllowed(
+      url::Origin::Create(GURL("https://foo.com")),
+      url::Origin::Create(GURL("https://example.com"))));
 }
 
 }  // namespace actor

@@ -280,6 +280,7 @@ ExecutionEngine::ShouldDeferNavigation(
 
   switch (decision) {
     case GatingDecision::kAllowSameOrigin:
+    case GatingDecision::kAllowByContainerConfig:
       LogNavigationGating(source_origin, navigation_handle.GetInitiatorOrigin(),
                           url::Origin::Create(navigation_handle.GetURL()),
                           /*applied_gate=*/false);
@@ -296,6 +297,7 @@ ExecutionEngine::ShouldDeferNavigation(
           /*is_pre_approved=*/false);
       return content::NavigationThrottle::PROCEED;
     case GatingDecision::kBlockByStaticList:
+    case GatingDecision::kBlockByContainerConfig:
       LogNavigationGating(source_origin, navigation_handle.GetInitiatorOrigin(),
                           url::Origin::Create(navigation_handle.GetURL()),
                           /*applied_gate=*/true);
@@ -353,6 +355,14 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
       return GatingDecision::kAllowByStaticList;
     case EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked:
       return GatingDecision::kBlockByStaticList;
+  }
+
+  if (actor_container_config_.IsActive()) {
+    return actor_container_config_.IsNavigationAllowed(
+               url::Origin::Create(source_url),
+               url::Origin::Create(destination_url))
+               ? GatingDecision::kAllowByContainerConfig
+               : GatingDecision::kBlockByContainerConfig;
   }
 
   switch (SafetyListManager::GetInstance()->Find(source_url, destination_url)) {
@@ -801,10 +811,21 @@ void ExecutionEngine::SafetyChecksForNextAction() {
     return;
   }
 
-  const SafetyListManager& safety_list_manager =
-      *SafetyListManager::GetInstance();
   const GURL& url =
       tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+
+  if (actor_container_config_.IsActive()) {
+    bool navigation_allowed =
+        actor_container_config_.IsActuationAllowed(url::Origin::Create(url));
+    OnMayActOnTabDecision(
+        tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+        navigation_allowed ? MayActOnUrlBlockReason::kAllowed
+                           : MayActOnUrlBlockReason::kBlockedByContainerConfig);
+    return;
+  }
+
+  const SafetyListManager& safety_list_manager =
+      *SafetyListManager::GetInstance();
   if (safety_list_manager.Find(url, url) ==
       SafetyListManager::Decision::kBlock) {
     OnMayActOnTabDecision(
