@@ -7,8 +7,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
-// Leading constant for the header label.
-const CGFloat kHeaderLabelLeadingPadding = 15.0f;
 // Vertical constant for the header label.
 const CGFloat kHeaderLabelVerticalPadding = 10.0f;
 // Font size for the header label.
@@ -28,16 +26,13 @@ const CGFloat kHeaderLabelFontSize = 16.0f;
     [self addSubview:_label];
 
     [NSLayoutConstraint activateConstraints:@[
-      [_label.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
-                                           constant:kHeaderLabelLeadingPadding],
+      [_label.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
       [_label.topAnchor constraintEqualToAnchor:self.topAnchor
                                        constant:kHeaderLabelVerticalPadding],
       [_label.bottomAnchor
           constraintEqualToAnchor:self.bottomAnchor
                          constant:-kHeaderLabelVerticalPadding],
-      [_label.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor
-                         constant:-kHeaderLabelLeadingPadding],
+      [_label.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
     ]];
   }
   return self;
