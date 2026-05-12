@@ -25,7 +25,7 @@ BASE_FEATURE_PARAM(size_t,
                    /*default_value=*/2048);
 
 // Controls the new upload count limit for content analysis.
-BASE_FEATURE(kEnableNewUploadCountLimit, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableNewUploadCountLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(size_t,
                    kParallelContentAnalysisRequestCountMax,
                    &kEnableNewUploadCountLimit,

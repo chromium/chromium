@@ -273,13 +273,13 @@ TEST_F(CloudBinaryUploadServiceBaseTest,
 }
 
 TEST_F(CloudBinaryUploadServiceBaseTest, TestMaxParallelRequestsFlag) {
-  EXPECT_EQ(15UL, CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
+  EXPECT_EQ(30UL, CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kEnableNewUploadCountLimit, {{"max_parallel_requests", "0"}});
-    EXPECT_EQ(15UL,
+    EXPECT_EQ(30UL,
               CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
   }
 
@@ -287,15 +287,15 @@ TEST_F(CloudBinaryUploadServiceBaseTest, TestMaxParallelRequestsFlag) {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         kEnableNewUploadCountLimit, {{"max_parallel_requests", "twenty"}});
-    EXPECT_EQ(15UL,
+    EXPECT_EQ(30UL,
               CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
   }
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kEnableNewUploadCountLimit, {{"max_parallel_requests", "25"}});
-    EXPECT_EQ(25UL,
+        kEnableNewUploadCountLimit, {{"max_parallel_requests", "20"}});
+    EXPECT_EQ(20UL,
               CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
   }
 }

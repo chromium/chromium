@@ -29,9 +29,9 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kMaxContentAnalysisFileSizeMB);
 
 // The default maximum number of concurrent active requests. This is used to
 // limit the number of requests that are actively being uploaded. This is set to
-// default of 15 because it was determined to be a good value through
-// experiments. See http://crbug.com/329293309.
-inline constexpr int kDefaultMaxParallelActiveRequests = 15;
+// default of 30 because it was determined to be a good value through
+// experiments. See http://crbug.com/444472089.
+inline constexpr int kDefaultMaxParallelActiveRequests = 30;
 
 // Controls enabling and count of concurrent upload limit for content analysis.
 BASE_DECLARE_FEATURE(kEnableNewUploadCountLimit);
