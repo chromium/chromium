@@ -271,6 +271,7 @@ class TabStripSceneLayer : public SceneLayer {
       ui::Resource* keyboard_focus_ring_drawable);
 
   void UpdateGlicButtonInternal(
+      scoped_refptr<cc::slim::Layer> container_layer,
       scoped_refptr<cc::slim::SolidColorLayer> background_layer,
       scoped_refptr<cc::slim::UIResourceLayer> icon_layer,
       scoped_refptr<cc::slim::UIResourceLayer> text_layer,
@@ -315,6 +316,7 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::slim::SolidColorLayer> left_padding_layer_;
   scoped_refptr<cc::slim::SolidColorLayer> right_padding_layer_;
 
+  scoped_refptr<cc::slim::Layer> glic_button_container_;
   scoped_refptr<cc::slim::UIResourceLayer> glic_button_;
   scoped_refptr<cc::slim::SolidColorLayer> glic_button_background_;
   scoped_refptr<cc::slim::UIResourceLayer> glic_button_text_;
@@ -323,6 +325,7 @@ class TabStripSceneLayer : public SceneLayer {
       glic_dismiss_nudge_button_keyboard_focus_ring_;
   scoped_refptr<cc::slim::UIResourceLayer> glic_button_keyboard_focus_ring_;
 
+  scoped_refptr<cc::slim::Layer> glic_actor_button_container_;
   scoped_refptr<cc::slim::UIResourceLayer> glic_actor_button_;
   scoped_refptr<cc::slim::SolidColorLayer> glic_actor_button_background_;
   scoped_refptr<cc::slim::UIResourceLayer> glic_actor_button_text_;

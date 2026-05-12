@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
+import android.util.FloatProperty;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -48,10 +52,12 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -111,8 +117,6 @@ public class StripLayoutTrailingButtonsCoordinator {
     private static final float GLIC_ACTOR_LEFT_SLOP_ADJUSTMENT_DP = 8.f;
     private static final float GLIC_ACTOR_RIGHT_SLOP_ADJUSTMENT_DP = 2.f;
 
-    private static final int ANIM_BUTTONS_FADE_MS = 150;
-
     // Core Dependencies
     private final Context mContext;
     private final LayoutUpdateHost mUpdateHost;
@@ -150,6 +154,56 @@ public class StripLayoutTrailingButtonsCoordinator {
     private float mTopPadding;
     private boolean mIsGlicUiVisible;
     private boolean mIsMsbVisible;
+
+    // Animations
+    private static final int ANIM_BUTTONS_FADE_MS = 150;
+    private static final int GLIC_ANIMATION_EXPANSION_IN_MS = 500;
+    private static final int GLIC_ANIMATION_EXPANSION_OUT_MS = 250;
+    private static final int GLIC_ANIMATION_OPACITY_IN_MS = 300;
+    private static final int GLIC_ANIMATION_OPACITY_OUT_MS = 100;
+    private static final int GLIC_ANIMATION_OPACITY_DELAY_MS = 100;
+    private @Nullable CompositorAnimator mGlicButtonWidthAnimator;
+    private @Nullable CompositorAnimator mGlicActorButtonWidthAnimator;
+    private @Nullable CompositorAnimator mGlicButtonOpacityAnimator;
+    private @Nullable CompositorAnimator mGlicActorButtonOpacityAnimator;
+
+    /** Property for width animations on the Glic button. */
+    public static final FloatProperty<StripLayoutTrailingButtonsCoordinator> GLIC_BUTTON_WIDTH =
+            new FloatProperty<>("glicButtonWidth") {
+                @Override
+                public void setValue(StripLayoutTrailingButtonsCoordinator object, float value) {
+                    if (object.mGlicButton != null) {
+                        object.mGlicButton.setWidth(value);
+                        object.updateGlicButtonPosition();
+                    }
+                }
+
+                @Override
+                public Float get(StripLayoutTrailingButtonsCoordinator object) {
+                    return object.mGlicButton != null ? object.mGlicButton.getWidth() : 0.f;
+                }
+            };
+
+    /** Property for width animations on the Glic Actor button. */
+    public static final FloatProperty<StripLayoutTrailingButtonsCoordinator>
+            GLIC_ACTOR_BUTTON_WIDTH =
+                    new FloatProperty<>("glicActorButtonWidth") {
+                        @Override
+                        public void setValue(
+                                StripLayoutTrailingButtonsCoordinator object, float value) {
+                            if (object.mGlicActorButton != null) {
+                                object.mGlicActorButton.setWidth(value);
+                                object.updateGlicButtonPosition();
+                            }
+                        }
+
+                        @Override
+                        public Float get(StripLayoutTrailingButtonsCoordinator object) {
+                            return object.mGlicActorButton != null
+                                    ? object.mGlicActorButton.getWidth()
+                                    : 0.f;
+                        }
+                    };
 
     /**
      * Creates the trailing buttons coordinator.
@@ -599,18 +653,19 @@ public class StripLayoutTrailingButtonsCoordinator {
             }
         }
 
-        updateGlicButtonWidth(mLayerTitleCache);
+        updateGlicButtonWidth(mLayerTitleCache, button == mGlicActorButton);
         updateGlicButtonPosition();
         mObserver.onTrailingButtonsLayoutStateChanged();
     }
 
-    private void updateGlicButtonWidth(@Nullable LayerTitleCache titleCache) {
-        if (mGlicButton != null) {
-            mGlicButton.setWidth(calculateButtonWidth(mGlicButton, titleCache));
-        }
-
-        if (mGlicActorButton != null) {
-            mGlicActorButton.setWidth(calculateButtonWidth(mGlicActorButton, titleCache));
+    private void updateGlicButtonWidth(@Nullable LayerTitleCache titleCache, boolean isActor) {
+        if (mGlicButton == null || mGlicActorButton == null) return;
+        if (isActor) {
+            float targetWidth = calculateButtonWidth(mGlicActorButton, titleCache);
+            animateGlicButton(mGlicActorButton, targetWidth, 1.0f, /* isActor= */ true);
+        } else {
+            float targetWidth = calculateButtonWidth(mGlicButton, titleCache);
+            animateGlicButton(mGlicButton, targetWidth, 1.0f, /* isActor= */ false);
         }
     }
 
@@ -634,6 +689,111 @@ public class StripLayoutTrailingButtonsCoordinator {
         }
 
         return width;
+    }
+
+    private void animateGlicButton(
+            TintedCompositorTextButton button,
+            float targetWidth,
+            float targetOpacity,
+            boolean isActor) {
+        CompositorAnimator widthAnimator =
+                isActor ? mGlicActorButtonWidthAnimator : mGlicButtonWidthAnimator;
+        if (widthAnimator != null && widthAnimator.isRunning()) {
+            widthAnimator.cancel();
+        }
+        CompositorAnimator opacityAnimator =
+                isActor ? mGlicActorButtonOpacityAnimator : mGlicButtonOpacityAnimator;
+        if (opacityAnimator != null && opacityAnimator.isRunning()) {
+            opacityAnimator.cancel();
+        }
+        FloatProperty<StripLayoutTrailingButtonsCoordinator> property =
+                isActor ? GLIC_ACTOR_BUTTON_WIDTH : GLIC_BUTTON_WIDTH;
+
+        boolean expanding = targetWidth > button.getWidth();
+        int duration = expanding ? GLIC_ANIMATION_EXPANSION_IN_MS : GLIC_ANIMATION_EXPANSION_OUT_MS;
+        widthAnimator =
+                CompositorAnimator.ofFloatProperty(
+                        mUpdateHost.getAnimationHandler(),
+                        this,
+                        property,
+                        button.getWidth(),
+                        targetWidth,
+                        duration);
+        widthAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+
+        float startOpacity = button.getOpacity();
+        int opacityDuration =
+                expanding ? GLIC_ANIMATION_OPACITY_IN_MS : GLIC_ANIMATION_OPACITY_OUT_MS;
+        int opacityDelay = expanding ? GLIC_ANIMATION_OPACITY_DELAY_MS : 0;
+        opacityAnimator =
+                CompositorAnimator.ofFloatProperty(
+                        mUpdateHost.getAnimationHandler(),
+                        button,
+                        CompositorButton.OPACITY,
+                        startOpacity,
+                        targetOpacity,
+                        opacityDuration);
+        opacityAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+        if (opacityDelay > 0) {
+            opacityAnimator.setStartDelay(opacityDelay);
+        }
+
+        final CompositorAnimator finalWidthAnimator = widthAnimator;
+        final CompositorAnimator finalOpacityAnimator = opacityAnimator;
+
+        AnimatorListenerAdapter listener =
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (mGlicActorButtonWidthAnimator == finalWidthAnimator) {
+                            mGlicActorButtonWidthAnimator = null;
+                        }
+                        if (mGlicActorButtonOpacityAnimator == finalOpacityAnimator) {
+                            mGlicActorButtonOpacityAnimator = null;
+                        }
+                        if (mGlicButtonWidthAnimator == finalWidthAnimator) {
+                            mGlicButtonWidthAnimator = null;
+                        }
+                        if (mGlicButtonOpacityAnimator == finalOpacityAnimator) {
+                            mGlicButtonOpacityAnimator = null;
+                        }
+
+                        mObserver.onTrailingButtonsLayoutStateChanged();
+                    }
+                };
+
+        if (isActor) {
+            mGlicActorButtonWidthAnimator = widthAnimator;
+            mGlicActorButtonOpacityAnimator = opacityAnimator;
+        } else {
+            mGlicButtonWidthAnimator = widthAnimator;
+            mGlicButtonOpacityAnimator = opacityAnimator;
+        }
+
+        List<Animator> animators = new ArrayList<>();
+        animators.add(widthAnimator);
+        animators.add(opacityAnimator);
+
+        startAnimations(animators, listener);
+    }
+
+    /**
+     * Starts the given list of animators together in an AnimatorSet.
+     *
+     * @param animators The list of animators to start.
+     * @param listener An optional listener to attach to the AnimatorSet.
+     */
+    @VisibleForTesting
+    /* package */ void startAnimations(
+            List<Animator> animators, @Nullable AnimatorListenerAdapter listener) {
+        if (animators == null || animators.isEmpty()) return;
+
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(animators);
+        if (listener != null) {
+            set.addListener(listener);
+        }
+        set.start();
     }
 
     /**
@@ -775,7 +935,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         }
 
         mGlicDismissNudgeButton.setVisible(isVisible);
-        updateGlicButtonWidth(mLayerTitleCache);
+        updateGlicButtonWidth(mLayerTitleCache, /* isActor= */ false);
         updateGlicButtonPosition();
         mObserver.onTrailingButtonsLayoutStateChanged();
         mUpdateHost.requestUpdate();
@@ -796,20 +956,6 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (mGlicActorButton == null || mGlicActorButton.isVisible() == visible) return;
 
         mGlicActorButton.setVisible(visible);
-
-        if (visible) {
-            setGlicButtonText(null, /* isActor= */ false);
-        } else {
-            setGlicButtonText(
-                    mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label),
-                    /* isActor= */ false);
-        }
-
-        // TODO(crbug.com/496678704): When Actor button visibility is driven by task list, these 3
-        // manual layout triggers can be removed. See similar logic exists in onGlicPrefChanged.
-        updateGlicButtonPosition();
-        mObserver.onTrailingButtonsLayoutStateChanged();
-        mUpdateHost.requestUpdate();
     }
 
     /** Returns whether the Glic actor button is currently visible. */

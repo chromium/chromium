@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -62,6 +64,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.GLIC)
@@ -83,6 +86,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private ChromeAndroidTaskTracker mTaskTracker;
     @Mock private ChromeAndroidTask mTask;
     @Mock private ActorKeyedService mActorKeyedService;
+    @Captor private ArgumentCaptor<List<Animator>> mAnimatorsListCaptor;
 
     private Activity mActivity;
     private StripLayoutTrailingButtonsCoordinator mCoordinator;
@@ -220,20 +224,40 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertNotNull("Button should be created.", button);
 
         // Start with no-text state button
-        mCoordinator.setGlicButtonText(null, isActor);
+        StripLayoutTrailingButtonsCoordinator coordinatorSpy = Mockito.spy(mCoordinator);
+        coordinatorSpy.setGlicButtonText(null, isActor);
         float initialWidth = button.getWidth();
         when(mLayerTitleCache.getUpdatedGlicButtonText(any(), anyBoolean())).thenReturn(123);
         when(mLayerTitleCache.getButtonTextWidth(any())).thenReturn(100);
+        Mockito.clearInvocations(coordinatorSpy);
 
-        mCoordinator.setGlicButtonText(text, isActor);
+        // Set text
+        coordinatorSpy.setGlicButtonText(text, isActor);
+        Mockito.verify(coordinatorSpy)
+                .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
 
+        // Fast forward animations to completion
+        for (Animator animator : mAnimatorsListCaptor.getValue()) {
+            animator.end();
+        }
+        Mockito.clearInvocations(coordinatorSpy);
+
+        // Assert the button has expanded in width
         verify(mLayerTitleCache).getUpdatedGlicButtonText(text, isActor);
         assertTrue(
                 "Button width should increase to accommodate text.",
                 button.getWidth() > initialWidth);
 
-        mCoordinator.setGlicButtonText(null, isActor);
+        // Set text back to null
+        coordinatorSpy.setGlicButtonText(null, isActor);
+        Mockito.verify(coordinatorSpy)
+                .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
 
+        for (Animator animator : mAnimatorsListCaptor.getValue()) {
+            animator.end();
+        }
+
+        // Assert the button has shrunk back to original width
         assertEquals(
                 "Button width should return to original singular icon width.",
                 initialWidth,
@@ -489,5 +513,48 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 "Glic Actor hover state must reset to false upon exit.",
                 mGlicActorButton.isHovered());
         verify(mRenderHost, Mockito.atLeastOnce()).requestRender();
+    }
+
+    @Test
+    public void testGlicButtonsAnimations() {
+        assertNotNull("Glic button should be created.", mGlicButton);
+        assertNotNull("Glic Actor button should be created.", mGlicActorButton);
+
+        when(mLayerTitleCache.getUpdatedGlicButtonText(any(), anyBoolean())).thenReturn(123);
+        when(mLayerTitleCache.getButtonTextWidth(any())).thenReturn(100);
+
+        // Create a unified spy of the coordinator for sequential transition verification
+        StripLayoutTrailingButtonsCoordinator coordinatorSpy = Mockito.spy(mCoordinator);
+
+        // 1. Test Glic Button Expansion Transition (Text addition)
+        coordinatorSpy.setGlicButtonText("Glic Nudge", /* isActor= */ false);
+        Mockito.verify(coordinatorSpy)
+                .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
+        assertEquals(
+                "Glic button expansion should queue 2 animators concurrently.",
+                2,
+                mAnimatorsListCaptor.getValue().size());
+
+        Mockito.clearInvocations(coordinatorSpy);
+
+        // 2. Test Glic Actor Button Expansion Transition (Text addition)
+        coordinatorSpy.setGlicButtonText("Actor Nudge", /* isActor= */ true);
+        Mockito.verify(coordinatorSpy)
+                .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
+        assertEquals(
+                "Glic Actor button expansion should queue 2 animators concurrently.",
+                2,
+                mAnimatorsListCaptor.getValue().size());
+
+        Mockito.clearInvocations(coordinatorSpy);
+
+        // 3. Test Glic Button Shrink/Collapse Transition (Text removal)
+        coordinatorSpy.setGlicButtonText(null, /* isActor= */ false);
+        Mockito.verify(coordinatorSpy)
+                .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
+        assertEquals(
+                "Glic button shrink transition should queue 2 animators concurrently.",
+                2,
+                mAnimatorsListCaptor.getValue().size());
     }
 }
