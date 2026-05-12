@@ -6320,9 +6320,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"new-tab-page-customization-v2",
      flag_descriptions::kNewTabPageCustomizationV2Name,
      flag_descriptions::kNewTabPageCustomizationV2Description, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kNewTabPageCustomizationV2,
-                                    kNewTabPageCustomizationV2Variations,
-                                    "NewTabPageCustomizationV2")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         segmentation_platform::features::kNewTabPageCustomizationV2,
+         kNewTabPageCustomizationV2Variations,
+         "NewTabPageCustomizationV2")},
 
     {"android-bottom-toolbar-v2",
      flag_descriptions::kAndroidBottomToolbarV2Name,
