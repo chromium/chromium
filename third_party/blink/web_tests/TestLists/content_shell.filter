@@ -384,10 +384,6 @@ external/wpt/css/css-values/viewport-units-scrollbars*
 external/wpt/css/css-variables/variable-presentation-attribute.html
 external/wpt/css/css-will-change/will-change-fixedpos-cb-*
 external/wpt/css/css-will-change/will-change-transform-zero-size-child-overflow-visible.html
-external/wpt/css/css-writing-modes/block-plaintext-001.html
-external/wpt/css/css-writing-modes/block-plaintext-003.html
-external/wpt/css/css-writing-modes/block-plaintext-004.html
-external/wpt/css/css-writing-modes/block-plaintext-006.html
 external/wpt/css/css-writing-modes/forms/text-input-vertical-overflow-no-scroll.html
 external/wpt/css/css-writing-modes/forms/select-multiple-keyboard-selection.optional.html
 external/wpt/css/css-writing-modes/margin-collapse-vrl-030.xht
