@@ -153,6 +153,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
                            RepeatingAlarmsScheduledPredictably);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest,
                            PollFrequencyFromStoredAlarm);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsTest, OldPersistentAlarmFromStorage);
   friend class BrowserContextKeyedAPIFactory<AlarmManager>;
 
   using AlarmMap = std::map<ExtensionId, AlarmList>;
@@ -204,6 +205,9 @@ class AlarmManager : public BrowserContextKeyedAPI,
   // Internal helper to add an alarm and start the timer with the given delay.
   void AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm);
 
+  // Internal helper to remove all alarms for an extension from memory.
+  bool RemoveAllAlarmsInternal(const ExtensionId& extension_id);
+
   // Syncs our alarm data for the given extension to/from the state storage.
   void WriteToStorage(const ExtensionId& extension_id);
   void ReadFromStorage(const ExtensionId& extension_id,
@@ -229,6 +233,9 @@ class AlarmManager : public BrowserContextKeyedAPI,
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const Extension* extension,
                               extensions::UninstallReason reason) override;

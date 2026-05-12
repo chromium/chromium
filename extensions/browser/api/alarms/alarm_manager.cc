@@ -39,6 +39,7 @@ namespace {
 // A list of alarms that this extension has set.
 const char kRegisteredAlarms[] = "alarms";
 const char kAlarmGranularity[] = "granularity";
+const char kAlarmPersistAcrossSessions[] = "persistAcrossSessions";
 
 // The minimum period between polling for alarms to run.
 const base::TimeDelta kDefaultMinPollPeriod() {
@@ -151,7 +152,18 @@ AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
 
   size_t max_name_length = 0;
   for (int i = 0; i < max_to_create; ++i) {
-    const base::Value& alarm_value = list[i];
+    base::DictValue alarm_value = list[i].GetDict().Clone();
+
+    // If this key does not exist, it means the alarm was written to the state
+    // store by an older Chrome version before we had support for non-persistent
+    // alarms. We should make them persistent by default in this case as the
+    // alarm would have been persistent in older Chrome versions.
+    // TODO(crbug.com/503787228): Remove this Clone and default value logic once
+    // default values are supported on API schema dictionaries.
+    if (!alarm_value.Find(kAlarmPersistAcrossSessions)) {
+      alarm_value.Set(kAlarmPersistAcrossSessions, true);
+    }
+
     Alarm alarm;
     alarm.js_alarm = alarms::Alarm::FromValue(alarm_value);
     if (alarm.js_alarm) {
@@ -159,7 +171,7 @@ AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
       max_name_length =
           std::max(max_name_length, alarm.js_alarm->name.length());
       std::optional<base::TimeDelta> delta =
-          base::ValueToTimeDelta(alarm_value.GetDict().Find(kAlarmGranularity));
+          base::ValueToTimeDelta(alarm_value.Find(kAlarmGranularity));
       if (delta) {
         alarm.granularity = *delta;
         // No else branch. It's okay to ignore the failure since we have
@@ -179,9 +191,13 @@ AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
   return alarms;
 }
 
-base::ListValue AlarmsToValue(const AlarmManager::AlarmList& alarms) {
+base::ListValue AlarmsToValue(const AlarmManager::AlarmList& alarms,
+                              bool only_persistent) {
   base::ListValue list;
   for (const auto& item : alarms) {
+    if (only_persistent && !item.js_alarm->persist_across_sessions) {
+      continue;
+    }
     base::DictValue alarm = item.js_alarm->ToValue();
     alarm.Set(kAlarmGranularity, base::TimeDeltaToValue(item.granularity));
     list.Append(std::move(alarm));
@@ -291,17 +307,25 @@ void AlarmManager::RemoveAlarmWhenReady(const std::string& name,
 
 void AlarmManager::RemoveAllAlarmsWhenReady(RemoveAllAlarmsCallback callback,
                                             const ExtensionId& extension_id) {
+  if (RemoveAllAlarmsInternal(extension_id)) {
+    WriteToStorage(extension_id);
+  }
+  std::move(callback).Run();
+}
+
+bool AlarmManager::RemoveAllAlarmsInternal(const ExtensionId& extension_id) {
   auto list = alarms_.find(extension_id);
   if (list != alarms_.end()) {
     // Note: I'm using indices rather than iterators here because
     // RemoveAlarmIterator will delete the list when it becomes empty.
-    for (size_t i = 0, size = list->second.size(); i < size; ++i)
+    for (size_t i = 0, size = list->second.size(); i < size; ++i) {
       RemoveAlarmIterator(AlarmIterator(list, list->second.begin()));
+    }
 
     CHECK(alarms_.find(extension_id) == alarms_.end());
-    WriteToStorage(extension_id);
+    return true;
   }
-  std::move(callback).Run();
+  return false;
 }
 
 AlarmManager::AlarmIterator AlarmManager::GetAlarmIterator(
@@ -414,9 +438,9 @@ void AlarmManager::WriteToStorage(const ExtensionId& extension_id) {
   base::Value alarms;
   auto list = alarms_.find(extension_id);
   if (list != alarms_.end()) {
-    alarms = base::Value(AlarmsToValue(list->second));
+    alarms = base::Value(AlarmsToValue(list->second, /*only_persistent=*/true));
   } else {
-    alarms = base::Value(AlarmsToValue(AlarmList()));
+    alarms = base::Value(AlarmsToValue(AlarmList(), /*only_persistent=*/true));
   }
   storage->SetExtensionValue(extension_id, kRegisteredAlarms,
                              std::move(alarms));
@@ -428,8 +452,11 @@ void AlarmManager::ReadFromStorage(const ExtensionId& extension_id,
   if (value && value->is_list()) {
     AlarmList alarm_states =
         AlarmsFromValue(extension_id, min_delay, value->GetList());
-    for (auto& alarm : alarm_states)
+    for (auto& alarm : alarm_states) {
+      // We should never read a non-persistent alarm from storage.
+      CHECK(alarm.js_alarm->persist_across_sessions);
       AddAlarmImpl(extension_id, std::move(alarm));
+    }
   }
 
   ReadyQueue& extension_ready_queue = ready_actions_[extension_id];
@@ -548,6 +575,12 @@ void AlarmManager::OnExtensionLoaded(content::BrowserContext* browser_context,
   }
 }
 
+void AlarmManager::OnExtensionUnloaded(content::BrowserContext* browser_context,
+                                       const Extension* extension,
+                                       UnloadedExtensionReason reason) {
+  RemoveAllAlarmsInternal(extension->id());
+}
+
 void AlarmManager::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
@@ -593,6 +626,12 @@ Alarm::Alarm(const std::string& name,
 
   // Check for repetition.
   js_alarm->period_in_minutes = create_info.period_in_minutes;
+
+  // The W3C WebExtensions Community Group decided that the default value is up
+  // to the browser (https://github.com/w3c/webextensions/issues/406). In
+  // Chrome, this defaults to true to match historical behavior.
+  js_alarm->persist_across_sessions =
+      create_info.persist_across_sessions.value_or(true);
 }
 
 Alarm::~Alarm() = default;

@@ -767,7 +767,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
     // Mimic retrieving an alarm from StateStore.
     std::string alarm_args =
         "[{\"name\": \"hello\", \"scheduledTime\": 10000, "
-        "\"periodInMinutes\": 0.0001}]";
+        "\"periodInMinutes\": 0.0001, \"persistAcrossSessions\": true}]";
     base::TimeDelta min_delay = alarms_api_constants::GetMinimumDelay(
         entry.is_unpacked, entry.manifest_version);
 
@@ -797,6 +797,31 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
               expected_poll_time + base::Seconds(10));
     RemoveAlarm("hello");
   }
+}
+
+void OldAlarmTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
+  ASSERT_TRUE(alarm);
+  EXPECT_EQ("hello", alarm->js_alarm->name);
+  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
+}
+
+// Tests that when reading an alarm from storage that was created before we had
+// support for both persistent and non-persistent alarms, the alarm will be
+// scheduled according to the old policy.
+TEST_F(ExtensionAlarmsTest, OldPersistentAlarmFromStorage) {
+  // Mimic retrieving an alarm from StateStore.
+  std::string alarm_args = "[{\"name\": \"hello\", \"scheduledTime\": 10000}]";
+
+  alarm_manager_->ReadFromStorage(extension()->id(),
+                                  /*min_delay=*/base::Seconds(1),
+                                  base::test::ParseJson(alarm_args));
+
+  alarm_manager_->GetAlarm(extension()->id(), "hello",
+                           base::BindOnce(OldAlarmTestGetAlarmsCallback, this));
+
+  // This looks racy (we're removing the alarm that the callback is waiting to
+  // fire on), but the callback is run synchronously, so this is fine.
+  alarm_manager_->RemoveAlarm(extension()->id(), "hello", base::DoNothing());
 }
 
 // Test that scheduled alarms go off at set intervals, even if their actual

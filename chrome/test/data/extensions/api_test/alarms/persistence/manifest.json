@@ -1,0 +1,12 @@
+{
+  "background": {
+    "service_worker": "background.js"
+  },
+  "description": "An extension that tests alarm persistence across browser restarts and extension reloads.",
+  "manifest_version": 3,
+  "name": "Alarm Persistence Test Extension",
+  "version": "0.1.1",
+  "permissions": [
+    "alarms"
+  ]
+}

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
@@ -47,6 +49,13 @@ class AlarmsApiTest : public ExtensionApiTest {
   const Extension* LoadAlarmsExtensionIncognito(const char* path) {
     return LoadExtension(test_data_dir_.AppendASCII("alarms").AppendASCII(path),
                          {.allow_in_incognito = true});
+  }
+
+  void FlushStateStore(Profile* profile) {
+    base::RunLoop run_loop;
+    extensions::ExtensionSystem::Get(profile)->state_store()->FlushForTesting(
+        run_loop.QuitWhenIdleClosure());
+    run_loop.Run();
   }
 };
 
@@ -168,6 +177,53 @@ IN_PROC_BROWSER_TEST_F(AlarmsNameHistogramTest, Name) {
       // 6 is the index of the expected bucket, AlarmNameLength::k126_250.
       "Extensions.AlarmManager.AlarmsMaxNameLength", 6,
       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(AlarmsApiTest, PRE_AlarmPersistence) {
+  // Create both alarms and verify both exist.
+  SetCustomArg("create");
+  ResultCatcher catcher;
+
+  ChromeTestExtensionLoader loader(profile());
+  // Pack the extension to ensure a reload is not treated as a re-install, which
+  // would clear out the alarms.
+  loader.set_pack_extension(true);
+  const Extension* extension =
+      loader.LoadExtension(test_data_dir_.AppendASCII("alarms/persistence"))
+          .get();
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // Verify that after an extension reload both still exist.
+  SetCustomArg("verify_after_reload");
+  ReloadExtension(extension->id());
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // Flush the state store to ensure the modified state is correctly stored
+  // on-disk (which could otherwise be potentially racy).
+  FlushStateStore(profile());
+}
+
+IN_PROC_BROWSER_TEST_F(AlarmsApiTest, AlarmPersistence) {
+  ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
+
+  // Wait until the extension system is ready.
+  base::RunLoop run_loop;
+  extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // This runs after a real browser restart.
+  // Verifies that only persistent alarm exists.
+  SetCustomArg("verify_after_restart");
+
+  // Reload the extension to ensure it runs with the right custom arg and
+  // we catch the result.
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
+  ResultCatcher catcher;
+  ReloadExtension(extension->id());
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 }  // namespace extensions
