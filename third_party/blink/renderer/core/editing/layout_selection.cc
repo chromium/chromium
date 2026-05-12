@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -599,15 +600,28 @@ static LayoutTextSelectionStatus ComputeSelectionStatusForNode(
     SelectionState selection_state,
     std::optional<unsigned> start_offset,
     std::optional<unsigned> end_offset) {
+  const bool nullopt_guard =
+      RuntimeEnabledFeatures::FixSelectionPaintRangeNullOptEnabled();
   switch (selection_state) {
     case SelectionState::kInside:
       return {0, text.length(), SelectionIncludeEnd::kInclude};
     case SelectionState::kStart:
+      // Offsets may be std::nullopt for non-Text endpoints; bail safely.
+      if (nullopt_guard && !start_offset.has_value()) {
+        return {0, 0, SelectionIncludeEnd::kNotInclude};
+      }
       return {start_offset.value(), text.length(),
               SelectionIncludeEnd::kInclude};
     case SelectionState::kEnd:
+      if (nullopt_guard && !end_offset.has_value()) {
+        return {0, 0, SelectionIncludeEnd::kNotInclude};
+      }
       return {0, end_offset.value(), SelectionIncludeEnd::kNotInclude};
     case SelectionState::kStartAndEnd:
+      if (nullopt_guard &&
+          (!start_offset.has_value() || !end_offset.has_value())) {
+        return {0, 0, SelectionIncludeEnd::kNotInclude};
+      }
       return {start_offset.value(), end_offset.value(),
               SelectionIncludeEnd::kNotInclude};
     default:
@@ -686,8 +700,14 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
     const TextOffsetRange& offset) const {
   const unsigned start_offset = offset.start;
   const unsigned end_offset = offset.end;
+  const bool nullopt_guard =
+      RuntimeEnabledFeatures::FixSelectionPaintRangeNullOptEnabled();
   switch (GetSelectionStateFor(cursor.Current())) {
     case SelectionState::kStart: {
+      // Offsets may be std::nullopt for non-Text endpoints; bail safely.
+      if (nullopt_guard && !paint_range_->start_offset.has_value()) {
+        return {0, 0, SelectSoftLineBreak::kNotSelected};
+      }
       const unsigned start_in_block = paint_range_->start_offset.value();
       const bool is_continuous = start_in_block <= end_offset;
       return {ClampOffset(start_in_block, start_offset, end_offset), end_offset,
@@ -696,6 +716,9 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
                   : SelectSoftLineBreak::kNotSelected};
     }
     case SelectionState::kEnd: {
+      if (nullopt_guard && !paint_range_->end_offset.has_value()) {
+        return {0, 0, SelectSoftLineBreak::kNotSelected};
+      }
       const unsigned end_in_block = paint_range_->end_offset.value();
       const unsigned end_in_fragment =
           ClampOffset(end_in_block, start_offset, end_offset);
@@ -706,6 +729,10 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
                   : SelectSoftLineBreak::kNotSelected};
     }
     case SelectionState::kStartAndEnd: {
+      if (nullopt_guard && (!paint_range_->start_offset.has_value() ||
+                            !paint_range_->end_offset.has_value())) {
+        return {0, 0, SelectSoftLineBreak::kNotSelected};
+      }
       const unsigned start_in_block = paint_range_->start_offset.value();
       const unsigned end_in_block = paint_range_->end_offset.value();
       const unsigned end_in_fragment =

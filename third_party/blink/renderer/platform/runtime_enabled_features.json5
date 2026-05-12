@@ -2884,6 +2884,14 @@
       status: "stable",
     },
     {
+      // Guard the kStart / kEnd / kStartAndEnd branches of
+      // LayoutSelection::ComputeSelectionStatus against std::nullopt
+      // start_offset / end_offset in SelectionPaintRange.
+      // See https://crbug.com/489028874
+      name: "FixSelectionPaintRangeNullOpt",
+      status: "stable",
+    },
+    {
       // Fix for strikethrough toggle not working in empty
       // contenteditable. See https://crbug.com/427915243
       name: "FixStrikethroughToggleInEmptyContentEditable",

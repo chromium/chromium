@@ -1296,4 +1296,38 @@ TEST_F(NGLayoutSelectionTest, SoftHyphen1to5) {
             status);
 }
 
+// Regression test: SelectionPaintRange's start/end offsets are
+// std::optional<unsigned> and may be std::nullopt when an endpoint is a
+// non-Text leaf (e.g. <img>). ComputeSelectionStatusForNode and
+// ComputeSelectionStatus(InlineCursor, TextOffsetRange) used to call
+// .value() on those nullopts and crash with std::bad_optional_access.
+TEST_F(LayoutSelectionTest, ComputeSelectionStatusNullOptOffsetsDoNotCrash) {
+  ScopedFixSelectionPaintRangeNullOptForTest scoped_feature(true);
+
+  // Commit a selection with non-Text endpoints so both offsets are
+  // std::nullopt in paint_range_.
+  Selection().SetSelection(SetSelectionTextToBody("^<img>foo<img>|"),
+                           SetSelectionOptions());
+  Selection().CommitAppearanceIfNeeded();
+
+  // Force "foo"'s layout-level SelectionState to each crashing branch.
+  LayoutText* foo_layout = nullptr;
+  for (Node& node : NodeTraversal::DescendantsOf(*GetDocument().body())) {
+    if (auto* lt = DynamicTo<LayoutText>(node.GetLayoutObject())) {
+      foo_layout = lt;
+      break;
+    }
+  }
+  ASSERT_TRUE(foo_layout);
+
+  for (SelectionState forced_state :
+       {SelectionState::kStart, SelectionState::kEnd,
+        SelectionState::kStartAndEnd}) {
+    foo_layout->SetSelectionState(forced_state);
+    LayoutTextSelectionStatus status =
+        Selection().ComputeLayoutSelectionStatus(*foo_layout);
+    EXPECT_LE(status.start, status.end);
+  }
+}
+
 }  // namespace blink
