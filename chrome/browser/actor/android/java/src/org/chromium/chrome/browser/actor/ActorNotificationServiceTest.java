@@ -211,6 +211,11 @@ public class ActorNotificationServiceTest {
         mNotificationService.updateNotificationForTask(
                 taskId, ActorTaskState.PAUSED_BY_ACTOR, /* isSilent= */ false);
         assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+
+        // Update with isSilent changed should be skipped because we only update on state changes.
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.PAUSED_BY_ACTOR, /* isSilent= */ true);
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
     }
 
     @Test
@@ -232,35 +237,6 @@ public class ActorNotificationServiceTest {
     }
 
     @Test
-    public void testUpdateNotificationForTask_TaskRemoved_TerminalState() {
-        int taskId = 1;
-        when(mTask.getId()).thenReturn(taskId);
-        when(mTask.getTitle()).thenReturn("Test Task");
-        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
-
-        // Task is known.
-        mNotificationService.updateNotificationForTask(
-                taskId, ActorTaskState.ACTING, /* isSilent= */ false);
-        assertEquals(1, mMockNotificationManager.getNotifications().size());
-
-        // Task is removed from KeyedService (native side).
-        when(mKeyedService.getTask(taskId)).thenReturn(null);
-
-        // Terminal state update should still work because of cache.
-        mNotificationService.updateNotificationForTask(
-                taskId, ActorTaskState.FINISHED, /* isSilent= */ false);
-
-        Notification notification =
-                mNotificationService.getCachedNotification(taskId, /* isSilent= */ false);
-        assertNotNull(notification);
-        assertEquals(
-                mContext.getString(R.string.actor_notification_title_task_complete),
-                notification.extras.getString(Notification.EXTRA_TITLE));
-        // Should NOT have been cancelled.
-        assertEquals(1, mMockNotificationManager.getNotifications().size());
-    }
-
-    @Test
     public void testTerminalNotificationsAreDismissible() {
         int taskId = 1;
         when(mTask.getId()).thenReturn(taskId);
@@ -273,6 +249,7 @@ public class ActorNotificationServiceTest {
         };
 
         for (int state : terminalStates) {
+            when(mTask.getState()).thenReturn(state);
             mNotificationService.updateNotificationForTask(taskId, state, /* isSilent= */ false);
             Notification notification =
                     mNotificationService.getCachedNotification(taskId, /* isSilent= */ false);

@@ -16,9 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manages the state and display of notifications for Actor tasks. Notifications are only surfaced
- * to the system tray when Chrome is in PiP mode, but one notification is always pinned to the
- * ForegroundService when tasks are active.
+ * Manages the state and display of notifications for Actor tasks. When foreground service is
+ * running, one notification is always pinned to it.
  */
 @NullMarked
 public class ActorNotificationService {
@@ -65,32 +64,17 @@ public class ActorNotificationService {
      */
     public void updateNotificationForTask(
             int taskId, @ActorTaskState int newState, boolean isSilent) {
-        ActorTask task = getTask(taskId);
-        if (task == null) {
+        NotificationWrapper old = mNotificationCache.get(taskId);
+        NotificationWrapper current = getOrBuildNotificationWrapper(taskId, newState, isSilent);
+        if (current == null) {
             mNotificationManager.cancel(taskId);
             clearTaskData(taskId);
             return;
         }
 
-        Integer oldState = mTaskStates.get(taskId);
-
-        // If the task appears to have regressed to CREATED from a terminal state, it's likely
-        // because the native task was destroyed. In this case, we trust our cached state.
-        if (oldState != null && isTerminalState(oldState) && newState == ActorTaskState.CREATED) {
-            newState = oldState;
+        if (current != old) {
+            mNotificationManager.notify(current);
         }
-
-        if (oldState != null
-                && !ActorNotificationFactory.shouldUpdateNotification(oldState, newState)) {
-            mTaskStates.put(taskId, newState);
-            return;
-        }
-
-        NotificationWrapper notification =
-                ActorNotificationFactory.buildNotification(task, newState, isSilent);
-        mNotificationManager.notify(notification);
-        mNotificationCache.put(taskId, notification);
-        mTaskStates.put(taskId, newState);
     }
 
     /**
@@ -102,36 +86,28 @@ public class ActorNotificationService {
      */
     @Nullable
     public Notification getCachedNotification(int taskId, boolean isSilent) {
-        NotificationWrapper wrapper = getNotificationWrapper(taskId, isSilent);
+        NotificationWrapper wrapper = getOrBuildNotificationWrapper(taskId, null, isSilent);
         return wrapper != null ? wrapper.getNotification() : null;
     }
 
-    private @Nullable NotificationWrapper getNotificationWrapper(int taskId, boolean isSilent) {
+    private @Nullable NotificationWrapper getOrBuildNotificationWrapper(
+            int taskId, @Nullable Integer newState, boolean isSilent) {
         ActorTask task = getTask(taskId);
         if (task == null) return null;
 
-        @ActorTaskState int state = task.getState();
-        NotificationWrapper cachedNotification = mNotificationCache.get(taskId);
+        @ActorTaskState int state = newState != null ? newState : task.getState();
         Integer oldState = mTaskStates.get(taskId);
-
-        if (oldState != null && isTerminalState(oldState) && state == ActorTaskState.CREATED) {
-            state = oldState;
-        }
+        NotificationWrapper cachedNotification = mNotificationCache.get(taskId);
 
         if (cachedNotification == null
                 || oldState == null
                 || ActorNotificationFactory.shouldUpdateNotification(oldState, state)) {
             cachedNotification = ActorNotificationFactory.buildNotification(task, state, isSilent);
             mNotificationCache.put(taskId, cachedNotification);
-            mTaskStates.put(taskId, state);
         }
-        return cachedNotification;
-    }
 
-    private boolean isTerminalState(@ActorTaskState int state) {
-        return state == ActorTaskState.FINISHED
-                || state == ActorTaskState.FAILED
-                || state == ActorTaskState.CANCELLED;
+        mTaskStates.put(taskId, state);
+        return cachedNotification;
     }
 
     /**
