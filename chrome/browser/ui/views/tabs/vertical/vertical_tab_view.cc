@@ -920,6 +920,9 @@ void VerticalTabView::ResetCollectionNode() {
   // needs the node.
   close_button_->SetCallback(base::RepeatingClosure(base::DoNothing()));
 
+  // Stop listening to tab data changes since the tab will be destroyed.
+  tab_data_changed_subscription_ = base::CallbackListSubscription();
+
   collection_node_ = nullptr;
 }
 
@@ -977,6 +980,7 @@ void VerticalTabView::OnTabStateChanged() {
 
 void VerticalTabView::OnTabDataChanged(TabChangeType change_type,
                                        const tabs::TabData& data) {
+  CHECK(collection_node_);
   UpdateTabData(GetTabInterface());
 }
 
