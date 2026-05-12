@@ -883,6 +883,25 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_NullRegistry_DoesNotCrash) {
+  // Arrange
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+
+  // Act
+  // Simulates a tab change to a tab with no WebContents or TabInterface,
+  // which causes GetSidePanelRegistryFromWebContents to return nullptr.
+  // This verifies that `MaybeShowEntryOnTabStripModelChanged` handles
+  // a null registry gracefully.
+  coordinator->SidePanelUIBase::OnActiveTabChanged(nullptr, nullptr, false);
+
+  // Assert
+  // The fact that this doesn't crash is the primary assertion.
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
     MaybeShowEntryOnTabStripModelChanged_Blocked_WhenWindowTooSmall) {
   // Arrange: Open 2 tabs, both with their own entries.
   BrowserWindowInterface* browser = GetBrowserWindow();

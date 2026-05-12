@@ -501,7 +501,7 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
   // If the side panel isn't showing, check if we should show it.
   std::optional<SidePanelEntry*> new_active_entry =
       new_contextual_registry ? new_contextual_registry->GetActiveEntry()
-                              : nullptr;
+                              : std::nullopt;
   if (new_active_entry) {
     UniqueKey key{new_contextual_registry->GetTabInterface().GetHandle(),
                   (*new_active_entry)->key()};
