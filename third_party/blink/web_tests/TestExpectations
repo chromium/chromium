@@ -386,6 +386,11 @@ crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.va
 crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.default.worker.html [ Failure ]
 crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.valid.worker.html [ Failure ]
 
+# We have mac-specific flakiness in these cross-origin frame tests.
+crbug.com/457930206 [ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/subframe-cross-origin-background-image.https.sub.html [ Failure Pass ]
+crbug.com/457930206 [ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/subframe-cross-origin-frame.https.sub.html [ Failure Pass ]
+crbug.com/457930206 [ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/subframe-cross-origin-html-images.https.sub.html [ Failure Pass ]
+
 crbug.com/400841 media/video-canvas-draw.html [ Failure ]
 
 crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-drawImage.html [ Failure ]
