@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Layout for empty item in the menu popup -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/AppMenuItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <TextView
+        style="@style/AppMenuItemText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:minHeight="?attr/listItemHeight"
+        android:duplicateParentState="true"
+        android:paddingEnd="0dp"
+        android:text="@string/menu_empty_submenu" />
+</LinearLayout>

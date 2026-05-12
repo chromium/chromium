@@ -609,6 +609,10 @@ class AppMenuHandlerImpl
                 AppMenuItemType.BOOKMARK,
                 new LayoutViewBuilder<>(standardItemResId),
                 AppMenuItemViewBinder::bindStandardItem);
+        adapter.registerType(
+                AppMenuItemType.EMPTY,
+                new LayoutViewBuilder<>(R.layout.menu_item_empty),
+                AppMenuItemViewBinder::bindStandardItem);
     }
 
     private void registerViewBinders(
@@ -787,6 +791,8 @@ class AppMenuHandlerImpl
     public AppMenuPopup createAndShowFlyoutPopup(
             List<ListItem> items, View view, Runnable dismissRunnable) {
         ModelList modelList = new ModelList();
+
+        assert (items.size() > 0);
         modelList.addAll(items);
 
         AppMenuAdapter adapter = new AppMenuAdapter(modelList);

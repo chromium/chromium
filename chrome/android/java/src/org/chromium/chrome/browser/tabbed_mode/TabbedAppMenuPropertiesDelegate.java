@@ -828,10 +828,24 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                             shouldShowIconBeforeItem()
                                     ? R.drawable.ic_folder_outline_24dp
                                     : Resources.ID_NULL,
-                            () ->
-                                    getBookmarkItemList(
-                                            bookmarkModel.getChildIds(item.getId()),
-                                            bookmarkModel)));
+                            () -> {
+                                List<ListItem> items =
+                                        getBookmarkItemList(
+                                                bookmarkModel.getChildIds(item.getId()),
+                                                bookmarkModel);
+                                if (items.size() == 0) {
+                                    items.add(
+                                            new ListItem(
+                                                    AppMenuHandler.AppMenuItemType.EMPTY,
+                                                    new PropertyModel.Builder(
+                                                                    AppMenuItemProperties.ALL_KEYS)
+                                                            .with(
+                                                                    AppMenuItemProperties.ENABLED,
+                                                                    false)
+                                                            .build()));
+                                }
+                                return items;
+                            }));
         } else {
             PropertyModel model =
                     populateBaseModelForTextItem(

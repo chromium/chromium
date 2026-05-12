@@ -28,7 +28,8 @@ public interface AppMenuHandler {
         AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
         AppMenuItemType.SUBMENU_HEADER,
         AppMenuItemType.DIVIDER,
-        AppMenuItemType.BOOKMARK
+        AppMenuItemType.BOOKMARK,
+        AppMenuItemType.EMPTY
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AppMenuItemType {
@@ -59,11 +60,14 @@ public interface AppMenuHandler {
         /** A bookmark item. */
         int BOOKMARK = 6;
 
+        /** An item indicating that a submenu is empty. */
+        int EMPTY = 7;
+
         /**
          * The number of menu item types specified above. If you add a menu item type you MUST
          * increment this.
          */
-        int NUM_ENTRIES = 7;
+        int NUM_ENTRIES = 8;
     }
 
     /**

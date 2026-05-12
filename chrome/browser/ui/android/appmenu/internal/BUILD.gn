@@ -50,6 +50,7 @@ android_resources("java_resources") {
     "java/res/layout/divider_line_menu_item.xml",
     "java/res/layout/icon_row_menu_item.xml",
     "java/res/layout/menu_item.xml",
+    "java/res/layout/menu_item_empty.xml",
     "java/res/layout/menu_item_start_with_icon.xml",
     "java/res/layout/menu_item_with_submenu.xml",
     "java/res/layout/submenu_header.xml",

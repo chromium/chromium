@@ -3020,6 +3020,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 title = "Icon Row";
             } else if (item.type == AppMenuHandler.AppMenuItemType.DIVIDER) {
                 title = "Divider";
+            } else if (item.type == AppMenuHandler.AppMenuItemType.EMPTY) {
+                title = "Item for empty submenu";
             }
         }
 
@@ -3394,6 +3396,39 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item("Bookmark 1"),
                                 item("Nested Folder", item("Nested Bookmark"))));
         assertMenuTitlesAreEqual(subItems, expectedTitles);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
+    public void testBookmarkMenu_EmptyFolder() {
+        mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Empty Folder");
+
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        MVCListAdapter.ListItem bookmarksParent =
+                findItemById(modelList, R.id.bookmarks_parent_menu_id);
+        assertNotNull(bookmarksParent);
+
+        List<MVCListAdapter.ListItem> subItems =
+                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+
+        List<MenuItem> expectedSubItems =
+                Arrays.asList(
+                        item(R.id.all_bookmarks_menu_id),
+                        item(R.id.bookmark_this_page_menu_id),
+                        item(R.id.toggle_bookmarks_bar_menu_id),
+                        item(R.id.divider_line_id),
+                        item(R.id.bookmark_menu_id),
+                        item(R.id.bookmark_menu_id),
+                        item(
+                                R.id.bookmark_folder_menu_id,
+                                item(R.id.bookmark_menu_id),
+                                item(R.id.bookmark_menu_id)),
+                        item(R.id.bookmark_folder_menu_id, item(0)));
+
+        assertMenuItemsAreEqual(subItems, expectedSubItems);
     }
 
     private static MenuItem item(Object id, MenuItem... subItems) {
