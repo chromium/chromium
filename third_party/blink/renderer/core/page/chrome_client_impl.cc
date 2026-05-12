@@ -167,7 +167,7 @@ String TruncateDialogMessage(const String& message) {
   return message.substr(0, kMaxMessageSize);
 }
 
-bool DisplayModeIsBorderless(LocalFrame& frame) {
+bool DisplayModeIsUnframed(LocalFrame& frame) {
   FrameWidget* widget = frame.GetWidgetForLocalRoot();
   return widget->DisplayMode() == mojom::blink::DisplayMode::kUnframed;
 }
@@ -229,8 +229,8 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
   DCHECK(web_view_);
   DCHECK_EQ(&frame, web_view_->MainFrameImpl()->GetFrame());
 
-  int minimum_size = DisplayModeIsBorderless(frame)
-                         ? blink::kMinimumBorderlessWindowSize
+  int minimum_size = DisplayModeIsUnframed(frame)
+                         ? blink::kMinimumUnframedWindowSize
                          : blink::kMinimumWindowSize;
 
   // TODO(crbug.com/1515106): Refactor so that the limits only live browser-side

@@ -324,17 +324,17 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   }
 
   int min_size = kMinimumWindowSize;
-  // The minimum size from popups opened from borderless apps differs from
+  // The minimum size from popups opened from unframed apps differs from
   // normal apps. When window.open is called, display-mode for the new frame is
   // still undefined as the app hasn't loaded yet, thus opener frame is used.
   bool new_popup = request.GetNavigationPolicy() ==
                    NavigationPolicy::kNavigationPolicyNewPopup;
-  bool borderless = false;
+  bool unframed = false;
   if (auto* widget = opener_frame.GetWidgetForLocalRoot()) {
-    borderless = widget->DisplayMode() == mojom::blink::DisplayMode::kUnframed;
+    unframed = widget->DisplayMode() == mojom::blink::DisplayMode::kUnframed;
   }
-  if (new_popup && borderless) {
-    min_size = kMinimumBorderlessWindowSize;
+  if (new_popup && unframed) {
+    min_size = kMinimumUnframedWindowSize;
   }
   if (features.width) {
     features.width = std::max(features.width, min_size);

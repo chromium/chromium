@@ -14,8 +14,8 @@ namespace blink {
 // window object
 BLINK_COMMON_EXPORT extern const int kMinimumWindowSize;
 
-// The minimum allowed window size for when the app is borderless.
-BLINK_COMMON_EXPORT extern const int kMinimumBorderlessWindowSize;
+// The minimum allowed window size for when the app is unframed.
+BLINK_COMMON_EXPORT extern const int kMinimumUnframedWindowSize;
 
 // The timeout for clearing old paint for a cross-document navigation.
 BLINK_COMMON_EXPORT extern const base::TimeDelta kNewContentRenderingDelay;

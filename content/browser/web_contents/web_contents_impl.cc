@@ -563,7 +563,7 @@ int64_t AdjustWindowRectForDisplay(gfx::Rect* rect, RenderFrameHost* host) {
 }
 
 // Adjusts the bounds to the minimum window size provided. Defaults to
-// `blink::kMinimumWindowSize` but can be overridden, e.g. for borderless apps.
+// `blink::kMinimumWindowSize` but can be overridden, e.g. for unframed apps.
 void AdjustWindowRectForMinimum(gfx::Rect* bounds,
                                 int minimum_size = blink::kMinimumWindowSize) {
   // Size 0 indicates default size, not minimum.
@@ -5748,18 +5748,18 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
 int64_t WebContentsImpl::AdjustWindowRect(gfx::Rect* bounds,
                                           RenderFrameHostImpl* opener) {
   // Auto-resize can override other mechanisms for enforcing min/max window size
-  // for some modals and popups to fit the size of their contents. Borderless
+  // for some modals and popups to fit the size of their contents. Unframed
   // apps shouldn't have overlap with auto-resize mode windows.
   if (!(GetRenderWidgetHostView() &&
         static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView())
             ->IsAutoResizeEnabled())) {
-    // For borderless apps the minimum size is
-    // `blink::kMinimumBorderlessWindowSize` instead of the default
+    // For unframed apps the minimum size is
+    // `blink::kMinimumUnframedWindowSize` instead of the default
     // `blink::kMinimumWindowSize`.
     int minimum_size =
         GetDisplayMode() == blink::mojom::DisplayMode::kUnframed &&
                 IsWindowManagementGranted(opener)
-            ? blink::kMinimumBorderlessWindowSize
+            ? blink::kMinimumUnframedWindowSize
             : blink::kMinimumWindowSize;
     AdjustWindowRectForMinimum(bounds, minimum_size);
   }
