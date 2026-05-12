@@ -197,7 +197,8 @@ bool HistogramExists(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name) != nullptr;
 }
 
-base::HistogramBase::Count32 GetHistogramDeltaTotalCount(std::string_view name) {
+base::HistogramBase::Count32 GetHistogramDeltaTotalCount(
+    std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name)
       ->SnapshotDelta()
       ->TotalCount();
@@ -332,7 +333,8 @@ class MetricsReportingLevelTest
   bool IsMetricsReportingEnabledInitialValue() const override { return false; }
 };
 
-IN_PROC_BROWSER_TEST_P(MetricsReportingLevelTest, ChangeMetricsReportingState) {
+IN_PROC_BROWSER_TEST_P(MetricsReportingLevelTest,
+                       ChangeMetricsReportingState_RestructureEnabled) {
   ASSERT_FALSE(MetricsReportingStateTest::IsMetricsAndCrashReportingEnabled());
 
   // Enable the metrics consent restructure.
@@ -364,6 +366,42 @@ IN_PROC_BROWSER_TEST_P(MetricsReportingLevelTest, ChangeMetricsReportingState) {
   // The legacy pref should not have been updated.
   EXPECT_FALSE(
       local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
+}
+
+IN_PROC_BROWSER_TEST_P(MetricsReportingLevelTest,
+                       ChangeMetricsReportingState_RestructureDisabled) {
+  ASSERT_FALSE(MetricsReportingStateTest::IsMetricsAndCrashReportingEnabled());
+
+  // Ensure the metrics consent restructure is disabled.
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(
+      metrics::prefs::kMetricsConsentRestructureFeatureState, false);
+  metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
+  ASSERT_FALSE(metrics::MetricsReportingChoiceService::
+                   ShouldUseMetricsConsentRestructure(local_state));
+
+  metrics::MetricsReportingLevel level = GetParam().level;
+  bool expected_enabled = GetParam().expected_enabled;
+
+  metrics::ChangeMetricsReportingState(
+      level, metrics::ChangeMetricsReportingStateCalledFrom::kUiSettings);
+
+  // ChangeMetricsReportingState() is asynchronous. Wait for it to finish.
+  base::RunLoop run_loop;
+  GoogleUpdateSettings::CollectStatsConsentTaskRunner()->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(expected_enabled,
+            MetricsReportingStateTest::IsMetricsAndCrashReportingEnabled());
+
+  // The legacy pref SHOULD have been updated.
+  EXPECT_EQ(expected_enabled,
+            local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
+
+  // The level pref should NOT have been updated.
+  EXPECT_EQ(static_cast<int>(metrics::MetricsReportingLevel::kNone),
+            local_state->GetInteger(metrics::prefs::kMetricsReportingLevel));
 }
 
 INSTANTIATE_TEST_SUITE_P(MetricsReportingStateTests,

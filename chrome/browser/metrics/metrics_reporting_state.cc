@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -67,7 +68,8 @@ bool SetGoogleUpdateSettings(bool enabled) {
 //  |callback_fn| is the callback function to be called in the end,
 //  |called_from| is from where the call was made,
 //  |level_to_write| is the level to be written to the metrics reporting level
-//  pref. If this is null, then the legacy boolean pref is updated.
+//  pref. If the metrics consent restructure is used, then it must be set.
+//  Otherwise, if it is null, then the legacy boolean pref is updated.
 //  |updated_pref| is the result of attempted update.
 // Update considers to be successful if |to_update_pref| and |updated_pref| are
 // the same.
@@ -76,10 +78,12 @@ void SetMetricsReporting(bool to_update_pref,
                          ChangeMetricsReportingStateCalledFrom called_from,
                          std::optional<MetricsReportingLevel> level_to_write,
                          bool updated_pref) {
-  // If a level was provided, update the new metrics reporting level preference.
-  // Otherwise, fallback to updating the legacy boolean metrics reporting
-  // preference.
-  if (level_to_write.has_value()) {
+  // If the metrics consent restructure should be used, update the new metrics
+  // reporting level preference. Otherwise, fallback to updating the legacy
+  // boolean metrics reporting preference.
+  if (MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure(
+          g_browser_process->local_state())) {
+    CHECK(level_to_write.has_value());
     MetricsReportingLevel final_level =
         updated_pref ? level_to_write.value() : MetricsReportingLevel::kNone;
     MetricsReportingChoiceService::SetMetricsReportingLevel(
