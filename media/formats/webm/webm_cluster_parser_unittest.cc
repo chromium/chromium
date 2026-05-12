@@ -603,6 +603,22 @@ TEST_F(WebMClusterParserTest, ParseInvalidUnknownButActuallyZeroSizedCluster) {
   EXPECT_EQ(-1, parser_->Parse(kBuffer, sizeof(kBuffer)));
 }
 
+TEST_F(WebMClusterParserTest, ParseClusterTimecodeOverflow) {
+  constexpr uint8_t kClusterData[] = {
+      0x1F, 0x43, 0xB6, 0x75, 0xFF,                    // Cluster (unknown size)
+      0xE7, 0x88,                                      // Timecode (size=8)
+      0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,  // Value = kint64max
+      0xA3, 0x85,                                      // SimpleBlock (size=5)
+      0x81,        // Track 1 (kAudioTrackNum is 1)
+      0x01, 0x8B,  // Timecode = 395
+      0x00,        // Flags
+      0x00         // Data (1 byte)
+  };
+
+  EXPECT_MEDIA_LOG(HasSubstr("Invalid cluster timecode."));
+  EXPECT_EQ(-1, parser_->Parse(kClusterData, sizeof(kClusterData)));
+}
+
 TEST_F(WebMClusterParserTest, ParseWithDefaultDurationsSimpleBlocks) {
   InSequence s;
   ResetParserToHaveDefaultDurations();

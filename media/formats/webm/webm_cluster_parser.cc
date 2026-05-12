@@ -456,8 +456,13 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
 
   int64_t microseconds;
 
-  if (!base::CheckMul(base::CheckAdd(cluster_timecode_, timecode),
-                      timecode_multiplier_)
+  auto checked_add = base::CheckAdd(cluster_timecode_, timecode);
+  if (!checked_add.IsValid()) {
+    MEDIA_LOG(ERROR, media_log_) << "Invalid cluster timecode.";
+    return false;
+  }
+
+  if (!base::CheckMul(checked_add, timecode_multiplier_)
            .AssignIfValid(&microseconds)) {
     MEDIA_LOG(ERROR, media_log_) << "Invalid cluster timecode.";
     return false;
