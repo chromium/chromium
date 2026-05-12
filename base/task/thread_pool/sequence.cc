@@ -313,9 +313,11 @@ std::optional<Task> Sequence::Clear(TaskSource::Transaction* transaction) {
   if (!IsEmpty() && !has_worker_) {
     ReleaseTaskRunner();
   }
+  Location posted_from =
+      !queue_.empty() ? queue_.front().posted_from : FROM_HERE;
 
   return Task(
-      FROM_HERE,
+      posted_from,
       base::BindOnce(
           [](base::queue<Task> queue,
              base::IntrusiveHeap<Task, DelayedTaskGreater> delayed_queue) {
