@@ -97,6 +97,7 @@ TEST_F(AppServerTestCase, SelfUninstall) {
   {
     scoped_refptr<GlobalPrefs> global_prefs =
         CreateGlobalPrefs(GetUpdaterScopeForTesting());
+    ASSERT_TRUE(global_prefs);
     global_prefs->SetActiveVersion("9999999");
     PrefsCommitPendingWrites(global_prefs->GetPrefService());
     scoped_refptr<LocalPrefs> local_prefs =
@@ -134,6 +135,7 @@ TEST_F(AppServerTestCase, SelfPromote) {
   }
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScopeForTesting());
+  ASSERT_TRUE(global_prefs);
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
@@ -152,6 +154,7 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
   }
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScopeForTesting());
+  ASSERT_TRUE(global_prefs);
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
@@ -174,6 +177,7 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
   }
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScopeForTesting());
+  ASSERT_TRUE(global_prefs);
   EXPECT_TRUE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), "0");
 }
@@ -182,6 +186,7 @@ TEST_F(AppServerTestCase, ActiveDutyAlready) {
   {
     scoped_refptr<GlobalPrefs> global_prefs =
         CreateGlobalPrefs(GetUpdaterScopeForTesting());
+    ASSERT_TRUE(global_prefs);
     global_prefs->SetActiveVersion(kUpdaterVersion);
     PrefsCommitPendingWrites(global_prefs->GetPrefService());
     scoped_refptr<LocalPrefs> local_prefs =
@@ -200,6 +205,7 @@ TEST_F(AppServerTestCase, ActiveDutyAlready) {
   }
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScopeForTesting());
+  ASSERT_TRUE(global_prefs);
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
@@ -208,6 +214,7 @@ TEST_F(AppServerTestCase, StateDirty) {
   {
     scoped_refptr<GlobalPrefs> global_prefs =
         CreateGlobalPrefs(GetUpdaterScopeForTesting());
+    ASSERT_TRUE(global_prefs);
     global_prefs->SetActiveVersion(kUpdaterVersion);
     global_prefs->SetSwapping(true);
     PrefsCommitPendingWrites(global_prefs->GetPrefService());
@@ -228,6 +235,7 @@ TEST_F(AppServerTestCase, StateDirty) {
   }
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScopeForTesting());
+  ASSERT_TRUE(global_prefs);
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
@@ -236,6 +244,7 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
   {
     scoped_refptr<GlobalPrefs> global_prefs =
         CreateGlobalPrefs(GetUpdaterScopeForTesting());
+    ASSERT_TRUE(global_prefs);
     global_prefs->SetActiveVersion(kUpdaterVersion);
     global_prefs->SetSwapping(true);
     PrefsCommitPendingWrites(global_prefs->GetPrefService());
@@ -255,6 +264,7 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
   }
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScopeForTesting());
+  ASSERT_TRUE(global_prefs);
   EXPECT_TRUE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
