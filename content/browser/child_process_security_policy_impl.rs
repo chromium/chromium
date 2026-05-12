@@ -9,7 +9,7 @@
 // enough to have one.
 #![deny(unsafe_code)]
 
-use std::collections::HashSet;
+use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex, MutexGuard};
 
 /// This block defines the Foreign Function Interface for C++ code to call the
@@ -21,12 +21,12 @@ mod ffi {
     extern "Rust" {
         fn register_web_safe_scheme(scheme: &str);
         fn register_web_safe_request_only_scheme(scheme: &str);
+        fn register_pseudo_scheme(scheme: &str);
         fn is_web_safe_scheme(scheme: &str) -> bool;
         fn can_commit_scheme_in_any_process(scheme: &str) -> bool;
+        fn is_pseudo_scheme(scheme: &str) -> bool;
         fn clear_registered_scheme_for_testing(scheme: &str);
         fn clear_all_registered_schemes_for_testing();
-        fn register_pseudo_scheme(scheme: &str);
-        fn is_pseudo_scheme(scheme: &str) -> bool;
     }
 }
 
@@ -35,74 +35,35 @@ mod ffi {
 // This should be ok for the scheme use cases, but consider using CxxString if a
 // copy is not desirable.
 fn register_web_safe_scheme(scheme: &str) {
-    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-
-    debug_assert!(
-        !cpsp.schemes_ok_to_request_in_any_process.contains(scheme),
-        "Add schemes at most once."
-    );
-    debug_assert!(
-        !cpsp.schemes_ok_to_commit_in_any_process.contains(scheme),
-        "Add schemes at most once."
-    );
-    debug_assert!(!cpsp.pseudo_schemes.contains(scheme), "Web-safe implies not pseudo.");
-
-    cpsp.schemes_ok_to_request_in_any_process.insert(scheme.to_string());
-    cpsp.schemes_ok_to_commit_in_any_process.insert(scheme.to_string());
+    register_scheme_internal(scheme, SchemePolicy::RequestAndCommit);
 }
 fn register_web_safe_request_only_scheme(scheme: &str) {
-    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-
-    debug_assert!(
-        !cpsp.schemes_ok_to_request_in_any_process.contains(scheme),
-        "Add schemes at most once."
-    );
-    debug_assert!(
-        !cpsp.schemes_ok_to_commit_in_any_process.contains(scheme),
-        "Add schemes at most once."
-    );
-    debug_assert!(!cpsp.pseudo_schemes.contains(scheme), "Web-safe implies not pseudo.");
-
-    cpsp.schemes_ok_to_request_in_any_process.insert(scheme.to_string());
+    register_scheme_internal(scheme, SchemePolicy::RequestOnly);
+}
+fn register_pseudo_scheme(scheme: &str) {
+    register_scheme_internal(scheme, SchemePolicy::Pseudo);
 }
 fn is_web_safe_scheme(scheme: &str) -> bool {
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    cpsp.schemes_ok_to_request_in_any_process.contains(scheme)
+    cpsp.known_schemes
+        .get(scheme)
+        .is_some_and(|p| *p == SchemePolicy::RequestOnly || *p == SchemePolicy::RequestAndCommit)
 }
 fn can_commit_scheme_in_any_process(scheme: &str) -> bool {
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    cpsp.schemes_ok_to_commit_in_any_process.contains(scheme)
-}
-fn clear_registered_scheme_for_testing(scheme: &str) {
-    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    cpsp.schemes_ok_to_request_in_any_process.remove(scheme);
-    cpsp.schemes_ok_to_commit_in_any_process.remove(scheme);
-    cpsp.pseudo_schemes.remove(scheme);
-}
-fn clear_all_registered_schemes_for_testing() {
-    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    cpsp.schemes_ok_to_request_in_any_process.clear();
-    cpsp.schemes_ok_to_commit_in_any_process.clear();
-    cpsp.pseudo_schemes.clear();
-}
-fn register_pseudo_scheme(scheme: &str) {
-    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-
-    debug_assert!(!cpsp.pseudo_schemes.contains(scheme), "Add schemes at most once.");
-    debug_assert!(
-        !cpsp.schemes_ok_to_request_in_any_process.contains(scheme),
-        "Pseudo implies not web-safe."
-    );
-    debug_assert!(
-        !cpsp.schemes_ok_to_commit_in_any_process.contains(scheme),
-        "Pseudo implies not web-safe."
-    );
-
-    cpsp.pseudo_schemes.insert(scheme.to_string());
+    cpsp.known_schemes.get(scheme).is_some_and(|p| *p == SchemePolicy::RequestAndCommit)
 }
 fn is_pseudo_scheme(scheme: &str) -> bool {
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    cpsp.pseudo_schemes.contains(scheme)
+    cpsp.known_schemes.get(scheme).is_some_and(|p| *p == SchemePolicy::Pseudo)
+}
+fn clear_registered_scheme_for_testing(scheme: &str) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    cpsp.known_schemes.remove(scheme);
+}
+fn clear_all_registered_schemes_for_testing() {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    cpsp.known_schemes.clear();
 }
 
 /// Defines a global policy object that tracks security information for child
@@ -114,17 +75,9 @@ fn is_pseudo_scheme(scheme: &str) -> bool {
 /// This object supports being accessed from different threads and guards access
 /// to its internal data with a Mutex.
 pub struct ChildProcessSecurityPolicyImpl {
-    /// Tracks the set of web-safe schemes that are ok to request from any
-    /// renderer process.
-    schemes_ok_to_request_in_any_process: HashSet<String>,
-    /// Tracks the set of schemes that are ok to commit in any renderer
-    /// process. These are generally a subset of
-    /// `schemes_ok_to_request_in_any_process`.
-    schemes_ok_to_commit_in_any_process: HashSet<String>,
-    /// Tracks the set of pseudo schemes, which do not actually represent
-    /// retrievable URLs. For example, most of the URLs in the "about" scheme
-    /// (apart from `about:blank` and `about:srcdoc`) are aliases to other URLs.
-    pseudo_schemes: HashSet<String>,
+    /// Tracks the schemes that are ok to request or commit, or are pseudo
+    /// schemes that are generally not allowed to commit.
+    known_schemes: HashMap<String, SchemePolicy>,
     // TODO(crbug.com/482216433): this will also eventually track per-process
     // state.
 }
@@ -133,11 +86,7 @@ impl ChildProcessSecurityPolicyImpl {
     /// ChildProcessSecurityPolicyImpl should always be obtained via
     /// `get_locked_instance()`.
     fn new() -> Self {
-        Self {
-            schemes_ok_to_request_in_any_process: HashSet::new(),
-            schemes_ok_to_commit_in_any_process: HashSet::new(),
-            pseudo_schemes: HashSet::new(),
-        }
+        Self { known_schemes: HashMap::new() }
     }
     /// Private function to get a reference to the singleton instance of
     /// ChildProcessSecurityPolicyImpl, wrapping it in a Mutex for thread
@@ -154,7 +103,7 @@ impl ChildProcessSecurityPolicyImpl {
     /// acquire the Mutex.
     ///
     /// Note that this is not public. Instead, the public API for
-    /// ChildProcessSecurityPolicyImpl is provided by the FFI functions below,
+    /// ChildProcessSecurityPolicyImpl is provided by the FFI functions above,
     /// which use this to operate on the underlying
     /// ChildProcessSecurityPolicyImpl.
     fn get_locked_instance() -> MutexGuard<'static, ChildProcessSecurityPolicyImpl> {
@@ -165,5 +114,32 @@ impl ChildProcessSecurityPolicyImpl {
         // TODO(crbug.com/477584253): Consider switching this to use
         // std::sync::nonpoison::Mutex once it is stabilized.
         Self::get_instance().lock().unwrap()
+    }
+}
+
+/// Represents what behavior is allowed for a given known scheme.
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+enum SchemePolicy {
+    /// Schemes that are ok to request from any renderer process. This includes
+    /// both web-safe and web-safe isolated schemes.
+    RequestOnly,
+    /// Schemes that are ok to commit in any renderer process, which are also ok
+    /// to request. This includes web-safe schemes but not web-safe isolated
+    /// schemes.
+    RequestAndCommit,
+    /// Pseudo schemes do not actually represent retrievable URLs. For example,
+    /// most of the URLs in the `about` scheme (apart from `about:blank` and
+    /// `about:srcdoc`) are aliases to other URLs. Thus, `about` is registered
+    /// as a pseudo scheme, with exceptions made to allow `about:blank` and
+    /// `about:srcdoc` to commit.
+    Pseudo,
+}
+
+/// Helper function to track how a given scheme should be treated, without
+/// allowing duplicate registrations.
+fn register_scheme_internal(scheme: &str, policy: SchemePolicy) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    if let Some(old_policy) = cpsp.known_schemes.insert(scheme.to_string(), policy) {
+        panic!("Scheme {scheme:?} is already registered as {old_policy:?}");
     }
 }

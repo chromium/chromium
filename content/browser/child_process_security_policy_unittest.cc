@@ -407,6 +407,22 @@ TEST_P(ChildProcessSecurityPolicyTest, IsWebSafeSchemeTest) {
   p->ClearRegisteredSchemeForTesting("registered-web-safe-scheme");
 }
 
+// Web-safe isolated schemes can be requested but not commit.
+TEST_P(ChildProcessSecurityPolicyTest, IsWebSafeIsolatedSchemeTest) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  // Currently, no web-safe isolated schemes are registered within content/, but
+  // embedders can register them.
+  std::string web_safe_isolated_scheme("registered-web-safe-isolated-scheme");
+  EXPECT_FALSE(p->IsWebSafeScheme(web_safe_isolated_scheme));
+  p->RegisterWebSafeIsolatedScheme(web_safe_isolated_scheme);
+  EXPECT_TRUE(p->IsWebSafeScheme(web_safe_isolated_scheme));
+  EXPECT_FALSE(p->CanCommitSchemeInAnyProcess(web_safe_isolated_scheme));
+
+  p->ClearRegisteredSchemeForTesting(web_safe_isolated_scheme);
+}
+
 TEST_P(ChildProcessSecurityPolicyTest, IsPseudoSchemeTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
