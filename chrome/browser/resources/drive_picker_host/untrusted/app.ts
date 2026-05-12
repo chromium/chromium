@@ -9,8 +9,8 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {DrivePickerApiProxyImpl} from './drive_picker_api_proxy.js';
-import type {GooglePickerResponse} from './drive_picker_api_proxy.js';
-import type {DrivePickerResultHandlerRemote} from './drive_picker_result_handler.mojom-webui.js';
+import {DrivePickerError} from './drive_picker_result_handler.mojom-webui.js';
+import type {DriveFile, DrivePickerResultHandlerRemote} from './drive_picker_result_handler.mojom-webui.js';
 
 export class DrivePickerHostUntrustedAppElement extends CrLitElement {
   static get is() {
@@ -40,6 +40,7 @@ export class DrivePickerHostUntrustedAppElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.reportError_(DrivePickerError.kMojoDisconnected);
     this.listenerIds_.forEach(
         id => assert(this.browserProxy_.callbackRouter.removeListener(id)));
     this.listenerIds_ = [];
@@ -51,21 +52,34 @@ export class DrivePickerHostUntrustedAppElement extends CrLitElement {
     this.resultHandler_ = resultHandler;
 
     try {
-      await this.drivePickerApiProxy_.showPicker(
-          keys.oauthToken, keys.apiKey, keys.appId,
-          (data: GooglePickerResponse) => this.onPickerCallback_(data));
+      const result = await this.drivePickerApiProxy_.showPicker(
+          keys.oauthToken, keys.apiKey, keys.appId);
+
+      if (!this.resultHandler_) {
+        return;
+      }
+
+      if (result === 'CANCEL') {
+        this.resultHandler_.onCancel();
+      } else {
+        this.resultHandler_.onSelection(result as DriveFile[]);
+      }
+      this.resultHandler_ = null;
     } catch (e) {
-      return;
+      if (typeof e === 'number') {
+        this.reportError_(e as DrivePickerError);
+      } else {
+        this.reportError_(DrivePickerError.kUnknown);
+      }
     }
   }
 
-  private onPickerCallback_(data: GooglePickerResponse) {
-    // TODO(crbug.com/497937568): Handle the selected files,
-    // sanitize the data, and send it to the trusted host using
-    // this.resultHandler_.
-    if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
-      console.info('Drive Picker result received', this.resultHandler_);
-    }
+  /**
+   * Reports a flow error and resets the result handler.
+   */
+  private reportError_(error: DrivePickerError) {
+    this.resultHandler_?.onError(error);
+    this.resultHandler_ = null;
   }
 }
 

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
+#include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted.mojom.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -65,6 +66,8 @@ class DrivePickerUntrustedHostUI
       drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) override;
 
  private:
+  void OnPageDisconnected();
+
   FRIEND_TEST_ALL_PREFIXES(DrivePickerUntrustedHostUITest,
                            ShowDrivePickerQueuesOnDisconnect);
 

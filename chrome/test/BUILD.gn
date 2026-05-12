@@ -8616,6 +8616,7 @@ test("unit_tests") {
       "//chrome/browser/ui/translate",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/user_education:unit_tests",
+      "//chrome/browser/ui/views/drive_picker_host",
       "//chrome/browser/ui/views/drive_picker_host:unit_tests",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/page_action:test_support",

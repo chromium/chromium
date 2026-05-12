@@ -12,8 +12,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
+#include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/base_window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -33,11 +35,17 @@ void DrivePickerHostController::ShowDrivePickerHost(
         result_handler) {
   // Ensure that we only have one Drive Picker Host view at a time.
   if (widget_) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+        std::move(result_handler))
+        ->OnError(drive_picker_host::mojom::DrivePickerError::kAlreadyActive);
     return;
   }
 
   ui::BaseWindow* window = browser_window_interface_->GetWindow();
   if (!window) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+        std::move(result_handler))
+        ->OnError(drive_picker_host::mojom::DrivePickerError::kWindowNotFound);
     return;
   }
 
@@ -50,6 +58,9 @@ void DrivePickerHostController::ShowDrivePickerHost(
 
   gfx::NativeWindow native_window = window->GetNativeWindow();
   if (!native_window) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+        std::move(result_handler))
+        ->OnError(drive_picker_host::mojom::DrivePickerError::kWindowNotFound);
     return;
   }
 

@@ -54,6 +54,7 @@
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "third_party/omnibox_proto/tool_config.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/webui/web_ui_util.h"
 
 class SearchboxHandlerTest : public ::testing::Test {
@@ -123,12 +124,22 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<RealboxHandler> handler_;
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
 
   void SetUp() override {
     SearchboxHandlerTest::SetUp();
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+    ON_CALL(browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile()));
+    ON_CALL(browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+    webui::SetBrowserWindowInterface(web_contents_.get(),
+                                     &browser_window_interface_);
+
     handler_ = std::make_unique<RealboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(), profile(), web_contents_.get(),
@@ -139,6 +150,7 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
   }
 
   void TearDown() override {
+    webui::SetBrowserWindowInterface(web_contents_.get(), nullptr);
     SearchboxHandlerTest::TearDown();
     handler_.reset();
   }

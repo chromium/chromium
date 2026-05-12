@@ -61,6 +61,16 @@ class MockResultHandler
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  MOCK_METHOD(void,
+              OnSelection,
+              (std::vector<drive_picker_host::mojom::DriveFilePtr>),
+              (override));
+  MOCK_METHOD(void, OnCancel, (), (override));
+  MOCK_METHOD(void,
+              OnError,
+              (drive_picker_host::mojom::DrivePickerError),
+              (override));
+
  private:
   mojo::Receiver<drive_picker_host::mojom::DrivePickerResultHandler> receiver_{
       this};
@@ -172,6 +182,35 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostQueuesUntilBridgeBound) {
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kAccessToken, base::Time::Now() + base::Hours(1));
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostReportsTokenFetchFailure) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockResultHandler result_handler;
+  EXPECT_CALL(
+      result_handler,
+      OnError(drive_picker_host::mojom::DrivePickerError::kTokenFetchFailure));
+
+  controller.TriggerDrivePickerHost(result_handler.BindAndGetRemote());
+
+  MockDrivePickerBridge mock_bridge;
+  // Binding the bridge should now trigger the fetch because a request is
+  // pending.
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
 
   base::RunLoop().RunUntilIdle();
 }

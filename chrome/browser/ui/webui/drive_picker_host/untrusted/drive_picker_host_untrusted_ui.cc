@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
@@ -94,6 +95,8 @@ void DrivePickerUntrustedHostUI::CreatePageHandler(
         handler) {
   page_.reset();
   page_.Bind(std::move(page));
+  page_.set_disconnect_handler(base::BindOnce(
+      &DrivePickerUntrustedHostUI::OnPageDisconnected, base::Unretained(this)));
 
   page_handler_receiver_.reset();
   page_handler_receiver_.Bind(std::move(handler));
@@ -112,9 +115,22 @@ void DrivePickerUntrustedHostUI::ShowDrivePicker(
   if (page_.is_bound() && page_.is_connected()) {
     page_->ShowDrivePicker(std::move(result_handler), std::move(keys));
   } else {
-    // Only the most recent request is kept if the page is not yet ready or
-    // has been disconnected.
+    if (pending_request_) {
+      mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+          std::move(pending_request_->result_handler))
+          ->OnCancel();
+    }
     pending_request_ = std::make_unique<PendingRequest>(
         std::move(result_handler), std::move(keys));
+  }
+}
+
+void DrivePickerUntrustedHostUI::OnPageDisconnected() {
+  if (pending_request_) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+        std::move(pending_request_->result_handler))
+        ->OnError(
+            drive_picker_host::mojom::DrivePickerError::kMojoDisconnected);
+    pending_request_.reset();
   }
 }

@@ -4,6 +4,67 @@
 
 module drive_picker_host.mojom;
 
+import "url/mojom/url.mojom";
+
+// Represents a selected file from Google Drive.
+struct DriveFile {
+  // The ID of the file.
+  string id;
+  // The MIME type of the file.
+  string mime_type;
+  // The name of the file.
+  string name;
+  // The type of the file (e.g. document, photo, video).
+  string type;
+  // The size of the file in bytes.
+  uint64 size_bytes;
+  // The resource key of the file. Optional since this implies the drive file
+  // is a shared file.
+  string? resource_key;
+  // The URL of the thumbnail of the file, only populated if the file is an
+  // image.
+  url.mojom.Url? thumbnail_url;
+};
+
+// Error states for the Drive Picker flow.
+enum DrivePickerError {
+  // The OAuth token could not be retrieved.
+  kTokenFetchFailure,
+  // The response from the 3P Picker API was malformed.
+  kInvalidResponse,
+  // One or more selected files had an invalid ID.
+  kInvalidFileId,
+  // Essential file metadata (e.g. name, mime type) was missing or invalid.
+  kInvalidFileMetadata,
+  // The user selected a file type that is not supported.
+  kUnsupportedFileType,
+  // One or more files had an invalid size.
+  kInvalidFileSize,
+  // The picker was already active in the browser window.
+  kAlreadyActive,
+  // The browser window was not found.
+  kWindowNotFound,
+  // The Drive Picker API failed to load.
+  kApiLoadFailure,
+  // Mojo connection disconnected.
+  kMojoDisconnected,
+  // The Drive Picker WebUI was not found.
+  kWebUINotFound,
+  // The Drive Picker Web View was not found.
+  kViewNotFound,
+  // An unknown error occurred.
+  kUnknown,
+};
+
 // Interface for handling the result of the Drive Picker selection.
 interface DrivePickerResultHandler {
+  // Called when the user successfully selects one or more files.
+  // `files` are returned in the order they were selected.
+  OnSelection(array<DriveFile> files);
+
+  // Called when the user cancels the picker.
+  OnCancel();
+
+  // Called when an error occurs during the picker flow.
+  OnError(DrivePickerError error);
 };

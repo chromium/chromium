@@ -947,6 +947,12 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
                 &OmniboxContextMenuController::OnDriveUploadResponse,
                 weak_ptr_factory_.GetWeakPtr()));
           }
+          RecordContextMenuItemSelection(sliced_prefix, id);
+          OmniboxEditModel* edit_model = GetEditModel();
+          if (edit_model) {
+            edit_model->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
+          }
           return;
         }
         file_selector_->OpenFileUploadDialog(

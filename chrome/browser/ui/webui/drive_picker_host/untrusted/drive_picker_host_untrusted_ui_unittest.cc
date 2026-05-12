@@ -56,6 +56,16 @@ class MockResultHandler
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  MOCK_METHOD(void,
+              OnSelection,
+              (std::vector<drive_picker_host::mojom::DriveFilePtr>),
+              (override));
+  MOCK_METHOD(void, OnCancel, (), (override));
+  MOCK_METHOD(void,
+              OnError,
+              (drive_picker_host::mojom::DrivePickerError),
+              (override));
+
  private:
   mojo::Receiver<drive_picker_host::mojom::DrivePickerResultHandler> receiver_{
       this};

@@ -12,14 +12,21 @@ build_webui("build") {
   ts_files = [
     "app.ts",
     "app.html.ts",
+    "untrusted/sanitizer.ts",
   ]
   css_files = [ "app.css" ]
   ts_composite = true
 
   mojo_files_deps = [
+    "//chrome/browser/ui/views/drive_picker_host:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/drive_picker_host:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/drive_picker_host/untrusted:mojo_bindings_ts__generator",
   ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/drive_picker_host/drive_picker_host.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/drive_picker_host/drive_picker_host.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted.mojom-webui.ts",
+  ]
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

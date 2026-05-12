@@ -17,6 +17,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -72,53 +74,17 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_controller.h"
+#include "chrome/browser/ui/views/drive_picker_host/drive_picker_sanitizer.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
 constexpr int kThumbnailWidth = 125;
 constexpr int kThumbnailHeight = 200;
+#if !BUILDFLAG(IS_ANDROID)
 constexpr size_t kMaxSize = 100 * 1000 * 1000;
-
-struct DriveFileData {
-  std::string drive_id;
-  std::string mime_type;
-  std::string file_name;
-  uint64_t size_bytes;
-  std::optional<std::string> resource_key;
-  std::optional<std::string> thumbnail_url;
-};
-
-std::vector<DriveFileData> GetMockDriveFiles() {
-  std::vector<DriveFileData> selected_files;
-
-  DriveFileData file1;
-  file1.drive_id = "mock_drive_id_1";
-  file1.mime_type = "application/vnd.google-apps.document";
-  file1.file_name = "Mock Google Doc.gdoc";
-  file1.size_bytes = 10000000;
-  file1.resource_key = "mock_resource_key_1";
-  selected_files.push_back(std::move(file1));
-
-  // Should be filtered out due to size.
-  DriveFileData file2;
-  file2.drive_id = "mock_drive_id_2";
-  file2.mime_type = "image/png";
-  file2.file_name = "Mock Image.png";
-  file2.size_bytes = 1000000000;
-  file2.resource_key = "mock_resource_key_2";
-  selected_files.push_back(std::move(file2));
-
-  DriveFileData file3;
-  file3.drive_id = "mock_drive_id_3";
-  file3.mime_type = "application/vnd.google-apps.spreadsheet";
-  file3.file_name = "Mock Google Sheet.gsheet";
-  file3.size_bytes = 10000000;
-  file3.resource_key = "mock_resource_key_3";
-  selected_files.push_back(std::move(file3));
-
-  return selected_files;
-}
+#endif
 
 }  // namespace
 
@@ -597,29 +563,57 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
                         std::move(callback));
 }
 
-void ContextualSearchboxHandler::OnDriveUploadClicked(
-    OnDriveUploadClickedCallback callback) {
-  CHECK(
-      base::FeatureList::IsEnabled(omnibox::kComposeboxDriveContextMenuOption));
-  CHECK(contextual_search::ContextualSearchService::IsContextSharingEnabled(
-      profile_->GetPrefs()));
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualSearchboxHandler::OnDrivePickerDisconnected() {
+  if (!drive_upload_click_callback_.is_null()) {
+    std::move(drive_upload_click_callback_)
+        .Run(searchbox::mojom::DriveUploadResponse::New());
+  }
+  CleanupDrivePicker();
+}
+
+void ContextualSearchboxHandler::OnSelection(
+    std::vector<drive_picker_host::mojom::DriveFilePtr> files) {
+  if (drive_upload_click_callback_.is_null()) {
+    LOG(WARNING) << "No drive upload click callback, aborting upload.";
+    CleanupDrivePicker();
+    return;
+  }
 
   auto response = searchbox::mojom::DriveUploadResponse::New();
-
-  // TODO(crbug.com/504745345): Replace with selected Drive files from Drive
-  // Picker.
-  std::vector<DriveFileData> selected_files = GetMockDriveFiles();
 
   auto* contextual_session_handle = GetContextualSessionHandle();
   size_t valid_files_count =
       contextual_session_handle
           ? contextual_session_handle->GetUploadedContextFileInfos().size()
           : 0;
+
   bool count_limit_hit = false;
   bool size_limit_hit = false;
-  size_t max_files = GetInputState().max_total_inputs;
+  const size_t max_total_inputs =
+      static_cast<size_t>(GetInputState().max_total_inputs);
+  if (max_total_inputs == 0) {
+    std::move(drive_upload_click_callback_).Run(std::move(response));
+    CleanupDrivePicker();
+    return;
+  }
+  const size_t max_files = max_total_inputs;
 
-  for (const auto& file : selected_files) {
+  for (const auto& file_ptr : files) {
+    std::optional<SanitizedDriveFileData> sanitized =
+        DrivePickerSanitizer::Sanitize(file_ptr);
+    if (!sanitized) {
+      drive_picker_result_handler_receiver_.ReportBadMessage(
+          "Invalid Drive file data received from renderer.");
+      if (!drive_upload_click_callback_.is_null()) {
+        std::move(drive_upload_click_callback_)
+            .Run(searchbox::mojom::DriveUploadResponse::New());
+      }
+      CleanupDrivePicker();
+      return;
+    }
+    const auto& file = sanitized.value();
+
     if (valid_files_count >= max_files) {
       count_limit_hit = true;
       break;
@@ -643,7 +637,8 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
     success_file->token = token;
     success_file->file_name = file.file_name;
     success_file->mime_type = file.mime_type;
-    success_file->thumbnail_url = file.thumbnail_url;
+    success_file->thumbnail_url =
+        file.thumbnail_url ? file.thumbnail_url->spec() : "";
 
     response->files.push_back(std::move(success_file));
     valid_files_count++;
@@ -657,7 +652,71 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
     response->error = searchbox::mojom::DriveUploadError::kSizeLimitExceeded;
   }
 
-  std::move(callback).Run(std::move(response));
+  std::move(drive_upload_click_callback_).Run(std::move(response));
+  CleanupDrivePicker();
+}
+
+void ContextualSearchboxHandler::OnCancel() {
+  if (!drive_upload_click_callback_.is_null()) {
+    std::move(drive_upload_click_callback_)
+        .Run(searchbox::mojom::DriveUploadResponse::New());
+  }
+  CleanupDrivePicker();
+}
+
+void ContextualSearchboxHandler::OnError(
+    drive_picker_host::mojom::DrivePickerError error) {
+  LOG(WARNING) << "Drive picker error: " << error;
+  if (!drive_upload_click_callback_.is_null()) {
+    std::move(drive_upload_click_callback_)
+        .Run(searchbox::mojom::DriveUploadResponse::New());
+  }
+  CleanupDrivePicker();
+}
+#endif
+
+void ContextualSearchboxHandler::CleanupDrivePicker() {
+#if !BUILDFLAG(IS_ANDROID)
+  drive_picker_result_handler_receiver_.reset();
+#endif
+}
+
+void ContextualSearchboxHandler::OnDriveUploadClicked(
+    OnDriveUploadClickedCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(searchbox::mojom::DriveUploadResponse::New());
+#else
+  CHECK(
+      base::FeatureList::IsEnabled(omnibox::kComposeboxDriveContextMenuOption));
+  CHECK(contextual_search::ContextualSearchService::IsContextSharingEnabled(
+      profile_->GetPrefs()));
+
+  if (!drive_upload_click_callback_.is_null()) {
+    return;
+  }
+  drive_upload_click_callback_ = std::move(callback);
+
+  if (drive_picker_result_handler_receiver_.is_bound()) {
+    return;
+  }
+
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser_window_interface) {
+    return;
+  }
+
+  if (!drive_picker_controller_) {
+    drive_picker_controller_ =
+        std::make_unique<DrivePickerHostController>(browser_window_interface);
+  }
+
+  drive_picker_controller_->ShowDrivePickerHost(
+      drive_picker_result_handler_receiver_.BindNewPipeAndPassRemote());
+  drive_picker_result_handler_receiver_.set_disconnect_handler(
+      base::BindOnce(&ContextualSearchboxHandler::OnDrivePickerDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
+#endif
 }
 
 std::vector<base::UnguessableToken>
@@ -1253,7 +1312,6 @@ void ContextualSearchboxHandler::OpenUrl(
       std::move(new_input_state_model));
   // TODO(crbug.com/469137247): Consider moving this logic to the specific
   // subclasses that have aim navigation.
-  // TODO(b/502297163): Implement for Android.
   bool should_open_url = true;
 #if !BUILDFLAG(IS_ANDROID)
   if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {

@@ -24,3 +24,7 @@ class DrivePickerHostTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(DrivePickerHostTest, App) {
   RunTest("drive_picker/drive_picker_host_app_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(DrivePickerHostTest, Sanitizer) {
+  RunTest("drive_picker/drive_picker_sanitizer_test.js", "mocha.run()");
+}

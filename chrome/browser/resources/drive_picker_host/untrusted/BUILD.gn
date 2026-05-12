@@ -13,6 +13,7 @@ build_webui("build") {
     "app.ts",
     "app.html.ts",
     "browser_proxy.ts",
+    "sanitizer.ts",
     "drive_picker_api_proxy.ts",
   ]
   css_files = [ "app.css" ]
@@ -23,8 +24,8 @@ build_webui("build") {
     "//chrome/browser/ui/webui/drive_picker_host/untrusted:mojo_bindings_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom-webui.ts",
   ]
 
   ts_deps = [

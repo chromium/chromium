@@ -6,14 +6,26 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   cc_test_files = [ "drive_picker_browsertest.cc" ]
-  files = [ "drive_picker_host_app_test.ts" ]
+  files = [
+    "drive_picker_host_app_test.ts",
+    "drive_picker_sanitizer_test.ts",
+  ]
 
-  ts_path_mappings = [ "chrome://drive-picker-host/app.js|" + rebase_path(
-                           "$root_gen_dir/chrome/browser/resources/drive_picker_host/tsc/app.d.ts",
-                           target_gen_dir) ]
+  ts_path_mappings = [
+    "chrome://drive-picker-host/app.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/drive_picker_host/tsc/app.d.ts",
+            target_gen_dir),
+    "chrome://drive-picker-host/untrusted/sanitizer.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/drive_picker_host/tsc/untrusted/sanitizer.d.ts",
+            target_gen_dir),
+    "chrome-untrusted://drive-picker-host/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/drive_picker_host/untrusted/tsc/*",
+            target_gen_dir),
+  ]
 
   ts_deps = [
     "//chrome/browser/resources/drive_picker_host:build_ts",
+    "//chrome/browser/resources/drive_picker_host/untrusted:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }

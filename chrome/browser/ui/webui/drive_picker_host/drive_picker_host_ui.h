@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_DRIVE_PICKER_HOST_DRIVE_PICKER_HOST_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_DRIVE_PICKER_HOST_DRIVE_PICKER_HOST_UI_H_
 
+#include <memory>
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted.mojom.h"
@@ -52,15 +54,13 @@ class DrivePickerHostUI
   static std::string_view GetWebUIName() { return "DrivePickerHost"; }
 
   // Triggers the Drive Picker host logic to display the picker UI and relay
-  // results to `result_handler`. If consent has not yet been granted, a
-  // consent dialog is shown first.
+  // results to `result_handler`.
   virtual void TriggerDrivePickerHost(
       mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
           result_handler);
 
   // Sets the untrusted bridge that will be used to display the picker UI and
-  // handle communication with the picker UI. This should be called before
-  // TriggerDrivePickerHost.
+  // handle communication with the picker UI.
   void SetBridge(
       mojo::PendingRemote<drive_picker_host_untrusted::mojom::DrivePickerBridge>
           untrusted_bridge);

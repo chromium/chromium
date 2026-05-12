@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -62,11 +63,17 @@ void DrivePickerHostView::TriggerDrivePickerHostUi(
     mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
         result_handler) {
   if (!view_tracker_.view()) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+        std::move(result_handler))
+        ->OnError(drive_picker_host::mojom::DrivePickerError::kViewNotFound);
     return;
   }
   views::WebView* web_view =
       views::AsViewClass<views::WebView>(view_tracker_.view());
   if (!web_view) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+        std::move(result_handler))
+        ->OnError(drive_picker_host::mojom::DrivePickerError::kViewNotFound);
     return;
   }
   content::WebContents* contents = web_view->GetWebContents();
@@ -75,8 +82,13 @@ void DrivePickerHostView::TriggerDrivePickerHostUi(
         contents->GetWebUI()->GetController()->GetAs<DrivePickerHostUI>();
     if (drive_picker_host_ui) {
       drive_picker_host_ui->TriggerDrivePickerHost(std::move(result_handler));
+      return;
     }
   }
+
+  mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+      std::move(result_handler))
+      ->OnError(drive_picker_host::mojom::DrivePickerError::kWebUINotFound);
 }
 
 BEGIN_METADATA(DrivePickerHostView)

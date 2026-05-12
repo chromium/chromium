@@ -8,6 +8,7 @@ assert(!is_android)
 
 mojom("mojo_bindings") {
   sources = [ "drive_picker_result_handler.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
 }
 
@@ -17,6 +18,8 @@ source_set("drive_picker_host") {
     "drive_picker_host_controller.h",
     "drive_picker_host_view.cc",
     "drive_picker_host_view.h",
+    "drive_picker_sanitizer.cc",
+    "drive_picker_sanitizer.h",
   ]
 
   public_deps = [
@@ -32,6 +35,7 @@ source_set("drive_picker_host") {
     "//chrome/common",
     "//components/constrained_window",
     "//content/public/browser",
+    "//net",
     "//skia",
     "//ui/base",
     "//ui/base/metadata",
@@ -45,6 +49,7 @@ source_set("unit_tests") {
   sources = [
     "drive_picker_host_controller_unittest.cc",
     "drive_picker_host_view_unittest.cc",
+    "drive_picker_sanitizer_unittest.cc",
   ]
   deps = [
     ":drive_picker_host",

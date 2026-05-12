@@ -11,6 +11,8 @@
 #include "chrome/grit/drive_picker_host_resources.h"
 #include "chrome/grit/drive_picker_host_resources_map.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/navigation_handle.h"
@@ -115,23 +117,49 @@ void DrivePickerHostUI::TriggerDrivePickerHost(
       untrusted_bridge_remote_.is_connected()) {
     FetchTokenAndShowPicker(std::move(result_handler));
   } else {
-    // Only the most recent request is kept if the bridge is not yet ready or
-    // has been disconnected.
+    if (pending_result_handler_) {
+      mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+          std::move(pending_result_handler_))
+          ->OnCancel();
+    }
     pending_result_handler_ = std::move(result_handler);
+  }
+}
+
+void DrivePickerHostUI::SetBridge(
+    mojo::PendingRemote<drive_picker_host_untrusted::mojom::DrivePickerBridge>
+        untrusted_bridge) {
+  untrusted_bridge_remote_.reset();
+  untrusted_bridge_remote_.Bind(std::move(untrusted_bridge));
+  untrusted_bridge_remote_.set_disconnect_handler(base::BindOnce(
+      [](base::WeakPtr<DrivePickerHostUI> self) {
+        if (self && self->pending_result_handler_) {
+          mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+              std::move(self->pending_result_handler_))
+              ->OnError(drive_picker_host::mojom::DrivePickerError::
+                            kMojoDisconnected);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
+
+  if (pending_result_handler_) {
+    FetchTokenAndShowPicker(std::move(pending_result_handler_));
   }
 }
 
 void DrivePickerHostUI::FetchTokenAndShowPicker(
     mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
         result_handler) {
-  if (access_token_fetcher_) {
-    return;
-  }
-
   Profile* profile = Profile::FromWebUI(web_ui());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
+
+  if (access_token_fetcher_ || !identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler> handler(
+        std::move(result_handler));
+    handler->OnError(
+        drive_picker_host::mojom::DrivePickerError::kTokenFetchFailure);
     return;
   }
 
@@ -155,7 +183,12 @@ void DrivePickerHostUI::OnAccessTokenFetched(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   access_token_fetcher_.reset();
+
   if (error.state() != GoogleServiceAuthError::NONE) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler> handler(
+        std::move(result_handler));
+    handler->OnError(
+        drive_picker_host::mojom::DrivePickerError::kTokenFetchFailure);
     return;
   }
 
@@ -172,17 +205,6 @@ void DrivePickerHostUI::OnAccessTokenFetched(
                                               std::move(keys));
   } else {
     pending_result_handler_ = std::move(result_handler);
-  }
-}
-
-void DrivePickerHostUI::SetBridge(
-    mojo::PendingRemote<drive_picker_host_untrusted::mojom::DrivePickerBridge>
-        untrusted_bridge) {
-  untrusted_bridge_remote_.reset();
-  untrusted_bridge_remote_.Bind(std::move(untrusted_bridge));
-
-  if (pending_result_handler_) {
-    FetchTokenAndShowPicker(std::move(pending_result_handler_));
   }
 }
 
