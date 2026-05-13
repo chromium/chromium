@@ -154,4 +154,8 @@ BASE_FEATURE(kGlicWebDragAndDropFileUpload, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicOptInImpressionMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Killswitch that controls whether the WebContents visibility state is
+// set to hidden when the Glic panel is warming.
+BASE_FEATURE(kGlicContentsInitiallyHidden, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

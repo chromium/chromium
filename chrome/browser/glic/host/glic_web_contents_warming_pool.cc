@@ -8,7 +8,9 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
@@ -126,8 +128,11 @@ void GlicWebContentsWarmingPool::EnsurePreload() {
 
 std::unique_ptr<WebUIContentsContainer>
 GlicWebContentsWarmingPool::CreateContainer() {
-  return std::make_unique<WebUIContentsContainerImpl>(
-      profile_, /*initially_hidden=*/false);
+  TRACE_EVENT("glic", "GlicWebContentsWarmingPool::CreateContainer");
+  bool initially_hidden =
+      base::FeatureList::IsEnabled(features::kGlicContentsInitiallyHidden);
+  return std::make_unique<WebUIContentsContainerImpl>(profile_,
+                                                      initially_hidden);
 }
 
 void GlicWebContentsWarmingPool::OnContainerExpired() {
