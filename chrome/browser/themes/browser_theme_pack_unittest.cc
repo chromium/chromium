@@ -174,13 +174,11 @@ class BrowserThemePackTest : public ::testing::Test {
 
   base::ScopedTempDir dir_;
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<BrowserThemePack> theme_pack_;
 };
 
 BrowserThemePackTest::BrowserThemePackTest()
     : theme_pack_(new BrowserThemePack(ThemeType::kExtension)) {
-  scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
   theme_pack_->InitEmptyPack();
 }
 
@@ -496,8 +494,8 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   const gfx::ImageSkiaRep& rep1 = image_skia->GetRepresentation(1.0f);
   ASSERT_FALSE(rep1.is_null());
   EXPECT_EQ(80, rep1.GetBitmap().width());
-  // Bitmap height won't be cropped now that Vertical Tabs has launched.
-  EXPECT_EQ(80, rep1.GetBitmap().height());
+  // Bitmap height will be cropped at 60 - kTallestTabHeight + 19.
+  EXPECT_EQ(60, rep1.GetBitmap().height());
   EXPECT_EQ(SkColorSetRGB(255, 255, 255), rep1.GetBitmap().getColor(4, 4));
   EXPECT_EQ(SkColorSetRGB(255, 255, 255), rep1.GetBitmap().getColor(8, 8));
   EXPECT_EQ(SkColorSetRGB(0, 241, 237), rep1.GetBitmap().getColor(16, 16));
@@ -507,8 +505,8 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   const gfx::ImageSkiaRep& rep2 = image_skia->GetRepresentation(2.0f);
   ASSERT_FALSE(rep2.is_null());
   EXPECT_EQ(160, rep2.GetBitmap().width());
-  // Bitmap height won't be cropped now that Vertical Tabs has launched.
-  EXPECT_EQ(160, rep2.GetBitmap().height());
+  // Cropped height will be 2 * 60.
+  EXPECT_EQ(120, rep2.GetBitmap().height());
   EXPECT_EQ(SkColorSetRGB(255, 255, 255), rep2.GetBitmap().getColor(4, 4));
   EXPECT_EQ(SkColorSetRGB(223, 42, 0), rep2.GetBitmap().getColor(8, 8));
   EXPECT_EQ(SkColorSetRGB(223, 42, 0), rep2.GetBitmap().getColor(16, 16));
@@ -534,8 +532,8 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   const gfx::ImageSkiaRep& rep3 = image_skia->GetRepresentation(1.0f);
   ASSERT_FALSE(rep3.is_null());
   EXPECT_EQ(80, rep3.GetBitmap().width());
-  // Bitmap height won't be cropped now that Vertical Tabs has launched.
-  EXPECT_EQ(80, rep3.GetBitmap().height());
+  // Bitmap height will be cropped at 60 - kTallestTabHeight + 19.
+  EXPECT_EQ(60, rep3.GetBitmap().height());
   // We take samples of colors and locations along the diagonal whenever
   // the color changes. Note these colors are slightly different from
   // the input PNG file due to input processing.
@@ -555,8 +553,8 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   const gfx::ImageSkiaRep& rep4 = image_skia->GetRepresentation(2.0f);
   ASSERT_FALSE(rep4.is_null());
   EXPECT_EQ(160, rep4.GetBitmap().width());
-  // Bitmap height won't be cropped now that Vertical Tabs has launched.
-  EXPECT_EQ(160, rep4.GetBitmap().height());
+  // Cropped height will be 2 * 60.
+  EXPECT_EQ(120, rep4.GetBitmap().height());
   // We expect the same colors and at locations scaled by 2
   // since this bitmap was scaled by 2.
   for (auto& i : normal) {
@@ -651,6 +649,19 @@ void BrowserThemePackTest::GenerateDefaultFrameColor(
   (*colors)[color] = HSLShift(GetDefaultColor(TP::COLOR_FRAME_ACTIVE),
                               TP::GetDefaultTint(tint, otr));
 }
+
+// VerticalBrowserThemePackTest ------------------------------------------------
+
+class VerticalBrowserThemePackTest : public BrowserThemePackTest {
+ public:
+  VerticalBrowserThemePackTest() {
+    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
+  }
+  ~VerticalBrowserThemePackTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // Actual tests ----------------------------------------------------------------
 
@@ -1469,4 +1480,25 @@ TEST_F(BrowserThemePackTest, TabGroupColorPaletteCustomizationTest) {
                  : shades[k600];
   actual = provider.GetColor(kColorThumbnailTabStripTabGroupFrameInactiveRed);
   EXPECT_EQ(expected, actual);
+}
+
+TEST_F(VerticalBrowserThemePackTest, FrameImageNotCropped) {
+  // Tests that we do not crop the height of IDR_THEME_FRAME elements when
+  // VerticalTabs is enabled.
+  base::FilePath hidpi_path = GetHiDpiThemePath();
+  scoped_refptr<BrowserThemePack> pack(
+      new BrowserThemePack(ThemeType::kExtension));
+  BuildFromUnpackedExtensionCheckValid(hidpi_path, pack.get());
+
+  int idr = IDR_THEME_FRAME;
+  gfx::Image image = pack->GetImageNamed(idr);
+  EXPECT_FALSE(image.IsEmpty());
+  const gfx::ImageSkia* image_skia = image.ToImageSkia();
+  ASSERT_TRUE(image_skia);
+
+  const gfx::ImageSkiaRep& rep = image_skia->GetRepresentation(1.0f);
+  ASSERT_FALSE(rep.is_null());
+
+  // Since VerticalTabs is enabled, we do not crop by |kTallestFrameHeight|.
+  EXPECT_EQ(rep.GetBitmap().height(), 80);
 }
