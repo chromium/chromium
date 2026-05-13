@@ -14,10 +14,10 @@
 #include "base/cpu.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/win/delayload_helpers.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -86,25 +86,20 @@ bool IsUEFISecureBootCapable() {
 }
 
 bool IsTPM20Supported() {
-  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+  static const bool is_tbs_availabe = [] {
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
-  // Using dynamic loading instead of using linker support for delay
-  // loading to prevent failed loads being treated as a fatal failure which
-  // can happen in rare cases due to missing or corrupted DLL file.
-  ScopedNativeLibrary tbs_library(LoadSystemLibrary(L"tbs.dll"));
-  if (!tbs_library.is_valid()) {
+    // Resolve all delay-loaded imports for tbs.dll on the first call to
+    // prevent failed loads being treated as a fatal failure later, which
+    // can happen in rare cases due to missing or corrupted DLL file.
+    return LoadAllImportsForDll("tbs.dll").value_or(false);
+  }();
+
+  if (!is_tbs_availabe) {
     return false;
   }
-
-  decltype(Tbsi_GetDeviceInfo)* tbsi_get_device_info_proc =
-      reinterpret_cast<decltype(Tbsi_GetDeviceInfo)*>(
-          tbs_library.GetFunctionPointer("Tbsi_GetDeviceInfo"));
-  if (!tbsi_get_device_info_proc) {
-    return false;
-  }
-
   TPM_DEVICE_INFO tpm_info{};
-  TBS_RESULT result = tbsi_get_device_info_proc(sizeof(tpm_info), &tpm_info);
+  TBS_RESULT result = ::Tbsi_GetDeviceInfo(sizeof(tpm_info), &tpm_info);
   return result == TBS_SUCCESS && tpm_info.tpmVersion >= TPM_VERSION_20;
 }
 
