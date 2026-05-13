@@ -769,11 +769,11 @@ class GSL_POINTER span {
   // Implicit conversion to fixed-extent `std::span<>`. (The fixed-extent
   // `std::span` range constructor is explicit.)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  operator std::span<element_type, extent>() const {
+  constexpr operator std::span<element_type, extent>() const {
     return std::span<element_type, extent>(*this);
   }
   // NOLINTNEXTLINE(google-explicit-constructor)
-  operator std::span<const element_type, extent>() const
+  constexpr operator std::span<const element_type, extent>() const
     requires(!std::is_const_v<element_type>)
   {
     return std::span<const element_type, extent>(*this);

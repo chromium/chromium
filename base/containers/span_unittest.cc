@@ -3512,6 +3512,28 @@ TEST(SpanTest, FromStdSpan) {
   std::span<const int, 3u> fixed_std_span(kData);
   std::span<int, 3u> mut_fixed_std_span(kData);
 
+  // Constexpr tests
+  {
+    static constexpr int kLocalData[] = {10, 11, 12};
+    static constexpr std::span<const int> const_std_span(kLocalData);
+
+    // Implicit
+    static constexpr base::span<const int> const_base_span = const_std_span;
+    static_assert(const_base_span.size() == 3u);
+    static_assert(const_base_span.data() == kLocalData);
+
+    // Explicit
+    static constexpr base::span<const int> const_base_span_explicit{
+        const_std_span};
+    static_assert(const_base_span_explicit.size() == 3u);
+
+    // Fixed
+    static constexpr std::span<const int, 3u> const_fixed_std_span(kLocalData);
+    static constexpr base::span<const int, 3u> const_fixed_base_span =
+        const_fixed_std_span;
+    static_assert(const_fixed_base_span.size() == 3u);
+  }
+
   // Tests *implicit* conversions through assignment construction.
   {
     base::span<const int> base_span = std_span;
@@ -3563,6 +3585,29 @@ TEST(SpanTest, ToStdSpan) {
   base::span<int> mut_base_span(kData);
   base::span<const int, 3u> fixed_base_span(kData);
   base::span<int, 3u> mut_fixed_base_span(kData);
+
+  // Constexpr tests
+  {
+    static constexpr int kLocalData[] = {10, 11, 12};
+    static constexpr base::span<const int> const_base_span(kLocalData);
+
+    // Implicit
+    static constexpr std::span<const int> const_std_span = const_base_span;
+    static_assert(const_std_span.size() == 3u);
+    static_assert(const_std_span.data() == kLocalData);
+
+    // Explicit
+    static constexpr std::span<const int> const_std_span_explicit{
+        const_base_span};
+    static_assert(const_std_span_explicit.size() == 3u);
+
+    // Fixed
+    static constexpr base::span<const int, 3u> const_fixed_base_span(
+        kLocalData);
+    static constexpr std::span<const int, 3u> const_fixed_std_span =
+        const_fixed_base_span;
+    static_assert(const_fixed_std_span.size() == 3u);
+  }
 
   // Tests *implicit* conversions through assignment construction.
   {
