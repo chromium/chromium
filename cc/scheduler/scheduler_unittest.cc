@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -133,6 +134,7 @@ class FakeSchedulerClient : public SchedulerClient,
     base::AutoReset<bool> mark_inside(&inside_action_, true);
     inside_begin_impl_frame_ = true;
     PushAction("WillBeginImplFrame");
+    last_begin_impl_frame_args_ = args;
     if (will_begin_impl_frame_requests_one_begin_impl_frame_)
       scheduler_->SetNeedsOneBeginImplFrame();
     if (will_begin_impl_frame_causes_redraw_)
@@ -169,6 +171,10 @@ class FakeSchedulerClient : public SchedulerClient,
 
   void OnBeginImplFrameDeadline() override {}
   void DidChangeBeginFrameSourcePaused(bool paused) override {}
+
+  const viz::BeginFrameArgs& last_begin_impl_frame_args() {
+    return last_begin_impl_frame_args_;
+  }
 
   const viz::BeginFrameArgs& last_begin_main_frame_args() {
     return last_begin_main_frame_args_;
@@ -292,6 +298,7 @@ class FakeSchedulerClient : public SchedulerClient,
   bool automatic_ack_ = true;
   bool will_begin_impl_frame_might_have_damage_ = true;
   int num_draws_;
+  viz::BeginFrameArgs last_begin_impl_frame_args_;
   viz::BeginFrameArgs last_begin_main_frame_args_;
   viz::BeginFrameAck last_begin_frame_ack_;
   base::TimeTicks posted_begin_impl_frame_deadline_;
@@ -662,6 +669,280 @@ TEST_P(SchedulerTest, InitializeLayerTreeFrameSinkDoesNotBeginImplFrame) {
   EXPECT_NO_ACTION();
 }
 
+TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringIdle) {
+  SetUpScheduler(EXTERNAL_BFS);
+
+  // Simulate basic standard frame cycle passing cleanly.
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_ACTIONS("AddObserver(this)");
+  client_->Reset();
+
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  EXPECT_TRUE(client_->IsInsideBeginImplFrame());
+  client_->Reset();
+
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionPostCommit",
+                 "ScheduledActionActivateSyncTree");
+  client_->Reset();
+
+  task_runner_->RunPendingTasks();
+  EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
+  client_->Reset();
+
+  EXPECT_SCOPED(AdvanceFrame());
+  task_runner_->RunPendingTasks();
+  EXPECT_ACTIONS("WillBeginImplFrame", "RemoveObserver(this)");
+  client_->Reset();
+
+  // Send immediate last frame synthetically.
+  scheduler_->SendEarlyLastBeginMainFrame();
+
+  EXPECT_TRUE(client_->IsInsideBeginImplFrame());
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+}
+
+TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_HalfInterval) {
+  SetUpScheduler(EXTERNAL_BFS);
+
+  base::TimeDelta default_interval = viz::BeginFrameArgs::DefaultInterval();
+
+  // Send a few BeginMainFrames with the default interval.
+  // Frame 1
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  task_runner_->RunPendingTasks();
+  client_->Reset();
+
+  // Frame 2
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  task_runner_->RunPendingTasks();
+
+  uint64_t base_seq =
+      client_->last_begin_main_frame_args().frame_id.sequence_number;
+  client_->Reset();
+
+  // Send the early last frame signal.
+  scheduler_->SendEarlyLastBeginMainFrame();
+
+  // Wait for half the default interval amount of time.
+  task_runner_->AdvanceMockTickClock(default_interval * 0.5);
+
+  // Check if the last BeginMainFrame sequence number had advanced.
+  EXPECT_EQ(client_->last_begin_main_frame_args().frame_id.sequence_number,
+            base_seq + 1);
+}
+
+TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_Throttling) {
+  SetUpScheduler(EXTERNAL_BFS);
+
+  // Send a regular frame first.
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  task_runner_->RunPendingTasks();
+  client_->Reset();
+
+  // Enable throttling.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRenderThrottleFrameRate,
+      {{"render-throttled-frame-interval-hz", "30"}});
+  scheduler_->SetShouldThrottleFrameRate(true);
+
+  uint64_t base_seq =
+      client_->last_begin_main_frame_args().frame_id.sequence_number;
+
+  // Send the early last frame signal.
+  scheduler_->SendEarlyLastBeginMainFrame();
+
+  // Check if the last BeginMainFrame sequence number had advanced, despite
+  // throttling.
+  EXPECT_GT(client_->last_begin_main_frame_args().frame_id.sequence_number,
+            base_seq);
+  EXPECT_TRUE(client_->IsInsideBeginImplFrame());
+}
+
+TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringCommit) {
+  // This is always set in proxy_impl.
+  scheduler_settings_.main_frame_before_commit_enabled = true;
+  SetUpScheduler(EXTERNAL_BFS);
+
+  // Start a frame and leave it pending commit.
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+
+  uint64_t base_seq =
+      client_->last_begin_main_frame_args().frame_id.sequence_number;
+
+  // Send the early last frame signal while the previous frame is pending
+  // commit.
+  scheduler_->SendEarlyLastBeginMainFrame();
+
+  // Frame should not be sent immediately because the previous one hasn't
+  // committed.
+  EXPECT_EQ(client_->last_begin_main_frame_args().frame_id.sequence_number,
+            base_seq);
+
+  // Notify ready to commit.
+  scheduler_->NotifyReadyToCommit(nullptr);
+
+  // This should have triggered the next BeginMainFrame.
+  EXPECT_EQ(client_->last_begin_main_frame_args().frame_id.sequence_number,
+            base_seq + 1);
+}
+
+TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringActivate) {
+  SetUpScheduler(EXTERNAL_BFS);
+
+  // Start a frame, complete the commit, and leave it pending activation.
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+
+  uint64_t base_seq =
+      client_->last_begin_main_frame_args().frame_id.sequence_number;
+
+  // Send the early last frame signal while the previous frame is pending
+  // activate.
+  scheduler_->SendEarlyLastBeginMainFrame();
+
+  // Frame should not be sent immediately because we are awaiting activation.
+  EXPECT_EQ(client_->last_begin_main_frame_args().frame_id.sequence_number,
+            base_seq);
+
+  // Notify ready to activate.
+  scheduler_->NotifyReadyToActivate();
+
+  // This should have triggered the next BeginMainFrame.
+  EXPECT_EQ(client_->last_begin_main_frame_args().frame_id.sequence_number,
+            base_seq + 1);
+}
+
+TEST_P(SchedulerTest,
+       SendEarlyLastBeginMainFrame_MonotonicityAndDuplicateDropping) {
+  SetUpScheduler(EXTERNAL_BFS);
+
+  // 1. Start with a regular frame to initialize
+  // last_dispatched_begin_main_frame_args_.
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  task_runner_->RunPendingTasks();
+
+  uint64_t base_seq =
+      client_->last_begin_main_frame_args().frame_id.sequence_number;
+  client_->Reset();
+
+  // 2. Start an Impl-only frame.
+  scheduler_->SetNeedsRedraw();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("WillBeginImplFrame");
+  uint64_t impl_only_seq =
+      client_->last_begin_impl_frame_args().frame_id.sequence_number;
+  EXPECT_GT(impl_only_seq, base_seq);
+  client_->Reset();
+
+  // 3. Send early last BeginMainFrame signal.
+  // This should advance beyond impl_only_seq.
+  scheduler_->SendEarlyLastBeginMainFrame();
+
+  uint64_t spoofed_seq =
+      client_->last_begin_impl_frame_args().frame_id.sequence_number;
+  EXPECT_GT(spoofed_seq, impl_only_seq);
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  client_->Reset();
+
+  // 4. Now simulate Viz sending a BeginFrame that clashes with our spoofed one.
+  // Since we already started spoofed_seq, this should be dropped.
+  viz::BeginFrameArgs clashing_args =
+      fake_external_begin_frame_source_->CreateBeginFrameArgs(
+          BEGINFRAME_FROM_HERE, task_runner_->GetMockTickClock());
+  clashing_args.frame_id.sequence_number = spoofed_seq;
+  // Satisfy monotonicity check in BeginFrameObserverBase.
+  clashing_args.frame_time =
+      std::max(clashing_args.frame_time,
+               client_->last_begin_impl_frame_args().frame_time);
+
+  scheduler_->OnBeginFrame(clashing_args);
+  EXPECT_NO_ACTION();
+}
+
+TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_ClearsPendingRetroFrame) {
+  SetUpScheduler(EXTERNAL_BFS);
+
+  // Initialize last_dispatched_begin_main_frame_args_.
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_SCOPED(AdvanceFrame());
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  task_runner_->RunPendingTasks();
+  client_->Reset();
+
+  // 1. Start a frame and stay inside it. Use an Impl-only frame so no main
+  // frame is in flight.
+  scheduler_->SetNeedsRedraw();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("WillBeginImplFrame");
+  // INSIDE_BEGIN_FRAME state.
+
+  // 2. Receive another BeginFrame from Viz. It should become pending because we
+  // are busy.
+  viz::BeginFrameArgs pending_args =
+      fake_external_begin_frame_source_->CreateBeginFrameArgs(
+          BEGINFRAME_FROM_HERE, task_runner_->GetMockTickClock());
+  scheduler_->OnBeginFrame(pending_args);
+  // pending_args is now in pending_begin_frame_args_.
+
+  client_->Reset();
+
+  // 3. Send early last BeginMainFrame.
+  // It should take the max(last_started, pending) and advance.
+  scheduler_->SendEarlyLastBeginMainFrame();
+
+  uint64_t spoofed_seq =
+      client_->last_begin_impl_frame_args().frame_id.sequence_number;
+  EXPECT_GT(spoofed_seq, pending_args.frame_id.sequence_number);
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  client_->Reset();
+
+  // 4. Now simulate Viz sending a BeginFrame that clashes with our spoofed one.
+  // It should be dropped.
+  viz::BeginFrameArgs clashing_args =
+      fake_external_begin_frame_source_->CreateBeginFrameArgs(
+          BEGINFRAME_FROM_HERE, task_runner_->GetMockTickClock());
+  clashing_args.frame_id.sequence_number = spoofed_seq;
+  clashing_args.frame_time =
+      std::max(clashing_args.frame_time,
+               client_->last_begin_impl_frame_args().frame_time);
+
+  scheduler_->OnBeginFrame(clashing_args);
+  EXPECT_NO_ACTION();
+
+  // 5. Finish the current spoofed frame.
+  task_runner_->RunPendingTasks();
+  client_->Reset();
+
+  // 6. Verify no more frames are started (pending retro frame was cleared).
+  EXPECT_NO_ACTION();
+}
 TEST_P(SchedulerTest, Stop) {
   SetUpScheduler(EXTERNAL_BFS);
 

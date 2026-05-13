@@ -517,8 +517,10 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
     return false;
 
   // Do not send more than one begin main frame in a begin frame.
-  if (did_send_begin_main_frame_for_current_frame_)
+  if (did_send_begin_main_frame_for_current_frame_ &&
+      !urgent_begin_main_frame_pending_) {
     return false;
+  }
 
   // Only send BeginMainFrame when there isn't another commit pending already.
   // Other parts of the state machine indirectly defer the BeginMainFrame
@@ -564,7 +566,8 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
   // might have new user input arriving soon.
   // TODO(brianderson): Allow sending BeginMainFrame while idle when the main
   // thread isn't consuming user input for non-synchronous compositor.
-  if (ShouldBlockBeginMainFrameWhenIdle()) {
+  if (ShouldBlockBeginMainFrameWhenIdle() &&
+      !urgent_begin_main_frame_pending_) {
     return false;
   }
 
@@ -855,7 +858,8 @@ void SchedulerStateMachine::WillSendBeginMainFrame() {
          current_pending_tree_is_impl_side_);
   DCHECK(visible_);
   DCHECK(!begin_frame_source_paused_);
-  DCHECK(!did_send_begin_main_frame_for_current_frame_);
+  DCHECK(!did_send_begin_main_frame_for_current_frame_ ||
+         urgent_begin_main_frame_pending_);
   if (begin_main_frame_state_ == BeginMainFrameState::IDLE) {
     begin_main_frame_state_ = BeginMainFrameState::SENT;
   } else {
@@ -874,6 +878,7 @@ void SchedulerStateMachine::WillSendBeginMainFrame() {
   // in order to avoid the effects of delay in-between BeginImplFrame and
   // SendBeginMainFrame(), that might lead to frame pacing issues.
   last_sent_begin_main_frame_time_ = last_begin_impl_frame_time_;
+  urgent_begin_main_frame_pending_ = false;
 }
 
 bool SchedulerStateMachine::CheckWillCommit() const {
@@ -1583,6 +1588,11 @@ void SchedulerStateMachine::SetNeedsBeginMainFrame(bool now) {
   if (now) {
     last_sent_begin_main_frame_time_ = base::TimeTicks();
   }
+}
+
+void SchedulerStateMachine::SetUrgentBeginMainFramePending() {
+  urgent_begin_main_frame_pending_ = true;
+  SetNeedsBeginMainFrame(true);
 }
 
 void SchedulerStateMachine::SetNeedsOneBeginImplFrame() {

@@ -410,6 +410,53 @@ TEST(SchedulerStateMachineTest, BeginMainFrameIsHighestPriorityAction) {
   EXPECT_ACTION(SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
 }
 
+TEST(SchedulerStateMachineTest,
+     TestUrgentBeginMainFrameBypassesIdleAndFrameLocks) {
+  SchedulerSettings default_scheduler_settings;
+  default_scheduler_settings.main_frame_before_commit_enabled = true;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  // UrgentBeginMainFrame triggers a BMF action when frame production is idle
+  state.SetVisible(true);
+  state.SetBeginImplFrameState(
+      SchedulerStateMachine::BeginImplFrameState::IDLE);
+  state.SetUrgentBeginMainFramePending();
+  EXPECT_ACTION(SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+
+  PerformAction(&state, SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+}
+
+TEST(SchedulerStateMachineTest,
+     TestUrgentBeginMainFramePipelinedWithInFlightFrame) {
+  SchedulerSettings default_scheduler_settings;
+  default_scheduler_settings.main_frame_before_commit_enabled = true;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  state.SetVisible(true);
+  state.SetNeedsBeginMainFrame(false);
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION(SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  PerformAction(&state, SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+
+  // Setting SetUrgentBeginMainFramePending will not result in that
+  // being the next action because the last outstanding frame needs to be ready
+  // to commit.
+  state.SetUrgentBeginMainFramePending();
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // Bring the primary BeginMainFrame state to READY_TO_COMMIT so it can
+  // pipeline.
+  state.NotifyReadyToCommit();
+
+  // Now the next action is to send the requested BeginMainFrame.
+  EXPECT_ACTION(SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  PerformAction(&state, SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_ACTION(SchedulerStateMachine::Action::COMMIT);
+}
+
 TEST(SchedulerStateMachineTest, TestNextActionBeginsMainFrameIfNeeded) {
   SchedulerSettings default_scheduler_settings;
 

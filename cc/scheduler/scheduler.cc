@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/task/delay_policy.h"
 #include "base/task/single_thread_task_runner.h"
@@ -31,6 +32,7 @@
 #include "cc/scheduler/slim_scheduler_state_machine.h"
 #include "cc/scheduler/webview_scheduler_state_machine.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
@@ -185,6 +187,63 @@ void Scheduler::SetNeedsBeginMainFrame(bool now) {
 void Scheduler::SetNeedsOneBeginImplFrame() {
   state_machine_->SetNeedsOneBeginImplFrame();
   ProcessScheduledActions();
+}
+
+// This is an experimental method introduced for crbug.com/496610055
+// in which we send an artificial BeginMainFrame if we know that we're
+// in the last renderer frame of a cross-document view transition.
+void Scheduler::SendEarlyLastBeginMainFrame() {
+  viz::BeginFrameArgs args = last_dispatched_begin_main_frame_args_;
+
+  // Ensure we start from the latest known args to avoid sequence number
+  // clashes.
+  if (begin_impl_frame_tracker_.DangerousMethodCurrentOrLast().frame_id >
+      args.frame_id) {
+    args = begin_impl_frame_tracker_.DangerousMethodCurrentOrLast();
+  }
+  if (pending_begin_frame_args_.frame_id > args.frame_id) {
+    args = pending_begin_frame_args_;
+  }
+
+  if (!args.IsValid() || args.interval.is_zero()) {
+    return;
+  }
+
+  // If we are starting a frame that covers or supersedes the pending one,
+  // clear it now to prevent it from starting later.
+  if (pending_begin_frame_args_.IsValid() &&
+      args.frame_id >= pending_begin_frame_args_.frame_id) {
+    pending_begin_frame_args_ = viz::BeginFrameArgs();
+    pending_begin_frame_task_.Cancel();
+  }
+
+  if (state_machine_->begin_impl_frame_state() !=
+      SchedulerStateMachine::BeginImplFrameState::IDLE) {
+    begin_impl_frame_deadline_timer_.Stop();
+    if (!settings_.using_synchronous_renderer_compositor) {
+      compositor_frame_reporting_controller_->OnFinishImplFrame(
+          begin_impl_frame_tracker_.Current().frame_id,
+          /*waiting_for_main=*/false);
+    }
+    FinishImplFrame();
+  }
+
+  // Calculate intervals after potentially finishing the current frame.
+  base::TimeDelta elapsed = Now() - args.frame_time;
+  uint64_t intervals =
+      elapsed.is_positive() ? base::ClampRound(elapsed / args.interval) : 1;
+  if (intervals <= 0) {
+    intervals = 1;
+  }
+  args.frame_id.sequence_number += intervals;
+  args.frame_time += args.interval * intervals;
+  args.deadline = args.frame_time + args.interval;
+  args.on_critical_path = !state_machine_->ImplLatencyTakesPriority();
+
+  state_machine_->SetUrgentBeginMainFramePending();
+
+  // Send the next BeginMainFrame right away.
+  OnBeginFrame(args);
 }
 
 void Scheduler::SetNeedsRedraw() {
@@ -386,8 +445,6 @@ void Scheduler::OnBeginFrameSourcePausedChanged(bool paused) {
 // If the scheduler is busy, we queue the BeginFrame to be handled later as a
 // pending BeginMainFrame.
 bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
-  TRACE_EVENT1("cc,benchmark", "Scheduler::BeginFrame", "args", args.AsValue());
-
   // If the begin frame interval is different than last frame and bigger than
   // zero then let |client_| know about the new interval for animations. In
   // theory the interval should always be bigger than zero but the value is
@@ -401,6 +458,20 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
     // interval.
     state_machine_->FrameIntervalUpdated(last_frame_interval_);
   }
+
+  // TODO(crbug.com/512813200): Audit uses of Dangerous* methods
+  if (begin_impl_frame_tracker_.DangerousMethodHasStarted()) {
+    const viz::BeginFrameArgs& last_args =
+        begin_impl_frame_tracker_.DangerousMethodCurrentOrLast();
+    if (args.frame_id.source_id == last_args.frame_id.source_id &&
+        args.frame_id.sequence_number <= last_args.frame_id.sequence_number) {
+      // We already processed this frame ID (e.g. from an early main frame).
+      // Do not call SendDidNotProduceFrame, as that would abort the reporter
+      // for the frame we are actively processing.
+      return false;
+    }
+  }
+  TRACE_EVENT1("cc,benchmark", "Scheduler::BeginFrame", "args", args.AsValue());
 
   // Drop the BeginFrame if we don't need one.
   if (!state_machine_->BeginFrameNeeded()) {

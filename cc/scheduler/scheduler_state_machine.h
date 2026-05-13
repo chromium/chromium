@@ -270,6 +270,7 @@ class CC_EXPORT SchedulerStateMachine {
   // `SetThrottleMainFrames()` has been called, and we have an "urgent" update
   // that should not wait more than necessary.
   void SetNeedsBeginMainFrame(bool now);
+  void SetUrgentBeginMainFramePending();
   bool needs_begin_main_frame() const { return needs_begin_main_frame_; }
 
   // Requests a single impl frame (after the current frame if there is one
@@ -477,6 +478,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool needs_redraw_ = false;
   bool needs_prepare_tiles_ = false;
   bool needs_begin_main_frame_ = false;
+  bool urgent_begin_main_frame_pending_ = false;
   bool needs_one_begin_impl_frame_ = false;
   bool needs_post_commit_ = false;
   bool visible_ = false;
