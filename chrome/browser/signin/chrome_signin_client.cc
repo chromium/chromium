@@ -41,6 +41,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/metrics/metrics_service.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -198,6 +199,30 @@ class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
     return signin::OAuthConsumer(
         signin::oauth_consumer_name::kSkillsServiceName,
         {features::kSkillsServiceApiOAuth2Scope.Get()});
+  }
+
+  signin::OAuthConsumer GetOAuthConsumerForContextualTasks() const override {
+    CHECK(base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks));
+    signin::ScopeSet scopes = {
+        contextual_tasks::ShouldUseSearchResultsScope()
+            ? GaiaConstants::kSearchResultsOAuth2Scope
+            : GaiaConstants::kChromeSyncOAuth2Scope,
+        GaiaConstants::kClearCutOAuth2Scope,
+        GaiaConstants::kLensOAuth2Scope,
+    };
+    if (base::FeatureList::IsEnabled(
+            contextual_tasks::kContextualTasksExtraOauthScopes)) {
+      std::string extra_scopes_str =
+          contextual_tasks::kContextualTasksOAuthScopes.Get();
+      std::vector<std::string> extra_scopes_vec =
+          base::SplitString(extra_scopes_str, ",", base::TRIM_WHITESPACE,
+                            base::SPLIT_WANT_NONEMPTY);
+      for (const std::string& extra_scope : extra_scopes_vec) {
+        scopes.insert(extra_scope);
+      }
+    }
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kContextualTasksName, std::move(scopes));
   }
 
   signin::OAuthConsumer GetOAuthConsumerForIndigo() const override {

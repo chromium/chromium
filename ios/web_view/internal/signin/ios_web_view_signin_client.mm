@@ -33,6 +33,10 @@ class IOSWebViewOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
     NOTREACHED();
   }
 
+  signin::OAuthConsumer GetOAuthConsumerForContextualTasks() const override {
+    NOTREACHED();
+  }
+
   signin::OAuthConsumer GetOAuthConsumerForIndigo() const override {
     NOTREACHED();
   }

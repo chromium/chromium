@@ -14,6 +14,7 @@
 namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
+BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 // When enabled, it should instead request the kSearchResultsOAuth2Scope instead
 // of the kChromeSyncOAuth2Scope
@@ -159,6 +160,9 @@ extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileSize;
 
 // The user agent suffix to use for requests from the contextual tasks UI.
 extern const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix;
+
+// Extra OAuth scopes separated by commas for contextual tasks.
+extern const base::FeatureParam<std::string> kContextualTasksOAuthScopes;
 
 // The URL for the help center article from the toolbar.
 extern const base::FeatureParam<std::string> kContextualTasksHelpUrl;

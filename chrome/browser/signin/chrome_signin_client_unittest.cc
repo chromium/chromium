@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,9 +18,11 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -126,6 +129,31 @@ TEST_F(ChromeSigninClientSignoutTest, ChildProfile) {
 #else
   EXPECT_TRUE(client_->IsClearPrimaryAccountAllowed());
 #endif
+}
+
+TEST_F(ChromeSigninClientSignoutTest, GetOAuthConsumerForContextualTasks) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasksExtraOauthScopes,
+        {{"ContextualTasksOAuthScopes",
+          "https://example.com/scope1,https://example.com/scope2"}}},
+       {contextual_tasks::kContextualTasks, {}}},
+      {});
+
+  signin::OAuthConsumer consumer = client_->GetOAuthConsumerFromId(
+      signin::OAuthConsumerId::kContextualTasks);
+  EXPECT_EQ(consumer.GetName(),
+            signin::oauth_consumer_name::kContextualTasksName);
+
+  signin::ScopeSet scopes = consumer.GetScopes();
+
+  // Scopes from chormium source
+  EXPECT_THAT(scopes, testing::Contains(GaiaConstants::kClearCutOAuth2Scope));
+  EXPECT_THAT(scopes, testing::Contains(GaiaConstants::kLensOAuth2Scope));
+
+  // Scopes from FeatureParam
+  EXPECT_THAT(scopes, testing::Contains("https://example.com/scope1"));
+  EXPECT_THAT(scopes, testing::Contains("https://example.com/scope2"));
 }
 
 class ChromeSigninClientSignoutSourceTest

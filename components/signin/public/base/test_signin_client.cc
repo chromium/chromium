@@ -39,6 +39,11 @@ class TestOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
     NOTREACHED();
   }
 
+  signin::OAuthConsumer GetOAuthConsumerForContextualTasks() const override {
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kContextualTasksName, {});
+  }
+
   signin::OAuthConsumer GetOAuthConsumerForIndigo() const override {
     NOTREACHED();
   }

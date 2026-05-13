@@ -22,50 +22,53 @@ inline constexpr char kUnexpectedServiceResponse[] =
     "UnexpectedServiceResponse";
 
 // OAuth2 scopes.
-inline constexpr char kOAuth1LoginScope[] =
-    "https://www.google.com/accounts/OAuthLogin";
+// Keep the list of OAuth2 scopes sorted alphabetically.
+// keep-sorted start case=no
 
-// Service/scope names for device management (cloud-based policy) server.
-inline constexpr char kDeviceManagementServiceOAuth[] =
-    "https://www.googleapis.com/auth/chromeosdevicemanagement";
-
+// OAuth2 scope for access to Account Capabilities API.
+inline constexpr char kAccountCapabilitiesOAuth2Scope[] =
+    "https://www.googleapis.com/auth/account.capabilities";
 // OAuth2 scope for access to all Google APIs.
 inline constexpr char kAnyApiOAuth2Scope[] =
     "https://www.googleapis.com/auth/any-api";
-
 // OAuth2 scope for access to Chrome sync APIs
 inline constexpr char kChromeSyncOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromesync";
-
+// OAuth2 scope for access to clear cut logs.
+inline constexpr char kClearCutOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cclog";
+// Service/scope names for device management (cloud-based policy) server.
+inline constexpr char kDeviceManagementServiceOAuth[] =
+    "https://www.googleapis.com/auth/chromeosdevicemanagement";
+// OAuth2 scope for access to Drive.
+inline constexpr char kDriveOAuth2Scope[] =
+    "https://www.googleapis.com/auth/drive";
+// OAuth2 scope for FCM, the Firebase Cloud Messaging service.
+inline constexpr char kFCMOAuthScope[] =
+    "https://www.googleapis.com/auth/firebase.messaging";
 // OAuth2 scope for access to Google account information.
 inline constexpr char kGoogleUserInfoEmail[] =
     "https://www.googleapis.com/auth/userinfo.email";
 inline constexpr char kGoogleUserInfoProfile[] =
     "https://www.googleapis.com/auth/userinfo.profile";
-
-// OAuth2 scope for FCM, the Firebase Cloud Messaging service.
-inline constexpr char kFCMOAuthScope[] =
-    "https://www.googleapis.com/auth/firebase.messaging";
-
-// OAuth2 scope for access to Drive.
-inline constexpr char kDriveOAuth2Scope[] =
-    "https://www.googleapis.com/auth/drive";
-
-// OAuth2 scope for access to Account Capabilities API.
-inline constexpr char kAccountCapabilitiesOAuth2Scope[] =
-    "https://www.googleapis.com/auth/account.capabilities";
-
-// OAuth2 scope for support content API.
-inline constexpr char kSupportContentOAuth2Scope[] =
-    "https://www.googleapis.com/auth/supportcontent";
-
+// OAuth2 scope for Lens.
+inline constexpr char kLensOAuth2Scope[] =
+    "https://www.googleapis.com/auth/lens";
+inline constexpr char kOAuth1LoginScope[] =
+    "https://www.google.com/accounts/OAuthLogin";
+// OAuth2 scope for search results.
+inline constexpr char kSearchResultsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/searchresults";
 // OAuth2 scope for access to the SecureConnect API.
 inline constexpr char kSecureConnectOAuth2Scope[] =
     "https://www.googleapis.com/auth/bce.secureconnect";
-
 // OAuth2 scope for access to the Secure Gateway API.
 inline constexpr char kSecureGatewayOAuth2Scope[] =
     "https://www.googleapis.com/auth/cloud-secure-gateway-users.access";
+// OAuth2 scope for support content API.
+inline constexpr char kSupportContentOAuth2Scope[] =
+    "https://www.googleapis.com/auth/supportcontent";
+// keep-sorted end
 
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up
