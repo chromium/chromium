@@ -28,4 +28,4 @@ class DesktopPlatformFeaturesMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 };
 
-#endif  //  CHROME_BROWSER_METRICS_DESKTOP_PLATFORM_FEATURES_METRICS_PROVIDER_H_
+#endif  // CHROME_BROWSER_METRICS_DESKTOP_PLATFORM_FEATURES_METRICS_PROVIDER_H_
