@@ -256,6 +256,27 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
   UpdateLoggerReadinessData(form);
 }
 
+void AutofillAiManager::OnFormInteracted(const FormStructure& form,
+                                         ukm::SourceId ukm_source_id) {
+  if (last_logged_ukm_source_id_for_interaction_ == ukm_source_id ||
+      form.server_predictions_received_timestamp().is_null()) {
+    return;
+  }
+  const DenseSet<EntityType> relevant_entities =
+      GetRelevantEntityTypesForFields(form.fields());
+  if (relevant_entities.empty()) {
+    return;
+  }
+
+  base::TimeDelta duration =
+      base::TimeTicks::Now() - form.server_predictions_received_timestamp();
+  base::UmaHistogramLongTimes(
+      "Autofill.Ai.TimingInterval."
+      "LoadedServerPredictionsToFirstInteraction",
+      duration);
+  last_logged_ukm_source_id_for_interaction_ = ukm_source_id;
+}
+
 void AutofillAiManager::OnDidFillSuggestion(
     const EntityInstance& entity,
     const FormStructure& form,
