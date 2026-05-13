@@ -42,7 +42,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
               ?hidden="${this.shouldShowErrorScrim_()}">
             <cr-icon-button id="stopButton" part="voice-stop-button"
                 iron-icon="composebox:stop"
-                title="Stop"
+                 title="${this.i18n('voiceStop')}"
                 @click="${this.onStopClick_}"
                 >
             </cr-icon-button>
