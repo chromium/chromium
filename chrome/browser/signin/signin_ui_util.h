@@ -66,11 +66,6 @@ void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint);
 
-// This function is used to sign-in the user into Chrome without offering sync.
-// This function does nothing if the user is already signed in to Chrome.
-void ShowSigninPromptFromPromo(Profile* profile,
-                               signin_metrics::AccessPoint access_point);
-
 // This function is used to sign in a given account:
 // * This function does nothing if the user is already signed in to Chrome.
 // * If |account| is empty, then it presents the Chrome sign-in page.
@@ -141,12 +136,6 @@ content::WebContents* GetSignInTabWithAccessPoint(
 std::u16string GetShortProfileIdentityToDisplay(
     const ProfileAttributesEntry& profile_attributes_entry,
     Profile* profile);
-
-// Returns the domain of the policy value of RestrictSigninToPattern. Returns
-// an empty string if the policy is not set or can not be parsed. The parser
-// only supports the policy value that matches [^@]+@[a-zA-Z0-9\-.]+(\\E)?\$?$.
-// Also, the parser does not validate the policy value.
-std::string GetAllowedDomain(std::string signin_pattern);
 
 // Returns whether Chrome should show the identity of the user (using a brief
 // animation) on opening a new window.

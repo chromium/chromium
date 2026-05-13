@@ -789,33 +789,6 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest,
   EXPECT_EQ(1, tab_strip->count());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-                       ShowSigninPromptFromPromo) {
-  Profile* profile = browser()->profile();
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  ShowSigninPromptFromPromo(profile, access_point_);
-  EXPECT_EQ(1, tab_strip->count());
-
-  content::WebContents* tab = tab_strip->GetWebContentsAt(0);
-  ASSERT_TRUE(tab);
-  EXPECT_TRUE(base::StartsWith(
-      tab->GetVisibleURL().spec(),
-      GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec(),
-      base::CompareCase::INSENSITIVE_ASCII));
-}
-
-IN_PROC_BROWSER_TEST_F(SigninUiUtilTest,
-                       ShowSigninPromptFromPromoWithExistingAccount) {
-  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "foo@example.com",
-                                      signin::ConsentLevel::kSignin);
-
-  Profile* profile = browser()->profile();
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  EXPECT_EQ(1, tab_strip->count());
-  ShowSigninPromptFromPromo(profile, access_point_);
-  EXPECT_EQ(1, tab_strip->count());
-}
-
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "foo@example.com",
                                       signin::ConsentLevel::kSignin);

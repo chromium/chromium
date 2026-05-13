@@ -247,27 +247,6 @@ void ShowExtensionSigninPrompt(Profile* profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void ShowSigninPromptFromPromo(Profile* profile,
-                               signin_metrics::AccessPoint access_point) {
-#if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
-#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-  CHECK(!profile->IsOffTheRecord());
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    DVLOG(1) << "The user is already signed in.";
-    return;
-  }
-
-  GetSigninUiDelegate()->ShowSigninUI(
-      profile, /*enable_sync=*/false, access_point,
-      signin_metrics::PromoAction::
-          PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 void SignInFromSingleAccountPromo(Profile* profile,
                                   const CoreAccountInfo& account,
                                   signin_metrics::AccessPoint access_point) {
@@ -546,37 +525,6 @@ std::u16string GetShortProfileIdentityToDisplay(
   }
 
   return base::UTF8ToUTF16(*given_name);
-}
-
-std::string GetAllowedDomain(std::string signin_pattern) {
-  std::vector<std::string> splitted_signin_pattern = base::SplitString(
-      signin_pattern, "@", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  // There are more than one '@'s in the pattern.
-  if (splitted_signin_pattern.size() != 2) {
-    return std::string();
-  }
-
-  std::string domain = splitted_signin_pattern[1];
-
-  // Trims tailing '$' if existed.
-  if (!domain.empty() && domain.back() == '$') {
-    domain.pop_back();
-  }
-
-  // Trims tailing '\E' if existed.
-  if (domain.size() > 1 &&
-      base::EndsWith(domain, "\\E", base::CompareCase::SENSITIVE)) {
-    domain.erase(domain.size() - 2);
-  }
-
-  // Check if there is any special character in the domain. Note that
-  // jsmith@[192.168.2.1] is not supported.
-  if (!re2::RE2::FullMatch(domain, "[a-zA-Z0-9\\-.]+")) {
-    return std::string();
-  }
-
-  return domain;
 }
 
 bool ShouldShowAnimatedIdentityOnOpeningWindow(Profile& profile) {

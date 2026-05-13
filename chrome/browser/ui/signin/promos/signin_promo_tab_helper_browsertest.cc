@@ -27,8 +27,9 @@ class SigninPromoTabHelperTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SigninPromoTabHelperTest,
                        CallPasswordMoveCallbackAfterSignInFromTab) {
   // Get the sign in tab with the correct access point.
-  signin_ui_util::ShowSigninPromptFromPromo(
-      browser()->profile(), signin_metrics::AccessPoint::kPasswordBubble);
+  signin_ui_util::SignInFromSingleAccountPromo(
+      browser()->profile(), CoreAccountInfo(),
+      signin_metrics::AccessPoint::kPasswordBubble);
   content::WebContents* sign_in_tab =
       signin_ui_util::GetSignInTabWithAccessPoint(
           browser(), signin_metrics::AccessPoint::kPasswordBubble);

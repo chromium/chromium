@@ -16,29 +16,6 @@ namespace signin_ui_util {
 
 namespace {
 
-TEST(GetAllowedDomainTest, WithInvalidPattern) {
-  EXPECT_EQ(std::string(), GetAllowedDomain("email"));
-  EXPECT_EQ(std::string(), GetAllowedDomain("email@a@b"));
-  EXPECT_EQ(std::string(), GetAllowedDomain("email@a[b"));
-  EXPECT_EQ(std::string(), GetAllowedDomain("@$"));
-  EXPECT_EQ(std::string(), GetAllowedDomain("@\\E$"));
-  EXPECT_EQ(std::string(), GetAllowedDomain("@\\E$a"));
-  EXPECT_EQ(std::string(), GetAllowedDomain("email@"));
-  EXPECT_EQ(std::string(), GetAllowedDomain("@"));
-  EXPECT_EQ(std::string(), GetAllowedDomain("example@a.com|example@b.com"));
-  EXPECT_EQ(std::string(), GetAllowedDomain(""));
-}
-
-TEST(GetAllowedDomainTest, WithValidPattern) {
-  EXPECT_EQ("example.com", GetAllowedDomain("email@example.com"));
-  EXPECT_EQ("example.com", GetAllowedDomain("email@example.com\\E"));
-  EXPECT_EQ("example.com", GetAllowedDomain("email@example.com$"));
-  EXPECT_EQ("example.com", GetAllowedDomain("email@example.com\\E$"));
-  EXPECT_EQ("example.com", GetAllowedDomain("*@example.com\\E$"));
-  EXPECT_EQ("example.com", GetAllowedDomain(".*@example.com\\E$"));
-  EXPECT_EQ("example-1.com", GetAllowedDomain("email@example-1.com"));
-}
-
 TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
   // Setup a testing profile manager with mock time.
   content::BrowserTaskEnvironment task_environment(
