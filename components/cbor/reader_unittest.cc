@@ -122,6 +122,26 @@ TEST(CBORReaderTest, TestUintEncodedWithNonMinimumByteLength) {
   }
 }
 
+// Regression test for crbug.com/512821715.
+TEST(CBORReaderTest, MapErrorHandlingFirstError) {
+  // Map with 1 pair.
+  // Key: String of length 1, but 0x80 is invalid UTF-8.
+  // Value: Unsigned integer needing 1 more byte (0x18), but it's missing.
+  // This test ensures that the first error encountered (INVALID_UTF8 from the
+  // key) is preserved and not overwritten by a subsequent error (such as
+  // INCOMPLETE_CBOR_DATA from the value).
+  static constexpr uint8_t kMapWithErrors[] = {
+      0xa1,        // map with 1 pair
+      0x61, 0x80,  // key: invalid UTF-8 string
+      0x18         // value: incomplete unsigned integer
+  };
+
+  Reader::DecoderError error_code;
+  std::optional<Value> cbor = Reader::Read(kMapWithErrors, &error_code);
+  EXPECT_FALSE(cbor.has_value());
+  EXPECT_EQ(error_code, Reader::DecoderError::INVALID_UTF8);
+}
+
 TEST(CBORReaderTest, TestReadNegativeInt) {
   struct NegativeIntTestCase {
     const int64_t negative_int;

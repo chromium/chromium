@@ -373,9 +373,12 @@ std::optional<Value> Reader::ReadMapContent(
   for (uint64_t i = 0; i < length; ++i) {
     std::optional<Value> key =
         DecodeCompleteDataItem(config, max_nesting_level - 1);
+    if (!key.has_value()) {
+      return std::nullopt;
+    }
     std::optional<Value> value =
         DecodeCompleteDataItem(config, max_nesting_level - 1);
-    if (!key.has_value() || !value.has_value()) {
+    if (!value.has_value()) {
       return std::nullopt;
     }
 
