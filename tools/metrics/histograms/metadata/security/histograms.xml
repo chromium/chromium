@@ -456,13 +456,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2025-12-21">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2027-04-01">
   <owner>cthomp@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
+  <owner>chrome-swan@google.com</owner>
   <summary>
     Events for navigations that are upgraded from HTTP to HTTPS by HTTPS-First
     Mode. Recorded for eligible navigations (HTTP main frame navigations that
     are not allowlisted), if the profile is opted in to HTTPS-First Mode.
+
+    Note: This histogram was expired from 2025-12-21 through 2026-05-13.
   </summary>
 </histogram>
 
