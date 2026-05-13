@@ -24,6 +24,8 @@ static_library("send_tab_to_self") {
     "received_tab_forms_filler.h",
     "send_tab_to_self_bridge.cc",
     "send_tab_to_self_bridge.h",
+    "send_tab_to_self_commit_tracker.cc",
+    "send_tab_to_self_commit_tracker.h",
     "send_tab_to_self_data_type_controller.cc",
     "send_tab_to_self_data_type_controller.h",
     "send_tab_to_self_entry.cc",
@@ -120,6 +122,7 @@ source_set("unit_tests") {
     "proto_conversions_unittest.cc",
     "received_tab_forms_filler_unittest.cc",
     "send_tab_to_self_bridge_unittest.cc",
+    "send_tab_to_self_commit_tracker_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
     "target_device_info_unittest.cc",
   ]
