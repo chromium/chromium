@@ -17,10 +17,14 @@
 #include "extensions/common/constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)              // nocheck
+#include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"  // nogncheck
+#include "ui/base/resource/resource_bundle.h"
 #endif
 
 namespace location_bar {
@@ -82,6 +86,25 @@ bool ShouldShowSecurityChipText(const LocationBarModel* model,
   return !model->GetSecureDisplayText().empty();
 }
 
+bool IsGradientGoogleSuperGIcon(const ui::ImageModel& icon) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!icon.IsImage()) {
+    return false;
+  }
+  gfx::ImageSkia image = icon.GetImage().AsImageSkia();
+  gfx::ImageSkia target_16 =
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_GOOGLE_G_GRADIENT_16_ALT);
+  gfx::ImageSkia target_20 =
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_GOOGLE_G_GRADIENT_20);
+  return image.BackedBySameObjectAs(target_16) ||
+         image.BackedBySameObjectAs(target_20);
+#else
+  return false;
+#endif
+}
+
 SecurityChipIcon GetSecurityChipIconEnum(const LocationBarModel* model,
                                          bool is_add_context_button_shown) {
   if (is_add_context_button_shown) {
@@ -91,6 +114,8 @@ SecurityChipIcon GetSecurityChipIconEnum(const LocationBarModel* model,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
   const gfx::VectorIcon& icon = model->GetVectorIcon();
   const char* icon_name = icon.name;
+  // TODO(b/507061157): Use gradient icon here instead of
+  //   `vector_icons::kGoogleSuperGIcon`.
   if (icon_name == vector_icons::kGoogleSuperGIcon.name) {
     return SecurityChipIcon::kGoogleSuperG;
   }
