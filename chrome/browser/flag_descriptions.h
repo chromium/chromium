@@ -2934,11 +2934,6 @@ inline constexpr char kLensSearchReinvocationAffordanceDescription[] =
     "Enables the Lens button in the AIM Searchbox for reinvocation of "
     "selection overlay.";
 
-inline constexpr char kLensSearchSidePanelNewFeedbackName[] =
-    "Lens side panel new feedback";
-inline constexpr char kLensSearchSidePanelNewFeedbackDescription[] =
-    "Enables a new feedback entry point in the Lens side panel.";
-
 
 inline constexpr char kLensVideoCitationsName[] = "Lens video citations";
 inline constexpr char kLensVideoCitationsDescription[] =
