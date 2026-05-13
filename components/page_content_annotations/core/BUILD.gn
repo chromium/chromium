@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("features") {
@@ -60,7 +61,6 @@ static_library("core") {
     "page_visibility_model_handler.h",
     "page_visibility_op_resolver.cc",
     "page_visibility_op_resolver.h",
-    "tracked_element_feature.h",
     "web_state_wrapper.cc",
     "web_state_wrapper.h",
   ]
@@ -84,6 +84,11 @@ static_library("core") {
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/tensorflow_models:tflite_custom_ops",
   ]
+
+  if (use_blink) {
+    sources += [ "tracked_element_feature.h" ]
+    public_deps += [ "//components/viz/common" ]
+  }
 }
 
 static_library("test_support") {

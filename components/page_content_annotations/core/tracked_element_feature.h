@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "components/viz/common/surfaces/tracked_element_rects.h"
+
 namespace page_content_annotations {
 
 // This enum represents the feature that is tracking a blink element rect. This
@@ -14,6 +16,10 @@ namespace page_content_annotations {
 // define values that should not be directly exposed to viz. The values of
 // this enum can be cast to a viz::TrackedElementFeature when calling
 // blink::Element::SetTrackedElementSubRect().
+
+// The int values of this enum can change over time if new values are added to
+// viz::TrackedElementFeature. You should avoid using the int values directly
+// when logging or storing the values.
 
 // For the viz TrackedElementRects definition, see
 // components/viz/common/surfaces/tracked_element_rects.h.
@@ -23,11 +29,9 @@ namespace page_content_annotations {
 
 // LINT.IfChange(TrackedElementFeature)
 enum class TrackedElementFeature : int32_t {
-  // TODO(http://crbug.com/441532128): Extend viz::TrackedElementFeature
-  // properly by importing that file and incrementing from
-  // kTrackedElementFeatureEnd. This will require fixing an ios build error that
-  // is caused by adding a //components/viz/common dependency to this component.
-  kAIHighlight = 2,
+  kAIHighlight = static_cast<int32_t>(
+                     viz::TrackedElementFeature::kTrackedElementFeatureEnd) +
+                 1,
 };
 // LINT.ThenChange(//components/viz/common/surfaces/tracked_element_rects.h:TrackedElementFeature)
 

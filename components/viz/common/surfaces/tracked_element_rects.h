@@ -26,13 +26,11 @@ using TrackedElementId = base::Token;
 // `kTrackedElementFeatureMax` should be updated. For the browser-level values,
 // see components/page_content_annotations/core/tracked_element_feature.h
 
-// LINT.IfChange(TrackedElementFeature)
 enum class TrackedElementFeature : int32_t {
   kIframeTracking = 0,
   kTrackedElementFeatureEnd,
   kTrackedElementFeatureMax = kTrackedElementFeatureEnd + 1,
 };
-// LINT.ThenChange(//components/page_content_annotations/core/tracked_element_feature.h:TrackedElementFeature)
 
 // New struct to hold the tracked element clipped/visible bounds and other data.
 struct VIZ_COMMON_EXPORT TrackedElementRect {

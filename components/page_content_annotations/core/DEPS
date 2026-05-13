@@ -17,6 +17,7 @@ include_rules = [
   "+components/passage_embeddings",
   "+components/search",
   "+components/search_engines",
+  "+components/viz/common/surfaces",
   "+net/base",
   "+services/metrics/public",
   "+sql",
