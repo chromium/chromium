@@ -139,7 +139,7 @@
 }
 
 :host([searchbox-next-enabled]) #composebox {
-  padding-bottom: 10px;
+  padding-bottom: var(--cr-composebox-padding-bottom, 10px);
 }
 
 search-animated-glow {
