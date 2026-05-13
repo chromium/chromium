@@ -37,6 +37,8 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -1665,14 +1667,22 @@ TEST_F(ContextualTasksUiServiceTest,
       .WillByDefault(Return(true));
   ON_CALL(*mock_panel_host, IsPanelInitialized()).WillByDefault(Return(true));
 
+  // Create side panel web contents and set it on the mock panel host.
+  auto side_panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(side_panel_contents.get())
+      ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
+  mock_panel_host->SetWebContents(side_panel_contents.get());
+
   auto coordinator = std::make_unique<ContextualTasksSidePanelCoordinator>(
       &mock_browser_window, std::move(mock_panel_host),
       &mock_active_task_context_provider, nullptr);
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
+  GURL original_tab_url("https://example.com");
   content::WebContentsTester::For(web_contents.get())
-      ->SetLastCommittedURL(GURL("chrome://contextual-tasks"));
+      ->SetLastCommittedURL(original_tab_url);
 
   // The WebContents must be added to the tab strip model to get a valid index.
   tab_strip_model.AppendWebContents(std::move(web_contents), true);
@@ -1698,6 +1708,14 @@ TEST_F(ContextualTasksUiServiceTest,
 
   // Verify that the tab was closed as part of expanding the side panel.
   EXPECT_EQ(tab_strip_model.count(), 0);
+
+  // Verify that the side panel's web contents navigation controller
+  // has the restored URL in the forward history.
+  content::NavigationController& controller =
+      side_panel_contents->GetController();
+  EXPECT_EQ(controller.GetEntryCount(), 2);
+  EXPECT_EQ(controller.GetEntryAtIndex(0)->GetURL(),
+            GURL("chrome://contextual-tasks/"));
 }
 #endif
 
