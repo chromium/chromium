@@ -17,6 +17,7 @@ Length::ValueRange LengthPropertyFunctions::GetValueRange(
     case CSSPropertyID::kBorderRightWidth:
     case CSSPropertyID::kBorderTopWidth:
     case CSSPropertyID::kFlexBasis:
+    case CSSPropertyID::kFlowTolerance:
     case CSSPropertyID::kHeight:
     case CSSPropertyID::kLineHeight:
     case CSSPropertyID::kMaxHeight:
@@ -189,6 +190,13 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
     case CSSPropertyID::kFlexBasis:
       result = style.FlexBasis();
       success = true;
+      break;
+    case CSSPropertyID::kFlowTolerance:
+      if (!style.GetFlowTolerance().IsNormal() &&
+          !style.GetFlowTolerance().IsInfinite()) {
+        result = style.GetFlowTolerance().GetLength();
+        success = true;
+      }
       break;
     case CSSPropertyID::kHeight:
       result = style.Height();

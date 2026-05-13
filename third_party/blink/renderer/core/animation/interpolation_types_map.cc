@@ -147,6 +147,7 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kCx:
       case CSSPropertyID::kCy:
       case CSSPropertyID::kFlexBasis:
+      case CSSPropertyID::kFlowTolerance:
       case CSSPropertyID::kHeight:
       case CSSPropertyID::kLeft:
       case CSSPropertyID::kLetterSpacing:

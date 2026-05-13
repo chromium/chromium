@@ -3666,6 +3666,7 @@
       keywords: ["normal", "infinite"],
       invalidate: ["layout", "paint"],
       runtime_flag: "CSSGridLanesLayout",
+      interpolable: true,
       percentages_depend_on_used_value: true,
     },
     {
