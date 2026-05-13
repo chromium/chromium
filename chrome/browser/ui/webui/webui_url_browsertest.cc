@@ -6,6 +6,7 @@
 #include <string_view>
 
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/web_ui_all_urls_browser_test.h"
 #include "chrome/browser/ui/webui/webui_urls_for_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -75,6 +76,11 @@ static const char* const kConsoleErrorUrls[] = {
     "chrome://smb-credentials-dialog",
 #else
     "chrome://signin-email-confirmation",
+#if BUILDFLAG(IS_LINUX)
+    // TODO(crbug.com/512775747): Fix crash error when navigating to
+    // signin-internals.
+    "chrome://signin-internals",
+#endif
 #endif
 };
 
