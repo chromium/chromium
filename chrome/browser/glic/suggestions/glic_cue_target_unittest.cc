@@ -158,6 +158,13 @@ TEST_F(GlicCueTargetTest, IsEligible) {
   EXPECT_CALL(*mock_glic_keyed_service_, IsPanelShowingForBrowser(_))
       .WillOnce(Return(false));
   EXPECT_TRUE(target.IsEligible());
+
+  // Eligible profile, panel isn't showing, but "Show Gemini at the top of the
+  // browser" is explicitly turned off.
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  EXPECT_CALL(*mock_glic_keyed_service_, IsPanelShowingForBrowser(_))
+      .Times(Exactly(0));
+  EXPECT_FALSE(target.IsEligible());
 }
 
 TEST_F(GlicCueTargetTest, OnClick_AutoSubmitEnabled) {

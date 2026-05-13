@@ -68,6 +68,8 @@ GlicCueTarget::~GlicCueTarget() = default;
 bool GlicCueTarget::IsEligible() const {
   return GlicEnabling::IsEnabledForProfile(
              browser_window_interface_->GetProfile()) &&
+         browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
+             prefs::kGlicPinnedToTabstrip) &&
          !glic_keyed_service_->IsPanelShowingForBrowser(
              *browser_window_interface_);
 }
