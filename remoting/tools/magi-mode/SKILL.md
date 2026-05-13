@@ -191,13 +191,20 @@ next expert.
   scaffold, the Orchestrator MUST act as or invoke an "Engineering Manager"
   sub-agent. The Engineering Manager reads `project.magi.json` to understand the
   requirements and `src/remoting/tools/magi-mode/PERSONAS.md` (the routing
-  catalog) to assess and select the most appropriate Domain Experts required
-  to implement the stubs. It returns the absolute file paths of their definition
-  files to the Orchestrator. The Engineering Manager MUST also read its own
-  persona file from
+  catalog) to assess and select both the **Implementors** and the **Reviewers**.
+    *   **Implementors**: Defaults to the "Big Three" (Security, Performance,
+        Architect). The Engineering Manager MAY select additional Domain Experts
+        if the task requires specialized work.
+    *   **Reviewers**: Includes all selected Implementors, plus the Language
+        Expert, and any relevant Domain Experts. If the change includes new or
+        modified tests, the Test Expert MUST also be included.
+  The Engineering Manager returns the absolute file paths of these selected
+  personas (separated into `implementors` and `reviewers`) to the Orchestrator.
+  The Engineering Manager MUST also read its own persona file from
   `src/remoting/tools/magi-mode/personas/core/engineering_manager.json` and
   evaluate the selection checklist to ensure all technical dimensions are
-  covered. It MUST include the checklist evaluation in its JSON output.
+  covered for both roles. It MUST include the checklist evaluation in its JSON
+  output.
 - **Checklist Initialization:** The Orchestrator MUST read the `checklist` from
   every selected persona JSON file, compute the **Union Set** of all checklist
   keys, and initialize `state_block.magi.json#checklist` with all these keys
@@ -273,7 +280,8 @@ Once the Domain Experts finish:
       "stall_count": 0,
       "active_constraints": [],
       "resolved_constraints": [],
-      "personas": ["[Selected Experts]"],
+      "implementors": ["[Selected Implementors]"],
+      "reviewers": ["[Selected Reviewers]"],
       "next_phase": "CRITIQUE",
       "review_mode": "[SUPERVISOR/CONSENSUS]",
       "state_transport": "[FILE_IO/EPHEMERAL/EPHEMERAL_WITH_LOGS]"
@@ -289,7 +297,8 @@ Once the Domain Experts finish:
         build/test suite on "Draft A" and attach the build logs to the
         synthesis report before signaling `next_phase: CRITIQUE`.
 ### 5. The Review Workflow (Consensus Loop vs. Supervisor)
-1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers.
+1.  **Blind Critique:** Push Draft A to the expanded panel of Reviewers
+    selected in Phase 2.
     **File I/O:** Output routing depends on `state_transport`:
     *   `FILE_IO`: Save feedback to disk as
         `review.[persona].magi.[iteration].json`.
