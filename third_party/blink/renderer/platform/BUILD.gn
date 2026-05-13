@@ -1497,7 +1497,6 @@ component("platform") {
     "text/date_components.h",
     "text/date_time_format.cc",
     "text/date_time_format.h",
-    "text/decode_escape_sequences.h",
     "text/east_asian_spacing_type.h",
     "text/emoji_segmentation_category.h",
     "text/emoji_segmentation_category_inline_header.h",
@@ -1874,8 +1873,8 @@ component("platform") {
   if (use_dawn) {
     deps += [ "//third_party/dawn/src/dawn/wire" ]
   } else {
-    # If Dawn is not used, use the proc table. This gives the WebGPU implementation
-    # something to link to, though WebGPU won't be supported.
+    # If Dawn is not used, use the proc table. This gives the WebGPU
+    # implementation something to link to, though WebGPU won't be supported.
     deps += [ "//third_party/dawn/src/dawn:proc" ]
   }
 
