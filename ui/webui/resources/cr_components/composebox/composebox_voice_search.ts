@@ -26,18 +26,6 @@ import {WindowProxy} from './window_proxy.js';
 const RECOGNITION_CONFIDENCE_THRESHOLD: number = 0.7;
 
 /**
- * Time in milliseconds to wait before closing the UI if no interaction
- * has occurred since start, OR last word spoken. Matches Google3.
- */
-const IDLE_TIMEOUT_MS: number = 3000;
-
-/**
- * Maximum number of characters recognized before force-submitting a query.
- * Includes characters of non-confident recognition transcripts.
- */
-const QUERY_LENGTH_LIMIT: number = 120;
-
-/**
  * Time in milliseconds to wait before automatically closing the UI after a
  * NO_MATCH error occurs (when the error timer is enabled).
  */
@@ -48,7 +36,6 @@ const ERROR_TIMEOUT_LONG_MS: number = 24000;
  * NO_MATCH error occurs (when the error timer is enabled).
  */
 const ERROR_TIMEOUT_SHORT_MS: number = 9000;
-
 
 // The set of controller states.
 enum State {
@@ -184,6 +171,31 @@ export class ComposeboxVoiceSearchElement extends
       voiceSearchCoherenceComposeboxesEnabled_: {type: Boolean},
       voiceSearchCoherenceSearchboxEnabled_: {type: Boolean},
       submitButtonIconType: {type: String},
+      /**
+       * Determines whether to automatically submit the query upon receiving a
+       * final speech recognition result. When disabled, it will instead close
+       * the voice search and populate the searchbox with the transcribed text.
+       */
+      autosubmitEnabled: {type: Boolean},
+      /**
+       * Controls the `continuous` parameter of the Webkit Speech API. When
+       * enabled, the API dynamically determines when to stop listening based on
+       * speech patterns.
+       */
+      dynamicTimeoutEnabled: {type: Boolean},
+      /**
+       * Maximum number of characters recognized before force-submitting a
+       * query. Includes characters of non-confident recognition transcripts.
+       * TODO(crbug.com/510393520): Enforce a 120-character limit for the
+       * Searchbox surface.
+       */
+      queryLengthLimit: {type: Number},
+      /**
+       * Time in milliseconds to wait before closing the UI if no interaction
+       * has occurred since start, OR last word spoken. The default
+       * value matches the Google3 AIM implementation.
+       */
+      idleTimeout: {type: Number},
     };
   }
 
@@ -215,11 +227,14 @@ export class ComposeboxVoiceSearchElement extends
   accessor hasErrorTimer: boolean = false;
   accessor submitButtonIconType: SubmitButtonIconType =
       SubmitButtonIconType.FORWARD;
+  accessor autosubmitEnabled: boolean = false;
+  accessor dynamicTimeoutEnabled: boolean = false;
+  accessor queryLengthLimit: number|undefined = undefined;
+  accessor idleTimeout: number = 3000;
 
   constructor() {
     super();
     this.voiceRecognition_ = new window.webkitSpeechRecognition();
-    this.voiceRecognition_.continuous = true;
     this.voiceRecognition_.interimResults = true;
     this.voiceRecognition_.lang = window.navigator.language;
     this.voiceRecognition_.onresult = this.onResult_.bind(this);
@@ -252,6 +267,7 @@ export class ComposeboxVoiceSearchElement extends
 
   start() {
     this.errorMessage_ = '';
+    this.voiceRecognition_.continuous = this.dynamicTimeoutEnabled;
     this.voiceRecognition_.start();
     this.state_ = State.STARTED;
     this.resetIdleTimer_();
@@ -276,7 +292,7 @@ export class ComposeboxVoiceSearchElement extends
   private resetIdleTimer_() {
     WindowProxy.getInstance().clearTimeout(this.timerId_);
     this.timerId_ = WindowProxy.getInstance().setTimeout(
-        this.onIdleTimeout_.bind(this), IDLE_TIMEOUT_MS);
+        this.onIdleTimeout_.bind(this), this.idleTimeout);
   }
 
   protected onSubmitClick_(e: Event) {
@@ -367,8 +383,9 @@ export class ComposeboxVoiceSearchElement extends
     }
     this.fire('transcript-update', this.transcript_);
 
-    // Force-stop long queries.
-    if (this.interimResult_.length > QUERY_LENGTH_LIMIT) {
+    // Force-stop long queries if queryLengthLimit is not undefined.
+    if (this.queryLengthLimit !== undefined &&
+        this.interimResult_.length > this.queryLengthLimit) {
       this.onFinalResult_(this.transcript_);
     }
   }
@@ -539,6 +556,11 @@ export class ComposeboxVoiceSearchElement extends
 
   private onFinalResult_(result: string) {
     if (!result) {
+      return;
+    }
+    if (!this.autosubmitEnabled) {
+      this.fire('recording-stopped', this.transcript_);
+      this.voiceModeEndCleanup_();
       return;
     }
     this.state_ = State.RESULT_FINAL;
