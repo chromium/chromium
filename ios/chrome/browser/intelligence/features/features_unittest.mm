@@ -99,3 +99,136 @@ TEST_F(ActorFeaturesTest, IsPageActionMenuEnabled_DisabledLocale) {
   // Restore locale.
   locale_storage->Set(original_locale);
 }
+
+TEST_F(ActorFeaturesTest, IsZeroStateSuggestionsEnabled_Default) {
+  EXPECT_FALSE(IsZeroStateSuggestionsEnabled());
+}
+
+// US + en-US users should have the feature enabled even without the
+// kZeroStateSuggestions feature flag.
+TEST_F(ActorFeaturesTest,
+       IsZeroStateSuggestionsEnabled_US_enUS_WithoutFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPageActionMenu);
+
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("US");
+
+  ApplicationLocaleStorage* locale_storage =
+      TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
+  std::string original_locale = locale_storage->Get();
+  locale_storage->Set("en-US");
+
+  EXPECT_TRUE(IsZeroStateSuggestionsEnabled());
+
+  // Restore locale.
+  locale_storage->Set(original_locale);
+}
+
+// US + en-US users should have the feature enabled with the
+// kZeroStateSuggestions feature flag.
+TEST_F(ActorFeaturesTest,
+       IsZeroStateSuggestionsEnabled_US_enUS_WithFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu, kZeroStateSuggestions},
+                                       {});
+
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
+
+  ApplicationLocaleStorage* locale_storage =
+      TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
+  std::string original_locale = locale_storage->Get();
+  locale_storage->Set("en-US");
+
+  EXPECT_TRUE(IsZeroStateSuggestionsEnabled());
+
+  // Restore locale.
+  locale_storage->Set(original_locale);
+}
+
+// Other countries (e.g., CA) should NOT have the feature enabled without the
+// kZeroStateSuggestions feature flag.
+TEST_F(ActorFeaturesTest,
+       IsZeroStateSuggestionsEnabled_CA_enUS_WithoutFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPageActionMenu);
+
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("ca");
+
+  ApplicationLocaleStorage* locale_storage =
+      TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
+  std::string original_locale = locale_storage->Get();
+  locale_storage->Set("en-US");
+
+  EXPECT_FALSE(IsZeroStateSuggestionsEnabled());
+
+  // Restore locale.
+  locale_storage->Set(original_locale);
+}
+
+// Other countries (e.g., CA) should have the feature enabled with the
+// kZeroStateSuggestions feature flag.
+TEST_F(ActorFeaturesTest,
+       IsZeroStateSuggestionsEnabled_CA_enUS_WithFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu, kZeroStateSuggestions},
+                                       {});
+
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("ca");
+
+  ApplicationLocaleStorage* locale_storage =
+      TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
+  std::string original_locale = locale_storage->Get();
+  locale_storage->Set("en-US");
+
+  EXPECT_TRUE(IsZeroStateSuggestionsEnabled());
+
+  // Restore locale.
+  locale_storage->Set(original_locale);
+}
+
+// Other locales (e.g., fr-FR) in US should NOT have the feature enabled without
+// the kZeroStateSuggestions feature flag.
+TEST_F(ActorFeaturesTest,
+       IsZeroStateSuggestionsEnabled_US_frFR_WithoutFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPageActionMenu);
+
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
+
+  ApplicationLocaleStorage* locale_storage =
+      TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
+  std::string original_locale = locale_storage->Get();
+  locale_storage->Set("fr-FR");
+
+  EXPECT_FALSE(IsZeroStateSuggestionsEnabled());
+
+  // Restore locale.
+  locale_storage->Set(original_locale);
+}
+
+// Other locales (e.g., fr-FR) in US should have the feature enabled with the
+// kZeroStateSuggestions feature flag.
+TEST_F(ActorFeaturesTest,
+       IsZeroStateSuggestionsEnabled_US_frFR_WithFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu, kZeroStateSuggestions},
+                                       {});
+
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
+
+  ApplicationLocaleStorage* locale_storage =
+      TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage();
+  std::string original_locale = locale_storage->Get();
+  locale_storage->Set("fr-FR");
+
+  EXPECT_TRUE(IsZeroStateSuggestionsEnabled());
+
+  // Restore locale.
+  locale_storage->Set(original_locale);
+}
