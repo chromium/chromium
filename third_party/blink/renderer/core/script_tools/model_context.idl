@@ -24,6 +24,7 @@ dictionary ModelContextRegisterToolOptions {
 dictionary RegisteredTool : RegisteredToolDeprecated {
   required Window window;
   required USVString origin;
+  ToolAnnotations annotations;
 };
 
 [
