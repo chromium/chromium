@@ -315,6 +315,24 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest,
   EXPECT_EQ(processor_.GetRemoteHostURLQueueSizeForTest(kExtensionId[0]), 0u);
 }
 
+// Tests that queues are cleared after a report is generated even when
+// there is no correlation (no password reuse events).
+TEST_F(PotentialPasswordTheftSignalProcessorTest,
+       QueuesClearedAfterReportEvenWithoutCorrelationTest) {
+  auto remote_host_signal = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[0]), kProtocolType);
+
+  processor_.ProcessSignal(remote_host_signal);
+
+  EXPECT_EQ(processor_.GetRemoteHostURLQueueSizeForTest(kExtensionId[0]), 1u);
+
+  // Generating report should clear the queues for that extension, even if it
+  // returns nullptr because there is no correlation.
+  EXPECT_EQ(processor_.GetSignalInfoForReport(kExtensionId[0]), nullptr);
+
+  EXPECT_EQ(processor_.GetRemoteHostURLQueueSizeForTest(kExtensionId[0]), 0u);
+}
+
 // Tests that multiple passwords in the queue are processed even if some
 // do not result in a potential password theft signal (e.g. no matching
 // domains).

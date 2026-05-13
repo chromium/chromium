@@ -186,58 +186,61 @@ PotentialPasswordTheftSignalProcessor::GetSignalInfoForReport(
     const extensions::ExtensionId& extension_id) {
   auto password_store_it = password_store_.find(extension_id);
   auto remote_host_url_store_it = remote_host_url_store_.find(extension_id);
-  if (password_store_it == password_store_.end() ||
-      remote_host_url_store_it == remote_host_url_store_.end()) {
-    return nullptr;
-  }
-  // Create the signal info protobuf.
-  auto signal_info =
-      std::make_unique<ExtensionTelemetryReportRequest_SignalInfo>();
-  ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo*
-      potential_password_theft_info =
-          signal_info->mutable_potential_password_theft_info();
-  for (auto& password_w_count_it : password_store_it->second) {
-    PasswordReuseInfo& reuse_info = password_w_count_it.second;
-    ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_PasswordReuseInfo*
-        password_pb =
-            potential_password_theft_info->add_reused_password_infos();
-    if (reuse_info.matches_signin_password) {
-      password_pb->set_is_chrome_signin_password(true);
+
+  std::unique_ptr<ExtensionTelemetryReportRequest_SignalInfo> signal_info;
+
+  if (password_store_it != password_store_.end() &&
+      remote_host_url_store_it != remote_host_url_store_.end()) {
+    // Create the signal info protobuf.
+    signal_info =
+        std::make_unique<ExtensionTelemetryReportRequest_SignalInfo>();
+    ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo*
+        potential_password_theft_info =
+            signal_info->mutable_potential_password_theft_info();
+    for (auto& password_w_count_it : password_store_it->second) {
+      PasswordReuseInfo& reuse_info = password_w_count_it.second;
+      ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_PasswordReuseInfo*
+          password_pb =
+              potential_password_theft_info->add_reused_password_infos();
+      if (reuse_info.matches_signin_password) {
+        password_pb->set_is_chrome_signin_password(true);
+      }
+      for (const auto& domain : reuse_info.matching_domains) {
+        password_pb->add_domains_matching_password(domain);
+      }
+      password_pb->set_count(reuse_info.count);
+      *password_pb->mutable_reused_password_account_type() =
+          ConvertToExtensionTelemetryReusedPasswordAccountType(
+              reuse_info.reused_password_account_type);
     }
-    for (const auto& domain : reuse_info.matching_domains) {
-      password_pb->add_domains_matching_password(domain);
+    for (auto& remote_host_url_w_count_it : remote_host_url_store_it->second) {
+      ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_RemoteHostData*
+          remote_host_url_pb =
+              potential_password_theft_info->add_remote_hosts_data();
+      remote_host_url_pb->set_remote_host_url(
+          std::move(remote_host_url_w_count_it.first));
+      remote_host_url_pb->set_count(remote_host_url_w_count_it.second);
     }
-    password_pb->set_count(reuse_info.count);
-    *password_pb->mutable_reused_password_account_type() =
-        ConvertToExtensionTelemetryReusedPasswordAccountType(
-            reuse_info.reused_password_account_type);
-  }
-  for (auto& remote_host_url_w_count_it : remote_host_url_store_it->second) {
-    ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_RemoteHostData*
-        remote_host_url_pb =
-            potential_password_theft_info->add_remote_hosts_data();
-    remote_host_url_pb->set_remote_host_url(
-        std::move(remote_host_url_w_count_it.first));
-    remote_host_url_pb->set_count(remote_host_url_w_count_it.second);
+
+    // Record the combined signal, kPotentialPasswordTheft, which is derived
+    // from kPasswordReuse and kRemoteHostContacted. The signal is created once
+    // every report creation time if there is potential password theft data
+    // available.
+    ExtensionTelemetryService::RecordSignalType(
+        ExtensionSignalType::kPotentialPasswordTheft);
   }
 
-  // Record the combined signal, kPotentialPasswordTheft, which is derived from
-  // kPasswordReuse and kRemoteHostContacted. The signal is created once every
-  // report creation time if there is potential password theft data available.
-  ExtensionTelemetryService::RecordSignalType(
-      ExtensionSignalType::kPotentialPasswordTheft);
-
-  // Clear the data in the stores.
-  // Following two iters are guaranteed to exist because
-  // password_hash_remote_host_url_pair_store_it is not null.
-  remote_host_url_store_.erase(remote_host_url_store_it);
-  password_store_.erase(password_store_it);
-
-  // Clear the queues as well.
+  // Clear the data in the stores and queues for this extension.
+  // Note: Unconditionally clearing the queues here prevents memory leaks,
+  // but introduces a small possibility of signal loss if a password reuse
+  // event and remote host contact occur across a reporting boundary (within
+  // the 1-second correlation window). This is an intentional trade-off for
+  // simplicity.
+  password_store_.erase(extension_id);
+  remote_host_url_store_.erase(extension_id);
   remote_host_url_queue_.erase(extension_id);
   password_queue_.erase(extension_id);
 
-  // Return signal info for report.
   return signal_info;
 }
 
