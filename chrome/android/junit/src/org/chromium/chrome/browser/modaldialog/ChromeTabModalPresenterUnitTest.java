@@ -142,4 +142,19 @@ public class ChromeTabModalPresenterUnitTest {
                         + " access throws AssertionError",
                 ChromeTabModalPresenter.isDialogShowing(mTab));
     }
+
+    @Test
+    public void testDismissAfterTabDestroyed() {
+        // Set the active tab in the presenter.
+        mPresenter.setActiveTabForTesting(mTab);
+
+        // Simulate that a dialog is currently showing on the tab.
+        TabAttributes.from(mTab).set(TabAttributeKeys.MODAL_DIALOG_SHOWING, true);
+
+        // Mock the tab being destroyed.
+        when(mTab.isDestroyed()).thenReturn(true);
+
+        // Simulate dismissing the dialog. This should not crash even though the tab is destroyed.
+        mPresenter.setBrowserControlsAccess(false);
+    }
 }

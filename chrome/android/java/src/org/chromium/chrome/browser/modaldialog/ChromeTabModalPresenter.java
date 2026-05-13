@@ -393,6 +393,15 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
     private void onTabModalDialogStateChanged(boolean isShowing) {
         assumeNonNull(mActiveTab);
+
+        if (mActiveTab.isDestroyed()) {
+            // If the tab is destroyed, we still need to update the visibility delegate
+            // to avoid locking browser controls.
+            mVisibilityDelegate.set(
+                    isShowing ? BrowserControlsState.SHOWN : BrowserControlsState.BOTH);
+            return;
+        }
+
         TabAttributes.from(mActiveTab).set(TabAttributeKeys.MODAL_DIALOG_SHOWING, isShowing);
         mVisibilityDelegate.set(
                 isDialogShowing(mActiveTab)
