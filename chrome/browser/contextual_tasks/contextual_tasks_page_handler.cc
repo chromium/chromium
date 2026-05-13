@@ -267,7 +267,7 @@ void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
       base::BindOnce(
           [](GetUrlForTaskCallback callback, GURL webui_url, GURL url) {
             std::move(callback).Run(contextual_tasks::ContextualTasksUiService::
-                                        CopyParamsFromWebUIUrl(url, webui_url));
+                                        GetAiUrlFromWebUIUrl(url, webui_url));
           },
           std::move(callback), web_ui_controller_->GetWebUiUrl()));
 }

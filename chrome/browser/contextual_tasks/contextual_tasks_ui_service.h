@@ -141,7 +141,8 @@ class ContextualTasksUiService : public KeyedService {
                                 content::WebContents* source_contents,
                                 bool is_from_embedded_page,
                                 bool is_to_new_tab,
-                                bool is_same_site_or_from_ui);
+                                bool is_same_site_or_from_ui,
+                                bool is_mobile_ua = false);
 
   // Returns the contextual_task UI for a task.
   virtual GURL GetContextualTaskUrlForTask(const base::Uuid& task_id);
@@ -262,6 +263,10 @@ class ContextualTasksUiService : public KeyedService {
   static GURL CopyParamsFromWebUIUrl(const GURL& base_url,
                                      const GURL& webui_url);
 
+  // Returns a copy of base_url with the URL params from webui_url applied to
+  // it. If the result is empty, returns base_url.
+  static GURL GetAiUrlFromWebUIUrl(const GURL& base_url, const GURL& webui_url);
+
   // Returns whether the provided host is trusted for overrides.
   static bool IsTrustedHost(const std::string& host);
 
@@ -337,11 +342,13 @@ class ContextualTasksUiService : public KeyedService {
                                     tabs::TabInterface* tab,
                                     bool is_from_embedded_page,
                                     bool is_to_new_tab,
-                                    bool is_same_site_or_from_ui);
+                                    bool is_same_site_or_from_ui,
+                                    bool is_mobile_ua = false);
 
   // Used primarily for debugging - loads a URL in the specified WebContents.
-  virtual void LoadUrlInWebContents(const GURL& url,
-                                    content::WebContents* web_contents);
+  virtual void LoadUrlInWebContents(
+      const GURL& url,
+      base::WeakPtr<content::WebContents> web_contents);
 
   // Creates a LensMediaLinkHandler for the given WebContents.
   // Virtual to allow overriding in tests to mock the handler.
