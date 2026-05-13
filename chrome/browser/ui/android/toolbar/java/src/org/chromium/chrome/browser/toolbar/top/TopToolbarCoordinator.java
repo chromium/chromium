@@ -1084,11 +1084,26 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // is fully scrolled off.
         // TODO(crbug.com/448641122): Let hairline layer owns the adjustment logic.
         int hairlineAdjustment = 0;
-        if (mBrowserControls.getBrowserVisibilityDelegate().get() == BrowserControlsState.HIDDEN
-                && mIsHairlineVisible) {
+        if (shouldHideHairlineInSceneLayer()) {
             hairlineAdjustment = -mControlContainer.getToolbarHairlineHeight();
         }
 
         assertNonNull(mOverlayCoordinator).setYOffset(mLayerYOffset - diff + hairlineAdjustment);
+    }
+
+    private boolean shouldHideHairlineInSceneLayer() {
+        // When mIsHairlineVisible is false, the hairline view is hidden and therefore is not
+        // drawn into the toolbar capture. With no hairline in the capture there is nothing to
+        // hide, so no scene layer adjustment is needed.
+        if (!mIsHairlineVisible) return false;
+        if (mBrowserControls.getBrowserVisibilityDelegate().get() == BrowserControlsState.HIDDEN) {
+            return true;
+        }
+
+        int topControlsMinHeight = mBrowserControls.getTopControlsMinHeight();
+        int topControlsHairlineHeight = mBrowserControls.getTopControlsHairlineHeight();
+        int contentOffset = mBrowserControls.getContentOffset();
+        return BrowserControlsUtils.shouldContentOffsetHideTopControlsHairline(
+                contentOffset, topControlsMinHeight, topControlsHairlineHeight);
     }
 }

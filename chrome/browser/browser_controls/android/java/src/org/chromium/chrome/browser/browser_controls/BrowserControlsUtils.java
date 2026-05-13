@@ -54,6 +54,13 @@ public class BrowserControlsUtils {
                 && ChromeFeatureList.sLockTopControlsForceAdjustHeightOnStartup.getValue();
     }
 
+    /** Returns whether the top-controls hairline needs an extra offset to stay hidden. */
+    public static boolean shouldContentOffsetHideTopControlsHairline(
+            int contentOffset, int topControlsMinHeight, int topControlsHairlineHeight) {
+        return contentOffset >= topControlsMinHeight
+                && contentOffset <= topControlsMinHeight + topControlsHairlineHeight;
+    }
+
     /**
      * @return True if the browser controls are completely off screen.
      */

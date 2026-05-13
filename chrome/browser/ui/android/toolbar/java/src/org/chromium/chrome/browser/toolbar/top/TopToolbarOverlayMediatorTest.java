@@ -445,6 +445,30 @@ public class TopToolbarOverlayMediatorTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
+    public void testTopToolbarOffset_hidesHairlineWhenHeightAtBoundary() {
+        int minHeight = 10;
+        int hairlineHeight = 3;
+        int height = minHeight + hairlineHeight;
+
+        doReturn(height).when(mBrowserControlsStateProvider).getTopControlsHeight();
+        doReturn(minHeight).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
+        doReturn(hairlineHeight).when(mBrowserControlsStateProvider).getTopControlsHairlineHeight();
+
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.TOP);
+
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+
+        assertEquals(
+                minHeight,
+                mModel.get(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET),
+                MathUtils.EPSILON);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testTopToolbarOffset_hidesHairlineWhenContentOffsetInsideRange() {
         int minHeight = 10;
         int hairlineHeight = 3;

@@ -268,7 +268,7 @@ public class TopToolbarOverlayMediator {
                                 height = getBookmarkBarAdjustedContentOffset(height);
                             }
                             if (getControlsPosition() == ControlsPosition.TOP) {
-                                applyContentOffsetToModel(height);
+                                applyContentOffsetToModel(adjustContentOffsetForHairline(height));
                             } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
                                 applyContentOffsetToModel(
                                         mBottomToolbarControlsOffsetSupplier.get()
@@ -627,22 +627,24 @@ public class TopToolbarOverlayMediator {
             return;
         }
 
-        // If BCIV is enabled, we keep the composited view visible even when hiding the toolbar,
-        // but the shadow isn't included in the toolbar's height, so we shift the toolbar up by
-        // the shadow's height to hide the toolbar completely.
-        int topControlsMinHeight = mBrowserControlsStateProvider.getTopControlsMinHeight();
-        int topControlsHairlineHeight =
-                mBrowserControlsStateProvider.getTopControlsHairlineHeight();
-        if (contentOffset >= topControlsMinHeight
-                && contentOffset <= topControlsMinHeight + topControlsHairlineHeight) {
-            contentOffset -= topControlsHairlineHeight;
-        }
+        contentOffset = adjustContentOffsetForHairline(contentOffset);
 
         if (ChromeFeatureList.sAndroidBookmarkBar.isEnabled()) {
             contentOffset = getBookmarkBarAdjustedContentOffset(contentOffset);
         }
 
         applyContentOffsetToModel(contentOffset);
+    }
+
+    private int adjustContentOffsetForHairline(int contentOffset) {
+        int topControlsMinHeight = mBrowserControlsStateProvider.getTopControlsMinHeight();
+        int topControlsHairlineHeight =
+                mBrowserControlsStateProvider.getTopControlsHairlineHeight();
+        if (BrowserControlsUtils.shouldContentOffsetHideTopControlsHairline(
+                contentOffset, topControlsMinHeight, topControlsHairlineHeight)) {
+            return contentOffset - topControlsHairlineHeight;
+        }
+        return contentOffset;
     }
 
     private void applyContentOffsetToModel(float contentOffset) {
