@@ -235,7 +235,6 @@ std::optional<lens::ImageCropAndBitmap> DownscaleAndEncodeBitmapRegionIfNeeded(
   lens::ImageCropAndBitmap image_crop_and_bitmap;
   scoped_refptr<base::RefCountedBytes> data =
       base::MakeRefCounted<base::RefCountedBytes>();
-  ;
   if (region_bytes.has_value()) {
     image_crop_and_bitmap.region_bitmap = DownscaleImageIfNeeded(*region_bytes, /*ui_scale_factor=*/0,
                                            client_logs);
@@ -246,10 +245,12 @@ std::optional<lens::ImageCropAndBitmap> DownscaleAndEncodeBitmapRegionIfNeeded(
 
   const auto& region_bitmap = image_crop_and_bitmap.region_bitmap;
   auto& image_crop = image_crop_and_bitmap.image_crop;
-  if (EncodeImageMaybeWithTransparency(
-          region_bitmap,
-          lens::features::GetLensOverlayImageCompressionQuality(), data,
-          client_logs)) {
+
+  // Populate the zoomed_crop spatial context independently of byte encoding
+  // success. This ensures region geometry is preserved for the backend even if
+  // compression fails. Valid dimension boundaries are enforced to prevent
+  // division by zero.
+  if (region_rect.width() > 0 && image.width() > 0 && image.height() > 0) {
     auto* mutable_zoomed_crop = image_crop.mutable_zoomed_crop();
     mutable_zoomed_crop->set_parent_height(image.height());
     mutable_zoomed_crop->set_parent_width(image.width());
@@ -270,7 +271,12 @@ std::optional<lens::ImageCropAndBitmap> DownscaleAndEncodeBitmapRegionIfNeeded(
         static_cast<double>(image.height()));
     mutable_zoomed_crop->mutable_crop()->set_coordinate_type(
         lens::CoordinateType::NORMALIZED);
+  }
 
+  if (EncodeImageMaybeWithTransparency(
+          region_bitmap,
+          lens::features::GetLensOverlayImageCompressionQuality(), data,
+          client_logs)) {
     image_crop.mutable_image()->mutable_image_content()->assign(data->begin(),
                                                                 data->end());
   }
