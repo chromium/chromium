@@ -23,10 +23,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner.AfterCleanupCheck;
 import org.chromium.base.test.BaseJUnit4ClassRunner.ClassCleanupHook;
 import org.chromium.build.annotations.ServiceImpl;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,20 +81,6 @@ public class LeakCanaryChecker {
                 checkLeaks();
             }
         }
-    }
-
-    // We only allow annotating entire test classes with this, since we rely on some class-level
-    // cleanups to occur, which do not happen between individual test methods in a class.
-    @Target({ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface EnableLeakChecks {}
-
-    // Annotate a test class with this to disable LeakCanary checks, even if
-    // @EnableLeakChecks is present or the --enable-leak-checks flag is used.
-    @Target({ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface DisableLeakChecks {
-        String value();
     }
 
     /**

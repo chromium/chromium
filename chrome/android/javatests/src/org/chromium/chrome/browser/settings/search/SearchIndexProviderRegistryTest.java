@@ -23,6 +23,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,6 +50,7 @@ import java.util.List;
     ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS,
     ChromeFeatureList.PLUS_ADDRESSES_ENABLED
 })
+@DisableLeakChecks("crbug.com/512492984 (SearchIndexProviderRegistryTest)")
 public class SearchIndexProviderRegistryTest {
 
     @ClassRule

@@ -20,6 +20,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Activity initialzation test")
+@DisableLeakChecks("crbug.com/512492607 (ApplicationStatus)")
 public class WebApkInitializationTest {
     @Rule public final WebApkActivityTestRule mActivityRule = new WebApkActivityTestRule();
 

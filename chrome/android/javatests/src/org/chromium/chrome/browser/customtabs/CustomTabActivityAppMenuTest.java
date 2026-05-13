@@ -56,6 +56,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -99,6 +100,7 @@ import java.util.concurrent.TimeoutException;
     // TODO(crbug.com/504757384): Add test for three dot menu flag.
     ChromeFeatureList.THREE_DOT_MENU_BACK_BUTTON
 })
+@DisableLeakChecks("crbug.com/512493466 (ChromeTabbedActivity)")
 public class CustomTabActivityAppMenuTest {
     private static final int MAX_MENU_CUSTOM_ITEMS = 7;
     private static final int NUM_CHROME_MENU_ITEMS = 6;

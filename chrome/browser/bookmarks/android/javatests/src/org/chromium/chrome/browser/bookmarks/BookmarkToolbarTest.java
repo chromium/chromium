@@ -44,6 +44,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -72,6 +73,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@DisableLeakChecks("crbug.com/512492757 (BookmarkToolbarTest)")
 public class BookmarkToolbarTest {
     private static final List<Integer> SELECTION_MENU_IDS =
             Arrays.asList(

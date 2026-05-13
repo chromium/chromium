@@ -32,6 +32,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,6 +48,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableLeakChecks("crbug.com/512492670 (SwipeRefreshHandler)")
 public class SwipeRefreshHandlerTest {
     private static final int ACCESSIBILITY_SWIPE_REFRESH_STRING_ID =
             R.string.accessibility_swipe_refresh;

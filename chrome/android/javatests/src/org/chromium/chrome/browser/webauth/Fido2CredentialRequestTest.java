@@ -47,6 +47,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.AttestationConveyancePreference;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
@@ -121,6 +122,7 @@ import java.util.List;
 })
 @Batch(Batch.PER_CLASS)
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_19W13)
+@DisableLeakChecks("crbug.com/512492393 (AuthenticatorImpl)")
 public class Fido2CredentialRequestTest {
     private static final String TAG = "Fido2CredentialRequestTest";
 

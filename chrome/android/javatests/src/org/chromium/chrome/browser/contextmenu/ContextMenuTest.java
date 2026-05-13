@@ -56,6 +56,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -133,6 +134,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288174
+@DisableLeakChecks("crbug.com/512492353 (OfflineContentAggregatorBridge)")
 public class ContextMenuTest {
 
     @Mock private TabContextMenuItemDelegate mItemDelegate;

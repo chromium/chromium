@@ -29,6 +29,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -42,6 +43,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
+@DisableLeakChecks("crbug.com/512492768 (AutoPipPermissionDialogViewRenderTest)")
 public class AutoPipPermissionDialogViewRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =

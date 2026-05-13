@@ -43,6 +43,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -83,6 +84,11 @@ import org.chromium.ui.widget.ButtonCompat;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(http://crbug.com/495529795): Enable side panel and fix this test
 @DisableFeatures({ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
+@DisableLeakChecks({
+    "crbug.com/512492299 (AppBannerManager)",
+    "crbug.com/512492108 (AppBannerManager)",
+    "crbug.com/512492577 (AppBannerManager)"
+})
 public class AppBannerManagerTest {
     @Rule
     public FreshCtaTransitTestRule mTabbedActivityTestRule =

@@ -52,6 +52,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -109,6 +110,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Restriction({
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02
+})
+@DisableLeakChecks({
+    "crbug.com/512491896 (DataSharingUiDelegateAndroid)",
+    "crbug.com/512493320 (DataSharingUiDelegateAndroid)",
+    "crbug.com/512492355 (DataSharingUiDelegateAndroid)"
 })
 public class CollaborationIntegrationTest {
 

@@ -83,6 +83,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -181,6 +182,7 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
 })
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
+@DisableLeakChecks("crbug.com/512492109 (AdvancedProtectionStatusManagerAndroidBridge)")
 public class SiteSettingsTest {
     private static final int RENDER_TEST_REVISION = 6;
     @ClassRule public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);

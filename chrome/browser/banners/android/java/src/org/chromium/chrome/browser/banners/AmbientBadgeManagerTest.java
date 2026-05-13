@@ -42,6 +42,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -86,6 +87,10 @@ import java.util.Observer;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(http://crbug.com/495529795): Enable side panel and fix this test.
 @DisableFeatures({ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
+@DisableLeakChecks({
+    "crbug.com/512491129 (AppBannerManager)",
+    "crbug.com/512491794 (AppBannerManager)"
+})
 public class AmbientBadgeManagerTest {
     @Rule
     public FreshCtaTransitTestRule mTabbedActivityTestRule =

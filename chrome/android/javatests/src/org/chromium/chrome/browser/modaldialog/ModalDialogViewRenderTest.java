@@ -39,6 +39,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -62,6 +63,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
+@DisableLeakChecks("crbug.com/512492101 (ModalDialogViewRenderTest)")
 public class ModalDialogViewRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =

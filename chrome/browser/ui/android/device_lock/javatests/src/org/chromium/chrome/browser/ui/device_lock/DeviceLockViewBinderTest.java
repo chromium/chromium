@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -49,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Tests for {@link DeviceLockViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@DisableLeakChecks("crbug.com/512492106 (DeviceLockViewBinderTest)")
 public class DeviceLockViewBinderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =

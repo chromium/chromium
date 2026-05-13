@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -43,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Tests for {@link BottomSheetToolbarViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisableLeakChecks("crbug.com/512491146 (BottomSheetToolbarViewBinderTest)")
 public class BottomSheetToolbarViewBinderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =

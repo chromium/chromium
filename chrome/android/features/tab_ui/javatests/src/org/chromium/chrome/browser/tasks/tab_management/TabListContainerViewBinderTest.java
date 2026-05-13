@@ -43,6 +43,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -55,6 +56,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests for {@link TabListRecyclerView} and {@link TabListContainerViewBinder} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisableLeakChecks("crbug.com/512492502 (TabListContainerViewBinderTest)")
 public class TabListContainerViewBinderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =

@@ -29,6 +29,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -45,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link AutofillSaveCardBottomSheetViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisableLeakChecks("crbug.com/512491186 (AutofillSaveCardBottomSheetViewBinderTest)")
 public class AutofillSaveCardBottomSheetViewBinderTest {
     @DrawableRes private static final int TEST_DRAWABLE_RES = R.drawable.arrow_up;
 

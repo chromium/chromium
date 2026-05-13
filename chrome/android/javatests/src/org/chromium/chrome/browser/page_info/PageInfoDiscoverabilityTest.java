@@ -33,6 +33,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -70,6 +71,7 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/344672094): Failing when batched, batch this again.
+@DisableLeakChecks("crbug.com/512492968 (PermissionStatusHandler)")
 public class PageInfoDiscoverabilityTest {
     @ClassRule
     public static final PermissionTestRule sPermissionTestRule = new PermissionTestRule();

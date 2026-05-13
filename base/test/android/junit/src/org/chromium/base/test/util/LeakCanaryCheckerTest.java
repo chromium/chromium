@@ -9,8 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.LeakCanaryChecker.DisableLeakChecks;
-import org.chromium.base.test.util.LeakCanaryChecker.EnableLeakChecks;
 
 /** Tests for {@link LeakCanaryChecker}. */
 @RunWith(BaseRobolectricTestRunner.class)

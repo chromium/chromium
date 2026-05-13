@@ -38,6 +38,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -77,6 +78,7 @@ import java.util.Map;
 @Batch(AndroidPaymentAppFinderUnitTest.PAYMENTS_BROWSER_UNIT_TESTS)
 @Features.EnableFeatures({PaymentFeatureList.UPDATE_PAYMENT_DETAILS_INTENT_FILTER_IN_PAYMENT_APP})
 @Features.DisableFeatures({PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS})
+@DisableLeakChecks("crbug.com/512492695 (AndroidPaymentAppFinderUnitTest)")
 public class AndroidPaymentAppFinderUnitTest {
     // Collection of payments unit tests that require the browser process to be initialized.
     static final String PAYMENTS_BROWSER_UNIT_TESTS = "PaymentsBrowserUnitTests";

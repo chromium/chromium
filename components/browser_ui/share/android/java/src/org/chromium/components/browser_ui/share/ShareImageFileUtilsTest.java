@@ -46,6 +46,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
@@ -59,6 +60,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests of {@link ShareImageFileUtils}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisableLeakChecks("crbug.com/512492320 (ShareImageFileUtilsTest)")
 public class ShareImageFileUtilsTest {
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
     private static final byte[] TEST_IMAGE_DATA = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};

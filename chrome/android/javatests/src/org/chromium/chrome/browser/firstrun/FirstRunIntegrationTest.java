@@ -66,6 +66,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
@@ -130,6 +131,12 @@ import java.util.concurrent.TimeoutException;
 })
 @DoNotBatch(reason = "This test interacts with startup, native initialization, and first run.")
 @CommandLineFlags.Add({ChromeSwitches.NO_FIRST_RUN})
+@DisableLeakChecks({
+    "crbug.com/512490467 (FirstRunActivity)",
+    "crbug.com/512493365 (FirstRunActivity)",
+    "crbug.com/512493466 (ChromeTabbedActivity)",
+    "crbug.com/512492736 (BlankUiTestActivity)"
+})
 public class FirstRunIntegrationTest {
     private static final String TEST_URL = "https://test.com";
     private static final String FOO_URL = "https://foo.com";

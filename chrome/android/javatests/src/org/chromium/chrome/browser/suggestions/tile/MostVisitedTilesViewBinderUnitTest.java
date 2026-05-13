@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesViewBinder.ViewHolder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -37,6 +38,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests for {@link MostVisitedTilesViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisableLeakChecks("crbug.com/512492958 (MostVisitedTilesViewBinderUnitTest)")
 public final class MostVisitedTilesViewBinderUnitTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =

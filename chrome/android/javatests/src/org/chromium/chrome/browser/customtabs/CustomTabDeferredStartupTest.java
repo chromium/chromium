@@ -24,6 +24,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
@@ -50,6 +51,10 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableLeakChecks({
+    "crbug.com/512491968 (ApplicationStatus)",
+    "crbug.com/512492507 (ApplicationStatus)"
+})
 public class CustomTabDeferredStartupTest {
     static class PageLoadFinishedTabObserver extends EmptyTabObserver {
         private boolean mIsPageLoadFinished;

@@ -25,6 +25,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
@@ -60,6 +61,12 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableLeakChecks({
+    "crbug.com/512492115 (AutoFetchNotifier)",
+    "crbug.com/512491549 (AutoFetchNotifier)",
+    "crbug.com/512492440 (OfflinePageBridge)",
+    "crbug.com/512492544 (OfflinePageBridge)"
+})
 public class OfflinePageAutoFetchTest {
     private static final String TAG = "AutoFetchTest";
     private static final long WAIT_TIMEOUT_MS = 20000;

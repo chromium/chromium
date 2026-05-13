@@ -35,6 +35,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -64,6 +65,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
+@DisableLeakChecks("crbug.com/512492277 (AutofillVcnEnrollBottomSheetViewBinderTest)")
 public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpener {
     private static final int CARD_ACCESSIBILITY_STRING_RESOURCE =
             R.string.autofill_virtual_card_container_accessibility_description;
