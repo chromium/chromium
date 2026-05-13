@@ -52,10 +52,9 @@ std::vector<std::string> SplitFilterString(const std::string& input) {
                            base::SPLIT_WANT_ALL);
 }
 
-ClientFilterableState ClientFilterableStateForGoogleGroups(
+std::unique_ptr<ClientFilterableState> ClientFilterableStateForGoogleGroups(
     const base::flat_set<uint64_t> google_groups) {
-  return ClientFilterableState(
-      base::BindOnce([] { return false; }),
+  return ClientFilterableState::CreateWithGoogleGroups(
       base::BindLambdaForTesting([=]() { return google_groups; }));
 }
 
@@ -289,24 +288,22 @@ TEST(VariationsStudyFilteringTest, CheckStudyLowEndDevice) {
 
 TEST(VariationsStudyFilteringTest, CheckStudyEnterprise) {
   Study::Filter filter;
-  ClientFilterableState client_non_enterprise(
-      base::BindOnce([] { return false; }),
-      base::BindOnce([] { return base::flat_set<uint64_t>(); }));
-  ClientFilterableState client_enterprise(
-      base::BindOnce([] { return true; }),
-      base::BindOnce([] { return base::flat_set<uint64_t>(); }));
+  ClientFilterableState client_non_enterprise;
+  std::unique_ptr<ClientFilterableState> client_enterprise =
+      ClientFilterableState::CreateWithIsEnterprise(
+          base::BindOnce([] { return true; }));
 
   // Check that if the filter is not set, study applies to both enterprise and
   // non-enterprise clients.
-  EXPECT_TRUE(internal::CheckStudyEnterprise(filter, client_enterprise));
+  EXPECT_TRUE(internal::CheckStudyEnterprise(filter, *client_enterprise));
   EXPECT_TRUE(internal::CheckStudyEnterprise(filter, client_non_enterprise));
 
   filter.set_is_enterprise(true);
-  EXPECT_TRUE(internal::CheckStudyEnterprise(filter, client_enterprise));
+  EXPECT_TRUE(internal::CheckStudyEnterprise(filter, *client_enterprise));
   EXPECT_FALSE(internal::CheckStudyEnterprise(filter, client_non_enterprise));
 
   filter.set_is_enterprise(false);
-  EXPECT_FALSE(internal::CheckStudyEnterprise(filter, client_enterprise));
+  EXPECT_FALSE(internal::CheckStudyEnterprise(filter, *client_enterprise));
   EXPECT_TRUE(internal::CheckStudyEnterprise(filter, client_non_enterprise));
 }
 
@@ -739,10 +736,10 @@ TEST(VariationsStudyFilteringTest, CheckStudyGoogleGroupFilterNotSet) {
   // Check that if the filter is not set, the study always applies.
   EXPECT_TRUE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>())));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>())));
   EXPECT_TRUE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1}))));
 }
 
 TEST(VariationsStudyFilteringTest, CheckStudyGoogleGroupFilterSet) {
@@ -754,16 +751,16 @@ TEST(VariationsStudyFilteringTest, CheckStudyGoogleGroupFilterSet) {
   filter.add_google_group(2);
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>())));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>())));
   EXPECT_TRUE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1}))));
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({3}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({3}))));
   EXPECT_TRUE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1, 3}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1, 3}))));
 }
 
 TEST(VariationsStudyFilteringTest, CheckStudyExcludeGoogleGroupFilterSet) {
@@ -775,16 +772,16 @@ TEST(VariationsStudyFilteringTest, CheckStudyExcludeGoogleGroupFilterSet) {
   filter.add_exclude_google_group(2);
   EXPECT_TRUE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>())));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>())));
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1}))));
   EXPECT_TRUE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({3}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({3}))));
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1, 3}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1, 3}))));
 }
 
 TEST(VariationsStudyFilteringTest, CheckStudyBothGoogleGroupFiltersSet) {
@@ -796,16 +793,16 @@ TEST(VariationsStudyFilteringTest, CheckStudyBothGoogleGroupFiltersSet) {
   filter.add_exclude_google_group(2);
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>())));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>())));
   EXPECT_TRUE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1}))));
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({2}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({2}))));
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(
       filter,
-      ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1, 2}))));
+      *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1, 2}))));
 }
 
 TEST(VariationsStudyFilteringTest, FilterAndValidateStudies) {

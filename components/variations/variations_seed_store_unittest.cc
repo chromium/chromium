@@ -126,9 +126,7 @@ VariationsSeed CreateTestSeed() {
 // for testing.
 std::unique_ptr<ClientFilterableState> CreateTestClientFilterableState() {
   std::unique_ptr<ClientFilterableState> client_state =
-      std::make_unique<ClientFilterableState>(
-          base::BindOnce([] { return false; }),
-          base::BindOnce([] { return base::flat_set<uint64_t>(); }));
+      std::make_unique<ClientFilterableState>();
   client_state->locale = "es-MX";
   client_state->reference_date = WrapTime(1234554321);
   client_state->version = base::Version("1.2.3.4");

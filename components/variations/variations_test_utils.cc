@@ -311,9 +311,7 @@ const FieldTrialTestingConfig kTestingConfig = {
     array_kFieldTrialConfig_studies};
 
 std::unique_ptr<ClientFilterableState> CreateDummyClientFilterableState() {
-  auto client_state = std::make_unique<ClientFilterableState>(
-      base::BindOnce([] { return false; }),
-      base::BindOnce([] { return base::flat_set<uint64_t>(); }));
+  auto client_state = std::make_unique<ClientFilterableState>();
   client_state->locale = "en-CA";
   client_state->reference_date = base::Time::Now();
   client_state->version = base::Version("20.0.0.0");

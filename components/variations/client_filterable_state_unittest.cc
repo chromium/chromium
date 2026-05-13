@@ -17,28 +17,26 @@ namespace {
 
 TEST(ClientFilterableStateTest, IsEnterprise) {
   // Test, for non enterprise clients, is_enterprise_function_ is called once.
-  ClientFilterableState client_non_enterprise(
-      base::BindOnce([] { return false; }),
-      base::BindOnce([] { return base::flat_set<uint64_t>(); }));
+  ClientFilterableState client_non_enterprise;
   EXPECT_FALSE(client_non_enterprise.IsEnterprise());
   EXPECT_FALSE(client_non_enterprise.IsEnterprise());
 
   // Test, for enterprise clients, is_enterprise_function_ is called once.
-  ClientFilterableState client_enterprise(
-      base::BindOnce([] { return true; }),
-      base::BindOnce([] { return base::flat_set<uint64_t>(); }));
-  EXPECT_TRUE(client_enterprise.IsEnterprise());
-  EXPECT_TRUE(client_enterprise.IsEnterprise());
+  std::unique_ptr<ClientFilterableState> client_enterprise =
+      ClientFilterableState::CreateWithIsEnterprise(
+          base::BindOnce([] { return true; }));
+  EXPECT_TRUE(client_enterprise->IsEnterprise());
+  EXPECT_TRUE(client_enterprise->IsEnterprise());
 }
 
 TEST(ClientFilterableStateTest, GoogleGroups) {
   // Test that google_groups_function_ is called once.
   base::flat_set<uint64_t> expected_google_groups({1234, 5678});
-  ClientFilterableState client(
-      base::BindOnce([] { return false; }),
-      base::BindOnce([] { return base::flat_set<uint64_t>({1234, 5678}); }));
-  EXPECT_EQ(client.GoogleGroups(), expected_google_groups);
-  EXPECT_EQ(client.GoogleGroups(), expected_google_groups);
+  std::unique_ptr<ClientFilterableState> client =
+      ClientFilterableState::CreateWithGoogleGroups(base::BindOnce(
+          [] { return base::flat_set<uint64_t>({1234, 5678}); }));
+  EXPECT_EQ(client->GoogleGroups(), expected_google_groups);
+  EXPECT_EQ(client->GoogleGroups(), expected_google_groups);
 }
 
 TEST(ClientFilterableStateTest, GetHardwareManufacturer) {
@@ -55,13 +53,11 @@ TEST(ClientFilterableStateTest, GetHardwareManufacturer) {
 TEST(ClientFilterableStateTest, EnterpriseGroups) {
   // Test that enterprise_groups_function_ is called once.
   base::flat_set<std::string> expected_enterprise_groups({"abcd", "efgh"});
-  ClientFilterableState client(
-      base::BindOnce([] { return false; }),
-      base::BindOnce([] { return base::flat_set<uint64_t>(); }),
-      base::BindOnce(
+  std::unique_ptr<ClientFilterableState> client =
+      ClientFilterableState::CreateWithEnterpriseGroups(base::BindOnce(
           [] { return base::flat_set<std::string>({"abcd", "efgh"}); }));
-  EXPECT_EQ(client.EnterpriseGroups(), expected_enterprise_groups);
-  EXPECT_EQ(client.EnterpriseGroups(), expected_enterprise_groups);
+  EXPECT_EQ(client->EnterpriseGroups(), expected_enterprise_groups);
+  EXPECT_EQ(client->EnterpriseGroups(), expected_enterprise_groups);
 }
 
 }  // namespace

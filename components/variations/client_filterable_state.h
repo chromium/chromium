@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VARIATIONS_CLIENT_FILTERABLE_STATE_H_
 #define COMPONENTS_VARIATIONS_CLIENT_FILTERABLE_STATE_H_
 
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -81,8 +83,16 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // The restriction applied to Chrome through the "ChromeVariations" policy.
   RestrictionPolicy policy_restriction = RestrictionPolicy::NO_RESTRICTIONS;
 
-  ClientFilterableState(IsEnterpriseFunction is_enterprise_function,
-                        GoogleGroupsFunction google_groups_function);
+  static std::unique_ptr<ClientFilterableState> CreateWithIsEnterprise(
+      IsEnterpriseFunction is_enterprise_function);
+
+  static std::unique_ptr<ClientFilterableState> CreateWithGoogleGroups(
+      GoogleGroupsFunction google_groups_function);
+
+  static std::unique_ptr<ClientFilterableState> CreateWithEnterpriseGroups(
+      EnterpriseGroupsFunction enterprise_groups_function);
+
+  ClientFilterableState();
 
   ClientFilterableState(IsEnterpriseFunction is_enterprise_function,
                         GoogleGroupsFunction google_groups_function,

@@ -120,10 +120,9 @@ std::string AssociatedStudyGroup(const base::Feature& feature) {
 // of a specific google group (which some tests rely on).
 constexpr uint64_t kExampleGoogleGroup = 123456;
 std::unique_ptr<ClientFilterableState> CreateTestClientFilterableState() {
-  auto client_state = std::make_unique<ClientFilterableState>(
-      base::BindOnce([] { return false; }), base::BindOnce([] {
-        return base::flat_set<uint64_t>({kExampleGoogleGroup});
-      }));
+  auto client_state =
+      ClientFilterableState::CreateWithGoogleGroups(base::BindOnce(
+          [] { return base::flat_set<uint64_t>({kExampleGoogleGroup}); }));
   client_state->locale = "en-CA";
   client_state->reference_date = base::Time::Now();
   client_state->version = base::Version("20.0.0.0");

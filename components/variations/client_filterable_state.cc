@@ -26,15 +26,39 @@ ClientFilterableState::ClientFilterableState(
   DCHECK(is_enterprise_function_);
 }
 
-ClientFilterableState::ClientFilterableState(
-    IsEnterpriseFunction is_enterprise_function,
-    GoogleGroupsFunction google_groups_function)
+ClientFilterableState::ClientFilterableState()
     : ClientFilterableState(
-          std::move(is_enterprise_function),
-          std::move(google_groups_function),
+          base::BindOnce([] { return false; }),
+          base::BindOnce([] { return base::flat_set<uint64_t>(); }),
           base::BindOnce([] { return base::flat_set<std::string>(); })) {}
 
 ClientFilterableState::~ClientFilterableState() = default;
+
+std::unique_ptr<ClientFilterableState>
+ClientFilterableState::CreateWithIsEnterprise(
+    IsEnterpriseFunction is_enterprise_function) {
+  return std::make_unique<ClientFilterableState>(
+      std::move(is_enterprise_function),
+      base::BindOnce([] { return base::flat_set<uint64_t>(); }),
+      base::BindOnce([] { return base::flat_set<std::string>(); }));
+}
+
+std::unique_ptr<ClientFilterableState>
+ClientFilterableState::CreateWithGoogleGroups(
+    GoogleGroupsFunction google_groups_function) {
+  return std::make_unique<ClientFilterableState>(
+      base::BindOnce([] { return false; }), std::move(google_groups_function),
+      base::BindOnce([] { return base::flat_set<std::string>(); }));
+}
+
+std::unique_ptr<ClientFilterableState>
+ClientFilterableState::CreateWithEnterpriseGroups(
+    EnterpriseGroupsFunction enterprise_groups_function) {
+  return std::make_unique<ClientFilterableState>(
+      base::BindOnce([] { return false; }),
+      base::BindOnce([] { return base::flat_set<uint64_t>(); }),
+      std::move(enterprise_groups_function));
+}
 
 bool ClientFilterableState::IsEnterprise() const {
   if (!is_enterprise_.has_value()) {
