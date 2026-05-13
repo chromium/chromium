@@ -1380,7 +1380,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PREFETCH_OFF_THE_MAIN_THREAD,
                 "Allow the WebView Prefetch API to start main resource prefetch requests from off"
-                        + " the main thread."),
+                        + " the main thread. Only takes effect if PREFETCH_OFF_THE_MAIN_THREAD is"
+                        + " enabled as well."),
         Flag.baseFeature(
                 "PreventSvgFilterPaint",
                 "Disables SVG filter painting for remote frames and web plugins."),

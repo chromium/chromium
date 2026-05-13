@@ -130,7 +130,8 @@ BASE_FEATURE(kWebViewPrefetchOnRendererReuse,
 
 // This enables to start main resource prefetch request from off the main thread
 // for WebView Prefetch API. See crbug.com/452406598, crbug.com/452389538 for
-// more details.
+// more details. Only takes effect if `kPrefetchOffTheMainThread` is enabled
+// as well.
 BASE_FEATURE(kWebViewPrefetchOffTheMainThread,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
