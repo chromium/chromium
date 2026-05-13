@@ -89,7 +89,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   void AddPrintServerObserver(
       mojo::PendingRemote<mojom::PrintServerObserver> remote,
       AddPrintServerObserverCallback callback) override;
-  void GetPolicies(GetPoliciesCallback callback) override;
   void GetPrinterTypeDenyList(GetPrinterTypeDenyListCallback callback) override;
   void AddPrintJobObserver(mojo::PendingRemote<mojom::PrintJobObserver> remote,
                            mojom::PrintJobSource source,

@@ -79,6 +79,7 @@
 #endif  // BUILDFLAG(IS_MAC)
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -241,112 +242,6 @@ UserActionBuckets DetermineUserAction(const base::DictValue& settings) {
   return UserActionBuckets::kPrintToPrinter;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-base::DictValue PoliciesToValue(crosapi::mojom::PoliciesPtr ptr) {
-  base::DictValue policies;
-
-  base::DictValue header_footer_policy;
-  if (ptr->print_header_footer_allowed !=
-      crosapi::mojom::Policies::OptionalBool::kUnset) {
-    header_footer_policy.Set(kAllowedMode,
-                             ptr->print_header_footer_allowed ==
-                                 crosapi::mojom::Policies::OptionalBool::kTrue);
-  }
-  if (ptr->print_header_footer_default !=
-      crosapi::mojom::Policies::OptionalBool::kUnset) {
-    header_footer_policy.Set(kDefaultMode,
-                             ptr->print_header_footer_default ==
-                                 crosapi::mojom::Policies::OptionalBool::kTrue);
-  }
-  if (!header_footer_policy.empty()) {
-    policies.Set(kHeaderFooter, std::move(header_footer_policy));
-  }
-
-  base::DictValue background_graphics_policy;
-  int value = static_cast<int>(ptr->allowed_background_graphics_modes);
-  if (value) {
-    background_graphics_policy.Set(kAllowedMode, value);
-  }
-  value = static_cast<int>(ptr->background_graphics_default);
-  if (value) {
-    background_graphics_policy.Set(kDefaultMode, value);
-  }
-  if (!background_graphics_policy.empty()) {
-    policies.Set(kCssBackground, std::move(background_graphics_policy));
-  }
-
-  base::DictValue paper_size_policy;
-  const std::optional<gfx::Size>& default_paper_size = ptr->paper_size_default;
-  if (default_paper_size.has_value()) {
-    base::DictValue default_paper_size_value;
-    default_paper_size_value.Set(kPaperSizeWidth,
-                                 default_paper_size.value().width());
-    default_paper_size_value.Set(kPaperSizeHeight,
-                                 default_paper_size.value().height());
-    paper_size_policy.Set(kDefaultMode, std::move(default_paper_size_value));
-  }
-  if (!paper_size_policy.empty()) {
-    policies.Set(kMediaSize, std::move(paper_size_policy));
-  }
-
-  if (ptr->max_sheets_allowed_has_value) {
-    base::DictValue sheets_policy;
-    sheets_policy.Set(kValue, static_cast<int>(ptr->max_sheets_allowed));
-    policies.Set(kSheets, std::move(sheets_policy));
-  }
-
-  base::DictValue color_policy;
-  if (ptr->allowed_color_modes) {
-    color_policy.Set(kAllowedMode, static_cast<int>(ptr->allowed_color_modes));
-  }
-  if (ptr->default_color_mode !=
-      printing::mojom::ColorModeRestriction::kUnset) {
-    color_policy.Set(kDefaultMode, static_cast<int>(ptr->default_color_mode));
-  }
-  if (!color_policy.empty()) {
-    policies.Set(kColor, std::move(color_policy));
-  }
-
-  base::DictValue duplex_policy;
-  if (ptr->allowed_duplex_modes) {
-    duplex_policy.Set(kAllowedMode,
-                      static_cast<int>(ptr->allowed_duplex_modes));
-  }
-  if (ptr->default_duplex_mode !=
-      printing::mojom::DuplexModeRestriction::kUnset) {
-    duplex_policy.Set(kDefaultMode, static_cast<int>(ptr->default_duplex_mode));
-  }
-  if (!duplex_policy.empty()) {
-    policies.Set(kDuplex, std::move(duplex_policy));
-  }
-
-  base::DictValue pin_policy;
-  if (ptr->allowed_pin_modes != printing::mojom::PinModeRestriction::kUnset) {
-    pin_policy.Set(kAllowedMode, static_cast<int>(ptr->allowed_pin_modes));
-  }
-  if (ptr->default_pin_mode != printing::mojom::PinModeRestriction::kUnset) {
-    pin_policy.Set(kDefaultMode, static_cast<int>(ptr->default_pin_mode));
-  }
-  if (!pin_policy.empty()) {
-    policies.Set(kPin, std::move(pin_policy));
-  }
-
-  base::DictValue print_as_image_for_pdf_default_policy;
-  if (ptr->default_print_pdf_as_image !=
-      crosapi::mojom::Policies::OptionalBool::kUnset) {
-    print_as_image_for_pdf_default_policy.Set(
-        kDefaultMode, ptr->default_print_pdf_as_image ==
-                          crosapi::mojom::Policies::OptionalBool::kTrue);
-  }
-  if (!print_as_image_for_pdf_default_policy.empty()) {
-    policies.Set(kPrintPdfAsImage,
-                 std::move(print_as_image_for_pdf_default_policy));
-  }
-
-  return policies;
-}
-
-#else
 base::DictValue GetPolicies(const PrefService& prefs) {
   base::DictValue policies;
 
@@ -366,14 +261,17 @@ base::DictValue GetPolicies(const PrefService& prefs) {
 
   base::DictValue background_graphics_policy;
   if (prefs.HasPrefPath(prefs::kPrintingAllowedBackgroundGraphicsModes)) {
-    background_graphics_policy.Set(
-        kAllowedMode,
-        prefs.GetInteger(prefs::kPrintingAllowedBackgroundGraphicsModes));
+    int value =
+        prefs.GetInteger(prefs::kPrintingAllowedBackgroundGraphicsModes);
+    if (value) {
+      background_graphics_policy.Set(kAllowedMode, value);
+    }
   }
   if (prefs.HasPrefPath(prefs::kPrintingBackgroundGraphicsDefault)) {
-    background_graphics_policy.Set(
-        kDefaultMode,
-        prefs.GetInteger(prefs::kPrintingBackgroundGraphicsDefault));
+    int value = prefs.GetInteger(prefs::kPrintingBackgroundGraphicsDefault);
+    if (value) {
+      background_graphics_policy.Set(kDefaultMode, value);
+    }
   }
   if (!background_graphics_policy.empty()) {
     policies.Set(kCssBackground, std::move(background_graphics_policy));
@@ -415,9 +313,70 @@ base::DictValue GetPolicies(const PrefService& prefs) {
                  std::move(print_as_image_for_pdf_default_policy));
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (prefs.HasPrefPath(ash::prefs::kPrintingMaxSheetsAllowed)) {
+    int max_sheets = prefs.GetInteger(ash::prefs::kPrintingMaxSheetsAllowed);
+    if (max_sheets >= 0) {
+      base::DictValue sheets_policy;
+      sheets_policy.Set(kValue, max_sheets);
+      policies.Set(kSheets, std::move(sheets_policy));
+    }
+  }
+
+  base::DictValue color_policy;
+  if (prefs.HasPrefPath(ash::prefs::kPrintingAllowedColorModes)) {
+    int value = prefs.GetInteger(ash::prefs::kPrintingAllowedColorModes);
+    if (value) {
+      color_policy.Set(kAllowedMode, value);
+    }
+  }
+  if (prefs.HasPrefPath(ash::prefs::kPrintingColorDefault)) {
+    int value = prefs.GetInteger(ash::prefs::kPrintingColorDefault);
+    if (value) {
+      color_policy.Set(kDefaultMode, value);
+    }
+  }
+  if (!color_policy.empty()) {
+    policies.Set(kColor, std::move(color_policy));
+  }
+
+  base::DictValue duplex_policy;
+  if (prefs.HasPrefPath(ash::prefs::kPrintingAllowedDuplexModes)) {
+    int value = prefs.GetInteger(ash::prefs::kPrintingAllowedDuplexModes);
+    if (value) {
+      duplex_policy.Set(kAllowedMode, value);
+    }
+  }
+  if (prefs.HasPrefPath(ash::prefs::kPrintingDuplexDefault)) {
+    int value = prefs.GetInteger(ash::prefs::kPrintingDuplexDefault);
+    if (value) {
+      duplex_policy.Set(kDefaultMode, value);
+    }
+  }
+  if (!duplex_policy.empty()) {
+    policies.Set(kDuplex, std::move(duplex_policy));
+  }
+
+  base::DictValue pin_policy;
+  if (prefs.HasPrefPath(ash::prefs::kPrintingAllowedPinModes)) {
+    int value = prefs.GetInteger(ash::prefs::kPrintingAllowedPinModes);
+    if (value) {
+      pin_policy.Set(kAllowedMode, value);
+    }
+  }
+  if (prefs.HasPrefPath(ash::prefs::kPrintingPinDefault)) {
+    int value = prefs.GetInteger(ash::prefs::kPrintingPinDefault);
+    if (value) {
+      pin_policy.Set(kDefaultMode, value);
+    }
+  }
+  if (!pin_policy.empty()) {
+    policies.Set(kPin, std::move(pin_policy));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   return policies;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -913,27 +872,8 @@ void PrintPreviewHandler::HandleGetInitialSettings(
   base::OnceCallback<void(base::DictValue, const std::string&)> cb =
       base::BindOnce(&PrintPreviewHandler::SendInitialSettings,
                      weak_factory_.GetWeakPtr(), callback_id);
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!local_printer_) {
-    LOG(ERROR) << "Local printer not available";
-    handler->GetDefaultPrinter(
-        base::BindOnce(std::move(cb), base::DictValue()));
-    return;
-  }
-  local_printer_->GetPolicies(
-      base::BindOnce(PoliciesToValue)
-          .Then(base::BindOnce(
-              [](base::OnceCallback<void(base::DictValue, const std::string&)>
-                     cb,
-                 PrinterHandler* handler, base::DictValue policies) {
-                handler->GetDefaultPrinter(
-                    base::BindOnce(std::move(cb), std::move(policies)));
-              },
-              std::move(cb), handler)));
-#else
   handler->GetDefaultPrinter(
       base::BindOnce(std::move(cb), GetPolicies(*GetPrefs())));
-#endif
 }
 
 void PrintPreviewHandler::SendInitialSettings(

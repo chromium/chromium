@@ -980,6 +980,20 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsMaxSheetsAllowedPolicy) {
                                      base::Value(2));
 }
 
+TEST_F(PrintPreviewHandlerTest, InitialSettingsZeroSheetsAllowedPolicy) {
+  prefs()->SetInteger(ash::prefs::kPrintingMaxSheetsAllowed, 0);
+  Initialize();
+  ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
+                                     base::Value(0));
+}
+
+TEST_F(PrintPreviewHandlerTest, InitialSettingsNegativeMaxSheetsPolicy) {
+  prefs()->SetInteger(ash::prefs::kPrintingMaxSheetsAllowed, -1);
+  Initialize();
+  ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
+                                     std::nullopt);
+}
+
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableColorAndMonochrome) {
   // Set a pref that should take priority over StickySettings.
   prefs()->SetInteger(ash::prefs::kPrintingAllowedColorModes, 3);

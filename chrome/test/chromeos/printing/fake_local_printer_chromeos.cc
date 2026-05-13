@@ -29,9 +29,6 @@ void FakeLocalPrinter::AddPrintServerObserver(
   FAIL();
 }
 
-void FakeLocalPrinter::GetPolicies(GetPoliciesCallback callback) {
-  FAIL();
-}
 
 
 void FakeLocalPrinter::GetPrinterTypeDenyList(

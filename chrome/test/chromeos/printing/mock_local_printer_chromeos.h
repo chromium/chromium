@@ -32,7 +32,6 @@ class MockLocalPrinter : public FakeLocalPrinter {
                uint32_t job_id,
                CancelPrintJobCallback callback),
               (override));
-  MOCK_METHOD(void, GetPolicies, (GetPoliciesCallback callback), (override));
 };
 
 #endif  // CHROME_TEST_CHROMEOS_PRINTING_MOCK_LOCAL_PRINTER_CHROMEOS_H_

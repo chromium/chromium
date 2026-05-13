@@ -42,7 +42,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
-#include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
@@ -246,78 +245,7 @@ void LocalPrinterAsh::AddPrintServerObserver(
   std::move(callback).Run();
 }
 
-void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
-  Profile* profile = GetProfile();
-  PrefService* prefs = profile->GetPrefs();
-  mojom::PoliciesPtr policies = mojom::Policies::New();
 
-  if (prefs->HasPrefPath(prefs::kPrintHeaderFooter)) {
-    (prefs->IsManagedPreference(prefs::kPrintHeaderFooter)
-         ? policies->print_header_footer_allowed
-         : policies->print_header_footer_default) =
-        prefs->GetBoolean(prefs::kPrintHeaderFooter)
-            ? mojom::Policies::OptionalBool::kTrue
-            : mojom::Policies::OptionalBool::kFalse;
-  }
-
-  if (prefs->HasPrefPath(prefs::kPrintingAllowedBackgroundGraphicsModes)) {
-    policies->allowed_background_graphics_modes =
-        static_cast<mojom::Policies::BackgroundGraphicsModeRestriction>(
-            prefs->GetInteger(prefs::kPrintingAllowedBackgroundGraphicsModes));
-  }
-  if (prefs->HasPrefPath(prefs::kPrintingBackgroundGraphicsDefault)) {
-    policies->background_graphics_default =
-        static_cast<mojom::Policies::BackgroundGraphicsModeRestriction>(
-            prefs->GetInteger(prefs::kPrintingBackgroundGraphicsDefault));
-  }
-
-  policies->paper_size_default = printing::ParsePaperSizeDefault(*prefs);
-  if (prefs->HasPrefPath(ash::prefs::kPrintingMaxSheetsAllowed)) {
-    int max_sheets = prefs->GetInteger(ash::prefs::kPrintingMaxSheetsAllowed);
-    if (max_sheets >= 0) {
-      policies->max_sheets_allowed = max_sheets;
-      policies->max_sheets_allowed_has_value = true;
-    }
-  }
-
-  if (prefs->HasPrefPath(ash::prefs::kPrintingAllowedColorModes)) {
-    policies->allowed_color_modes =
-        prefs->GetInteger(ash::prefs::kPrintingAllowedColorModes);
-  }
-  if (prefs->HasPrefPath(ash::prefs::kPrintingAllowedDuplexModes)) {
-    policies->allowed_duplex_modes =
-        prefs->GetInteger(ash::prefs::kPrintingAllowedDuplexModes);
-  }
-  if (prefs->HasPrefPath(ash::prefs::kPrintingAllowedPinModes)) {
-    policies->allowed_pin_modes =
-        static_cast<printing::mojom::PinModeRestriction>(
-            prefs->GetInteger(ash::prefs::kPrintingAllowedPinModes));
-  }
-  if (prefs->HasPrefPath(ash::prefs::kPrintingColorDefault)) {
-    policies->default_color_mode =
-        static_cast<printing::mojom::ColorModeRestriction>(
-            prefs->GetInteger(ash::prefs::kPrintingColorDefault));
-  }
-  if (prefs->HasPrefPath(ash::prefs::kPrintingDuplexDefault)) {
-    policies->default_duplex_mode =
-        static_cast<printing::mojom::DuplexModeRestriction>(
-            prefs->GetInteger(ash::prefs::kPrintingDuplexDefault));
-  }
-  if (prefs->HasPrefPath(ash::prefs::kPrintingPinDefault)) {
-    policies->default_pin_mode =
-        static_cast<printing::mojom::PinModeRestriction>(
-            prefs->GetInteger(ash::prefs::kPrintingPinDefault));
-  }
-
-  if (prefs->HasPrefPath(prefs::kPrintPdfAsImageDefault)) {
-    policies->default_print_pdf_as_image =
-        prefs->GetBoolean(prefs::kPrintPdfAsImageDefault)
-            ? mojom::Policies::OptionalBool::kTrue
-            : mojom::Policies::OptionalBool::kFalse;
-  }
-
-  std::move(callback).Run(std::move(policies));
-}
 
 
 void LocalPrinterAsh::GetPrinterTypeDenyList(
