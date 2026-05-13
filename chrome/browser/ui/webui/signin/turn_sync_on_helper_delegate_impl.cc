@@ -201,6 +201,7 @@ void TurnSyncOnHelperDelegateImpl::SwitchToProfile(Profile* new_profile) {
 
 void TurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
+  scoped_login_ui_service_observation_.Reset();
   DCHECK(sync_confirmation_callback_);
   // Treat closing the ui as an implicit ABORT_SYNC action.
   if (result == LoginUIService::UI_CLOSED) {
