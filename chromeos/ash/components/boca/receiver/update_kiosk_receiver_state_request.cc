@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/boca_request.h"
@@ -39,9 +40,10 @@ UpdateKioskReceiverStateRequest::UpdateKioskReceiverStateRequest(
 UpdateKioskReceiverStateRequest::~UpdateKioskReceiverStateRequest() = default;
 
 std::string UpdateKioskReceiverStateRequest::GetRelativeUrl() {
-  return base::ReplaceStringPlaceholders(kRelativeUrlTemplate,
-                                         {receiver_id_, connection_id_},
-                                         /*offsets=*/nullptr);
+  return base::ReplaceStringPlaceholders(
+      kRelativeUrlTemplate,
+      {base::EscapeAllExceptUnreserved(receiver_id_), connection_id_},
+      /*offsets=*/nullptr);
 }
 
 std::optional<std::string> UpdateKioskReceiverStateRequest::GetRequestBody() {

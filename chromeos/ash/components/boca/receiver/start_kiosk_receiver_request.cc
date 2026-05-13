@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/boca_request.h"
@@ -63,8 +64,9 @@ StartKioskReceiverRequest::StartKioskReceiverRequest(
 StartKioskReceiverRequest::~StartKioskReceiverRequest() = default;
 
 std::string StartKioskReceiverRequest::GetRelativeUrl() {
-  return base::ReplaceStringPlaceholders(boca::kStartKioskReceiverUrlTemplate,
-                                         {receiver_id_}, nullptr);
+  return base::ReplaceStringPlaceholders(
+      boca::kStartKioskReceiverUrlTemplate,
+      {base::EscapeAllExceptUnreserved(receiver_id_)}, nullptr);
 }
 
 std::optional<std::string> StartKioskReceiverRequest::GetRequestBody() {

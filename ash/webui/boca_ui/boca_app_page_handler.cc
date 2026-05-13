@@ -317,6 +317,10 @@ mojom::CrdConnectionState GetMojomCrdConnectionState(CrdConnectionState state) {
   NOTREACHED();
 }
 
+bool IsValidReceiverId(const std::string& receiver_id) {
+  return receiver_id.find_first_of("/\\.?#%") == std::string::npos;
+}
+
 }  // namespace
 
 BocaAppHandler::BocaAppHandler(
@@ -835,6 +839,10 @@ void BocaAppHandler::PresentStudentScreen(
     mojom::IdentityPtr student,
     const std::string& receiver_id,
     PresentStudentScreenCallback callback) {
+  if (!IsValidReceiverId(receiver_id)) {
+    receiver_.ReportBadMessage("Invalid receiver_id.");
+    return;
+  }
   auto* session = GetSessionManager()->GetCurrentSession();
   if (!session || !IsActiveSession(session->session_id())) {
     LOG(ERROR) << "[Boca] unexpected call to present student screen - no "
@@ -887,6 +895,10 @@ void BocaAppHandler::StopPresentingStudentScreen(
 
 void BocaAppHandler::PresentOwnScreen(const std::string& receiver_id,
                                       PresentOwnScreenCallback callback) {
+  if (!IsValidReceiverId(receiver_id)) {
+    receiver_.ReportBadMessage("Invalid receiver_id.");
+    return;
+  }
   auto* session = GetSessionManager()->GetCurrentSession();
   bool is_session_active = session && IsActiveSession(session->session_id());
   if (!teacher_screen_presenter()) {

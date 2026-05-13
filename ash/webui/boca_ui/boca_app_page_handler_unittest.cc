@@ -3316,6 +3316,24 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
   EXPECT_TRUE(second_disconnected_future.Wait());
 }
 
+TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenInvalidReceiverId) {
+  std::string bad_message;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&bad_message](const std::string& error) { bad_message = error; }));
+
+  auto student =
+      mojom::Identity::New("1", "a", "a@gmail.com", GURL("cdn://s1"));
+  remote().get()->PresentStudentScreen(std::move(student), "../invalid",
+                                       base::DoNothing());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&bad_message]() { return !bad_message.empty(); }));
+
+  EXPECT_EQ("Invalid receiver_id.", bad_message);
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+}
+
 TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenFailure) {
   auto student_screen_presenter =
       std::make_unique<MockStudentScreenPresenter>();

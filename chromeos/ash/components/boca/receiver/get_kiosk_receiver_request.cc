@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/boca_request.h"
@@ -33,14 +34,16 @@ GetKioskReceiverRequest::GetKioskReceiverRequest(
 GetKioskReceiverRequest::~GetKioskReceiverRequest() = default;
 
 std::string GetKioskReceiverRequest::GetRelativeUrl() {
+  std::string escaped_receiver_id =
+      base::EscapeAllExceptUnreserved(receiver_id_);
   if (!connection_id_) {
     return base::ReplaceStringPlaceholders(
-        boca::kGetKioskReceiverWithoutConnectionIdUrlTemplate, {receiver_id_},
-        nullptr);
+        boca::kGetKioskReceiverWithoutConnectionIdUrlTemplate,
+        {escaped_receiver_id}, nullptr);
   }
-  return base::ReplaceStringPlaceholders(boca::kGetKioskReceiverUrlTemplate,
-                                         {receiver_id_, connection_id_.value()},
-                                         nullptr);
+  return base::ReplaceStringPlaceholders(
+      boca::kGetKioskReceiverUrlTemplate,
+      {escaped_receiver_id, connection_id_.value()}, nullptr);
 }
 
 std::optional<std::string> GetKioskReceiverRequest::GetRequestBody() {

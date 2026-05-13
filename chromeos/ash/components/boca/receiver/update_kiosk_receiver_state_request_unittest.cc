@@ -33,6 +33,17 @@ TEST(UpdateKioskReceiverStateRequestTest, GetRelativeUrl) {
             "test_connection_id:updateState");
 }
 
+TEST(UpdateKioskReceiverStateRequestTest, GetRelativeUrlWithEscapedReceiverId) {
+  UpdateKioskReceiverStateRequest request(
+      "../teachers/111/sessions/222:updateConfig?", kConnectionId,
+      ::boca::ReceiverConnectionState::CONNECTED, base::DoNothing());
+  EXPECT_EQ(
+      request.GetRelativeUrl(),
+      "/v1/receivers/..%2Fteachers%2F111%2Fsessions%2F222%3AupdateConfig%3F/"
+      "connections/"
+      "test_connection_id:updateState");
+}
+
 TEST(UpdateKioskReceiverStateRequestTest, GetRequestBody) {
   UpdateKioskReceiverStateRequest request(
       kReceiverId, kConnectionId, ::boca::ReceiverConnectionState::CONNECTED,

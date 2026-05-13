@@ -43,6 +43,18 @@ TEST(StartKioskReceiverRequestTest, RelativeUrl) {
   EXPECT_EQ(request.GetRelativeUrl(), "/v1/receivers/receiver_id:start");
 }
 
+TEST(StartKioskReceiverRequestTest, RelativeUrlWithEscapedReceiverId) {
+  ::boca::UserIdentity initiator;
+  ::boca::UserIdentity presenter;
+  StartKioskReceiverRequest request(
+      "../teachers/111/sessions/222:updateConfig?", initiator, presenter,
+      std::string(kInitiatorDeviceId), std::string(kPresenterDeviceId),
+      std::string(kConnectionCode), std::string(kSessionId), base::DoNothing());
+  EXPECT_EQ(request.GetRelativeUrl(),
+            "/v1/receivers/"
+            "..%2Fteachers%2F111%2Fsessions%2F222%3AupdateConfig%3F:start");
+}
+
 TEST(StartKioskReceiverRequestTest, GetRequestBody) {
   std::optional<std::string> response_body;
   ::boca::ConnectionParameter connection_param;
