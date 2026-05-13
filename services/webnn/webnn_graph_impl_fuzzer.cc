@@ -143,6 +143,14 @@ struct BuildPool2dAttributes {
   std::vector<uint32_t> dilations;
 };
 
+// Represents which activation function to fuse for conv2d.
+enum class ActivationKind : uint8_t {
+  kNone = 0,
+  kRelu = 1,
+  kRelu6 = 2,
+  kReluN1To1 = 3,
+};
+
 // Tri-state for optional operands: not present, constant, or input.
 enum class OptionalOperandKind : uint8_t {
   kNone = 0,
@@ -194,6 +202,7 @@ struct Conv2dParams {
   bool is_filter_constant;
   OptionalOperandKind bias_kind;
   bool is_depthwise;
+  ActivationKind activation_kind;
 };
 
 struct ExpandParams {
@@ -598,7 +607,10 @@ auto AnyConv2dParams() {
       fuzztest::Arbitrary<bool>(),    // is_input_constant
       fuzztest::Arbitrary<bool>(),    // is_filter_constant
       AnyOptionalOperandKind(),       // bias_kind
-      fuzztest::Arbitrary<bool>()     // is_depthwise
+      fuzztest::Arbitrary<bool>(),    // is_depthwise
+      fuzztest::ElementOf<ActivationKind>(
+          {ActivationKind::kNone, ActivationKind::kRelu, ActivationKind::kRelu6,
+           ActivationKind::kReluN1To1})  // activation_kind
   );
 }
 
@@ -639,10 +651,11 @@ auto AnyGemmParams() {
       AnyDimSize(),  // m
       AnyDimSize(),  // k
       AnyDimSize(),  // n
-      // The 1.0f values are used to exercise the fusiable path for TFLite
-      // backend:
+      // The 1.0f value exercises the fusiable path and 0.0f exercises the
+      // alpha == 0 simplification path for TFLite backend:
       // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2083;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
-      fuzztest::OneOf(fuzztest::Just(1.0f),
+      // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=5652;drc=398e74869153a12e825bc789c2134762cbe81c36
+      fuzztest::OneOf(fuzztest::Just(1.0f), fuzztest::Just(0.0f),
                       fuzztest::Arbitrary<float>()),  // alpha
       fuzztest::OneOf(fuzztest::Just(1.0f),
                       fuzztest::Arbitrary<float>()),  // beta
@@ -929,8 +942,8 @@ std::optional<Conv2dDescriptors> SetUpConv2dDescriptors(
                     params.input_channels};
       if (params.conv2d_kind == mojom::Conv2d::Kind::kDirect) {
         if (is_depthwise) {
-          filter_dims = {params.input_channels, params.filter_dimensions.height,
-                         params.filter_dimensions.width, 1};
+          filter_dims = {1, params.filter_dimensions.height,
+                         params.filter_dimensions.width, params.groups};
         } else {
           filter_dims = {params.output_channels,
                          params.filter_dimensions.height,
@@ -1662,10 +1675,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
     }
   }
 
-  OperandId output_id =
-      builder.BuildOutput("output", conv2d_descs.output_desc.shape(),
-                          conv2d_descs.output_desc.data_type());
-
   BuildConv2dAttributes conv2d_attr;
   conv2d_attr.padding = {
       params.padding.beginning.height, params.padding.ending.height,
@@ -1673,8 +1682,38 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
   conv2d_attr.strides = {params.strides.height, params.strides.width};
   conv2d_attr.dilations = {params.dilations.height, params.dilations.width};
   conv2d_attr.groups = params.groups;
-  builder.BuildConv2d(params.conv2d_kind, input_id, filter_id, output_id,
-                      conv2d_attr, bias_id);
+
+  if (params.activation_kind != ActivationKind::kNone) {
+    OperandId conv2d_output_id = builder.BuildIntermediateOperand(
+        conv2d_descs.output_desc.shape(), conv2d_descs.output_desc.data_type());
+    builder.BuildConv2d(params.conv2d_kind, input_id, filter_id,
+                        conv2d_output_id, conv2d_attr, bias_id);
+
+    OperandId output_id =
+        builder.BuildOutput("output", conv2d_descs.output_desc.shape(),
+                            conv2d_descs.output_desc.data_type());
+    switch (params.activation_kind) {
+      case ActivationKind::kNone:
+        NOTREACHED();
+      case ActivationKind::kRelu:
+        builder.BuildRelu(conv2d_output_id, output_id);
+        break;
+      case ActivationKind::kRelu6:
+        builder.BuildClamp(conv2d_output_id, output_id, /*min_value=*/0.0f,
+                           /*max_value=*/6.0f);
+        break;
+      case ActivationKind::kReluN1To1:
+        builder.BuildClamp(conv2d_output_id, output_id, /*min_value=*/-1.0f,
+                           /*max_value=*/1.0f);
+        break;
+    }
+  } else {
+    OperandId output_id =
+        builder.BuildOutput("output", conv2d_descs.output_desc.shape(),
+                            conv2d_descs.output_desc.data_type());
+    builder.BuildConv2d(params.conv2d_kind, input_id, filter_id, output_id,
+                        conv2d_attr, bias_id);
+  }
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -2745,11 +2784,33 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
                       conv2d_filter_id, conv_output_id, conv2d_attr,
                       conv2d_bias_id);
 
+  OperandId quantize_input_id = conv_output_id;
+  if (conv2d_params.activation_kind != ActivationKind::kNone) {
+    OperandId activation_output_id = builder.BuildIntermediateOperand(
+        conv2d_descs.output_desc.shape(), conv2d_descs.output_desc.data_type());
+    switch (conv2d_params.activation_kind) {
+      case ActivationKind::kNone:
+        NOTREACHED();
+      case ActivationKind::kRelu:
+        builder.BuildRelu(conv_output_id, activation_output_id);
+        break;
+      case ActivationKind::kRelu6:
+        builder.BuildClamp(conv_output_id, activation_output_id,
+                           /*min_value=*/0.0f, /*max_value=*/6.0f);
+        break;
+      case ActivationKind::kReluN1To1:
+        builder.BuildClamp(conv_output_id, activation_output_id,
+                           /*min_value=*/-1.0f, /*max_value=*/1.0f);
+        break;
+    }
+    quantize_input_id = activation_output_id;
+  }
+
   OperandId quantize_output_id =
       builder.BuildOutput("output", quantized_output_desc.shape(),
                           quantized_output_desc.data_type());
-  builder.BuildQuantizeLinear(conv_output_id, output_scale_id, output_zero_id,
-                              quantize_output_id);
+  builder.BuildQuantizeLinear(quantize_input_id, output_scale_id,
+                              output_zero_id, quantize_output_id);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -3406,6 +3467,8 @@ WEBNN_FUZZ_TEST_F(SingleOpConv2d,
                                        /*is_filter_constant=*/true,
                                        /*bias_kind=*/OptionalOperandKind::kNone,
                                        /*is_depthwise=*/false,
+                                       /*activation_kind=*/
+                                       ActivationKind::kRelu,
                                    },
                                    /*seed_for_data=*/1}}));
 
@@ -3594,7 +3657,9 @@ WEBNN_FUZZ_TEST_F(
                                   /*is_input_constant=*/false,
                                   /*is_filter_constant=*/true,
                                   /*bias_kind=*/OptionalOperandKind::kNone,
-                                  /*is_depthwise=*/false},
+                                  /*is_depthwise=*/false,
+                                  /*activation_kind=*/
+                                  ActivationKind::kRelu},
                      QuantizationParams{
                          /*quantized_type=*/OperandDataType::kUint8,
                          QuantizationKind::kPerTensor,
