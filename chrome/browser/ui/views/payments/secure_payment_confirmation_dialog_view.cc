@@ -265,7 +265,7 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
     }
     if (model_->instrument_icon()->drawsNothing()) {
       image_view->SetImage(ui::ImageModel::FromVectorIcon(
-          kCreditCardIcon, ui::kColorDialogForeground,
+          kCreditCardIcon, ui::kColorSysOnSurfaceSubtle,
           kSecurePaymentConfirmationIconDefaultWidthPx));
     }
   }
