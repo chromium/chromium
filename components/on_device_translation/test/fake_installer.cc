@@ -4,6 +4,7 @@
 
 #include "components/on_device_translation/test/fake_installer.h"
 
+#include "base/native_library.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
@@ -30,7 +31,8 @@ FakeOnDeviceTranslationInstaller::InstalledLanguagePacks() const {
   return installed_lang_packs_;
 }
 base::FilePath FakeOnDeviceTranslationInstaller::GetLibraryPath() const {
-  return fake_install_dir_.AppendASCII("fake_installation.so");
+  return fake_install_dir_.AppendASCII(
+      base::GetNativeLibraryName("fake_installation"));
 }
 
 base::FilePath FakeOnDeviceTranslationInstaller::GetLanguagePackPath(

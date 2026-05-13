@@ -19,8 +19,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 class Browser;
+class Profile;
 
 namespace on_device_translation {
+
+class FakeOnDeviceTranslationInstaller;
 
 class MockComponentManager : public ComponentManager {
  public:
@@ -176,6 +179,17 @@ void TestTranslationAvailable(Browser* browser,
                               const std::string_view sourceLang,
                               const std::string_view targetLang,
                               const std::string_view result);
+
+// Writes mock language pack files (dict.dat) to the directory returned by
+// the fake installer.
+void WriteMockLanguagePackFiles(
+    FakeOnDeviceTranslationInstaller& fake_installer,
+    LanguagePackKey language_pack_key);
+
+// Sets up the fake installer for testing.
+void SetupFakeInstaller(Profile* profile,
+                        FakeOnDeviceTranslationInstaller& fake_installer,
+                        LanguagePackKey language_pack_key);
 
 }  // namespace on_device_translation
 
