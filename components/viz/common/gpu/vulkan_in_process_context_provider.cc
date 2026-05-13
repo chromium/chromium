@@ -143,18 +143,17 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
       // vkQueue*Hook routes all skia side access to the same
       // VulkanFunctionPointers vkQueue* api which chrome uses and is under the
       // lock.
-      if (UNSAFE_TODO(std::strcmp("vkCreateGraphicsPipelines", proc_name)) ==
-          0) {
+      std::string_view proc_name_view(proc_name);
+      if (proc_name_view == "vkCreateGraphicsPipelines") {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::CreateGraphicsPipelinesHook);
-      } else if (UNSAFE_TODO(std::strcmp("vkQueueSubmit", proc_name)) == 0) {
+      } else if (proc_name_view == "vkQueueSubmit") {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueueSubmitHook);
-      } else if (UNSAFE_TODO(std::strcmp("vkQueueWaitIdle", proc_name)) == 0) {
+      } else if (proc_name_view == "vkQueueWaitIdle") {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueueWaitIdleHook);
-      } else if (UNSAFE_TODO(std::strcmp("vkQueuePresentKHR", proc_name)) ==
-                 0) {
+      } else if (proc_name_view == "vkQueuePresentKHR") {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueuePresentKHRHook);
       }
