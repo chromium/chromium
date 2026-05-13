@@ -4,6 +4,7 @@
 
 assert(!is_component_build, "component build is unsupported on iOS")
 
+import("//build/config/apple/mobile_config.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/ios/ios_sdk.gni")
@@ -39,7 +40,7 @@ group("all") {
       "//third_party/breakpad:dump_syms",
       "//third_party/breakpad:symupload",
     ]
-    if (use_blink) {
+    if (use_blink && target_platform == "iphoneos") {
       deps += [ "//ios/web/content:all_tests" ]
     }
   } else {
