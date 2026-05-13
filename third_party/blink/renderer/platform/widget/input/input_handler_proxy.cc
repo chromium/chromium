@@ -1301,6 +1301,11 @@ InputHandlerProxy::HandleGestureScrollUpdate(
   cc::InputHandlerScrollResult scroll_result =
       input_handler_->ScrollUpdate(cc::ScrollState(scroll_state_data), delay);
 
+  if (scroll_result.hit_snap_constraint) {
+    snap_fling_controller_->Finish();
+    input_handler_->ScrollEnd(/*should_snap=*/true, std::nullopt);
+  }
+
   if (is_only_empty_gsu_in_queue_) {
     UMA_HISTOGRAM_BOOLEAN("Event.ScrollJank.EmptyGestureScrollUpdateFrame",
                           scroll_result.did_scroll);
@@ -1934,6 +1939,10 @@ gfx::PointF InputHandlerProxy::ScrollByForSnapFling(
     const gfx::Vector2dF& delta) {
   cc::InputHandlerScrollResult scroll_result = input_handler_->ScrollUpdate(
       CreateScrollStateForInertialUpdate(delta), base::TimeDelta());
+  if (scroll_result.hit_snap_constraint) {
+    snap_fling_controller_->Finish();
+    input_handler_->ScrollEnd(/*should_snap=*/true, std::nullopt);
+  }
   return scroll_result.current_visual_offset;
 }
 

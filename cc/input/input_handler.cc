@@ -362,13 +362,27 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
     AdjustScrollDeltaForScrollbarSnap(scroll_state);
   }
 
-  gfx::Vector2dF resolvedScrollDelta = ResolveScrollGranularityToPixels(
+  gfx::Vector2dF resolved_scroll_delta = ResolveScrollGranularityToPixels(
       scroll_node,
       gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y()),
       scroll_state.delta_granularity());
 
-  scroll_state.data()->delta_x = resolvedScrollDelta.x();
-  scroll_state.data()->delta_y = resolvedScrollDelta.y();
+  bool hit_snap_constraint = false;
+  gfx::PointF current_offset = GetVisualScrollOffset(scroll_node);
+  gfx::PointF new_offset = current_offset + resolved_scroll_delta;
+  if (std::optional<gfx::PointF> constrained =
+          ConstrainFling(current_offset, new_offset)) {
+    gfx::Vector2dF applied_delta = *constrained - current_offset;
+    if (applied_delta != resolved_scroll_delta) {
+      resolved_scroll_delta = applied_delta;
+      hit_snap_constraint = true;
+    }
+  }
+
+  // Apply resolved constrained scroll delta to scroll_state.
+  scroll_state.data()->delta_x = resolved_scroll_delta.x();
+  scroll_state.data()->delta_y = resolved_scroll_delta.y();
+
   // The decision of whether or not we'll animate a scroll comes down to
   // whether the granularity is specified in precise pixels or not. Thus we
   // need to preserve a precise granularity if that's what was specified; all
@@ -392,9 +406,9 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
   // Mark the input as having caused a scroll for the purposes of metrics even
   // if the scroll only affected browser controls.
   bool did_scroll_anything =
-      std::abs(scroll_state.delta_x() - resolvedScrollDelta.x()) >
+      std::abs(scroll_state.delta_x() - resolved_scroll_delta.x()) >
           kScrollEpsilon ||
-      std::abs(scroll_state.delta_y() - resolvedScrollDelta.y()) >
+      std::abs(scroll_state.delta_y() - resolved_scroll_delta.y()) >
           kScrollEpsilon;
   if (did_scroll_anything) {
     compositor_delegate_->DidScrollForMetrics();
@@ -406,7 +420,7 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
   if (did_scroll_content) {
     bool is_animated_scroll = ShouldAnimateScroll(scroll_state);
     compositor_delegate_->DidScrollContent(
-        scroll_node.element_id, is_animated_scroll, resolvedScrollDelta);
+        scroll_node.element_id, is_animated_scroll, resolved_scroll_delta);
   }
 
   SetNeedsCommit();
@@ -461,6 +475,7 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
 
   InputHandlerScrollResult scroll_result;
   scroll_result.did_scroll = did_scroll_content || did_scroll_top_controls;
+  scroll_result.hit_snap_constraint = hit_snap_constraint;
   // TODO(crbug.com/41102897): Refactor did_root_overscroll to instead store the
   // ElementId of scroller that consumed the overscroll.
   scroll_result.did_overscroll_root =
@@ -481,7 +496,7 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
   if (!has_received_scroll_update_for_sequence_ && scroll_result.did_scroll &&
       base::ShouldRecordSubsampledMetric(0.01)) {
     UMA_HISTOGRAM_COUNTS("Input.FirstGestureScrollUpdate.DeltaY",
-                         resolvedScrollDelta.y());
+                         resolved_scroll_delta.y());
   }
   has_received_scroll_update_for_sequence_ = true;
 
@@ -599,6 +614,8 @@ InputHandlerScrollEndResult InputHandler::ScrollEnd(
     compositor_delegate_->ScrollEnd(compensated_scroll_delta_pixels);
     deferred_scroll_ends_.erase(cleanup_node.element_id);
     snap_fling_state_ = kNoFling;
+    fling_snap_constrain_x_ = std::nullopt;
+    fling_snap_constrain_y_ = std::nullopt;
     snap_strategy_.reset();
     has_received_scroll_update_for_sequence_ = false;
   };
@@ -1091,17 +1108,41 @@ bool InputHandler::ScrollLayerTo(ElementId element_id,
   return true;
 }
 
-std::optional<gfx::PointF> InputHandler::ConstrainFling(gfx::PointF original) {
-  gfx::PointF fling = original;
+std::optional<gfx::PointF> InputHandler::ConstrainFling(
+    gfx::PointF current_offset,
+    gfx::PointF proposed_offset) {
+  gfx::PointF constrained_offset = proposed_offset;
   if (fling_snap_constrain_x_) {
-    fling.set_x(std::clamp(fling.x(), fling_snap_constrain_x_->GetMin(),
-                           fling_snap_constrain_x_->GetMax()));
+    float min = fling_snap_constrain_x_->GetMin();
+    float max = fling_snap_constrain_x_->GetMax();
+    float curr_x = current_offset.x();
+    float prop_x = proposed_offset.x();
+
+    if (curr_x <= max) {
+      prop_x = std::min(prop_x, max);
+    }
+    if (curr_x >= min) {
+      prop_x = std::max(prop_x, min);
+    }
+    constrained_offset.set_x(prop_x);
   }
   if (fling_snap_constrain_y_) {
-    fling.set_y(std::clamp(fling.y(), fling_snap_constrain_y_->GetMin(),
-                           fling_snap_constrain_y_->GetMax()));
+    float min = fling_snap_constrain_y_->GetMin();
+    float max = fling_snap_constrain_y_->GetMax();
+    float curr_y = current_offset.y();
+    float prop_y = proposed_offset.y();
+
+    if (curr_y <= max) {
+      prop_y = std::min(prop_y, max);
+    }
+    if (curr_y >= min) {
+      prop_y = std::max(prop_y, min);
+    }
+    constrained_offset.set_y(prop_y);
   }
-  return original == fling ? std::nullopt : std::make_optional(fling);
+  return proposed_offset == constrained_offset
+             ? std::nullopt
+             : std::make_optional(constrained_offset);
 }
 
 double InputHandler::PredictViewportBoundsDelta(
@@ -1142,15 +1183,12 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
 
   gfx::PointF current_offset = GetVisualScrollOffset(*scroll_node);
   gfx::PointF new_offset = current_offset + current_delta_in_content;
-
   if (snap_fling_state_ == kConstrainedNativeFling) {
-    if (std::optional<gfx::PointF> constrained = ConstrainFling(new_offset)) {
+    if (std::optional<gfx::PointF> constrained =
+            ConstrainFling(current_offset, new_offset)) {
       snap_displacement = *constrained - current_offset;
-    } else {
-      return false;
     }
   }
-
   // CC side always uses fractional scroll deltas.
   bool use_fractional_offsets = true;
   std::unique_ptr<SnapSelectionStrategy> strategy =
@@ -1168,13 +1206,58 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
     return false;
   }
 
-  if (snap_fling_state_ == kNoFling &&
-      snap.type == SnapPositionData::Type::kCovered) {
-    fling_snap_constrain_x_ = snap.covered_range_x;
-    fling_snap_constrain_y_ = snap.covered_range_y;
-    if (!ConstrainFling(new_offset)) {
+  if (snap.is_extremity &&
+      base::FeatureList::IsEnabled(features::kSnapFlingNearExtremes)) {
+    double distance_x = std::abs(snap.position.x() - current_offset.x());
+    double distance_y = std::abs(snap.position.y() - current_offset.y());
+    // Displacement is the total expected distance of the fling, so we are
+    // checking if the fling is predicted to go far enough to reach the snap
+    // point.
+    double displacement_x = std::abs(snap_displacement.x());
+    double displacement_y = std::abs(snap_displacement.y());
+    bool fast_enough = true;
+    if (strategy->ShouldSnapOnX() && displacement_x < distance_x) {
+      fast_enough = false;
+    }
+    if (strategy->ShouldSnapOnY() && displacement_y < distance_y) {
+      fast_enough = false;
+    }
+
+    if (fast_enough) {
+      // For fast flings targeting extremities, we allow the scroll to
+      // proceed at its natural velocity as long as it doesn't leave the valid
+      // range.
+      fling_snap_constrain_x_ = snap.covered_range_x
+                                    ? snap.covered_range_x
+                                    : gfx::RangeF(snap.position.x());
+      fling_snap_constrain_y_ = snap.covered_range_y
+                                    ? snap.covered_range_y
+                                    : gfx::RangeF(snap.position.y());
       snap_fling_state_ = kConstrainedNativeFling;
       return false;
+    }
+    // If not fast enough, fall through to start snap animation!
+  } else {
+    // Large snap areas logic (only if not extremity or feature disabled).
+    if (snap_fling_state_ == kConstrainedNativeFling) {
+      if (std::optional<gfx::PointF> constrained =
+              ConstrainFling(current_offset, new_offset)) {
+        snap_displacement = *constrained - current_offset;
+        strategy = SnapSelectionStrategy::CreateForDisplacement(
+            current_offset, snap_displacement, use_fractional_offsets);
+        snap = data.FindSnapPositionWithViewportAdjustment(
+            *strategy, snapport_height_adjustment);
+      }
+    }
+
+    if (snap_fling_state_ == kNoFling &&
+        snap.type == SnapPositionData::Type::kCovered) {
+      if (!ConstrainFling(current_offset, new_offset)) {
+        fling_snap_constrain_x_ = snap.covered_range_x;
+        fling_snap_constrain_y_ = snap.covered_range_y;
+        snap_fling_state_ = kConstrainedNativeFling;
+        return false;
+      }
     }
   }
 

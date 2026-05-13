@@ -995,15 +995,18 @@ LayerTreeHostImplTest::LayerTreeHostImplTest() {
     case CommitToActiveTreeTreesInVizClient:
     case CommitToPendingTreeTreesInVizClient:
     case CommitToActiveTreeTreesInVizService:
-      scoped_feature_list_.InitAndEnableFeature(features::kTreesInViz);
+      scoped_feature_list_.InitWithFeatures({features::kTreesInViz},
+                                            {features::kSnapFlingNearExtremes});
       break;
     case CommitToActiveTreeAnimationsInVizService:
       scoped_feature_list_.InitWithFeatures(
-          {features::kTreesInViz, features::kTreeAnimationsInViz}, {});
+          {features::kTreesInViz, features::kTreeAnimationsInViz},
+          {features::kSnapFlingNearExtremes});
       break;
     case CommitToActiveTree:
     case CommitToPendingTree:
-      scoped_feature_list_.InitAndDisableFeature(features::kTreesInViz);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kTreesInViz, features::kSnapFlingNearExtremes});
       break;
   }
 }

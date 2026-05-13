@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../animations/web-animations/resources/testcommon.js"></script>
+<style>
+#scroller {
+  width: 400px;
+  height: 400px;
+  overflow: scroll;
+  scroll-snap-type: both mandatory;
+  border: solid black 5px;
+}
+.target {
+  height: 1000px;
+  scroll-snap-align: start;
+  background-color: blue;
+}
+</style>
+
+<div id="scroller">
+  <div class="target"></div>
+  <div class="target"></div>
+  <div class="target"></div>
+  <div class="target"></div>
+</div>
+
+<script>
+var body = document.body;
+var scroller = document.getElementById("scroller");
+var space = document.getElementById("space");
+
+promise_test (async () => {
+  await waitForScrollReset(scroller, 0, 2600);
+  await waitForCompositorCommit();
+  const bounds = scroller.getBoundingClientRect();
+  await touchScroll(bounds.left + 10, bounds.top + 10, 0, 20, scroller, { prevent_fling_pause_ms: 0 });
+}, "Should not crash if we fling within the middle covering area.");
+
+</script>

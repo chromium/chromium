@@ -1015,6 +1015,37 @@ TEST_P(InputHandlerProxyTest, SnapFlingIgnoresFollowingGSUAndGSE) {
   VERIFY_AND_RESET_MOCKS();
 }
 
+TEST_P(InputHandlerProxyTest, FlingHitsConstraintCompletesEarly) {
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(mock_input_handler_, RecordScrollBegin(_, _)).Times(1);
+
+  gesture_.SetType(WebInputEvent::Type::kGestureScrollBegin);
+  EXPECT_EQ(InputHandlerProxy::DID_HANDLE,
+            HandleInputEventWithLatencyInfo(input_handler_.get(), gesture_));
+
+  gesture_.SetType(WebInputEvent::Type::kGestureScrollUpdate);
+  gesture_.data.scroll_update.delta_y = -40;
+  gesture_.data.scroll_update.inertial_phase =
+      WebGestureEvent::InertialPhaseState::kMomentum;
+
+  EXPECT_CALL(mock_input_handler_,
+              GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
+      .WillOnce(testing::Return(false));
+
+  cc::InputHandlerScrollResult scroll_result;
+  scroll_result.did_scroll = false;
+  scroll_result.hit_snap_constraint = true;
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+      .WillOnce(testing::Return(scroll_result));
+
+  EXPECT_CALL(mock_input_handler_, ScrollEnd(true, _)).Times(1);
+
+  EXPECT_EQ(InputHandlerProxy::DROP_EVENT,
+            HandleInputEventWithLatencyInfo(input_handler_.get(), gesture_));
+  VERIFY_AND_RESET_MOCKS();
+}
+
 TEST_P(InputHandlerProxyTest, GesturePinch) {
   // We shouldn't send any events to the widget for this gesture.
   expected_disposition_ = InputHandlerProxy::DID_HANDLE;

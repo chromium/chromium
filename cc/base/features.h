@@ -230,6 +230,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlimDirectReceiverIpc);
 // When enabled, the overscroll effect will display on non-root scrollers.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kOverscrollEffectOnNonRootScrollers);
 
+// When enabled, scrolling to the end of a snap scroller has the same fling
+// curve as a regular scroller.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSnapFlingNearExtremes);
+
 // A kill switch in case skipping finish causes unexpected issues.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSkipFinishDuringReleaseLayerTreeFrameSink);
 

@@ -86,6 +86,46 @@ chain we need to know whether to use cc::Viewport or not. Blink sets the
 node so that the compositor can know that scrolls bubbling to the inner
 viewport should not use the cc::Viewport class.
 
+## Scroll Snapping
+
+Scroll snapping allows scroll containers to lock to specific offsets after scrolling has finished, ensuring content is aligned nicely within the viewport.
+
+### Snap Data Collection
+
+The scroll snap data is collected and maintained as follows:
+1. **Blink Layout**: During the Blink lifecycle update, the layout engine identifies snap containers (elements with `scroll-snap-type`) and snap areas (descendants with `scroll-snap-align`).
+2. **Data Representation**: Blink represents this data using `cc::SnapContainerData` (for the container) and `cc::SnapAreaData` (for each snap area).
+3. **Commit to CC**: This data is pushed to the compositor thread during commit and stored in the corresponding `cc::ScrollNode` as `snap_container_data`.
+
+### Snap Selection Strategies (`cc::SnapSelectionStrategy`)
+
+When a scroll gesture ends, the compositor needs to select the best snap point. It uses different strategies represented by subclasses of `cc::SnapSelectionStrategy`:
+- **`SnapSelectionStrategy::CreateForEndPosition`**: Used for non-directional scrolls where we want to snap to the closest point to the intended destination. Examples include panning gestures released without momentum, explicit scrollbar thumb drags, programmatically scrolling via `scrollTo()`, tabbing through focusable elements, navigating to anchors, or using Home/End keys.
+- **`SnapSelectionStrategy::CreateForDirection`**: Used for directional scrolls by a small step, preferring to stop at the next snap point in that direction. Examples include pressing arrow keys, imprecise wheel scrolls, and small scrollbar arrow/track clicks.
+- **`SnapSelectionStrategy::CreateForDisplacement`**: Used for flings (inertial scrolls) with momentum, where we predict the landing position based on displacement but prefer the natural landing position over snapping to intermediate points unless they have `scroll-snap-stop: always`.
+- **`SnapSelectionStrategy::CreateForPageScroll`**: Used for page scrolls (PgUp/PgDn or scrollbar track clicks) where we prefer to scroll by about a page size in the given direction and snap to a point within that range.
+- **`SnapSelectionStrategy::CreateForTargetElement`**: Used to snap back to a previously targeted element when the layout changes (Blink) or after viewport changes like pinch-zoom (CC).
+
+### Snapping in Blink vs. CC
+
+- **Compositor Thread (CC)**: Handles active user gestures (touch, wheel, flings). When a gesture ends, `cc::InputHandler::ScrollEnd` calls `SnapAtScrollEnd`, which uses the appropriate strategy to find a snap position. If a snap target is found, it starts a scroll offset animation to smoothly glide to the target. Once the animation completes, the compositor notifies the main thread about the new snapped targets.
+- **Main Thread (Blink)**: Handles programmatic scrolls (e.g., `window.scrollTo()`, `element.scrollIntoView()`) and layout changes. If a layout change moves a snapped element, Blink's `ScrollableArea` recalculates the snap position and performs a resnap. It also receives snapped target IDs from CC to fire `scrollsnapchange` and `scrollsnapchanging` events.
+
+### Inertial Scrolls (Flings) and Extremities (Hybrid Fling)
+
+For flings (inertial scrolls) targeting extremities (the first or last snap area) that are not mandatory stops, we use a **hybrid approach**:
+1. **Native Fling with Constraints**: If the fling is predicted to be fast enough to reach the extreme snap point, we allow it to proceed at its natural velocity (native fling) instead of immediately taking over with a slow snap animation.
+2. **Overshoot Prevention**: We apply constraints in `ScrollUpdate` to clamp the offset to the valid snap range (using `ConstrainFling`), preventing the scroll from overshooting the extremity.
+3. **Animation Takeover**: If the fling slows down and is no longer predicted to reach the target, a smooth scroll animation takes over to complete the snap.
+4. **Early Completion**: If the fling hits the constraint limit, we abort the fling early and immediately trigger `ScrollEnd` with `should_snap = true` to sync the snap targets with the main thread and fire `scrollsnapchange` and `overscrollend` events without delay.
+
+### Large Snap Areas
+
+For snap areas that are larger than the viewport:
+- We allow the user to scroll naturally within the covered range of the snap area.
+- We only apply constraints to prevent the user from scrolling out of the covered range, unless they perform a scroll strong enough to escape it.
+- Constraints are applied directionally: we only clamp if the scroll attempts to leave the covered range after being inside, or overshoots it completely, allowing smooth entry into the covered range.
+
 ## Other Docs
 
 * [Blink Scrolling](../../third_party/blink/renderer/core/page/scrolling/README.md)

@@ -5,6 +5,7 @@
 #include "cc/input/snap_fling_controller.h"
 
 #include <utility>
+
 #include "cc/input/snap_fling_curve.h"
 
 namespace cc {
@@ -36,6 +37,15 @@ void SnapFlingController::ClearSnapFling() {
 
   curve_.reset();
   state_ = State::kIdle;
+}
+
+void SnapFlingController::Finish() {
+  if (state_ != State::kActive) {
+    return;
+  }
+
+  client_->ScrollEndForSnapFling(true /* did_finish */);
+  state_ = State::kFinished;
 }
 
 bool SnapFlingController::HandleGestureScrollUpdate(
@@ -79,6 +89,10 @@ void SnapFlingController::Animate(base::TimeTicks time) {
   }
   gfx::Vector2dF snapped_delta = curve_->GetScrollDelta(time);
   gfx::PointF current_offset = client_->ScrollByForSnapFling(snapped_delta);
+  // The fling may be canceled if we hit the snap constraint.
+  if (state_ != State::kActive) {
+    return;
+  }
   curve_->UpdateCurrentOffset(current_offset);
   client_->RequestAnimationForSnapFling();
 }

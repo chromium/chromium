@@ -323,6 +323,10 @@ struct SnapPositionData {
 
   std::optional<gfx::RangeF> covered_range_x;
   std::optional<gfx::RangeF> covered_range_y;
+
+  // True if we are targeting the first or last scroll snap area in that axis
+  // and it is not a scroll-snap-stop: always snap point.
+  bool is_extremity = false;
 };
 
 // Snap container is a scroll container that at least one snap area assigned to
@@ -385,7 +389,7 @@ class CC_EXPORT SnapContainerData {
   void set_scroll_snap_type(ScrollSnapType type) { scroll_snap_type_ = type; }
   ScrollSnapType scroll_snap_type() const { return scroll_snap_type_; }
 
-  void set_rect(const gfx::RectF& rect) { rect_ = rect; }
+  void set_rect(const gfx::RectF& rect);
   gfx::RectF rect() const { return rect_; }
 
   void set_max_position(gfx::PointF position) { max_position_ = position; }
@@ -396,6 +400,8 @@ class CC_EXPORT SnapContainerData {
   }
   gfx::PointF proximity_range() const { return proximity_range_; }
 
+  gfx::RangeF GetSnapRange(SearchAxis axis) const;
+
   void set_targeted_area_id(const std::optional<ElementId>& id) {
     targeted_area_id_ = id;
   }
@@ -405,6 +411,8 @@ class CC_EXPORT SnapContainerData {
   }
 
  private:
+  void UpdateExtremes();
+
   // Finds the best SnapArea candidate that's optimal for the given selection
   // strategy, while satisfying two invariants:
   // - |candidate.snap_offset| is within |cross_axis_snap_result|'s visible
@@ -538,6 +546,11 @@ class CC_EXPORT SnapContainerData {
   // if no such snap area exists.
   // [1]https://drafts.csswg.org/selectors/#the-target-pseudo
   std::optional<ElementId> targeted_area_id_;
+
+  std::optional<float> min_snap_offset_x_;
+  std::optional<float> max_snap_offset_x_;
+  std::optional<float> min_snap_offset_y_;
+  std::optional<float> max_snap_offset_y_;
 
   FRIEND_TEST_ALL_PREFIXES(ScrollSnapDataTest, SnapToFocusedElementHorizontal);
   FRIEND_TEST_ALL_PREFIXES(ScrollSnapDataTest, SnapToFocusedElementVertical);

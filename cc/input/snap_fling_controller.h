@@ -75,6 +75,9 @@ class CC_EXPORT SnapFlingController {
   // Notifies the snap fling controller to update or end the scroll animation.
   void Animate(base::TimeTicks time);
 
+  // Finishes the current snap fling animation if active.
+  void Finish();
+
  private:
   friend class test::SnapFlingControllerTest;
 

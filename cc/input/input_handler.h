@@ -114,6 +114,9 @@ struct CC_EXPORT InputHandlerScrollResult {
   // the user will see the new pixels (for example, because the scroller does
   // not have a composited layer).
   bool needs_main_thread_repaint = false;
+
+  // Set to true if the scroll was blocked by a snap constraint during a fling.
+  bool hit_snap_constraint = false;
 };
 
 struct CC_EXPORT InputHandlerScrollEndResult {
@@ -727,7 +730,14 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     return scrollbar_controller_.get();
   }
 
-  std::optional<gfx::PointF> ConstrainFling(gfx::PointF original);
+  // Constrains the proposed fling offset to remain within the snap area's
+  // covered range. Clamping is applied directionally: we strictly clamp if
+  // already inside the range, but allow entering the range from outside,
+  // only clamping if we attempt to overshoot it on the far side.
+  // Returns the new constrained offset if clamping occurred, or std::nullopt
+  // if the proposed offset was allowed as-is.
+  std::optional<gfx::PointF> ConstrainFling(gfx::PointF current_offset,
+                                            gfx::PointF proposed_offset);
 
   // Estimate how to adjust the height of the snapport rect based on the state
   // of browser controls that are being shown or hidden during a scroll gesture

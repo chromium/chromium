@@ -903,6 +903,10 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerWithElement) {
   EXPECT_EQ(child_data.element_id,
             CompositorElementIdFromDOMNodeId(menu->GetDomNodeId()));
   ASSERT_EQ(child_data.rect, gfx::RectF(0, 0, 200, 200));
+
+  cc::TargetSnapAreaElementIds target_ids =
+      snap_container_data->GetTargetSnapAreaElementIds();
+  EXPECT_EQ(target_ids.x, parent_area_data.element_id);
 }
 
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollAreaChangingOrigin) {

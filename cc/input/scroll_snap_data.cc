@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "cc/base/features.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -148,6 +149,36 @@ bool CanCoverSnapportOnAxis(SearchAxis axis,
           area_rect.width() >= container_rect.width());
 }
 
+std::optional<gfx::RangeF> CalculateCoveredRange(SearchAxis axis,
+                                                 const gfx::RectF& snapport,
+                                                 const gfx::RectF& area_rect) {
+  if (axis == SearchAxis::kX) {
+    if (area_rect.width() > snapport.width()) {
+      float min_offset = area_rect.x() - snapport.x();
+      float max_offset = area_rect.right() - snapport.right();
+      return gfx::RangeF(min_offset, max_offset);
+    }
+  } else {
+    if (area_rect.height() > snapport.height()) {
+      float min_offset = area_rect.y() - snapport.y();
+      float max_offset = area_rect.bottom() - snapport.bottom();
+      return gfx::RangeF(min_offset, max_offset);
+    }
+  }
+  return std::nullopt;
+}
+
+void UpdateMinMax(float offset,
+                  std::optional<float>& min_offset,
+                  std::optional<float>& max_offset) {
+  if (!min_offset || offset < *min_offset) {
+    min_offset = offset;
+  }
+  if (!max_offset || offset > *max_offset) {
+    max_offset = offset;
+  }
+}
+
 }  // namespace
 
 SnapSearchResult::SnapSearchResult(float offset,
@@ -203,6 +234,102 @@ SnapContainerData& SnapContainerData::operator=(SnapContainerData&& other) =
 
 void SnapContainerData::AddSnapAreaData(SnapAreaData snap_area_data) {
   snap_area_list_.push_back(snap_area_data);
+
+  gfx::RectF rect = snapport();
+
+  // Track the minimum and maximum valid scroll positions in each axis that
+  // are valid snap positions. In mandatory snap scrollers this is the
+  // reachable scroll range.
+
+  if (snap_area_data.scroll_snap_align.alignment_inline !=
+      SnapAlignment::kNone) {
+    SnapSearchResult result =
+        GetSnapSearchResult(SearchAxis::kX, snap_area_data);
+    std::optional<gfx::RangeF> covered_range =
+        CalculateCoveredRange(SearchAxis::kX, rect, snap_area_data.rect);
+    if (covered_range) {
+      UpdateMinMax(covered_range->start(), min_snap_offset_x_,
+                   max_snap_offset_x_);
+      UpdateMinMax(covered_range->end(), min_snap_offset_x_,
+                   max_snap_offset_x_);
+    } else {
+      UpdateMinMax(result.snap_offset(), min_snap_offset_x_,
+                   max_snap_offset_x_);
+    }
+  }
+
+  if (snap_area_data.scroll_snap_align.alignment_block !=
+      SnapAlignment::kNone) {
+    SnapSearchResult result =
+        GetSnapSearchResult(SearchAxis::kY, snap_area_data);
+    std::optional<gfx::RangeF> covered_range =
+        CalculateCoveredRange(SearchAxis::kY, rect, snap_area_data.rect);
+    if (covered_range) {
+      UpdateMinMax(covered_range->start(), min_snap_offset_y_,
+                   max_snap_offset_y_);
+      UpdateMinMax(covered_range->end(), min_snap_offset_y_,
+                   max_snap_offset_y_);
+    } else {
+      UpdateMinMax(result.snap_offset(), min_snap_offset_y_,
+                   max_snap_offset_y_);
+    }
+  }
+}
+
+void SnapContainerData::set_rect(const gfx::RectF& rect) {
+  rect_ = rect;
+  UpdateExtremes();
+}
+
+void SnapContainerData::UpdateExtremes() {
+  min_snap_offset_x_ = std::nullopt;
+  max_snap_offset_x_ = std::nullopt;
+  min_snap_offset_y_ = std::nullopt;
+  max_snap_offset_y_ = std::nullopt;
+
+  gfx::RectF rect = snapport();
+
+  for (const auto& area : snap_area_list_) {
+    if (area.scroll_snap_align.alignment_inline != SnapAlignment::kNone) {
+      SnapSearchResult sr = GetSnapSearchResult(SearchAxis::kX, area);
+      std::optional<gfx::RangeF> covered_range =
+          CalculateCoveredRange(SearchAxis::kX, rect, area.rect);
+      if (covered_range) {
+        UpdateMinMax(covered_range->start(), min_snap_offset_x_,
+                     max_snap_offset_x_);
+        UpdateMinMax(covered_range->end(), min_snap_offset_x_,
+                     max_snap_offset_x_);
+      } else {
+        UpdateMinMax(sr.snap_offset(), min_snap_offset_x_, max_snap_offset_x_);
+      }
+    }
+
+    if (area.scroll_snap_align.alignment_block != SnapAlignment::kNone) {
+      SnapSearchResult sr = GetSnapSearchResult(SearchAxis::kY, area);
+      std::optional<gfx::RangeF> covered_range =
+          CalculateCoveredRange(SearchAxis::kY, rect, area.rect);
+      if (covered_range) {
+        UpdateMinMax(covered_range->start(), min_snap_offset_y_,
+                     max_snap_offset_y_);
+        UpdateMinMax(covered_range->end(), min_snap_offset_y_,
+                     max_snap_offset_y_);
+      } else {
+        UpdateMinMax(sr.snap_offset(), min_snap_offset_y_, max_snap_offset_y_);
+      }
+    }
+  }
+}
+
+gfx::RangeF SnapContainerData::GetSnapRange(SearchAxis axis) const {
+  if (axis == SearchAxis::kX) {
+    float min = min_snap_offset_x_.value_or(0.f);
+    float max = max_snap_offset_x_.value_or(max_position_.x());
+    return gfx::RangeF(min, max);
+  } else {
+    float min = min_snap_offset_y_.value_or(0.f);
+    float max = max_snap_offset_y_.value_or(max_position_.y());
+    return gfx::RangeF(min, max);
+  }
 }
 
 SnapPositionData SnapContainerData::FindSnapPositionWithViewportAdjustment(
@@ -331,15 +458,48 @@ SnapPositionData SnapContainerData::FindSnapPosition(
     }
   }
 
+  gfx::Vector2dF direction =
+      strategy.HasIntendedDirection()
+          ? strategy.intended_position() - strategy.current_position()
+          : gfx::Vector2dF();
+
   if (selected_x) {
     result.position.set_x(selected_x->snap_offset());
     result.target_element_ids.x = selected_x->element_id();
     result.covered_range_x = selected_x->covered_range();
+
+    // Check if this is a directional scroll towards the first or last available
+    // snap point in the given direction.
+    if ((direction.x() > 0.f && max_snap_offset_x_ &&
+         (selected_x->snap_offset() == *max_snap_offset_x_ ||
+          (selected_x->covered_range() &&
+           selected_x->covered_range()->end() == *max_snap_offset_x_))) ||
+        (direction.x() < 0.f && min_snap_offset_x_ &&
+         (selected_x->snap_offset() == *min_snap_offset_x_ ||
+          (selected_x->covered_range() &&
+           selected_x->covered_range()->start() == *min_snap_offset_x_)))) {
+      // TODO(crbug.com/507028423): Only use a native fling for
+      // scroll-snap-stop: normal snap points.
+      result.is_extremity = true;
+    }
   }
   if (selected_y) {
     result.position.set_y(selected_y->snap_offset());
     result.target_element_ids.y = selected_y->element_id();
     result.covered_range_y = selected_y->covered_range();
+
+    // Check if this is a directional scroll towards the first or last available
+    // snap point in the given direction.
+    if ((direction.y() > 0.f && max_snap_offset_y_ &&
+         (selected_y->snap_offset() == *max_snap_offset_y_ ||
+          (selected_y->covered_range() &&
+           selected_y->covered_range()->end() == *max_snap_offset_y_))) ||
+        (direction.y() < 0.f && min_snap_offset_y_ &&
+         (selected_y->snap_offset() == *min_snap_offset_y_ ||
+          (selected_y->covered_range() &&
+           selected_y->covered_range()->start() == *min_snap_offset_y_)))) {
+      result.is_extremity = true;
+    }
   }
   if ((!selected_x || result.covered_range_x) &&
       (!selected_y || result.covered_range_y)) {
