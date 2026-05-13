@@ -533,10 +533,13 @@ bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
   POINT current_pos;
   ::GetCursorPos(&current_pos);
   if (screen_point.x() == current_pos.x && screen_point.y() == current_pos.y) {
-    if (task)
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(task));
-    return true;
+    // Windows does not dispatch a WM_MOUSEMOVE message if the cursor is already
+    // at the target coordinates. To force Windows to dispatch the event, offset
+    // the target x-coordinate by 1 DIP.
+    LOG(WARNING) << "ui_controls: Cursor is already at the target position. "
+                    "Offsetting move target by 1 DIP for x to force dispatch.";
+    screen_point = display::win::GetScreenWin()->DIPToScreenPoint(
+        {screen_x + 1, screen_y});
   }
 
   if (!ui::SendMouseEvent(screen_point,
