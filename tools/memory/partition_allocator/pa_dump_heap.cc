@@ -28,10 +28,10 @@
 #include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/in_slot_metadata.h"
+#include "partition_alloc/internal/partition_page_internal.h"  // nogncheck
+#include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
+#include "partition_alloc/internal/thread_cache_internal.h"    // nogncheck
 #include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_root.h"
-#include "partition_alloc/thread_cache.h"
 #include "third_party/snappy/src/snappy.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
@@ -391,8 +391,9 @@ class HeapDumper {
   static uintptr_t FindRootAddress(RemoteProcessMemoryReader& reader)
       NO_THREAD_SAFETY_ANALYSIS {
     uintptr_t tcache_registry_address = IndexThreadCacheNeedleArray(reader, 1);
-    auto registry = RawBuffer<ThreadCacheRegistry>::ReadFromProcessMemory(
-        reader, tcache_registry_address);
+    auto registry =
+        RawBuffer<internal::ThreadCacheRegistry>::ReadFromProcessMemory(
+            reader, tcache_registry_address);
     if (!registry)
       return 0;
 
@@ -401,8 +402,8 @@ class HeapDumper {
     if (!tcache_address)
       return 0;
 
-    auto tcache =
-        RawBuffer<ThreadCache>::ReadFromProcessMemory(reader, tcache_address);
+    auto tcache = RawBuffer<internal::ThreadCache>::ReadFromProcessMemory(
+        reader, tcache_address);
     if (!tcache)
       return 0;
 

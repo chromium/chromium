@@ -229,12 +229,17 @@ component("raw_ptr") {
   sources = [ "pointers/instance_tracer.cc" ]
   public_configs = [ ":public_includes" ]
   configs += [ ":wexit_time_destructors" ]
+  deps = []
 
   if (use_raw_ptr_backup_ref_impl) {
     sources += [
       "pointers/raw_ptr_backup_ref_impl.cc",
       "pointers/raw_ptr_backup_ref_impl.h",
     ]
+
+    # Depends on FreeAfterBRPQuarantine() and InSlotMetadataPointerFromSlotStartAndSize().
+    # Is it possible to make FreeAfterBRPQuarantine() PA_NOINLINE like FreeNoInline?
+    deps += [ ":internal_headers" ]
   } else if (use_raw_ptr_hookable_impl) {
     sources += [
       "pointers/raw_ptr_hookable_impl.cc",
@@ -379,6 +384,27 @@ if (is_clang_or_gcc) {
     }
   }
 
+  source_set("internal_headers") {
+    visibility = [
+      ":allocator_core",
+      ":death_unittests",
+      ":raw_ptr",
+      ":test_support",
+      ":unittests",
+    ]
+
+    sources = [
+      "internal/page_allocator_internal.h",
+      "internal/partition_address_space_internal.h",
+      "internal/partition_page_internal.h",
+      "internal/partition_root_exports.h",
+      "internal/partition_root_internal.h",
+      "internal/partition_superpage_extent_entry_internal.h",
+      "internal/reservation_offset_table_internal.h",
+      "internal/thread_cache_internal.h",
+    ]
+  }
+
   component("allocator_core") {
     visibility = [ ":*" ]
 
@@ -430,7 +456,6 @@ if (is_clang_or_gcc) {
       "page_allocator.cc",
       "page_allocator.h",
       "page_allocator_constants.h",
-      "page_allocator_internal.h",
       "partition_address_space.cc",
       "partition_address_space.h",
       "partition_alloc-inl.h",
@@ -539,7 +564,10 @@ if (is_clang_or_gcc) {
       ":memory_tagging",
       ":wexit_time_destructors",
     ]
-    deps = [ ":allocator_base" ]
+    deps = [
+      ":allocator_base",
+      ":internal_headers",
+    ]
     if (use_partition_alloc_as_malloc_on_win_component_build) {
       # We need to add explicit libc++ dependency here because of
       # no_default_deps=true.
@@ -1016,6 +1044,7 @@ if (build_with_chromium) {
       "use_death_tests.h",
     ]
     deps = []
+    deps += [ ":internal_headers" ]
 
     if (is_linux || is_chromeos || is_android) {
       deps += [ ":debug_proc_maps" ]
@@ -1148,6 +1177,7 @@ if (build_with_chromium) {
       "use_death_tests.h",
     ]
     deps = []
+    deps += [ ":internal_headers" ]
 
     if (is_linux || is_chromeos || is_android) {
       deps += [ ":debug_proc_maps" ]
@@ -1237,6 +1267,10 @@ source_set("test_support") {
     ":partition_alloc",
     ":raw_ptr",
   ]
+
+  # "extended_api.cc" depends on thread_cache_internal.h.
+  deps = [ ":internal_headers" ]
+
   public_configs = []
 
   if (is_fuchsia) {

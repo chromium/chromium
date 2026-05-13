@@ -6,10 +6,10 @@
 
 #include <cstdint>
 
+#include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_bucket.h"
 #include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_root.h"
 
 namespace partition_alloc::internal {
 

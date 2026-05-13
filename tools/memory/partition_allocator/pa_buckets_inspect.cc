@@ -29,8 +29,8 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_root.h"
-#include "partition_alloc/thread_cache.h"
+#include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
+#include "partition_alloc/internal/thread_cache_internal.h"    // nogncheck
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
 namespace partition_alloc::tools {

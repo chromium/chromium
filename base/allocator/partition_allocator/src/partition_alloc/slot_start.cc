@@ -4,8 +4,8 @@
 
 #include "partition_alloc/slot_start.h"
 
+#include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_root.h"
 
 // TODO(crbug.com/459322791): Enforce this check in non-debug builds.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)

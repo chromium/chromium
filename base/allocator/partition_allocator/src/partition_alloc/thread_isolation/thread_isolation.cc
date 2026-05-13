@@ -9,10 +9,10 @@
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/internal/reservation_offset_table_internal.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
-#include "partition_alloc/reservation_offset_table.h"
 
 #if PA_BUILDFLAG(ENABLE_PKEYS)
 #include "partition_alloc/thread_isolation/pkey.h"

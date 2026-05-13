@@ -5,10 +5,10 @@
 #include "partition_alloc/scheduler_loop_quarantine.h"
 
 #include "partition_alloc/extended_api.h"
+#include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "partition_alloc/slot_start.h"
@@ -36,8 +36,8 @@ internal::ThreadBoundSchedulerLoopQuarantineBranch*
 GetBranchFromAllocatorRoot<true>(PartitionRoot* root) {
   PA_CHECK(root->settings_.with_thread_cache);
   PA_CHECK(root->settings_.thread_cache_index == 0);
-  ThreadCache* tcache = root->thread_cache_for_testing();
-  PA_CHECK(ThreadCache::IsValid(tcache));
+  internal::ThreadCache* tcache = root->thread_cache_for_testing();
+  PA_CHECK(internal::ThreadCache::IsValid(tcache));
   return &tcache->GetSchedulerLoopQuarantineBranch();
 }
 

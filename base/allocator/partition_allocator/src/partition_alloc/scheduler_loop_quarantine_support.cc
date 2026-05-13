@@ -4,14 +4,14 @@
 
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
 
-#include "partition_alloc/partition_root.h"
+#include "partition_alloc/internal/partition_root_internal.h"
 
 namespace partition_alloc {
 ScopedSchedulerLoopQuarantineExclusion::
     ScopedSchedulerLoopQuarantineExclusion() {
   for (size_t index = 0; index < kNumPartitions; ++index) {
-    ThreadCache* tcache = ThreadCache::Get(index);
-    if (!ThreadCache::IsValid(tcache)) {
+    internal::ThreadCache* tcache = internal::ThreadCache::Get(index);
+    if (!internal::ThreadCache::IsValid(tcache)) {
       return;
     }
     PA_UNSAFE_TODO(instances_[index])
@@ -51,8 +51,9 @@ void SchedulerLoopQuarantineScanPolicyUpdater::AllowScanlessPurge() {
 
 internal::ThreadBoundSchedulerLoopQuarantineBranch*
 SchedulerLoopQuarantineScanPolicyUpdater::GetQuarantineBranch() {
-  ThreadCache* tcache = ThreadCache::EnsureAndGetForQuarantine();
-  if (!ThreadCache::IsValid(tcache)) {
+  internal::ThreadCache* tcache =
+      internal::ThreadCache::EnsureAndGetForQuarantine();
+  if (!internal::ThreadCache::IsValid(tcache)) {
     return nullptr;
   }
 
@@ -70,8 +71,8 @@ ScopedSchedulerLoopQuarantineBranchAccessorForTesting::
     ScopedSchedulerLoopQuarantineBranchAccessorForTesting(
         PartitionRoot* allocator_root) {
   if (allocator_root->settings_.with_thread_cache) {
-    ThreadCache* tcache = allocator_root->thread_cache_for_testing();
-    if (ThreadCache::IsValid(tcache)) {
+    internal::ThreadCache* tcache = allocator_root->thread_cache_for_testing();
+    if (internal::ThreadCache::IsValid(tcache)) {
       branch_ = &tcache->GetSchedulerLoopQuarantineBranch();
       return;
     }

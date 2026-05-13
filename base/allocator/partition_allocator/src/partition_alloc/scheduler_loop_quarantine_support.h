@@ -10,10 +10,10 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/internal/thread_cache_internal.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/memory/stack_allocated.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
-#include "partition_alloc/thread_cache.h"
 
 // Extra utilities for Scheduler-Loop Quarantine.
 // This is a separate header to avoid cyclic reference between "thread_cache.h"
@@ -92,13 +92,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
  public:
   PA_ALWAYS_INLINE ScopedSchedulerLoopQuarantineDisallowScanlessPurge() {
-    active_ = ThreadCache::IsInitialized();
+    active_ = internal::ThreadCache::IsInitialized();
     if (!active_) {
       return;
     }
 
-    ThreadCache* tcache = ThreadCache::EnsureAndGetForQuarantine();
-    PA_CHECK(ThreadCache::IsValid(tcache));
+    internal::ThreadCache* tcache =
+        internal::ThreadCache::EnsureAndGetForQuarantine();
+    PA_CHECK(internal::ThreadCache::IsValid(tcache));
 
     tcache->GetSchedulerLoopQuarantineBranch().DisallowScanlessPurge();
   }
@@ -108,8 +109,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
       return;
     }
 
-    ThreadCache* tcache = ThreadCache::EnsureAndGetForQuarantine();
-    PA_CHECK(ThreadCache::IsValid(tcache));
+    internal::ThreadCache* tcache =
+        internal::ThreadCache::EnsureAndGetForQuarantine();
+    PA_CHECK(internal::ThreadCache::IsValid(tcache));
 
     tcache->GetSchedulerLoopQuarantineBranch().AllowScanlessPurge();
   }

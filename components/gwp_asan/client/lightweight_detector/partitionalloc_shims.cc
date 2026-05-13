@@ -5,7 +5,7 @@
 #include "components/gwp_asan/client/lightweight_detector/partitionalloc_shims.h"
 
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
-#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_hooks.h"
 
 namespace gwp_asan::internal::lud {
 

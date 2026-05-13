@@ -4,9 +4,9 @@
 
 #include "components/gwp_asan/client/extreme_lightweight_detector_quarantine.h"
 
+#include "partition_alloc/internal/partition_page_internal.h"  // nogncheck
+#include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
 #include "partition_alloc/partition_alloc_for_testing.h"
-#include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/slot_start.h"
 #include "partition_alloc/thread_cache.h"

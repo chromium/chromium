@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_check.h"
@@ -66,7 +67,7 @@ void MemoryReclaimer::Reclaim(int flags) {
   // as there is periodic purge which makes sure that it doesn't take too much
   // space.
   if (flags & PurgeFlags::kAggressiveReclaim) {
-    ThreadCacheRegistry::Instance().PurgeAll();
+    ThreadCache::PurgeAllThread();
   }
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 

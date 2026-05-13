@@ -17,8 +17,8 @@
 #include "components/gwp_asan/client/extreme_lightweight_detector_quarantine.h"
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/extreme_lightweight_detector_util.h"
+#include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
 #include "partition_alloc/partition_address_space.h"
-#include "partition_alloc/partition_root.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
