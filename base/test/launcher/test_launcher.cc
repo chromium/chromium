@@ -581,6 +581,11 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
       base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
       // Ensure that the process terminates.
       process.Terminate(-1, true);
+      // If you hit this and all of the tests passed, then it might be stuck
+      // generating something like a leak-santizer report. You can try extending
+      // the timeout with the `--test-launcher-timeout` flag.
+      LOG(ERROR) << "Timed out waiting for test process to exit ("
+                 << timeout_per_test << "). Terminating child process.";
     }
   }
 
