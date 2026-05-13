@@ -598,7 +598,6 @@ import java.util.function.Supplier;
 
     private boolean areAttachmentsCompatibleWithCreateImage() {
         if (!isInInputSession()) return false;
-        int imageCount = 0;
         for (MVCListAdapter.ListItem listItem : mModelList) {
             if (listItem.type == FuseboxAttachmentType.ATTACHMENT_FILE) {
                 return false;
@@ -609,12 +608,8 @@ import java.util.function.Supplier;
             if (listItem.type == FuseboxAttachmentType.ATTACHMENT_PDF) {
                 return false;
             }
-            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_IMAGE
-                    || listItem.type == FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL) {
-                imageCount++;
-            }
         }
-        return imageCount <= 1;
+        return true;
     }
 
     private void onTabPickerClicked() {
@@ -877,22 +872,21 @@ import java.util.function.Supplier;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
 
-        boolean allowMultipleAttachments =
-                mInput.getRequestType() != AutocompleteRequestType.IMAGE_GENERATION;
         Intent intent;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            int imageMax = allowMultipleAttachments ? mModelList.getRemainingAttachments() : 1;
             intent =
                     new Intent(MediaStore.ACTION_PICK_IMAGES)
                             .setType(MimeTypeUtils.IMAGE_ANY_MIME_TYPE)
-                            .putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, imageMax);
+                            .putExtra(
+                                    MediaStore.EXTRA_PICK_IMAGES_MAX,
+                                    mModelList.getRemainingAttachments());
         } else {
             intent =
                     new Intent(Intent.ACTION_PICK)
                             .setDataAndType(
                                     MediaStore.Images.Media.INTERNAL_CONTENT_URI,
                                     MimeTypeUtils.IMAGE_ANY_MIME_TYPE)
-                            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultipleAttachments);
+                            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
@@ -1011,11 +1005,6 @@ import java.util.function.Supplier;
             return;
         }
         if (!isInInputSession()) return;
-
-        // Image generation is only allowed to have a single piece of context.
-        if (mInput.getRequestType() == AutocompleteRequestType.IMAGE_GENERATION) {
-            mModelList.clear();
-        }
 
         // Use FuseboxModelList's unified add method.
         mModelList.add(attachment);

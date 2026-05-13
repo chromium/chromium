@@ -708,38 +708,6 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void testAddAttachment_replacesDuringCreateImage() {
-        addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
-        assertEquals(1, mAttachments.size());
-
-        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
-
-        addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE);
-        assertEquals(1, mAttachments.size());
-        assertEquals("token2", mAttachments.get(0).getToken());
-    }
-
-    @Test
-    public void testAddAttachment_replacesDuringCreateImage_imageNoThumbnail() {
-        addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
-        assertEquals(1, mAttachments.size());
-
-        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
-
-        addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
-        assertEquals(1, mAttachments.size());
-        assertEquals("token2", mAttachments.get(0).getToken());
-
-        addAttachment("title3", "token3", FuseboxAttachmentType.ATTACHMENT_IMAGE);
-        assertEquals(1, mAttachments.size());
-        assertEquals("token3", mAttachments.get(0).getToken());
-
-        addAttachment("title4", "token4", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
-        assertEquals(1, mAttachments.size());
-        assertEquals("token4", mAttachments.get(0).getToken());
-    }
-
-    @Test
     public void dedicatedButton_clearsAttachmentsAndAbandonsSession() {
         addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_TAB);
         assertEquals(
@@ -916,7 +884,7 @@ public class FuseboxMediatorUnitTest {
         mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
-        assertFalse(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, /* defaultValue= */ true));
+        assertTrue(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, /* defaultValue= */ false));
     }
 
     @Test
@@ -927,7 +895,8 @@ public class FuseboxMediatorUnitTest {
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
         assertEquals(
-                1, intent.getIntExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, /* defaultValue= */ -1));
+                FuseboxAttachmentModelList.getMaxAttachments(),
+                intent.getIntExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, /* defaultValue= */ -1));
     }
 
     @Test
@@ -1399,13 +1368,16 @@ public class FuseboxMediatorUnitTest {
 
         addAttachment("title", "token3", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(2, mAttachments.size());
-        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
-
-        mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
-        assertEquals(1, mAttachments.size());
         assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
-        mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
+        var tabAttachment =
+                addAttachment("title-tab", "token-tab", FuseboxAttachmentType.ATTACHMENT_TAB);
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+
+        mAttachments.remove(tabAttachment, /* isFailure= */ false);
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+
+        mAttachments.clear();
         assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         addAttachment("title", "token4", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
@@ -1414,7 +1386,7 @@ public class FuseboxMediatorUnitTest {
 
         addAttachment("title", "token5", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
         assertEquals(2, mAttachments.size());
-        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
     }
 
     @Test
