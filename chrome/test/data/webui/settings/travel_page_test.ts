@@ -216,7 +216,6 @@ suite('TravelPage', function() {
           AutofillAddOtherDatatypesPrefIsEnabled: false,
           autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
-          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
         });
 
         settingsPrefs.set(
@@ -247,7 +246,6 @@ suite('TravelPage', function() {
           AutofillAddOtherDatatypesPrefIsEnabled: false,
           autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
-          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
         });
 
         settingsPrefs.set(
@@ -279,7 +277,6 @@ suite('TravelPage', function() {
           AutofillAddOtherDatatypesPrefIsEnabled: false,
           autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
-          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
         });
 
         settingsPrefs.set(
@@ -308,7 +305,6 @@ suite('TravelPage', function() {
           AutofillAddOtherDatatypesPrefIsEnabled: false,
           autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
-          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
         });
 
         settingsPrefs.set(
@@ -336,7 +332,6 @@ suite('TravelPage', function() {
           AutofillAddOtherDatatypesPrefIsEnabled: false,
           autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
-          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
         });
 
         settingsPrefs.set(

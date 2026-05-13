@@ -289,9 +289,6 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
   });
 
   test('DisableAddButtotWhenAddressAutofillDisabled', async function() {
-    loadTimeData.overrideValues({
-      enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
-    });
     const entriesList = await createEntriesList();
     entriesList.allowEditingPref = {
       key: '',
@@ -314,9 +311,6 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
   });
 
   test('DisableAddButtonWhenAiPredictionsDisabled', async function() {
-    loadTimeData.overrideValues({
-      enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
-    });
     const entriesList = await createEntriesList();
     entriesList.allowEditingPref = {
       key: '',
@@ -345,9 +339,6 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
   test(
       'AddressAutofillForcedTrueValueShouldNotOverrideAllowEditingPrefValue',
       async function() {
-        loadTimeData.overrideValues({
-          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
-        });
         const entriesList = await createEntriesList();
         entriesList.allowEditingPref = {
           key: '',

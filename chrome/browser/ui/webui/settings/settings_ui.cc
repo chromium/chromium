@@ -433,12 +433,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           autofill::features::kYourSavedInfoBrandingInSettings));
 
   html_source->AddBoolean(
-      "enableYourSavedInfoPolicyAndExtentionToggleIndicators",
-      base::FeatureList::IsEnabled(
-          autofill::features::
-              kYourSavedInfoPolicyAndExtentionToggleIndicators));
-
-  html_source->AddBoolean(
       "enableYourSavedInfoShoppingPage",
       base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoSettingsPageShoppingIntegration));

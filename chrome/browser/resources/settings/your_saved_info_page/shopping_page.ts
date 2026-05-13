@@ -115,14 +115,6 @@ export class SettingsShoppingPageElement extends
         },
       },
 
-      enableYourSavedInfoPolicyAndExtentionToggleIndicators_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableYourSavedInfoPolicyAndExtentionToggleIndicators');
-        },
-      },
-
       /**
        * Set to true once CrSettingsPrefs is fully initialized.
        * Guards against race conditions where prefs are accessed before the full
@@ -147,8 +139,6 @@ export class SettingsShoppingPageElement extends
   declare private autofillAddOtherDatatypesPrefIsEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
   declare private canEnableOrDisableAutofillAi_: boolean;
-  declare private enableYourSavedInfoPolicyAndExtentionToggleIndicators_:
-      boolean;
   declare private prefsInitialized_: boolean;
 
   private entityDataManager_: EntityDataManagerProxy =
@@ -211,15 +201,12 @@ export class SettingsShoppingPageElement extends
       fakePref.value = false;
     }
 
-    if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
-      const addressPolicy = this.getPref<boolean>('autofill.profile_enabled');
-      const autofillAiPolicy =
-          this.getPref<ModelExecutionEnterprisePolicyValue>(
-              AiEnterpriseFeaturePrefName.AUTOFILL_AI);
+    const addressPolicy = this.getPref<boolean>('autofill.profile_enabled');
+    const autofillAiPolicy = this.getPref<ModelExecutionEnterprisePolicyValue>(
+        AiEnterpriseFeaturePrefName.AUTOFILL_AI);
 
-      checkAutofillPoliciesAndModifyPrefIfNecessary(
-          fakePref, addressPolicy, autofillAiPolicy);
-    }
+    checkAutofillPoliciesAndModifyPrefIfNecessary(
+        fakePref, addressPolicy, autofillAiPolicy);
 
     return fakePref;
   }
@@ -235,8 +222,7 @@ export class SettingsShoppingPageElement extends
   }
 
   private extensionControlledIndicatorIsVisible_(): boolean {
-    if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_ ||
-        !this.prefsInitialized_) {
+    if (!this.prefsInitialized_) {
       return false;
     }
 

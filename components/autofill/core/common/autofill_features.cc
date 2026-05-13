@@ -1078,13 +1078,6 @@ BASE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest,
 BASE_FEATURE(kYourSavedInfoBrandingInSettings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for indicators of settings controlled by a policy or extension.
-// Applies to toggles on identity docs settings page, travel settings page,
-// and the Enhanced Autofill opt-in.
-// TODO(crbug.com/489667079): Remove when launched.
-BASE_FEATURE(kYourSavedInfoPolicyAndExtentionToggleIndicators,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Defines if the "Your Saved Info" page is eligible to be shown in Chrome
 // settings.
 BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_ENABLED_BY_DEFAULT);

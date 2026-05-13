@@ -376,8 +376,6 @@ BASE_DECLARE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoBrandingInSettings);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kYourSavedInfoPolicyAndExtentionToggleIndicators);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPage);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageShoppingIntegration);

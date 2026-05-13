@@ -130,14 +130,6 @@ export class SettingsIdentityDocsPageElement extends
         },
       },
 
-      enableYourSavedInfoPolicyAndExtentionToggleIndicators_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableYourSavedInfoPolicyAndExtentionToggleIndicators');
-        },
-      },
-
       prefsInitialized_: {
         type: Boolean,
         value: false,
@@ -157,8 +149,6 @@ export class SettingsIdentityDocsPageElement extends
   declare private canEnableOrDisableAutofillAi_: boolean;
   declare private identityDocsOptedIn_: chrome.settingsPrivate.PrefObject;
   declare private autofillAddOtherDatatypesPrefIsEnabled_: boolean;
-  declare private enableYourSavedInfoPolicyAndExtentionToggleIndicators_:
-      boolean;
   declare private prefsInitialized_: boolean;
 
   private entityDataManager_: EntityDataManagerProxy =
@@ -229,15 +219,12 @@ export class SettingsIdentityDocsPageElement extends
       fakePref.value = false;
     }
 
-    if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
-      const addressPolicy = this.getPref<boolean>('autofill.profile_enabled');
-      const autofillAiPolicy =
-          this.getPref<ModelExecutionEnterprisePolicyValue>(
-              AiEnterpriseFeaturePrefName.AUTOFILL_AI);
+    const addressPolicy = this.getPref<boolean>('autofill.profile_enabled');
+    const autofillAiPolicy = this.getPref<ModelExecutionEnterprisePolicyValue>(
+        AiEnterpriseFeaturePrefName.AUTOFILL_AI);
 
-      checkAutofillPoliciesAndModifyPrefIfNecessary(
-          fakePref, addressPolicy, autofillAiPolicy);
-    }
+    checkAutofillPoliciesAndModifyPrefIfNecessary(
+        fakePref, addressPolicy, autofillAiPolicy);
 
     return fakePref;
   }
@@ -265,8 +252,7 @@ export class SettingsIdentityDocsPageElement extends
   }
 
   private extensionControlledIndicatorIsVisible_(): boolean {
-    if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_ ||
-        !this.prefsInitialized_) {
+    if (!this.prefsInitialized_) {
       return false;
     }
 
