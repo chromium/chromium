@@ -114,13 +114,19 @@ class OmniboxWebUiInteractiveTestBase
         {omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady, {}}};
     if (force_enable_aim) {
       base::FieldTrialParams aim_params = {
-          {omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
-           "below_results"},
-          {omnibox::kHideClassicContextButton.name, "false"}};
+          {omnibox::kShowRecentTabChip.name, "true"}};
       features.emplace_back(omnibox::internal::kWebUIOmniboxAimPopup,
                             aim_params);
+      base::FieldTrialParams simplification_params = {
+          {omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
+           "below_results"},
+          {omnibox::kHideClassicContextButton.name, "false"},
+          {omnibox::kShowLensSearchChip.name, "true"}};
+      features.emplace_back(omnibox::internal::kWebUIOmniboxSimplification,
+                            simplification_params);
       features.emplace_back(omnibox::kAiModeOmniboxEntryPoint,
                             base::FieldTrialParams());
+      features.emplace_back(omnibox::kAimEnabled, base::FieldTrialParams());
       features.emplace_back(
           features::kPageActionsMigration,
           base::FieldTrialParams(
@@ -837,11 +843,19 @@ class WebUIOmniboxSimplificationInteractiveTest
     : public OmniboxAimWebUiInteractiveTestBase {
  public:
   WebUIOmniboxSimplificationInteractiveTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features =
-        GetEnabledFeatures(/*force_enable_aim=*/true);
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    for (auto& feature : GetEnabledFeatures(/*force_enable_aim=*/true)) {
+      if (feature.feature.get().name !=
+          omnibox::internal::kWebUIOmniboxSimplification.name) {
+        enabled_features.push_back(feature);
+      }
+    }
     enabled_features.emplace_back(
         omnibox::internal::kWebUIOmniboxSimplification,
         base::FieldTrialParams{
+            {omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
+             "below_results"},
+            {omnibox::kHideClassicContextButton.name, "false"},
             {"Omnibox_ContextButtonHasBackground", "true"},
             {"Omnibox_ContextButtonShapeIsOblong", "true"},
             {"Omnibox_ContextButtonShowSuggestionLabel", "true"}});

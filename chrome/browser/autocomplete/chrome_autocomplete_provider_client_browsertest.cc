@@ -62,9 +62,11 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
             base::BindRepeating([](tabs::TabInterface& tab) {
               return std::make_unique<MockLensSearchController>(&tab);
             }));
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features*/ {omnibox::internal::kWebUIOmniboxPopup,
-                              omnibox::internal::kWebUIOmniboxAimPopup},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features*/ {{omnibox::internal::kWebUIOmniboxPopup, {}},
+                              {omnibox::internal::kWebUIOmniboxAimPopup, {}},
+                              {omnibox::internal::kWebUIOmniboxSimplification,
+                               {{omnibox::kShowLensSearchChip.name, "true"}}}},
         /*disabled_features*/ {});
   }
 
@@ -198,8 +200,11 @@ class ChromeAutocompleteProviderClientWithChipTest
   ChromeAutocompleteProviderClientWithChipTest() {
     // Enable the AIM popup (which implies IsAimPopupFeatureEnabled = true) and
     // the Lens Search Chip.
-    feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxAimPopup},
-                                   {});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::internal::kWebUIOmniboxAimPopup, {}},
+         {omnibox::internal::kWebUIOmniboxSimplification,
+          {{omnibox::kShowLensSearchChip.name, "true"}}}},
+        {});
   }
 
  private:

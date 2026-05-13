@@ -693,6 +693,8 @@ class LocationBarViewAddContextButtonBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{omnibox::internal::kWebUIOmniboxAimPopup,
+          {{omnibox::kShowToolsAndModels.name, "true"}}},
+         {omnibox::internal::kWebUIOmniboxSimplification,
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
             "inline"}}},
          {omnibox::internal::kWebUIOmniboxPopup, {}},
@@ -701,6 +703,7 @@ class LocationBarViewAddContextButtonBrowserTest
                                omnibox::kAimFuseboxEligibilityCheckEnabled,
                                omnibox::kAimUsePecApi});
   }
+
   ~LocationBarViewAddContextButtonBrowserTest() override = default;
 
  private:
