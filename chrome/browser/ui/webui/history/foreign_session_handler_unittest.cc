@@ -29,7 +29,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/test_device_info_builder.h"
-#include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
+#include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "content/public/test/test_web_ui.h"
@@ -43,6 +43,15 @@
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace browser_sync {
+
+namespace {
+
+using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
+
+MATCHER_P(HasSessionTag, tag, "") {
+  return arg && arg->GetSessionTag() == tag;
+}
 
 MATCHER_P(TabHasUrl, url, "") {
   return !arg.navigations.empty() &&
@@ -62,8 +71,8 @@ class FakeSessionSyncService : public sync_sessions::SessionSyncService {
   // SessionSyncService overrides.
   syncer::GlobalIdMapper* GetGlobalIdMapper() const override { return nullptr; }
 
-  sync_sessions::MockOpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
-    return &mock_open_tabs_ui_delegate_;
+  sync_sessions::FakeOpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
+    return &open_tabs_ui_delegate_;
   }
 
   void AddTabScreenshot(SessionID tab_id,
@@ -89,7 +98,7 @@ class FakeSessionSyncService : public sync_sessions::SessionSyncService {
 
  private:
   base::RepeatingClosureList subscriber_list_;
-  sync_sessions::MockOpenTabsUIDelegate mock_open_tabs_ui_delegate_;
+  sync_sessions::FakeOpenTabsUIDelegate open_tabs_ui_delegate_;
 };
 
 class MockForeignSessionPage : public history::mojom::ForeignSessionPage {
@@ -180,49 +189,37 @@ TEST_F(ForeignSessionHandlerTest, ShouldFireForeignSessionsChanged) {
 }
 
 TEST_F(ForeignSessionHandlerTest, OpenForeignSessionAllTabs) {
-  ::sessions::SessionWindow window1;
-  std::vector<const ::sessions::SessionWindow*> windows = {&window1};
+  session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+      "my_session_tag");
 
-  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
-              GetForeignSession("my_session_tag"))
-      .WillOnce(testing::Return(windows));
+  const sessions::SessionWindow* window_ptr =
+      session_sync_service()->GetOpenTabsUIDelegate()->GetForeignSession(
+          "my_session_tag")[0];
 
-  EXPECT_CALL(restore_windows_callback_, Run(profile(), windows));
+  EXPECT_CALL(restore_windows_callback_,
+              Run(profile(), ElementsAre(window_ptr)));
 
   handler()->OpenForeignSessionAllTabs("my_session_tag");
 }
 
 TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTabLeftClick) {
-  ::sessions::SessionTab session_tab;
-  session_tab.navigations.emplace_back();
-  session_tab.navigations.back().set_virtual_url(
-      GURL("https://www.google.com"));
-
-  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
-              GetForeignTab("my_session_tag",
-                            SessionID::FromSerializedValue(456), testing::_))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(&session_tab),
-                               testing::Return(true)));
+  sessions::SessionTab* tab =
+      session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+          "my_session_tag", GURL("https://www.google.com"));
 
   EXPECT_CALL(restore_tab_callback_,
               Run(web_contents(), TabHasUrl(GURL("https://www.google.com")),
                   WindowOpenDisposition::CURRENT_TAB));
 
   ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
-  handler_->OpenForeignSessionTab("my_session_tag", 456, std::move(modifiers));
+  handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
+                                  std::move(modifiers));
 }
 
 TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTabMiddleClick) {
-  ::sessions::SessionTab session_tab;
-  session_tab.navigations.emplace_back();
-  session_tab.navigations.back().set_virtual_url(
-      GURL("https://www.google.com"));
-
-  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
-              GetForeignTab("my_session_tag",
-                            SessionID::FromSerializedValue(456), testing::_))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(&session_tab),
-                               testing::Return(true)));
+  sessions::SessionTab* tab =
+      session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+          "my_session_tag", GURL("https://www.google.com"));
 
   EXPECT_CALL(restore_tab_callback_,
               Run(web_contents(), TabHasUrl(GURL("https://www.google.com")),
@@ -230,15 +227,27 @@ TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTabMiddleClick) {
 
   ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
   modifiers->middle_button = true;
-  handler_->OpenForeignSessionTab("my_session_tag", 456, std::move(modifiers));
+  handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
+                                  std::move(modifiers));
 }
 
 TEST_F(ForeignSessionHandlerTest, DeleteForeignSession) {
-  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
-              DeleteForeignSession("my_session_tag"))
-      .Times(testing::AtLeast(1));
+  sync_sessions::FakeOpenTabsUIDelegate* delegate =
+      session_sync_service()->GetOpenTabsUIDelegate();
+  delegate->AddForeignSession("session_to_delete");
+  delegate->AddForeignSession("session_to_keep");
 
-  handler()->DeleteForeignSession("my_session_tag");
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions;
+  ASSERT_TRUE(delegate->GetAllForeignSessions(&sessions));
+  ASSERT_THAT(sessions, UnorderedElementsAre(HasSessionTag("session_to_delete"),
+                                             HasSessionTag("session_to_keep")));
+
+  handler()->DeleteForeignSession("session_to_delete");
+
+  sessions.clear();
+  delegate->GetAllForeignSessions(&sessions);
+  EXPECT_THAT(sessions, ElementsAre(HasSessionTag("session_to_keep")));
 }
 
 TEST_F(ForeignSessionHandlerTest, SetForeignSessionCollapsed) {
@@ -359,18 +368,9 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
        OpenForeignSessionTabWithSidePanelLeftClick) {
   CreateSidePanelUI();
 
-  // Create a fake session.
-  ::sessions::SessionTab session_tab;
-  session_tab.navigations.emplace_back();
-  session_tab.navigations.back().set_virtual_url(
-      GURL("https://www.google.com"));
-
-  const ::sessions::SessionTab* returned_session_tab = &session_tab;
-  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
-              GetForeignTab("my_session_tag",
-                            SessionID::FromSerializedValue(456), testing::_))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(returned_session_tab),
-                               testing::Return(true)));
+  sessions::SessionTab* tab =
+      session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+          "my_session_tag", GURL("https://www.google.com"));
 
   // Perform a left click so that it replaces the current tab.
   ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
@@ -383,25 +383,17 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
                   TabHasUrl(GURL("https://www.google.com")),
                   WindowOpenDisposition::CURRENT_TAB));
 
-  handler_->OpenForeignSessionTab("my_session_tag", 456, std::move(modifiers));
+  handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
+                                  std::move(modifiers));
 }
 
 TEST_F(ForeignSessionHandlerSidePanelTest,
        OpenForeignSessionTabWithSidePanelMiddleClick) {
   CreateSidePanelUI();
 
-  // Create a fake session.
-  ::sessions::SessionTab session_tab;
-  session_tab.navigations.emplace_back();
-  session_tab.navigations.back().set_virtual_url(
-      GURL("https://www.google.com"));
-
-  const ::sessions::SessionTab* returned_session_tab = &session_tab;
-  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
-              GetForeignTab("my_session_tag",
-                            SessionID::FromSerializedValue(456), testing::_))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(returned_session_tab),
-                               testing::Return(true)));
+  sessions::SessionTab* tab =
+      session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+          "my_session_tag", GURL("https://www.google.com"));
 
   // Perform a middle click so that it adds a background tab.
   ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
@@ -415,7 +407,8 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
                   TabHasUrl(GURL("https://www.google.com")),
                   WindowOpenDisposition::NEW_BACKGROUND_TAB));
 
-  handler_->OpenForeignSessionTab("my_session_tag", 456, std::move(modifiers));
+  handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
+                                  std::move(modifiers));
 }
 
 TEST_F(ForeignSessionHandlerSidePanelTest, RecordMetricsOnTabOpen) {
@@ -425,23 +418,16 @@ TEST_F(ForeignSessionHandlerSidePanelTest, RecordMetricsOnTabOpen) {
   metrics.OnEntryShown(nullptr);
   side_panel_ui_->SetMetricsRecorder(metrics.GetWeakPtr());
 
-  ::sessions::SessionTab session_tab;
-  session_tab.navigations.emplace_back();
-  session_tab.navigations.back().set_virtual_url(
-      GURL("https://www.google.com"));
-
-  const ::sessions::SessionTab* returned_session_tab = &session_tab;
-  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
-              GetForeignTab("my_session_tag",
-                            SessionID::FromSerializedValue(456), testing::_))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(returned_session_tab),
-                               testing::Return(true)));
+  sessions::SessionTab* tab =
+      session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+          "my_session_tag", GURL("https://www.google.com"));
 
   ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
 
   base::HistogramTester histogram_tester;
 
-  handler_->OpenForeignSessionTab("my_session_tag", 456, std::move(modifiers));
+  handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
+                                  std::move(modifiers));
 
   histogram_tester.ExpectBucketCount(
       "Sync.TabsFromOtherDevicesSidePanel.List.Events", 3,
@@ -480,23 +466,15 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
   device_info_tracker->Add(std::move(device2));
 
   // Set up fake sessions.
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      sessions;
-  auto session1 = std::make_unique<sync_sessions::SyncedSession>();
-  session1->SetSessionTag("tag1");
-  session1->SetSessionName("My Device");
+  session_sync_service()
+      ->GetOpenTabsUIDelegate()
+      ->AddForeignSession("tag1")
+      ->SetSessionName("My Device");
 
-  auto session2 = std::make_unique<sync_sessions::SyncedSession>();
-  session2->SetSessionTag("tag2");
-  session2->SetSessionName("My Device");
-
-  sessions.push_back(session1.get());
-  sessions.push_back(session2.get());
-
-  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
-              GetAllForeignSessions)
-      .WillOnce(testing::DoAll(testing::SetArgPointee<0>(sessions),
-                               testing::Return(true)));
+  session_sync_service()
+      ->GetOpenTabsUIDelegate()
+      ->AddForeignSession("tag2", base::Time::Now() - base::Seconds(1))
+      ->SetSessionName("My Device");
 
   base::MockCallback<ForeignSessionHandler::GetForeignSessionsCallback>
       callback;
@@ -547,23 +525,15 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
   device_info_tracker->Add(std::move(device2));
 
   // Set up fake sessions.
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      sessions;
-  auto session1 = std::make_unique<sync_sessions::SyncedSession>();
-  session1->SetSessionTag("tag1");
-  session1->SetSessionName("Stable Device");
+  session_sync_service()
+      ->GetOpenTabsUIDelegate()
+      ->AddForeignSession("tag1")
+      ->SetSessionName("Stable Device");
 
-  auto session2 = std::make_unique<sync_sessions::SyncedSession>();
-  session2->SetSessionTag("tag2");
-  session2->SetSessionName("Canary Device");
-
-  sessions.push_back(session1.get());
-  sessions.push_back(session2.get());
-
-  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
-              GetAllForeignSessions)
-      .WillOnce(testing::DoAll(testing::SetArgPointee<0>(sessions),
-                               testing::Return(true)));
+  session_sync_service()
+      ->GetOpenTabsUIDelegate()
+      ->AddForeignSession("tag2", base::Time::Now() - base::Seconds(1))
+      ->SetSessionName("Canary Device");
 
   base::MockCallback<ForeignSessionHandler::GetForeignSessionsCallback>
       callback;
@@ -581,5 +551,7 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
   ASSERT_EQ(result_sessions.size(), 1u);
   EXPECT_EQ(result_sessions[0]->name, "Canary Device");
 }
+
+}  // namespace
 
 }  // namespace browser_sync
