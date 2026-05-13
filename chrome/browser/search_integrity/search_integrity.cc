@@ -190,6 +190,17 @@ void SearchIntegrity::OnTemplateURLServiceLoaded() {
                                     report.referral_param_found.value());
     }
   }
+
+  SiteSearchIntegrityReport site_report = CheckSiteSearchReport();
+
+  base::UmaHistogramBoolean("Search.Integrity.ObfuscatedSearchUrl",
+                            site_report.has_obfuscated_search_url);
+  base::UmaHistogramBoolean("Search.Integrity.CrossTldSearch",
+                            site_report.has_cross_tld_search);
+  base::UmaHistogramBoolean("Search.Integrity.CrossDomainSearch",
+                            site_report.has_cross_domain_search);
+  base::UmaHistogramBoolean("Search.Integrity.ExtensionUrlSearch",
+                            site_report.has_extension_url_search);
 }
 
 void SearchIntegrity::LogEnterpriseMetrics(
@@ -206,17 +217,6 @@ void SearchIntegrity::LogEnterpriseMetrics(
         "Search.Integrity.Enterprise.Referral.ParameterFound",
         report.referral_param_found.value());
   }
-
-  SiteSearchIntegrityReport site_report = CheckSiteSearchReport();
-
-  base::UmaHistogramBoolean("Search.Integrity.ObfuscatedSearchUrl",
-                            site_report.has_obfuscated_search_url);
-  base::UmaHistogramBoolean("Search.Integrity.CrossTldSearch",
-                            site_report.has_cross_tld_search);
-  base::UmaHistogramBoolean("Search.Integrity.CrossDomainSearch",
-                            site_report.has_cross_domain_search);
-  base::UmaHistogramBoolean("Search.Integrity.ExtensionUrlSearch",
-                            site_report.has_extension_url_search);
 }
 
 SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
