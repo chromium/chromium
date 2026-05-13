@@ -3796,6 +3796,19 @@
       "features": [
         "recreate_fbo_upon_flush"
       ]
+    },
+    {
+      "id": 478,
+      "description": "Program binaries don't contain transform feedback varyings on Mali GPUs",
+      "cr_bugs": [510589906],
+      "os": {
+        "type": "linux"
+      },
+      "gl_vendor": "ARM.*",
+      "gl_renderer": "Mali.*",
+      "features": [
+        "disable_program_caching_for_transform_feedback"
+      ]
     }
   ]
 }
