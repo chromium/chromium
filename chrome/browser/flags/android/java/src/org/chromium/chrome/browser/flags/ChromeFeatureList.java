@@ -1777,6 +1777,10 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sGlicShowTaskInProgressSnackbar =
             newBooleanCachedFeatureParam(GLIC, "show_task_in_progress_snackbar", true);
 
+    public static final BooleanCachedFeatureParam sHomeButtonRemovalEverywhere =
+            newBooleanCachedFeatureParam(
+                    HOME_BUTTON_REMOVAL, "remove_home_button_everywhere", false);
+
     public static final BooleanCachedFeatureParam sHomeButtonRemovalKeepOnNtp =
             newBooleanCachedFeatureParam(HOME_BUTTON_REMOVAL, "keep_home_button_on_ntp", false);
 
@@ -1935,6 +1939,7 @@ public abstract class ChromeFeatureList {
                     sEnableAndroidSidePanelDisableAnimations,
                     sGestureUserEducationPageDelay,
                     sGlicShowTaskInProgressSnackbar,
+                    sHomeButtonRemovalEverywhere,
                     sHomeButtonRemovalKeepOnNtp,
                     sInitFeatureListEarly,
                     sLockTopControlsForceAdjustHeightOnStartup,

@@ -4008,10 +4008,15 @@ const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1C", kAndroidBottomBarKeepBothInToolbarParam, nullptr},
     {"- 1C with NTP", kAndroidBottomBarKeepBothInToolbarWithNtpParam, nullptr}};
 
+const FeatureEntry::FeatureParam kHomeButtonRemovalEverywhereParam[] = {
+    {"remove_home_button_everywhere", "true"}};
+
 const FeatureEntry::FeatureParam kHomeButtonRemovalKeepOnNtpParam[] = {
     {"keep_home_button_on_ntp", "true"}};
 
 const FeatureEntry::FeatureVariation kHomeButtonRemovalVariations[] = {
+    {"Remove home button everywhere", kHomeButtonRemovalEverywhereParam,
+     nullptr},
     {"Keep home button on NTP", kHomeButtonRemovalKeepOnNtpParam, nullptr}};
 
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsTrustAndSafety[] = {
