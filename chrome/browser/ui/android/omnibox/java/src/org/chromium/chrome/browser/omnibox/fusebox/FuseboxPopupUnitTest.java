@@ -28,6 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -42,6 +44,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.RectProvider;
 
 /** Unit tests for FuseboxPopup. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,6 +58,8 @@ public class FuseboxPopupUnitTest {
     private @Mock WindowAndroid mWindowAndroid;
     private @Mock InsetObserver mInsetObserver;
     private @Mock WindowInsetsCompat mWindowInsets;
+
+    private @Captor ArgumentCaptor<RectProvider.Observer> mRectProviderObserverCaptor;
 
     private Activity mActivity;
     private FuseboxPopup mFuseboxPopup;
@@ -310,5 +315,20 @@ public class FuseboxPopupUnitTest {
         mFuseboxPopup.mScrollView.mGestureListener.onFling(null, null, 0, minFlingVelocity + 1);
 
         verify(mPopupWindow).dismiss();
+    }
+
+    @Test
+    public void testObserveDynamicRectProvider_callsUpdateLayout() {
+        // Mock showing state to allow updateLayout to proceed
+        doReturn(true).when(mPopupWindow).isShowing();
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+
+        // Capture the observer passed to startObserving
+        verify(mDynamicRectProvider).startObserving(mRectProviderObserverCaptor.capture());
+        mRectProviderObserverCaptor.getValue().onRectChanged();
+
+        // Verify that updateLayout was called (which calls updateDesiredContentSize)
+        verify(mPopupWindow, atLeastOnce())
+                .updateDesiredContentSize(any(Integer.class), eq(0), eq(true));
     }
 }

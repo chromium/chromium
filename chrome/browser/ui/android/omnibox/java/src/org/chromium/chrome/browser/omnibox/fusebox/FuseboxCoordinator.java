@@ -193,7 +193,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mBottomSheetRectProvider = new BottomSheetRectProvider(activity, mParent);
         var dynamicRectProvider =
                 new DynamicRectProvider(viewRectProvider, mBottomSheetRectProvider);
-
         mViewportRectProvider = new ViewportRectProvider(mContext);
         var contextButton = mParent.findViewById(R.id.location_bar_attachments_add);
 
@@ -491,6 +490,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         @Override
         public void onConfigurationChanged(Configuration configuration) {
             updateRect();
+            notifyRectChanged();
         }
 
         private void updateRect() {

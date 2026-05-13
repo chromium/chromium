@@ -68,6 +68,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
+import org.chromium.ui.widget.RectProvider;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -91,6 +92,7 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private FuseboxMetrics mMetrics;
+    @Mock private RectProvider.Observer mRectProviderObserver;
 
     private AutocompleteInput mAutocompleteInput;
     private ActivityController<TestActivity> mActivityController;
@@ -295,10 +297,13 @@ public class FuseboxCoordinatorUnitTest {
     public void viewportRectProvider() {
         Context context = mActivityController.get();
         ViewportRectProvider viewportRectProvider = new ViewportRectProvider(context);
+        viewportRectProvider.startObserving(mRectProviderObserver);
+
         viewportRectProvider.onConfigurationChanged(new Configuration());
         int width = context.getResources().getDisplayMetrics().widthPixels;
         int height = context.getResources().getDisplayMetrics().heightPixels;
         assertEquals(new Rect(0, 0, width, height), viewportRectProvider.getRect());
+        verify(mRectProviderObserver).onRectChanged();
     }
 
     @Test

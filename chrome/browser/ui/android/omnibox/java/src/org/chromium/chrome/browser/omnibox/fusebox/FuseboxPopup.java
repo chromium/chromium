@@ -26,6 +26,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.RectProvider;
 
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +65,17 @@ class FuseboxPopup {
     private final int mInitialScrollPaddingBottom;
     private @PopupState int mCurrentState = PopupState.HIDDEN;
 
+    private final RectProvider.Observer mDynamicRectObserver =
+            new RectProvider.Observer() {
+                @Override
+                public void onRectChanged() {
+                    updateLayout();
+                }
+
+                @Override
+                public void onRectHidden() {}
+            };
+
     private final WindowInsetObserver mWindowInsetObserver =
             new WindowInsetObserver() {
                 @Override
@@ -87,6 +99,7 @@ class FuseboxPopup {
         mPopupWindow = popupWindow;
         mPopupWindow.setClippingEnabled(false);
         mDynamicRectProvider = dynamicRectProvider;
+        mDynamicRectProvider.startObserving(mDynamicRectObserver);
         mInsetObserver = windowAndroid.getInsetObserver();
         if (mInsetObserver != null) {
             mInsetObserver.addObserver(mWindowInsetObserver);
@@ -178,6 +191,7 @@ class FuseboxPopup {
             mInsetObserver.removeObserver(mWindowInsetObserver);
         }
         mScrollView.setOnSwipeDownListener(null);
+        mDynamicRectProvider.stopObserving(mDynamicRectObserver);
     }
 
     /** Show the popup window. */
