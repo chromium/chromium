@@ -379,6 +379,9 @@ export class ClientDelegateFactory {
       stopPresentingOwnScreen: async () => {
         return (await pageHandler.stopPresentingOwnScreen()).success;
       },
+      getGeminiStatus: async () => {
+        return (await pageHandler.getGeminiStatus()).enabled;
+      },
     };
   }
 

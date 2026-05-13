@@ -8,10 +8,11 @@ import type {AddStudentsError, Assignment, BocaValidPref, CaptionConfig, Config,
 import {PageHandlerRemote, SubmitAccessCodeError, UrlType as UrlTypeMojo} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import type {TimeDelta} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
-import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 class MockRemoteHandler extends PageHandlerRemote {
   urlTypeMojo: UrlTypeMojo|null = null;
+  geminiEnabled = false;
   override getWindowsTabsList(): Promise<{windowList: Window[]}> {
     return Promise.resolve({
       windowList: [
@@ -409,6 +410,10 @@ class MockRemoteHandler extends PageHandlerRemote {
   override startSpotlight(crdConnectionCode: string) {
     crdConnectionCode;
     return Promise.resolve();
+  }
+
+  override getGeminiStatus(): Promise<{enabled: boolean}> {
+    return Promise.resolve({enabled: this.geminiEnabled});
   }
 }
 
@@ -1009,5 +1014,14 @@ suite('ClientDelegateTest', function() {
           startSpotlightResponded = true;
         });
         assertTrue(startSpotlightResponded);
+      });
+
+  test(
+      'client delegate should return gemini status when requested',
+      async () => {
+        remoteHandler.geminiEnabled = true;
+        assertTrue(await clientDelegateImpl.getInstance().getGeminiStatus());
+        remoteHandler.geminiEnabled = false;
+        assertFalse(await clientDelegateImpl.getInstance().getGeminiStatus());
       });
 });

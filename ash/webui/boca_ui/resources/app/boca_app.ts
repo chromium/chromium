@@ -451,6 +451,11 @@ export declare interface ClientApiDelegate {
    * Stop the current screen share presentation for the student.
    */
   stopPresentingStudentScreen(): Promise<boolean>;
+
+  /**
+   * Get Gemini enabled status.
+   */
+  getGeminiStatus(): Promise<boolean>;
 }
 
 /**
