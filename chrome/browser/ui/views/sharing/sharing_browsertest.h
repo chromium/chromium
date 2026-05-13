@@ -93,7 +93,6 @@ class SharingBrowserTest : public SyncTest {
       scoped_testing_factory_installer_;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   syncer::FakeDeviceInfoTracker fake_device_info_tracker_;
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos_;
   raw_ptr<SharingService, AcrossTasksDanglingUntriaged> sharing_service_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
 };

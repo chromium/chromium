@@ -28,6 +28,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -461,27 +462,19 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
           device_info_sync_service->GetDeviceInfoTracker());
 
   // Create two devices with the same name but different channels.
-  auto device1 = std::make_unique<syncer::DeviceInfo>(
-      "tag1", "My Device", "1.0", "Mozilla/5.0 channel(stable)",
-      syncer::DeviceInfo::DeviceType::kPhone,
-      syncer::DeviceInfo::OsType::kAndroid,
-      syncer::DeviceInfo::FormFactor::kPhone, "id1", "Manufacturer", "Model",
-      "FullHWClass", base::Time::Now(), base::TimeDelta(), false,
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      std::nullopt, std::nullopt, "fcm1", syncer::DataTypeSet{}, std::nullopt,
-      false, MobilePromoOnDesktopPromoTypeSet{},
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+  auto device1 =
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid("tag1")
+          .WithClientName("My Device")
+          .WithSyncUserAgent("Mozilla/5.0 channel(stable)")
+          .Build();
 
-  auto device2 = std::make_unique<syncer::DeviceInfo>(
-      "tag2", "My Device", "1.0", "Mozilla/5.0 channel(canary)",
-      syncer::DeviceInfo::DeviceType::kPhone,
-      syncer::DeviceInfo::OsType::kAndroid,
-      syncer::DeviceInfo::FormFactor::kPhone, "id2", "Manufacturer", "Model",
-      "FullHWClass", base::Time::Now(), base::TimeDelta(), false,
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      std::nullopt, std::nullopt, "fcm2", syncer::DataTypeSet{}, std::nullopt,
-      false, MobilePromoOnDesktopPromoTypeSet{},
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+  auto device2 =
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid("tag2")
+          .WithClientName("My Device")
+          .WithSyncUserAgent("Mozilla/5.0 channel(canary)")
+          .Build();
 
   device_info_tracker->Add(std::move(device1));
   device_info_tracker->Add(std::move(device2));
@@ -536,27 +529,19 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
           device_info_sync_service->GetDeviceInfoTracker());
 
   // Create one stable and one canary device.
-  auto device1 = std::make_unique<syncer::DeviceInfo>(
-      "tag1", "Stable Device", "1.0", "Mozilla/5.0 channel(stable)",
-      syncer::DeviceInfo::DeviceType::kPhone,
-      syncer::DeviceInfo::OsType::kAndroid,
-      syncer::DeviceInfo::FormFactor::kPhone, "id1", "Manufacturer", "Model",
-      "FullHWClass", base::Time::Now(), base::TimeDelta(), false,
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      std::nullopt, std::nullopt, "fcm1", syncer::DataTypeSet{}, std::nullopt,
-      false, MobilePromoOnDesktopPromoTypeSet{},
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+  auto device1 =
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid("tag1")
+          .WithClientName("Stable Device")
+          .WithSyncUserAgent("Mozilla/5.0 channel(stable)")
+          .Build();
 
-  auto device2 = std::make_unique<syncer::DeviceInfo>(
-      "tag2", "Canary Device", "1.0", "Mozilla/5.0 channel(canary)",
-      syncer::DeviceInfo::DeviceType::kPhone,
-      syncer::DeviceInfo::OsType::kAndroid,
-      syncer::DeviceInfo::FormFactor::kPhone, "id2", "Manufacturer", "Model",
-      "FullHWClass", base::Time::Now(), base::TimeDelta(), false,
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      std::nullopt, std::nullopt, "fcm2", syncer::DataTypeSet{}, std::nullopt,
-      false, MobilePromoOnDesktopPromoTypeSet{},
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+  auto device2 =
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid("tag2")
+          .WithClientName("Canary Device")
+          .WithSyncUserAgent("Mozilla/5.0 channel(canary)")
+          .Build();
 
   device_info_tracker->Add(std::move(device1));
   device_info_tracker->Add(std::move(device2));

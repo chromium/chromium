@@ -7,6 +7,8 @@
 #include <optional>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
+
 namespace syncer {
 
 bool DeviceInfo::SharingTargetInfo::operator==(
@@ -109,7 +111,13 @@ DeviceInfo::DeviceInfo(
           desktop_to_ios_promo_receiving_types),
       glic_experimental_triggering_state_(glic_experimental_triggering_state) {}
 
+DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
+
 DeviceInfo::~DeviceInfo() = default;
+
+std::unique_ptr<DeviceInfo> DeviceInfo::DeepCopyForTesting() const {
+  return base::WrapUnique(new DeviceInfo(*this));
+}
 
 const std::string& DeviceInfo::guid() const {
   return guid_;

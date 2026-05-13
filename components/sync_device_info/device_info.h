@@ -208,10 +208,11 @@ class DeviceInfo {
           desktop_to_ios_promo_receiving_types,
       GlicExperimentalTriggeringState glic_experimental_triggering_state);
 
-  DeviceInfo(const DeviceInfo&) = delete;
   DeviceInfo& operator=(const DeviceInfo&) = delete;
 
   ~DeviceInfo();
+
+  std::unique_ptr<DeviceInfo> DeepCopyForTesting() const;
 
   // Sync specific unique identifier for the device. Note if a device
   // is wiped and sync is set up again this id WILL be different.
@@ -329,6 +330,9 @@ class DeviceInfo {
       GlicExperimentalTriggeringState state);
 
  private:
+  // Used by DeepCopyForTesting().
+  DeviceInfo(const DeviceInfo& other);
+
   const std::string guid_;
 
   std::string client_name_;

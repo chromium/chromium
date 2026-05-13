@@ -33,6 +33,7 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -137,30 +138,14 @@ void SharingBrowserTest::RegisterDevice(
 void SharingBrowserTest::AddDeviceInfo(
     const syncer::DeviceInfo& original_device,
     int fake_device_id) {
-  std::unique_ptr<syncer::DeviceInfo> fake_device =
-      std::make_unique<syncer::DeviceInfo>(
-          original_device.guid(),
-          base::StrCat(
-              {"testing_device_", base::NumberToString(fake_device_id)}),
-          original_device.chrome_version(), original_device.sync_user_agent(),
-          original_device.device_type(), original_device.os_type(),
-          original_device.form_factor(),
-          original_device.signin_scoped_device_id(), "Google",
-          base::StrCat({"model", base::NumberToString(fake_device_id)}),
-          original_device.full_hardware_class(),
-          original_device.last_updated_timestamp(),
-          original_device.pulse_interval(),
-          original_device.send_tab_to_self_receiving_enabled(),
-          original_device.send_tab_to_self_receiving_type(),
-          original_device.sharing_info(), original_device.paask_info(),
-          original_device.fcm_registration_token(),
-          original_device.interested_data_types(),
-          original_device.auto_sign_out_last_signin_timestamp(),
-          original_device.desktop_to_ios_promo_receiving_enabled(),
-          original_device.desktop_to_ios_promo_receiving_types(),
-          original_device.glic_experimental_triggering_state());
-  fake_device_info_tracker_.Add(fake_device.get());
-  device_infos_.push_back(std::move(fake_device));
+  syncer::TestDeviceInfoBuilder builder(original_device);
+  builder.WithClientName(
+      base::StrCat({"testing_device_", base::NumberToString(fake_device_id)}));
+  builder.WithManufacturerName("Google");
+  builder.WithModelName(
+      base::StrCat({"model", base::NumberToString(fake_device_id)}));
+
+  fake_device_info_tracker_.Add(builder.Build());
 }
 
 std::unique_ptr<TestRenderViewContextMenu> SharingBrowserTest::InitContextMenu(

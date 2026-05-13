@@ -57,6 +57,36 @@ TestDeviceInfoBuilder::TestDeviceInfoBuilder(DeviceInfo::OsType os_type)
       os_type_(os_type),
       form_factor_(DeriveDefaultFormFactor(os_type)) {}
 
+TestDeviceInfoBuilder::TestDeviceInfoBuilder(const DeviceInfo& other)
+    : guid_(other.guid()),
+      client_name_(other.client_name()),
+      chrome_version_(other.chrome_version()),
+      sync_user_agent_(other.sync_user_agent()),
+      device_type_(other.device_type()),
+      os_type_(other.os_type()),
+      form_factor_(other.form_factor()),
+      signin_scoped_device_id_(other.signin_scoped_device_id()),
+      manufacturer_name_(other.manufacturer_name()),
+      model_name_(other.model_name()),
+      full_hardware_class_(other.full_hardware_class()),
+      last_updated_timestamp_(other.last_updated_timestamp()),
+      pulse_interval_(other.pulse_interval()),
+      send_tab_to_self_receiving_enabled_(
+          other.send_tab_to_self_receiving_enabled()),
+      send_tab_to_self_receiving_type_(other.send_tab_to_self_receiving_type()),
+      sharing_info_(other.sharing_info()),
+      paask_info_(other.paask_info()),
+      fcm_registration_token_(other.fcm_registration_token()),
+      interested_data_types_(other.interested_data_types()),
+      auto_sign_out_last_signin_timestamp_(
+          other.auto_sign_out_last_signin_timestamp()),
+      desktop_to_ios_promo_receiving_enabled_(
+          other.desktop_to_ios_promo_receiving_enabled()),
+      desktop_to_ios_promo_receiving_types_(
+          other.desktop_to_ios_promo_receiving_types()),
+      glic_experimental_triggering_state_(
+          other.glic_experimental_triggering_state()) {}
+
 TestDeviceInfoBuilder::~TestDeviceInfoBuilder() = default;
 
 TestDeviceInfoBuilder::TestDeviceInfoBuilder(TestDeviceInfoBuilder&&) = default;

@@ -22,6 +22,7 @@ class TestDeviceInfoBuilder {
  public:
   explicit TestDeviceInfoBuilder(
       DeviceInfo::OsType os_type = DeviceInfo::OsType::kWindows);
+  explicit TestDeviceInfoBuilder(const DeviceInfo& other);
   ~TestDeviceInfoBuilder();
 
   // Disable copy

@@ -15,6 +15,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_constants.h"
@@ -56,7 +57,8 @@ struct TestDeviceInfoConfig {
   uint16_t tunnel_server_domain = 0;
 };
 
-syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
+std::unique_ptr<syncer::DeviceInfo> TestDeviceInfo(
+    const TestDeviceInfoConfig& config) {
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
   paask_info.contact_id = std::vector<uint8_t>({1, 2, 3});
   std::ranges::fill(paask_info.peer_public_key_x962, 0);
@@ -71,40 +73,18 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
     paask_info_opt = paask_info;
   }
 
-  return syncer::DeviceInfo(
-      /*guid=*/"guid",
-      /*client_name=*/"client_name",
-      /*chrome_version=*/"chrome_version",
-      /*sync_user_agent=*/"sync_user_agent",
-      syncer::DeviceInfo::DeviceType::kLinux,
-      syncer::DeviceInfo::OsType::kLinux,
-      syncer::DeviceInfo::FormFactor::kDesktop,
-      /*signin_scoped_device_id=*/"signin_scoped_device_id",
-      /*manufacturer_name=*/"manufacturer_name",
-      /*model_name=*/"model_name",
-      /*full_hardware_class=*/"full_hardware_class",
-      /*last_updated_timestamp=*/base::Time::Now(),
-      /*pulse_interval=*/base::TimeDelta(),
-      /*send_tab_to_self_receiving_enabled=*/
-      false,
-      /*send_tab_to_self_receiving_type=*/
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      /*sharing_info=*/std::nullopt, paask_info_opt,
-      /*fcm_registration_token=*/"fcm_token", syncer::DataTypeSet(),
-      /*auto_sign_out_last_signin_timestamp=*/base::Time::Now(),
-      /*desktop_to_ios_promo_receiving_enabled=*/false,
-      /*desktop_to_ios_promo_receiving_types=*/
-      MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_state=*/
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+  syncer::TestDeviceInfoBuilder builder(syncer::DeviceInfo::OsType::kLinux);
+  builder.WithClientName("client_name");
+  builder.WithPaaskInfo(paask_info_opt);
+  return builder.Build();
 }
 
 TEST(CableV2FromSyncInfoTest, Basic) {
   TestDeviceInfoConfig config;
-  syncer::DeviceInfo info = TestDeviceInfo(config);
+  std::unique_ptr<syncer::DeviceInfo> info = TestDeviceInfo(config);
 
   std::unique_ptr<device::cablev2::Pairing> pairing =
-      cablev2::PairingFromSyncedDevice(&info, base::Time::Now());
+      cablev2::PairingFromSyncedDevice(info.get(), base::Time::Now());
   ASSERT_TRUE(pairing);
   EXPECT_TRUE(pairing->from_sync_deviceinfo);
   EXPECT_EQ(pairing->name, "client_name");
@@ -121,30 +101,30 @@ TEST(CableV2FromSyncInfoTest, TooOld) {
   TestDeviceInfoConfig config;
   config.id -= device::cablev2::kMaxSyncInfoDaysForConsumer + 1;
 
-  syncer::DeviceInfo info = TestDeviceInfo(config);
+  std::unique_ptr<syncer::DeviceInfo> info = TestDeviceInfo(config);
 
   std::unique_ptr<device::cablev2::Pairing> pairing =
-      cablev2::PairingFromSyncedDevice(&info, base::Time::Now());
+      cablev2::PairingFromSyncedDevice(info.get(), base::Time::Now());
   EXPECT_FALSE(pairing);
 }
 
 TEST(CableV2FromSyncInfoTest, NoInfo) {
   TestDeviceInfoConfig config;
   config.omit_paask_info = true;
-  syncer::DeviceInfo info = TestDeviceInfo(config);
+  std::unique_ptr<syncer::DeviceInfo> info = TestDeviceInfo(config);
 
   std::unique_ptr<device::cablev2::Pairing> pairing =
-      cablev2::PairingFromSyncedDevice(&info, base::Time::Now());
+      cablev2::PairingFromSyncedDevice(info.get(), base::Time::Now());
   EXPECT_FALSE(pairing);
 }
 
 TEST(CableV2FromSyncInfoTest, UnknownTunnelServer) {
   TestDeviceInfoConfig config;
   config.tunnel_server_domain = 42;
-  syncer::DeviceInfo info = TestDeviceInfo(config);
+  std::unique_ptr<syncer::DeviceInfo> info = TestDeviceInfo(config);
 
   std::unique_ptr<device::cablev2::Pairing> pairing =
-      cablev2::PairingFromSyncedDevice(&info, base::Time::Now());
+      cablev2::PairingFromSyncedDevice(info.get(), base::Time::Now());
   EXPECT_FALSE(pairing);
 }
 

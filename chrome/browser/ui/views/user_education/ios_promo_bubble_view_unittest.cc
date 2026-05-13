@@ -20,6 +20,7 @@
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_preferences/features.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
@@ -39,12 +40,15 @@ class MockIOSPromoTriggerService : public IOSPromoTriggerService {
  public:
   explicit MockIOSPromoTriggerService(Profile* profile)
       : IOSPromoTriggerService(profile) {
+    syncer::TestDeviceInfoBuilder builder(syncer::DeviceInfo::OsType::kIOS);
+    fake_device_info_ = builder.Build();
+
     // Add a fake iOS device.
-    fake_device_info_tracker_.Add(&fake_device_info_);
+    fake_device_info_tracker_.Add(fake_device_info_.get());
   }
 
   const syncer::DeviceInfo* GetIOSDeviceToRemind() override {
-    return &fake_device_info_;
+    return fake_device_info_.get();
   }
 
   MOCK_METHOD(void,
@@ -52,27 +56,13 @@ class MockIOSPromoTriggerService : public IOSPromoTriggerService {
               (PromoType promo_type, const std::string& device_guid),
               (override));
 
-  const syncer::DeviceInfo* GetFakeDeviceInfo() { return &fake_device_info_; }
+  const syncer::DeviceInfo* GetFakeDeviceInfo() {
+    return fake_device_info_.get();
+  }
 
  private:
   syncer::FakeDeviceInfoTracker fake_device_info_tracker_;
-  syncer::DeviceInfo fake_device_info_{
-      "guid", "iPhone", "Chrome 100", "User Agent",
-      syncer::DeviceInfo::DeviceType::kPhone, syncer::DeviceInfo::OsType::kIOS,
-      syncer::DeviceInfo::FormFactor::kPhone, "device_id", "manufacturer",
-      "model", "full_hardware_class", base::Time::Now(), base::TimeDelta(),
-      /*send_tab_to_self_receiving_enabled=*/true,
-      syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-      /*sharing_info=*/std::nullopt,
-      /*paask_info=*/std::nullopt,
-      /*fcm_registration_token=*/"token",
-      /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      /*desktop_to_ios_promo_receiving_enabled=*/false,
-      /*desktop_to_ios_promo_receiving_types=*/
-      MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_state=*/
-      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable};
+  std::unique_ptr<syncer::DeviceInfo> fake_device_info_;
 };
 
 std::unique_ptr<KeyedService> CreateMockIOSPromoTriggerService(
