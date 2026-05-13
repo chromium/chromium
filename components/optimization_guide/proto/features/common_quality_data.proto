@@ -401,14 +401,6 @@ message Geometry {
   // hit-testable in the DOM.
   BoundingRect visible_bounding_box = 2 [features = { field_presence: EXPLICIT }];
 
-  // The bounding box of the content node relative to the viewport including all
-  // ancestor clipping. This is conceptually the same as `visible_bounding_box`,
-  // but with coordinates calculated by the compositor on the client side. This
-  // geometry should be more in sync with the browser screenshot, and should be
-  // used for screenshot redaction when present. See crbug.com/441532128 for more
-  // details.
-  BoundingRect compositor_bounding_box = 7 [features = { field_presence: EXPLICIT }];
-
   // Multiple boxes are used when there are multiple rectangles belonging to
   // the same node, e.g.: across multiple lines, columns or pages. In layout
   // terms, a node that does this is called a fragmentainer.
@@ -428,7 +420,7 @@ message Geometry {
   // The computed CSS position property.
   CssPosition css_position = 8 [features = { field_presence: EXPLICIT }];
 
-  reserved 4, 5;
+  reserved 4, 5, 7;
 }
 
 message BoundingRect {
@@ -986,6 +978,7 @@ message PageInteractionInfo {
 
   // The content node ID of the content node that is currently focused by a
   // screen reader. If this is set, it means that a screen reader is being used.
+  // This is only tracked for the main frame.
   // TODO(linnan): Deprecate this field in favor of
   // FrameInteractionInfo.accessibility_focused_node_id.
   int32 accessibility_focused_node_id = 2 [features = { field_presence: EXPLICIT }];
@@ -998,7 +991,7 @@ message PageInteractionInfo {
 
   // The identifier of the frame that currently has accessibility focus. If the
   // field is present but the identifier is empty, it means no frame has
-  // accessibility focus.
+  // accessibility focus. This could be main frame or an iframe.
   DocumentIdentifier accessibility_focused_frame = 5 [features = { field_presence: EXPLICIT }];
 }
 
@@ -1068,10 +1061,27 @@ message GeminiInChromePageMetadata {
 // The screenshot information for the page. While the screenshot is not
 // conveyed in the parent message, this metadata should be used to inform the
 // model about the screenshot.
-// Next ID: 2
+// Next ID: 3
 message ScreenshotInfo {
   // Whether the screenshot contains a selection region.
   bool has_selection_region_in_screenshot = 1 [features = { field_presence: EXPLICIT }];
+
+  // Information about the iframes in the screenshot.
+  repeated IframeInfo iframe_info = 2;
+}
+
+// Information about an iframe in the screenshot.
+// Next ID: 4
+message IframeInfo {
+  // The security origin of the iframe.
+  SecurityOrigin security_origin = 1 [features = { field_presence: EXPLICIT }];
+
+  // The URL of the iframe.
+  string url = 2 [features = { field_presence: EXPLICIT }];
+
+  // The bounding box of the iframe node in the coordinate space of the
+  // screenshot, including all ancestor clipping.
+  BoundingRect bounding_box = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // Uniquely identifies a DOM elements across all frames.

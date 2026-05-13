@@ -44,6 +44,11 @@ message ActorLoginQuality {
   // detection. Only set if successful_login_detected is true.
   int64 time_until_successful_login_ms = 8 [features = { field_presence: EXPLICIT }];
 
+  // The type of flow that the actor login operation belongs to.
+  // This is currently used to distinguish between regular actor login flows and
+  // actor login flows part of an automated password change task.
+  FlowType flow_type = 9 [features = { field_presence: EXPLICIT }];
+
   message FormData {
     // The signature of the form. This is the hash identifier used to denote
     // this field for query and voting purposes. See
@@ -322,5 +327,13 @@ message ActorLoginQuality {
     // permission for this credential and stopped
     // the task.
     TASK_STOPPED = 3;
+  }
+
+  enum FlowType {
+    // Default value. Regular actor login flows.
+    UNSPECIFIED = 0;
+
+    // Actor login flows part of an automated password change actor task.
+    AUTOMATED_PASSWORD_CHANGE = 1;
   }
 }

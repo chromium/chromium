@@ -292,7 +292,7 @@ message AttemptLoginAction {
 // This FormFillingRequest in development and future changes are possible once
 // the model constraings/performance are understood.
 //
-// Next ID: 3
+// Next ID: 4
 message FormFillingRequest {
   // Specifies a field that is part of the form. Autofill will be triggered from
   // this field, but will fill other fields of the same autofill section with
@@ -306,6 +306,11 @@ message FormFillingRequest {
   // presented in the UI to the user (e.g. a user chooses an address for the
   // "shipping address").
   RequestedData requested_data = 2 [features = { field_presence: EXPLICIT }];
+
+  // Specifies the section label that this form is part of. The section will be
+  // presented in the UI over the form selector in the UI to the user (e.g.
+  // "Emergency Contact Info" above an email-and-phone selector.)
+  string section_label = 3 [features = { field_presence: EXPLICIT }];
 
   // Enumerates the purposes for forms. Note that although the type of data
   // (address or credit card) is encoded that autofill already detects the type,
