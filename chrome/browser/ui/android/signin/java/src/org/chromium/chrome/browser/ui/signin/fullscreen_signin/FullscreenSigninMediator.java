@@ -435,7 +435,15 @@ public class FullscreenSigninMediator
     /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
-        mAccountManagerFacade.getAccounts().then(this::updateAccounts);
+        if (mAccountManagerFacade.getAccounts().isFulfilled()) {
+            updateAccountsAndCheck(mAccountManagerFacade.getAccounts().getResult());
+        } else {
+            mAccountManagerFacade.getAccounts().then(this::updateAccountsAndCheck);
+        }
+    }
+
+    private void updateAccountsAndCheck(List<AccountInfo> accounts) {
+        updateAccounts(accounts);
         checkWhetherInitialLoadCompleted(LoadPoint.ACCOUNT_FETCHING);
     }
 
