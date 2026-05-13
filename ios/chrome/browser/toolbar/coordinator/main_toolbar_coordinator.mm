@@ -525,12 +525,12 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
     if (self.primaryToolbarViewController.view.hidden) {
       // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
       // zero. This is a temporary fix for the pdf bug.
-      return 1.0;
+      return IsFullscreenRefactoringEnabled() ? 0.0 : 1.0;
     }
     if ([self isOmniboxInBottomPosition]) {
       // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
       // zero. This is a temporary fix for the pdf bug.
-      return 1;
+      return IsFullscreenRefactoringEnabled() ? 0 : 1;
     }
     if (ShouldHaveFullHeightTopToolbar(self.traitEnvironment)) {
       return kToolbarHeightFullscreen;
@@ -540,7 +540,7 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
   if (_omniboxPosition == ToolbarType::kSecondary) {
     // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
     // zero. This is a temporary fix for the pdf bug.
-    return 1.0;
+    return IsFullscreenRefactoringEnabled() ? 0.0 : 1.0;
   }
 
   return ToolbarCollapsedHeight(
@@ -552,7 +552,7 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
     if (self.primaryToolbarViewController.view.hidden) {
       // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
       // zero. This is a temporary fix for the pdf bug.
-      return 1.0;
+      return IsFullscreenRefactoringEnabled() ? 0.0 : 1.0;
     }
     BOOL isOmniboxInBottomPosition = [self isOmniboxInBottomPosition];
     CGFloat height = 0;
@@ -572,7 +572,11 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
     if (isOmniboxInBottomPosition) {
       // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
       // zero. This is a temporary fix for the pdf bug.
-      return height > 0 ? height : 1;
+      if (IsFullscreenRefactoringEnabled()) {
+        return height;
+      } else {
+        return height > 0 ? height : 1;
+      }
     }
     if (ShouldHaveFullHeightTopToolbar(self.traitEnvironment)) {
       return height + kToolbarHeight;
