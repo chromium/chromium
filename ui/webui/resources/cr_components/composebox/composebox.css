@@ -145,6 +145,9 @@
   border-radius: inherit;
 }
 
+/* This, along with its input container child's contents determine the height
+ * of cr-composebox.
+ */
 #composebox {
   border-radius: inherit;
   display: flex;
@@ -572,7 +575,7 @@ search-animated-glow {
 
 :host([in-voice-search-mode]) #composebox {
   block-size: fit-content;
-  min-block-size: 108px;
+  min-block-size: 112px;
   opacity: 0;
   /* CANNOT be display: None since :host depends on its height. */
   visibility: hidden;
