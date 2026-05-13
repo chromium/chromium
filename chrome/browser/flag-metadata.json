@@ -2955,7 +2955,7 @@
   {
     "name": "enable-audio-focus-enforcement",
     "owners": [ "liberato@chromium.org", "steimel@chromium.org", "meganlfu@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 175
   },
   {
     "name": "enable-audio-monitoring-on-android",
