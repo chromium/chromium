@@ -267,9 +267,9 @@ void DataControlsTabHelper::FinishSearchWith(
     Verdict verdict,
     base::OnceCallback<void(bool)> callback,
     bool bypassed) {
-  if (bypassed && source_profile) {
+  if (source_profile) {
     MaybeReportDataControlsCopy(source_url, source_profile.get(), metadata,
-                                std::move(verdict), /*bypassed=*/true);
+                                std::move(verdict), bypassed);
   }
   std::move(callback).Run(bypassed);
 }
