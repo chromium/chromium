@@ -8126,6 +8126,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.NestedScrollingEnabled" enum="BooleanEnabled"
+    expires_after="2026-09-01">
+  <owner>bewise@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether nested scrolling is enabled on WebView when a touch event
+    starts. Recorded upon ACTION_DOWN in onTouchEvent.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.NonAppUid" enum="AndroidUidType"
     expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>

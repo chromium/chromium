@@ -4656,6 +4656,9 @@ public class AwContents implements SmartClipProvider {
             if (isDestroyed(NO_WARN)) return false;
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 mSettings.setSpatialNavigationEnabled(false);
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.WebView.NestedScrollingEnabled",
+                        mContainerView.isNestedScrollingEnabled());
             }
 
             AwContentsJni.get().onInputEvent(mNativeAwContents);
