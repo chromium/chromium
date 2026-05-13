@@ -13,6 +13,7 @@ from generate_system_modulemap import (
     parse_depfile,
     parse_modulemap,
     split_modulemap,
+    strip_modules_from_modulemap,
 )
 
 _TESTDATA = (pathlib.Path(__file__).parent / 'testdata').resolve()
@@ -160,6 +161,18 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
             pathlib.Path('/path/to/header with spaces.h'),
             pathlib.Path('/path/to/header3.h'),
         ])
+
+  def test_strip_modules_from_modulemap(self):
+    tent = """module foo {
+  module submodule {
+    header "bar.h"
+  }
+}"""
+    self.assertEqual(strip_modules_from_modulemap(tent, {'foo'}), '')
+
+    self.assertEqual(
+        strip_modules_from_modulemap(tent, {'submodule'}).strip(),
+        'module foo {\n\n}')
 
 
 if __name__ == '__main__':
