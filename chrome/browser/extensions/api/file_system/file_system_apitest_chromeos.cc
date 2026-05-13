@@ -44,8 +44,6 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 
-// TODO(michaelpg): Port these tests to app_shell: crbug.com/40425056.
-
 using file_manager::VolumeManager;
 
 namespace extensions {

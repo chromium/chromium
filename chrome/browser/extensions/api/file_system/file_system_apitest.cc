@@ -19,8 +19,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
-// TODO(michaelpg): Port these tests to app_shell: crbug.com/40425056.
-
 namespace content {
 class BrowserContext;
 }

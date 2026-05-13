@@ -5,8 +5,6 @@
 // Checking for "chrome" availability allows this app code to be tested in
 // non-Chrome browsers, which is useful for example to test touch support with
 // a non-Chrome touch device.
-// Checking for "chrome.shell" allows testing under app_shell, which does not
-// have chrome.app APIs.
 // Checking for "chrome.app.runtime" availability allows testing in a regular
 // web page (like tests/manual.html).
 if (typeof chrome !== 'undefined' && chrome.app && chrome.app.runtime) {

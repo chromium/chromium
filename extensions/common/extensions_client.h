@@ -89,7 +89,7 @@ class ExtensionsClient {
   virtual const PermissionMessageProvider& GetPermissionMessageProvider()
       const = 0;
 
-  // Returns the application name. For example, "Chromium" or "app_shell".
+  // Returns the application name. For example, "Chromium" or "Google Chrome".
   virtual const std::string GetProductName() = 0;
 
   // Takes the list of all hosts and filters out those with special
