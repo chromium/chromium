@@ -24,6 +24,7 @@
   --context-carousel-top-position: 20px;
   --context-top-carousel-bottom-margin: 0;
   --context-top-carousel-top-margin: 0;
+  /* Set by resize observer of composebox component child. */
   --composebox-container-height:
     calc(var(--composebox-height) + var(--composebox-dropdown-height)
       + var(--composebox-margin-bottom)
@@ -31,6 +32,7 @@
   /* Shared sizing between voice cancel and regular cancel buttons. */
   --composebox-cancel-button-size: 40px;
   --composebox-icon-menu-bottom: 12px;
+  --composebox-min-height: 112px;
   --composebox-submit-container-size: 48px;
   --composebox-submit-container-inline-end:
       var(--composebox-last-icon-inline-end);
@@ -131,6 +133,10 @@
   inset-block-start: auto;
   pointer-events: auto;
   position: fixed;
+}
+
+#composebox::part(composebox) {
+  min-height: var(--composebox-min-height);
 }
 
 :host(:not([input-enabled])) #composebox::part(composebox) {
