@@ -200,6 +200,9 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
   // Whether the close button used metric was recorded in this session.
   private closeButtonUsedRecorded = false;
 
+  // Whether the region context menu was shown for the current selection.
+  private menuWasShownForCurrentSelection = false;
+
   // Whether or not translate mode is enabled. If true, only text should
   // be selectable, and it should be selectable from any point in the
   // overlay.
@@ -289,15 +292,25 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
         (e: CustomEvent<SelectedRegionContextMenuData>) => {
           this.updateSelectedRegionContextMenu(e.detail);
           this.positionSelectedRegionContextMenu();
+
+          if (!this.menuWasShownForCurrentSelection &&
+              this.showDetectedTextContextMenuOptions) {
+            this.setShowSelectedRegionContextMenu(true);
+            this.menuWasShownForCurrentSelection = true;
+          }
         });
     this.eventTracker_.add(
         document, 'show-selected-region-context-menu',
         (e: CustomEvent<SelectedRegionContextMenuData>) => {
           this.updateSelectedRegionContextMenu(e.detail);
-          this.setShowSelectedRegionContextMenu(
+          const shouldShow =
               (!this.suppressCopyAndSaveAsImage &&
                (this.enableCopyAsImage || this.enableSaveAsImage)) ||
-              this.showDetectedTextContextMenuOptions);
+              this.showDetectedTextContextMenuOptions;
+          this.setShowSelectedRegionContextMenu(shouldShow);
+          if (shouldShow) {
+            this.menuWasShownForCurrentSelection = true;
+          }
           this.positionSelectedRegionContextMenu();
 
           // Send an event to the post selection renderer to darken the scrim if
@@ -319,6 +332,7 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
                 (!this.suppressCopyAndSaveAsImage &&
                  (this.enableCopyAsImage || this.enableSaveAsImage)) ||
                 this.showDetectedTextContextMenuOptions);
+            this.positionSelectedRegionContextMenu();
           }
         });
     this.eventTracker_.add(
@@ -444,6 +458,7 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
     this.detectedTextStartIndex = -1;
     this.detectedTextEndIndex = -1;
     this.showDetectedTextContextMenuOptions = false;
+    this.menuWasShownForCurrentSelection = false;
 
     this.$.textLayer.onSelectionStart();
 
