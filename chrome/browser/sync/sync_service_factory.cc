@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -211,8 +210,6 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
 #endif  // DCHECK_IS_ON()
 
   browser_sync::CommonControllerBuilder builder;
-  builder.SetAccessibilityAnnotatorBackend(
-      AccessibilityAnnotatorBackendFactory::GetForProfile(profile));
   builder.SetAccountSettingService(
       AccountSettingServiceFactory::GetForBrowserContext(profile));
   // A callback is needed here because `autofill::PersonalDataManagerFactory`
@@ -541,7 +538,6 @@ SyncServiceFactory::SyncServiceFactory()
   // destruction order. Note that some of the dependencies are listed here but
   // actually plumbed in ChromeSyncClient, which this factory constructs.
   DependsOn(AboutSigninInternalsFactory::GetInstance());
-  DependsOn(AccessibilityAnnotatorBackendFactory::GetInstance());
   DependsOn(AccountSettingServiceFactory::GetInstance());
   DependsOn(AccountBookmarkSyncServiceFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());

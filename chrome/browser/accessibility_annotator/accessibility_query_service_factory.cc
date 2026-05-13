@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/browser/accessibility_annotator/accessibility_query_service_delegate_impl.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -19,7 +18,6 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/accessibility_query_service.h"
 #include "components/accessibility_annotator/core/annotation_reducer/one_p_resolver_impl.h"
-#include "components/accessibility_annotator/core/annotation_reducer/sync_bridge_data_provider.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider_impl.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/storage_partition.h"
@@ -44,7 +42,6 @@ AccessibilityQueryServiceFactory::AccessibilityQueryServiceFactory()
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
-  DependsOn(AccessibilityAnnotatorBackendFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -66,12 +63,6 @@ AccessibilityQueryServiceFactory::BuildServiceInstanceForBrowserContext(
       autofill::PersonalDataManagerFactory::GetForBrowserContext(context),
       autofill::AutofillEntityDataManagerFactory::GetForProfile(profile)));
 
-  if (auto* backend =
-          AccessibilityAnnotatorBackendFactory::GetForProfile(profile)) {
-    data_providers.push_back(
-        std::make_unique<accessibility_annotator::SyncBridgeDataProvider>(
-            *backend));
-  }
 
   auto* optimization_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);

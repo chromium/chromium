@@ -21,17 +21,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace syncer {
-class DataTypeControllerDelegate;
-}  // namespace syncer
-
-namespace sync_pb {
-class AccessibilityAnnotationSpecifics;
-}  // namespace sync_pb
-
 namespace accessibility_annotator {
-
-class AccessibilityAnnotationSyncBridge;
 
 class AccessibilityAnnotatorBackend : public KeyedService {
  public:
@@ -51,11 +41,6 @@ class AccessibilityAnnotatorBackend : public KeyedService {
   };
 
   ~AccessibilityAnnotatorBackend() override = default;
-
-  // Returns DataTypeControllerDelegate for the accessibility annotation
-  // datatype.
-  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
-  GetAccessibilityAnnotationControllerDelegate() = 0;
 
   // Adds an observer to the backend.
   virtual void AddObserver(Observer* observer) = 0;
@@ -116,21 +101,6 @@ class AccessibilityAnnotatorBackend : public KeyedService {
   // the boolean result of the clearing.
   virtual void ClearAllContentAnnotations(
       base::OnceCallback<void(bool)> callback) = 0;
-
-  // Returns sync annotations from the sync bridge that match the given entity
-  // types.
-  virtual void GetSyncAnnotationsByTypes(
-      EntityTypeEnumSet types,
-      base::OnceCallback<
-          void(std::vector<sync_pb::AccessibilityAnnotationSpecifics>)>
-          callback) = 0;
-
-  // Returns `accessibility_annotation_sync_bridge_`.
-  // TODO(crbug.com/489492084): This is currently used by
-  // `DirectServerEntityProvider` to directly observe the sync bridge. Remove
-  // this method once `DirectServerEntityProvider` is deprecated and removed.
-  virtual AccessibilityAnnotationSyncBridge*
-  accessibility_annotation_sync_bridge() = 0;
 };
 
 }  // namespace accessibility_annotator

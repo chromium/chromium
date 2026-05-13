@@ -10,11 +10,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/sync/model/data_type_store_service.h"
 #include "sql/database.h"
 
 constexpr base::FilePath::CharType kAccessibilityAnnotatorDatabaseFileName[] =
@@ -38,7 +36,6 @@ AccessibilityAnnotatorBackendFactory::AccessibilityAnnotatorBackendFactory()
     : ProfileKeyedServiceFactory(
           "AccessibilityAnnotatorBackend",
           ProfileSelections::BuildRedirectedInIncognito()) {
-  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
 }
 
@@ -75,7 +72,5 @@ AccessibilityAnnotatorBackendFactory::BuildServiceInstanceForBrowserContext(
       accessibility_annotator::AccessibilityAnnotatorBackendImpl>(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      g_browser_process->os_crypt_async(),
-      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
-      db_path);
+      g_browser_process->os_crypt_async(), db_path);
 }

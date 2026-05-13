@@ -23,7 +23,6 @@
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/sync/test/data_type_store_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -89,8 +88,6 @@ class ContentAnnotatorInternalsPageHandlerTest
                       accessibility_annotator::
                           AccessibilityAnnotatorBackendImpl>(
                       /*history_service=*/nullptr, os_crypt_async,
-                      syncer::DataTypeStoreTestUtil::
-                          FactoryForInMemoryStoreForTest(),
                       path.Append(
                           FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase")));
                 },

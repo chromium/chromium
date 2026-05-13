@@ -24,8 +24,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="AccessibilityAnnotator.MemoryDataProvider">
   <variant name="AutofillDataProvider" summary="The Autofill data provider."/>
-  <variant name="SyncBridgeDataProvider"
-      summary="The sync bridge data provider."/>
 </variants>
 
 <variants name="AccessibilityAnnotator.ValueClassifierType">
@@ -57,28 +55,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records when a page is missing the dependent information required to
     annotate it. This is ONLY recorded when there is missing information.
-  </summary>
-</histogram>
-
-<histogram name="AccessibilityAnnotator.DirectServerProvider.EntityCount"
-    units="entities" expires_after="2026-08-01">
-  <owner>victorshu@google.com</owner>
-  <owner>zelarabaty@google.com</owner>
-  <summary>
-    Number of annotations retrieved from sync bridge that were converted to
-    entities for service. Recorded when GetEntities is called on the
-    DirectServerEntityProvider.
-  </summary>
-</histogram>
-
-<histogram
-    name="AccessibilityAnnotator.DirectServerProvider.GetEntitiesLatency"
-    units="ms" expires_after="2026-08-01">
-  <owner>victorshu@google.com</owner>
-  <owner>zelarabaty@google.com</owner>
-  <summary>
-    Duration of the GetEntities method in the DirectServerEntityProvider.
-    Recorded when GetEntities is called.
   </summary>
 </histogram>
 

@@ -44,8 +44,6 @@ source_set("annotation_reducer") {
     "memory_search_result.h",
     "query_classifier.cc",
     "query_classifier.h",
-    "sync_bridge_data_provider.cc",
-    "sync_bridge_data_provider.h",
     "util.cc",
     "util.h",
   ]
@@ -67,7 +65,6 @@ source_set("unit_tests") {
     "ingested_content_annotation_utils_unittest.cc",
     "memory_search_result_unittest.cc",
     "query_classifier_unittest.cc",
-    "sync_bridge_data_provider_unittest.cc",
     "util_unittest.cc",
   ]
 
@@ -87,8 +84,6 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:model_execution_test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/signin/public/identity_manager:test_support",
-    "//components/sync:test_support",
-    "//components/sync/protocol",
     "//components/version_info",
     "//net:test_support",
     "//services/network:test_support",

@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_data_type_controller.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
@@ -213,12 +212,6 @@ bool ArePreferencesAllowedInTransportMode() {
 CommonControllerBuilder::CommonControllerBuilder() = default;
 
 CommonControllerBuilder::~CommonControllerBuilder() = default;
-
-void CommonControllerBuilder::SetAccessibilityAnnotatorBackend(
-    accessibility_annotator::AccessibilityAnnotatorBackend*
-        accessibility_annotator_backend) {
-  accessibility_annotator_backend_.Set(accessibility_annotator_backend);
-}
 
 void CommonControllerBuilder::SetAccountSettingService(
     account_settings::AccountSettingService* account_setting_service) {
@@ -568,10 +561,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 
   if (!disabled_types.Has(syncer::GEMINI_THREAD)) {
     add_controller(CreateGeminiThreadDataTypeController());
-  }
-
-  if (!disabled_types.Has(syncer::ACCESSIBILITY_ANNOTATION)) {
-    add_controller(CreateAccessibilityAnnotationDataTypeController());
   }
 
   if (!disabled_types.Has(syncer::CONTEXTUAL_TASK)) {
@@ -1164,27 +1153,6 @@ CommonControllerBuilder::CreateGeminiThreadDataTypeController() {
   }
   return std::make_unique<contextual_tasks::GeminiThreadDataTypeController>(
       /*contextual_tasks_service=*/contextual_tasks_service_.value(),
-      /*delegate_for_full_sync_mode= */
-      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
-      /*delegate_for_transport_mode= */
-      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
-}
-
-std::unique_ptr<syncer::DataTypeController>
-CommonControllerBuilder::CreateAccessibilityAnnotationDataTypeController() {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncAccessibilityAnnotation) ||
-      !accessibility_annotator_backend_.value()) {
-    return nullptr;
-  }
-  syncer::DataTypeControllerDelegate* delegate =
-      accessibility_annotator_backend_.value()
-          ->GetAccessibilityAnnotationControllerDelegate()
-          .get();
-  if (!delegate) {
-    return nullptr;
-  }
-  return std::make_unique<DataTypeController>(
-      syncer::ACCESSIBILITY_ANNOTATION,
       /*delegate_for_full_sync_mode= */
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
       /*delegate_for_transport_mode= */

@@ -25,9 +25,6 @@ class PrefService;
 class SharingMessageBridge;
 class TemplateURLService;
 
-namespace accessibility_annotator {
-class AccessibilityAnnotatorBackend;
-}  // namespace accessibility_annotator
 
 namespace account_settings {
 class AccountSettingService;
@@ -146,11 +143,6 @@ class CommonControllerBuilder {
   CommonControllerBuilder();
   ~CommonControllerBuilder();
 
-  // Setters to inject dependencies. Each of these setters must be invoked
-  // before invoking `Build()`. In some cases it is allowed to inject nullptr.
-  void SetAccessibilityAnnotatorBackend(
-      accessibility_annotator::AccessibilityAnnotatorBackend*
-          accessibility_annotator_backend);
   void SetAccountSettingService(
       account_settings::AccountSettingService* account_setting_service);
   void SetAddressDataManagerGetter(
@@ -317,8 +309,6 @@ class CommonControllerBuilder {
   std::unique_ptr<syncer::DataTypeController>
   CreateGeminiThreadDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
-  CreateAccessibilityAnnotationDataTypeController();
-  std::unique_ptr<syncer::DataTypeController>
   CreateContextualTaskDataTypeController();
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   std::unique_ptr<syncer::DataTypeController> CreateSkillDataTypeController();
@@ -373,8 +363,6 @@ class CommonControllerBuilder {
 
   // For all above, nullopt indicates the corresponding setter wasn't invoked.
   // nullptr indicates the setter was invoked with nullptr.
-  SafeOptional<raw_ptr<accessibility_annotator::AccessibilityAnnotatorBackend>>
-      accessibility_annotator_backend_;
   SafeOptional<raw_ptr<account_settings::AccountSettingService>>
       account_setting_service_;
   base::RepeatingCallback<autofill::AddressDataManager*()>

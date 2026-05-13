@@ -21,21 +21,14 @@
 #include "base/values.h"
 #include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
-#include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/sync/model/data_type_store.h"
-#include "components/sync/protocol/accessibility_annotation_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace os_crypt_async {
 class Encryptor;
 class OSCryptAsync;
 }  // namespace os_crypt_async
-
-namespace syncer {
-class DataTypeControllerDelegate;
-}  // namespace syncer
 
 namespace history {
 class DeletionInfo;
@@ -49,13 +42,11 @@ class AccessibilityAnnotatorDatabase;
 
 class AccessibilityAnnotatorBackendImpl
     : public AccessibilityAnnotatorBackend,
-      public AccessibilityAnnotationSyncBridge::Observer,
       public history::HistoryServiceObserver {
  public:
   AccessibilityAnnotatorBackendImpl(
       history::HistoryService* history_service,
       os_crypt_async::OSCryptAsync* os_crypt_async,
-      syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
       const base::FilePath& db_path);
 
   ~AccessibilityAnnotatorBackendImpl() override;
@@ -69,8 +60,6 @@ class AccessibilityAnnotatorBackendImpl
   void Shutdown() override;
 
   // AccessibilityAnnotatorBackend implementation.
-  base::WeakPtr<syncer::DataTypeControllerDelegate>
-  GetAccessibilityAnnotationControllerDelegate() override;
   void AddObserver(AccessibilityAnnotatorBackend::Observer* observer) override;
   void RemoveObserver(
       AccessibilityAnnotatorBackend::Observer* observer) override;
@@ -105,16 +94,6 @@ class AccessibilityAnnotatorBackendImpl
     return merged_multipage_annotations_;
   }
 
-  void GetSyncAnnotationsByTypes(
-      EntityTypeEnumSet types,
-      base::OnceCallback<void(
-          std::vector<sync_pb::AccessibilityAnnotationSpecifics>)> callback)
-      override;
-
-  // AccessibilityAnnotationSyncBridge::Observer implementation.
-  void OnAccessibilityAnnotationChanged() override;
-  void OnAccessibilityAnnotationSyncBridgeLoaded() override;
-
   // history::HistoryServiceObserver implementation.
   void OnURLVisited(history::HistoryService* history_service,
                     const history::VisitedURLInfo& visited_url_info) override;
@@ -122,13 +101,6 @@ class AccessibilityAnnotatorBackendImpl
                           const history::DeletionInfo& deletion_info) override;
   void OnHistoryServiceLoaded(
       history::HistoryService* history_service) override;
-
-  // Returns `accessibility_annotation_sync_bridge_`.
-  // TODO(crbug.com/489492084): This is currently used by
-  // `DirectServerEntityProvider` to directly observe the sync bridge. Remove
-  // this method once `DirectServerEntityProvider` is deprecated and removed.
-  AccessibilityAnnotationSyncBridge* accessibility_annotation_sync_bridge()
-      override;
 
  private:
   // State of the database initialization.
@@ -198,9 +170,6 @@ class AccessibilityAnnotatorBackendImpl
   // executed once the database is initialized.
   std::vector<base::OnceClosure> queued_operations_;
 
-  std::unique_ptr<AccessibilityAnnotationSyncBridge>
-      accessibility_annotation_sync_bridge_;
-
   // TODO(crbug.com/496384941): Once the DebugUI reads from the persistent
   // database, the cache and its related functions should be cleaned up.
   // Stores annotations keyed by the visit ID they are associated with. The
@@ -209,9 +178,6 @@ class AccessibilityAnnotatorBackendImpl
   base::LRUCache<history::VisitID, ContentAnnotationsData>
       content_annotations_cache_;
 
-  base::ScopedObservation<AccessibilityAnnotationSyncBridge,
-                          AccessibilityAnnotationSyncBridge::Observer>
-      sync_bridge_observation_{this};
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};

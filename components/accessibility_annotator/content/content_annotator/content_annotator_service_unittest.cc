@@ -38,7 +38,6 @@
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
-#include "components/sync/test/data_type_store_test_util.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -150,7 +149,6 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
         std::make_unique<AccessibilityAnnotatorBackendImpl>(
             /*history_service=*/nullptr,
             /*os_crypt_async=*/nullptr,
-            syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
             temp_dir_.GetPath().Append(
                 FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase")));
 

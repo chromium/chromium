@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
-#include "components/sync/protocol/accessibility_annotation_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace accessibility_annotator {
@@ -37,10 +36,6 @@ class TestAccessibilityAnnotatorBackend : public AccessibilityAnnotatorBackend {
   TestAccessibilityAnnotatorBackend();
   ~TestAccessibilityAnnotatorBackend() override;
 
-  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
-              GetAccessibilityAnnotationControllerDelegate,
-              (),
-              (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(base::optional_ref<const ContentAnnotationsData>,
@@ -85,19 +80,6 @@ class TestAccessibilityAnnotatorBackend : public AccessibilityAnnotatorBackend {
               ClearAllContentAnnotations,
               (base::OnceCallback<void(bool)>),
               (override));
-  MOCK_METHOD(void,
-              GetSyncAnnotationsByTypes,
-              (EntityTypeEnumSet,
-               base::OnceCallback<void(
-                   std::vector<sync_pb::AccessibilityAnnotationSpecifics>)>),
-              (override));
-  MOCK_METHOD(AccessibilityAnnotationSyncBridge*,
-              accessibility_annotation_sync_bridge,
-              (),
-              (override));
-
-  void SetSyncAnnotations(
-      std::vector<sync_pb::AccessibilityAnnotationSpecifics> annotations);
 };
 
 }  // namespace accessibility_annotator

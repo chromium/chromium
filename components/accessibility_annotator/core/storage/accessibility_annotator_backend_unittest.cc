@@ -25,7 +25,6 @@
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/sync/test/data_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -110,7 +109,6 @@ class AccessibilityAnnotatorBackendTest
         /*is_sync_for_unittests=*/true);
     backend_ = std::make_unique<AccessibilityAnnotatorBackendImpl>(
         /*history_service=*/nullptr, os_crypt_async_.get(),
-        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         temp_dir_.GetPath().AppendASCII("TestDB"));
   }
 };
@@ -122,7 +120,6 @@ class AccessibilityAnnotatorBackendDbDisabledTest
     AccessibilityAnnotatorBackendTestBase::SetUp();
     backend_ = std::make_unique<AccessibilityAnnotatorBackendImpl>(
         /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
-        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         temp_dir_.GetPath().AppendASCII("TestDB"));
   }
 };
@@ -420,7 +417,6 @@ TEST_F(AccessibilityAnnotatorBackendNoInitTest,
 
   backend_ = std::make_unique<AccessibilityAnnotatorBackendImpl>(
       /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
-      syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
       temp_dir_.GetPath().AppendASCII("Case1DB"));
 
   backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
@@ -1153,7 +1149,6 @@ TEST_F(AccessibilityAnnotatorBackendNoInitTest,
   std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend =
       std::make_unique<AccessibilityAnnotatorBackendImpl>(
           /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
-          syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
           temp_dir_.GetPath().AppendASCII("AddWithoutInit"));
 
   MockAccessibilityAnnotatorBackendObserver observer;
@@ -1176,7 +1171,6 @@ TEST_F(AccessibilityAnnotatorBackendNoInitTest,
   std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend =
       std::make_unique<AccessibilityAnnotatorBackendImpl>(
           /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
-          syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
           temp_dir_.GetPath().AppendASCII("DeleteWithoutInit"));
 
   MockAccessibilityAnnotatorBackendObserver observer;
@@ -1200,7 +1194,6 @@ TEST_F(AccessibilityAnnotatorBackendNoInitTest,
   std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend =
       std::make_unique<AccessibilityAnnotatorBackendImpl>(
           /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
-          syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
           temp_dir_.GetPath().AppendASCII("ClearWithoutInit"));
 
   MockAccessibilityAnnotatorBackendObserver observer;
@@ -1230,7 +1223,6 @@ TEST_F(AccessibilityAnnotatorBackendTest, ContentAnnotationOperationsQueued) {
 
   auto local_backend = std::make_unique<AccessibilityAnnotatorBackendImpl>(
       /*history_service=*/nullptr, os_crypt_async_.get(),
-      syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
       temp_dir_.GetPath().AppendASCII("LocalTestDB"));
 
   // Queue first operation.
