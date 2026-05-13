@@ -95,7 +95,8 @@ const StyleMaskSourceImage* ToMaskSourceIfSVGMask(
 void PaintMaskLayer(const FillLayer& layer,
                     const LayoutObject& object,
                     const SVGBackgroundPaintContext& bg_paint_context,
-                    GraphicsContext& context) {
+                    GraphicsContext& context,
+                    PaintFlags paint_flags) {
   const StyleImage* style_image = layer.GetImage();
   if (!style_image) {
     return;
@@ -131,7 +132,7 @@ void PaintMaskLayer(const FillLayer& layer,
     saver.Save();
     SVGMaskPainter::PaintSVGMaskLayer(
         context, *mask_source, observer, reference_box, zoom, composite_op,
-        layer.MaskMode() == EFillMaskMode::kMatchSource);
+        layer.MaskMode() == EFillMaskMode::kMatchSource, paint_flags);
     return;
   }
 
@@ -237,7 +238,8 @@ void IterateFillLayersReveresed(const FillLayer* layer, Callback callback) {
 
 void SVGMaskPainter::Paint(GraphicsContext& context,
                            const LayoutObject& layout_object,
-                           const DisplayItemClient& display_item_client) {
+                           const DisplayItemClient& display_item_client,
+                           PaintFlags paint_flags) {
   const auto* properties = layout_object.FirstFragment().PaintProperties();
   DCHECK(properties);
   DCHECK(properties->Mask());
@@ -259,11 +261,13 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
                            gfx::ToEnclosingRect(visual_rect));
 
   const SVGBackgroundPaintContext bg_paint_context(layout_object);
-  IterateFillLayersReveresed(
-      &layout_object.StyleRef().MaskLayers(),
-      [&layout_object, &bg_paint_context, &context](const FillLayer& layer) {
-        PaintMaskLayer(layer, layout_object, bg_paint_context, context);
-      });
+  IterateFillLayersReveresed(&layout_object.StyleRef().MaskLayers(),
+                             [&layout_object, &bg_paint_context, &context,
+                              paint_flags](const FillLayer& layer) {
+                               PaintMaskLayer(layer, layout_object,
+                                              bg_paint_context, context,
+                                              paint_flags);
+                             });
 }
 
 void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,
@@ -272,7 +276,8 @@ void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,
                                        const gfx::RectF& reference_box,
                                        const float zoom,
                                        const SkBlendMode composite_op,
-                                       const bool apply_mask_type) {
+                                       const bool apply_mask_type,
+                                       PaintFlags paint_flags) {
   LayoutSVGResourceMasker* masker =
       ResolveElementReference(mask_source, observer);
   if (!masker) {
@@ -281,7 +286,7 @@ void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,
   const AffineTransform content_transformation =
       MaskToContentTransform(*masker, reference_box, zoom);
   SubtreeContentTransformScope content_transform_scope(content_transformation);
-  PaintRecord record = masker->CreatePaintRecord();
+  PaintRecord record = masker->CreatePaintRecord(paint_flags);
 
   context.Clip(masker->ResourceBoundingBox(reference_box, zoom));
 

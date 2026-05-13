@@ -23,6 +23,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -54,10 +55,11 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
     return kResourceType;
   }
 
-  PaintRecord CreatePaintRecord();
+  PaintRecord CreatePaintRecord(PaintFlags paint_flags);
 
  private:
   std::optional<PaintRecord> cached_paint_record_;
+  PaintFlags cached_paint_flags_ = PaintFlag::kNoFlag;
 };
 
 template <>

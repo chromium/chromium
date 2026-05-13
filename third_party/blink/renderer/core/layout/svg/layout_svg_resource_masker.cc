@@ -44,8 +44,12 @@ void LayoutSVGResourceMasker::RemoveAllClientsFromCache() {
                                 kPaintInvalidation);
 }
 
-PaintRecord LayoutSVGResourceMasker::CreatePaintRecord() {
+PaintRecord LayoutSVGResourceMasker::CreatePaintRecord(PaintFlags paint_flags) {
   NOT_DESTROYED();
+  if (cached_paint_record_ && cached_paint_flags_ != paint_flags) {
+    cached_paint_record_ = std::nullopt;
+  }
+
   if (cached_paint_record_)
     return *cached_paint_record_;
 
@@ -59,10 +63,12 @@ PaintRecord LayoutSVGResourceMasker::CreatePaintRecord() {
         layout_object->StyleRef().Display() == EDisplay::kNone)
       continue;
     SVGObjectPainter(*layout_object, nullptr)
-        .PaintResourceSubtree(builder.Context(), PaintFlag::kPaintingSVGMask);
+        .PaintResourceSubtree(builder.Context(),
+                              PaintFlag::kPaintingSVGMask | paint_flags);
   }
 
   cached_paint_record_ = builder.EndRecording();
+  cached_paint_flags_ = paint_flags;
   return *cached_paint_record_;
 }
 

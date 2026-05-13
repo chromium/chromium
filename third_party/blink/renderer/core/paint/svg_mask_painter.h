@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_MASK_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_MASK_PAINTER_H_
 
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 
@@ -26,14 +27,16 @@ class SVGMaskPainter {
  public:
   static void Paint(GraphicsContext& context,
                     const LayoutObject& layout_object,
-                    const DisplayItemClient& display_item_client);
+                    const DisplayItemClient& display_item_client,
+                    PaintFlags paint_flags);
   static void PaintSVGMaskLayer(GraphicsContext&,
                                 const StyleMaskSourceImage&,
                                 const ImageResourceObserver&,
                                 const gfx::RectF& reference_box,
                                 const float zoom,
                                 const SkBlendMode composite_op,
-                                const bool apply_mask_type);
+                                const bool apply_mask_type,
+                                PaintFlags paint_flags);
   static gfx::RectF ResourceBoundsForSVGChild(
       const LayoutObject& layout_object);
   static bool MaskIsValid(const StyleMaskSourceImage&,
