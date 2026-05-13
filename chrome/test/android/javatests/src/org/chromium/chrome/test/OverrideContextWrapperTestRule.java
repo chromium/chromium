@@ -11,12 +11,15 @@ import android.content.pm.PackageManager;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.chromium.build.BuildConfig;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.PackageManagerWrapper;
+import org.chromium.build.BuildConfig;
 
-/** JUnit test rule that takes care of setup and teardown for automotive-specific tests. */
+/**
+ * JUnit test rule that takes care of setup and teardown for tests that need to override the
+ * context.
+ */
 public class OverrideContextWrapperTestRule implements TestRule {
     private OverrideTestContext mContext;
 
