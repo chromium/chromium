@@ -238,7 +238,7 @@ void ContentWebFramesManager::ScriptMessageReceived(
   ScriptMessage message_for_handler(
       std::make_unique<base::Value>(std::move(*message_content)),
       script_message.is_user_interacting(), script_message.is_main_frame(),
-      script_message.request_url());
+      script_message.request_url(), script_message.security_origin());
 
   js_feature_manager_->ScriptMessageReceived(message_for_handler, *handler_name,
                                              content_web_state_);

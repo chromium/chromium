@@ -13,6 +13,7 @@
 #import "components/js_injection/browser/web_message.h"
 #import "components/js_injection/browser/web_message_host.h"
 #import "third_party/abseil-cpp/absl/functional/overload.h"
+#import "url/origin.h"
 
 namespace web {
 namespace {
@@ -60,7 +61,8 @@ class IOSWebMessageHost : public js_injection::WebMessageHost {
     bool is_user_interacting = false;
     ScriptMessage script_message(
         std::make_unique<base::Value>(std::move(*message_value)),
-        is_user_interacting, is_main_frame_, GURL(origin_string_));
+        is_user_interacting, is_main_frame_, GURL(origin_string_),
+        url::Origin::Create(GURL(origin_string_)));
     message_callback_.Run(script_message);
   }
 
