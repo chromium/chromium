@@ -1,7 +1,7 @@
 Name: llvm-libc
 URL: https://libc.llvm.org/
 Version: N/A
-Revision: a649e03a9edd1fdf03088a23e1fbacc0cebd02ff
+Revision: 57ec00816a5dbbc7792ba179ef2a226799b426be
 Update Mechanism: Autoroll
 License: Apache-with-LLVM-Exception, NCSA
 License File: src/LICENSE.TXT
