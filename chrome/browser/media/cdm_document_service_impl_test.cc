@@ -34,6 +34,16 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <aclapi.h>
+
+#include "base/win/security_util.h"
+#include "base/win/sid.h"
+#include "sandbox/policy/win/lpac_capability.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 using testing::_;
 using testing::DoAll;
 using testing::SaveArg;
@@ -365,5 +375,76 @@ TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceDataNullFilter) {
   new_origin_id = GetMediaFoundationCdmData()->origin_id;
   ASSERT_NE(origin_id_1, new_origin_id);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(CdmDocumentServiceImplTest, VerifyCdmStorePathRootAcl) {
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
+  auto data = GetMediaFoundationCdmData();
+
+  auto sids = base::win::Sid::FromNamedCapabilityVector(
+      {sandbox::policy::kMediaFoundationCdmData});
+  ASSERT_FALSE(sids.empty());
+
+  // The root path should have traverse permissions.
+  EXPECT_TRUE(base::win::HasAccessToPath(data->cdm_store_path_root, sids,
+                                         FILE_TRAVERSE, NO_INHERITANCE));
+
+  // The root path should NOT have list directory permissions to prevent
+  // cross-origin enumeration. base::win::HasAccessToPath cannot be used here
+  // because it matches inherit-only ACEs when querying with NO_INHERITANCE.
+  PACL dacl = nullptr;
+  PSECURITY_DESCRIPTOR sd = nullptr;
+  // Manually retrieve the Discretionary Access Control List (DACL) to inspect
+  // its entries directly.
+  ASSERT_EQ(ERROR_SUCCESS,
+            ::GetNamedSecurityInfo(data->cdm_store_path_root.value().c_str(),
+                                   SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
+                                   nullptr, nullptr, &dacl, nullptr, &sd));
+  bool has_list_directory = false;
+  if (dacl) {
+    // Iterate over each Access Control Entry (ACE) in the DACL.
+    for (DWORD i = 0; i < dacl->AceCount; ++i) {
+      PVOID ace_ptr = nullptr;
+      if (::GetAce(dacl, i, &ace_ptr)) {
+        PACE_HEADER ace_header = static_cast<PACE_HEADER>(ace_ptr);
+        // We only care about ACEs that grant access and are not marked as
+        // "inherit only". INHERIT_ONLY_ACEs apply to child objects, not the
+        // directory itself.
+        if (ace_header->AceType == ACCESS_ALLOWED_ACE_TYPE &&
+            !(ace_header->AceFlags & INHERIT_ONLY_ACE)) {
+          PACCESS_ALLOWED_ACE allowed_ace =
+              static_cast<PACCESS_ALLOWED_ACE>(ace_ptr);
+          // Check if this ACE grants the FILE_LIST_DIRECTORY permission.
+          if (allowed_ace->Mask & FILE_LIST_DIRECTORY) {
+            PSID ace_sid = reinterpret_cast<PSID>(&allowed_ace->SidStart);
+            // Check if the SID in the ACE matches our LPAC SID.
+            for (const auto& sid : sids) {
+              if (::EqualSid(ace_sid, sid.GetPSID())) {
+                has_list_directory = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+      if (has_list_directory) {
+        break;
+      }
+    }
+  }
+  // A compromised MF utility process can't enumerate other origin-specific
+  // subdirectories anymore, which is the main goal of this test.
+  EXPECT_FALSE(has_list_directory);
+  ::LocalFree(sd);
+
+  // And the inherited permissions should grant full access to subdirectories.
+  // (Note: HasAccessToPath requires the exact inheritance flags to match the
+  // ACE).
+  EXPECT_TRUE(base::win::HasAccessToPath(
+      data->cdm_store_path_root, sids,
+      FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE,
+      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

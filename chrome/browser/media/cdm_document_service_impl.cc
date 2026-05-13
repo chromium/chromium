@@ -35,6 +35,8 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include <aclapi.h>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -102,10 +104,23 @@ bool CreateCdmStorePathRootAndGrantAccessIfNeeded(
 
   auto sids = base::win::Sid::FromNamedCapabilityVector(
       {sandbox::policy::kMediaFoundationCdmData});
+
+  // Grant traverse access to the root directory itself to allow processes to
+  // access known subdirectories but prevent directory listing.
+  if (!base::win::GrantAccessToPath(cdm_store_path_root, sids, FILE_TRAVERSE,
+                                    NO_INHERITANCE,
+                                    /*recursive=*/false)) {
+    DLOG(ERROR) << "Failed to grant traverse access to the root directory.";
+    return false;
+  }
+
+  // Grant full access to children via inheritance, so that subdirectories
+  // corresponding to specific origin IDs are accessible.
   return base::win::GrantAccessToPath(
       cdm_store_path_root, sids,
-      FILE_GENERIC_READ | FILE_GENERIC_WRITE | GENERIC_EXECUTE | DELETE,
-      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
+      FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE,
+      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE,
+      /*recursive=*/false);
 }
 
 std::unique_ptr<media::MediaFoundationCdmData>
@@ -118,7 +133,20 @@ GetMediaFoundationCdmDataInternal(const base::FilePath profile_path,
     return nullptr;
   }
 
-  std::unique_ptr<media::MediaFoundationCdmData> cdm_data;
+  // The root directory is only granted FILE_TRAVERSE access, which doesn't
+  // allow the utility process to create new subdirectories. So we should have
+  // the browser process pre-create the origin-specific subdirectory before
+  // passing the root path to the CDM. This way, the utility process never needs
+  // directory creation permissions at the root; it only accesses the explicit
+  // subdirectory made for it.
+  base::FilePath cdm_store_path =
+      cdm_store_path_root.AppendASCII(pref_data->origin_id().ToString());
+  base::File::Error file_error;
+  if (!base::CreateDirectoryAndGetError(cdm_store_path, &file_error)) {
+    DLOG(ERROR) << "Create CDM store path failed with " << file_error;
+    return nullptr;
+  }
+
   return std::make_unique<media::MediaFoundationCdmData>(
       pref_data->origin_id(), pref_data->client_token(), cdm_store_path_root);
 }
