@@ -372,4 +372,21 @@ TEST_F(MediaSessionTest, PositionPlaybackState_Playing) {
   loop.Run();
 }
 
+// Regression test for https://crbug.com/510589916.
+TEST_F(MediaSessionTest, PlaybackPositionState_HugeValuesNoCrash) {
+  base::RunLoop loop;
+  EXPECT_CALL(service(), SetPositionState(_))
+      .WillOnce([&](auto position_state) {
+        EXPECT_EQ(base::TimeDelta::Max(), position_state->duration);
+        loop.Quit();
+      });
+
+  SetPlaybackState(V8MediaSessionPlaybackState::Enum::kNone);
+  SetPositionState(1e308, 1e300, -1e200);
+  loop.Run();
+
+  clock().Advance(base::Seconds(1));
+  SetPlaybackState(V8MediaSessionPlaybackState::Enum::kPaused);
+}
+
 }  // namespace blink

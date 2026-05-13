@@ -358,9 +358,16 @@ base::TimeDelta MediaSession::GetPositionNow() const {
   const base::TimeDelta elapsed_time =
       position_state_->playback_rate *
       (now - position_state_->last_updated_time);
+  const base::TimeDelta start = base::Seconds(0);
+
+  if (elapsed_time.is_min()) {
+    return start;
+  } else if (elapsed_time.is_max()) {
+    return position_state_->duration;
+  }
+
   const base::TimeDelta updated_position =
       position_state_->position + elapsed_time;
-  const base::TimeDelta start = base::Seconds(0);
 
   if (updated_position <= start)
     return start;
