@@ -20,7 +20,7 @@ namespace {
 // The amount of time after a snackbar is presented, during which it will
 // retain a11y focus so that VoiceOver is not interrupted by a modal dismissal
 // transition.
-const double kRetainA11yFocusSeconds = 0.75;
+const double kRetainA11yFocusSeconds = 2.0;
 
 // Animation constants.
 const NSTimeInterval kSnackbarAnimationDuration = 0.8;
@@ -533,6 +533,10 @@ const CGFloat kTextSpacing = 2.0;
                   object:nil
                    queue:nil
               usingBlock:retainFocus];
+
+  // Post an initial notification to focus the snackbar.
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  _titleLabel);
 
   // Stop observing after `kRetainA11yFocusSeconds`.
   dispatch_time_t time =
