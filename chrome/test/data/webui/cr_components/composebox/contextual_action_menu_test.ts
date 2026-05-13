@@ -8,8 +8,10 @@ import 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {MockInputState} from './composebox_test_utils.js';
@@ -25,7 +27,11 @@ suite('ContextualActionMenu', () => {
       composeboxShowContextMenuTabPreviews: true,
       ShowContextMenuHeaders: true,
       composeboxSmartTabSharingVisible: false,
+      contextManagementInComposeboxEnabled: false,
     });
+
+    const pluralStringProxy = new TestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralStringProxy);
 
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
     Object.assign(
@@ -745,5 +751,50 @@ suite('ContextualActionMenu', () => {
 
     // Assert that the focus is correctly returned to the parent trigger button.
     assertEquals(trigger, actionMenu.shadowRoot.activeElement);
+  });
+
+  test('Tabs counter visibility', async () => {
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+    assertFalse(!!$$(actionMenu, '#shareTabsTrigger'));
+
+    // There is no tab counter if no tabs exist.
+    loadTimeData.overrideValues({contextManagementInComposeboxEnabled: true});
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.tabSuggestions = [
+      {
+        tabId: 1,
+        title: 'Tab 1',
+        url: {url: 'https://example.com'},
+        lastActiveTime: {internalValue: 0n},
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: {internalValue: 0n},
+      } as any,
+    ];
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
+    });
+    actionMenu.disabledTabIds = new Map();
+    document.body.appendChild(actionMenu);
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+    const shareTabsTrigger = $$(actionMenu, '#shareTabsTrigger');
+    assertTrue(!!shareTabsTrigger);
+    // The counter text should not be visible when no tabs are selected.
+    assertFalse(shareTabsTrigger.textContent.includes('1'));
+
+    // Show tab counter when one tab is chosen.
+    actionMenu.disabledTabIds = new Map([[1, '1']]);
+    await microtasksFinished();
+    assertTrue(!!shareTabsTrigger.querySelector('.share-tabs-arrow'));
+
+    // No tab counter when no tab is selected.
+    actionMenu.disabledTabIds = new Map();
+    await microtasksFinished();
+    assertFalse(shareTabsTrigger.textContent.includes('1'));
   });
 });

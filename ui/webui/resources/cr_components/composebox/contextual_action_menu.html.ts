@@ -37,8 +37,10 @@ export function getHtml(this: ContextualActionMenuElement) {
               @pointerleave="${this.onShareTabsRowPointerleave_}"
               @keydown="${this.onShareTabsRowKeydown_}">
             <cr-icon icon="composebox:shareTabs"></cr-icon>
-            <span class="tab-title">${this.i18n('shareTabs')}</span>
-            <cr-icon class="share-tabs-arrow" icon="cr:chevron_right"></cr-icon>
+            <span class="tab-title">
+              ${this.sharingTabsText_}
+            </span>
+            <cr-icon class="share-tabs-arrow" icon="cr:chevron-right"></cr-icon>
           </button>
           <div class="share-tabs-flyout" role="menu"
               ?hidden="${!this.shareTabsFlyoutOpen_}"
