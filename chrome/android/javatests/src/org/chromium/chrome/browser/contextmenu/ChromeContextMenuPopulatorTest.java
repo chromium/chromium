@@ -490,7 +490,6 @@ public class ChromeContextMenuPopulatorTest {
         int[] expected6 = {
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
-            R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
         checkMenuOptions(expected6);
@@ -636,10 +635,9 @@ public class ChromeContextMenuPopulatorTest {
         int[] expected6 = {
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
-            R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
-        checkMenuOptions(Arrays.asList(R.id.contextmenu_save_link_as), expected6);
+        checkMenuOptions(expected6);
     }
 
     @Test
@@ -729,7 +727,6 @@ public class ChromeContextMenuPopulatorTest {
         int[] expected5 = {
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
-            R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
         checkMenuOptions(expected5);
@@ -815,7 +812,6 @@ public class ChromeContextMenuPopulatorTest {
         int[] expected5 = {
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
-            R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
         checkMenuOptions(expected5);
@@ -1408,10 +1404,9 @@ public class ChromeContextMenuPopulatorTest {
         int[] expected7Tab1 = {
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
-            R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
-        int[] expected7Tab2 = {R.id.contextmenu_save_video, R.id.contextmenu_copy_video_frame};
+        int[] expected7Tab2 = {R.id.contextmenu_copy_video_frame};
         checkMenuOptions(expected7Tab1, expected7Tab2);
     }
 
@@ -1544,21 +1539,10 @@ public class ChromeContextMenuPopulatorTest {
         int[] expected7Tab1 = {
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
-            R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
-        int[] expected7Tab2 = {
-            R.id.contextmenu_save_video,
-            R.id.contextmenu_copy_video_frame,
-            R.id.contextmenu_download_video_frame
-        };
-        checkMenuOptions(
-                Arrays.asList(
-                        R.id.contextmenu_save_link_as,
-                        R.id.contextmenu_save_video,
-                        R.id.contextmenu_download_video_frame),
-                expected7Tab1,
-                expected7Tab2);
+        int[] expected7Tab2 = {R.id.contextmenu_copy_video_frame};
+        checkMenuOptions(expected7Tab1, expected7Tab2);
     }
 
     @Test
@@ -1712,9 +1696,7 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(expected5);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
-        int[] expected6 = {
-            R.id.contextmenu_copy_image, R.id.contextmenu_save_image, R.id.contextmenu_share_image
-        };
+        int[] expected6 = {R.id.contextmenu_copy_image, R.id.contextmenu_share_image};
         checkMenuOptions(expected6);
 
         initializePopulator(
@@ -1851,14 +1833,8 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(expected5Tab1, expected5Tab2);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
-        int[] expected6Tab1 = {
-            R.id.contextmenu_copy_link_address,
-            R.id.contextmenu_save_link_as,
-            R.id.contextmenu_share_link
-        };
-        int[] expected6Tab2 = {
-            R.id.contextmenu_copy_image, R.id.contextmenu_save_image, R.id.contextmenu_share_image
-        };
+        int[] expected6Tab1 = {R.id.contextmenu_copy_link_address, R.id.contextmenu_share_link};
+        int[] expected6Tab2 = {R.id.contextmenu_copy_image, R.id.contextmenu_share_image};
         checkMenuOptions(expected6Tab1, expected6Tab2);
     }
 
@@ -1930,10 +1906,8 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(Arrays.asList(R.id.contextmenu_save_image), expected5);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
-        int[] expected6 = {
-            R.id.contextmenu_copy_image, R.id.contextmenu_save_image, R.id.contextmenu_share_image
-        };
-        checkMenuOptions(Arrays.asList(R.id.contextmenu_save_image), expected6);
+        int[] expected6 = {R.id.contextmenu_copy_image, R.id.contextmenu_share_image};
+        checkMenuOptions(expected6);
     }
 
     @Test
@@ -2025,7 +1999,6 @@ public class ChromeContextMenuPopulatorTest {
         int[] expected6 = {
             R.id.contextmenu_copy_link_address,
             R.id.contextmenu_copy_link_text,
-            R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
         checkMenuOptions(expected6);
@@ -3413,6 +3386,80 @@ public class ChromeContextMenuPopulatorTest {
     private void setAllMandatoryFlowsComplete() {
         FirstRunStatus.setFirstRunFlowComplete(true);
         when(mMockForcedSigninStatusProvider.isForcedSigninShowing()).thenReturn(false);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testThinWebViewExcludesAllDownloadItems() {
+        setAllMandatoryFlowsComplete();
+
+        // 1. Test Http Link (excludes SAVE_LINK_AS)
+        ContextMenuParams linkParams = getHttpLinkParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, linkParams);
+        List<ModelList> linkMenu = mPopulator.buildContextMenu();
+        assertNull(
+                "ThinWebView context menu must not contain 'Save Link As'",
+                findItemWithId(linkMenu, R.id.contextmenu_save_link_as));
+
+        // 2. Test Image (excludes SAVE_IMAGE)
+        ContextMenuParams imageParams = getImageParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, imageParams);
+        List<ModelList> imageMenu = mPopulator.buildContextMenu();
+        assertNull(
+                "ThinWebView context menu must not contain 'Save Image'",
+                findItemWithId(imageMenu, R.id.contextmenu_save_image));
+
+        // 3. Test Video (excludes SAVE_VIDEO, DOWNLOAD_VIDEO_FRAME)
+        ContextMenuParams videoParams =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.VIDEO,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        new GURL(PAGE_URL),
+                        new GURL("http://www.blah.com/video.mp4"),
+                        "VIDEO!",
+                        GURL.emptyGURL(),
+                        new GURL("http://www.blah.com/"),
+                        "",
+                        null,
+                        true,
+                        0,
+                        0,
+                        MenuSourceType.TOUCH,
+                        false,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
+                        /* additionalNavigationParams= */ null);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, videoParams);
+        List<ModelList> videoMenu = mPopulator.buildContextMenu();
+        assertNull(
+                "ThinWebView context menu must not contain 'Save Video'",
+                findItemWithId(videoMenu, R.id.contextmenu_save_video));
+        assertNull(
+                "ThinWebView context menu must not contain 'Download Video Frame'",
+                findItemWithId(videoMenu, R.id.contextmenu_download_video_frame));
+    }
+
+    /**
+     * Searches through all generated menu groups to find a menu item with a specific ID.
+     *
+     * @param menuState The list of ModelLists generated by the populator.
+     * @param itemId The ID of the menu item to find.
+     * @return The {@link ListItem} if found, otherwise {@code null}.
+     */
+    private ListItem findItemWithId(List<ModelList> menuState, int itemId) {
+        for (ModelList group : menuState) {
+            for (ListItem item : group) {
+                if (item.type == MENU_ITEM) {
+                    if (item.model.get(MENU_ITEM_ID) == itemId) {
+                        return item;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private CustomContentAction createSimpleContentAction(int actionId) {

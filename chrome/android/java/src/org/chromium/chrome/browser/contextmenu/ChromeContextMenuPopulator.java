@@ -549,7 +549,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
             if (areMandatoryFlowsCompleted(getProfile())) {
                 if (!mItemDelegate.isIncognito()
-                        && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())) {
+                        && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())
+                        && mMode != ContextMenuMode.THIN_WEB_VIEW) {
                     linkGroup.add(
                             createListItem(
                                     Item.SAVE_LINK_AS,
@@ -634,7 +635,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
             }
             imageGroup.add(createListItem(Item.COPY_IMAGE));
-            if (isSrcDownloadableScheme) {
+            if (isSrcDownloadableScheme && mMode != ContextMenuMode.THIN_WEB_VIEW) {
                 imageGroup.add(
                         createListItem(
                                 Item.SAVE_IMAGE,
@@ -689,7 +690,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
         if (mParams.isVideo() && areMandatoryFlowsCompleted(getProfile())) {
             ModelList videoGroup = new ModelList();
-            if (mParams.canSaveMedia() && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
+            if (mParams.canSaveMedia()
+                    && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())
+                    && mMode != ContextMenuMode.THIN_WEB_VIEW) {
                 videoGroup.add(
                         createListItem(
                                 Item.SAVE_VIDEO,
@@ -706,7 +709,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 }
                 if (ChromeFeatureList.sContextMenuDownloadVideoFrame.isEnabled()
                         && mParams.canSaveMedia()
-                        && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
+                        && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())
+                        && mMode != ContextMenuMode.THIN_WEB_VIEW) {
                     videoGroup.add(
                             createListItem(
                                     Item.DOWNLOAD_VIDEO_FRAME,
