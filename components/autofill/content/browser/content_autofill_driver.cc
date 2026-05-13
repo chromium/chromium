@@ -570,12 +570,12 @@ void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
                suggestion_availability);
 }
 
-void ContentAutofillDriver::DispatchEmailVerifiedEvent(
+void ContentAutofillDriver::SendEmailVerificationToken(
     FieldGlobalId field_id,
-    const std::string& presentation_token) {
-  RouteToAgent(router(), &AutofillDriverRouter::DispatchEmailVerifiedEvent,
-               &mojom::AutofillAgent::DispatchEmailVerifiedEvent, field_id,
-               presentation_token);
+    const std::string& token) {
+  RouteToAgent(router(), &AutofillDriverRouter::SendEmailVerificationToken,
+               &mojom::AutofillAgent::SendEmailVerificationToken, field_id,
+               token);
 }
 
 void ContentAutofillDriver::FormsSeen(

@@ -47,7 +47,7 @@ class MockAutofillDriver : public TestContentAutofillDriver {
  public:
   using TestContentAutofillDriver::TestContentAutofillDriver;
   MOCK_METHOD(void,
-              DispatchEmailVerifiedEvent,
+              SendEmailVerificationToken,
               (FieldGlobalId field_id, const std::string& presentation_token),
               (override));
 };
@@ -135,7 +135,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
   EXPECT_CALL(email_verifier(), Verify("test@example.com", "test_nonce", _))
       .WillOnce(RunOnceCallback<2>("test_token"));
 
-  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent(form->field(0)->global_id(),
+  EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(0)->global_id(),
                                                    "test_token"));
   EXPECT_CALL(client(), ShowEmailVerifiedToast);
 
@@ -162,7 +162,7 @@ TEST_F(EmailVerifierDelegateTest, FeatureDisabled) {
   ASSERT_TRUE(form);
 
   EXPECT_CALL(email_verifier(), Verify).Times(0);
-  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
@@ -185,7 +185,7 @@ TEST_F(EmailVerifierDelegateTest, NotFillAction) {
   ASSERT_TRUE(form);
 
   EXPECT_CALL(email_verifier(), Verify).Times(0);
-  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
@@ -218,7 +218,7 @@ TEST_F(EmailVerifierDelegateTest, NoNonce) {
 
   EXPECT_CALL(email_verifier(), Verify).Times(0);
 
-  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
@@ -250,7 +250,7 @@ TEST_F(EmailVerifierDelegateTest, NotEmailField) {
 
   EXPECT_CALL(email_verifier(), Verify).Times(0);
 
-  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
@@ -279,7 +279,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
       .WillOnce(RunOnceCallback<2>(std::nullopt));
 
   // When the verification fails, the event is not dispatched.
-  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();

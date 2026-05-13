@@ -102,7 +102,7 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
             }
 
             manager->client().ShowEmailVerifiedToast();
-            manager->driver().DispatchEmailVerifiedEvent(field_id,
+            manager->driver().SendEmailVerificationToken(field_id,
                                                          *presentation_token);
           },
           manager.GetWeakPtr(), email_field.global_id()));

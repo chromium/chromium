@@ -93,7 +93,7 @@ class MockAutofillAgent : public mojom::AutofillAgent {
                base::OnceCallback<void(const std::string&)>),
               (override));
   MOCK_METHOD(void,
-              DispatchEmailVerifiedEvent,
+              SendEmailVerificationToken,
               (::autofill::FieldRendererId, const std::string&),
               (override));
   MOCK_METHOD(void,

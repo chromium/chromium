@@ -156,17 +156,6 @@ void WebFormControlElement::DispatchBlurEvent() {
       nullptr, mojom::blink::FocusType::kForward, nullptr);
 }
 
-void WebFormControlElement::DispatchEmailVerifiedEvent(
-    const WebString& presentation_token) {
-  if (IsNull()) {
-    return;
-  }
-
-  // Create and dispatch the event.
-  EmailVerifiedEvent* event = EmailVerifiedEvent::Create(
-      AtomicString("emailverified"), presentation_token);
-  Unwrap<HTMLFormControlElement>()->DispatchEvent(*event);
-}
 
 void WebFormControlElement::SetAutofillValue(const WebString& value,
                                              WebAutofillState autofill_state) {

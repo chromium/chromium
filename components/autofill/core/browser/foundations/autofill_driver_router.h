@@ -261,10 +261,10 @@ class AutofillDriverRouter {
       const url::Origin& main_origin,
       const url::Origin& triggered_origin,
       const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map);
-  void DispatchEmailVerifiedEvent(
+  void SendEmailVerificationToken(
       RoutedCallback<FieldRendererId, const std::string&> callback,
       const FieldGlobalId& field_id,
-      const std::string& presentation_token);
+      const std::string& token);
   void ExposeDomNodeIdsInAllFrames(RoutedCallback<> callback);
   using BrowserFormHandler = AutofillDriver::BrowserFormHandler;
   using RendererFormHandler =

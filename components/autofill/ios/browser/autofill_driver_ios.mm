@@ -884,7 +884,7 @@ void AutofillDriverIOS::RecordTriggeredFormExtractionMetrics() {
       form_extraction_trigger_count_);
 }
 
-void AutofillDriverIOS::DispatchEmailVerifiedEvent(
+void AutofillDriverIOS::SendEmailVerificationToken(
     FieldGlobalId field_id,
     const std::string& presentation_token) {
   // TODO(crbug.com/380367784): Implement email verification on iOS.

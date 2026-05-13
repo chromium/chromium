@@ -370,9 +370,10 @@ class AutofillDriver {
       base::OnceCallback<void(const std::string& amount)>
           response_callback) = 0;
 
-  virtual void DispatchEmailVerifiedEvent(
-      FieldGlobalId field_id,
-      const std::string& presentation_token) = 0;
+  // Sends an email verification token to the renderer to be used upon
+  // form submission.
+  virtual void SendEmailVerificationToken(FieldGlobalId field_id,
+                                          const std::string& token) = 0;
 
   // Scrolls the page containing the field corresponding to `field_id` until it
   // becomes visible on the user's display.

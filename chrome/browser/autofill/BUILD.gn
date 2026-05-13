@@ -245,6 +245,7 @@ source_set("browser_tests") {
       "autofill_browsertest.cc",
       "autofill_metrics_browsertest.cc",
       "autofill_server_browsertest.cc",
+      "email_verification_browsertest.cc",
       "form_structure_browsertest.cc",
     ]
   }

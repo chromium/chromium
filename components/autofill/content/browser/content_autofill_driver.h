@@ -223,9 +223,8 @@ class ContentAutofillDriver : public AutofillDriver,
                         mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field_id,
                         const std::u16string& value) override;
-  void DispatchEmailVerifiedEvent(
-      FieldGlobalId field_id,
-      const std::string& presentation_token) override;
+  void SendEmailVerificationToken(FieldGlobalId field_id,
+                                  const std::string& token) override;
   void ExtractFormWithField(FieldGlobalId field_id,
                             BrowserFormHandler final_handler) override;
   void RendererShouldAcceptDataListSuggestion(
