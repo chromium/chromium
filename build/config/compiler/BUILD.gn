@@ -2449,7 +2449,7 @@ if (is_win) {
   common_optimize_on_cflags = []
   common_optimize_on_ldflags = []
 
-  if (is_android) {
+  if (is_android && (use_lld || use_mold)) {
     # TODO(jdduke) Re-enable on mips after resolving linking
     # issues with libc++ (crbug.com/456380).
     if (current_cpu != "mipsel" && current_cpu != "mips64el") {
