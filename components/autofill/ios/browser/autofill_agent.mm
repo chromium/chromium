@@ -460,7 +460,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
                formName:SysNSStringToUTF8(formName)
                   value:SysNSStringToUTF16(suggestion.value)
                 inFrame:frame];
-  } else if (suggestion.type == SuggestionType::kUndoOrClear) {
+  } else if (suggestion.type == SuggestionType::kUndoOrClear &&
+             !base::FeatureList::IsEnabled(kAutofillUndoIos)) {
     const auto callback = [](__weak AutofillAgent* agent,
                              base::WeakPtr<web::WebFrame> frame,
                              FormRendererId formId,
