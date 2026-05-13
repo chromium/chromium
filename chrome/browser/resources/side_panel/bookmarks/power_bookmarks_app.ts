@@ -157,6 +157,11 @@ export class PowerBookmarksAppElement extends PolymerElement implements
         value: false,
       },
 
+      canAddCurrentUrl_: {
+        type: Boolean,
+        value: false,
+      },
+
       sectionVisibility_: {
         type: Object,
         computed: 'computeSectionVisibility_(hasLoadedData_,' +
@@ -164,6 +169,12 @@ export class PowerBookmarksAppElement extends PolymerElement implements
             'labels_.length, hasSomeActiveFilter_)',
       },
     };
+  }
+
+  static get observers() {
+    return [
+      'updateCanAddCurrentUrl_(currentUrl_) ',
+    ];
   }
 
   private bookmarksApi_: BookmarksApiProxy =
@@ -187,8 +198,8 @@ export class PowerBookmarksAppElement extends PolymerElement implements
   declare private hasLoadedData_: boolean;
   declare private hasSomeActiveFilter_: boolean;
   declare private hasShownBookmarks_: boolean;
+  declare private canAddCurrentUrl_: boolean;
   declare private sectionVisibility_: AppSectionVisibility;
-  private recordCountMetricsOnNextUpdate_: boolean = false;
   private showUiCalled_: boolean = false;
   private visibilityChangedListener_: () => void = () => {
     if (document.visibilityState === 'hidden') {
@@ -260,22 +271,26 @@ export class PowerBookmarksAppElement extends PolymerElement implements
   onBookmarksLoaded() {
     this.$.bookmarksList.onBookmarksLoaded();
     this.hasLoadedData_ = true;
+    this.updateCanAddCurrentUrl_();
   }
 
   onBookmarkChanged(id: string) {
     this.$.bookmarksList.onBookmarkChanged(id);
     this.updateShoppingData_();
+    this.updateCanAddCurrentUrl_();
   }
 
   onBookmarkAdded(bookmark: BookmarksTreeNode, parent: BookmarksTreeNode) {
     this.$.bookmarksList.onBookmarkAdded(bookmark, parent);
     this.updateShoppingData_();
+    this.updateCanAddCurrentUrl_();
   }
 
   onBookmarkMoved(
       bookmark: BookmarksTreeNode, oldParent: BookmarksTreeNode,
       newParent: BookmarksTreeNode) {
     this.$.bookmarksList.onBookmarkMoved(bookmark, oldParent, newParent);
+    this.updateCanAddCurrentUrl_();
   }
 
   onBookmarkRemoved(bookmark: BookmarksTreeNode) {
@@ -290,6 +305,7 @@ export class PowerBookmarksAppElement extends PolymerElement implements
     if (this.selectedBookmarks_[bookmark.id]) {
       this.set(`selectedBookmarks_.${bookmark.id}`, false);
     }
+    this.updateCanAddCurrentUrl_();
   }
 
   getTrackedProductInfos(): {[key: string]: BookmarkProductInfo} {
@@ -354,8 +370,8 @@ export class PowerBookmarksAppElement extends PolymerElement implements
     this.$.bookmarksList.setImageUrl(bookmark, productInfo.info.imageUrl);
   }
 
-  private canAddCurrentUrl_(): boolean {
-    return this.bookmarksService_.canAddUrl(
+  private updateCanAddCurrentUrl_() {
+    this.canAddCurrentUrl_ = this.bookmarksService_.canAddUrl(
         this.currentUrl_, this.getActiveFolder_());
   }
 
@@ -420,7 +436,6 @@ export class PowerBookmarksAppElement extends PolymerElement implements
   }
 
   private onSearchChanged_(e: CustomEvent<string>) {
-    this.recordCountMetricsOnNextUpdate_ = true;
     this.searchQuery_ = e.detail.toLocaleLowerCase();
   }
 

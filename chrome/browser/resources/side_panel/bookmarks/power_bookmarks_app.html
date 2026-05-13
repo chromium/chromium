@@ -159,8 +159,7 @@
         class="floating-button"
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
-        disabled="[[!canAddCurrentUrl_(
-                    activeFolderPath_.*, currentUrl_)]]">
+        disabled="[[!canAddCurrentUrl_]]">
       <cr-icon slot="prefix-icon" icon="sp:add-circle"></cr-icon>
       $i18n{addCurrentTab}
     </cr-button>

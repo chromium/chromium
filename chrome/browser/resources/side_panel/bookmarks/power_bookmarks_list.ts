@@ -182,6 +182,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
   static get observers() {
     return [
+      'onSearchChanged_(searchQuery)',
       'updateDisplayLists_(activeFolderPath.splices, labels.*, ' +
           'sortOrder, searchQuery)',
     ];
@@ -570,6 +571,10 @@ export class PowerBookmarksListElement extends PolymerElement implements
     });
   }
 
+  private onSearchChanged_() {
+    this.recordCountMetricsOnNextUpdate_ = true;
+  }
+
   private updateListScrollOffset_() {
     // Set scrollOffset so the iron-list scrolling accounts for the space the
     // other scrolling UI elements take.
@@ -621,6 +626,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     recordBookmarksShown(
         this.keyArrowNavigationService_.getElementCount(),
         this.hasSomeActiveFilter);
+    this.dispatchEvent(new CustomEvent('bookmark-count-recorded'));
   }
 
   private onRowToggled_(_event: CustomEvent<{

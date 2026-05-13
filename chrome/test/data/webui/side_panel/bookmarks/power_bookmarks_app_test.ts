@@ -8,6 +8,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
 import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
+import type {PowerBookmarksAddFolderButtonElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_add_folder_button.js';
 import type {PowerBookmarksAppElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import type {PageRemote} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
@@ -48,8 +49,9 @@ suite('General', () => {
   }
 
   function getAddNewFolderButton() {
-    return powerBookmarksApp.shadowRoot!.querySelector<CrButtonElement>(
-        '.new-folder-row')!;
+    return powerBookmarksApp.$.bookmarksList.shadowRoot!
+        .querySelector<PowerBookmarksAddFolderButtonElement>(
+            'power-bookmarks-add-folder-button')!;
   }
 
   function getCrUrlListItemElementWithId(id: string): CrUrlListItemElement|
@@ -70,12 +72,14 @@ suite('General', () => {
     const searchField =
         powerBookmarksApp.shadowRoot!.querySelector('cr-toolbar-search-field')!;
     const searchChanged = eventToPromise('search-changed', searchField);
+    const metricsLogged = eventToPromise(
+        'bookmark-count-recorded', powerBookmarksApp.$.bookmarksList);
     searchField.$.searchInput.value = query;
     searchField.onSearchTermInput();
     searchField.onSearchTermSearch();
 
     await searchChanged;
-    await flushTasks();
+    await metricsLogged;
   }
 
   async function openBookmark(id: string) {
@@ -145,6 +149,7 @@ suite('General', () => {
     });
 
     powerBookmarksApp = await initializeAppUi(bookmarksApi);
+    await flushTasks();
   });
 
   suite('Part1', function() {
