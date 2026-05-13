@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
-#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -175,14 +174,6 @@ class AppBarMediatorTest : public PlatformTest {
         startDispatchingToTarget:mock_qr_scanner_handler_
                      forProtocol:@protocol(QRScannerCommands)];
 
-    mock_lens_handler_ = OCMProtocolMock(@protocol(LensCommands));
-    [regular_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_lens_handler_
-                     forProtocol:@protocol(LensCommands)];
-    [incognito_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_lens_handler_
-                     forProtocol:@protocol(LensCommands)];
-
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(regular_browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(regular_browser_.get());
 
@@ -239,7 +230,6 @@ class AppBarMediatorTest : public PlatformTest {
     mediator_.sceneHandler = mock_scene_handler_;
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     mediator_.settingsHandler = mock_settings_handler_;
-    mediator_.lensHandler = mock_lens_handler_;
     mock_gemini_handler_ = OCMProtocolMock(@protocol(BWGCommands));
     mediator_.geminiHandler = mock_gemini_handler_;
     mock_tab_groups_handler_ = OCMProtocolMock(@protocol(TabGroupsCommands));
@@ -319,7 +309,6 @@ class AppBarMediatorTest : public PlatformTest {
   id mock_fullscreen_handler_;
   id mock_scene_handler_;
   id mock_browser_coordinator_handler_;
-  id mock_lens_handler_;
   id mock_qr_scanner_handler_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
@@ -810,18 +799,6 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiNotAvailable) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-// Tests that the assistant button is in the signed out state when not signed
-// in and not location eligible.
-TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensFallback) {
-  SetLocationEligible(false);
-
-  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
-                                   highlighted:NO
-                                       enabled:YES]);
-  [mediator_ updateAssistantButton];
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
 // Tests that the assistant button is in the ask state when location is
 // eligible, even if not signed in.
 TEST_F(AppBarMediatorTest, TestAssistantButtonStateAskLocationEligible) {
@@ -830,19 +807,6 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAskLocationEligible) {
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
                                        enabled:NO]);
-  [mediator_ updateAssistantButton];
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
-// Tests that the assistant button remains in the Lens state when signed in but
-// not location eligible (fallback state).
-TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensFallbackSignedIn) {
-  SetLocationEligible(false);
-  SignInAndSetCapability(false);
-
-  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
-                                   highlighted:NO
-                                       enabled:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -901,20 +865,6 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_GeminiNotAvailable) {
                                        enabled:NO]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
-// Tests that tapping the assistant button in the Lens state dispatches
-// the Lens command.
-TEST_F(AppBarMediatorTest, TestAssistantButtonTappedLens) {
-  OCMExpect([mock_lens_handler_
-      openLensInputSelection:[OCMArg
-                                 checkWithBlock:^BOOL(
-                                     OpenLensInputSelectionCommand* command) {
-                                   return command.entryPoint ==
-                                          LensEntrypoint::AppBar;
-                                 }]]);
-  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kLens];
-  EXPECT_OCMOCK_VERIFY(mock_lens_handler_);
 }
 
 // Tests that tapping the assistant button in the ask state dispatches the

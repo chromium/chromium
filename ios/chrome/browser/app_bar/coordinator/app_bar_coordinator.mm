@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
-#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -73,8 +72,6 @@
       HandlerForProtocol(regularDispatcher, SceneCommands);
   id<TabGridCommands> tabGridHandler =
       HandlerForProtocol(regularDispatcher, TabGridCommands);
-  id<LensCommands> lensHandler =
-      HandlerForProtocol(regularDispatcher, LensCommands);
   id<BWGCommands> geminiHandler =
       HandlerForProtocol(regularDispatcher, BWGCommands);
 
@@ -139,7 +136,6 @@
                          tabGridState:sceneState.tabGridState
                        incognitoState:sceneState.incognitoState];
   _mediator.sceneHandler = sceneHandler;
-  _mediator.lensHandler = lensHandler;
   _mediator.tabGridHandler = tabGridHandler;
   _mediator.settingsHandler =
       HandlerForProtocol(regularDispatcher, SettingsCommands);

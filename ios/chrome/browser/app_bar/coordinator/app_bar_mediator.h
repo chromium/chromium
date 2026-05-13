@@ -20,7 +20,6 @@ class FullscreenController;
 @class IncognitoState;
 class FullscreenBrowserAgent;
 class PrefService;
-@protocol LensCommands;
 @protocol SceneCommands;
 @protocol TabGridCommands;
 @protocol SettingsCommands;
@@ -47,9 +46,6 @@ class WebStateList;
 
 // Handler for the scene commands.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
-
-// Handler for the lens commands.
-@property(nonatomic, weak) id<LensCommands> lensHandler;
 
 // Handler for the tab grid commands.
 @property(nonatomic, weak) id<TabGridCommands> tabGridHandler;

@@ -516,9 +516,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
                     truncatedTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK)];
     case AppBarAssistantButtonState::kAIM:
       return l10n_util::GetNSString(IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT);
-    default:
-      return @"TODO(crbug.com/484000888): To be removed when lens is "
-             @"implemented";
+    case AppBarAssistantButtonState::kFallback:
+      // TODO:(crbug.com/484000888): Update with fallback text.
+      return @"";
   }
 }
 
@@ -585,10 +585,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   NSString* title = [self assistantButtonTitleForCurrentState];
   UIImage* image;
   switch (_assistantButtonState) {
-    case AppBarAssistantButtonState::kLens:
-      title = @"TODO(crbug.com/484000888): Use actual text";
-      image = CustomAppBarSymbol(kCameraLensSymbol);
-      break;
     case AppBarAssistantButtonState::kAsk:
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
       image = CustomAppBarSymbol(kGeminiBrandedLogoSymbol);
@@ -598,6 +594,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
       break;
     case AppBarAssistantButtonState::kAIM:
       image = CustomAppBarSymbol(kMagnifyingglassSparkSymbol);
+      break;
+    case AppBarAssistantButtonState::kFallback:
+      // TODO:(crbug.com/484000888): Update with fallback image.
       break;
   }
 

@@ -510,16 +510,6 @@ class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
 
 - (void)assistantButtonTappedWithState:(AppBarAssistantButtonState)state {
   switch (state) {
-    case AppBarAssistantButtonState::kLens: {
-      OpenLensInputSelectionCommand* command =
-          [[OpenLensInputSelectionCommand alloc]
-                  initWithEntryPoint:LensEntrypoint::AppBar
-                   presentationStyle:LensInputSelectionPresentationStyle::
-                                         SlideFromRight
-              presentationCompletion:nil];
-      [self.lensHandler openLensInputSelection:command];
-      break;
-    }
     case AppBarAssistantButtonState::kAsk: {
       if (!_authenticationService->HasPrimaryIdentity()) {
         ShowSigninCommand* command = [[ShowSigninCommand alloc]
@@ -546,6 +536,9 @@ class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
       [self.sceneHandler showAssistant];
       break;
     }
+    case AppBarAssistantButtonState::kFallback:
+      // TODO(crbug.com/484000888): Handle fallback action.
+      break;
   }
 }
 
@@ -674,7 +667,7 @@ class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
 
 // Updates the consumer with the latest state of the assistant button.
 - (void)updateAssistantButton {
-  AppBarAssistantButtonState state = AppBarAssistantButtonState::kLens;
+  AppBarAssistantButtonState state = AppBarAssistantButtonState::kFallback;
 
   if (IsPageActionMenuEnabled()) {
     state = AppBarAssistantButtonState::kAsk;
