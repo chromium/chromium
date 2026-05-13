@@ -760,4 +760,39 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiIdpOneAccountFallback) {
   EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
 }
 
+IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
+                       TabSwitchingNoDoubleCounting) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
+  base::HistogramTester histograms;
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp,
+                content::IdentityRequestAccount::LoginState::kSignUp);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignUpChip, 1);
+
+  // Add a new tab and switch to it.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Switch back to the first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  // Verify that switching back did not trigger an additional impression log.
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignUpChip, 1);
+  // TODO(crbug.com/512535342): We should not record a SignUpIcon here.
+  histograms.ExpectTotalCount("Blink.FedCm.Ambient.Impression", 2);
+}
+
 }  // namespace webid

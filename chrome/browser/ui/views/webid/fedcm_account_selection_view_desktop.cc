@@ -1439,6 +1439,8 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
 void FedCmAccountSelectionView::ResetDialogWidgetStateOnAnyShow() {
   accounts_widget_shown_callback_.Reset();
   hide_dialog_widget_after_idp_login_popup_ = false;
+  chip_impression_recorded_ = false;
+  icon_impression_recorded_ = false;
 }
 
 gfx::Rect FedCmAccountSelectionView::GetDialogBounds() {
@@ -1569,12 +1571,20 @@ void FedCmAccountSelectionView::RecordPageActionImpression(
 
 void FedCmAccountSelectionView::OnPageActionIconShown(
     const page_actions::PageActionState& next) {
+  if (icon_impression_recorded_) {
+    return;
+  }
+  icon_impression_recorded_ = true;
   RecordPageActionImpression(next, AmbientImpression::kSignInIcon,
                              AmbientImpression::kSignUpIcon);
 }
 
 void FedCmAccountSelectionView::OnPageActionChipShown(
     const page_actions::PageActionState& next) {
+  if (chip_impression_recorded_) {
+    return;
+  }
+  chip_impression_recorded_ = true;
   RecordPageActionImpression(next, AmbientImpression::kSignInChip,
                              AmbientImpression::kSignUpChip);
 }
