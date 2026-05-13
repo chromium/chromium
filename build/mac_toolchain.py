@@ -33,9 +33,9 @@ def LoadPList(path):
     return plistlib.load(f)
 
 
-# This contains binaries from Xcode 26.4 (17E202) along with the macOS 26.4 SDK
-# (25E251) and the Metal toolchain (17E188). To build these packages, see
-# comments in build/xcode_binaries.yaml.
+# This contains binaries from Xcode 26.5 (17F42) along with the macOS 26.5 SDK
+# (25F70, which is like macOS 26.5 25F71) and the Metal toolchain (17F42). To
+# build these packages, see comments in build/xcode_binaries.yaml.
 #
 # To update the version numbers, open Xcode's "About Xcode" or run `xcodebuild
 # -version` for the Xcode version, and run `xcrun --show-sdk-version` and `xcrun
@@ -45,11 +45,11 @@ def LoadPList(path):
 # (https://chrome-infra-packages.appspot.com/) at the path given in
 # MAC_BINARIES_LABEL.
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = 'kH3MaZ57dboNBFglnOC55GKCnKdnqaaiKZvDKFr6_VoC'
+MAC_BINARIES_TAG = 'kOmHbtsfesXcIbC4HV1jyQFFF3-qrCVo-IG0srX48qkC'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
-# is the Darwin major version number for macOS 10.15. Xcode 26.0 17A324 only
-# runs on macOS 15.6 and newer, but some bots are still running older OS
+# is the Darwin major version number for macOS 10.15. Xcode 26.4 17E192 only
+# runs on macOS 26.2 and newer, but some bots are still running older OS
 # versions. macOS 10.15.4, the OS minimum through Xcode 12.4, still seems to
 # work.
 MAC_MINIMUM_OS_VERSION = [19, 4]
