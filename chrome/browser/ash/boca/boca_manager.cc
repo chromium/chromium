@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/boca/boca_metrics_manager.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
+#include "chromeos/ash/components/boca/gemini/gemini_status_fetcher.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 #include "chromeos/ash/components/boca/receiver/screen_presenter_factory_impl.h"
@@ -132,14 +133,16 @@ BocaManager::BocaManager(
     std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl,
     std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
     std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager,
-    std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager)
+    std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager,
+    Profile* profile)
     : session_client_impl_(std::move(session_client_impl)),
       boca_session_manager_(std::move(boca_session_manager)),
       on_task_session_manager_(std::move(on_task_session_manager)),
       invalidation_service_impl_(std::move(invalidation_service_impl)),
       babel_orca_manager_(std::move(babel_orca_manager)),
       boca_metrics_manager_(std::move(boca_metrics_manager)),
-      spotlight_session_manager_(std::move(spotlight_session_manager)) {
+      spotlight_session_manager_(std::move(spotlight_session_manager)),
+      profile_(profile) {
   AddObservers(nullptr);
 }
 
@@ -148,7 +151,8 @@ BocaManager::BocaManager(Profile* profile,
                          const std::string& application_locale)
     : session_client_impl_(std::make_unique<boca::SessionClientImpl>(
           profile->GetURLLoaderFactory(),
-          IdentityManagerFactory::GetForProfile(profile))) {
+          IdentityManagerFactory::GetForProfile(profile))),
+      profile_(profile) {
   auto* user =
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   bool is_consumer = ash::boca_util::IsConsumer(user);
@@ -218,6 +222,16 @@ void BocaManager::Shutdown() {
   }
   boca_session_manager_->RemoveSessionCaptionInitializer();
   babel_orca_manager_.reset();
+}
+
+std::unique_ptr<boca::GeminiStatusFetcher>
+BocaManager::GetGeminiStatusFetcher() {
+  user_manager::User* const user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
+  return std::make_unique<boca::GeminiStatusFetcher>(
+      user->GetAccountId().GetGaiaId().ToString(),
+      IdentityManagerFactory::GetForProfile(profile_),
+      profile_->GetURLLoaderFactory(), profile_->GetPrefs());
 }
 
 void BocaManager::AddObservers(const user_manager::User* user) {

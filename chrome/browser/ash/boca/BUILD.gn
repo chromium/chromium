@@ -42,6 +42,7 @@ static_library("boca") {
     "//chromeos/ash/components/boca:spotlight_lib",
     "//chromeos/ash/components/boca/babelorca",
     "//chromeos/ash/components/boca/babelorca:soda_installer",
+    "//chromeos/ash/components/boca/gemini",
     "//chromeos/ash/components/boca/on_task",
     "//chromeos/ash/components/boca/receiver",
     "//chromeos/ash/components/boca/session_api",

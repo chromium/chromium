@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/gemini/gemini_status_fetcher.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -133,7 +134,7 @@ void BocaUI::Create(
       std::make_unique<ClassroomPageHandlerImpl>(),
       std::move(content_settings_handler), system_web_app_manager,
       BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
-      is_producer_);
+      boca_manager->GetGeminiStatusFetcher(), is_producer_);
   page_handler_impl_->SetSpotlightService(&spotlight_service_);
   if (ash::features::IsAnnotatorModeEnabled() && is_producer_) {
     ash::boca::util::EnableOrDisableMarkerMode(/*enable=*/true);

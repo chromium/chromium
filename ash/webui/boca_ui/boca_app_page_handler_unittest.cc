@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -37,6 +38,7 @@
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
+#include "chromeos/ash/components/boca/gemini/gemini_status_fetcher.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -63,6 +65,7 @@
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -79,6 +82,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -536,6 +541,7 @@ class TestBocaAppHandler : public BocaAppHandler {
       std::unique_ptr<ContentSettingsHandler> content_settings_handler,
       OnTaskSystemWebAppManager* system_web_app_manager,
       SessionClientImpl* session_client_impl,
+      std::unique_ptr<GeminiStatusFetcher> gemini_status_fetcher,
       bool is_producer)
       : BocaAppHandler(std::move(receiver),
                        std::move(remote),
@@ -544,6 +550,7 @@ class TestBocaAppHandler : public BocaAppHandler {
                        std::move(content_settings_handler),
                        system_web_app_manager,
                        session_client_impl,
+                       std::move(gemini_status_fetcher),
                        is_producer) {}
 
   MOCK_METHOD(std::vector<mojom::WindowPtr>,
@@ -642,7 +649,8 @@ class BocaAppPageHandlerTest : public testing::Test {
   std::unique_ptr<BocaAppHandler> CreateNewBocaAppHandler(
       bool is_producer,
       mojo::Remote<mojom::PageHandler>* remote,
-      std::unique_ptr<FakePage>* fake_page) {
+      std::unique_ptr<FakePage>* fake_page,
+      std::unique_ptr<GeminiStatusFetcher> gemini_status_fetcher = nullptr) {
     mojo::PendingReceiver<mojom::Page> page_pending_receiver;
     remote->reset();
     // `BocaAppClient::GetSessionManager` should be called exactly once on
@@ -658,7 +666,8 @@ class BocaAppPageHandlerTest : public testing::Test {
         // now. Adding test case for classroom and tab info.
         page_pending_receiver.InitWithNewPipeAndPassRemote(), web_ui_.get(),
         /*classroom_client_impl=*/nullptr, std::move(content_settings_handler),
-        /*system_web_app_manager=*/nullptr, &session_client_impl_, is_producer);
+        /*system_web_app_manager=*/nullptr, &session_client_impl_,
+        std::move(gemini_status_fetcher), is_producer);
     *fake_page = std::make_unique<FakePage>(std::move(page_pending_receiver));
     boca_app_handler->SetSpotlightService(&spotlight_service_);
     // Explicitly set pref
@@ -3957,6 +3966,41 @@ TEST_F(BocaAppPageHandlerConsumerTest, SetSitePermission_DeniedWhenNoWindows) {
                               success_future.GetCallback());
   EXPECT_FALSE(success_future.Get());
   EXPECT_TRUE(remote().is_connected());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, GetGeminiStatusFallbackWhenFetcherNull) {
+  base::test::TestFuture<bool> future;
+  boca_app_handler()->GetGeminiStatus(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, GetGeminiStatusSuccessWhenFetcherValid) {
+  network::TestURLLoaderFactory test_url_loader_factory;
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakePrimaryAccountAvailable("test_user@gmail.com",
+                                                signin::ConsentLevel::kSignin);
+  GeminiStatusFetcher::RegisterProfilePrefs(pref_service()->registry());
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
+  auto gemini_status_fetcher = std::make_unique<GeminiStatusFetcher>(
+      kGaiaId.ToString(), identity_test_env.identity_manager(),
+      test_url_loader_factory.GetSafeWeakWrapper(), pref_service());
+  mojo::Remote<mojom::PageHandler> remote;
+  std::unique_ptr<FakePage> fake_page;
+  auto handler = CreateNewBocaAppHandler(
+      /*is_producer=*/true, &remote, &fake_page,
+      std::move(gemini_status_fetcher));
+
+  std::string url = base::ReplaceStringPlaceholders(
+      "https://schooltools-pa.googleapis.com/v1/users/$1:getGeminiStatus",
+      {kGaiaId.ToString()}, nullptr);
+  test_url_loader_factory.AddResponse(
+      url, R"({"status": "ENABLEMENT_STATUS_DISABLED"})");
+
+  base::test::TestFuture<bool> future;
+  handler->GetGeminiStatus(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+  mock_content_settings_handler_ = nullptr;
 }
 
 class BocaAppPageHandlerProducerMarkerModeTest : public AshTestBase {

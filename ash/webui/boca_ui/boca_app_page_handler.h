@@ -43,6 +43,7 @@ namespace ash::boca {
 
 class StudentScreenPresenter;
 class TeacherScreenPresenter;
+class GeminiStatusFetcher;
 
 // TODO(crbug.com/399923859): Remove `mojom::Page` implementation.
 class BocaAppHandler : public mojom::PageHandler,
@@ -57,6 +58,7 @@ class BocaAppHandler : public mojom::PageHandler,
       std::unique_ptr<ContentSettingsHandler> content_settings_handler,
       OnTaskSystemWebAppManager* system_web_app_manager,
       SessionClientImpl* session_client_impl,
+      std::unique_ptr<GeminiStatusFetcher> gemini_status_fetcher,
       bool is_producer);
 
   BocaAppHandler(const BocaAppHandler&) = delete;
@@ -130,6 +132,7 @@ class BocaAppHandler : public mojom::PageHandler,
                         PresentOwnScreenCallback callback) override;
   void StopPresentingOwnScreen(
       StopPresentingOwnScreenCallback callback) override;
+  void GetGeminiStatus(GetGeminiStatusCallback callback) override;
 
   // mojom::Page:
   void OnStudentActivityUpdated(
@@ -312,6 +315,7 @@ class BocaAppHandler : public mojom::PageHandler,
   raw_ptr<PrefService> pref_service_;
   mojom::CaptionConfigPtr producer_current_session_caption_config_;
   raw_ptr<BocaSessionManager> session_manager_;
+  std::unique_ptr<GeminiStatusFetcher> gemini_status_fetcher_;
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 

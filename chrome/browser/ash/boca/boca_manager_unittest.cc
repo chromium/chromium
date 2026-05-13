@@ -168,7 +168,8 @@ class BocaManagerProducerTest : public BocaManagerTest {
         std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/true),
         std::make_unique<boca::SpotlightSessionManager>(
             /*spotlight_notification_handler=*/nullptr,
-            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr));
+            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr),
+        /*profile=*/nullptr);
   }
 
   std::unique_ptr<BocaManager> boca_manager_;
@@ -227,7 +228,8 @@ class BocaManagerConsumerTest : public BocaManagerTest {
         std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/false),
         std::make_unique<boca::SpotlightSessionManager>(
             /*spotlight_notification_handler=*/nullptr,
-            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr));
+            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr),
+        /*profile=*/nullptr);
   }
 
   std::unique_ptr<BocaManager> boca_manager_;

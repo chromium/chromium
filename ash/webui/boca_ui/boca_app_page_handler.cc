@@ -39,6 +39,7 @@
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
+#include "chromeos/ash/components/boca/gemini/gemini_status_fetcher.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -331,6 +332,7 @@ BocaAppHandler::BocaAppHandler(
     std::unique_ptr<ContentSettingsHandler> content_settings_handler,
     OnTaskSystemWebAppManager* system_web_app_manager,
     SessionClientImpl* session_client_impl,
+    std::unique_ptr<GeminiStatusFetcher> gemini_status_fetcher,
     bool is_producer)
     : is_producer_(is_producer),
       tab_info_collector_(web_ui, is_producer),
@@ -341,7 +343,8 @@ BocaAppHandler::BocaAppHandler(
       system_web_app_manager_(system_web_app_manager),
       session_client_impl_(session_client_impl),
       web_ui_(web_ui),
-      session_manager_(BocaAppClient::Get()->GetSessionManager()) {
+      session_manager_(BocaAppClient::Get()->GetSessionManager()),
+      gemini_status_fetcher_(std::move(gemini_status_fetcher)) {
   auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
       web_ui->GetWebContents()->GetBrowserContext());
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
@@ -934,6 +937,16 @@ void BocaAppHandler::StopPresentingOwnScreen(
     return;
   }
   teacher_screen_presenter()->Stop(std::move(callback));
+}
+
+void BocaAppHandler::GetGeminiStatus(GetGeminiStatusCallback callback) {
+  if (gemini_status_fetcher_) {
+    gemini_status_fetcher_->GetStatus(std::move(callback));
+  } else {
+    LOG(ERROR)
+        << "Gemini status fetcher not available, fallback to default value";
+    std::move(callback).Run(true);
+  }
 }
 
 void BocaAppHandler::OnStudentActivityUpdated(

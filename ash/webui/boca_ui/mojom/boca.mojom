@@ -424,6 +424,8 @@ interface PageHandler {
   PresentOwnScreen(string receiver_id) => (bool success);
   // Stop the current screen share presentation for the teacher.
   StopPresentingOwnScreen() => (bool success);
+  // Get Gemini enabled status.
+  GetGeminiStatus() => (bool enabled);
 };
 
 // Implemented by renderer process. There is an implementation in the browser

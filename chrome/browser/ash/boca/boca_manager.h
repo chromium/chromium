@@ -26,6 +26,11 @@ class User;
 }  // namespace user_manager
 
 namespace ash {
+
+namespace boca {
+class GeminiStatusFetcher;
+}
+
 // Manages boca main business logic.
 class BocaManager : public KeyedService {
  public:
@@ -37,7 +42,8 @@ class BocaManager : public KeyedService {
       std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl,
       std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
       std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager,
-      std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager);
+      std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager,
+      Profile* profile);
 
   BocaManager(Profile* profile,
               PrefService* global_prefs,
@@ -46,6 +52,8 @@ class BocaManager : public KeyedService {
 
   // KeyedService:
   void Shutdown() override;
+
+  std::unique_ptr<boca::GeminiStatusFetcher> GetGeminiStatusFetcher();
 
   boca::BocaSessionManager* GetBocaSessionManager() {
     return boca_session_manager_.get();
@@ -77,6 +85,7 @@ class BocaManager : public KeyedService {
   std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager_;
   std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager_;
   std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager_;
+  const raw_ptr<Profile> profile_;
 };
 }  // namespace ash
 
