@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -24,12 +25,14 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace glic {
@@ -132,12 +135,11 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpensDialog) {
   views::test::WidgetVisibleWaiter(widget).Wait();
   EXPECT_TRUE(widget->IsVisible());
 
-  views::View* view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          GlicExperimentalOptInDialogView::kDialogElementId,
-          views::ElementTrackerViews::GetContextForWidget(widget));
-  ASSERT_TRUE(view);
-  views::WebView* web_view = static_cast<views::WebView*>(view);
+  GlicExperimentalOptInDialogView* dialog_view =
+      service()->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
   content::WebContents* dialog_contents = web_view->GetWebContents();
   ASSERT_TRUE(dialog_contents);
 
@@ -232,6 +234,122 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, WebviewURL_OptInNotNeeded) {
       browser()->tab_strip_model()->GetActiveWebContents();
   views::Widget* widget = service->opt_in_controller().ShowDialog(web_contents);
   EXPECT_FALSE(widget);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, ResizesToContent) {
+  content::URLLoaderInterceptor interceptor(base::BindRepeating(
+      [](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "a.test") {
+          std::string html = R"(
+            <html>
+              <body style="width: 500px; height: 400px; margin: 0;">
+                <div style="width: 100%; height: 100%; background: blue;"></div>
+              </body>
+            </html>
+          )";
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-type: text/html\n\n", html,
+              params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  views::Widget* widget =
+      service()->opt_in_controller().ShowDialog(web_contents);
+  ASSERT_TRUE(widget);
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  EXPECT_TRUE(widget->IsVisible());
+
+  GlicExperimentalOptInDialogView* dialog_view =
+      service()->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+
+  // Verify that the WebView's preferred size resizes to match the loaded
+  // content.
+  bool size_matched = base::test::RunUntil([web_view]() {
+    return web_view->GetPreferredSize() == gfx::Size(512, 400);
+  });
+
+  EXPECT_TRUE(size_matched) << "Timed out waiting for web_view to resize to "
+                               "512x400! Current preferred size: "
+                            << web_view->GetPreferredSize().ToString();
+
+  service()->opt_in_controller().CloseDialog();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
+                       TabClosedClosesDialogSynchronously) {
+  content::WebContents* tab1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  views::Widget* widget = service()->opt_in_controller().ShowDialog(tab1);
+  ASSERT_TRUE(widget);
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  EXPECT_TRUE(widget->IsVisible());
+
+  GlicExperimentalOptInDialogView* dialog_view =
+      service()->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+
+  // Track the view and widget lifetime.
+  views::ViewTracker tracker(web_view);
+  EXPECT_TRUE(tracker.view());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+
+  // Close the tab (triggers dialog close).
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  // The view and widget should be destroyed synchronously.
+  EXPECT_FALSE(tracker.view());
+  destroyed_waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabDraggedToAnotherWindow) {
+  // Add a second tab so we may detach the first.
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), 1, false);
+
+  content::WebContents* tab1 =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  views::Widget* widget = service()->opt_in_controller().ShowDialog(tab1);
+  ASSERT_TRUE(widget);
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  EXPECT_TRUE(widget->IsVisible());
+
+  GlicExperimentalOptInDialogView* dialog_view =
+      service()->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+
+  // Track the view and widget lifetime.
+  views::ViewTracker tracker(web_view);
+  EXPECT_TRUE(tracker.view());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+
+  // Detach the tab (triggers kInsertIntoOtherWindow detach reason and sync
+  // dialog close).
+  std::unique_ptr<content::WebContents> detached_contents =
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
+
+  // The view and widget should be destroyed synchronously due to
+  // MakeCloseSynchronous in the controller.
+  EXPECT_FALSE(tracker.view());
+  destroyed_waiter.Wait();
+
+  // Re-insert the detached WebContents into the tab strip so it is cleanly
+  // destroyed during browser teardown.
+  browser()->tab_strip_model()->AppendWebContents(std::move(detached_contents),
+                                                  true);
 }
 
 }  // namespace glic

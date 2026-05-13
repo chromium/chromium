@@ -40,6 +40,10 @@ class GlicExperimentalOptInController {
   views::Widget* ShowDialog(content::WebContents* web_contents);
   void CloseDialog();
 
+  GlicExperimentalOptInDialogView* GetDialogViewForTesting() {
+    return dialog_view_.get();
+  }
+
  private:
   void CloseWidget(views::Widget::ClosedReason reason);
 

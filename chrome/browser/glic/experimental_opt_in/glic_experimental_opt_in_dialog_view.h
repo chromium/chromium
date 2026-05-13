@@ -10,18 +10,30 @@
 
 class Profile;
 
+namespace views {
+class WebView;
+}
+
+namespace tabs {
+class TabInterface;
+}
+
 namespace glic {
 
 class GlicExperimentalOptInDialogView : public views::DialogDelegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDialogElementId);
 
-  explicit GlicExperimentalOptInDialogView(Profile* profile);
+  explicit GlicExperimentalOptInDialogView(Profile* profile,
+                                           tabs::TabInterface* tab_interface);
+
   GlicExperimentalOptInDialogView(const GlicExperimentalOptInDialogView&) =
       delete;
   GlicExperimentalOptInDialogView& operator=(
       const GlicExperimentalOptInDialogView&) = delete;
   ~GlicExperimentalOptInDialogView() override;
+
+  views::WebView* GetWebViewForTesting();
 };
 
 }  // namespace glic

@@ -9,6 +9,11 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 function init() {
   const webview = document.querySelector('webview');
   if (webview) {
+    webview.addEventListener('sizechanged', (e: Event) => {
+      const sizeEvent = e as unknown as chrome.webviewTag.SizeChangedEvent;
+      window.resizeTo(sizeEvent.newWidth, sizeEvent.newHeight);
+    });
+
     const url = loadTimeData.getString('glicExperimentalTriggeringOptInURL');
     webview.setAttribute('src', url);
   }

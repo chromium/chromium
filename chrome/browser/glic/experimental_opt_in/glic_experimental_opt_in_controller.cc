@@ -45,7 +45,8 @@ views::Widget* GlicExperimentalOptInController::ShowDialog(
     return nullptr;
   }
 
-  dialog_view_ = std::make_unique<GlicExperimentalOptInDialogView>(profile_);
+  dialog_view_ = std::make_unique<GlicExperimentalOptInDialogView>(
+      profile_, tab_interface);
   dialog_view_->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
