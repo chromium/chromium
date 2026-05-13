@@ -57,8 +57,8 @@ base::Value* ScopedUserPrefUpdateBase::GetValueOfType(base::Value::Type type) {
 
 void ScopedUserPrefUpdateBase::Notify() {
   if (value_) {
-    service_->ReportUserPrefChanged(path_);
     value_ = nullptr;
+    service_->ReportUserPrefChanged(path_);
   }
 }
 
