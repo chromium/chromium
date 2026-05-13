@@ -33,6 +33,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_types.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/webrtc/webrtc_features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_fallback_recorder.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -96,12 +97,11 @@ bool HasSoftwareFallback(media::VideoCodec video_codec) {
   if (video_codec == media::VideoCodec::kHEVC) {
     return false;
   }
-// TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
-// should be detangled such that software decoding can be enabled without
-// software encoding.
-#if BUILDFLAG(IS_ANDROID) && \
-    (!BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || !BUILDFLAG(ENABLE_OPENH264))
-  return video_codec != media::VideoCodec::kH264;
+// Software fallback for the H.264 codec is disabled on Android ARM 32‑bit
+// devices for both encoding and decoding.
+#if BUILDFLAG(IS_ANDROID)
+  return video_codec != media::VideoCodec::kH264 ||
+         ::features::IsOpenH264SoftwareEncoderEnabledForWebRTC();
 #else
   return true;
 #endif
