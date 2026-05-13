@@ -115,6 +115,8 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
      kColorWebNativeControlScrollbarArrowForeground},
     {RendererColorId::kColorWebNativeControlScrollbarArrowForegroundDisabled,
      kColorWebNativeControlScrollbarArrowForegroundDisabled},
+    {RendererColorId::kColorWebNativeControlScrollbarArrowForegroundHovered,
+     kColorWebNativeControlScrollbarArrowForegroundHovered},
     {RendererColorId::kColorWebNativeControlScrollbarArrowForegroundPressed,
      kColorWebNativeControlScrollbarArrowForegroundPressed},
     {RendererColorId::kColorWebNativeControlScrollbarCorner,
@@ -487,11 +489,13 @@ std::unique_ptr<ColorProvider> COMPONENT_EXPORT(COLOR)
   return color_provider;
 }
 
-void CompleteScrollbarColorsDefinition(ui::ColorMixer& mixer) {
+void CompleteFluentScrollbarColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
       kColorWebNativeControlScrollbarCorner};
   mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
       kColorWebNativeControlScrollbarArrowBackgroundHovered};
+  mixer[kColorWebNativeControlScrollbarArrowForegroundHovered] = {
+      kColorWebNativeControlScrollbarArrowForegroundPressed};
   mixer[kColorWebNativeControlScrollbarThumb] = {
       kColorWebNativeControlScrollbarArrowForeground};
   mixer[kColorWebNativeControlScrollbarThumbHovered] = {
@@ -547,7 +551,7 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlSliderDisabled] = {kColorCssSystemGrayText};
   mixer[kColorWebNativeControlSliderHovered] = {kColorCssSystemHighlight};
   mixer[kColorWebNativeControlSliderPressed] = {kColorCssSystemHighlight};
-  CompleteScrollbarColorsDefinition(mixer);
+  CompleteFluentScrollbarColorsDefinition(mixer);
 }
 
 void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
@@ -643,6 +647,8 @@ void COMPONENT_EXPORT(COLOR)
     mixer[kColorWebNativeControlScrollbarArrowForeground] = {SK_ColorWHITE};
     mixer[kColorWebNativeControlScrollbarArrowForegroundDisabled] = {
         SkColorSetRGB(0xAF, 0xAF, 0xAF)};
+    mixer[kColorWebNativeControlScrollbarArrowForegroundHovered] = {
+        SK_ColorWHITE};
     mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
         SK_ColorBLACK};
     mixer[kColorWebNativeControlScrollbarCorner] = {
@@ -725,6 +731,8 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetRGB(0x50, 0x50, 0x50)};
     mixer[kColorWebNativeControlScrollbarArrowForegroundDisabled] = {
         SkColorSetARGB(0x4D, 0x50, 0x50, 0x50)};
+    mixer[kColorWebNativeControlScrollbarArrowForegroundHovered] = {
+        SK_ColorBLACK};
     mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
         SK_ColorWHITE};
     mixer[kColorWebNativeControlScrollbarCorner] = {

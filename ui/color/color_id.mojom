@@ -61,6 +61,7 @@ enum RendererColorId {
   kColorWebNativeControlScrollbarArrowBackgroundPressed,
   kColorWebNativeControlScrollbarArrowForeground,
   kColorWebNativeControlScrollbarArrowForegroundDisabled,
+  kColorWebNativeControlScrollbarArrowForegroundHovered,
   kColorWebNativeControlScrollbarArrowForegroundPressed,
   kColorWebNativeControlScrollbarCorner,
   kColorWebNativeControlScrollbarThumb,

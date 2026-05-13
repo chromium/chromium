@@ -76,6 +76,25 @@ class NativeThemeFluentTest : public ::testing::Test,
                                NativeTheme::kNormal, gfx::Rect(15, 100), {});
   }
 
+  SkColor GetScrollbarArrowForegroundColor(
+      SkColor bg_color,
+      NativeTheme::State state,
+      const NativeTheme::ScrollbarArrowExtraParams& extra_params,
+      const ColorProvider* color_provider) const {
+    return theme_.GetScrollbarArrowForegroundColor(
+        bg_color, extra_params, state, /*dark_mode=*/false,
+        NativeTheme::PreferredContrast::kNoPreference, color_provider);
+  }
+
+  SkColor GetScrollbarArrowBackgroundColor(
+      NativeTheme::State state,
+      const NativeTheme::ScrollbarArrowExtraParams& extra_params,
+      const ColorProvider* color_provider) const {
+    return theme_.GetScrollbarArrowBackgroundColor(
+        extra_params, state, /*dark_mode=*/false,
+        NativeTheme::PreferredContrast::kNoPreference, color_provider);
+  }
+
  private:
   static float ScaleFromDIP() { return GetParam(); }
 
@@ -220,6 +239,62 @@ TEST_F(NativeThemeFluentTest, GetThumbColor) {
   EXPECT_NE(kCssColor,
             theme().GetScrollbarThumbColor(
                 color_provider.get(), NativeTheme::kPressed, kColorParams));
+}
+
+// Verify that GetScrollbarArrowForegroundColor returns the correct color given
+// the scrollbar state.
+TEST_F(NativeThemeFluentTest, GetArrowForegroundColor) {
+  std::unique_ptr<ColorProvider> color_provider =
+      CreateDefaultColorProviderForBlink(/*dark_mode=*/false);
+  CompleteFluentScrollbarColorsDefinition(color_provider->AddMixer());
+  static constexpr NativeTheme::ScrollbarArrowExtraParams kNoExtraParams = {};
+  const SkColor bg_color = GetScrollbarArrowBackgroundColor(
+      NativeTheme::kNormal, kNoExtraParams, color_provider.get());
+  EXPECT_EQ(
+      color_provider->GetColor(kColorWebNativeControlScrollbarArrowForeground),
+      GetScrollbarArrowForegroundColor(bg_color, NativeTheme::kNormal,
+                                       kNoExtraParams, color_provider.get()));
+  EXPECT_EQ(
+      color_provider->GetColor(
+          kColorWebNativeControlScrollbarArrowForegroundHovered),
+      GetScrollbarArrowForegroundColor(bg_color, NativeTheme::kHovered,
+                                       kNoExtraParams, color_provider.get()));
+  EXPECT_EQ(
+      color_provider->GetColor(
+          kColorWebNativeControlScrollbarArrowForegroundPressed),
+      GetScrollbarArrowForegroundColor(bg_color, NativeTheme::kPressed,
+                                       kNoExtraParams, color_provider.get()));
+  EXPECT_EQ(
+      color_provider->GetColor(
+          kColorWebNativeControlScrollbarArrowForegroundDisabled),
+      GetScrollbarArrowForegroundColor(bg_color, NativeTheme::kDisabled,
+                                       kNoExtraParams, color_provider.get()));
+}
+
+// Verify that GetScrollbarArrowBackgroundColor returns the correct color. The
+// background color should not change regardless of the state.
+TEST_F(NativeThemeFluentTest, GetArrowBackgroundColor) {
+  std::unique_ptr<ColorProvider> color_provider =
+      CreateDefaultColorProviderForBlink(/*dark_mode=*/false);
+  CompleteFluentScrollbarColorsDefinition(color_provider->AddMixer());
+  static constexpr NativeTheme::ScrollbarArrowExtraParams kNoExtraParams = {};
+
+  const auto normal_color = GetScrollbarArrowBackgroundColor(
+      NativeTheme::kNormal, kNoExtraParams, color_provider.get());
+  const auto hovered_color = GetScrollbarArrowBackgroundColor(
+      NativeTheme::kHovered, kNoExtraParams, color_provider.get());
+  const auto pressed_color = GetScrollbarArrowBackgroundColor(
+      NativeTheme::kPressed, kNoExtraParams, color_provider.get());
+  EXPECT_EQ(color_provider->GetColor(kColorWebNativeControlScrollbarTrack),
+            normal_color);
+  EXPECT_EQ(color_provider->GetColor(
+                kColorWebNativeControlScrollbarArrowBackgroundHovered),
+            hovered_color);
+  EXPECT_EQ(color_provider->GetColor(
+                kColorWebNativeControlScrollbarArrowBackgroundPressed),
+            pressed_color);
+  EXPECT_EQ(normal_color, hovered_color);
+  EXPECT_EQ(normal_color, pressed_color);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

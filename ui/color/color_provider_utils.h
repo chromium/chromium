@@ -85,11 +85,11 @@ std::unique_ptr<ColorProvider> COMPONENT_EXPORT(COLOR)
 std::unique_ptr<ColorProvider> COMPONENT_EXPORT(COLOR)
     CreateDefaultColorProviderForBlink(bool dark_mode);
 
-// Scrollbars have three main colors. This function completes the
+// Fluent scrollbars have three main colors. This function completes the
 // definition of colors for all scrollbar parts in relation to the three main
 // ones.
 void COMPONENT_EXPORT(COLOR)
-    CompleteScrollbarColorsDefinition(ui::ColorMixer& mixer);
+    CompleteFluentScrollbarColorsDefinition(ui::ColorMixer& mixer);
 
 // Completes color definitions for the controls defined in
 // NativeThemeBase::ControlColorId when in forced colors mode.

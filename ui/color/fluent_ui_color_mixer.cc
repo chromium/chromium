@@ -33,7 +33,7 @@ void AddFluentUiColorMixer(ColorProvider* provider,
         dark_mode ? SkColorSetRGB(0x2C, 0x2C, 0x2C)
                   : SkColorSetRGB(0xFC, 0xFC, 0xFC)};
   }
-  CompleteScrollbarColorsDefinition(mixer);
+  CompleteFluentScrollbarColorsDefinition(mixer);
 }
 
 }  // namespace ui

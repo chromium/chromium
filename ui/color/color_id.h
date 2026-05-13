@@ -583,6 +583,7 @@
   E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowForeground) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundDisabled) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundHovered) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarCorner) \
   E_CPONLY(kColorWebNativeControlScrollbarThumb) \
