@@ -22,6 +22,7 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
                 false /* is_ad_auction_trusted_signals_request */),
             List({}));
 
+  // "user-agent" is NOT forbidden per spec, but forbidden in Chromium.
   EXPECT_EQ(CorsUnsafeNotForbiddenRequestHeaderNames(
                 {{"content-type", "text/plain"},
                  {"dpr", "12345"},
@@ -31,9 +32,7 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
                  {"hogE", "fuga"}},
                 false /* is_revalidating */,
                 false /* is_ad_auction_trusted_signals_request */),
-            List({/* "user-agent", */ "hoge"}));
-  // TODO(https://crbug.com/40450316): uncomment "user-agent" above when
-  // `net::features::kUserAgentFollowingSpec` becomes the default.
+            List({"hoge"}));
 
   EXPECT_EQ(CorsUnsafeNotForbiddenRequestHeaderNames(
                 {{"content-type", "text/html"},

@@ -61,7 +61,6 @@ class MockBaseFetchContext final : public BaseFetchContext {
   ~MockBaseFetchContext() override = default;
 
   // BaseFetchContext overrides:
-  String GetDefaultUserAgent() const override { return ""; }
   net::SiteForCookies GetSiteForCookies() const override {
     return net::SiteForCookies();
   }

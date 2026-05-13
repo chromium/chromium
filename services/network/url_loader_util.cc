@@ -519,10 +519,7 @@ void ConfigureUrlRequest(const ResourceRequest& request,
   // they should be ignored by CORS checks.
   net::HttpRequestHeaders merged_headers = request.headers;
   merged_headers.MergeFrom(ComputeAttributionReportingHeaders(request));
-  merged_headers = net::HttpUtil::MergeHeadersAndAddUserAgent(
-      std::move(merged_headers), request.cors_exempt_headers,
-      request.content_user_agent);
-
+  merged_headers.MergeFrom(request.cors_exempt_headers);
   // This should be ensured by the CorsURLLoaderFactory(), which is called
   // before URLLoaders are created.
   DCHECK(AreRequestHeadersSafe(merged_headers));

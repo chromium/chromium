@@ -100,8 +100,6 @@ const base::FeatureParam<int> kAlternativePortForGloballyReachableCheck{
 BASE_FEATURE(kUseAlternativePortForGloballyReachableCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUserAgentFollowingSpec, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableIPv6ReachabilityOverride,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

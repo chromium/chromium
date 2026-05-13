@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/trust_token_params_conversion.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -257,7 +256,6 @@ scoped_refptr<network::ResourceRequestBody> NetworkResourceRequestBodyFor(
 
 void PopulateResourceRequest(const ResourceRequestHead& src,
                              ResourceRequestBody src_body,
-                             const String& context_default_user_agent,
                              network::ResourceRequest* dest) {
   dest->method = src.HttpMethod().Latin1();
   dest->url = GURL(src.Url());
@@ -302,15 +300,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
     const std::string value = TrimLWSAndCRLF(item.value.Latin1());
     dest->headers.SetHeader(name, value);
   }
-
-  // Send the context-bound User-Agent value down to the network implementation
-  // so it can use the value without triggering CORS checks.
-  // We must make sure we do not set a JavaScript-supplied value, as they
-  // should not be immune to CORS.
-  if (RuntimeEnabledFeatures::UserAgentFollowingSpecEnabled()) {
-    dest->content_user_agent = context_default_user_agent.Utf8();
-  }
-
   // Set X-Requested-With header to cors_exempt_headers rather than headers to
   // be exempted from CORS checks.
   if (!src.GetRequestedWithHeader().empty()) {

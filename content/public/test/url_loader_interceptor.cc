@@ -535,15 +535,7 @@ bool URLLoaderInterceptor::Intercept(RequestParams* params) {
     // Only set the last request url and headers if the request was actually
     // processed by the interceptor.
     SetLastRequestURL(params->url_request.url);
-
-    // Merge all headers to ensure we mimic the real request behaviour
-    net::HttpRequestHeaders merged_last_headers =
-        net::HttpUtil::MergeHeadersAndAddUserAgent(
-            params->url_request.headers,
-            params->url_request.cors_exempt_headers,
-            params->url_request.content_user_agent);
-
-    SetLastRequestHeaders(merged_last_headers);
+    SetLastRequestHeaders(params->url_request.headers);
     return true;
   }
 

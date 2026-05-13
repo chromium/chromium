@@ -112,6 +112,7 @@ var FORBIDDEN_HEADER_NAMES = [
   'Trailer',
   'Transfer-Encoding',
   'Upgrade',
+  'User-Agent',
   'Via',
   'Proxy-',
   'Sec-',

@@ -1623,7 +1623,7 @@ TEST_P(FrameFetchContextTest, ResourceRequestCachePolicyWhenDetached) {
 }
 
 TEST_P(FrameFetchContextMockedLocalFrameClientTest,
-       MaintainsUserAgentWhenDetached) {
+       PrepareRequestWhenDetached) {
   Checkpoint checkpoint;
 
   EXPECT_CALL(checkpoint, Call(1));
@@ -1634,8 +1634,13 @@ TEST_P(FrameFetchContextMockedLocalFrameClientTest,
   dummy_page_holder = nullptr;
   checkpoint.Call(2);
 
-  // Test that the UA is correctly cached when the request is detached
-  EXPECT_EQ("hi", GetFetchContext()->GetDefaultUserAgent());
+  ResourceRequest request(KURL("https://localhost/"));
+  WebScopedVirtualTimePauser virtual_time_pauser;
+  ResourceLoaderOptions options(nullptr /* world */);
+  GetFetchContext()->PrepareRequest(request, options, virtual_time_pauser,
+                                    ResourceType::kRaw);
+
+  EXPECT_EQ("hi", request.HttpHeaderField(http_names::kUserAgent));
 }
 
 TEST_P(FrameFetchContextTest, PrepareRequestHistogramCount) {

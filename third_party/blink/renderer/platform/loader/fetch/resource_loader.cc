@@ -195,12 +195,10 @@ bool ShouldActivateCacheAwareLoading(const ResourceFetcher* fetcher,
 
 std::unique_ptr<network::ResourceRequest> CreateNetworkRequest(
     const ResourceRequestHead& request_head,
-    ResourceRequestBody& request_body,
-    const String context_default_user_agent) {
+    ResourceRequestBody& request_body) {
   auto network_resource_request = std::make_unique<network::ResourceRequest>();
   scoped_refptr<EncodedFormData> form_body = request_body.FormBody();
   PopulateResourceRequest(request_head, std::move(request_body),
-                          context_default_user_agent,
                           network_resource_request.get());
   if (form_body) {
     request_body = ResourceRequestBody(std::move(form_body));
@@ -278,8 +276,7 @@ void ResourceLoader::Start() {
   }
 
   if (!resource_->Url().ProtocolIsData()) {
-    network_resource_request_ = CreateNetworkRequest(
-        request, request_body_, Context().GetDefaultUserAgent());
+    network_resource_request_ = CreateNetworkRequest(request, request_body_);
     fetcher_->PopulateResourceRequestPermissionsPolicy(
         network_resource_request_.get());
     if (is_cache_aware_loading_activated_) {
@@ -415,8 +412,7 @@ void ResourceLoader::Restart() {
   CHECK_EQ(resource_->Options().synchronous_policy, kRequestAsynchronously);
   CHECK(!network_resource_request_);
   CHECK(!resource_->Url().ProtocolIsData());
-  network_resource_request_ = CreateNetworkRequest(
-      request, request_body_, Context().GetDefaultUserAgent());
+  network_resource_request_ = CreateNetworkRequest(request, request_body_);
   loader_ = fetcher_->CreateURLLoader(
       *network_resource_request_, resource_->Options(),
       resource_->GetResourceRequest().GetRequestContext(),

@@ -22,9 +22,9 @@ test(function() {
     assert_true(request.headers instanceof Headers,
                 'Request.headers should be Headers');
 
-    assert_equals(size(request.headers), 3,
-                  'Request.headers size should not change');
-
+    // 'User-Agent' is a forbidden header.
+    assert_equals(size(request.headers), 2,
+                  'Request.headers size should match');
     // Note: detailed behavioral tests for Headers are in another test,
     // http/tests/fetch/*/headers.html.
 

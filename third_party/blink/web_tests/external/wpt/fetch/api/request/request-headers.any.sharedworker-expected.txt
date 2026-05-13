@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Adding valid request header "User-Agent: OK"
+  assert_equals: expected (string) "OK" but got (object) null
+Harness: the test ran to completion.
+
