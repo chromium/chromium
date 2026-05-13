@@ -194,9 +194,9 @@ class OnTaskSessionManagerTest : public ::testing::Test {
         std::move(active_tab_tracker));
   }
 
-  base::flat_set<GURL>* provider_url_set() {
+  base::flat_map<GURL, ::boca::UrlType>* provider_url_map() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(session_manager_->sequence_checker_);
-    return &session_manager_->provider_url_set_;
+    return &session_manager_->provider_url_map_;
   }
 
   base::flat_map<GURL, std::set<SessionID>>* provider_url_tab_ids_map() {
@@ -396,7 +396,9 @@ TEST_F(OnTaskSessionManagerTest, ShouldOpenTabsOnBundleUpdated) {
       .WillOnce(Return(kTabId_2));
 
   ::boca::Bundle bundle;
-  bundle.add_content_configs()->set_url(kTestUrl1);
+  ::boca::ContentConfig* const content_config = bundle.add_content_configs();
+  content_config->set_url(kTestUrl1);
+  content_config->set_url_type(::boca::URL_TYPE_GEMINI_REGULAR);
   bundle.add_content_configs()->set_url(kTestUrl2);
   session_manager_->OnBundleUpdated(bundle);
 
@@ -404,6 +406,8 @@ TEST_F(OnTaskSessionManagerTest, ShouldOpenTabsOnBundleUpdated) {
   task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskBundleContentAddedNotificationId));
+  EXPECT_EQ(boca_session_manager_->GetTabUrlType(kTabId_1.id()),
+            ::boca::URL_TYPE_GEMINI_REGULAR);
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldSkipInvalidSchemeTabsOnBundleUpdated) {
@@ -661,8 +665,12 @@ TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
 
   ::boca::Bundle bundle_1;
   bundle_1.add_content_configs()->set_url(kTestUrl1);
-  bundle_1.add_content_configs()->set_url(kTestUrl2);
+  ::boca::ContentConfig* const content_config = bundle_1.add_content_configs();
+  content_config->set_url(kTestUrl2);
+  content_config->set_url_type(::boca::URL_TYPE_GEMINI_GUIDED_LEARNING);
   session_manager_->OnBundleUpdated(bundle_1);
+  const ::boca::UrlType url_type_before_removal =
+      boca_session_manager_->GetTabUrlType(kTabId_2.id());
 
   // Verify notification is shown for newly added tabs.
   task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
@@ -672,11 +680,15 @@ TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
   ::boca::Bundle bundle_2;
   bundle_2.add_content_configs()->set_url(kTestUrl1);
   session_manager_->OnBundleUpdated(bundle_2);
+  const ::boca::UrlType url_type_after_removal =
+      boca_session_manager_->GetTabUrlType(kTabId_2.id());
 
   // Verify notification is shown for removed content.
   task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskBundleContentRemovedNotificationId));
+  EXPECT_EQ(url_type_before_removal, ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING);
+  EXPECT_EQ(url_type_after_removal, ::boca::URL_TYPE_UNSPECIFIED);
 }
 
 TEST_F(OnTaskSessionManagerTest,
@@ -859,8 +871,8 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
   // there is no nav restriction being tracked.
   const SessionID kOldTabId1 = SessionID::NewUnique();
   const SessionID kOldTabId2 = SessionID::NewUnique();
-  (*provider_url_set()).insert(GURL(kTestUrl1));
-  (*provider_url_set()).insert(GURL(kTestUrl2));
+  (*provider_url_map())[GURL(kTestUrl1)] = ::boca::URL_TYPE_UNSPECIFIED;
+  (*provider_url_map())[GURL(kTestUrl2)] = ::boca::URL_TYPE_GEMINI_REGULAR;
   (*provider_url_tab_ids_map())[GURL(kTestUrl1)].insert(kOldTabId1);
   (*provider_url_restriction_level_map())[GURL(kTestUrl1)] =
       ::boca::LockedNavigationOptions::BLOCK_NAVIGATION;
@@ -916,6 +928,8 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
               ElementsAre(kTabId2));
   EXPECT_EQ((*provider_url_restriction_level_map())[GURL(kTestUrl2)],
             ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
+  EXPECT_EQ(boca_session_manager_->GetTabUrlType(kTabId2.id()),
+            ::boca::URL_TYPE_GEMINI_REGULAR);
 }
 
 TEST_F(OnTaskSessionManagerTest, LockWindowOnAppReload) {

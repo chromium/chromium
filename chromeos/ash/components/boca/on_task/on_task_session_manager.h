@@ -156,6 +156,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   void OnBundleTabAdded(
       GURL url,
       ::boca::LockedNavigationOptions::NavigationType restriction_level,
+      ::boca::UrlType url_type,
       SessionID tab_id);
 
   // Callback triggered when a tab from the bundle is removed.
@@ -181,7 +182,8 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   bool enter_pause_mode_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // The set of urls sent by the provider.
-  base::flat_set<GURL> provider_url_set_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<GURL, ::boca::UrlType> provider_url_map_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Maps the url that providers send to the tab ids spawned from the url. This
   // map allows to remove all the related tabs to the url.
