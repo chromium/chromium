@@ -9799,7 +9799,7 @@ crbug.com/510128101 [ Win ] fast/forms/color/color-picker-events-change.html [ F
 crbug.com/485661974 [ Mac ] external/wpt/client-hints/critical-ch/request-count.multiple.https.window.html [ Failure ]
 crbug.com/485661974 [ Mac ] external/wpt/client-hints/critical-ch/unsafe-method.https.window.html [ Failure ]
 crbug.com/507309053 [ Mac ] external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations.tentative.https.html [ Failure ]
-crbug.com/506273267 virtual/permission-element/external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations.tentative.https.html [ Failure Pass ]
+crbug.com/506273267 virtual/permission-element/external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations.tentative.https.html [ Failure Pass Timeout ]
 
 # Gardener 2026-05-07
 crbug.com/510507820 [ Win10.20h2 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Pass Timeout ]
