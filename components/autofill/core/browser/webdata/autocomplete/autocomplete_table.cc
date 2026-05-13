@@ -235,11 +235,11 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
   if (!s_delete.Run()) {
     return false;
   }
-  for (const auto& update : updates) {
-    sql::Statement s_update;
-    sql::UpdateBuilder(*db(), s_update, kAutocompleteTable,
-                       {kDateCreated, kDateLastUsed, kCount},
-                       /*where_clause=*/"name = ? AND value = ?");
+  sql::Statement s_update;
+  sql::UpdateBuilder(*db(), s_update, kAutocompleteTable,
+                     {kDateCreated, kDateLastUsed, kCount},
+                     /*where_clause=*/"name = ? AND value = ?");
+  for (const AutocompleteUpdate& update : updates) {
     s_update.BindInt64(0, update.date_created);
     s_update.BindInt64(1, update.date_last_used);
     s_update.BindInt(2, update.count);
@@ -248,6 +248,7 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
     if (!s_update.Run()) {
       return false;
     }
+    s_update.Reset(/*clear_bound_vars=*/true);
   }
   if (!transaction.Commit()) {
     return false;
@@ -399,7 +400,8 @@ bool AutocompleteTable::AddFormFieldValueTime(
   AutocompleteChange::Type change_type;
   if (GetAutocompleteEntry(element.name(), element.value()).has_value()) {
     change_type = AutocompleteChange::UPDATE;
-    sql::Statement s(db()->GetUniqueStatement(
+    sql::Statement s(db()->GetCachedStatement(
+        SQL_FROM_HERE,
         "UPDATE autofill SET date_last_used = ?, count = count + 1 "
         "WHERE name = ? AND value = ?"));
     s.BindInt64(0, time.ToTimeT());

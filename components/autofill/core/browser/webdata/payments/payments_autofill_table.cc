@@ -707,9 +707,10 @@ bool PaymentsAutofillTable::UpdateLocalIban(const Iban& iban) {
   }
 
   sql::Statement s;
-  sql::UpdateBuilder(*db(), s, kLocalIbansTable,
-                     {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
-                     /*where_clause=*/"guid=?1");
+  sql::CachedUpdateBuilder(
+      SQL_FROM_HERE, *db(), s, kLocalIbansTable,
+      {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
+      /*where_clause=*/"guid=?1");
   BindIbanToStatement(iban, &s, *encryptor());
 
   return s.Run();
@@ -802,11 +803,12 @@ bool PaymentsAutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
   old_credit_card->set_cvc(credit_card.cvc());
   bool card_updated = *old_credit_card != credit_card;
   sql::Statement card_statement;
-  sql::UpdateBuilder(*db(), card_statement, kCreditCardsTable,
-                     {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
-                      kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
-                      kOrigin, kBillingAddressId, kNickname},
-                     /*where_clause=*/"guid=?1");
+  sql::CachedUpdateBuilder(
+      SQL_FROM_HERE, *db(), card_statement, kCreditCardsTable,
+      {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
+       kCardNumberEncrypted, kUseCount, kUseDate, kDateModified, kOrigin,
+       kBillingAddressId, kNickname},
+      /*where_clause=*/"guid=?1");
   BindCreditCardToStatement(
       credit_card,
       card_updated ? AutofillClock::Now()
@@ -1051,9 +1053,10 @@ bool PaymentsAutofillTable::AddServerCvc(const ServerCvc& server_cvc) {
 
 bool PaymentsAutofillTable::UpdateServerCvc(const ServerCvc& server_cvc) {
   sql::Statement s;
-  sql::UpdateBuilder(*db(), s, kServerStoredCvcTable,
-                     {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp},
-                     /*where_clause=*/"instrument_id=?1");
+  sql::CachedUpdateBuilder(
+      SQL_FROM_HERE, *db(), s, kServerStoredCvcTable,
+      {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp},
+      /*where_clause=*/"instrument_id=?1");
   BindServerCvcToStatement(server_cvc, *encryptor(), &s);
   s.Run();
   return db()->GetLastChangeCount() > 0;
@@ -1543,9 +1546,10 @@ bool PaymentsAutofillTable::AddOrUpdateVirtualCardUsageData(
     sql::InsertBuilder(*db(), s, kVirtualCardUsageDataTable,
                        {kId, kInstrumentId, kMerchantDomain, kLastFour});
   } else {
-    sql::UpdateBuilder(*db(), s, kVirtualCardUsageDataTable,
-                       {kId, kInstrumentId, kMerchantDomain, kLastFour},
-                       /*where_clause=*/"id=?1");
+    sql::CachedUpdateBuilder(SQL_FROM_HERE, *db(), s,
+                             kVirtualCardUsageDataTable,
+                             {kId, kInstrumentId, kMerchantDomain, kLastFour},
+                             /*where_clause=*/"id=?1");
   }
   BindVirtualCardUsageDataToStatement(virtual_card_usage_data, s);
   return s.Run();
@@ -2080,15 +2084,16 @@ bool PaymentsAutofillTable::MigrateToVersion115EncryptIbanValue() {
     return false;
   }
 
+  sql::UpdateBuilder(*db(), s, kIbansTable, {kGuid, kValue},
+                     /*where_clause=*/"guid=?1");
   for (const auto& [guid, value] : iban_guid_to_value_pairs) {
-    sql::UpdateBuilder(*db(), s, kIbansTable, {kGuid, kValue},
-                       /*where_clause=*/"guid=?1");
     int index = 0;
     s.BindString(index++, guid);
     BindEncryptedU16StringToColumn(&s, index++, value, *encryptor());
     if (!s.Run()) {
       return false;
     }
+    s.Reset(/*clear_bound_vars=*/true);
   }
 
   return db()->Execute(

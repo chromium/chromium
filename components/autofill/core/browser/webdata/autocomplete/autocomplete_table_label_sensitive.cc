@@ -330,11 +330,11 @@ bool AutocompleteTableLabelSensitive::RemoveFormElementsAddedBetween(
   if (!s_delete.Run()) {
     return false;
   }
+  sql::Statement s_update;
+  sql::UpdateBuilder(*db(), s_update, kAutocompleteTableLabelSensitive,
+                     {kDateCreated, kDateLastUsed, kCount},
+                     /*where_clause=*/"name = ? AND label = ? AND value = ?");
   for (const auto& update : updates) {
-    sql::Statement s_update;
-    sql::UpdateBuilder(*db(), s_update, kAutocompleteTableLabelSensitive,
-                       {kDateCreated, kDateLastUsed, kCount},
-                       /*where_clause=*/"name = ? AND label = ? AND value = ?");
     s_update.BindInt64(0, update.date_created);
     s_update.BindInt64(1, update.date_last_used);
     s_update.BindInt(2, update.count);
@@ -344,6 +344,7 @@ bool AutocompleteTableLabelSensitive::RemoveFormElementsAddedBetween(
     if (!s_update.Run()) {
       return false;
     }
+    s_update.Reset(/*clear_bound_vars=*/true);
   }
   if (!transaction.Commit()) {
     return false;
@@ -460,7 +461,8 @@ bool AutocompleteTableLabelSensitive::AddFormFieldValueTime(
 
   // Always try to update counts of all entries that would contribute to correct
   // suggestion.
-  sql::Statement update_statement(db()->GetUniqueStatement(
+  sql::Statement update_statement(db()->GetCachedStatement(
+      SQL_FROM_HERE,
       "UPDATE autocomplete SET date_last_used = ?, count = count + 1 "
       "WHERE (name = ? OR (label_normalized = ? AND label_normalized != '')) "
       "AND value = ?"));
