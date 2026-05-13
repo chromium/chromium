@@ -4341,7 +4341,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
       if (rare_data->HasCustomElementRegistrySet() &&
           insertion_point.IsInTreeScope()) {
         auto* registry = rare_data->GetCustomElementRegistry();
-        if (registry && registry->IsGlobalRegistry() &&
+        if (registry &&
             registry ==
                 insertion_point.GetTreeScope().customElementRegistry()) {
           rare_data->ClearCustomElementRegistry();
@@ -4513,8 +4513,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     ElementRareDataVector* data = RareData();
     if (!data->HasCustomElementRegistrySet() &&
         insertion_point.IsInTreeScope()) {
-      data_ = data->SetCustomElementRegistry(
-          insertion_point.GetTreeScope().customElementRegistry());
+      data_ = data->SetCustomElementRegistry(customElementRegistry());
     }
   }
 
