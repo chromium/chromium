@@ -455,6 +455,7 @@ source_set("impl") {
     "//components/device_event_log",
     "//components/device_signals/core/browser",
     "//components/device_signals/core/common",
+    "//components/dom_distiller/core",
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/common:files_scan_data",
