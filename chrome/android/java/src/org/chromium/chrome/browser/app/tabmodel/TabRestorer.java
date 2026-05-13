@@ -37,8 +37,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -130,7 +130,7 @@ class TabRestorer {
     private final TabCreator mTabCreator;
     private final Supplier<ScopedStorageBatch> mBatchFactory;
     private final TabModelSelector mTabModelSelector;
-    private final List<Integer> mTabIdsToIgnore = new ArrayList<>();
+    private final Set<@TabId Integer> mTabIdsToIgnore = new HashSet<>();
     private final boolean mIsFromRecreating;
 
     private @State int mState = State.EMPTY;
@@ -352,10 +352,18 @@ class TabRestorer {
 
     /** Cleans up the {@link StorageLoadedData}. */
     private void cleanupStorageLoadedData() {
+        maybeDestroyActiveTabState();
+
         assumeNonNull(mData);
         if (TabStateStorageFlagHelper.isStorageAuthoritative()) {
             TabGroupVisualDataStore.removeCachedGroups(mData.getGroupsData());
         }
+
+        for (LoadedTabState loadedTabState : mData.getLoadedTabStates()) {
+            if (mTabIdsToIgnore.contains(loadedTabState.tabId)) continue;
+            destroyLoadedTabState(loadedTabState);
+        }
+
         mData.destroy();
         mData = null;
     }
@@ -372,7 +380,6 @@ class TabRestorer {
         for (int i = mIndex; i < loadedTabStates.length; i++) {
             LoadedTabState loadedTabState = loadedTabStates[i];
             if (!mTabIdsToIgnore.contains(loadedTabState.tabId) && predicate.test(loadedTabState)) {
-                mTabIdsToIgnore.add(loadedTabState.tabId);
                 restoreTab(loadedTabState, i, /* isActive= */ false);
                 return true;
             }
@@ -408,7 +415,6 @@ class TabRestorer {
             postTaskToFinish();
             return;
         }
-        mTabIdsToIgnore.add(activeTabState.tabId);
         PostTask.postTask(TaskTraits.UI_DEFAULT, this::restoreNextBatchOfTabs);
     }
 
@@ -426,6 +432,7 @@ class TabRestorer {
         if (mTabIdsToIgnore.contains(loadedTabState.tabId)) return;
 
         assert mData != null;
+        mTabIdsToIgnore.add(tabId);
         assert mCachedRestoredActiveTabId == null || tabId != mCachedRestoredActiveTabId;
 
         Tab tab = resolveTab(loadedTabState.tabState, tabId, index, isActive, mIsFromRecreating);
