@@ -209,9 +209,9 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "skylab-use-tauto-chromium-wrapper",
+    name = "skylab-tauto-chromium-graphics",
     skylab = targets.skylab(
-        autotest_name = "chromium",
+        autotest_name = "chromium_Graphics",
     ),
 )
 

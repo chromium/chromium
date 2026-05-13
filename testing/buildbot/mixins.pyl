@@ -912,9 +912,9 @@
       'result_format': 'tast',
     },
   },
-  'skylab-use-tauto-chromium-wrapper': {
+  'skylab-tauto-chromium-graphics': {
     'skylab': {
-      'autotest_name': 'chromium',
+      'autotest_name': 'chromium_Graphics',
     },
   },
   'swarming_containment_auto': {

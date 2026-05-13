@@ -1175,6 +1175,40 @@ COMPOSITION_SUITE_WITH_TELEMETRY_TEST = """\
 }
 """
 
+COMPOSITION_SUITE_WITH_TELEMETRY_TEST_SKYLAB = """\
+{
+  'basic_suites': {
+    'foo_tests': {
+      'foo_tests': {
+        'telemetry_test_name': 'foo',
+        'autotest_name': 'chromium_Graphics',
+        'swarming': {
+          'dimensions': {
+            'os': 'Linux',
+          },
+          'shards': 2,
+        },
+      },
+    },
+    'bar_tests': {
+      'bar_test': {
+        'swarming': {
+          'dimensions': {
+            'os': 'Linux',
+          },
+        },
+      },
+    },
+  },
+  'compound_suites': {
+    'composition_tests': [
+      'foo_tests',
+      'bar_tests',
+    ],
+  },
+}
+"""
+
 COMPOSITION_SUITE_WITH_GPU_ARGS = """\
 {
   'basic_suites': {
@@ -2184,7 +2218,7 @@ class UnitTest(TestCase):
   def test_gpu_telemetry_tests_skylab(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL_SKYLAB,
-                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST,
+                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST_SKYLAB,
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS,
                     gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP)
