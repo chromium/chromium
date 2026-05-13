@@ -2574,6 +2574,14 @@ const FeatureEntry::FeatureParam kTipsNotificationsPromoHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
      segmentation_platform::kTipsNotificationsPromo},
 };
+const FeatureEntry::FeatureParam kNtpThemePromoShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kNtpThemePromo},
+};
+const FeatureEntry::FeatureParam kNtpThemePromoHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kNtpThemePromo},
+};
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
@@ -2593,6 +2601,8 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          kTipsNotificationsPromoShowArm, nullptr},
         {"- Force hide tips notifications promo",
          kTipsNotificationsPromoHideArm, nullptr},
+        {"- Force show ntp theme promo", kNtpThemePromoShowArm, nullptr},
+        {"- Force hide ntp theme promo", kNtpThemePromoHideArm, nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
