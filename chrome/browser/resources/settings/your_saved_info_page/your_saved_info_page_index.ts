@@ -13,8 +13,10 @@ import './your_saved_info_page.js';
 import '../settings_shared.css.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin} from '../router.js';
 import type {Route} from '../router.js';
@@ -47,10 +49,18 @@ export class SettingsYourSavedInfoPageIndexElement extends
   static get properties() {
     return {
       prefs: Object,
+
+      enableYourSavedInfoShoppingPage_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableYourSavedInfoShoppingPage');
+        },
+      },
     };
   }
 
   declare prefs: {[key: string]: any};
+  declare private enableYourSavedInfoShoppingPage_: boolean;
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);
@@ -103,6 +113,7 @@ export class SettingsYourSavedInfoPageIndexElement extends
               DataManagementSurvey.TRAVEL, isFromHomePage);
           break;
         case routes.YOUR_SAVED_INFO_SHOPPING:
+          assert(this.enableYourSavedInfoShoppingPage_);
           this.$.viewManager.switchView(
               'shopping', 'no-animation', 'no-animation');
           break;

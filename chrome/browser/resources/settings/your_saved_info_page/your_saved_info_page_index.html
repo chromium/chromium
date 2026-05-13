@@ -33,8 +33,10 @@
       data-parent-view-id="parent">
   </settings-travel-page>
 
-  <settings-shopping-page slot="view" id="shopping" prefs="{{prefs}}"
-      data-parent-view-id="parent">
-  </settings-shopping-page>
+  <template is="dom-if" if="[[enableYourSavedInfoShoppingPage_]]">
+    <settings-shopping-page slot="view" id="shopping" prefs="{{prefs}}"
+        data-parent-view-id="parent">
+    </settings-shopping-page>
+  </template>
 
 </cr-view-manager>
