@@ -8,6 +8,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/rand_util.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -21,6 +22,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace actor {
 
@@ -30,6 +32,17 @@ bool ShouldLogJournal() {
   static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableActorJournalVLog);
   return enabled || VLOG_IS_ON(1);
+}
+
+std::string DetermineProtoType(std::string_view override_type,
+                               const google::protobuf::MessageLite& message) {
+  if (!override_type.empty()) {
+    return std::string(override_type);
+  }
+  if (!message.GetTypeName().empty()) {
+    return std::string(message.GetTypeName());
+  }
+  return "Unknown Proto";
 }
 
 class NonTerminatedJournalEntries
@@ -235,6 +248,37 @@ void AggregatedJournal::Log(const GURL& url,
       mojom::JournalEntry::New(mojom::JournalEntryType::kInstant, task_id,
                                base::Time::Now(), std::string(event_name),
                                track_uuid, std::move(details))));
+}
+
+void AggregatedJournal::LogProto(const GURL& url,
+                                 TaskId task_id,
+                                 std::string_view event_name,
+                                 std::vector<mojom::JournalDetailsPtr> details,
+                                 const google::protobuf::MessageLite& message,
+                                 std::string_view proto_type_override) {
+  LogProto(url, task_id, MakeBrowserTrackUUID(task_id), event_name,
+           std::move(details), message, proto_type_override);
+}
+
+void AggregatedJournal::LogProto(const GURL& url,
+                                 TaskId task_id,
+                                 uint64_t track_uuid,
+                                 std::string_view event_name,
+                                 std::vector<mojom::JournalDetailsPtr> details,
+                                 const google::protobuf::MessageLite& message,
+                                 std::string_view proto_type_override) {
+  // TODO(b/512580434): Avoid logging protos in protos as base64 strings. Move
+  // logging arbitrary fields as proto_bytes inside the stream.
+  std::string base64_proto = ToBase64(message);
+  std::string proto_type = DetermineProtoType(proto_type_override, message);
+
+  JournalDetailsBuilder builder;
+  builder.Add("proto_type", proto_type).Add("proto", base64_proto);
+  for (auto& detail : details) {
+    builder.Add(detail->key, detail->value);
+  }
+
+  Log(url, task_id, track_uuid, event_name, std::move(builder).Build());
 }
 
 void AggregatedJournal::EnsureJournalBound(content::RenderFrameHost& rfh) {

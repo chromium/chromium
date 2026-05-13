@@ -142,7 +142,7 @@ CreateActorJournalFetchPageProgressListener(
     const GURL& url,
     TaskId task_id);
 
-std::string ToBase64(const optimization_guide::proto::Actions& actions);
+std::string ToBase64(const google::protobuf::MessageLite& proto);
 
 std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(
     tabs::TabInterface* tab);

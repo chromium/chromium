@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharing/glic_experimental_triggering/actor_log.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
@@ -307,6 +308,14 @@ class ExperimentalTriggeringUpdatesHandler
       task_update->set_data(std::move(*data));
     }
 
+    if (message_handler_ && message_handler_->profile_) {
+      actor::ActorKeyedService* actor_service =
+          actor::ActorKeyedService::Get(message_handler_->profile_);
+      LogGlicExperimentalTriggeringProto(
+          actor_service, "GlicExperimentalTriggering", context_id_,
+          message.glic_experimental_triggering());
+    }
+
     if (message_sender_) {
       message_sender_->SendMessageToServerTarget(
           server_channel_, kUpdateMessageTimeout, std::move(message),
@@ -383,6 +392,12 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
 
   const auto& request = message.glic_experimental_triggering();
   if (!request.has_request()) {
+    if (profile_) {
+      actor::ActorKeyedService* actor_service =
+          actor::ActorKeyedService::Get(profile_);
+      LogGlicExperimentalTriggeringProto(
+          actor_service, "GlicExperimentalTriggering", "", request);
+    }
     DLOG(WARNING) << "Received GlicExperimentalTriggering message with no "
                      "request payload.";
     std::move(done_callback).Run(nullptr);
@@ -407,6 +422,13 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
       (request.has_context_id() && !request.context_id().empty())
           ? request.context_id()
           : base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  if (profile_) {
+    actor::ActorKeyedService* actor_service =
+        actor::ActorKeyedService::Get(profile_);
+    LogGlicExperimentalTriggeringProto(
+        actor_service, "GlicExperimentalTriggering", context_id, request);
+  }
 
   auto it = context_id_to_updates_handler_map_.find(context_id);
   ExperimentalTriggeringUpdatesHandler* handler = nullptr;

@@ -5,6 +5,7 @@
 #ifndef CHROME_COMMON_ACTOR_JOURNAL_DETAILS_BUILDER_H_
 #define CHROME_COMMON_ACTOR_JOURNAL_DETAILS_BUILDER_H_
 
+#include "base/hash/hash.h"
 #include "base/strings/to_string.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
@@ -60,6 +61,12 @@ class JournalDetailsBuilder {
 // The default global track.
 inline constexpr uint64_t kGlobalTrackUUID = 0;
 
+// The track and lookup mask for GlicExperimentalTriggering.
+inline constexpr uint64_t kGlicExperimentalTriggeringTrack =
+    0xda00000300000000LL;
+inline constexpr uint64_t kGlicExperimentalTriggeringTrackMask =
+    0xffffffff00000000LL;
+
 // A specific browser track for a task.
 inline uint64_t MakeBrowserTrackUUID(TaskId task_id) {
   constexpr uint64_t kBrowserTrack = 0xda00000000000000LL;
@@ -76,6 +83,20 @@ inline uint64_t MakeRendererTrackUUID(TaskId task_id) {
 inline uint64_t MakeFrontEndTrackUUID(TaskId task_id) {
   constexpr uint64_t kFrontEndTrack = 0xda00000200000000LL;
   return kFrontEndTrack + task_id.value();
+}
+
+// A specific Glic Experimental Triggering track for a context ID.
+inline uint64_t MakeGlicExperimentalTriggeringTrackUUID(
+    std::string_view context_id) {
+  if (context_id.empty()) {
+    return kGlicExperimentalTriggeringTrack;
+  }
+  return kGlicExperimentalTriggeringTrack + base::PersistentHash(context_id);
+}
+
+inline bool IsGlicExperimentalTriggeringTrack(uint64_t track_uuid) {
+  return (track_uuid & kGlicExperimentalTriggeringTrackMask) ==
+         kGlicExperimentalTriggeringTrack;
 }
 
 }  // namespace actor

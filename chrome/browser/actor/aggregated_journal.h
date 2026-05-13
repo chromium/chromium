@@ -25,6 +25,10 @@ namespace content {
 class RenderFrameHost;
 }
 
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
+
 namespace actor {
 
 // A class that amalgamates all the journal entries from various RenderFrames.
@@ -114,6 +118,24 @@ class AggregatedJournal {
            uint64_t track_uuid,
            std::string_view event_name,
            std::vector<mojom::JournalDetailsPtr> details);
+
+  // Log a generic protobuf message with base64 encoding and optional type
+  // override. By default the type name from the proto itself is used, but
+  // this can be overridden if there is a discrepancy between internal
+  // and external package / proto naming.
+  void LogProto(const GURL& url,
+                TaskId task_id,
+                std::string_view event_name,
+                std::vector<mojom::JournalDetailsPtr> details,
+                const google::protobuf::MessageLite& message,
+                std::string_view proto_type_override = {});
+  void LogProto(const GURL& url,
+                TaskId task_id,
+                uint64_t track_uuid,
+                std::string_view event_name,
+                std::vector<mojom::JournalDetailsPtr> details,
+                const google::protobuf::MessageLite& message,
+                std::string_view proto_type_override = {});
 
   // Screenshots need to be an instant event with a custom event name to be
   // decoded in perfetto.

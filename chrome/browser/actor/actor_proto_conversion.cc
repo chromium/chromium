@@ -1406,11 +1406,10 @@ apc::ActionsResult BuildErrorActionsResult(
   return response;
 }
 
-std::string ToBase64(const optimization_guide::proto::Actions& actions) {
-  TRACE_EVENT0("actor", "ActionsToBase64");
-  size_t size = actions.ByteSizeLong();
-  std::vector<uint8_t> buffer(size);
-  actions.SerializeToArray(buffer.data(), size);
+std::string ToBase64(const google::protobuf::MessageLite& proto) {
+  TRACE_EVENT0("actor", "ProtoToBase64");
+  std::string buffer;
+  proto.SerializeToString(&buffer);
   return base::Base64Encode(buffer);
 }
 

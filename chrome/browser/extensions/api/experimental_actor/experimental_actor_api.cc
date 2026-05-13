@@ -279,11 +279,10 @@ ExperimentalActorPerformActionsFunction::Run() {
   }
 
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
-  actor_service->GetJournal().Log(GURL(), actor::TaskId(actions.task_id()),
-                                  "ExperimentalActorExecuteAction",
-                                  actor::JournalDetailsBuilder()
-                                      .Add("proto", actor::ToBase64(actions))
-                                      .Build());
+  actor_service->GetJournal().LogProto(
+      GURL(), actor::TaskId(actions.task_id()),
+      "ExperimentalActorExecuteAction", /*details=*/{}, actions,
+      "chrome_intelligence_proto_features.Actions");
 
   actor::TaskId task_id(actions.task_id());
 

@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +72,18 @@ TEST_F(AggregatedJournalTest, AddObserver) {
 
   journal.Log(GURL(), TaskId(0), "Test",
               JournalDetailsBuilder().Add("details", "Nothing").Build());
+}
+
+TEST_F(AggregatedJournalTest, LogProto) {
+  AggregatedJournal& journal = ActorKeyedService::Get(profile())->GetJournal();
+  MockJournalObserver observer(journal);
+  EXPECT_CALL(observer, WillAddJournalEntry(testing::_)).Times(1);
+
+  optimization_guide::proto::Actions actions_proto;
+  journal.LogProto(GURL(), TaskId(0),
+                   MakeGlicExperimentalTriggeringTrackUUID("test_context"),
+                   "GlicProtoEvent", std::vector<mojom::JournalDetailsPtr>(),
+                   actions_proto);
 }
 
 TEST_F(AggregatedJournalTest, SerializerInMemory) {

@@ -15,7 +15,11 @@ source_set("glic_experimental_triggering") {
 }
 
 source_set("impl") {
-  sources = [ "glic_experimental_triggering_message_handler.cc" ]
+  sources = [
+    "actor_log.cc",
+    "actor_log.h",
+    "glic_experimental_triggering_message_handler.cc",
+  ]
 
   deps = [
     ":glic_experimental_triggering",

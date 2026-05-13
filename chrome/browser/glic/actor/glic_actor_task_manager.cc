@@ -534,11 +534,9 @@ void GlicActorClientSession::PerformActions(
     return;
   }
 
-  actor_keyed_service().GetJournal().Log(
+  actor_keyed_service().GetJournal().LogProto(
       GURL(), actor::TaskId(actions.task_id()), "GlicPerformActions",
-      actor::JournalDetailsBuilder()
-          .Add("proto", actor::ToBase64(actions))
-          .Build());
+      /*details=*/{}, actions, "chrome_intelligence_proto_features.Actions");
 
   if (!actions.has_task_id()) {
     actor_keyed_service().GetJournal().Log(

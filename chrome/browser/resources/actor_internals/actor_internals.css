@@ -37,6 +37,11 @@ td {
   --initial-background-color: #cacaca;
 }
 
+.glic-experimental-triggering-track {
+  background-color: #e6e6fa;
+  --initial-background-color: #e6e6fa;
+}
+
 .error-cell {
   background-color: #ffb6b6;
   font-weight: bold;

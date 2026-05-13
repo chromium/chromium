@@ -84,6 +84,8 @@ class ActorEventLog {
     const detailsCell = cells[4]!;
     if (entry.track === 'FrontEnd') {
       typeCell.classList.add('frontend-track');
+    } else if (entry.track === 'GlicExperimentalTriggering') {
+      typeCell.classList.add('glic-experimental-triggering-track');
     }
 
     this.formatTypeCell(entry, row, typeCell);
@@ -124,14 +126,30 @@ class ActorEventLog {
 
   private formatDetailsCell(entry: JournalEntry,
       detailsCell: HTMLTableCellElement ) {
-    if (entry.event === 'GlicPerformActions' && entry.details['proto']) {
+    if (entry.details['proto']) {
       const protobytes = entry.details['proto'];
+      const typeName = entry.details['proto_type'] || 'Protobuf';
       const link = document.createElement('a');
-      link.textContent = 'Actions Proto';
-      link.href = `https://protoshop.corp.google.com/embed?tabs=viewer,editor&type=chrome_intelligence_proto_features.Actions&protobytes=${
-          protobytes}`;
+      link.textContent = `${typeName} (Protoshop)`;
+      link.href =
+          `https://protoshop.corp.google.com/embed?tabs=viewer,editor,textproto&type=${
+              typeName}&protobytes=${encodeURIComponent(protobytes)}`;
       link.target = '_blank';
       detailsCell.appendChild(link);
+
+      // Create a copy of the details, but strip out the proto related fields.
+      const otherDetails = new Map<string, string>();
+      for (const [k, v] of Object.entries(entry.details)) {
+        if (k !== 'proto' && k !== 'proto_type') {
+          otherDetails.set(k, v);
+        }
+      }
+      // If there are details other than proto related fields, display them.
+      if (otherDetails.size > 0) {
+        const span = document.createElement('span');
+        span.textContent = '\n' + this.formatMapDetails(otherDetails);
+        detailsCell.appendChild(span);
+      }
     } else if (entry.screenshot) {
       const byteArray = new Uint8Array(entry.screenshot);
       const blob = new Blob([byteArray], { type: 'image/jpeg' });

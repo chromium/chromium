@@ -44,6 +44,8 @@ std::string ToString(uint64_t track_uuid, actor::TaskId task_id) {
     return "Browser";
   } else if (actor::MakeRendererTrackUUID(task_id) == track_uuid) {
     return "Renderer";
+  } else if (actor::IsGlicExperimentalTriggeringTrack(track_uuid)) {
+    return "GlicExperimentalTriggering";
   } else {
     return base::NumberToString(track_uuid);
   }
