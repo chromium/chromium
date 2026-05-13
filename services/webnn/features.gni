@@ -11,10 +11,8 @@ declare_args() {
   # TFLite is used as a fallback option on Apple and Windows.
   webnn_use_tflite = is_android || is_chromeos || is_linux || is_apple || is_win
 
-  # LiteRT matches TFLite except for arm.
-  # TODO(b/454732289): Add arm support once APK size issue is resolved.
-  webnn_use_litert = (is_android || is_chromeos || is_linux || is_apple ||
-                      is_win) && current_cpu != "arm"
+  # LiteRT matches TFLite.
+  webnn_use_litert = is_android || is_chromeos || is_linux || is_apple || is_win
 
   # Enable the GPU delegate provided by the Optimization Guide library.
   webnn_use_chrome_ml_api = enable_ml_internal
