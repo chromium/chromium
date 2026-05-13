@@ -10,12 +10,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
-
 import org.chromium.base.Log;
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,7 +25,7 @@ import java.util.function.Supplier;
  * acceleration sensor to detect sharp spikes in acceleration.
  */
 @NullMarked
-public class SendTabToSelfGestureDetector implements SensorEventListener, DefaultLifecycleObserver {
+public class SendTabToSelfGestureDetector implements SensorEventListener {
     private static final String TAG = "STTSGestureDetector";
 
     // Time window for a double tap (in milliseconds).
@@ -55,30 +50,15 @@ public class SendTabToSelfGestureDetector implements SensorEventListener, Defaul
     private boolean mListening;
 
     public SendTabToSelfGestureDetector(
-            Context context,
-            LifecycleOwner lifecycleOwner,
-            Supplier<Tab> tabSupplier,
-            Supplier<Profile> profileSupplier) {
+            Context context, Supplier<Tab> tabSupplier, Supplier<Profile> profileSupplier) {
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mTabSupplier = tabSupplier;
         mProfileSupplier = profileSupplier;
         mAccelerationThreshold = getAccelerationThreshold();
-        lifecycleOwner.getLifecycle().addObserver(this);
     }
 
-    @VisibleForTesting
-    public boolean isListening() {
-        return mListening;
-    }
-
-    @Override
-    public void onDestroy(LifecycleOwner owner) {
-        owner.getLifecycle().removeObserver(this);
-    }
-
-    @Override
-    public void onStart(LifecycleOwner owner) {
+    public void start() {
         if (mAccelerometer != null && !mListening) {
             mSensorManager.registerListener(
                     this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -89,8 +69,7 @@ public class SendTabToSelfGestureDetector implements SensorEventListener, Defaul
         }
     }
 
-    @Override
-    public void onStop(LifecycleOwner owner) {
+    public void stop() {
         if (mListening) {
             mSensorManager.unregisterListener(this);
             mListening = false;
