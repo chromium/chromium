@@ -110,6 +110,49 @@ class TestProcessCrashreports(unittest.TestCase):
       self.assertFalse(os.path.exists(self.crash_sh))
       self.assertFalse(os.path.exists(self.crash_c))
 
+  @patch('subprocess.check_call')
+  @patch('sys.argv', ['process_crashreports.py', '--source', 'test-bot'])
+  def test_main_leftover_artifacts(self, mock_check_call):
+    with patch('process_crashreports.CRASHREPORTS_DIR', self.crashreports_dir):
+      # Remove standard reproducer files created in setUp
+      os.remove(self.crash_sh)
+      os.remove(self.crash_c)
+
+      # Create leftover crash files/dirs
+      leftover_cpp = os.path.join(self.crashreports_dir,
+                                  'crash-report-1234.cpp')
+      with open(leftover_cpp, 'w') as f:
+        f.write('partially preprocessed code')
+      leftover_dir = os.path.join(self.crashreports_dir, 'modules.cache')
+      os.makedirs(leftover_dir)
+      with open(os.path.join(leftover_dir, 'cache.dat'), 'w') as f:
+        f.write('cache content')
+
+      # Create mock siso_output
+      default_dir = os.path.join(self.out_dir, 'Default')
+      os.makedirs(default_dir)
+      siso_output = os.path.join(default_dir, 'siso_output')
+      with open(siso_output, 'w') as f:
+        f.write("build completed\n")
+
+      with patch('process_crashreports.datetime') as mock_datetime:
+        mock_datetime.datetime.now.return_value = datetime.datetime(
+            2026, 5, 13, 14, 30, 5)
+        process_crashreports.main()
+
+      self.assertEqual(mock_check_call.call_count, 1)
+      expected_dest = (
+          'gs://chrome-clang-crash-reports/v1/2026/05/13/'
+          'test-bot-incomplete-crash-report-missing-reproducer-143005.tgz')
+      mock_check_call.assert_called_once_with([
+          sys.executable, process_crashreports.GSUTIL, '-q', 'cp', ANY,
+          expected_dest
+      ])
+
+      # Verify all files/dirs were deleted
+      self.assertFalse(os.path.exists(leftover_cpp))
+      self.assertFalse(os.path.exists(leftover_dir))
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -84,28 +84,8 @@ def FetchRbeCrashReports():
       print('failed')
 
 
-def ProcessCrashreport(base, source):
-  """Zip up all files belonging to a crash base name and upload them to GCS."""
-  sys.stdout.write('processing %s... ' % base)
-  sys.stdout.flush()
-
-  # Note that this will include the .sh and other files:
-  files = glob.glob(os.path.join(CRASHREPORTS_DIR, base + '.*'))
-
-  # Path design.
-  # - For each crash, it should be easy to see which platform it was on,
-  #   and which configuration it happened for.
-  # - Crash prefixes should be regular so that a second bot could download
-  #   crash reports and auto-triage them.
-  # - Ideally the assert reason would be easily visible too, but clang doesn't
-  #   write that to disk.
-  # Prepend with '/v1' so that we can move to other schemes in the future if
-  # needed.
-  # /v1/yyyy-mm-dd/botname-basename.tgz
-  now = datetime.datetime.now()
-  dest = 'gs://%s/v1/%04d/%02d/%02d/%s-%s.tgz' % (
-      GCS_BUCKET, now.year, now.month, now.day, source, base)
-
+def ArchiveAndUpload(dest, files):
+  """Compresses the given files into a tarball and uploads it to GCS."""
   # zipfile.ZipFile() defaults to Z_DEFAULT_COMPRESSION (6) and that can't
   # be overridden until Python 3.7. tarfile always uses compression level 9,
   # so use tarfile.
@@ -130,6 +110,31 @@ def ProcessCrashreport(base, source):
   finally:
     if tmp_name:
       os.remove(tmp_name)
+
+
+def ProcessCrashreport(base, source):
+  """Zip up all files belonging to a crash base name and upload them to GCS."""
+  sys.stdout.write('processing %s... ' % base)
+  sys.stdout.flush()
+
+  # Note that this will include the .sh and other files:
+  files = glob.glob(os.path.join(CRASHREPORTS_DIR, base + '.*'))
+
+  # Path design.
+  # - For each crash, it should be easy to see which platform it was on,
+  #   and which configuration it happened for.
+  # - Crash prefixes should be regular so that a second bot could download
+  #   crash reports and auto-triage them.
+  # - Ideally the assert reason would be easily visible too, but clang doesn't
+  #   write that to disk.
+  # Prepend with '/v1' so that we can move to other schemes in the future if
+  # needed.
+  # /v1/yyyy-mm-dd/botname-basename.tgz
+  now = datetime.datetime.now()
+  dest = 'gs://%s/v1/%04d/%02d/%02d/%s-%s.tgz' % (
+      GCS_BUCKET, now.year, now.month, now.day, source, base)
+
+  ArchiveAndUpload(dest, files)
 
 
 def DeleteCrashFiles():
@@ -182,9 +187,41 @@ def main():
   # lld reproducers just leave a .tar
   lld_reproducers = glob.glob(
       os.path.join(CRASHREPORTS_DIR, 'linker-crash*.tar'))
-  for reproducer in clang_reproducers + lld_reproducers:
+  reproducers = clang_reproducers + lld_reproducers
+  for reproducer in reproducers:
     base = os.path.splitext(os.path.basename(reproducer))[0]
     ProcessCrashreport(base, args.source)
+
+  # If no .sh or .tar reproducer scripts were found, but the crash
+  # reports directory contains leftover files or directories, log a
+  # clear diagnostic notice and upload them before deleting them.
+  # This typically occurs when Clang crashes but its Driver recovery
+  # preprocessor pass (-E) aborts early (e.g., due to Clang Modules or
+  # invalid module cache paths), preventing the emission of the .sh
+  # reproducer script while still leaving behind auxiliary outputs
+  # like preprocessed .cpp files or .cache directories downloaded
+  # from RBE.
+  if not reproducers and os.path.exists(CRASHREPORTS_DIR):
+    leftover_artifacts = sorted(
+        [f for f in os.listdir(CRASHREPORTS_DIR) if f != '.gitignore'])
+    if leftover_artifacts:
+      print('\nNotice: Found crash artifacts in %s but no .sh '
+            'reproducer scripts or .tar files were found.' % CRASHREPORTS_DIR)
+      print('Uploading leftover artifacts: %s' % ', '.join(leftover_artifacts))
+      print('This usually happens if the Clang Driver aborted '
+            'diagnostic generation during the preprocessor '
+            'recovery pass.\n')
+      now = datetime.datetime.now()
+      base = ('incomplete-crash-report-missing-reproducer-' +
+              now.strftime('%H%M%S'))
+      dest = 'gs://%s/v1/%04d/%02d/%02d/%s-%s.tgz' % (
+          GCS_BUCKET, now.year, now.month, now.day, args.source, base)
+      leftover_files = [
+          os.path.join(CRASHREPORTS_DIR, f) for f in leftover_artifacts
+      ]
+      sys.stdout.write('processing leftover artifacts... ')
+      sys.stdout.flush()
+      ArchiveAndUpload(dest, leftover_files)
 
   if args.delete:
     DeleteCrashFiles()
