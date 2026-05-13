@@ -265,11 +265,11 @@ bool DeserializeSection11(base::PickleIterator* iter,
 
 bool DeserializeSection13(base::PickleIterator* iter,
                           FormFieldData* field_data) {
-  std::u16string nonce;
-  if (!iter->ReadString16(&nonce)) {
+  std::u16string challenge;
+  if (!iter->ReadString16(&challenge)) {
     return false;
   }
-  field_data->set_nonce(std::move(nonce));
+  field_data->set_challenge(std::move(challenge));
   return true;
 }
 
@@ -317,7 +317,7 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
   if (!base::FeatureList::IsEnabled(features::kAutofillFixFormEquality)) {
     auto equality_tuple = [](const FormFieldData& f) {
       return std::tie(f.renderer_id_, f.host_frame_, f.label_, f.name_,
-                      f.name_attribute_, f.id_attribute_, f.nonce_,
+                      f.name_attribute_, f.id_attribute_, f.challenge_,
                       f.form_control_type_, f.autocomplete_attribute_,
                       f.placeholder_, f.max_length_, f.css_classes_,
                       f.is_focusable_, f.should_autocomplete_, f.role_,
@@ -359,7 +359,7 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
         !e.contains(kNotRefillRelated) ? f.css_classes_ : base::EmptyString16(),
         !e.contains(kNotRefillRelated) ? f.aria_label_ : base::EmptyString16(),
         !e.contains(kNotRefillRelated) ? f.aria_description_ : base::EmptyString16(),
-        !e.contains(kNotRefillRelated) ? f.nonce_ : base::EmptyString16(),
+        !e.contains(kNotRefillRelated) ? f.challenge_ : base::EmptyString16(),
         f.host_frame_,
         f.renderer_id_,
         !e.contains(kNotRefillRelated) ? f.host_form_id_ : kNoFormId,
@@ -486,7 +486,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteUInt32(field_data.properties_mask());
   pickle->WriteString16(field_data.id_attribute());
   pickle->WriteString16(field_data.name_attribute());
-  pickle->WriteString16(field_data.nonce());
+  pickle->WriteString16(field_data.challenge());
 }
 
 bool DeserializeFormFieldData(base::PickleIterator* iter,
@@ -679,7 +679,7 @@ std::ostream& PrintWithIndentation(std::ostream& os,
   PRINT_PROPERTY(pattern);
   PRINT_PROPERTY(aria_label);
   PRINT_PROPERTY(aria_description);
-  PRINT_PROPERTY(nonce);
+  PRINT_PROPERTY(challenge);
   PRINT_PROPERTY(placeholder);
   PRINT_PROPERTY(max_length);
   PRINT_PROPERTY(css_classes);

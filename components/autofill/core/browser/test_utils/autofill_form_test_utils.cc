@@ -561,8 +561,8 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   if (fd.id_attribute) {
     ff.set_id_attribute(*fd.id_attribute);
   }
-  if (fd.nonce) {
-    ff.set_nonce(*fd.nonce);
+  if (fd.challenge) {
+    ff.set_challenge(*fd.challenge);
   }
   if (fd.value) {
     ff.set_value(*fd.value);

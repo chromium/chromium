@@ -73,7 +73,7 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
 <html>
 <body>
   <form id="testform">
-    <input type="email" id="email" name="email" nonce="test_nonce">
+    <input type="email" id="email" name="email" challenge="test_nonce">
     <input
       type="hidden"
       id="verification"
@@ -156,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
 
   const FormStructure* form_structure = nullptr;
   for (const FormStructure* form : test_api(*manager).form_structures()) {
-    if (!form->fields().empty() && form->field(0)->nonce() == u"test_nonce") {
+    if (!form->fields().empty() &&
+        form->field(0)->challenge() == u"test_nonce") {
       form_structure = form;
       break;
     }

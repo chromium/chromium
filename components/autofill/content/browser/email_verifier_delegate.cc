@@ -68,7 +68,7 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
   const std::vector<std::unique_ptr<AutofillField>>& fields = form->fields();
   auto it = std::ranges::find_if(
       fields, [&](const std::unique_ptr<AutofillField>& field) {
-        return !field->nonce().empty() &&
+        return !field->challenge().empty() &&
                field->autofilled_type() == EMAIL_ADDRESS &&
                filled_field_ids.contains(field->global_id());
       });
@@ -89,7 +89,7 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
     return;
   }
   verifier->Verify(
-      base::UTF16ToUTF8(email), base::UTF16ToUTF8(email_field.nonce()),
+      base::UTF16ToUTF8(email), base::UTF16ToUTF8(email_field.challenge()),
       base::BindOnce(
           [](base::WeakPtr<AutofillManager> manager, FieldGlobalId field_id,
              std::optional<std::string> presentation_token) {

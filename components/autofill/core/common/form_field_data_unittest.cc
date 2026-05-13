@@ -56,7 +56,7 @@ void FillVersion8Fields(FormFieldData* data) {
 }
 
 void FillVersion10Fields(FormFieldData* data) {
-  data->set_nonce(u"nonce");
+  data->set_challenge(u"challenge");
 }
 
 void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
@@ -129,7 +129,7 @@ void WriteVersion8Specific(const FormFieldData& data, base::Pickle* pickle) {
 }
 
 void WriteVersion10Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.nonce());
+  pickle->WriteString16(data.challenge());
 }
 
 void SerializeInVersion1Format(const FormFieldData& data,
