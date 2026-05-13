@@ -4,6 +4,8 @@
 
 #include "chrome/enterprise_companion/installer.h"
 
+#include <shlobj.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -92,7 +94,11 @@ bool Install() {
   }
 
   base::ScopedTempDir temp_dir;
-  if (!temp_dir.CreateUniqueTempDir()) {
+  base::FilePath system_temp;
+  if (::IsUserAnAdmin()
+          ? !base::PathService::Get(base::DIR_SYSTEM_TEMP, &system_temp) ||
+                !temp_dir.CreateUniqueTempDirUnderPath(system_temp)
+          : !temp_dir.CreateUniqueTempDir()) {
     VLOG(1) << "Failed to create temporary directory.";
     return false;
   }
