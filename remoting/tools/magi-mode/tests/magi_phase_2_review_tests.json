@@ -1,7 +1,7 @@
 {
     "$schema": "./magi_test_schemas.json#/definitions/Scenario",
-    "name": "Preparation & Persona Selection",
-    "description": "Verify persona selection and checklist evaluation by Engineering Manager.",
+    "name": "Review Mode",
+    "description": "Verify review mode flow.",
     "base_inputs": {
         "project_spec": "testdata/project.magi.json",
         "state_block": "testdata/state_block.magi.json"
@@ -9,16 +9,17 @@
     "cases": [
         {
             "phase": 2,
-            "name": "Persona Selection and Checklist",
+            "name": "Review Mode - Skip Implementors",
             "override_inputs": {
                 "project_spec_overrides": {
-                    "goal": "Implement feature X touching platform Y and Mojo"
+                    "task_type": "REVIEW",
+                    "goal": "Review existing code for feature X"
                 }
             },
             "expected_outputs": {
                 "valid_json": true,
                 "content_patterns": {
-                    "test_output.json": "\"impl_consider_platform\": true"
+                    "test_output.json": "\"impl_skip_if_not_needed\": true"
                 }
             }
         }

@@ -12,7 +12,10 @@
     "stall_count": 0,
     "active_constraints": [],
     "resolved_constraints": [],
-    "personas": [
+    "implementors": [
+        "remoting/tools/magi-mode/personas/core/security.json"
+    ],
+    "reviewers": [
         "remoting/tools/magi-mode/personas/core/security.json",
         "remoting/tools/magi-mode/personas/domain/signaling.json"
     ],

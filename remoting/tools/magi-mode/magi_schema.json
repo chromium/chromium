@@ -49,7 +49,8 @@
           "type": "array",
           "items": { "type": "string" }
         },
-        "personas": { "type": "array", "items": { "type": "string" } },
+        "implementors": { "type": "array", "items": { "type": "string" } },
+        "reviewers": { "type": "array", "items": { "type": "string" } },
         "next_phase": { "type": "string" },
         "review_mode": {
           "type": "string",
@@ -66,7 +67,8 @@
         "stall_count",
         "active_constraints",
         "resolved_constraints",
-        "personas",
+        "implementors",
+        "reviewers",
         "review_mode",
         "state_transport",
         "next_phase"
@@ -76,6 +78,10 @@
       "type": "object",
       "properties": {
         "checklist": { "$ref": "#/definitions/ChecklistObject" },
+        "task_type": {
+          "type": "string",
+          "enum": ["IMPLEMENTATION", "REVIEW", "AUDIT"]
+        },
         "unlisted_issues_found": {
           "type": "array",
           "items": { "type": "string" }
