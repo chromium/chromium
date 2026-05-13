@@ -711,6 +711,7 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
     }
 
     if (break_token_ && !is_at_block_end_ && space.IsInsideBalancedColumns() &&
+        !IsFragmentainerBoxType() &&
         IsAvoidBreakValue(space, Style().BreakInside()) &&
         !space.IsInsideBreakAvoid() && space.HasKnownFragmentainerBlockSize()) {
       // This is a `break-inside:avoid` root that we ended up breaking inside
