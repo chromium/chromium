@@ -345,6 +345,21 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
                    withAction:@selector(sizeClassDidChange)];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self updateLayoutGuideRegistration];
+}
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  [self updateLayoutGuideRegistration];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [self updateLayoutGuideRegistration];
+}
+
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
   [self updateLayoutConstraints];
@@ -443,6 +458,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [self loadViewIfNeeded];
   [self updateToolbarElementsVisibility];
   [self updateTabGroupIndicatorAvailability];
+  [self updateLayoutGuideRegistration];
 }
 
 - (void)setNTPVisible:(BOOL)NTPVisible {
@@ -1408,6 +1424,32 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
     [self updateBannerConstraints];
     _bannerPromoBackgroundHeightConstraint.constant = [self
         bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
+  }
+  [self updateLayoutGuideRegistration];
+}
+
+// Registers the toolbar's button views with the layout guide center if the view
+// is loaded and the toolbar is visible.
+- (void)updateLayoutGuideRegistration {
+  LayoutGuideCenter* layoutGuideCenter = self.layoutGuideCenter;
+  if ([self isViewLoaded] && _visible) {
+    [layoutGuideCenter referenceView:_toolsMenuButton
+                           underName:kToolsMenuGuide];
+    [layoutGuideCenter referenceView:_backButton underName:kBackButtonGuide];
+    [layoutGuideCenter referenceView:_forwardButton
+                           underName:kForwardButtonGuide];
+
+    // Check `!button.hidden` for shared layout guides to prevent tracking
+    // inactive buttons and overwriting active guides in other view
+    // controllers.
+    if (!_tabGridButton.hidden) {
+      [layoutGuideCenter referenceView:_tabGridButton
+                             underName:kTabSwitcherGuide];
+    }
+    if (!_shareButton.hidden) {
+      [layoutGuideCenter referenceView:_shareButton
+                             underName:kShareButtonGuide];
+    }
   }
 }
 
