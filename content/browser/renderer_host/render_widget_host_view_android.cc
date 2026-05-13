@@ -647,6 +647,8 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
     : RenderWidgetHostViewBase(widget_host),
       is_window_visible_(true),
       is_window_activity_started_(true),
+      page_visibility_(widget_host->IsHidden() ? PageVisibilityState::kHidden
+                                               : PageVisibilityState::kVisible),
       view_visibility_(widget_host->IsHidden() ? Visibility::HIDDEN
                                                : Visibility::VISIBLE),
       ime_adapter_android_(nullptr),
@@ -1239,41 +1241,27 @@ bool RenderWidgetHostViewAndroid::IsSurfaceAvailableForCopy() {
 
 void RenderWidgetHostViewAndroid::ShowWithVisibility(
     PageVisibilityState page_visibility) {
-  // We can transition from `PageVisibilityState::kHiddenButPainting` to
-  // `PageVisibilityState::kVisible` while view_visibility_ == VISIBLE. We only
-  // want to support updating visibility requests for this transition.
-  if (page_visibility_ == page_visibility &&
-      view_visibility_ == Visibility::VISIBLE) {
-    return;
+  DCHECK_NE(page_visibility, PageVisibilityState::kHidden);
+  Visibility next_view_visibility = view_visibility_;
+  if (page_visibility == PageVisibilityState::kVisible) {
+    next_view_visibility = Visibility::VISIBLE;
+  } else if (page_visibility == PageVisibilityState::kHiddenButPainting &&
+             next_view_visibility == Visibility::VISIBLE) {
+    next_view_visibility = Visibility::HIDDEN;
   }
-
-  page_visibility_ = page_visibility;
-  SetViewVisibility(Visibility::VISIBLE);
+  TryUpdateVisibilities(next_view_visibility, page_visibility);
 }
 
 void RenderWidgetHostViewAndroid::Hide() {
-  if (view_visibility_ == Visibility::HIDDEN) {
-    return;
-  }
-
-  page_visibility_ = PageVisibilityState::kHidden;
-  SetViewVisibility(Visibility::HIDDEN);
+  TryUpdateVisibilities(Visibility::HIDDEN, PageVisibilityState::kHidden);
 }
 
 void RenderWidgetHostViewAndroid::WasOccluded() {
-  if (view_visibility_ == Visibility::OCCLUDED) {
-    return;
-  }
-
-  // In occlusion cases, we do not want to hide the frontbuffer as we want the
-  // last state of the page to be visible in case there are delays with the
-  // occlusion state update.
-  page_visibility_ = PageVisibilityState::kHidden;
-  SetViewVisibility(Visibility::OCCLUDED);
+  TryUpdateVisibilities(Visibility::OCCLUDED, PageVisibilityState::kHidden);
 }
 
 void RenderWidgetHostViewAndroid::WasUnOccluded() {
-  ShowWithVisibility(PageVisibilityState::kVisible);
+  TryUpdateVisibilities(Visibility::VISIBLE, PageVisibilityState::kVisible);
 }
 
 bool RenderWidgetHostViewAndroid::IsShowing() {
@@ -2379,8 +2367,13 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
   OnShowWithPageVisibility(page_visibility_);
 }
 
+bool RenderWidgetHostViewAndroid::VisibilityNeedsDrawing() const {
+  return view_visibility_ == Visibility::VISIBLE ||
+         page_visibility_ == PageVisibilityState::kHiddenButPainting;
+}
+
 void RenderWidgetHostViewAndroid::UpdateVisibility() {
-  bool should_be_showing = (view_visibility_ == Visibility::VISIBLE) &&
+  bool should_be_showing = VisibilityNeedsDrawing() &&
                            is_window_activity_started_ && is_window_visible_;
   if (should_be_showing) {
     ShowInternal();
@@ -2389,12 +2382,38 @@ void RenderWidgetHostViewAndroid::UpdateVisibility() {
   }
 }
 
-void RenderWidgetHostViewAndroid::SetViewVisibility(Visibility visibility) {
-  if (view_visibility_ == visibility) {
+void RenderWidgetHostViewAndroid::TryUpdateVisibilities(
+    Visibility new_view_visibility,
+    PageVisibilityState new_page_visibility) {
+#if DCHECK_IS_ON()
+  switch (new_view_visibility) {
+    case Visibility::VISIBLE:
+      // A visible view must have a visible page. It cannot be hidden or
+      // hidden-but-painting.
+      DCHECK_EQ(new_page_visibility, PageVisibilityState::kVisible);
+      break;
+    case Visibility::HIDDEN:
+    case Visibility::OCCLUDED:
+      // A hidden or occluded view cannot have a visible page. It must be hidden
+      // or hidden-but-painting.
+      DCHECK_NE(new_page_visibility, PageVisibilityState::kVisible);
+      break;
+  }
+#endif
+
+  if (view_visibility_ == new_view_visibility &&
+      page_visibility_ == new_page_visibility) {
     return;
   }
-  view_visibility_ = visibility;
-  view_.SetIsHitTestEligible(view_visibility_ == Visibility::VISIBLE);
+
+  bool view_visibility_changed = (view_visibility_ != new_view_visibility);
+  view_visibility_ = new_view_visibility;
+  page_visibility_ = new_page_visibility;
+
+  if (view_visibility_changed) {
+    view_.SetIsHitTestEligible(view_visibility_ == Visibility::VISIBLE);
+  }
+
   UpdateVisibility();
 }
 
@@ -2458,7 +2477,7 @@ void RenderWidgetHostViewAndroid::HideInternal() {
 void RenderWidgetHostViewAndroid::StartObservingRootWindow() {
   DCHECK(view_.parent());
   DCHECK(view_.GetWindowAndroid());
-  DCHECK(view_visibility_ == Visibility::VISIBLE);
+  DCHECK(VisibilityNeedsDrawing());
   if (observing_root_window_)
     return;
 
@@ -2987,7 +3006,7 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
   // TODO(enne): figure out a more straightforward init path for screen infos.
   UpdateScreenInfo();
 
-  if ((view_visibility_ == Visibility::VISIBLE) && view_.GetWindowAndroid()) {
+  if (VisibilityNeedsDrawing() && view_.GetWindowAndroid()) {
     StartObservingRootWindow();
   }
 
@@ -3154,7 +3173,7 @@ void RenderWidgetHostViewAndroid::OnAttachedToWindow() {
     return;
 
   UpdateScreenInfo();
-  if (view_visibility_ == Visibility::VISIBLE) {
+  if (VisibilityNeedsDrawing()) {
     StartObservingRootWindow();
   }
   DCHECK(view_.GetWindowAndroid());
@@ -3346,7 +3365,7 @@ void RenderWidgetHostViewAndroid::DidNavigate() {
     RenderWidgetHostViewBase::DidNavigate();
     return;
   }
-  if (view_visibility_ != Visibility::VISIBLE) {
+  if (!VisibilityNeedsDrawing()) {
     // Navigating while hidden should not allocate a new LocalSurfaceID. Once
     // sizes are ready, or we begin to Show, we can then allocate the new
     // LocalSurfaceId.
@@ -3686,7 +3705,7 @@ void RenderWidgetHostViewAndroid::WasEvicted() {
   // upon creating RenderWidgetHostViewAndroid. When this occurs while visible
   // a new LocalSurfaceId should be generated. If eviction occurs while not
   // visible, then the new LocalSurfaceId can be allocated upon the next Show.
-  if (view_visibility_ == Visibility::VISIBLE) {
+  if (VisibilityNeedsDrawing()) {
     local_surface_id_allocator_.GenerateId();
     // Guarantee that the new LocalSurfaceId is propagated. Rather than relying
     // upon calls to Show() and OnDidUpdateVisualPropertiesComplete(). As there
@@ -3840,7 +3859,7 @@ void RenderWidgetHostViewAndroid::EndRotationAndSyncIfNecessary() {
     return;
   EndRotationBatching();
 
-  if (view_visibility_ == Visibility::VISIBLE) {
+  if (VisibilityNeedsDrawing()) {
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                                 std::nullopt,
                                 /*reuse_current_local_surface_id=*/false,

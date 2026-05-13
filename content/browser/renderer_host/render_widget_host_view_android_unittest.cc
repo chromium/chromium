@@ -327,6 +327,28 @@ TEST_F(RenderWidgetHostViewAndroidTest, NoSurfaceSynchronizationWhileEvicted) {
       cc::DeadlinePolicy::UseDefaultDeadline(), initial_local_surface_id));
 }
 
+TEST_F(RenderWidgetHostViewAndroidTest,
+       OcclusionStateTransitionWithThumbnailCapture) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  EXPECT_TRUE(rwhva->IsShowing());
+
+  // 1. Occlude the view.
+  rwhva->WasOccluded();
+  EXPECT_FALSE(rwhva->IsShowing());
+
+  // 2. Trigger thumbnail capture (kHiddenButPainting).
+  rwhva->ShowWithVisibility(
+      blink::mojom::PageVisibilityState::kHiddenButPainting);
+
+  // The view must NOT be considered visible/showing to the user, preventing
+  // clobbering the occlusion state.
+  EXPECT_FALSE(rwhva->IsShowing());
+
+  // 3. Transition back to hidden/occluded (capture finishes).
+  rwhva->WasOccluded();
+  EXPECT_FALSE(rwhva->IsShowing());
+}
+
 // Tests insetting the Visual Viewport.
 TEST_F(RenderWidgetHostViewAndroidTest, InsetVisualViewport) {
   ui::TestViewAndroidDelegate test_view_android_delegate;

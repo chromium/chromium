@@ -622,7 +622,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void ShowInternal();
   void HideInternal();
   void UpdateVisibility();
-  void SetViewVisibility(Visibility visibility);
+  bool VisibilityNeedsDrawing() const;
+  void TryUpdateVisibilities(Visibility new_view_visibility,
+                             PageVisibilityState new_page_visibility);
   void AttachLayers();
   void RemoveLayers();
 
