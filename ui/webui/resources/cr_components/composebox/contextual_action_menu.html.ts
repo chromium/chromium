@@ -34,7 +34,8 @@ export function getHtml(this: ContextualActionMenuElement) {
               aria-popup="menu"
               aria-expanded="${this.shareTabsFlyoutOpen_}"
               @pointerenter="${this.onShareTabsRowPointerenter_}"
-              @pointerleave="${this.onShareTabsRowPointerleave_}">
+              @pointerleave="${this.onShareTabsRowPointerleave_}"
+              @keydown="${this.onShareTabsRowKeydown_}">
             <cr-icon icon="composebox:shareTabs"></cr-icon>
             <span class="tab-title">${this.i18n('shareTabs')}</span>
             <cr-icon class="share-tabs-arrow" icon="cr:chevron_right"></cr-icon>
@@ -42,7 +43,8 @@ export function getHtml(this: ContextualActionMenuElement) {
           <div class="share-tabs-flyout" role="menu"
               ?hidden="${!this.shareTabsFlyoutOpen_}"
               @pointerenter="${this.onShareTabsFlyoutPointerenter_}"
-              @pointerleave="${this.onShareTabsFlyoutPointerleave_}">
+              @pointerleave="${this.onShareTabsFlyoutPointerleave_}"
+              @keydown="${this.onShareTabsFlyoutKeydown_}">
             ${this.tabSuggestions.map((tab, index) => html`
               <div class="suggestion-container">
                 <button class="dropdown-item"

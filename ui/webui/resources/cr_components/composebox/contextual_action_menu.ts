@@ -463,6 +463,37 @@ export class ContextualActionMenuElement extends
     this.scheduleCloseTimer_();
   }
 
+  protected onShareTabsRowKeydown_(e: KeyboardEvent) {
+    if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      this.shareTabsFlyoutOpen_ = true;
+
+      this.updateComplete.then(() => {
+        const firstTabItem = this.shadowRoot.querySelector<HTMLElement>(
+            '.share-tabs-flyout button.dropdown-item');
+        if (firstTabItem) {
+          firstTabItem.focus();
+        }
+      });
+    }
+  }
+
+  protected onShareTabsFlyoutKeydown_(e: KeyboardEvent) {
+    if (e.key === 'ArrowLeft' || e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      this.shareTabsFlyoutOpen_ = false;
+
+      const row =
+          this.shadowRoot.querySelector<HTMLElement>('#shareTabsTrigger');
+      if (row) {
+        row.focus();
+      }
+    }
+  }
+
+
   private scheduleCloseTimer_() {
     this.cancelCloseTimer_();
     this.closeTimer_ = WindowProxy.getInstance().setTimeout(() => {
