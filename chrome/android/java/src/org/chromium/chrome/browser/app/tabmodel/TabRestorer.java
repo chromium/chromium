@@ -191,7 +191,7 @@ class TabRestorer {
 
         int tabCount = mTabModelSelector.getModel(mIncognito).getCount();
         Tab tab =
-                resolveTab(
+                maybeRestoreTab(
                         tabState,
                         loadedTabState.tabId,
                         tabCount,
@@ -435,7 +435,8 @@ class TabRestorer {
         mTabIdsToIgnore.add(tabId);
         assert mCachedRestoredActiveTabId == null || tabId != mCachedRestoredActiveTabId;
 
-        Tab tab = resolveTab(loadedTabState.tabState, tabId, index, isActive, mIsFromRecreating);
+        Tab tab =
+                maybeRestoreTab(loadedTabState.tabState, tabId, index, isActive, mIsFromRecreating);
         if (tab == null) {
             destroyLoadedTabState(loadedTabState);
             return;
@@ -485,21 +486,25 @@ class TabRestorer {
         }
     }
 
-    private @Nullable Tab resolveTab(
+    /**
+     * Restores a tab from the given {@link TabState}. Returns null if the WebContentsState, if
+     * present, was not used to create the tab.
+     */
+    private @Nullable Tab maybeRestoreTab(
             TabState tabState, int tabId, int index, boolean isActiveTab, boolean isRecreating) {
+        boolean isReparenting = mTabCreator.isReparenting(tabId);
+        if (isReparenting) {
+            createTabFromState(tabState, tabId, index);
+            // Reparenting will not use the TabState to create the tab.
+            return null;
+        }
+
         if (!isActiveTab) {
-            if (isRecreating) {
-                // If activity is recreating, we restore non-active NTPs.
-                boolean isNtp = tabState.url != null && UrlUtilities.isNtpUrl(tabState.url);
-                if (isNtp) {
-                    if (tabState.contentsState != null) {
-                        return createFrozenTab(tabState, tabId, index);
-                    } else {
-                        return createTabWithoutContentsState(assumeNonNull(tabState.url), index);
-                    }
-                }
-            }
-            if (shouldSkipTab(tabState)) {
+            // If activity is recreating, we restore non-active NTPs.
+            boolean isNtp = tabState.url != null && UrlUtilities.isNtpUrl(tabState.url);
+            if (isRecreating && isNtp) {
+                return createTabFromState(tabState, tabId, index);
+            } else if (shouldSkipTab(tabState)) {
                 mRestoreFilteredTabCount++;
                 return null;
             }
@@ -520,6 +525,14 @@ class TabRestorer {
             mDelegate.onActiveTabRestored(mIncognito);
         }
         return tab;
+    }
+
+    private @Nullable Tab createTabFromState(TabState tabState, int tabId, int index) {
+        if (tabState.contentsState != null) {
+            return createFrozenTab(tabState, tabId, index);
+        } else {
+            return createTabWithoutContentsState(assumeNonNull(tabState.url), index);
+        }
     }
 
     /** Creates a Tab from the given URL when tabState.contentsState is null. */
