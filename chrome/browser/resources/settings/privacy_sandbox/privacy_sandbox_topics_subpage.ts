@@ -171,7 +171,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   }
 
   private isTopicsEnabledAndLoaded_(): boolean {
-    return this.getPref('privacy_sandbox.m1.topics_enabled').value &&
+    return this.getPref<boolean>('privacy_sandbox.m1.topics_enabled').value &&
         this.isTopicsListLoaded_;
   }
 

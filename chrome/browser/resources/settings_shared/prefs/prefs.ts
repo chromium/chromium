@@ -24,7 +24,7 @@ import {CrSettingsPrefs} from './prefs_types.js';
  * @param val2 Value to compare with val1.
  * @return Whether the values are recursively equal.
  */
-function deepEqual(val1: any, val2: any): boolean {
+function deepEqual(val1: unknown, val2: unknown): boolean {
   if (val1 === val2) {
     return true;
   }
@@ -37,7 +37,8 @@ function deepEqual(val1: any, val2: any): boolean {
   }
 
   if (val1 instanceof Object && val2 instanceof Object) {
-    return objectsEqual(val1, val2);
+    return objectsEqual(
+        val1 as Record<string, unknown>, val2 as Record<string, unknown>);
   }
 
   return false;
@@ -46,7 +47,7 @@ function deepEqual(val1: any, val2: any): boolean {
 /**
  * @return Whether the arrays are recursively equal.
  */
-function arraysEqual(arr1: any[], arr2: any[]): boolean {
+function arraysEqual(arr1: unknown[], arr2: unknown[]): boolean {
   if (arr1.length !== arr2.length) {
     return false;
   }
@@ -64,7 +65,7 @@ function arraysEqual(arr1: any[], arr2: any[]): boolean {
  * @return Whether the objects are recursively equal.
  */
 function objectsEqual(
-    obj1: {[key: string]: any}, obj2: {[key: string]: any}): boolean {
+    obj1: Record<string, unknown>, obj2: Record<string, unknown>): boolean {
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
   if (keys1.length !== keys2.length) {
@@ -104,13 +105,13 @@ export class SettingsPrefsElement extends PolymerElement {
     ];
   }
 
-  declare prefs: {[key: string]: any}|undefined;
+  declare prefs: {[key: string]: unknown}|undefined;
 
   /**
    * Map of pref keys to values representing the state of the Chrome
    * pref store as of the last update from the API.
    */
-  private lastPrefValues_: Map<string, any> = new Map();
+  private lastPrefValues_: Map<string, unknown> = new Map();
 
   private settingsApi_: typeof chrome.settingsPrivate = chrome.settingsPrivate;
   private initialized_: boolean = false;
@@ -218,7 +219,7 @@ export class SettingsPrefsElement extends PolymerElement {
    * @param prefsObject The prefs object to add the path to.
    */
   private updatePrefPath_(
-      path: string, value: any, prefsObject: {[key: string]: any}) {
+      path: string, value: unknown, prefsObject: {[key: string]: unknown}) {
     const parts = path.split('.');
     let cur = prefsObject;
 
@@ -227,7 +228,7 @@ export class SettingsPrefsElement extends PolymerElement {
         // last part, set the value.
         cur[part] = value;
       } else if (part in cur) {
-        cur = cur[part];
+        cur = cur[part] as Record<string, unknown>;
       } else {
         cur = cur[part] = {};
       }

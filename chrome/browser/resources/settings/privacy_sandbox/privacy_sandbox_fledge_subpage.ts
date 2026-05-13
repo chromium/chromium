@@ -167,7 +167,7 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
   }
 
   private isFledgeEnabledAndLoaded_(): boolean {
-    return this.getPref('privacy_sandbox.m1.fledge_enabled').value &&
+    return this.getPref<boolean>('privacy_sandbox.m1.fledge_enabled').value &&
         this.isSitesListLoaded_;
   }
 

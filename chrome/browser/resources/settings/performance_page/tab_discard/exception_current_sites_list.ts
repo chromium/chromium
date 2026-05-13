@@ -155,8 +155,9 @@ export class ExceptionCurrentSitesListElement extends
   }
 
   private async updateCurrentSites_() {
-    const existingSites =
-        new Set(Object.keys(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value));
+    const existingSites = new Set(Object.keys(
+        this.getPref<Record<string, unknown>>(TAB_DISCARD_EXCEPTIONS_PREF)
+            .value));
     const currentSites = (await this.browserProxy_.getCurrentOpenSites())
                              .filter(rule => !existingSites.has(rule));
 

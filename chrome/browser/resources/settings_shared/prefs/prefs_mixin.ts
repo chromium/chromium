@@ -28,12 +28,13 @@ export const PrefsMixin = dedupingMixin(
           };
         }
 
-        declare prefs: any;
+        declare prefs: Record<string, unknown>;
 
         /**
          * Gets the pref at the given prefPath. Throws if the pref is not found.
          */
-        getPref(prefPath: string) {
+        getPref<T = any>(prefPath: string):
+            chrome.settingsPrivate.PrefObject<T> {
           const pref = this.get(prefPath, this.prefs);
           assert(typeof pref !== 'undefined', 'Pref is missing: ' + prefPath);
           return pref;
@@ -43,7 +44,7 @@ export const PrefsMixin = dedupingMixin(
          * Sets the value of the pref at the given prefPath. Throws if the pref
          * is not found.
          */
-        setPrefValue(prefPath: string, value: any) {
+        setPrefValue(prefPath: string, value: unknown) {
           this.getPref(prefPath);  // Ensures we throw if the pref is not found.
           this.set('prefs.' + prefPath + '.value', value);
         }
@@ -53,8 +54,8 @@ export const PrefsMixin = dedupingMixin(
          * already in the list. Asserts if the pref itself is not found or is
          * not an Array type.
          */
-        appendPrefListItem(key: string, item: any) {
-          const pref = this.getPref(key);
+        appendPrefListItem(key: string, item: unknown) {
+          const pref = this.getPref<unknown[]>(key);
           assert(pref && pref.type === chrome.settingsPrivate.PrefType.LIST);
           if (pref.value.indexOf(item) === -1) {
             this.push('prefs.' + key + '.value', item);
@@ -65,8 +66,8 @@ export const PrefsMixin = dedupingMixin(
          * Updates the item in the pref list to the new value. Asserts if the
          * pref itself is not found or is not an Array type.
          */
-        updatePrefListItem(key: string, item: any, newItem: any) {
-          const pref = this.getPref(key);
+        updatePrefListItem(key: string, item: unknown, newItem: unknown) {
+          const pref = this.getPref<unknown[]>(key);
           assert(pref && pref.type === chrome.settingsPrivate.PrefType.LIST);
           const index = pref.value.indexOf(item);
           if (index !== -1) {
@@ -79,10 +80,10 @@ export const PrefsMixin = dedupingMixin(
          * found. Asserts if the pref itself is not found or is not an Array
          * type.
          */
-        deletePrefListItem(key: string, item: any) {
-          assert(
-              this.getPref(key).type === chrome.settingsPrivate.PrefType.LIST);
-          const index = this.getPref(key).value.indexOf(item);
+        deletePrefListItem(key: string, item: unknown) {
+          const pref = this.getPref<unknown[]>(key);
+          assert(pref && pref.type === chrome.settingsPrivate.PrefType.LIST);
+          const index = pref.value.indexOf(item);
           if (index !== -1) {
             this.splice(`prefs.${key}.value`, index, 1);
           }
@@ -92,12 +93,13 @@ export const PrefsMixin = dedupingMixin(
          * Updates the entry in the pref dictionary to the new key value pair.
          * Asserts if the pref itself is not found or is not a dictionary type.
          */
-        setPrefDictEntry(prefPath: string, key: any, value: any) {
+        setPrefDictEntry(prefPath: string, key: string, value: unknown) {
           const pref = this.getPref(prefPath);
           assert(
               pref && pref.type === chrome.settingsPrivate.PrefType.DICTIONARY);
-          pref.value[key] = value;
-          this.set('prefs.' + prefPath + '.value', {...pref.value});
+          const dict = pref.value as Record<string, unknown>;
+          dict[key] = value;
+          this.set('prefs.' + prefPath + '.value', {...dict});
         }
 
         /**
@@ -105,12 +107,13 @@ export const PrefsMixin = dedupingMixin(
          * found. Asserts if the pref itself is not found or is not a dictionary
          * type.
          */
-        deletePrefDictEntry(prefPath: string, key: any) {
+        deletePrefDictEntry(prefPath: string, key: string) {
           const pref = this.getPref(prefPath);
           assert(
               pref && pref.type === chrome.settingsPrivate.PrefType.DICTIONARY);
-          delete pref.value[key];
-          this.set('prefs.' + prefPath + '.value', {...pref.value});
+          const dict = pref.value as Record<string, unknown>;
+          delete dict[key];
+          this.set('prefs.' + prefPath + '.value', {...dict});
         }
 
         /**
@@ -128,10 +131,10 @@ export const PrefsMixin = dedupingMixin(
 export interface PrefsMixinInterface {
   prefs: any;
   getPref<T = any>(prefPath: string): chrome.settingsPrivate.PrefObject<T>;
-  setPrefValue(prefPath: string, value: any): void;
-  appendPrefListItem(key: string, item: any): void;
-  updatePrefListItem(key: string, item: any, new_item: any): void;
-  deletePrefListItem(key: string, item: any): void;
-  setPrefDictEntry(prefPath: string, key: any, value: any): void;
-  deletePrefDictEntry(prefPath: string, key: any): void;
+  setPrefValue(prefPath: string, value: unknown): void;
+  appendPrefListItem(key: string, item: unknown): void;
+  updatePrefListItem(key: string, item: unknown, newItem: unknown): void;
+  deletePrefListItem(key: string, item: unknown): void;
+  setPrefDictEntry(prefPath: string, key: string, value: unknown): void;
+  deletePrefDictEntry(prefPath: string, key: string): void;
 }

@@ -170,23 +170,28 @@ export class ExceptionListElement extends
 
   private onPrefsChanged_() {
     const newSites: ExceptionEntry[] = [];
-    for (const pref
-             of [TAB_DISCARD_EXCEPTIONS_MANAGED_PREF,
-                 TAB_DISCARD_EXCEPTIONS_PREF]) {
-      // Annotate sites with their managed status and append them to newSites
-      // with managed sites first.
-      const prefObject = this.getPref(pref);
-      let sites = prefObject.value;
 
-      if (sites.constructor.name === 'Object') {
-        sites = Object.keys(sites);
-      }
-      const siteToExceptionEntry = (site: string) => ({
-        site,
-        managed: prefObject.enforcement ===
-            chrome.settingsPrivate.Enforcement.ENFORCED,
-      });
-      newSites.push(...sites.map(siteToExceptionEntry));
+    const siteToExceptionEntry =
+        (site: string, prefObject: chrome.settingsPrivate.PrefObject) => ({
+          site,
+          managed: prefObject.enforcement ===
+              chrome.settingsPrivate.Enforcement.ENFORCED,
+        });
+
+    {
+      const prefObject =
+          this.getPref<string[]>(TAB_DISCARD_EXCEPTIONS_MANAGED_PREF);
+      const sites: string[] = prefObject.value;
+      newSites.push(
+          ...sites.map(site => siteToExceptionEntry(site, prefObject)));
+    }
+
+    {
+      const prefObject =
+          this.getPref<Record<string, string>>(TAB_DISCARD_EXCEPTIONS_PREF);
+      const sites: string[] = Object.keys(prefObject.value);
+      newSites.push(
+          ...sites.map(site => siteToExceptionEntry(site, prefObject)));
     }
 
     // Optimizes updates by keeping existing references and minimizes splices

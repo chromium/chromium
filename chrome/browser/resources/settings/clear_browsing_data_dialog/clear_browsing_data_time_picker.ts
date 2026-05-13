@@ -144,7 +144,7 @@ export class SettingsClearBrowsingDataTimePicker extends
 
   private onTimePeriodPrefUpdated_() {
     const timePeriodValue =
-        this.getPref('browser.clear_data.time_period').value;
+        this.getPref<TimePeriod>('browser.clear_data.time_period').value;
 
     if (timePeriodValue in TimePeriod &&
         timePeriodValue !== this.selectedTimePeriod_) {

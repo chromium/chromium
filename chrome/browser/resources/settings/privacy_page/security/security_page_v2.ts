@@ -330,11 +330,13 @@ export class SettingsSecurityPageV2Element extends
     this.lastFocusTime_ = this.hatsBrowserProxy_.now();
     CrSettingsPrefs.initialized.then(() => {
       this.safeBrowsingStateOnOpen_ =
-          this.getPref('generated.safe_browsing').value;
+          this.getPref<SafeBrowsingSetting>('generated.safe_browsing').value;
       this.currentSafeBrowsingSetting_ =
-          this.getPref('generated.safe_browsing').value;
+          this.getPref<SafeBrowsingSetting>('generated.safe_browsing').value;
       this.securitySettingsBundleStateOnOpen_ =
-          this.getPref('generated.security_settings_bundle').value;
+          this.getPref<SecuritySettingsBundleSetting>(
+                  'generated.security_settings_bundle')
+              .value;
     });
   }
 
@@ -614,8 +616,11 @@ export class SettingsSecurityPageV2Element extends
     this.isResettingToDefaults_ = false;
   }
 
-  private getBundleSetting_() {
-    return this.getPref('generated.security_settings_bundle').value;
+  private getBundleSetting_(): SecuritySettingsBundleSetting {
+    return this
+        .getPref<SecuritySettingsBundleSetting>(
+            'generated.security_settings_bundle')
+        .value;
   }
 
   private getDefaultSafeBrowsingValue_(

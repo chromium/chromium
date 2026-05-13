@@ -78,7 +78,7 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
   declare indicatorTooltip: string;
   declare indicatorVisible: boolean;
   declare pref?: chrome.settingsPrivate.PrefObject;
-  declare associatedValue?: any;
+  declare associatedValue?: unknown;
 
   /**
    * @return True if the indicator should be shown.

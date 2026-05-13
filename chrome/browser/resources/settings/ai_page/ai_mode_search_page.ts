@@ -110,7 +110,8 @@ export class SettingsAiModeSearchPageElement extends
   }
 
   getSiteExclusions(): Record<string, number> {
-    const pref = this.getPref('contextual_tasks.site_exclusions');
+    const pref = this.getPref<Record<string, number>>(
+        'contextual_tasks.site_exclusions');
     return pref ? pref.value : {};
   }
 

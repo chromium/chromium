@@ -404,8 +404,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     if (this.prefs === undefined || this.languages === undefined) {
       return;
     }
-    const alwaysTranslateCodes =
-        Object.keys(this.getPref('translate_allowlists').value);
+    const alwaysTranslateCodes = Object.keys(
+        this.getPref<Record<string, unknown>>('translate_allowlists').value);
     const alwaysTranslateLanguages =
         alwaysTranslateCodes.map((code: string) => this.getLanguage(code));
     this.set('languages.alwaysTranslate', alwaysTranslateLanguages);
@@ -433,7 +433,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       return;
     }
     const neverTranslateSites =
-        Object.keys(this.getPref('translate_site_blocklist_with_time').value);
+        Object.keys(this.getPref<Record<string, unknown>>(
+                            'translate_site_blocklist_with_time')
+                        .value);
     this.set('languages.neverTranslateSites', neverTranslateSites);
   }
 
@@ -443,7 +445,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     }
 
     const translateBlockedPrefValue =
-        this.getPref('translate_blocked_languages').value as string[];
+        this.getPref<string[]>('translate_blocked_languages').value;
     const translateBlockedSet =
         this.makeSetFromArray_(translateBlockedPrefValue);
 

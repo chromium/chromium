@@ -466,7 +466,7 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 
   private async updateOptInStatus_(): Promise<void> {
-    const addressPref = this.getPref('autofill.profile_enabled');
+    const addressPref = this.getPref<boolean>('autofill.profile_enabled');
     const autofillAiPref = this.getPref<ModelExecutionEnterprisePolicyValue>(
         AiEnterpriseFeaturePrefName.AUTOFILL_AI);
     const meetsAddressPrefRequirement =

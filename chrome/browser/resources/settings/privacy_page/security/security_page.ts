@@ -248,7 +248,8 @@ export class SettingsSecurityPageElement extends
     CrSettingsPrefs.initialized.then(() => {
       // Expand initial pref value manually because automatic
       // expanding is disabled.
-      const prefValue = this.getPref('generated.safe_browsing').value;
+      const prefValue =
+          this.getPref<SafeBrowsingSetting>('generated.safe_browsing').value;
       if (prefValue === SafeBrowsingSetting.ENHANCED) {
         this.$.safeBrowsingEnhanced.expanded = true;
       } else if (prefValue === SafeBrowsingSetting.STANDARD) {

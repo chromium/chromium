@@ -187,7 +187,8 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     // <if expr="not is_chromeos">
     if (this.installedLanguagePacks_.length === 0) {
       this.installLanguagePacks_(
-          [this.getPref('accessibility.captions.live_caption_language').value]);
+          [this.getPref<string>('accessibility.captions.live_caption_language')
+               .value]);
     }
     // </if>
   }
@@ -224,7 +225,8 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     }
 
     return languageCode ===
-        this.prefs.accessibility.captions.live_caption_language.value;
+        this.getPref<string>('accessibility.captions.live_caption_language')
+            .value;
   }
 
   private onMakeDefaultClick_() {
