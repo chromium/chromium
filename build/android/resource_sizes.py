@@ -2,12 +2,10 @@
 # Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Reports binary size metrics for an APK.
 
 More information at //docs/speed/binary_size/metrics.md.
 """
-
 
 import argparse
 import collections
@@ -49,11 +47,6 @@ with host_paths.SysPath(host_paths.TRACING_PATH):
 with host_paths.SysPath(_ANDROID_UTILS_PATH, 0):
   from util import build_utils  # pylint: disable=import-error
 
-# Captures an entire config from aapt output.
-_AAPT_CONFIG_PATTERN = r'config %s:(.*?)config [a-zA-Z-]+:'
-# Matches string resource entries from aapt output.
-_AAPT_ENTRY_RE = re.compile(
-    r'resource (?P<id>\w{10}) [\w\.]+:string/.*?"(?P<val>.+?)"', re.DOTALL)
 _BASE_CHART = {
     'format_version': '0.1',
     'benchmark_name': 'resource_sizes',
@@ -61,9 +54,6 @@ _BASE_CHART = {
     'trace_rerun_options': [],
     'charts': {}
 }
-# Macro definitions look like (something, 123) when
-# enable_resource_allowlist_generation=true.
-_RC_HEADER_RE = re.compile(r'^#define (?P<name>\w+).* (?P<id>\d+)\)?$')
 _RE_NON_LANGUAGE_PAK = re.compile(r'^assets/.*(resources|percent)\.pak$')
 _READELF_SIZES_METRICS = {
     'text': ['.text'],
@@ -90,6 +80,7 @@ _READELF_SIZES_METRICS = {
 
 
 class _AccumulatingReporter:
+
   def __init__(self):
     self._combined_metrics = collections.defaultdict(int)
 
@@ -103,6 +94,7 @@ class _AccumulatingReporter:
 
 
 class _ChartJsonReporter(_AccumulatingReporter):
+
   def __init__(self, chartjson):
     super().__init__()
     self._chartjson = chartjson
@@ -207,8 +199,8 @@ def _CreateSectionNameSizeMap(so_path):
 
 def _ParseManifestAttributes(apk_path):
   # Parses minSdkVersion and on-demand module attributes from the manifest.
-  output = cmd_helper.GetCmdOutput([
-      _AAPT_PATH.read(), 'd', 'xmltree', apk_path, 'AndroidManifest.xml'])
+  output = cmd_helper.GetCmdOutput(
+      [_AAPT_PATH.read(), 'd', 'xmltree', apk_path, 'AndroidManifest.xml'])
 
   def parse_attr(namespace, name, default=None):
     # dist:onDemand=(type 0x12)0xffffffff
@@ -235,61 +227,6 @@ def _NormalizeLanguagePaks(translations, factor):
     ret -= translations.ComputeZippedSize()
     ret += int(english_pak.compress_size * num_translations * factor)
   return ret
-
-
-def _NormalizeResourcesArsc(apk_path, num_arsc_files, num_translations,
-                            out_dir):
-  """Estimates the expected overhead of untranslated strings in resources.arsc.
-
-  See http://crbug.com/677966 for why this is necessary.
-  """
-  # If there are multiple .arsc files, use the resource packaged APK instead.
-  if num_arsc_files > 1:
-    if not out_dir:
-      return -float('inf')
-    ap_name = os.path.basename(apk_path).replace('.apk', '.ap_')
-    ap_path = os.path.join(out_dir, 'arsc/apks', ap_name)
-    if not os.path.exists(ap_path):
-      raise Exception('Missing expected file: %s, try rebuilding.' % ap_path)
-    apk_path = ap_path
-
-  aapt_output = _RunAaptDumpResources(apk_path)
-  # en-rUS is in the default config and may be cluttered with non-translatable
-  # strings, so en-rGB is a better baseline for finding missing translations.
-  en_strings = _CreateResourceIdValueMap(aapt_output, 'en-rGB')
-  fr_strings = _CreateResourceIdValueMap(aapt_output, 'fr')
-
-  # en-US and en-GB will never be translated.
-  config_count = num_translations - 2
-
-  size = 0
-  for res_id, string_val in en_strings.items():
-    if string_val == fr_strings.get(res_id):
-      string_size = len(string_val)
-      # 7 bytes is the per-entry overhead (not specific to any string). See
-      # https://android.googlesource.com/platform/frameworks/base.git/+/android-4.2.2_r1/tools/aapt/StringPool.cpp#414.
-      # The 1.5 factor was determined experimentally and is meant to account for
-      # other languages generally having longer strings than english.
-      size += config_count * (7 + string_size * 1.5)
-
-  return int(size)
-
-
-def _CreateResourceIdValueMap(aapt_output, lang):
-  """Return a map of resource ids to string values for the given |lang|."""
-  config_re = _AAPT_CONFIG_PATTERN % lang
-  return {entry.group('id'): entry.group('val')
-          for config_section in re.finditer(config_re, aapt_output, re.DOTALL)
-          for entry in re.finditer(_AAPT_ENTRY_RE, config_section.group(0))}
-
-
-def _RunAaptDumpResources(apk_path):
-  cmd = [_AAPT_PATH.read(), 'dump', '--values', 'resources', apk_path]
-  status, output = cmd_helper.GetCmdStatusAndOutput(cmd)
-  if status != 0:
-    raise Exception('Failed running aapt command: "%s" with output "%s".' %
-                    (' '.join(cmd), output))
-  return output
 
 
 class _FileGroup:
@@ -339,7 +276,6 @@ def _AnalyzeInternal(apk_path,
                      sdk_version,
                      report_func,
                      dex_stats_collector,
-                     out_dir,
                      apks_path=None,
                      split_name=None):
   """Analyse APK to determine size contributions of different file classes.
@@ -431,8 +367,8 @@ def _AnalyzeInternal(apk_path,
     if filename.endswith('.so'):
       basename = posixpath.basename(filename)
       should_extract_lib = basename.startswith('lib')
-      native_code.AddZipInfo(
-          member, extracted_multiplier=int(should_extract_lib))
+      native_code.AddZipInfo(member,
+                             extracted_multiplier=int(should_extract_lib))
     elif filename.startswith('classes') and filename.endswith('.dex'):
       # Android P+, uncompressed dex does not need to be extracted.
       compressed = member.compress_type != zipfile.ZIP_STORED
@@ -619,19 +555,6 @@ def _AnalyzeInternal(apk_path,
       normalized_apk_size += _NormalizeLanguagePaks(translations, 1.17)
     if num_stored_translations > 1:
       normalized_apk_size += _NormalizeLanguagePaks(stored_translations, 1.43)
-    if num_translations + num_stored_translations > 1:
-      if num_translations == 0:
-        # WebView stores all locale paks uncompressed.
-        num_arsc_translations = num_stored_translations
-      else:
-        # Monochrome has more configurations than Chrome since it includes
-        # WebView (which supports more locales), but these should mostly be
-        # empty so ignore them here.
-        num_arsc_translations = num_translations
-      normalized_apk_size += _NormalizeResourcesArsc(apk_path,
-                                                     arsc.GetNumEntries(),
-                                                     num_arsc_translations,
-                                                     out_dir)
 
   # It will be -Inf for .apk files with multiple .arsc files and no out_dir set.
   if normalized_apk_size < 0:
@@ -648,8 +571,8 @@ def _AnalyzeInternal(apk_path,
   report_func('FileCount', 'file count', len(apk_contents), 'zip entries')
 
   for info in unknown.AllEntries():
-    sys.stderr.write(
-        'Unknown entry: %s %d\n' % (info.filename, info.compress_size))
+    sys.stderr.write('Unknown entry: %s %d\n' %
+                     (info.filename, info.compress_size))
   return normalized_apk_size
 
 
@@ -668,11 +591,12 @@ def _CalculateCompressedSize(file_path):
 def Unzip(zip_file, filename=None):
   """Utility for temporary use of a single file in a zip archive."""
   with build_utils.TempDir() as unzipped_dir:
-    unzipped_files = build_utils.ExtractAll(
-        zip_file, unzipped_dir, True, pattern=filename)
+    unzipped_files = build_utils.ExtractAll(zip_file,
+                                            unzipped_dir,
+                                            True,
+                                            pattern=filename)
     if len(unzipped_files) == 0:
-      raise Exception(
-          '%s not found in %s' % (filename, zip_file))
+      raise Exception('%s not found in %s' % (filename, zip_file))
     yield unzipped_files[0]
 
 
@@ -708,15 +632,14 @@ def _ExtractToTempFile(zip_obj, subpath, temp_file):
   temp_file.flush()
 
 
-def _AnalyzeApkOrApks(report_func, apk_path, out_dir):
+def _AnalyzeApkOrApks(report_func, apk_path):
   # Create DexStatsCollector here to track unique methods across base & chrome
   # modules.
   dex_stats_collector = method_count.DexStatsCollector()
 
   if apk_path.endswith('.apk'):
     sdk_version, _ = _ParseManifestAttributes(apk_path)
-    _AnalyzeInternal(apk_path, sdk_version, report_func, dex_stats_collector,
-                     out_dir)
+    _AnalyzeInternal(apk_path, sdk_version, report_func, dex_stats_collector)
   elif apk_path.endswith('.apks'):
     with tempfile.NamedTemporaryFile(suffix='.apk') as f:
       with zipfile.ZipFile(apk_path) as z:
@@ -746,7 +669,6 @@ def _AnalyzeApkOrApks(report_func, apk_path, out_dir):
                                   sdk_version,
                                   inner_report_func,
                                   inner_dex_stats_collector,
-                                  out_dir,
                                   apks_path=apk_path,
                                   split_name=split_name)
           report_func('DFM_' + split_name, 'Size with hindi', size, 'bytes')
@@ -792,14 +714,13 @@ def _ResourceSizes(args):
   for prefix, path in specs:
     if path:
       reporter.trace_title_prefix = prefix
-      child_dex_stats_collector = _AnalyzeApkOrApks(reporter, path,
-                                                    args.out_dir)
+      child_dex_stats_collector = _AnalyzeApkOrApks(reporter, path)
       dex_stats_collector.MergeFrom(prefix, child_dex_stats_collector)
 
   if any(path for _, path in specs):
     reporter.SynthesizeTotals(dex_stats_collector.GetUniqueMethodCount())
   else:
-    _AnalyzeApkOrApks(reporter, args.input, args.out_dir)
+    _AnalyzeApkOrApks(reporter, args.input)
 
   if chartjson:
     _DumpChartJson(args, chartjson)
@@ -841,35 +762,30 @@ def _DumpChartJson(args, chartjson):
 def main():
   build_utils.InitLogging('RESOURCE_SIZES_DEBUG')
   argparser = argparse.ArgumentParser(description='Print APK size metrics.')
-  argparser.add_argument(
-      '--min-pak-resource-size',
-      type=int,
-      default=20 * 1024,
-      help='Minimum byte size of displayed pak resources.')
-  argparser.add_argument(
-      '--chromium-output-directory',
-      dest='out_dir',
-      type=os.path.realpath,
-      help='Location of the build artifacts.')
-  argparser.add_argument(
-      '--chartjson',
-      action='store_true',
-      help='DEPRECATED. Use --output-format=chartjson '
-      'instead.')
-  argparser.add_argument(
-      '--output-format',
-      choices=['chartjson', 'histograms'],
-      help='Output the results to a file in the given '
-      'format instead of printing the results.')
+  argparser.add_argument('--min-pak-resource-size',
+                         type=int,
+                         default=20 * 1024,
+                         help='Minimum byte size of displayed pak resources.')
+  argparser.add_argument('--chromium-output-directory',
+                         dest='out_dir',
+                         type=os.path.realpath,
+                         help='Location of the build artifacts.')
+  argparser.add_argument('--chartjson',
+                         action='store_true',
+                         help='DEPRECATED. Use --output-format=chartjson '
+                         'instead.')
+  argparser.add_argument('--output-format',
+                         choices=['chartjson', 'histograms'],
+                         help='Output the results to a file in the given '
+                         'format instead of printing the results.')
   argparser.add_argument('--loadable_module', help='Obsolete (ignored).')
 
   # Accepted to conform to the isolated script interface, but ignored.
-  argparser.add_argument(
-      '--isolated-script-test-filter', help=argparse.SUPPRESS)
-  argparser.add_argument(
-      '--isolated-script-test-perf-output',
-      type=os.path.realpath,
-      help=argparse.SUPPRESS)
+  argparser.add_argument('--isolated-script-test-filter',
+                         help=argparse.SUPPRESS)
+  argparser.add_argument('--isolated-script-test-perf-output',
+                         type=os.path.realpath,
+                         help=argparse.SUPPRESS)
   argparser.add_argument('--isolated-script-test-repeat',
                          help=argparse.SUPPRESS)
   argparser.add_argument('--isolated-script-test-launcher-retry-limit',
@@ -877,28 +793,28 @@ def main():
 
   output_group = argparser.add_mutually_exclusive_group()
 
-  output_group.add_argument(
-      '--output-dir', default='.', help='Directory to save chartjson to.')
+  output_group.add_argument('--output-dir',
+                            default='.',
+                            help='Directory to save chartjson to.')
   output_group.add_argument(
       '--output-file',
       help='Path to output .json (replaces --output-dir). Works only for '
       '--output-format=chartjson')
-  output_group.add_argument(
-      '--isolated-script-test-output',
-      type=os.path.realpath,
-      help='File to which results will be written in the '
-      'simplified JSON output format.')
+  output_group.add_argument('--isolated-script-test-output',
+                            type=os.path.realpath,
+                            help='File to which results will be written in the '
+                            'simplified JSON output format.')
 
   argparser.add_argument('input', help='Path to .apk or .apks file to measure.')
   trichrome_group = argparser.add_argument_group(
       'Trichrome inputs',
       description='When specified, |input| is used only as Test suite name.')
-  trichrome_group.add_argument(
-      '--trichrome-chrome', help='Path to Trichrome Chrome .apks')
-  trichrome_group.add_argument(
-      '--trichrome-webview', help='Path to Trichrome WebView .apk(s)')
-  trichrome_group.add_argument(
-      '--trichrome-library', help='Path to Trichrome Library .apk')
+  trichrome_group.add_argument('--trichrome-chrome',
+                               help='Path to Trichrome Chrome .apks')
+  trichrome_group.add_argument('--trichrome-webview',
+                               help='Path to Trichrome WebView .apk(s)')
+  trichrome_group.add_argument('--trichrome-library',
+                               help='Path to Trichrome Library .apk')
   args = argparser.parse_args()
 
   args.out_dir = _ConfigOutDir(args.out_dir)

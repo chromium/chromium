@@ -59,7 +59,6 @@ template("android_resource_sizes_test") {
     } else {
       if (defined(invoker.apk_name)) {
         _file_path = "$root_out_dir/apks/${invoker.apk_name}.apk"
-        data += [ "$root_out_dir/arsc/apks/${invoker.apk_name}.ap_" ]
       } else if (defined(invoker.file_path)) {
         _file_path = invoker.file_path
       }
