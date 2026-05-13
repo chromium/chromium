@@ -43,9 +43,6 @@
 
 - (void)layoutState:(LayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
-  if (appBarPosition != AppBarPosition::kBottom) {
-    [self setFullscreenProgress:1.0];
-  }
   [self updateLayout];
 }
 
