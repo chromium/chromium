@@ -6918,6 +6918,45 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_ZOrder) {
                    .has_document_scoped_z_order());
 }
 
+// Tests that common attributes (ARIA label, role, and interaction info) are
+// correctly extracted for the root node (body element).
+TEST_P(PageContextWrapperTest, PopulatePageContext_RootNodeAttributes) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  web::test::LoadHtml(@"<html><body aria-label=\"RootLabel\" role=\"button\" "
+                      @"onclick=\"void(0)\"></body></html>",
+                      web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& root = page_context->annotated_page_content().root_node();
+
+  EXPECT_EQ(root.content_attributes().label(), "RootLabel");
+  EXPECT_TRUE(root.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      root.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_CLICK_HANDLER));
+  EXPECT_EQ(root.content_attributes().aria_role(),
+            optimization_guide::proto::AX_ROLE_BUTTON);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),

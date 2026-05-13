@@ -2235,6 +2235,53 @@ function getBasicContentForNonGenericElement(
 // TODO(crbug.com/468852704): Extract the missing data to reach parity with
 // third_party/blink/renderer/modules/content_extraction/
 // ai_page_content_agent.cc.
+
+/**
+ * Populates common attributes for a PageContentNode, such as interaction info,
+ * annotated roles, ARIA roles, and labels.
+ *
+ * @param element The HTML element to extract attributes from.
+ * @param attributes The PageContentAttributes object to populate.
+ * @param interactionInfo Pre-calculated interaction info, if available.
+ * @param paidContentContext Context regarding paid content extraction.
+ * @param actionableMode Whether to extract actionable information.
+ * @param annotatedRoles Pre-calculated annotated roles, if available.
+ * @param styleCache The style cache to use for computing styles.
+ */
+function populateCommonAttributes(
+    element: HTMLElement,
+    attributes: PageContentAttributes,
+    interactionInfo: PageContentNodeInteractionInfo | undefined,
+    paidContentContext: PaidContentExtractionContext,
+    actionableMode: boolean,
+    annotatedRoles?: PageContentAnnotatedRole[],
+    styleCache?: StyleCache) {
+
+  if (interactionInfo) {
+    attributes.nodeInteractionInfo = interactionInfo;
+  }
+
+  const rolesToAdd = annotatedRoles ?? [];
+  if (!annotatedRoles) {
+    addAnnotatedRoles(element, rolesToAdd, paidContentContext, styleCache);
+  }
+
+  if (rolesToAdd.length > 0) {
+    attributes.annotatedRoles ??= [];
+    attributes.annotatedRoles.push(...rolesToAdd);
+  }
+  if (actionableMode) {
+    const roleStr = element.getAttribute(ATTR_KEY_ROLE);
+    attributes.ariaRole =
+        roleStr ? getAXRoleForAriaRole(roleStr) : AxRole.AX_ROLE_UNKNOWN;
+  }
+
+  const ariaLabel = getAriaLabel(element);
+  if (ariaLabel) {
+    attributes.label = ariaLabel;
+  }
+}
+
 /**
  * Generates content for an element node.
  *
@@ -2243,8 +2290,6 @@ function getBasicContentForNonGenericElement(
  * @param depth Current recursion depth.
  * @param maxDepth Maximal depth for nesting json objects beyond which content
  *     is truncated.
- * @param annotatedRoles The pre-calculated annotated roles which will be merged
- *     into the content attributes of the generated node.
  * @param interactionInfo The pre-calculated interaction info which will be
  *     merged into the content attributes of the generated node.
  * @param actionableMode Whether to extract actionable information.
@@ -2255,7 +2300,6 @@ function getBasicContentForNonGenericElement(
  */
 function getContentForElementNode(
     domNode: HTMLElement, nonce: string, depth: number, maxDepth: number,
-    annotatedRoles: PageContentAnnotatedRole[],
     interactionInfo: PageContentNodeInteractionInfo|undefined,
     actionableMode: boolean, interactiveNodeIds: InteractiveNodeIds,
     paidContentContext: PaidContentExtractionContext,
@@ -2272,6 +2316,9 @@ function getContentForElementNode(
   contentNode = getBasicContentForNonGenericElement(
       domNode, nonce, depth, maxDepth, actionableMode, paidContentContext,
       styleCache);
+
+  const annotatedRoles: PageContentAnnotatedRole[] = [];
+  addAnnotatedRoles(domNode, annotatedRoles, paidContentContext, styleCache);
 
   // 2. Fallback: Generic Container.
   if (!contentNode &&
@@ -2293,20 +2340,11 @@ function getContentForElementNode(
   // `basicAttributes`.
 
   if (contentNode) {
-    if (annotatedRoles.length > 0) {
-      contentNode.contentAttributes.annotatedRoles = annotatedRoles;
-    }
-    if (interactionInfo) {
-      contentNode.contentAttributes.nodeInteractionInfo = interactionInfo;
-    }
-
+    populateCommonAttributes(
+        domNode, contentNode.contentAttributes, interactionInfo,
+        paidContentContext, actionableMode, annotatedRoles, styleCache);
     if (labelForDOMNodeID !== undefined) {
       contentNode.contentAttributes.labelForDomNodeId = labelForDOMNodeID;
-    }
-
-    const ariaLabel = getAriaLabel(domNode);
-    if (ariaLabel) {
-      contentNode.contentAttributes.label = ariaLabel;
     }
   }
 
@@ -2597,13 +2635,11 @@ function maybeGenerateContentNode(
     }
   } else if (domNode.nodeType === Node.ELEMENT_NODE) {
     const element = domNode as HTMLElement;
-    const annotatedRoles: PageContentAnnotatedRole[] = [];
-    addAnnotatedRoles(element, annotatedRoles, paidContentContext, styleCache);
     const interactionInfo =
         getNodeInteractionInfo(element, actionableMode, hasCanvas, styleCache);
 
     const contentNode = getContentForElementNode(
-        element, nonce, depth, maxDepth, annotatedRoles, interactionInfo,
+        element, nonce, depth, maxDepth, interactionInfo,
         actionableMode, interactiveNodeIds, paidContentContext, styleCache);
     if (contentNode) {
       const domNodeId = getOrCreateNodeId(domNode);
@@ -2611,11 +2647,7 @@ function maybeGenerateContentNode(
         contentNode.contentAttributes.domNodeId = domNodeId;
       }
 
-      if (actionableMode) {
-        const roleStr = element.getAttribute(ATTR_KEY_ROLE);
-        contentNode.contentAttributes.ariaRole =
-            roleStr ? getAXRoleForAriaRole(roleStr) : AxRole.AX_ROLE_UNKNOWN;
-      }
+
 
       const nextClippingContext = addNodeGeometry(
           element, contentNode.contentAttributes, parentContext, actionableMode,
@@ -3305,6 +3337,11 @@ export function extractAnnotatedPageContent(
     childrenNodes: [],
   };
 
+  const rootInteractionInfo =
+      getNodeInteractionInfo(root, actionableMode, hasCanvas, styleCache);
+  populateCommonAttributes(
+      root, rootNode.contentAttributes, rootInteractionInfo, paidContentContext,
+      actionableMode, undefined, styleCache);
 
   // Stack to track the current ancestry chain. At this point it is known that
   // that there is at least a root node that is walkable.
