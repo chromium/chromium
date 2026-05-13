@@ -98,6 +98,19 @@ bool FakeJavaScriptFeature::GetErrorCount(
                                 base::Seconds(kGetErrorCountTimeout));
 }
 
+bool FakeJavaScriptFeature::CallAsyncSum(
+    WebFrame* web_frame,
+    int a,
+    int b,
+    ExecuteJavaScriptCallbackWithError callback) {
+  base::DictValue parameters;
+  parameters.Set("a", a);
+  parameters.Set("b", b);
+  return CallAsyncJavaScriptFunction(web_frame,
+                                     "javaScriptFeatureTest.asyncSum",
+                                     parameters, std::move(callback));
+}
+
 std::optional<std::string> FakeJavaScriptFeature::GetScriptMessageHandlerName()
     const {
   return std::string(kFakeJavaScriptFeatureScriptHandlerName);

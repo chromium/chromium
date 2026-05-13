@@ -426,4 +426,69 @@ bool JavaScriptFeature::ExecuteJavaScript(
 #endif  // BUILDFLAG(USE_BLINK)
 }
 
+bool JavaScriptFeature::CallAsyncJavaScriptFunction(
+    WebFrame* web_frame,
+    const std::string& name,
+    const base::DictValue& parameters,
+    ExecuteJavaScriptCallbackWithError callback) {
+  CHECK(web_frame);
+
+#if BUILDFLAG(USE_BLINK)
+  // TODO(crbug.com/40254930): Call the ContentJavascriptFeatureManager instead.
+  return false;
+#else
+  if (!ShouldAllowCallingFunctionInOrigin(web_frame->GetSecurityOrigin())) {
+    return false;
+  }
+
+  JavaScriptFeatureManager* feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
+
+  JavaScriptContentWorld* content_world =
+      feature_manager->GetContentWorldForFeature(this);
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  if (!content_world) {
+    return false;
+  }
+#endif  // BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  CHECK(content_world);
+
+  return web_frame->GetWebFrameInternal()
+      ->CallAsyncJavaScriptFunctionInContentWorld(
+          name, parameters, content_world, std::move(callback));
+#endif  // BUILDFLAG(USE_BLINK)
+}
+
+bool JavaScriptFeature::ExecuteAsyncJavaScript(
+    WebFrame* web_frame,
+    const std::u16string& script,
+    const base::DictValue& parameters,
+    ExecuteJavaScriptCallbackWithError callback) {
+  CHECK(web_frame);
+
+#if BUILDFLAG(USE_BLINK)
+  // TODO(crbug.com/40254930): Call the ContentJavascriptFeatureManager instead.
+  return false;
+#else
+  if (!ShouldAllowCallingFunctionInOrigin(web_frame->GetSecurityOrigin())) {
+    return false;
+  }
+
+  JavaScriptFeatureManager* feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
+
+  JavaScriptContentWorld* content_world =
+      feature_manager->GetContentWorldForFeature(this);
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  if (!content_world) {
+    return false;
+  }
+#endif  // BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  CHECK(content_world);
+
+  return web_frame->GetWebFrameInternal()->ExecuteAsyncJavaScriptInContentWorld(
+      script, parameters, content_world, std::move(callback));
+#endif  // BUILDFLAG(USE_BLINK)
+}
+
 }  // namespace web
