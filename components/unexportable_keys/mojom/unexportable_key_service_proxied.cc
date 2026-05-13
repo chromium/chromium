@@ -136,6 +136,25 @@ void UnexportableKeyServiceProxied::OnSigningKeyLoaded(
   std::move(original_callback).Run(UnexportableSigningKeyId(key_id));
 }
 
+void UnexportableKeyServiceProxied::GenerateAttestationKeySlowlyAsync(
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        acceptable_algorithms,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
+        callback) {
+  // TODO(crbug.com/501306852): Implement this.
+  std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+}
+
+void UnexportableKeyServiceProxied::FromWrappedAttestationKeySlowlyAsync(
+    base::span<const uint8_t> wrapped_key,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
+        callback) {
+  // TODO(crbug.com/501306852): Implement this.
+  std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+}
+
 void UnexportableKeyServiceProxied::SignSlowlyAsync(
     UnexportableSigningKeyId key_id,
     base::span<const uint8_t> data,

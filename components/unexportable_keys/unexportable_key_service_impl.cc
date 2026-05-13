@@ -201,6 +201,27 @@ void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
   }
 }
 
+void UnexportableKeyServiceImpl::GenerateAttestationKeySlowlyAsync(
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        acceptable_algorithms,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
+        callback) {
+  // TODO(crbug.com/501306852): Implement this.
+  std::move(callback).Run(
+      base::unexpected(ServiceError::kOperationNotSupported));
+}
+
+void UnexportableKeyServiceImpl::FromWrappedAttestationKeySlowlyAsync(
+    base::span<const uint8_t> wrapped_key,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
+        callback) {
+  // TODO(crbug.com/501306852): Implement this.
+  std::move(callback).Run(
+      base::unexpected(ServiceError::kOperationNotSupported));
+}
+
 void UnexportableKeyServiceImpl::GetAllKeysForGarbageCollectionSlowlyAsync(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>

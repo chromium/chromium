@@ -46,6 +46,17 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
           callback) override;
+  void GenerateAttestationKeySlowlyAsync(
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
+          callback) override;
+  void FromWrappedAttestationKeySlowlyAsync(
+      base::span<const uint8_t> wrapped_key,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
+          callback) override;
   void SignSlowlyAsync(
       UnexportableSigningKeyId key_id,
       base::span<const uint8_t> data,
