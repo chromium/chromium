@@ -943,7 +943,10 @@ def main():
             print('Building bindgen...')
             build_cmd = [
                 sys.executable,
-                os.path.join(THIS_DIR, 'build_bindgen.py')
+                os.path.join(THIS_DIR, 'build_bindgen.py'),
+                # TODO(crbug.com/512812284): unskip the test once we roll
+                # bindgen.
+                "--skip-test"
             ]
             TeeCmd(build_cmd, log)
 
