@@ -28,7 +28,7 @@ class PermissionDialogDelegateTest : public content::RenderViewHostTestHarness {
 
     SetContents(CreateTestWebContents());
 
-    delegate_ = std::make_unique<MockPermissionPromptDelegate>();
+    delegate_ = std::make_unique<StubPermissionPromptDelegate>();
     delegate_->AddRequest(
         std::make_unique<MockPermissionRequest>(RequestType::kGeolocation));
 
@@ -44,7 +44,7 @@ class PermissionDialogDelegateTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
-  MockPermissionPromptDelegate* delegate() { return delegate_.get(); }
+  StubPermissionPromptDelegate* delegate() { return delegate_.get(); }
   MockPermissionPromptIOS* prompt() { return prompt_.get(); }
 
   PermissionDialogDelegate* CreateDialogDelegate() {
@@ -57,7 +57,7 @@ class PermissionDialogDelegateTest : public content::RenderViewHostTestHarness {
   __strong PermissionDialogDelegate* dialog_delegate_;
 
  private:
-  std::unique_ptr<MockPermissionPromptDelegate> delegate_;
+  std::unique_ptr<StubPermissionPromptDelegate> delegate_;
   std::unique_ptr<MockPermissionPromptIOS> prompt_;
 };
 

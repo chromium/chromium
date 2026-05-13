@@ -8,101 +8,101 @@
 
 namespace permissions {
 
-MockPermissionPromptDelegate::MockPermissionPromptDelegate() = default;
-MockPermissionPromptDelegate::~MockPermissionPromptDelegate() = default;
+StubPermissionPromptDelegate::StubPermissionPromptDelegate() = default;
+StubPermissionPromptDelegate::~StubPermissionPromptDelegate() = default;
 
 const std::vector<std::unique_ptr<PermissionRequest>>&
-MockPermissionPromptDelegate::Requests() {
+StubPermissionPromptDelegate::Requests() {
   return requests_;
 }
 
-GURL MockPermissionPromptDelegate::GetRequestingOrigin() const {
+GURL StubPermissionPromptDelegate::GetRequestingOrigin() const {
   return GURL("https://example.com");
 }
 
-GURL MockPermissionPromptDelegate::GetEmbeddingOrigin() const {
+GURL StubPermissionPromptDelegate::GetEmbeddingOrigin() const {
   return GURL("https://example.com");
 }
 
-void MockPermissionPromptDelegate::Accept(const PromptOptions& prompt_options) {
+void StubPermissionPromptDelegate::Accept(const PromptOptions& prompt_options) {
   accept_called_ = true;
 }
-void MockPermissionPromptDelegate::AcceptThisTime(
+void StubPermissionPromptDelegate::AcceptThisTime(
     const PromptOptions& prompt_options) {
   accept_this_time_called_ = true;
 }
-void MockPermissionPromptDelegate::Deny(const PromptOptions& prompt_options) {
+void StubPermissionPromptDelegate::Deny(const PromptOptions& prompt_options) {
   deny_called_ = true;
 }
-void MockPermissionPromptDelegate::Dismiss(
+void StubPermissionPromptDelegate::Dismiss(
     const PromptOptions& prompt_options) {}
-void MockPermissionPromptDelegate::Ignore(const PromptOptions& prompt_options) {
+void StubPermissionPromptDelegate::Ignore(const PromptOptions& prompt_options) {
 }
 GeolocationAccuracy
-MockPermissionPromptDelegate::GetInitialGeolocationAccuracySelection() const {
+StubPermissionPromptDelegate::GetInitialGeolocationAccuracySelection() const {
   return GeolocationAccuracy::kPrecise;
 }
-bool MockPermissionPromptDelegate::ShouldShowLocationPrecisionSelector() const {
+bool StubPermissionPromptDelegate::ShouldShowLocationPrecisionSelector() const {
   return true;
 }
-void MockPermissionPromptDelegate::FinalizeCurrentRequests() {}
-void MockPermissionPromptDelegate::OpenHelpCenterLink(const ui::Event& event) {}
-void MockPermissionPromptDelegate::PreIgnoreQuietPrompt() {}
+void StubPermissionPromptDelegate::FinalizeCurrentRequests() {}
+void StubPermissionPromptDelegate::OpenHelpCenterLink(const ui::Event& event) {}
+void StubPermissionPromptDelegate::PreIgnoreQuietPrompt() {}
 
 std::optional<PermissionUiSelector::QuietUiReason>
-MockPermissionPromptDelegate::ReasonForUsingQuietUi() const {
+StubPermissionPromptDelegate::ReasonForUsingQuietUi() const {
   return std::nullopt;
 }
 
-bool MockPermissionPromptDelegate::ShouldCurrentRequestUseQuietUI() const {
+bool StubPermissionPromptDelegate::ShouldCurrentRequestUseQuietUI() const {
   return false;
 }
-bool MockPermissionPromptDelegate::ShouldDropCurrentRequestIfCannotShowQuietly()
+bool StubPermissionPromptDelegate::ShouldDropCurrentRequestIfCannotShowQuietly()
     const {
   return false;
 }
-bool MockPermissionPromptDelegate::WasCurrentRequestAlreadyDisplayed() {
+bool StubPermissionPromptDelegate::WasCurrentRequestAlreadyDisplayed() {
   return false;
 }
 
-void MockPermissionPromptDelegate::SetDismissOnTabClose() {}
-void MockPermissionPromptDelegate::SetPromptShown() {}
-void MockPermissionPromptDelegate::SetDecisionTime() {}
-void MockPermissionPromptDelegate::SetManageClicked() {}
-void MockPermissionPromptDelegate::SetLearnMoreClicked() {}
-void MockPermissionPromptDelegate::SetHatsShownCallback(
+void StubPermissionPromptDelegate::SetDismissOnTabClose() {}
+void StubPermissionPromptDelegate::SetPromptShown() {}
+void StubPermissionPromptDelegate::SetDecisionTime() {}
+void StubPermissionPromptDelegate::SetManageClicked() {}
+void StubPermissionPromptDelegate::SetLearnMoreClicked() {}
+void StubPermissionPromptDelegate::SetHatsShownCallback(
     base::OnceCallback<void()> callback) {}
-void MockPermissionPromptDelegate::SwitchToLoudPrompt() {}
+void StubPermissionPromptDelegate::SwitchToLoudPrompt() {}
 
-content::WebContents* MockPermissionPromptDelegate::GetAssociatedWebContents() {
+content::WebContents* StubPermissionPromptDelegate::GetAssociatedWebContents() {
   return nullptr;
 }
 
 base::WeakPtr<PermissionPrompt::Delegate>
-MockPermissionPromptDelegate::GetWeakPtr() {
+StubPermissionPromptDelegate::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool MockPermissionPromptDelegate::RecreateView() {
+bool StubPermissionPromptDelegate::RecreateView() {
   return false;
 }
 
-const PermissionPrompt* MockPermissionPromptDelegate::GetCurrentPrompt() const {
+const PermissionPrompt* StubPermissionPromptDelegate::GetCurrentPrompt() const {
   return nullptr;
 }
 
-void MockPermissionPromptDelegate::AddRequest(
+void StubPermissionPromptDelegate::AddRequest(
     std::unique_ptr<PermissionRequest> request) {
   requests_.push_back(std::move(request));
 }
 
-bool MockPermissionPromptDelegate::accept_called() const {
+bool StubPermissionPromptDelegate::accept_called() const {
   return accept_called_;
 }
-bool MockPermissionPromptDelegate::accept_this_time_called() const {
+bool StubPermissionPromptDelegate::accept_this_time_called() const {
   return accept_this_time_called_;
 }
-bool MockPermissionPromptDelegate::deny_called() const {
+bool StubPermissionPromptDelegate::deny_called() const {
   return deny_called_;
 }
 

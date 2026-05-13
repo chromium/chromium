@@ -19,7 +19,7 @@ class PermissionPromptIOSTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::SetUp();
 
     SetContents(CreateTestWebContents());
-    delegate_ = std::make_unique<MockPermissionPromptDelegate>();
+    delegate_ = std::make_unique<StubPermissionPromptDelegate>();
   }
 
   void TearDown() override {
@@ -28,7 +28,7 @@ class PermissionPromptIOSTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
-  MockPermissionPromptDelegate* delegate() { return delegate_.get(); }
+  StubPermissionPromptDelegate* delegate() { return delegate_.get(); }
 
   std::unique_ptr<MockPermissionPromptIOS> CreatePrompt() {
     return std::make_unique<MockPermissionPromptIOS>(web_contents(),
@@ -41,7 +41,7 @@ class PermissionPromptIOSTest : public content::RenderViewHostTestHarness {
   }
 
  private:
-  std::unique_ptr<MockPermissionPromptDelegate> delegate_;
+  std::unique_ptr<StubPermissionPromptDelegate> delegate_;
 };
 
 TEST_F(PermissionPromptIOSTest, Construction) {

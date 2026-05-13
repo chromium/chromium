@@ -13,10 +13,10 @@
 
 namespace permissions {
 
-class MockPermissionPromptDelegate : public PermissionPrompt::Delegate {
+class StubPermissionPromptDelegate : public PermissionPrompt::Delegate {
  public:
-  MockPermissionPromptDelegate();
-  ~MockPermissionPromptDelegate() override;
+  StubPermissionPromptDelegate();
+  ~StubPermissionPromptDelegate() override;
 
   // PermissionPrompt::Delegate:
   const std::vector<std::unique_ptr<PermissionRequest>>& Requests() override;
@@ -71,7 +71,7 @@ class MockPermissionPromptDelegate : public PermissionPrompt::Delegate {
   bool accept_called_ = false;
   bool accept_this_time_called_ = false;
   bool deny_called_ = false;
-  base::WeakPtrFactory<MockPermissionPromptDelegate> weak_factory_{this};
+  base::WeakPtrFactory<StubPermissionPromptDelegate> weak_factory_{this};
 };
 
 class MockPermissionPromptIOS : public PermissionPromptIOS {
