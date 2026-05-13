@@ -92,6 +92,7 @@ const char* CardNetworkFromWalletCardType(
     case sync_pb::WalletMaskedCreditCard::UNKNOWN:
       return kGenericCard;
   }
+  NOTREACHED();
 }
 
 sync_pb::CardBenefit::CategoryBenefitType
@@ -133,6 +134,7 @@ CategoryBenefitTypeFromBenefitCategory(
     case CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory:
       return sync_pb::CardBenefit::CATEGORY_BENEFIT_TYPE_UNKNOWN;
   }
+  NOTREACHED();
 }
 
 CreditCardCategoryBenefit::BenefitCategory
@@ -175,6 +177,7 @@ BenefitCategoryFromCategoryBenefitType(
       return CreditCardCategoryBenefit::BenefitCategory::
           kUnknownBenefitCategory;
   }
+  NOTREACHED();
 }
 
 // Creates a CreditCardBenefit from the specified `benefit_specifics` and
@@ -278,19 +281,17 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   result.SetExpirationYear(card.exp_year());
   result.set_billing_address_id(card.billing_address_id());
 
-  CreditCard::Issuer issuer = CreditCard::Issuer::kIssuerUnknown;
-  switch (card.card_issuer().issuer()) {
-    case sync_pb::CardIssuer::ISSUER_UNKNOWN:
-      issuer = CreditCard::Issuer::kIssuerUnknown;
-      break;
-    case sync_pb::CardIssuer::GOOGLE:
-      issuer = CreditCard::Issuer::kGoogle;
-      break;
-    case sync_pb::CardIssuer::EXTERNAL_ISSUER:
-      issuer = CreditCard::Issuer::kExternalIssuer;
-      break;
-  }
-  result.set_card_issuer(issuer);
+  result.set_card_issuer([&]() {
+    switch (card.card_issuer().issuer()) {
+      case sync_pb::CardIssuer::ISSUER_UNKNOWN:
+        return CreditCard::Issuer::kIssuerUnknown;
+      case sync_pb::CardIssuer::GOOGLE:
+        return CreditCard::Issuer::kGoogle;
+      case sync_pb::CardIssuer::EXTERNAL_ISSUER:
+        return CreditCard::Issuer::kExternalIssuer;
+    }
+    NOTREACHED();
+  }());
   result.set_issuer_id(card.card_issuer().issuer_id());
 
   if (!card.nickname().empty()) {
@@ -298,45 +299,37 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   }
   result.set_instrument_id(card.instrument_id());
 
-  CreditCard::VirtualCardEnrollmentState state;
-  switch (card.virtual_card_enrollment_state()) {
-    case sync_pb::WalletMaskedCreditCard::UNENROLLED:
-      state = CreditCard::VirtualCardEnrollmentState::kUnenrolled;
-      break;
-    case sync_pb::WalletMaskedCreditCard::ENROLLED:
-      state = CreditCard::VirtualCardEnrollmentState::kEnrolled;
-      break;
-    case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_NOT_ELIGIBLE:
-      state = CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible;
-      break;
-    case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_ELIGIBLE:
-      state = CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible;
-      break;
-    case sync_pb::WalletMaskedCreditCard::UNSPECIFIED:
-      state = CreditCard::VirtualCardEnrollmentState::kUnspecified;
-      break;
-  }
-  result.set_virtual_card_enrollment_state(state);
+  result.set_virtual_card_enrollment_state([&]() {
+    switch (card.virtual_card_enrollment_state()) {
+      case sync_pb::WalletMaskedCreditCard::UNENROLLED:
+        return CreditCard::VirtualCardEnrollmentState::kUnenrolled;
+      case sync_pb::WalletMaskedCreditCard::ENROLLED:
+        return CreditCard::VirtualCardEnrollmentState::kEnrolled;
+      case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_NOT_ELIGIBLE:
+        return CreditCard::VirtualCardEnrollmentState::
+            kUnenrolledAndNotEligible;
+      case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_ELIGIBLE:
+        return CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible;
+      case sync_pb::WalletMaskedCreditCard::UNSPECIFIED:
+        return CreditCard::VirtualCardEnrollmentState::kUnspecified;
+    }
+    NOTREACHED();
+  }());
 
   // We should only have a virtual card enrollment type for enrolled cards.
   if (card.virtual_card_enrollment_state() ==
       sync_pb::WalletMaskedCreditCard::ENROLLED) {
-    CreditCard::VirtualCardEnrollmentType virtual_card_enrollment_type;
-    switch (card.virtual_card_enrollment_type()) {
-      case sync_pb::WalletMaskedCreditCard::TYPE_UNSPECIFIED:
-        virtual_card_enrollment_type =
-            CreditCard::VirtualCardEnrollmentType::kTypeUnspecified;
-        break;
-      case sync_pb::WalletMaskedCreditCard::ISSUER:
-        virtual_card_enrollment_type =
-            CreditCard::VirtualCardEnrollmentType::kIssuer;
-        break;
-      case sync_pb::WalletMaskedCreditCard::NETWORK:
-        virtual_card_enrollment_type =
-            CreditCard::VirtualCardEnrollmentType::kNetwork;
-        break;
-    }
-    result.set_virtual_card_enrollment_type(virtual_card_enrollment_type);
+    result.set_virtual_card_enrollment_type([&]() {
+      switch (card.virtual_card_enrollment_type()) {
+        case sync_pb::WalletMaskedCreditCard::TYPE_UNSPECIFIED:
+          return CreditCard::VirtualCardEnrollmentType::kTypeUnspecified;
+        case sync_pb::WalletMaskedCreditCard::ISSUER:
+          return CreditCard::VirtualCardEnrollmentType::kIssuer;
+        case sync_pb::WalletMaskedCreditCard::NETWORK:
+          return CreditCard::VirtualCardEnrollmentType::kNetwork;
+      }
+      NOTREACHED();
+    }());
   }
 
   if (!card.card_art_url().empty()) {
@@ -350,62 +343,49 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
     result.set_product_terms_url(GURL(card.product_terms_url()));
   }
 
-  CreditCard::CardInfoRetrievalEnrollmentState enrollment_state =
-      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
-  switch (card.card_info_retrieval_enrollment_state()) {
-    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED:
-      enrollment_state =
-          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
-      break;
-    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE:
-      enrollment_state = CreditCard::CardInfoRetrievalEnrollmentState::
-          kRetrievalUnenrolledAndNotEligible;
-      break;
-    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_ELIGIBLE:
-      enrollment_state = CreditCard::CardInfoRetrievalEnrollmentState::
-          kRetrievalUnenrolledAndEligible;
-      break;
-    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED:
-      enrollment_state =
-          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
-      break;
-  }
-  result.set_card_info_retrieval_enrollment_state(enrollment_state);
+  result.set_card_info_retrieval_enrollment_state([&]() {
+    switch (card.card_info_retrieval_enrollment_state()) {
+      case sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED:
+        return CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
+      case sync_pb::WalletMaskedCreditCard::
+          RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE:
+        return CreditCard::CardInfoRetrievalEnrollmentState::
+            kRetrievalUnenrolledAndNotEligible;
+      case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_ELIGIBLE:
+        return CreditCard::CardInfoRetrievalEnrollmentState::
+            kRetrievalUnenrolledAndEligible;
+      case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED:
+        return CreditCard::CardInfoRetrievalEnrollmentState::
+            kRetrievalUnspecified;
+    }
+    NOTREACHED();
+  }());
 
-  std::string benefit_source;
-  switch (card.card_benefit_source()) {
-    case sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN:
-      benefit_source = "";
-      break;
-    case sync_pb::WalletMaskedCreditCard::SOURCE_AMEX:
-      benefit_source = std::string(kAmexCardBenefitSource);
-      break;
-    case sync_pb::WalletMaskedCreditCard::SOURCE_BMO:
-      benefit_source = std::string(kBmoCardBenefitSource);
-      break;
-    case sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS:
-      benefit_source = std::string(kCurinosCardBenefitSource);
-      break;
-  }
-  result.set_benefit_source(benefit_source);
+  result.set_benefit_source([&]() {
+    switch (card.card_benefit_source()) {
+      case sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN:
+        return std::string_view();
+      case sync_pb::WalletMaskedCreditCard::SOURCE_AMEX:
+        return kAmexCardBenefitSource;
+      case sync_pb::WalletMaskedCreditCard::SOURCE_BMO:
+        return kBmoCardBenefitSource;
+      case sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS:
+        return kCurinosCardBenefitSource;
+    }
+    NOTREACHED();
+  }());
 
-  CreditCard::CardCreationSource card_creation_source =
-      CreditCard::CardCreationSource::kCreationSourceUnspecified;
-  switch (card.card_creation_source()) {
-    case sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_CHROME_PAYMENTS:
-      card_creation_source =
-          CreditCard::CardCreationSource::kCreationSourceChromePayments;
-      break;
-    case sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_NON_CHROME_PAYMENTS:
-      card_creation_source =
-          CreditCard::CardCreationSource::kCreationSourceNonChromePayments;
-      break;
-    case sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_UNSPECIFIED:
-      card_creation_source =
-          CreditCard::CardCreationSource::kCreationSourceUnspecified;
-      break;
-  }
-  result.set_card_creation_source(card_creation_source);
+  result.set_card_creation_source([&]() {
+    switch (card.card_creation_source()) {
+      case sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_CHROME_PAYMENTS:
+        return CreditCard::CardCreationSource::kCreationSourceChromePayments;
+      case sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_NON_CHROME_PAYMENTS:
+        return CreditCard::CardCreationSource::kCreationSourceNonChromePayments;
+      case sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_UNSPECIFIED:
+        return CreditCard::CardCreationSource::kCreationSourceUnspecified;
+    }
+    NOTREACHED();
+  }());
 
   return result;
 }
@@ -456,6 +436,7 @@ BankAccount::AccountType ConvertSyncAccountTypeToBankAccountType(
     case sync_pb::BankAccountDetails_AccountType_ACCOUNT_TYPE_UNSPECIFIED:
       return BankAccount::AccountType::kUnknown;
   }
+  NOTREACHED();
 }
 
 sync_pb::BankAccountDetails::AccountType
@@ -475,6 +456,7 @@ ConvertBankAccountTypeToSyncBankAccountType(
     case BankAccount::AccountType::kUnknown:
       return sync_pb::BankAccountDetails_AccountType_ACCOUNT_TYPE_UNSPECIFIED;
   }
+  NOTREACHED();
 }
 
 sync_pb::PaymentInstrument::SupportedRail
@@ -490,6 +472,7 @@ ConvertPaymentInstrumentPaymentRailToSyncPaymentRail(
     case PaymentInstrument::PaymentRail::kUnknown:
       return sync_pb::PaymentInstrument_SupportedRail_SUPPORTED_RAIL_UNKNOWN;
   }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -540,61 +523,57 @@ void SetAutofillWalletSpecificsFromServerCard(
   if (!card.nickname().empty())
     wallet_card->set_nickname(base::UTF16ToUTF8(card.nickname()));
 
-  sync_pb::CardIssuer::Issuer issuer = sync_pb::CardIssuer::ISSUER_UNKNOWN;
-  switch (card.card_issuer()) {
-    case CreditCard::Issuer::kIssuerUnknown:
-      issuer = sync_pb::CardIssuer::ISSUER_UNKNOWN;
-      break;
-    case CreditCard::Issuer::kGoogle:
-      issuer = sync_pb::CardIssuer::GOOGLE;
-      break;
-    case CreditCard::Issuer::kExternalIssuer:
-      issuer = sync_pb::CardIssuer::EXTERNAL_ISSUER;
-      break;
-  }
-  wallet_card->mutable_card_issuer()->set_issuer(issuer);
+  wallet_card->mutable_card_issuer()->set_issuer([&]() {
+    switch (card.card_issuer()) {
+      case CreditCard::Issuer::kIssuerUnknown:
+        return sync_pb::CardIssuer::ISSUER_UNKNOWN;
+      case CreditCard::Issuer::kGoogle:
+        return sync_pb::CardIssuer::GOOGLE;
+      case CreditCard::Issuer::kExternalIssuer:
+        return sync_pb::CardIssuer::EXTERNAL_ISSUER;
+    }
+    // `card.card_issuer()` comes from the database and is not validated
+    // (crbug.com/325043292), so this line may be reached.
+    return sync_pb::CardIssuer::ISSUER_UNKNOWN;
+  }());
   wallet_card->mutable_card_issuer()->set_issuer_id(card.issuer_id());
 
   wallet_card->set_instrument_id(card.instrument_id());
 
-  sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState state;
-  switch (card.virtual_card_enrollment_state()) {
-    case CreditCard::VirtualCardEnrollmentState::kUnenrolled:
-      state = sync_pb::WalletMaskedCreditCard::UNENROLLED;
-      break;
-    case CreditCard::VirtualCardEnrollmentState::kEnrolled:
-      state = sync_pb::WalletMaskedCreditCard::ENROLLED;
-      break;
-    case CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible:
-      state = sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_NOT_ELIGIBLE;
-      break;
-    case CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible:
-      state = sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_ELIGIBLE;
-      break;
-    case CreditCard::VirtualCardEnrollmentState::kUnspecified:
-      state = sync_pb::WalletMaskedCreditCard::UNSPECIFIED;
-      break;
-  }
-  wallet_card->set_virtual_card_enrollment_state(state);
+  wallet_card->set_virtual_card_enrollment_state([&]() {
+    switch (card.virtual_card_enrollment_state()) {
+      case CreditCard::VirtualCardEnrollmentState::kUnenrolled:
+        return sync_pb::WalletMaskedCreditCard::UNENROLLED;
+      case CreditCard::VirtualCardEnrollmentState::kEnrolled:
+        return sync_pb::WalletMaskedCreditCard::ENROLLED;
+      case CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible:
+        return sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_NOT_ELIGIBLE;
+      case CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible:
+        return sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_ELIGIBLE;
+      case CreditCard::VirtualCardEnrollmentState::kUnspecified:
+        return sync_pb::WalletMaskedCreditCard::UNSPECIFIED;
+    }
+    // `card.virtual_card_enrollment_state()` comes from the database and is not
+    // validated (crbug.com/325043292), so this line may be reached.
+    return sync_pb::WalletMaskedCreditCard::UNSPECIFIED;
+  }());
 
   // We should only have a virtual card enrollment type for enrolled cards.
   if (card.virtual_card_enrollment_state() ==
       CreditCard::VirtualCardEnrollmentState::kEnrolled) {
-    sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentType
-        virtual_card_enrollment_type;
-    switch (card.virtual_card_enrollment_type()) {
-      case CreditCard::VirtualCardEnrollmentType::kTypeUnspecified:
-        virtual_card_enrollment_type =
-            sync_pb::WalletMaskedCreditCard::TYPE_UNSPECIFIED;
-        break;
-      case CreditCard::VirtualCardEnrollmentType::kIssuer:
-        virtual_card_enrollment_type = sync_pb::WalletMaskedCreditCard::ISSUER;
-        break;
-      case CreditCard::VirtualCardEnrollmentType::kNetwork:
-        virtual_card_enrollment_type = sync_pb::WalletMaskedCreditCard::NETWORK;
-        break;
-    }
-    wallet_card->set_virtual_card_enrollment_type(virtual_card_enrollment_type);
+    wallet_card->set_virtual_card_enrollment_type([&]() {
+      switch (card.virtual_card_enrollment_type()) {
+        case CreditCard::VirtualCardEnrollmentType::kTypeUnspecified:
+          return sync_pb::WalletMaskedCreditCard::TYPE_UNSPECIFIED;
+        case CreditCard::VirtualCardEnrollmentType::kIssuer:
+          return sync_pb::WalletMaskedCreditCard::ISSUER;
+        case CreditCard::VirtualCardEnrollmentType::kNetwork:
+          return sync_pb::WalletMaskedCreditCard::NETWORK;
+      }
+      // `card.virtual_card_enrollment_type()` comes from the database and is
+      // not validated (crbug.com/325043292), so this line may be reached.
+      return sync_pb::WalletMaskedCreditCard::TYPE_UNSPECIFIED;
+    }());
   }
 
   if (!card.card_art_url().is_empty()) {
@@ -608,27 +587,25 @@ void SetAutofillWalletSpecificsFromServerCard(
     wallet_card->set_product_terms_url(card.product_terms_url().spec());
   }
 
-  sync_pb::WalletMaskedCreditCard::CardInfoRetrievalEnrollmentState
-      enrollment_state = sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED;
-  switch (card.card_info_retrieval_enrollment_state()) {
-    case CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled:
-      enrollment_state = sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED;
-      break;
-    case CreditCard::CardInfoRetrievalEnrollmentState::
-        kRetrievalUnenrolledAndNotEligible:
-      enrollment_state = sync_pb::WalletMaskedCreditCard::
-          RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE;
-      break;
-    case CreditCard::CardInfoRetrievalEnrollmentState::
-        kRetrievalUnenrolledAndEligible:
-      enrollment_state =
-          sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_ELIGIBLE;
-      break;
-    case CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified:
-      enrollment_state = sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED;
-      break;
-  }
-  wallet_card->set_card_info_retrieval_enrollment_state(enrollment_state);
+  wallet_card->set_card_info_retrieval_enrollment_state([&]() {
+    switch (card.card_info_retrieval_enrollment_state()) {
+      case CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled:
+        return sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED;
+      case CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible:
+        return sync_pb::WalletMaskedCreditCard::
+            RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE;
+      case CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndEligible:
+        return sync_pb::WalletMaskedCreditCard::
+            RETRIEVAL_UNENROLLED_AND_ELIGIBLE;
+      case CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified:
+        return sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED;
+    }
+    // `card.card_info_retrieval_enrollment_state()` comes from the database and
+    // is not validated (crbug.com/325043292), so this line may be reached.
+    return sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED;
+  }());
 
   sync_pb::WalletMaskedCreditCard::CardBenefitSource benefit_source =
       sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN;
@@ -641,23 +618,20 @@ void SetAutofillWalletSpecificsFromServerCard(
   }
   wallet_card->set_card_benefit_source(benefit_source);
 
-  sync_pb::WalletMaskedCreditCard::CardCreationSource card_creation_source =
-      sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_UNSPECIFIED;
-  switch (card.card_creation_source()) {
-    case CreditCard::CardCreationSource::kCreationSourceChromePayments:
-      card_creation_source =
-          sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_CHROME_PAYMENTS;
-      break;
-    case CreditCard::CardCreationSource::kCreationSourceNonChromePayments:
-      card_creation_source =
-          sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_NON_CHROME_PAYMENTS;
-      break;
-    case CreditCard::CardCreationSource::kCreationSourceUnspecified:
-      card_creation_source =
-          sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_UNSPECIFIED;
-      break;
-  }
-  wallet_card->set_card_creation_source(card_creation_source);
+  wallet_card->set_card_creation_source([&]() {
+    switch (card.card_creation_source()) {
+      case CreditCard::CardCreationSource::kCreationSourceChromePayments:
+        return sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_CHROME_PAYMENTS;
+      case CreditCard::CardCreationSource::kCreationSourceNonChromePayments:
+        return sync_pb::WalletMaskedCreditCard::
+            CREATION_SOURCE_NON_CHROME_PAYMENTS;
+      case CreditCard::CardCreationSource::kCreationSourceUnspecified:
+        return sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_UNSPECIFIED;
+    }
+    // `card.card_creation_source()` comes from the database and is not
+    // validated (crbug.com/325043292), so this line may be reached.
+    return sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_UNSPECIFIED;
+  }());
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(
