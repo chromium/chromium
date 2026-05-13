@@ -573,6 +573,9 @@ static_library("safe_browsing") {
       if (!is_android) {
         deps += [ "//chrome/browser/user_education" ]
       }
+      if (!is_android && !is_chromeos) {
+        deps += [ "//chrome/browser/download/bubble" ]
+      }
     } else if (safe_browsing_mode == 2) {
       public += [
         "android/download_protection_metrics_data.h",

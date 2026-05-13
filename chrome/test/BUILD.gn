@@ -1892,7 +1892,10 @@ source_set("platform_browser_tests") {
 
     # ChromeOS and Android don't use the download bubble UI.
     if (is_win || is_mac || is_linux) {
-      deps += [ "//chrome/browser/ui/download" ]
+      deps += [
+        "//chrome/browser/download/bubble",
+        "//chrome/browser/ui/download",
+      ]
     }
 
     if (enable_service_discovery) {
@@ -4578,8 +4581,6 @@ if (!is_android) {
     if (!is_chromeos) {
       sources += [
         "../browser/chrome_multiprofile_startup_browsertest.cc",
-        "../browser/download/bubble/download_bubble_ui_controller_browsertest.cc",
-        "../browser/download/bubble/download_display_controller_browsertest.cc",
         "../browser/enterprise/reporting/cloud_profile_reporting_browsertest.cc",
         "../browser/external_protocol/external_protocol_handler_browsertest.cc",
         "../browser/policy/cloud/extension_install_policy_service_browsertest.cc",
@@ -4615,6 +4616,8 @@ if (!is_android) {
       deps += [
         ":dump_accessibility_events_views_browsertest_base",
         "//chrome/browser/default_browser:browser_tests",
+        "//chrome/browser/download/bubble",
+        "//chrome/browser/download/bubble:browser_tests",
         "//chrome/browser/ui/download",
         "//chrome/browser/ui/global_media_controls",
         "//components/global_media_controls:test_support",
@@ -9010,16 +9013,13 @@ test("unit_tests") {
 
   if (!is_android && !is_chromeos) {
     sources += [
-      "../browser/download/bubble/download_bubble_accessible_alerts_map_unittest.cc",
-      "../browser/download/bubble/download_bubble_prefs_unittest.cc",
-      "../browser/download/bubble/download_bubble_update_service_unittest.cc",
-      "../browser/download/bubble/download_bubble_utils_unittest.cc",
       "../browser/download/download_ui_context_menu_unittest.cc",
       "../browser/hid/hid_status_icon_unittest.cc",
     ]
 
     deps += [
       "//chrome/browser/default_browser:unit_tests",
+      "//chrome/browser/download/bubble:unit_tests",
       "//chrome/browser/offline_items_collection",
       "//chrome/browser/shortcuts:unit_tests",
       "//chrome/browser/ui/download",
@@ -10321,6 +10321,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/download/bubble",
       # Remove this when
       # chrome_browser_cloud_management_register_watcher_unittest.cc is
       # modularized.
@@ -11755,6 +11756,10 @@ if (!is_android && !is_chromeos_device) {
       sources += [ "../browser/password_manager/web_app_profile_switcher_interactive_uitest.cc" ]
     } else {
       deps += [ "//chrome/browser/smart_card" ]
+    }
+
+    if (!is_chromeos && !is_android) {
+      deps += [ "//chrome/browser/download/bubble" ]
     }
 
     if (is_mac) {

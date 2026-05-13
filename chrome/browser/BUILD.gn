@@ -3953,28 +3953,12 @@ static_library("browser") {
 
     #!is_android
     if (!is_chromeos) {
-      sources += [
-        "download/bubble/download_bubble_accessible_alerts_map.cc",
-        "download/bubble/download_bubble_accessible_alerts_map.h",
-        "download/bubble/download_bubble_display_info.cc",
-        "download/bubble/download_bubble_display_info.h",
-        "download/bubble/download_bubble_prefs.cc",
-        "download/bubble/download_bubble_prefs.h",
-        "download/bubble/download_bubble_ui_controller.cc",
-        "download/bubble/download_bubble_ui_controller.h",
-        "download/bubble/download_bubble_update_service.cc",
-        "download/bubble/download_bubble_update_service.h",
-        "download/bubble/download_bubble_update_service_factory.cc",
-        "download/bubble/download_bubble_update_service_factory.h",
-        "download/bubble/download_bubble_utils.cc",
-        "download/bubble/download_bubble_utils.h",
-        "download/bubble/download_display_controller.cc",
-        "download/bubble/download_display_controller.h",
-        "platform_util.cc",
-      ]
+      sources += [ "platform_util.cc" ]
 
       deps += [
         "//chrome/browser/default_browser",
+        "//chrome/browser/download/bubble",
+        "//chrome/browser/download/bubble:impl",
         "//chrome/browser/shortcuts",
         "//chrome/browser/ui/download",
         "//chrome/browser/ui/download:impl",

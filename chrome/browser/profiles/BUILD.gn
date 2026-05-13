@@ -856,7 +856,10 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (!is_chromeos && !is_android) {
-    deps += [ ":profile_util" ]
+    deps += [
+      ":profile_util",
+      "//chrome/browser/download/bubble",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {

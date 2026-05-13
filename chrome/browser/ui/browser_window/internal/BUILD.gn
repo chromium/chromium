@@ -144,7 +144,10 @@ source_set("internal") {
     }
 
     if (is_win || is_mac || is_linux) {
-      deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
+      deps += [
+        "//chrome/browser/download/bubble",
+        "//chrome/browser/ui/views/session_restore_infobar",
+      ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {

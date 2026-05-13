@@ -250,6 +250,7 @@ source_set("impl") {
 
   if (!is_android && !is_chromeos) {
     sources += [ "download_ui_context_menu.cc" ]
+    deps += [ "//chrome/browser/download/bubble" ]
   }
 
   if (is_chromeos) {

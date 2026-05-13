@@ -831,6 +831,12 @@ static_library("ui") {
     ]
   }
 
+  if (!is_android && !is_chromeos) {
+    # //chrome/browser/download/bubble:impl sources include UI headers (browser.h,
+    # views/frame/immersive_mode_controller.h, web_applications/app_browser_controller.h).
+    allow_circular_includes_from += [ "//chrome/browser/download/bubble:impl" ]
+  }
+
   allow_circular_includes_from += [
     # TODO(crbug.com/503408628): Remove this circular dependency.
     "//chrome/browser/first_run:impl",
@@ -1844,6 +1850,13 @@ static_library("ui") {
 
     if (is_chromeos) {
       deps += [ "//chrome/browser/apps/app_service" ]
+    }
+
+    if (!is_chromeos && !is_android) {
+      deps += [
+        "//chrome/browser/download/bubble",
+        "//chrome/browser/download/bubble:impl",
+      ]
     }
 
     # Any circular includes must depend on the target
