@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -82,7 +81,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
 public class HomeOfTransactionsFragmentTest {
     @Rule(order = 0)
     public SigninTestRule mSigninTestRule = new SigninTestRule();
@@ -98,7 +96,8 @@ public class HomeOfTransactionsFragmentTest {
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
-    @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
+    @Mock private BottomSheetSigninAndHistorySyncCoordinator mSettingsSigninCoordinator;
+    @Mock private BottomSheetSigninAndHistorySyncCoordinator mAutofillAndPasswordsSigninCoordinator;
 
     private final FakeCredentialManagerLauncherFactoryImpl mFakeLauncherFactory =
             new FakeCredentialManagerLauncherFactoryImpl();
@@ -125,6 +124,19 @@ public class HomeOfTransactionsFragmentTest {
 
         SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(mSigninLauncher);
 
+        when(mSigninLauncher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        eq(SigninAccessPoint.SETTINGS_AUTOFILL_AND_PASSWORDS)))
+                .thenReturn(mAutofillAndPasswordsSigninCoordinator);
+
         // Required for multi-pane tests involving MainSettings.
         when(mSigninLauncher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
                         any(),
@@ -137,7 +149,7 @@ public class HomeOfTransactionsFragmentTest {
                         any(),
                         any(),
                         eq(SigninAccessPoint.SETTINGS)))
-                .thenReturn(mSigninCoordinator);
+                .thenReturn(mSettingsSigninCoordinator);
 
         // Dismiss the promo by default.
         signInPromoDeclined(true);
@@ -165,48 +177,91 @@ public class HomeOfTransactionsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
-    public void testSignInPromoVisible() {
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton",
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testSignInPromoVisible_noAccount() {
         signInPromoDeclined(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_promo_title_autofill_and_passwords))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.signin_promo_description_autofill_and_passwords))
-                .check(matches(isDisplayed()));
-        onView(withId(R.id.sync_promo_signin_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_promo_title))
+                .check(matches(withText(R.string.signin_account_picker_bottom_sheet_title)));
+        onView(withId(R.id.signin_promo_description))
+                .check(
+                        matches(
+                                withText(
+                                        R.string
+                                                .signin_promo_description_autofill_and_passwords_seamless)));
+        onView(withId(R.id.signin_promo_primary_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_promo_secondary_button)).check(doesNotExist());
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
-    public void testSignInPromoVisibleWithAccount() {
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton",
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testSignInPromoVisible_withAccount() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         signInPromoDeclined(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_promo_title_autofill_and_passwords))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.signin_promo_description_autofill_and_passwords))
-                .check(matches(isDisplayed()));
-        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_promo_title))
+                .check(matches(withText(R.string.signin_account_picker_bottom_sheet_title)));
+        onView(withId(R.id.signin_promo_description))
+                .check(
+                        matches(
+                                withText(
+                                        R.string
+                                                .signin_promo_description_autofill_and_passwords_seamless)));
+        onView(withId(R.id.signin_promo_primary_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_promo_secondary_button)).check(doesNotExist());
     }
 
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromoVisible_seamlessDisabled() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        signInPromoDeclined(false);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_title))
+                .check(matches(withText(R.string.signin_promo_title_autofill_and_passwords)));
+        onView(withId(R.id.sync_promo_description))
+                .check(matches(withText(R.string.signin_promo_description_autofill_and_passwords)));
+        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_signin_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton",
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void testSignInPromoDismiss() {
         signInPromoDeclined(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
-        onView(withId(R.id.sync_promo_close_button)).perform(click());
+        onView(withId(R.id.signin_promo_dismiss_button)).perform(click());
 
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
         assertTrue(
@@ -218,22 +273,30 @@ public class HomeOfTransactionsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton",
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void testSignInPromoClick() {
         signInPromoDeclined(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
-        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+        onView(withId(R.id.signin_promo_primary_button)).perform(click());
 
-        verify(mSigninLauncher)
-                .createBottomSheetSigninIntentOrShowError(
-                        any(), any(), any(), eq(SigninAccessPoint.SETTINGS_AUTOFILL_AND_PASSWORDS));
+        verify(mAutofillAndPasswordsSigninCoordinator).startSigninFlow(any());
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton",
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
     public void testSignInPromoMaxImpressions() {
         signInPromoDeclined(false);
         ChromeSharedPreferences.getInstance()

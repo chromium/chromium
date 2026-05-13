@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -63,11 +65,23 @@ public class AutofillAndPasswordsPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTitle() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            // More info at crbug.com/482994749#comment13: HoT launches after Seamless sign-in is
+            // landed.
+            return mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
+        }
+
         return mContext.getString(R.string.signin_promo_title_autofill_and_passwords);
     }
 
     @Override
     String getDescription(@Nullable String accountEmail) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            // More info at crbug.com/482994749#comment13: HoT launches after Seamless sign-in is
+            // landed.
+            return mContext.getString(
+                    R.string.signin_promo_description_autofill_and_passwords_seamless);
+        }
         return mContext.getString(R.string.signin_promo_description_autofill_and_passwords);
     }
 
@@ -122,12 +136,6 @@ public class AutofillAndPasswordsPromoDelegate extends SigninPromoDelegate {
     @ColorInt
     int getAccountPickerBackgroundColor() {
         return SemanticColorUtils.getColorSurface(mContext);
-    }
-
-    @Override
-    boolean isSeamlessSigninAllowed() {
-        // TODO (crbug.com/482994749): Support seamless Sign-in.
-        return false;
     }
 
     private @PromoState int computePromoState() {
