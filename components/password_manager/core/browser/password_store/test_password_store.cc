@@ -46,6 +46,11 @@ void TestPasswordStore::SetError(ActionableError error) {
   fake_backend()->SetError(error);
 }
 
+void TestPasswordStore::SetAffiliatedMatchHelper(
+    AffiliatedMatchHelper* helper) {
+  fake_backend()->SetAffiliatedMatchHelper(helper);
+}
+
 void TestPasswordStore::NotifyAboutError() {
   fake_backend()->NotifyAboutError();
 }

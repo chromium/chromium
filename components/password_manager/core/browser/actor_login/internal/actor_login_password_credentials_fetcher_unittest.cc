@@ -139,8 +139,8 @@ class ActorLoginPasswordCredentialsFetcherTest : public ::testing::Test {
   ActorLoginPasswordCredentialsFetcherTest() = default;
 
   void SetUp() override {
-    client_.profile_store()->Init(/*affiliated_match_helper=*/nullptr);
-    client_.account_store()->Init(/*affiliated_match_helper=*/nullptr);
+    client_.profile_store()->Init();
+    client_.account_store()->Init();
     ON_CALL(password_manager_, GetPasswordFormCache())
         .WillByDefault(Return(&form_cache_));
     ON_CALL(password_manager_, GetClient()).WillByDefault(Return(&client_));

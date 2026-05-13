@@ -39,7 +39,7 @@ namespace password_manager {
 template <class Context, class Store>
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(Context* context) {
   scoped_refptr<password_manager::PasswordStore> store(new Store);
-  store->Init(/*affiliated_match_helper=*/nullptr);
+  store->Init();
   return store;
 }
 
@@ -60,7 +60,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithArgs(
     Context* context) {
   scoped_refptr<password_manager::PasswordStore> store(
       new Store(std::forward<Args>(args)...));
-  store->Init(/*affiliated_match_helper=*/nullptr);
+  store->Init();
   return store;
 }
 

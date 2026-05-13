@@ -2066,8 +2066,8 @@ class PasswordAccessoryControllerWithTestStoreTest
 
   void SetUp() override {
     PasswordAccessoryControllerTest::SetUp();
-    test_account_store_->Init(/*affiliated_match_helper=*/nullptr);
-    test_profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    test_account_store_->Init();
+    test_profile_store_->Init();
   }
 
   void TearDown() override {

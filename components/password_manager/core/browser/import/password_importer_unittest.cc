@@ -58,8 +58,8 @@ class PasswordImporterTest : public testing::Test {
     importer_.SetServiceForTesting(std::move(pending_remote));
     importer_.SetDeleteFileForTesting(mock_delete_file_.Get());
 
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
+    account_store_->Init();
     async_task_completed_ = false;
     presenter_.Init(base::BindOnce(&PasswordImporterTest::OnAsyncTaskCompleted,
                                    base::Unretained(this)));

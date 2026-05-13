@@ -39,6 +39,7 @@ class Encryptor;
 
 namespace password_manager {
 
+class AffiliatedMatchHelper;
 class LoginDatabase;
 class LoginDatabaseAsyncHelper;
 
@@ -50,11 +51,13 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
-  PasswordStoreBuiltInBackend(std::unique_ptr<LoginDatabase> login_db,
-                              syncer::WipeModelUponSyncDisabledBehavior
-                                  wipe_model_upon_sync_disabled_behavior,
-                              PrefService* prefs,
-                              os_crypt_async::OSCryptAsync* os_crypt_async);
+  PasswordStoreBuiltInBackend(
+      std::unique_ptr<LoginDatabase> login_db,
+      syncer::WipeModelUponSyncDisabledBehavior
+          wipe_model_upon_sync_disabled_behavior,
+      PrefService* prefs,
+      os_crypt_async::OSCryptAsync* os_crypt_async,
+      std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper);
 
   ~PasswordStoreBuiltInBackend() override;
 
@@ -68,8 +71,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
 
  private:
   // Implements PasswordStoreBackend interface.
-  void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
-                   RemoteChangesReceived remote_form_changes_received,
+  void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
@@ -152,7 +154,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   std::unique_ptr<LoginDatabaseAsyncHelper> helper_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
+  std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
   // TaskRunner for all the background operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_

@@ -45,8 +45,8 @@ class MockObserver : public PasswordCounter::Observer {
 class PasswordCounterTest : public testing::Test {
  public:
   PasswordCounterTest() {
-    store_->Init(/*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    store_->Init();
+    account_store_->Init();
   }
   ~PasswordCounterTest() override {
     store_->ShutdownOnUIThread();

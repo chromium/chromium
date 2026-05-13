@@ -15,8 +15,6 @@ class DataTypeControllerDelegate;
 
 namespace password_manager {
 
-class AffiliatedMatchHelper;
-
 // This class processes passwords stored in local storage (not associated to any
 // account).
 class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
@@ -31,8 +29,7 @@ class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
   ~PasswordStoreAndroidLocalBackend() override;
 
   // PasswordStoreBackend implementation.
-  void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
-                   RemoteChangesReceived remote_form_changes_received,
+  void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;

@@ -80,21 +80,20 @@ class CredentialManagerPendingPreventSilentAccessTaskTest
     : public ::testing::Test {
  public:
   CredentialManagerPendingPreventSilentAccessTaskTest() {
-    auto profile_store_match_helper =
+    mock_affiliated_match_helper_ =
         std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
             affiliation_service_.get());
-    mock_affiliated_match_helper_ = profile_store_match_helper.get();
 
     profile_store_ = new TestPasswordStore(IsAccountStore(false));
-    profile_store_->Init(std::move(profile_store_match_helper));
+    profile_store_->SetAffiliatedMatchHelper(
+        mock_affiliated_match_helper_.get());
+    profile_store_->Init();
 
     account_store_ = new TestPasswordStore(IsAccountStore(true));
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_store_->Init();
   }
 
   ~CredentialManagerPendingPreventSilentAccessTaskTest() override {
-    mock_affiliated_match_helper_ = nullptr;
-
     account_store_->ShutdownOnUIThread();
     profile_store_->ShutdownOnUIThread();
     // It's needed to cleanup the password store asynchronously.
@@ -114,7 +113,8 @@ class CredentialManagerPendingPreventSilentAccessTaskTest
   scoped_refptr<TestPasswordStore> account_store_;
   std::unique_ptr<affiliations::FakeAffiliationService> affiliation_service_ =
       std::make_unique<affiliations::FakeAffiliationService>();
-  raw_ptr<NiceMock<MockAffiliatedMatchHelper>> mock_affiliated_match_helper_;
+  std::unique_ptr<NiceMock<MockAffiliatedMatchHelper>>
+      mock_affiliated_match_helper_;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;

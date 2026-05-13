@@ -85,7 +85,7 @@ LeakCheckCredential MakeLeakCredential(std::u16string_view username,
 class InsecureCredentialsManagerTest : public testing::TestWithParam<bool> {
  protected:
   InsecureCredentialsManagerTest() {
-    store_->Init(/*affiliated_match_helper=*/nullptr);
+    store_->Init();
     presenter_.Init();
     RunUntilIdle();
   }
@@ -1237,8 +1237,8 @@ namespace {
 class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
  protected:
   InsecureCredentialsManagerWithTwoStoresTest() {
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
+    account_store_->Init();
     presenter_.Init();
     RunUntilIdle();
   }

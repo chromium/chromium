@@ -81,7 +81,7 @@ class PasskeyTabHelperTest : public PlatformTest {
 
     test_password_store_ =
         base::MakeRefCounted<password_manager::TestPasswordStore>();
-    test_password_store_->Init(/*affiliated_match_helper=*/nullptr);
+    test_password_store_->Init();
     auto client = std::make_unique<FakeIOSPasskeyClient>();
     client_ = client.get();
     PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get(),

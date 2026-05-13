@@ -194,8 +194,8 @@ class SafariDataImporterTest : public testing::Test {
     importer_->password_importer_->SetDeleteFileForTesting(
         mock_delete_file_.Get());
 
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
+    account_store_->Init();
     // Use of Unretained below is safe because the RunUntil loop below
     // guarantees this outlives the tasks.
     presenter_.Init(base::BindOnce(&SafariDataImporterTest::OnPresenterReady,

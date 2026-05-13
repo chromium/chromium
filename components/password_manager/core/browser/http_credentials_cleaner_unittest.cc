@@ -144,7 +144,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   static const std::array<std::u16string, 2> password = {u"pass0", u"pass1"};
 
   base::test::TaskEnvironment task_environment;
-  store_->Init(/*affiliated_match_helper=*/nullptr);
+  store_->Init();
   TestCase test = GetParam();
   SCOPED_TRACE(testing::Message()
                << "is_hsts_enabled=" << test.is_hsts_enabled
@@ -254,7 +254,7 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
 
     base::test::TaskEnvironment task_environment;
     auto password_store = base::MakeRefCounted<TestPasswordStore>();
-    password_store->Init(/*affiliated_match_helper=*/nullptr);
+    password_store->Init();
 
     double last_time =
         (base::Time::Now() - base::Minutes(10)).InSecondsFSinceUnixEpoch();

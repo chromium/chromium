@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "chrome/browser/password_manager/android/password_store_empty_backend.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -43,10 +45,12 @@ void SetIsUserDataDirPolicySet(
 }  // namespace
 
 std::unique_ptr<password_manager::PasswordStoreBackend>
-CreatePasswordStoreBackend(password_manager::IsAccountStore is_account_store,
-                           const base::FilePath& login_db_directory,
-                           PrefService* prefs,
-                           os_crypt_async::OSCryptAsync* os_crypt_async) {
+CreatePasswordStoreBackend(
+    password_manager::IsAccountStore is_account_store,
+    const base::FilePath& login_db_directory,
+    PrefService* prefs,
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    affiliations::AffiliationService* affiliation_service) {
   TRACE_EVENT0("passwords", is_account_store
                                 ? "AccountPasswordStoreBackendCreation"
                                 : "ProfilePasswordStoreBackendCreation");
@@ -70,7 +74,12 @@ CreatePasswordStoreBackend(password_manager::IsAccountStore is_account_store,
   auto behavior = is_account_store
                       ? syncer::WipeModelUponSyncDisabledBehavior::kAlways
                       : syncer::WipeModelUponSyncDisabledBehavior::kNever;
+  CHECK(affiliation_service);
+  auto affiliated_match_helper =
+      std::make_unique<password_manager::AffiliatedMatchHelper>(
+          affiliation_service);
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-      std::move(login_db), behavior, prefs, os_crypt_async);
+      std::move(login_db), behavior, prefs, os_crypt_async,
+      std::move(affiliated_match_helper));
 #endif  // BUILDFLAG(IS_ANDROID)
 }

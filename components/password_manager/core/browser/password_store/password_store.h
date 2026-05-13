@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
@@ -54,7 +53,7 @@ class PasswordStore : public PasswordStoreInterface {
 
   // Always call this too on the UI thread.
   // TODO(crbug.com/40185648): Move initialization into the core interface, too.
-  void Init(std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper);
+  void Init();
 
   // RefcountedKeyedService:
   void ShutdownOnUIThread() override;
@@ -164,8 +163,6 @@ class PasswordStore : public PasswordStoreInterface {
 
   // The observers.
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
-
-  std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
   base::Time construction_time_;
 

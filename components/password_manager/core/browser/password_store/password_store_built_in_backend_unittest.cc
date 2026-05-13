@@ -188,6 +188,7 @@ class PasswordStoreBuiltInBackendBaseTest : public testing::Test {
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
   std::unique_ptr<PasswordStoreBuiltInBackend> store_;
+  affiliations::FakeAffiliationService fake_affiliation_service_;
 
  private:
   void SetupTempDir();
@@ -212,7 +213,9 @@ class PasswordStoreBuiltInBackendTest
   }
 
   PasswordStoreBuiltInBackend* CreateBackend(
-      std::unique_ptr<LoginDatabase> database = nullptr) {
+      std::unique_ptr<LoginDatabase> database = nullptr,
+      std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
+          nullptr) {
     if (!database) {
       database = std::make_unique<LoginDatabase>(
           test_login_db_file_path(),
@@ -221,15 +224,13 @@ class PasswordStoreBuiltInBackendTest
 
     store_ = std::make_unique<PasswordStoreBuiltInBackend>(
         std::move(database), syncer::WipeModelUponSyncDisabledBehavior::kNever,
-        pref_service(), os_crypt_async_.get());
+        pref_service(), os_crypt_async_.get(),
+        std::move(affiliated_match_helper));
     return store_.get();
   }
 
-  void InitializeBackend(
-      PasswordStoreBackend* backend,
-      AffiliatedMatchHelper* affiliated_match_helper = nullptr) {
-    backend->InitBackend(affiliated_match_helper,
-                         /*remote_form_changes_received=*/base::DoNothing(),
+  void InitializeBackend(PasswordStoreBackend* backend) {
+    backend->InitBackend(/*remote_form_changes_received=*/base::DoNothing(),
                          /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
                          /*completion=*/base::DoNothing());
     RunUntilIdle();
@@ -243,10 +244,9 @@ class PasswordStoreBuiltInBackendTest
     EXPECT_CALL(
         sync_service,
         AddObserver(static_cast<PasswordStoreBuiltInBackend*>(backend)));
-    backend->InitBackend(
-        /*affiliated_match_helper=*/nullptr, std::move(remote_changes_callback),
-        std::move(sync_enabled_or_disabled_cb),
-        /*completion=*/base::DoNothing());
+    backend->InitBackend(std::move(remote_changes_callback),
+                         std::move(sync_enabled_or_disabled_cb),
+                         /*completion=*/base::DoNothing());
     backend->OnSyncServiceInitialized(&sync_service);
     RunUntilIdle();
   }
@@ -913,11 +913,13 @@ TEST_P(PasswordStoreBuiltInBackendTest,
 }
 
 TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
-  affiliations::FakeAffiliationService fake_affiliation_service;
-  MockAffiliatedMatchHelper mock_affiliated_match_helper(
-      &fake_affiliation_service);
-  PasswordStoreBackend* backend = CreateBackend();
-  InitializeBackend(backend, &mock_affiliated_match_helper);
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  PasswordStoreBackend* backend =
+      CreateBackend(nullptr, std::move(owning_mock_match_helper));
+  InitializeBackend(backend);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
@@ -947,10 +949,10 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   std::vector<std::string> grouped_realms;
   grouped_realms.push_back(kTestWebRealm3);
 
-  mock_affiliated_match_helper.ExpectCallToGetAffiliatedAndGrouped(
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
       observed_form, affiliated_android_realms, grouped_realms);
   mock_affiliated_match_helper
-      .ExpectCallToInjectAffiliationAndBrandingInformation({});
+      ->ExpectCallToInjectAffiliationAndBrandingInformation({});
   base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
   EXPECT_CALL(mock_reply,
               Run(VariantWith<BackendLoginsResult>(
@@ -962,11 +964,13 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
 
 TEST_P(PasswordStoreBuiltInBackendTest,
        GetAllLoginsWithAffiliationAndBrandingInformation) {
-  affiliations::FakeAffiliationService fake_affiliation_service;
-  MockAffiliatedMatchHelper mock_affiliated_match_helper(
-      &fake_affiliation_service);
-  PasswordStoreBackend* backend = CreateBackend();
-  InitializeBackend(backend, &mock_affiliated_match_helper);
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  PasswordStoreBackend* backend =
+      CreateBackend(nullptr, std::move(owning_mock_match_helper));
+  InitializeBackend(backend);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
@@ -992,7 +996,7 @@ TEST_P(PasswordStoreBuiltInBackendTest,
           {/* Pretend affiliation or branding info is unavailable. */}};
 
   mock_affiliated_match_helper
-      .ExpectCallToInjectAffiliationAndBrandingInformation(
+      ->ExpectCallToInjectAffiliationAndBrandingInformation(
           affiliation_info_for_results);
 
   for (size_t i = 0; i < expected_results.size(); ++i) {
@@ -1044,18 +1048,17 @@ class PasswordStoreBuiltInBackendPasswordLossMetricsTest
         test_login_db_file_path(),
         password_manager::IsAccountStore(GetParam().is_account_store));
 
-    affiliations::FakeAffiliationService fake_affiliation_service;
-    MockAffiliatedMatchHelper mock_affiliated_match_helper(
-        &fake_affiliation_service);
+    auto mock_match_helper =
+        std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
 
     store_ = std::make_unique<PasswordStoreBuiltInBackend>(
         std::move(database), syncer::WipeModelUponSyncDisabledBehavior::kNever,
-        pref_service(), os_crypt_async_.get());
+        pref_service(), os_crypt_async_.get(), std::move(mock_match_helper));
     PasswordStoreBackend* backend = store_.get();
-    backend->InitBackend(&mock_affiliated_match_helper,
-                         /*remote_form_changes_received=*/base::DoNothing(),
-                         /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
-                         /*completion=*/base::DoNothing());
+    backend->InitBackend(
+        /*remote_form_changes_received=*/base::DoNothing(),
+        /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+        /*completion=*/base::DoNothing());
     RunUntilIdle();
     return backend;
   }

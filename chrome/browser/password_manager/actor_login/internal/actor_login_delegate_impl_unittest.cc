@@ -237,8 +237,8 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
                     -> PasswordManagerDriver* { return driver; },
                 base::Unretained(&mock_driver_))));
 
-    client_.profile_store()->Init(/*affiliated_match_helper=*/nullptr);
-    client_.account_store()->Init(/*affiliated_match_helper=*/nullptr);
+    client_.profile_store()->Init();
+    client_.account_store()->Init();
 
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));

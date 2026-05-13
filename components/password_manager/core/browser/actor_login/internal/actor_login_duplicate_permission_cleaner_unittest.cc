@@ -43,11 +43,11 @@ using testing::UnorderedElementsAre;
 class ActorLoginDuplicatePermissionCleanerTest : public testing::Test {
  public:
   ActorLoginDuplicatePermissionCleanerTest() {
-    auto match_helper =
+    match_helper_owned_ =
         std::make_unique<password_manager::AffiliatedMatchHelper>(
             &mock_affiliation_service_);
-    match_helper_ = match_helper.get();
-    store_->Init(std::move(match_helper));
+    store_->Init();
+    store_->SetAffiliatedMatchHelper(match_helper_owned_.get());
     service_ = std::make_unique<ActorLoginPermissionCleaningServiceImpl>(
         &permission_service_, store_.get(), nullptr);
 
@@ -63,16 +63,13 @@ class ActorLoginDuplicatePermissionCleanerTest : public testing::Test {
   }
 
   ~ActorLoginDuplicatePermissionCleanerTest() override {
-    match_helper_ = nullptr;
     store_->ShutdownOnUIThread();
   }
 
   affiliations::MockAffiliationService& mock_affiliation_service() {
     return mock_affiliation_service_;
   }
-  password_manager::AffiliatedMatchHelper* match_helper() {
-    return match_helper_;
-  }
+
   MockActorLoginPermissionService* permission_service() {
     return &permission_service_;
   }
@@ -82,13 +79,13 @@ class ActorLoginDuplicatePermissionCleanerTest : public testing::Test {
     return service_.get();
   }
 
-  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+  base::test::TaskEnvironment& task_environmenft() { return task_environment_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
-  raw_ptr<password_manager::AffiliatedMatchHelper> match_helper_ = nullptr;
+  std::unique_ptr<password_manager::AffiliatedMatchHelper> match_helper_owned_;
   testing::NiceMock<MockActorLoginPermissionService> permission_service_;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();

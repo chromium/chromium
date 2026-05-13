@@ -127,7 +127,7 @@ GURL CreateFaviconUrl(GURL url) {
 class SavedPasswordsPresenterTest : public testing::Test {
  protected:
   void SetUp() override {
-    store_->Init(/*affiliated_match_helper=*/nullptr);
+    store_->Init();
     presenter_.Init();
     GetSyncService()->SetSignedIn(signin::ConsentLevel::kSync);
     task_env_.RunUntilIdle();
@@ -1204,8 +1204,8 @@ namespace {
 class SavedPasswordsPresenterWithTwoStoresTest : public testing::Test {
  protected:
   void SetUp() override {
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
+    account_store_->Init();
     presenter_.Init();
     RunUntilIdle();
   }
@@ -2327,12 +2327,12 @@ class SavedPasswordsPresenterInitializationTest : public ::testing::Test {
     profile_store_ = base::MakeRefCounted<PasswordStore>(
         std::make_unique<FakePasswordStoreBackend>(
             IsAccountStore(false), profile_store_backend_runner()));
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
 
     account_store_ = base::MakeRefCounted<PasswordStore>(
         std::make_unique<FakePasswordStoreBackend>(
             IsAccountStore(true), account_store_backend_runner()));
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_store_->Init();
   }
 
   ~SavedPasswordsPresenterInitializationTest() override {

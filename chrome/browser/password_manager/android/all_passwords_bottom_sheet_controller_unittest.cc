@@ -147,7 +147,7 @@ class AllPasswordsBottomSheetControllerTest
                                 PlusAddressServiceTestFactory,
                             base::Unretained(this)));
     profile_store_ = CreateAndUseTestPasswordStore(profile());
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
     createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
   }
 
@@ -423,9 +423,9 @@ class AllPasswordsBottomSheetControllerAccountStoreTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     profile_store_ = CreateAndUseTestPasswordStore(profile());
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
     account_store_ = CreateAndUseTestAccountPasswordStore(profile());
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_store_->Init();
     createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
   }
 };

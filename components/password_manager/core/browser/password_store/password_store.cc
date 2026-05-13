@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -72,17 +71,14 @@ void ConsumerReplyConverter(base::WeakPtr<PasswordStoreConsumer> consumer,
 PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
     : backend_(std::move(backend)), construction_time_(base::Time::Now()) {}
 
-void PasswordStore::Init(
-    std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper) {
+void PasswordStore::Init() {
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   DCHECK(main_task_runner_);
-  affiliated_match_helper_ = std::move(affiliated_match_helper);
 
   DCHECK(backend_);
   TRACE_EVENT_BEGIN("passwords", "PasswordStore::InitOnBackgroundSequence",
                     perfetto::Track::FromPointer(this));
   backend_->InitBackend(
-      affiliated_match_helper_.get(),
       base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
                           this, LoginsChangedTrigger::ExternalUpdate),
       base::BindPostTask(
@@ -430,9 +426,6 @@ void PasswordStore::ShutdownOnUIThread() {
         std::move(backend_)));
     // Now, backend_ == nullptr (guaranteed by move).
   }
-
-  // The AffiliationService must be destroyed from the main sequence.
-  affiliated_match_helper_.reset();
 }
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>

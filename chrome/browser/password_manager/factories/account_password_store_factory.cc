@@ -23,7 +23,6 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -35,7 +34,6 @@
 
 namespace {
 
-using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 
@@ -79,13 +77,19 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(!profile->IsOffTheRecord());
+  affiliations::AffiliationService* affiliation_service = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+  affiliation_service = AffiliationServiceFactory::GetForProfile(profile);
+#endif
+
   scoped_refptr<PasswordStore> ps =
-      new password_manager::PasswordStore(CreatePasswordStoreBackend(
-          password_manager::kAccountStore, profile->GetPath(),
-          profile->GetPrefs(), g_browser_process->os_crypt_async()));
-  affiliations::AffiliationService* affiliation_service =
-      AffiliationServiceFactory::GetForProfile(profile);
-  ps->Init(std::make_unique<AffiliatedMatchHelper>(affiliation_service));
+      base::MakeRefCounted<password_manager::PasswordStore>(
+          CreatePasswordStoreBackend(password_manager::kAccountStore,
+                                     profile->GetPath(), profile->GetPrefs(),
+                                     g_browser_process->os_crypt_async(),
+                                     affiliation_service));
+
+  ps->Init();
   password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       password_manager::kAccountStore, profile->GetPrefs(), base::Seconds(60),
@@ -95,6 +99,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   auto password_affiliation_adapter =
       std::make_unique<password_manager::PasswordAffiliationSourceAdapter>();
   password_affiliation_adapter->RegisterPasswordStore(ps.get());
+  CHECK(affiliation_service);
   affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
   // Clear the stats table from the account store, if marked.
   MaybeClearStatsTableForSyncToSigninMigration(ps, profile->GetPrefs());

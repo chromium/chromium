@@ -55,7 +55,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     ProfileIOS* profile) {
   auto store = base::MakeRefCounted<password_manager::TestPasswordStore>(
       is_account_store);
-  store->Init(/*affiliated_match_helper=*/nullptr);
+  store->Init();
   return store;
 }
 

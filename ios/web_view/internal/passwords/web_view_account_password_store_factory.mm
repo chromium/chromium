@@ -69,16 +69,17 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
       password_manager::CreateLoginDatabase(password_manager::kAccountStore,
                                             browser_state->GetStatePath(),
                                             prefs));
+  affiliations::AffiliationService* affiliation_service =
+      WebViewAffiliationServiceFactory::GetForBrowserState(browser_state);
   scoped_refptr<password_manager::PasswordStore> ps =
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db),
               syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs,
-              ApplicationContext::GetInstance()->GetOSCryptAsync()));
-  affiliations::AffiliationService* affiliation_service =
-      WebViewAffiliationServiceFactory::GetForBrowserState(browser_state);
-  ps->Init(std::make_unique<password_manager::AffiliatedMatchHelper>(
-      affiliation_service));
+              ApplicationContext::GetInstance()->GetOSCryptAsync(),
+              std::make_unique<password_manager::AffiliatedMatchHelper>(
+                  affiliation_service)));
+  ps->Init();
   auto password_affiliation_adapter =
       std::make_unique<password_manager::PasswordAffiliationSourceAdapter>();
   password_affiliation_adapter->RegisterPasswordStore(ps.get());

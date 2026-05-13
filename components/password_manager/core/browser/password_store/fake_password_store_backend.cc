@@ -128,12 +128,15 @@ void FakePasswordStoreBackend::NotifyAboutError() {
   remote_form_changes_received_.Run(PasswordStoreBackendError(error_type));
 }
 
+void FakePasswordStoreBackend::SetAffiliatedMatchHelper(
+    AffiliatedMatchHelper* match_helper) {
+  match_helper_ = match_helper;
+}
+
 void FakePasswordStoreBackend::InitBackend(
-    AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
-  match_helper_ = affiliated_match_helper;
   remote_form_changes_received_ = std::move(remote_form_changes_received);
   GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(std::move(completion), /*success=*/true));

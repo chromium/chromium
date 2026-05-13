@@ -308,8 +308,8 @@ class LeakDetectionDelegateHelperWithTwoStoreTest
       public LeakDetectionDelegateHelperTestBase {
  protected:
   void SetUp() override {
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
+    account_store_->Init();
 
     delegate_helper_ = std::make_unique<LeakDetectionDelegateHelper>(
         profile_store_, account_store_, callback_.Get());

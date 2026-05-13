@@ -22,6 +22,7 @@ class SequencedTaskRunner;
 
 namespace password_manager {
 
+class AffiliatedMatchHelper;
 class SmartBubbleStatsStore;
 
 using PasswordMap = std::map<std::string /* signon_realm */,
@@ -42,7 +43,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   FakePasswordStoreBackend();
   explicit FakePasswordStoreBackend(
       IsAccountStore is_account_store,
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
+      scoped_refptr<base::SequencedTaskRunner> tapsk_runner = nullptr);
   FakePasswordStoreBackend(
       IsAccountStore is_account_store,
       UpdateAlwaysSucceeds update_always_succeeds,
@@ -55,13 +56,13 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
       PasswordStoreBackendError password_store_backend_error);
   void SetError(ActionableError error);
   void NotifyAboutError();
+  void SetAffiliatedMatchHelper(AffiliatedMatchHelper* match_helper);
 
   IsAccountStore is_account_store() const { return is_account_store_; }
 
  private:
   // Implements PasswordStoreBackend interface.
-  void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
-                   RemoteChangesReceived remote_form_changes_received,
+  void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
@@ -121,7 +122,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   const IsAccountStore is_account_store_{false};
   const UpdateAlwaysSucceeds update_always_succeeds_{false};
 
-  raw_ptr<AffiliatedMatchHelper> match_helper_;
+  raw_ptr<AffiliatedMatchHelper> match_helper_ = nullptr;
   PasswordMap stored_passwords_;
   PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

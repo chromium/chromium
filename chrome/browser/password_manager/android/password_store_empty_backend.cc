@@ -21,7 +21,6 @@ PasswordStoreEmptyBackend::PasswordStoreEmptyBackend() {}
 PasswordStoreEmptyBackend::~PasswordStoreEmptyBackend() {}
 
 void PasswordStoreEmptyBackend::InitBackend(
-    AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {

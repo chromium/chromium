@@ -120,8 +120,8 @@ class CredentialProviderServiceTest : public PlatformTest {
         base::apple::FilePathToNSURL(scoped_temp_dir_.GetPath());
     SetFaviconsFolderURLForTesting(folder_url);
 
-    password_store_->Init(/*affiliated_match_helper=*/nullptr);
-    account_password_store_->Init(/*affiliated_match_helper=*/nullptr);
+    password_store_->Init();
+    account_password_store_->Init();
     testing_pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
     testing_pref_service_.registry()->RegisterBooleanPref(

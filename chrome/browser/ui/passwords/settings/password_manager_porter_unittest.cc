@@ -266,7 +266,7 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
     importer->SetDeleteFileForTesting(import_file_deletion_callback_.Get());
     porter_->SetImporterForTesting(std::move(importer));
 
-    store_->Init(/*affiliated_match_helper=*/nullptr);
+    store_->Init();
 
     base::test::TestFuture<void> init_future;
     presenter_.Init(init_future.GetCallback());

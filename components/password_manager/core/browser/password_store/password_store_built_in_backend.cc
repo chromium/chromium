@@ -171,8 +171,11 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior,
     PrefService* prefs,
-    os_crypt_async::OSCryptAsync* os_crypt_async)
-    : pref_service_(prefs), os_crypt_async_(os_crypt_async) {
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper)
+    : affiliated_match_helper_(std::move(affiliated_match_helper)),
+      pref_service_(prefs),
+      os_crypt_async_(os_crypt_async) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(os_crypt_async_);
 
@@ -208,7 +211,7 @@ void PasswordStoreBuiltInBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
-  affiliated_match_helper_ = nullptr;
+  affiliated_match_helper_.reset();
   sync_observation_.Reset();
   if (helper_) {
     background_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
@@ -227,13 +230,11 @@ ActionableError PasswordStoreBuiltInBackend::GetError() {
 }
 
 void PasswordStoreBuiltInBackend::InitBackend(
-    AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
-  affiliated_match_helper_ = affiliated_match_helper;
   remote_form_changes_received_callback_ = remote_form_changes_received;
   sync_enabled_or_disabled_cb_ = sync_enabled_or_disabled_cb;
 

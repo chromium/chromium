@@ -193,15 +193,14 @@ class PasswordManualFallbackFlowTest : public Test {
     ON_CALL(password_manager_client(), GetProfilePasswordStore)
         .WillByDefault(Return(&profile_password_store()));
 
-    auto profile_store_match_helper =
+    mock_affiliated_match_helper_ =
         std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
             affiliation_service_.get());
-    mock_affiliated_match_helper_ = profile_store_match_helper.get();
-    profile_password_store().Init(std::move(profile_store_match_helper));
+    profile_password_store().SetAffiliatedMatchHelper(
+        mock_affiliated_match_helper_.get());
+    profile_password_store().Init();
   }
-
   ~PasswordManualFallbackFlowTest() override {
-    mock_affiliated_match_helper_ = nullptr;
     profile_password_store_->ShutdownOnUIThread();
   }
 
@@ -296,7 +295,8 @@ class PasswordManualFallbackFlowTest : public Test {
       manual_fallback_metrics_recorder_;
   std::unique_ptr<NiceMock<MockAffiliationService>> affiliation_service_ =
       std::make_unique<NiceMock<MockAffiliationService>>();
-  raw_ptr<MockAffiliatedMatchHelper> mock_affiliated_match_helper_;
+  std::unique_ptr<NiceMock<MockAffiliatedMatchHelper>>
+      mock_affiliated_match_helper_;
   scoped_refptr<TestPasswordStore> profile_password_store_ =
       base::MakeRefCounted<TestPasswordStore>();
   GURL triggering_form_domain_ = GURL::EmptyGURL();

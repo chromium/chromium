@@ -57,8 +57,8 @@ class ActorLoginPermissionsManagerTest : public testing::Test {
  public:
   void SetUp() override {
     test_sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
+    account_store_->Init();
     ON_CALL(actor_login_permission_service_, ListAllPermissions)
         .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(
             std::vector<FederatedPermission>()));
@@ -423,12 +423,12 @@ class ActorLoginPermissionsManagerInitializationTest : public ::testing::Test {
     profile_store_ = base::MakeRefCounted<password_manager::PasswordStore>(
         std::make_unique<password_manager::FakePasswordStoreBackend>(
             IsAccountStore(false), profile_store_backend_runner()));
-    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    profile_store_->Init();
 
     account_store_ = base::MakeRefCounted<password_manager::PasswordStore>(
         std::make_unique<password_manager::FakePasswordStoreBackend>(
             IsAccountStore(true), account_store_backend_runner()));
-    account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_store_->Init();
 
     ON_CALL(actor_login_permission_service(), ListAllPermissions)
         .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(

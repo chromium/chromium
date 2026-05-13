@@ -106,10 +106,11 @@ PasswordFormToIncomingSharingInvitation(const PasswordForm& form) {
 }
 
 scoped_refptr<TestPasswordStore> CreateStoreAndInit(
-    std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper) {
+    AffiliatedMatchHelper* affiliated_match_helper) {
   scoped_refptr<TestPasswordStore> store =
       base::MakeRefCounted<TestPasswordStore>();
-  store->Init(std::move(affiliated_match_helper));
+  store->SetAffiliatedMatchHelper(affiliated_match_helper);
+  store->Init();
   return store;
 }
 
@@ -123,8 +124,6 @@ class PasswordReceiverServiceImplTest : public testing::Test {
   }
 
   ~PasswordReceiverServiceImplTest() override {
-    affiliated_match_helper_profile_store_ = nullptr;
-    affiliated_match_helper_account_store_ = nullptr;
     account_password_store_->ShutdownOnUIThread();
     profile_password_store_->ShutdownOnUIThread();
   }
@@ -204,16 +203,16 @@ class PasswordReceiverServiceImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   affiliations::FakeAffiliationService affiliation_service_;
-  raw_ptr<MockAffiliatedMatchHelper> affiliated_match_helper_profile_store_ =
-      new MockAffiliatedMatchHelper(&affiliation_service_);
+  std::unique_ptr<MockAffiliatedMatchHelper>
+      affiliated_match_helper_profile_store_ =
+          std::make_unique<MockAffiliatedMatchHelper>(&affiliation_service_);
   const scoped_refptr<TestPasswordStore> profile_password_store_ =
-      CreateStoreAndInit(
-          base::WrapUnique(affiliated_match_helper_profile_store_.get()));
-  raw_ptr<MockAffiliatedMatchHelper> affiliated_match_helper_account_store_ =
-      new MockAffiliatedMatchHelper(&affiliation_service_);
+      CreateStoreAndInit(affiliated_match_helper_profile_store_.get());
+  std::unique_ptr<MockAffiliatedMatchHelper>
+      affiliated_match_helper_account_store_ =
+          std::make_unique<MockAffiliatedMatchHelper>(&affiliation_service_);
   const scoped_refptr<TestPasswordStore> account_password_store_ =
-      CreateStoreAndInit(
-          base::WrapUnique(affiliated_match_helper_account_store_.get()));
+      CreateStoreAndInit(affiliated_match_helper_account_store_.get());
   std::unique_ptr<PasswordReceiverServiceImpl> password_receiver_service_ =
       std::make_unique<PasswordReceiverServiceImpl>(
           /*sync_bridge=*/nullptr,

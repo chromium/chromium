@@ -71,15 +71,15 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
       password_manager::CreateLoginDatabase(password_manager::kAccountStore,
                                             profile->GetStatePath(),
                                             profile->GetPrefs()));
+  AffiliationService* affiliation_service =
+      IOSChromeAffiliationServiceFactory::GetForProfile(profile);
   auto password_store = base::MakeRefCounted<password_manager::PasswordStore>(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-          profile->GetPrefs(), GetApplicationContext()->GetOSCryptAsync()));
-  AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForProfile(profile);
-  password_store->Init(
-      std::make_unique<AffiliatedMatchHelper>(affiliation_service));
+          profile->GetPrefs(), GetApplicationContext()->GetOSCryptAsync(),
+          std::make_unique<AffiliatedMatchHelper>(affiliation_service)));
+  password_store->Init();
   password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), password_store,
       password_manager::kAccountStore, profile->GetPrefs(), base::Minutes(1),

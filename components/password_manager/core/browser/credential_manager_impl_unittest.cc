@@ -246,15 +246,16 @@ class CredentialManagerImplTest : public testing::Test,
 
     fake_affiliation_service_ =
         std::make_unique<affiliations::FakeAffiliationService>();
-    auto owning_mock_match_helper =
+    owning_mock_match_helper_ =
         std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
             fake_affiliation_service_.get());
-    mock_match_helper_ = owning_mock_match_helper.get();
-    store_->Init(std::move(owning_mock_match_helper));
+    mock_match_helper_ = owning_mock_match_helper_.get();
+    store_->SetAffiliatedMatchHelper(mock_match_helper_);
+    store_->Init();
 
     if (GetParam()) {
       account_store_ = new TestPasswordStore(IsAccountStore(true));
-      account_store_->Init(/*affiliated_match_helper=*/nullptr);
+      account_store_->Init();
     }
     client_ = std::make_unique<testing::NiceMock<MockPasswordManagerClient>>(
         store_.get(), account_store_.get());
@@ -424,6 +425,8 @@ class CredentialManagerImplTest : public testing::Test,
   std::unique_ptr<testing::NiceMock<MockPasswordManagerClient>> client_;
   std::unique_ptr<affiliations::FakeAffiliationService>
       fake_affiliation_service_;
+  std::unique_ptr<NiceMock<MockAffiliatedMatchHelper>>
+      owning_mock_match_helper_;
   raw_ptr<MockAffiliatedMatchHelper> mock_match_helper_ = nullptr;
   std::unique_ptr<CredentialManagerImpl> cm_service_impl_;
 };

@@ -32,7 +32,7 @@ class PasswordStoreEmptyBackendTest : public testing::Test {
  protected:
   PasswordStoreBackend* CreateAndInitBackend() {
     backend_ = std::make_unique<PasswordStoreEmptyBackend>();
-    backend_->InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
+    backend_->InitBackend(base::DoNothing(), base::DoNothing(),
                           base::DoNothing());
     return backend_.get();
   }
@@ -46,7 +46,7 @@ TEST_F(PasswordStoreEmptyBackendTest, InitAndShutdownSignalBack) {
       std::make_unique<PasswordStoreEmptyBackend>();
   base::MockOnceCallback<void(bool)> mock_completion_cb;
   EXPECT_CALL(mock_completion_cb, Run(true));
-  backend->InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
+  backend->InitBackend(base::DoNothing(), base::DoNothing(),
                        mock_completion_cb.Get());
 
   base::MockOnceClosure mock_shutdown_cb;

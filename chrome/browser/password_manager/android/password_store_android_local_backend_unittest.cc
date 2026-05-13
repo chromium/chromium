@@ -127,7 +127,6 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
 
 TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForGetAllLogins) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
 
@@ -149,7 +148,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForGetAllLogins) {
 TEST_F(PasswordStoreAndroidLocalBackendTest,
        CallsBridgeForGetAllLoginsWithAffiliationAndBranding) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
 
@@ -171,7 +169,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
 TEST_F(PasswordStoreAndroidLocalBackendTest,
        CallsBridgeForGetAutofillableLogins) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
 
@@ -193,7 +190,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
 TEST_F(PasswordStoreAndroidLocalBackendTest,
        CallsBridgeForGroupedMatchingLogins) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
 
@@ -244,7 +240,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
 
 TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForAddLogin) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
 
@@ -266,7 +261,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForAddLogin) {
 
 TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForUpdateLogin) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
   const JobId kUpdateLoginJobId{13388};
@@ -288,7 +282,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForUpdateLogin) {
 TEST_F(PasswordStoreAndroidLocalBackendTest,
        ResetTemporarySavingSuspensionAfterSuccessfulLogin) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
   EXPECT_EQ(ActionableError::kNoError, backend().GetError());
@@ -326,7 +319,6 @@ class PasswordStoreAndroidLocalBackendRetriesTest
 TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
        GetAllLoginsIsRetriedUntilSuccess) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
 
@@ -362,7 +354,6 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
 TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
        GetAutofillableLoginsIsRetriedUntilSuccess) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
 
@@ -398,7 +389,6 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
 TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
        GetAllLoginsIsRetriedUntilTimeout) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
 
@@ -433,7 +423,6 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
 TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
        GetAutofillableLoginsIsRetriedUntilTimeout) {
   backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
 

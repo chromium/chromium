@@ -455,11 +455,12 @@ class PasswordManagerTestBase : public testing::Test {
  protected:
   void SetUp() override {
     store_ = base::MakeRefCounted<TestPasswordStore>();
-    auto owning_mock_match_helper =
+    owning_mock_match_helper_ =
         std::make_unique<testing::NiceMock<MockAffiliatedMatchHelper>>(
             &fake_affiliation_service_);
-    mock_match_helper_ = owning_mock_match_helper.get();
-    store_->Init(std::move(owning_mock_match_helper));
+    mock_match_helper_ = owning_mock_match_helper_.get();
+    store_->SetAffiliatedMatchHelper(mock_match_helper_);
+    store_->Init();
 
     ON_CALL(client_, GetProfilePasswordStore())
         .WillByDefault(Return(store_.get()));
@@ -467,7 +468,7 @@ class PasswordManagerTestBase : public testing::Test {
     if (ShouldEnableAccountStorage()) {
       account_store_ =
           base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-      account_store_->Init(/*affiliated_match_helper=*/nullptr);
+      account_store_->Init();
 
       ON_CALL(client_, GetAccountPasswordStore())
           .WillByDefault(Return(account_store_.get()));
@@ -861,6 +862,8 @@ class PasswordManagerTestBase : public testing::Test {
   affiliations::FakeAffiliationService fake_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
+  std::unique_ptr<testing::NiceMock<MockAffiliatedMatchHelper>>
+      owning_mock_match_helper_;
   raw_ptr<MockAffiliatedMatchHelper> mock_match_helper_ = nullptr;
   MockPasswordReuseManager reuse_manager_;
   testing::NiceMock<MockPasswordManagerClient> client_;
@@ -1816,7 +1819,7 @@ TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
   // Test that a plain form submit doesn't result in offering to save passwords.
   auto store = base::MakeRefCounted<PasswordStore>(
       std::make_unique<FailingPasswordStoreBackend>());
-  store->Init(/*affiliated_match_helper=*/nullptr);
+  store->Init();
   ON_CALL(client_, GetProfilePasswordStore())
       .WillByDefault(Return(store.get()));
 
@@ -1867,7 +1870,7 @@ TEST_P(
   backend->ReturnErrorOnRequest(PasswordStoreBackendError(
       PasswordStoreBackendErrorType::kIrretrievableSecurityDomain));
   auto store = base::MakeRefCounted<PasswordStore>(std::move(backend));
-  store->Init(/*affiliated_match_helper=*/nullptr);
+  store->Init();
   ON_CALL(client_, GetAccountPasswordStore())
       .WillByDefault(Return(store.get()));
 
@@ -1901,7 +1904,7 @@ TEST_P(PasswordManagerTest,
   // Test that a plain form submit doesn't result in offering to save passwords.
   auto store = base::MakeRefCounted<PasswordStore>(
       std::make_unique<FailingPasswordStoreBackend>());
-  store->Init(/*affiliated_match_helper=*/nullptr);
+  store->Init();
   PasswordForm form(MakeSimpleForm());
   form.password_value = u"old_password";
   store->AddLogin(password_manager::FromPasswordForm(form));
@@ -2254,7 +2257,7 @@ TEST_P(PasswordManagerTest, BrokenPasswordStorePreventsMutingCredentials) {
   manager()->set_leak_factory(std::move(mock_factory));
   auto store = base::MakeRefCounted<PasswordStore>(
       std::make_unique<FailingPasswordStoreBackend>());
-  store->Init(/*affiliated_match_helper=*/nullptr);
+  store->Init();
   ON_CALL(client_, GetProfilePasswordStore())
       .WillByDefault(Return(store.get()));
 
