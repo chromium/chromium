@@ -2034,6 +2034,12 @@ targets.binaries.console_test_launcher(
     module_scheme = "gtest",
 )
 
+targets.binaries.console_test_launcher(
+    name = "puffin_unittests",
+    label = "//third_party/puffin:puffin_unittests",
+    module_scheme = "gtest",
+)
+
 targets.binaries.windowed_test_launcher(
     name = "remoting_unittests",
     label = "//remoting:remoting_unittests",

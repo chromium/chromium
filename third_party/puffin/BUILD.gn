@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 group("all") {
   deps = [
@@ -31,9 +32,16 @@ proto_library("libpuffin-proto") {
   proto_out_dir = "puffin/src"
 }
 
+static_library("libpuffin-common") {
+  configs += [ ":target_defaults" ]
+  sources = [ "src/file_stream.cc" ]
+  deps = [ "//base" ]
+}
+
 static_library("libpuffpatch") {
   configs += [ ":target_defaults" ]
   deps = [
+    ":libpuffin-common",
     ":libpuffin-proto",
     "//base",
     "//components/zucchini:zucchini_lib",
@@ -44,7 +52,6 @@ static_library("libpuffpatch") {
     "src/bit_reader.cc",
     "src/bit_writer.cc",
     "src/brotli_util.cc",
-    "src/file_stream.cc",
     "src/huffer.cc",
     "src/huffman_table.cc",
     "src/memory_stream.cc",
@@ -59,6 +66,7 @@ static_library("libpuffpatch") {
 static_library("libpuffdiff") {
   configs += [ ":target_defaults" ]
   deps = [
+    ":libpuffin-common",
     ":libpuffin-proto",
     "//base",
     "//components/zucchini:zucchini_lib",
@@ -66,7 +74,6 @@ static_library("libpuffdiff") {
     "//third_party/brotli:enc",
   ]
   sources = [
-    "src/file_stream.cc",
     "src/puffdiff.cc",
     "src/utils.cc",
   ]
@@ -100,7 +107,7 @@ config("test_defaults") {
   defines = [ "_FILE_OFFSET_BITS=64" ]
 }
 
-executable("puffin_unittest") {
+test("puffin_unittests") {
   testonly = true
   configs += [ ":test_defaults" ]
   sources = [
@@ -111,7 +118,6 @@ executable("puffin_unittest") {
     "src/puff_io_unittest.cc",
     "src/puffin_unittest.cc",
     "src/stream_unittest.cc",
-    "src/testrunner.cc",
     "src/unittest_common.cc",
     "src/utils_unittest.cc",
   ]
@@ -120,6 +126,7 @@ executable("puffin_unittest") {
     ":libpuffdiff",
     ":libpuffpatch",
     "//base",
+    "//base/test:run_all_unittests",
     "//testing/gtest",
   ]
 

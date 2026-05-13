@@ -1018,6 +1018,25 @@
       },
       {
         "ci_only": true,
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//third_party/puffin:puffin_unittests",
+        "module_scheme": "gtest",
+        "name": "puffin_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "puffin_unittests",
+        "test_id_prefix": "ninja://third_party/puffin:puffin_unittests/"
+      },
+      {
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

@@ -856,6 +856,10 @@
         },
       },
       'perfetto_unittests': {},
+      'puffin_unittests': {
+        'ci_only': True,
+        'experiment_percentage': 100,
+      },
       'services_unittests': {},
       'shell_dialogs_unittests': {},
       'skia_unittests': {},

@@ -1423,6 +1423,27 @@
         "test_id_prefix": "ninja://third_party/pthreadpool:pthreadpool_unittests/"
       },
       {
+        "ci_only": true,
+        "experiment_percentage": 100,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//third_party/puffin:puffin_unittests",
+        "module_scheme": "gtest",
+        "name": "puffin_unittests",
+        "retry_only_failed_tests": true,
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "puffin_unittests",
+        "test_id_prefix": "ninja://third_party/puffin:puffin_unittests/"
+      },
+      {
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

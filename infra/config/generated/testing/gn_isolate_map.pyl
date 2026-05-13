@@ -1811,6 +1811,11 @@
     "type": "console_test_launcher",
     "module_scheme": "gtest",
   },
+  "puffin_unittests": {
+    "label": "//third_party/puffin:puffin_unittests",
+    "type": "console_test_launcher",
+    "module_scheme": "gtest",
+  },
   "push_apps_to_background_apk": {
     "label": "//tools/android/push_apps_to_background:push_apps_to_background_apk",
     "type": "additional_compile_target",

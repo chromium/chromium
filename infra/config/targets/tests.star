@@ -2220,6 +2220,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "puffin_unittests",
+)
+
+targets.tests.gtest_test(
     name = "remoting_unittests",
 )
 

@@ -465,6 +465,15 @@
         "test_id_prefix": "ninja://third_party/pthreadpool:pthreadpool_unittests/"
       },
       {
+        "ci_only": true,
+        "experiment_percentage": 100,
+        "module_name": "//third_party/puffin:puffin_unittests",
+        "module_scheme": "gtest",
+        "name": "puffin_unittests",
+        "test": "puffin_unittests",
+        "test_id_prefix": "ninja://third_party/puffin:puffin_unittests/"
+      },
+      {
         "module_name": "//remoting:remoting_unittests",
         "module_scheme": "gtest",
         "name": "remoting_unittests",

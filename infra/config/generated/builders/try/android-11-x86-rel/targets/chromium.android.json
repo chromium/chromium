@@ -2424,6 +2424,59 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
+        "description": "Run with android_30_google_apis_x86",
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "puffin_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "module_name": "//third_party/puffin:puffin_unittests",
+        "module_scheme": "gtest",
+        "name": "puffin_unittests",
+        "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_30_google_apis_x86",
+              "path": ".android_emulator/android_30_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_30_google_apis_x86"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "puffin_unittests",
+        "test_id_prefix": "ninja://third_party/puffin:puffin_unittests/"
+      },
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
         "description": "Run with android_30_google_apis_x86",
         "merge": {
           "args": [
