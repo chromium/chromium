@@ -1157,12 +1157,12 @@ void DisplayLockContext::DetermineIfSubtreeHasTopLayerElement() {
   // have nested display locks that walk is more optimal.
   for (auto top_layer_element : document_->TopLayerElements()) {
     auto* ancestor = top_layer_element.Get();
-    while ((ancestor = FlatTreeTraversal::ParentElement(*ancestor))) {
+    do {
       if (ancestor == element_) {
         NotifyHasTopLayerElement();
         return;
       }
-    }
+    } while ((ancestor = FlatTreeTraversal::ParentElement(*ancestor)));
   }
 }
 
