@@ -6,6 +6,9 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "components/autofill/core/browser/form_import/form_data_importer.h"
+#import "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_delegate.h"
@@ -45,6 +48,9 @@ class PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest
         browser_->GetWebStateList()->InsertWebState(std::move(fake_web_state));
     browser_->GetWebStateList()->ActivateWebStateAt(web_state_index);
 
+    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
+        browser_->GetWebStateList()->GetActiveWebState(), nil);
+
     mock_commands_handler_ =
         OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
     [browser_->GetCommandDispatcher()
@@ -74,6 +80,7 @@ class PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest
   UIViewController* base_view_controller_;
   ScopedKeyWindow scoped_key_window_;
   PaymentsScanSaveAndFillOfferBottomSheetCoordinator* coordinator_;
+  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
 };
 
 // Tests that `paymentsBottomSheetDidDisappear` triggers the
@@ -90,7 +97,7 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
 }
 
 // Tests that `didTapScanCardButton` triggers the
-// `dismissPaymentSuggestions` command.
+// `dismissPaymentSuggestions` command and sets the cancellation flag.
 TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
        DidTapScanCardButton) {
   [coordinator_ start];
@@ -100,6 +107,16 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
     method_invoked = YES;
   }] dismissPaymentSuggestions];
 
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  autofill::AutofillClientIOS* client =
+      autofill::AutofillClientIOS::FromWebState(web_state);
+  ASSERT_TRUE(client);
+
+  autofill::payments::PaymentsFormDataImporter& payments_importer =
+      client->GetFormDataImporter()->GetPaymentsFormDataImporter();
+  EXPECT_FALSE(payments_importer.fetched_payments_data_context()
+                   .card_submitted_through_save_and_fill);
+
   [coordinator_ didTapScanCardButton];
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -107,10 +124,12 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
         return method_invoked;
       }));
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
+  EXPECT_TRUE(payments_importer.fetched_payments_data_context()
+                  .card_submitted_through_save_and_fill);
 }
 
 // Tests that `didTapOnCancelButton` triggers the
-// `dismissPaymentSuggestions` command.
+// `dismissPaymentSuggestions` command and sets the cancellation flag.
 TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
        DidTapOnCancelButton) {
   [coordinator_ start];
@@ -120,6 +139,16 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
     method_invoked = YES;
   }] dismissPaymentSuggestions];
 
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  autofill::AutofillClientIOS* client =
+      autofill::AutofillClientIOS::FromWebState(web_state);
+  ASSERT_TRUE(client);
+
+  autofill::payments::PaymentsFormDataImporter& payments_importer =
+      client->GetFormDataImporter()->GetPaymentsFormDataImporter();
+  EXPECT_FALSE(payments_importer.fetched_payments_data_context()
+                   .card_submitted_through_save_and_fill);
+
   [coordinator_ didTapOnCancelButton];
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -127,4 +156,6 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
         return method_invoked;
       }));
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
+  EXPECT_TRUE(payments_importer.fetched_payments_data_context()
+                  .card_submitted_through_save_and_fill);
 }

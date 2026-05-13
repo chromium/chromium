@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator.h"
 
 #import "base/check.h"
+#import "components/autofill/core/browser/form_import/form_data_importer.h"
+#import "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_consumer.h"
@@ -64,11 +67,12 @@
       [[PaymentsScanSaveAndFillOfferBottomSheetViewController alloc] init];
   _viewController.delegate = self;
   if (_params.has_value()) {
-    _mediator = [[PaymentsScanSaveAndFillOfferBottomSheetMediator alloc]
-        initWithParams:std::move(*_params)];
-
     web::WebState* webState =
         self.browser->GetWebStateList()->GetActiveWebState();
+    _mediator = [[PaymentsScanSaveAndFillOfferBottomSheetMediator alloc]
+        initWithParams:std::move(*_params)
+              webState:webState];
+
     FormSuggestionTabHelper* tabHelper =
         FormSuggestionTabHelper::FromWebState(webState);
     if (tabHelper) {
@@ -169,6 +173,7 @@
   [self logExitReasonIfNeeded:ScanCardSuggestionBottomSheetExitReason::
                                   kRejectSuggestion];
   _viewController.delegate = nil;
+  [_mediator didCancelScanCardSuggestion];
   [_mediator disconnect];
 
   id<BrowserCoordinatorCommands> handler = HandlerForProtocol(

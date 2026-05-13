@@ -27,11 +27,16 @@ enum class ScanCardSuggestionBottomSheetExitReason {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ScanCardSuggestionBottomSheetExitReason)
 
+namespace web {
+class WebState;
+}  // namespace web
+
 @protocol PaymentsScanSaveAndFillOfferBottomSheetConsumer;
 
 @interface PaymentsScanSaveAndFillOfferBottomSheetMediator : NSObject
 // Designated initializer. `webStateList` must not be nil.
 - (instancetype)initWithParams:(autofill::FormActivityParams)params
+                      webState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -40,6 +45,8 @@ enum class ScanCardSuggestionBottomSheetExitReason {
     consumer;
 
 - (void)didAcceptScanCardSuggestion;
+
+- (void)didCancelScanCardSuggestion;
 
 // Disconnects the mediator.
 - (void)disconnect;

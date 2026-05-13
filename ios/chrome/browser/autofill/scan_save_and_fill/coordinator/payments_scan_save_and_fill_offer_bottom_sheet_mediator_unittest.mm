@@ -9,14 +9,19 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/form_import/form_data_importer.h"
+#import "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -33,8 +38,16 @@ class PaymentsScanSaveAndFillOfferBottomSheetMediatorTest
 
     test_web_state_->SetCurrentURL(GURL("http://foo.com"));
 
+    test_web_state_->SetWebFramesManager(
+        AutofillBottomSheetJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld(),
+        std::make_unique<web::FakeWebFramesManager>());
+
     consumer_ = OCMStrictProtocolMock(
         @protocol(PaymentsScanSaveAndFillOfferBottomSheetConsumer));
+
+    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
+        test_web_state_.get(), nil);
   }
 
   ~PaymentsScanSaveAndFillOfferBottomSheetMediatorTest() override {
@@ -44,12 +57,14 @@ class PaymentsScanSaveAndFillOfferBottomSheetMediatorTest
 
   // Create a mediator.
   void CreateMediator() {
+    web::WebState* web_state = test_web_state_.get();
     web_state_list_->InsertWebState(
         std::move(test_web_state_),
         WebStateList::InsertionParams::Automatic().Activate());
 
     mediator_ = [[PaymentsScanSaveAndFillOfferBottomSheetMediator alloc]
-        initWithParams:autofill::FormActivityParams()];
+        initWithParams:autofill::FormActivityParams()
+              webState:web_state];
     mediator_.consumer = consumer_;
   }
 
@@ -60,6 +75,7 @@ class PaymentsScanSaveAndFillOfferBottomSheetMediatorTest
   std::unique_ptr<WebStateList> web_state_list_;
   id consumer_;
   PaymentsScanSaveAndFillOfferBottomSheetMediator* mediator_;
+  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
 };
 
 // Tests that `didAccpetScanCardSuggestion` successfully forwards the scan card
@@ -121,4 +137,38 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest,
 
   histogram_tester.ExpectTimeBucketCount(
       "IOS.ScanCardBottomSheet.TimeToSelection", time_to_selection, 1);
+}
+
+// Tests that `didAcceptScanCardSuggestion` sets the
+// card_submitted_through_save_and_fill flag.
+TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest,
+       DidAcceptScanCardSuggestionSetsFlag) {
+  CreateMediator();
+
+  autofill::payments::PaymentsFormDataImporter& payments_importer =
+      autofill_client_->GetFormDataImporter()->GetPaymentsFormDataImporter();
+  EXPECT_FALSE(payments_importer.fetched_payments_data_context()
+                   .card_submitted_through_save_and_fill);
+
+  [mediator_ didAcceptScanCardSuggestion];
+
+  EXPECT_TRUE(payments_importer.fetched_payments_data_context()
+                  .card_submitted_through_save_and_fill);
+}
+
+// Tests that `didCancelScanCardSuggestion` sets the
+// card_submitted_through_save_and_fill flag.
+TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest,
+       DidCancelScanCardSuggestionSetsFlag) {
+  CreateMediator();
+
+  autofill::payments::PaymentsFormDataImporter& payments_importer =
+      autofill_client_->GetFormDataImporter()->GetPaymentsFormDataImporter();
+  EXPECT_FALSE(payments_importer.fetched_payments_data_context()
+                   .card_submitted_through_save_and_fill);
+
+  [mediator_ didCancelScanCardSuggestion];
+
+  EXPECT_TRUE(payments_importer.fetched_payments_data_context()
+                  .card_submitted_through_save_and_fill);
 }
