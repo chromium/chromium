@@ -999,40 +999,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
 
-  // TODO(crbug.com/486706573): Refactor this function and move the common logic
+  // TODO(crbug.com/486706573): common logic is moved
   // to the mixin class. Move embedder specific logic to the embedder class.
   override clearAllInputs(
       querySubmitted: boolean, shouldBlockAutoSuggestedTabs: boolean) {
-    this.clearInput();
+    // Reset side-panel specific suggested tab context URL/Title pointers
     this.automaticActiveTab = null;
     this.pendingAutomaticActiveTabUrl_ = '';
     this.pendingAutomaticActiveTabTitle_ = '';
-    // Let `querySubmit` handle clearing files if the tool mode is a tool mode
-    // that should be cleared after submitting. For all other general
-    // clearing, clear input here.
-    if (!querySubmitted) {
-      this.resetModes();
-    }
-    const undeletableFiles =
-        Array.from(this.files.values()).filter(file => !file.isDeletable);
-    if (undeletableFiles.length !== this.files.size) {
-      this.files = new Map(undeletableFiles.map(file => [file.uuid, file]));
-      this.addedTabsIds = new Map(undeletableFiles.filter(file => file.tabId)
-                                      .map(file => [file.tabId!, file.uuid]));
-    }
-    // Reset files in set to match remaining files in carousel.
-    this.pendingUploads = new Set([...this.files.keys()]);
-    this.smartComposeInlineHint = '';
-    this.resetSmartComposeStats();
-    if (!querySubmitted) {
-      // If the query was submitted, the searchbox handler will clear its own
-      // uploaded file state when the query submission is handled.
-      this.searchboxHandler_.clearFiles(shouldBlockAutoSuggestedTabs);
-    }
-    this.fileUploadsComplete = this.pendingUploads.size === 0;
-    if (this.inVoiceSearchMode) {
-      this.voiceSearchEndCleanup();
-    }
+    super.clearAllInputs(querySubmitted, shouldBlockAutoSuggestedTabs);
   }
 
   protected shouldDisableFileInputs_() {
