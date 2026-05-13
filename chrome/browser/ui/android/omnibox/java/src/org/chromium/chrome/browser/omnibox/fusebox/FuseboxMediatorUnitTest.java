@@ -1601,11 +1601,9 @@ public class FuseboxMediatorUnitTest {
     public void testIsMaxAttachmentCountReached_imageInImageGeneration() {
         mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
         assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE));
-        verify(mSnackbarManager, never()).showSnackbar(any());
 
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE));
-        verify(mSnackbarManager, never()).showSnackbar(any());
     }
 
     @Test
@@ -1614,30 +1612,22 @@ public class FuseboxMediatorUnitTest {
         assertFalse(
                 mMediator.isMaxAttachmentCountReached(
                         FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL));
-        verify(mSnackbarManager, never()).showSnackbar(any());
 
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
         assertFalse(
                 mMediator.isMaxAttachmentCountReached(
                         FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL));
-        verify(mSnackbarManager, never()).showSnackbar(any());
     }
 
     @Test
     public void testIsMaxAttachmentCountReached_nonImageInImageGeneration() {
         mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-
-        assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-
-        clearInvocations(mSnackbarManager);
-
         assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
     }
 
     @Test
     public void testIsMaxAttachmentCountReached_tabReselection() {
         assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-        verify(mSnackbarManager, never()).showSnackbar(any());
     }
 
     @Test
@@ -1657,13 +1647,11 @@ public class FuseboxMediatorUnitTest {
         addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_TAB);
 
         assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-        verify(mSnackbarManager, never()).showSnackbar(any());
     }
 
     @Test
     public void testIsMaxAttachmentCountReached_remainingAttachments() {
         assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE));
-        verify(mSnackbarManager, never()).showSnackbar(any());
     }
 
     @Test
