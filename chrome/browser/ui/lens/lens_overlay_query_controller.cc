@@ -608,9 +608,9 @@ void LensOverlayQueryController::SendContextualTextQuery(
   // Include the vit to get contextualized results.
   additional_search_query_params = AddVisualInputTypeQueryParam(
       additional_search_query_params, primary_content_type_);
-  // If AIM omnibox is enabled, all contextual queries for lens should be
-  // fulfilled in AIM.
-  if (omnibox::IsAimPopupEnabled(profile_)) {
+  // If AIM omnibox and M3 are enabled, all contextual queries for lens should
+  // be fulfilled in AIM.
+  if (omnibox::IsAimPopupEnabled(profile_) && lens::IsAimM3Enabled(profile_)) {
     additional_search_query_params.insert(
         {kModeParameterKey, kAimModeParameterValue});
   }
@@ -1976,6 +1976,15 @@ void LensOverlayQueryController::CreateSearchUrlAndSendToCallback(
       {kVisualSearchInteractionDataQueryParameterKey, encoded_vsint});
   suggest_inputs_.set_encoded_visual_search_interaction_log_data(encoded_vsint);
   RunSuggestInputsCallback();
+
+  // If M3 is not enabled, strip the param udm=50 if it exists.
+  if (!lens::IsAimM3Enabled(profile_)) {
+    auto it = additional_search_query_params.find(kModeParameterKey);
+    if (it != additional_search_query_params.end() &&
+        it->second == kAimModeParameterValue) {
+      additional_search_query_params.erase(it);
+    }
+  }
 
   // Generate and send the Lens search url.
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
