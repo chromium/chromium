@@ -24,17 +24,7 @@ cast_source_set("desktop") {
     "//chromecast/public/media",
     "//media",
   ]
-  if (enable_video_with_mixed_audio) {
-    sources += [ "desktop_system_volume_control.cc" ]
-    deps += [
-      "//chromecast/media/cma/backend:for_mixer_audio",
-      "//chromecast/media/cma/backend:null_video",
-      "//chromecast/media/cma/backend:public",
-      "//chromecast/media/cma/backend/video:av_sync_video",
-    ]
-  } else {
-    sources += [ "volume_control_desktop.cc" ]
-  }
+  sources += [ "volume_control_desktop.cc" ]
 }
 
 cast_source_set("mixer_output") {

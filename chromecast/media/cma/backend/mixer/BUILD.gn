@@ -6,9 +6,6 @@ import("//build/config/cast.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 
-declare_args() {
-  mixer_output = ""
-}
 
 cast_source_set("post_processor_paths") {
   sources = [
@@ -112,14 +109,7 @@ cast_source_set("mixer") {
   if (use_alsa) {
     deps += [ "//chromecast/media/cma/backend/alsa:mixer_output" ]
   } else {
-    # If enable_video_with_mixed_audio && !use_alsa, the platform needs to
-    # provide its own mixer output.
-    if (!enable_video_with_mixed_audio) {
-      deps += [ ":mixer_output_stream_dummy" ]
-    } else {
-      assert("$mixer_output" != "")
-      deps += [ "$mixer_output" ]
-    }
+    deps += [ ":mixer_output_stream_dummy" ]
   }
 }
 

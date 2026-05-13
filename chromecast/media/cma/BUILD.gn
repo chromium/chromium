@@ -100,9 +100,6 @@ cast_source_set("unittests") {
     ]
   }
 
-  if (enable_video_with_mixed_audio) {
-    defines = [ "ENABLE_VIDEO_WITH_MIXED_AUDIO" ]
-  }
 
   data = [ "//media/test/data/" ]
 }

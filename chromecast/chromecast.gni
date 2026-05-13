@@ -56,9 +56,6 @@ declare_args() {
     use_remote_service_logcat = false
   }
 
-  # Set to true to enable a CMA media backend that allows mixed audio to be
-  # output with sync'd video.
-  enable_video_with_mixed_audio = false
 
   # unified flag to pick monotonic_clock OR monotonic_clock_raw
   media_clock_monotonic_raw = !is_android && !is_cast_desktop_build
