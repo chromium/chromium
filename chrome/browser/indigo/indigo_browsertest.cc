@@ -62,6 +62,7 @@ const char kHtmlBody[] = R"(
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDialogWebContentsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabId);
 
 // Caveat: This observer applies insets, so it will miss layout changes that
 // only affect the border/insets but not the content bounds.
@@ -327,6 +328,63 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, OnboardingFlow) {
                     return browser()->profile()->GetPrefs()->GetBoolean(
                         prefs::kIndigoHasOnboarded);
                   }));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabSwitchPreservesToolbarState) {
+  const GURL url = embedded_test_server()->GetURL("/image.html");
+  const GURL url2 = embedded_test_server()->GetURL("/empty.html");
+
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, url),
+                  WaitForShow(kIndigoPageActionIconElementId),
+                  PressButton(kIndigoPageActionIconElementId),
+                  WaitForShow(IndigoToolbar::kToolbarElementId),
+
+                  // Expand the toolbar
+                  PressButton(IndigoToolbar::kExpandButtonElementId),
+                  WaitForShow(IndigoToolbar::kExpandedContainerElementId),
+
+                  // Open a new tab and switch to it
+                  AddInstrumentedTab(kSecondTabId, url2),
+                  WaitForHide(IndigoToolbar::kToolbarElementId),
+
+                  // Switch back to the first tab
+                  SelectTab(kTabStripElementId, 0),
+                  WaitForShow(IndigoToolbar::kToolbarElementId),
+
+                  // Verify it is still expanded
+                  WaitForShow(IndigoToolbar::kExpandedContainerElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
+  const GURL url = embedded_test_server()->GetURL("/image.html");
+  const GURL url2 = embedded_test_server()->GetURL("/empty.html");
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+
+      // Open a new tab (Tab 2 is active, Tab 1 is in background)
+      AddInstrumentedTab(kSecondTabId, url2),
+
+      // Trigger toolbar showing on the background tab (Tab 1)
+      Do(base::BindLambdaForTesting([&]() {
+        content::WebContents* tab1_contents =
+            browser()->tab_strip_model()->GetWebContentsAt(0);
+        auto* tab1 = tabs::TabInterface::GetFromContents(tab1_contents);
+        auto* controller = IndigoPageActionController::From(tab1);
+        ASSERT_TRUE(controller);
+        controller->ShowToolbarInside(gfx::Rect(10, 10, 100, 100));
+      })),
+
+      // Verify toolbar is NOT shown (since active tab is Tab 2 which doesn't
+      // have it)
+      EnsureNotPresent(IndigoToolbar::kToolbarElementId),
+
+      // Switch back to Tab 1
+      SelectTab(kTabStripElementId, 0),
+
+      // Verify toolbar IS now shown
+      WaitForShow(IndigoToolbar::kToolbarElementId));
 }
 
 }  // namespace

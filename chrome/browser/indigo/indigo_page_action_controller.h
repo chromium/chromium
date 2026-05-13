@@ -120,6 +120,14 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata&);
 
+  void TabWillBecomeHidden(tabs::TabInterface* tab);
+  void TabDidBecomeVisible(tabs::TabInterface* tab);
+
+  // Retrieves the indigo overlay view for this tab. May return nullptr if
+  // the tab is currently invisible (backgrounded) or has no active browser
+  // window.
+  views::View* GetIndigoOverlayView() const;
+
   // `page_action_controller_` is owned by the same `TabFeatures` that owns
   // `this`. Since `page_action_controller_` is initialized before `this` and
   // destroyed after, it is safe to hold as a `raw_ref`.
@@ -148,6 +156,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   // The floating toolbar, if shown.
   std::unique_ptr<IndigoToolbar> toolbar_;
+
+  base::CallbackListSubscription tab_became_hidden_subscription_;
+  base::CallbackListSubscription tab_became_visible_subscription_;
 
   base::CallbackListSubscription indigo_service_subscription_;
 
