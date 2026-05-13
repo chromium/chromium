@@ -17,6 +17,7 @@
 #include "components/webdata/common/web_database.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/table_management_helpers.h"
 #include "sql/transaction.h"
 
@@ -47,10 +48,10 @@ std::vector<GURL> GetMerchantDomainsForLoyaltyCardId(
     const ValuableId& loyalty_card_id) {
   std::vector<GURL> merchant_domains;
   sql::Statement s_card_merchant_domain;
-  sql::SelectBuilder(*db, s_card_merchant_domain,
-                     kLoyaltyCardMerchantDomainTable,
-                     {kLoyaltyCardId, kMerchantDomain},
-                     base::StrCat({"WHERE ", kLoyaltyCardId, " = ?"}));
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db, s_card_merchant_domain,
+                           kLoyaltyCardMerchantDomainTable,
+                           {kLoyaltyCardId, kMerchantDomain},
+                           base::StrCat({"WHERE ", kLoyaltyCardId, " = ?"}));
   s_card_merchant_domain.BindString(0, loyalty_card_id.value());
   while (s_card_merchant_domain.Step()) {
     const std::string merchant_domain = s_card_merchant_domain.ColumnString(1);
@@ -66,9 +67,10 @@ std::optional<ValuableMetadata> GetValuableMetadataFromDb(
     sql::Database* db,
     const ValuableId& valuable_id) {
   sql::Statement s_valuable_metadata;
-  sql::SelectBuilder(*db, s_valuable_metadata, kValuablesMetadataTable,
-                     {kValuableId, kUseCount, kUseDate},
-                     base::StrCat({"WHERE ", kValuableId, " = ?"}));
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db, s_valuable_metadata,
+                           kValuablesMetadataTable,
+                           {kValuableId, kUseCount, kUseDate},
+                           base::StrCat({"WHERE ", kValuableId, " = ?"}));
   s_valuable_metadata.BindString(0, valuable_id.value());
 
   if (!s_valuable_metadata.Step()) {
@@ -200,8 +202,8 @@ bool ValuablesTable::MigrateToVersion(int version,
 
 std::vector<LoyaltyCard> ValuablesTable::GetLoyaltyCards() const {
   sql::Statement query;
-  sql::SelectBuilder(
-      *db(), query, kLoyaltyCardsTable,
+  sql::CachedSelectBuilder(
+      SQL_FROM_HERE, *db(), query, kLoyaltyCardsTable,
       {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
        kLoyaltyCardProgramLogo, kLoyaltyCardNumber});
   std::vector<LoyaltyCard> result;
@@ -372,8 +374,8 @@ absl::flat_hash_map<ValuableId, ValuableMetadata>
 ValuablesTable::GetAllValuableMetadata() const {
   absl::flat_hash_map<ValuableId, ValuableMetadata> all_metadata;
   sql::Statement s;
-  sql::SelectBuilder(*db(), s, kValuablesMetadataTable,
-                     {kValuableId, kUseCount, kUseDate});
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s, kValuablesMetadataTable,
+                           {kValuableId, kUseCount, kUseDate});
 
   while (s.Step()) {
     ValuableId valuable_id = ValuableId(s.ColumnString(0));

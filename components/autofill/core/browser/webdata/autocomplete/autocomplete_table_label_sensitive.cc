@@ -25,6 +25,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/table_management_helpers.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -405,8 +406,9 @@ int AutocompleteTableLabelSensitive::GetCountOfValuesContainedBetween(
 bool AutocompleteTableLabelSensitive::GetAllAutocompleteEntries(
     std::vector<AutocompleteEntryLabelSensitive>* entries) {
   sql::Statement s;
-  sql::SelectBuilder(*db(), s, kAutocompleteTableLabelSensitive,
-                     {kName, kLabel, kValue, kDateCreated, kDateLastUsed});
+  sql::CachedSelectBuilder(
+      SQL_FROM_HERE, *db(), s, kAutocompleteTableLabelSensitive,
+      {kName, kLabel, kValue, kDateCreated, kDateLastUsed});
 
   while (s.Step()) {
     std::u16string name = s.ColumnString16(0);
@@ -427,10 +429,11 @@ AutocompleteTableLabelSensitive::GetAutocompleteEntryLabelSensitive(
     std::u16string_view label,
     std::u16string_view value) {
   sql::Statement s;
-  sql::SelectBuilder(*db(), s, kAutocompleteTableLabelSensitive,
-                     {kDateCreated, kDateLastUsed},
-                     /*modifiers=*/
-                     "WHERE name = ? AND label = ? AND value = ?");
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s,
+                           kAutocompleteTableLabelSensitive,
+                           {kDateCreated, kDateLastUsed},
+                           /*modifiers=*/
+                           "WHERE name = ? AND label = ? AND value = ?");
   s.BindString16(0, name);
   s.BindString16(1, label);
   s.BindString16(2, value);

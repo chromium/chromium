@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/table_management_helpers.h"
 #include "sql/transaction.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -121,11 +122,11 @@ bool AutocompleteTable::GetFormValuesForElementName(
     int limit,
     std::vector<AutocompleteEntry>& entries) {
   sql::Statement s;
-  sql::SelectBuilder(*db(), s, kAutocompleteTable,
-                     {kName, kValue, kDateCreated, kDateLastUsed},
-                     /*modifiers=*/
-                     "WHERE name = ? AND value_lower LIKE ? "
-                     "ORDER BY count DESC LIMIT ?");
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s, kAutocompleteTable,
+                           {kName, kValue, kDateCreated, kDateLastUsed},
+                           /*modifiers=*/
+                           "WHERE name = ? AND value_lower LIKE ? "
+                           "ORDER BY count DESC LIMIT ?");
   s.BindString16(0, name);
   s.BindString16(1, base::i18n::ToLower(prefix) + u"%");
   s.BindInt(2, limit);
@@ -327,8 +328,8 @@ int AutocompleteTable::GetCountOfValuesContainedBetween(base::Time begin,
 bool AutocompleteTable::GetAllAutocompleteEntries(
     std::vector<AutocompleteEntry>* entries) {
   sql::Statement s;
-  sql::SelectBuilder(*db(), s, kAutocompleteTable,
-                     {kName, kValue, kDateCreated, kDateLastUsed});
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s, kAutocompleteTable,
+                           {kName, kValue, kDateCreated, kDateLastUsed});
 
   while (s.Step()) {
     std::u16string name = s.ColumnString16(0);
@@ -346,9 +347,9 @@ std::optional<AutocompleteEntry> AutocompleteTable::GetAutocompleteEntry(
     const std::u16string& name,
     const std::u16string& value) {
   sql::Statement s;
-  sql::SelectBuilder(*db(), s, kAutocompleteTable,
-                     {kDateCreated, kDateLastUsed},
-                     /*modifiers=*/"WHERE name = ? AND value = ?");
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s, kAutocompleteTable,
+                           {kDateCreated, kDateLastUsed},
+                           /*modifiers=*/"WHERE name = ? AND value = ?");
   s.BindString16(0, name);
   s.BindString16(1, value);
   if (!s.Step()) {
