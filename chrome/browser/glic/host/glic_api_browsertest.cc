@@ -2239,7 +2239,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   }));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCloseAndOpenWhileOpening) {
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_testCloseAndOpenWhileOpening DISABLED_testCloseAndOpenWhileOpening
+#else
+#define MAYBE_testCloseAndOpenWhileOpening testCloseAndOpenWhileOpening
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testCloseAndOpenWhileOpening) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   ExecuteJsTest();
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
