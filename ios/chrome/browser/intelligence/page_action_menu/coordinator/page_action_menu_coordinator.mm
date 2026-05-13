@@ -179,7 +179,7 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
   if (IsPageActionMenuAuthFlowEnabled() &&
       [_mediator isGeminiEligibilityLoading] && [_mediator isManagedAccount]) {
     [_viewController updateGeminiLoadingState:YES];
-    [self startEligibilityPolling];
+    [self startManagedAccountEligibilityPolling];
   }
 
   [super start];
@@ -468,6 +468,35 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
 - (void)stopAccountMenu {
   [_accountMenuCoordinator stop];
   _accountMenuCoordinator = nil;
+}
+
+// Polls until the workspace policy check resolves, then updates the
+// Ask Gemini button state. Used only for managed accounts when the PAM
+// opens and the check is still in flight.
+- (void)startManagedAccountEligibilityPolling {
+  __weak __typeof(self) weakSelf = self;
+  NSDate* startTime = [NSDate date];
+  _eligibilityPollTimer = [NSTimer
+      scheduledTimerWithTimeInterval:kEligibilityPollInterval
+                             repeats:YES
+                               block:^(NSTimer* timer) {
+                                 [weakSelf
+                                     pollManagedAccountEligibilityWithStartTime:
+                                         startTime];
+                               }];
+}
+
+// Called by the managed account poll timer. Hides the spinner when
+// the eligibility check resolves or times out.
+- (void)pollManagedAccountEligibilityWithStartTime:(NSDate*)startTime {
+  NSTimeInterval elapsed = -[startTime timeIntervalSinceNow];
+  if (elapsed < kEligibilityPollTimeout &&
+      [_mediator isGeminiEligibilityLoading]) {
+    return;
+  }
+
+  [self stopEligibilityPolling];
+  [_viewController updateGeminiLoadingState:NO];
 }
 
 @end
