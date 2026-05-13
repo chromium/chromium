@@ -356,6 +356,10 @@ class NET_EXPORT HostResolverManager
   //
   // If |cache_usage == ResolveHostParameters::CacheUsage::STALE_ALLOWED|, then
   // stale cache entries can be returned.
+  //
+  // WARNING: The task ordering configured here is assumed by
+  // HostResolverManager::Job::CalculateResolvePath() and other methods. If you
+  // modify the task ordering, update them accordingly.
   HostCache::Entry ResolveLocally(
       bool only_ipv6_reachable,
       const JobKey& job_key,
@@ -453,6 +457,10 @@ class NET_EXPORT HostResolverManager
 
   // Initialized the sequence of tasks to run to resolve a request. The sequence
   // may be adjusted later and not all tasks need to be run.
+  //
+  // WARNING: The task ordering configured here is assumed by
+  // HostResolverManager::Job::CalculateResolvePath() and other methods. If you
+  // modify the task ordering, update them accordingly.
   void CreateTaskSequence(const JobKey& job_key,
                           ResolveHostParameters::CacheUsage cache_usage,
                           SecureDnsPolicy secure_dns_policy,

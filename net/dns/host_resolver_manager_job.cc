@@ -154,6 +154,51 @@ handles::NetworkHandle HostResolverManager::JobKey::GetTargetNetwork() const {
                          : handles::kInvalidNetworkHandle;
 }
 
+// static
+// WARNING: This method assumes the current task ordering configured by
+// HostResolverManager::ResolveLocally() and
+// HostResolverManager::CreateTaskSequence(). If you modify the task ordering
+// in those methods, update this method accordingly.
+std::optional<HostResolverManager::Job::ResolveFallbackPath>
+HostResolverManager::Job::CalculateResolvePath(TaskType task_type,
+                                               bool secure_dns_failed,
+                                               bool classic_dns_failed,
+                                               bool platform_dns_failed) {
+  switch (task_type) {
+    case TaskType::SECURE_DNS:
+      return ResolveFallbackPath::kSecureSuccess;
+    case TaskType::DNS:
+      return secure_dns_failed
+                 ? ResolveFallbackPath::kSecureFallbackToClassicSuccess
+                 : ResolveFallbackPath::kClassicSuccess;
+    case TaskType::DNS_PLATFORM:
+      return secure_dns_failed
+                 ? ResolveFallbackPath::kSecureFallbackToPlatformSuccess
+                 : ResolveFallbackPath::kPlatformSuccess;
+    case TaskType::SYSTEM:
+      if (secure_dns_failed) {
+        if (classic_dns_failed) {
+          return ResolveFallbackPath::
+              kSecureFallbackToClassicFallbackToSystemSuccess;
+        }
+        if (platform_dns_failed) {
+          return ResolveFallbackPath::
+              kSecureFallbackToPlatformFallbackToSystemSuccess;
+        }
+        return ResolveFallbackPath::kSecureFallbackToSystemSuccess;
+      }
+      if (classic_dns_failed) {
+        return ResolveFallbackPath::kClassicFallbackToSystemSuccess;
+      }
+      if (platform_dns_failed) {
+        return ResolveFallbackPath::kPlatformFallbackToSystemSuccess;
+      }
+      return ResolveFallbackPath::kSystemSuccess;
+    default:
+      return std::nullopt;
+  }
+}
+
 HostResolverManager::Job::Job(
     const base::WeakPtr<HostResolverManager>& resolver,
     JobKey key,
@@ -1082,6 +1127,34 @@ void HostResolverManager::Job::RecordJobHistograms(
       base::UmaHistogramSparse("Net.DNS.ResolveError.Fast", std::abs(error));
     } else {
       base::UmaHistogramSparse("Net.DNS.ResolveError.Slow", std::abs(error));
+    }
+  }
+
+  // Record the complete fallback path taken to achieve a successful
+  // resolution.
+  if (category == RESOLVE_SUCCESS && task_type.has_value()) {
+    bool secure_dns_failed = false;
+    bool classic_dns_failed = false;
+    bool platform_dns_failed = false;
+
+    for (const auto& result : completion_results_) {
+      if (IsAttemptModeSecure(result.attempt_mode)) {
+        secure_dns_failed = true;
+      } else if (result.attempt_mode ==
+                 DnsTransactionFactory::AttemptMode::kClassic) {
+        classic_dns_failed = true;
+      } else if (result.attempt_mode ==
+                 DnsTransactionFactory::AttemptMode::kPlatform) {
+        platform_dns_failed = true;
+      }
+    }
+
+    std::optional<ResolveFallbackPath> path =
+        CalculateResolvePath(task_type.value(), secure_dns_failed,
+                             classic_dns_failed, platform_dns_failed);
+    if (path.has_value()) {
+      base::UmaHistogramEnumeration("Net.DNS.ResolveFallbackPath",
+                                    path.value());
     }
   }
 }

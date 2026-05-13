@@ -2891,6 +2891,26 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="RESOLVE_SPECULATIVE_ABORT"/>
 </enum>
 
+<!-- LINT.IfChange(ResolveFallbackPath) -->
+
+<enum name="ResolveFallbackPath">
+  <int value="0" label="Secure DNS (DoH) Success"/>
+  <int value="1" label="Secure Fallback to Classic DNS Success"/>
+  <int value="2" label="Secure Fallback to Platform DNS Success"/>
+  <int value="3" label="Secure Fallback to System Resolver Success"/>
+  <int value="4"
+      label="Secure Fallback to Classic Fallback to System Resolver Success"/>
+  <int value="5"
+      label="Secure Fallback to Platform Fallback to System Resolver Success"/>
+  <int value="6" label="Classic DNS Success"/>
+  <int value="7" label="Platform DNS Success"/>
+  <int value="8" label="Classic Fallback to System Resolver Success"/>
+  <int value="9" label="Platform Fallback to System Resolver Success"/>
+  <int value="10" label="System Resolver Success"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/host_resolver_manager_job.h:ResolveFallbackPath) -->
+
 <enum name="SCTOrigin">
   <int value="0" label="SCT_EMBEDDED"/>
   <int value="1" label="SCT_FROM_TLS_EXTENSION"/>

@@ -68,6 +68,8 @@
 #include "net/dns/host_resolver_cache.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_internal_result_test_util.h"
+#include "net/dns/host_resolver_manager.h"
+#include "net/dns/host_resolver_manager_job.h"
 #include "net/dns/host_resolver_results_test_util.h"
 #include "net/dns/host_resolver_system_task.h"
 #include "net/dns/mock_host_resolver.h"
@@ -14634,6 +14636,110 @@ TEST_F(HostResolverManagerDnsTest,
   ASSERT_TRUE(details->task_completion_delay.has_value());
   EXPECT_EQ(base::Milliseconds(100), details->task_completion_delay.value());
   EXPECT_TRUE(details->secure_dns_attempted);
+}
+
+TEST_F(HostResolverManagerTest, CalculateResolvePath) {
+  using ResolveFallbackPath = HostResolverManager::Job::ResolveFallbackPath;
+
+  struct TestCase {
+    std::string_view summary;
+    TaskType task_type;
+    bool secure_dns_failed;
+    bool classic_dns_failed;
+    bool platform_dns_failed;
+    std::optional<ResolveFallbackPath> expected;
+  };
+
+  const TestCase kTestCases[] = {
+      {.summary = "kSecureSuccess",
+       .task_type = TaskType::SECURE_DNS,
+       .secure_dns_failed = false,
+       .classic_dns_failed = false,
+       .platform_dns_failed = false,
+       .expected = ResolveFallbackPath::kSecureSuccess},
+      {.summary = "kSecureFallbackToClassicSuccess",
+       .task_type = TaskType::DNS,
+       .secure_dns_failed = true,
+       .classic_dns_failed = false,
+       .platform_dns_failed = false,
+       .expected = ResolveFallbackPath::kSecureFallbackToClassicSuccess},
+      {.summary = "kClassicSuccess",
+       .task_type = TaskType::DNS,
+       .secure_dns_failed = false,
+       .classic_dns_failed = false,
+       .platform_dns_failed = false,
+       .expected = ResolveFallbackPath::kClassicSuccess},
+      {.summary = "kSecureFallbackToPlatformSuccess",
+       .task_type = TaskType::DNS_PLATFORM,
+       .secure_dns_failed = true,
+       .classic_dns_failed = false,
+       .platform_dns_failed = false,
+       .expected = ResolveFallbackPath::kSecureFallbackToPlatformSuccess},
+      {.summary = "kPlatformSuccess",
+       .task_type = TaskType::DNS_PLATFORM,
+       .secure_dns_failed = false,
+       .classic_dns_failed = false,
+       .platform_dns_failed = false,
+       .expected = ResolveFallbackPath::kPlatformSuccess},
+      {.summary = "kSecureFallbackToClassicFallbackToSystemSuccess",
+       .task_type = TaskType::SYSTEM,
+       .secure_dns_failed = true,
+       .classic_dns_failed = true,
+       .platform_dns_failed = false,
+       .expected = ResolveFallbackPath::
+           kSecureFallbackToClassicFallbackToSystemSuccess},
+      {.summary = "kSecureFallbackToPlatformFallbackToSystemSuccess",
+       .task_type = TaskType::SYSTEM,
+       .secure_dns_failed = true,
+       .classic_dns_failed = false,
+       .platform_dns_failed = true,
+       .expected = ResolveFallbackPath::
+           kSecureFallbackToPlatformFallbackToSystemSuccess},
+      {.summary = "kSecureFallbackToSystemSuccess",
+       .task_type = TaskType::SYSTEM,
+       .secure_dns_failed = true,
+       .classic_dns_failed = false,
+       .platform_dns_failed = false,
+       .expected = ResolveFallbackPath::kSecureFallbackToSystemSuccess},
+      {.summary = "kClassicFallbackToSystemSuccess",
+       .task_type = TaskType::SYSTEM,
+       .secure_dns_failed = false,
+       .classic_dns_failed = true,
+       .platform_dns_failed = false,
+       .expected = ResolveFallbackPath::kClassicFallbackToSystemSuccess},
+      {.summary = "kPlatformFallbackToSystemSuccess",
+       .task_type = TaskType::SYSTEM,
+       .secure_dns_failed = false,
+       .classic_dns_failed = false,
+       .platform_dns_failed = true,
+       .expected = ResolveFallbackPath::kPlatformFallbackToSystemSuccess},
+      {.summary = "kSystemSuccess",
+       .task_type = TaskType::SYSTEM,
+       .secure_dns_failed = false,
+       .classic_dns_failed = false,
+       .platform_dns_failed = false,
+       .expected = ResolveFallbackPath::kSystemSuccess},
+      {.summary = "nullopt MDNS",
+       .task_type = TaskType::MDNS,
+       .secure_dns_failed = false,
+       .classic_dns_failed = false,
+       .platform_dns_failed = false,
+       .expected = std::nullopt},
+      {.summary = "nullopt NAT64",
+       .task_type = TaskType::NAT64,
+       .secure_dns_failed = false,
+       .classic_dns_failed = false,
+       .platform_dns_failed = false,
+       .expected = std::nullopt},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.summary);
+    EXPECT_EQ(test_case.expected,
+              HostResolverManager::Job::CalculateResolvePath(
+                  test_case.task_type, test_case.secure_dns_failed,
+                  test_case.classic_dns_failed, test_case.platform_dns_failed));
+  }
 }
 
 }  // namespace net

@@ -64,6 +64,8 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
   void IPv4AddressLiteralInIPv6OnlyNetworkBadAddressTest(bool is_async);
 
  protected:
+  using TaskType = HostResolverManager::TaskType;
+
   // testing::Test implementation:
   void SetUp() override;
   void TearDown() override;

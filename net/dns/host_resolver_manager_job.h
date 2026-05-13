@@ -67,6 +67,58 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
                                  public HostResolverDnsTask::Delegate,
                                  public DnsTaskResultsManager::Delegate {
  public:
+  // Describes the complete fallback path taken to successfully resolve a host.
+  // Used to analyze the frequency and success rate of fallbacks between Secure
+  // DNS, built-in Classic DNS (Do53), Platform DNS, and the System Resolver.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ResolveFallbackPath)
+  enum class ResolveFallbackPath {
+    // Successfully resolved via Secure DNS (DoH) without fallback.
+    kSecureSuccess = 0,
+    // Secure DNS failed, fallback to Classic DNS (built-in Do53) succeeded.
+    kSecureFallbackToClassicSuccess = 1,
+    // Secure DNS failed, fallback to Platform DNS succeeded.
+    kSecureFallbackToPlatformSuccess = 2,
+    // Secure DNS failed, fallback directly to System Resolver succeeded.
+    kSecureFallbackToSystemSuccess = 3,
+    // Secure DNS and Classic DNS both failed, fallback to System Resolver
+    // succeeded.
+    kSecureFallbackToClassicFallbackToSystemSuccess = 4,
+    // Secure DNS and Platform DNS both failed, fallback to System Resolver
+    // succeeded.
+    kSecureFallbackToPlatformFallbackToSystemSuccess = 5,
+    // Successfully resolved via Classic DNS (built-in Do53) without fallback.
+    kClassicSuccess = 6,
+    // Successfully resolved via Platform DNS without fallback.
+    kPlatformSuccess = 7,
+    // Classic DNS failed, fallback to System Resolver succeeded.
+    kClassicFallbackToSystemSuccess = 8,
+    // Platform DNS failed, fallback to System Resolver succeeded.
+    kPlatformFallbackToSystemSuccess = 9,
+    // Successfully resolved via System Resolver from the start (no built-in DNS
+    // attempted).
+    kSystemSuccess = 10,
+    kMaxValue = kSystemSuccess,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:ResolveFallbackPath)
+
+  // Helper method to calculate the ResolveFallbackPath based on the final
+  // successful TaskType and the history of failed attempts. Returns
+  // std::nullopt if the combination is not applicable for the metrics.
+  //
+  // WARNING: This method assumes the current task ordering configured by
+  // HostResolverManager::ResolveLocally() and
+  // HostResolverManager::CreateTaskSequence(). If you modify the task ordering
+  // in those methods, update this method accordingly.
+  static std::optional<ResolveFallbackPath> CalculateResolvePath(
+      TaskType successful_task_type,
+      bool secure_dns_failed,
+      bool classic_dns_failed,
+      bool platform_dns_failed);
+
   // Creates new job for |key| where |request_net_log| is bound to the
   // request that spawned it.
   Job(const base::WeakPtr<HostResolverManager>& resolver,
@@ -293,7 +345,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
                            std::unique_ptr<HostResolverInternalResult> result);
 
   void RecordJobHistograms(const HostCache::Entry& results,
-                           std::optional<TaskType> task_type);
+                           std::optional<TaskType> successful_task_type);
 
   void RecordJobHttpsHistograms();
 
@@ -311,19 +363,19 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       base::TimeDelta ttl,
       bool allow_cache,
       bool secure,
-      std::optional<TaskType> task_type,
+      std::optional<TaskType> successful_task_type,
       std::optional<base::TimeDelta> task_completion_delay = std::nullopt,
       std::optional<DohResolutionDetails> doh_details = std::nullopt);
 
   void CompleteRequestsWithoutCache(
       const HostCache::Entry& results,
       std::optional<HostCache::EntryStaleness> stale_info,
-      TaskType task_type,
+      TaskType successful_task_type,
       std::optional<base::TimeDelta> task_completion_delay = std::nullopt);
 
   // Convenience wrapper for CompleteRequests in case of failure.
   void CompleteRequestsWithError(int net_error,
-                                 std::optional<TaskType> task_type);
+                                 std::optional<TaskType> successful_task_type);
 
   // Notifies requests that the job was cancelled.
   void CancelRequests();
@@ -347,7 +399,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DnsTransactionFactory::AttemptMode attempt_mode;
   };
 
-  // Results to use in last-ditch attempt to complete request.
+  // Results of failed tasks, used in last-ditch attempt to complete request or
+  // to record fallback path metrics.
   std::vector<CompletionResult> completion_results_;
 
   // The sequence of tasks to run in this Job. Tasks may be aborted and removed

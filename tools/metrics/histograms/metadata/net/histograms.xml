@@ -3228,6 +3228,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.ResolveFallbackPath" enum="ResolveFallbackPath"
+    expires_after="2026-11-08">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The complete fallback path taken to achieve a successful host resolution.
+    Emitted when a non-speculative HostResolverManager::Job successfully
+    resolves a host.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.ResolveSuccessTime" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 
