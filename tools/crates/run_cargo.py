@@ -99,9 +99,6 @@ def RunCargo(rust_sysroot, home_dir, cargo_args, extra_rustflags=None):
     if home_dir:
         cargo_env['CARGO_HOME'] = home_dir
 
-    # Some dependencies (e.g. rustix) might try to use internal rustc features.
-    cargo_env['RUSTC_BOOTSTRAP'] = '1'
-
     _PrependOrInsert(cargo_env, 'PATH', os.pathsep, str(bin_dir))
 
     if not extra_rustflags:

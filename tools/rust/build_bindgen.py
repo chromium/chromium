@@ -114,9 +114,6 @@ def RunCargo(cargo_args):
     # Use a rustc we deterministically provide, not a system one.
     env['RUSTC'] = rustc_bin
 
-    # Some dependencies (e.g. rustix) might try to use internal rustc features.
-    env['RUSTC_BOOTSTRAP'] = '1'
-
     # Use the LLVM libs and clang compiler from the rustc build.
     env['LLVM_CONFIG_PATH'] = os.path.join(llvm_dir, 'bin', 'llvm-config')
     if sys.platform == 'win32':
