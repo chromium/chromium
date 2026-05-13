@@ -76,8 +76,6 @@ blink_core_sources_events = [
   "touch_event_context.h",
   "transition_event.cc",
   "transition_event.h",
-  "email_verified_event.cc",
-  "email_verified_event.h",
   "ui_event.cc",
   "ui_event.h",
   "ui_event_with_key_state.cc",
