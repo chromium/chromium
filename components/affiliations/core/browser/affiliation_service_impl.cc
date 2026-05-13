@@ -65,27 +65,33 @@ FacetURI ConvertGURLToFacet(const GURL& url) {
   }
 }
 
-// Returns FacetURI corresponding to the top level domain of the `facet`. Empty
-// if `facet` is android app, eTLD+1 can't be extracted, or `facet` is already
-// top level domain.
+// Returns FacetURI corresponding to the top level domain of the `facet`.
+// If `kFetchChangePasswordPatterns` is enabled, returns `facet` as a fallback
+// when `facet` is an Android app, eTLD+1 can't be extracted, or `facet` is
+// already a top level domain. Otherwise, returns an empty FacetURI in these
+// cases.
 FacetURI GetFacetForTopLevelDomain(
     FacetURI facet,
     const base::flat_set<std::string>& psl_extension_list) {
+  FacetURI fallback = base::FeatureList::IsEnabled(kFetchChangePasswordPatterns)
+                          ? facet
+                          : FacetURI();
+
   if (!facet.IsValidWebFacetURI()) {
-    return FacetURI();
+    return fallback;
   }
 
   std::string top_domain = GetExtendedTopLevelDomain(
       GURL(facet.canonical_spec()), psl_extension_list);
   if (top_domain.empty()) {
-    return FacetURI();
+    return fallback;
   }
 
   FacetURI result =
       FacetURI::FromPotentiallyInvalidSpec("https://" + top_domain);
 
   if (!result.is_valid() || result == facet) {
-    return FacetURI();
+    return fallback;
   }
 
   return result;
