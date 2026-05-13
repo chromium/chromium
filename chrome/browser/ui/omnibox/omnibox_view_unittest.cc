@@ -169,7 +169,7 @@ TEST_F(OmniboxViewTest, DISABLED_GetIcon_BookmarkIcon) {
                            u"a bookmark", kUrl);
 
   ui::ImageModel expected_icon =
-      ui::ImageModel::FromVectorIcon(omnibox::kBookmarkChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(omnibox::kBookmarkChromeRefreshOldIcon,
                                      gfx::kPlaceholderColor, gfx::kFaviconSize);
 
   ui::ImageModel icon = view()->GetIcon(

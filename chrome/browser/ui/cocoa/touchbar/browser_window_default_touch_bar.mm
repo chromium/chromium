@@ -647,7 +647,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 + (NSImage*)starDefaultIcon {
   static __strong NSImage* starDefaultIcon = CreateNSImageFromIcon(
-      omnibox::kStarChromeRefreshIcon, kTouchBarDefaultIconColor);
+      omnibox::kStarChromeRefreshOldIcon, kTouchBarDefaultIconColor);
   return starDefaultIcon;
 }
 
@@ -657,7 +657,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 + (NSImage*)starActiveIcon {
   static __strong NSImage* starActiveIcon = []() {
-    return CreateNSImageFromIcon(omnibox::kStarActiveChromeRefreshIcon,
+    return CreateNSImageFromIcon(omnibox::kStarActiveChromeRefreshOldIcon,
                                  kTouchBarStarActiveColor);
   }();
   return starActiveIcon;

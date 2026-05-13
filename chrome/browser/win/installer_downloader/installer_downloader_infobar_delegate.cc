@@ -55,7 +55,7 @@ InstallerDownloaderInfoBarDelegate::GetIdentifier() const {
 
 const gfx::VectorIcon& InstallerDownloaderInfoBarDelegate::GetVectorIcon()
     const {
-  return dark_mode() ? omnibox::kProductChromeRefreshIcon
+  return dark_mode() ? omnibox::kProductChromeRefreshOldIcon
                      : vector_icons::kProductRefreshIcon;
 }
 

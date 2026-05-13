@@ -110,7 +110,7 @@ bool OmniboxAction::IsReadyToTrigger(
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& OmniboxAction::GetVectorIcon() const {
   // TODO(tommycli): Replace with real icon.
-  return omnibox::kProductChromeRefreshIcon;
+  return omnibox::kProductChromeRefreshOldIcon;
 }
 #endif
 

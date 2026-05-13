@@ -54,7 +54,7 @@ void SetPageActionVisibility(
         ui::ImageModel::FromImageGenerator(
             base::BindRepeating([](const ui::ColorProvider* color_provider) {
               return gfx::CreateVectorIcon(
-                  omnibox::kSearchSparkIcon,
+                  omnibox::kSearchSparkOldIcon,
                   GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
                   color_provider->GetColor(kColorOmniboxIconForegroundTonal));
             }),

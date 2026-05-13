@@ -140,9 +140,9 @@ void BookmarkPageActionController::SetStarred(bool starred) {
 
   page_action_controller_->OverrideImage(
       kActionBookmarkThisTab,
-      ui::ImageModel::FromVectorIcon(starred
-                                         ? omnibox::kStarActiveChromeRefreshIcon
-                                         : omnibox::kStarChromeRefreshIcon),
+      ui::ImageModel::FromVectorIcon(
+          starred ? omnibox::kStarActiveChromeRefreshOldIcon
+                  : omnibox::kStarChromeRefreshOldIcon),
       starred ? page_actions::PageActionColorSource::kCascadingAccent
               : page_actions::PageActionColorSource::kForeground);
 }

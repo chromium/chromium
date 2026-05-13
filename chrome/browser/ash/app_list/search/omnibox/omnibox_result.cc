@@ -217,11 +217,11 @@ void OmniboxResult::SetGenericIcon() {
   // If this is neither a rich entity nor eligible for a favicon, use either
   // the generic bookmark or another generic icon as appropriate.
   if (search_result_->omnibox_type == OmniboxResultType::kBookmark) {
-    SetIcon(IconInfo(
-        ui::ImageModel::FromVectorIcon(
-            omnibox::kBookmarkIcon, kGenericIconColorId, kSystemIconDimension),
+    SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(omnibox::kBookmarkOldIcon,
+                                                    kGenericIconColorId,
+                                                    kSystemIconDimension),
 
-        kSystemIconDimension));
+                     kSystemIconDimension));
   } else {
     SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(
                          TypeToVectorIcon(search_result_->omnibox_type),

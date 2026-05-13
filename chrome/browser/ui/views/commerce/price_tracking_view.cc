@@ -65,8 +65,9 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
 
   // Icon column
   auto* icon = AddChildView(std::make_unique<views::ImageView>());
-  icon->SetImage(ui::ImageModel::FromVectorIcon(
-      omnibox::kPriceTrackingDisabledIcon, kColorBookmarkDialogTrackPriceIcon));
+  icon->SetImage(
+      ui::ImageModel::FromVectorIcon(omnibox::kPriceTrackingDisabledOldIcon,
+                                     kColorBookmarkDialogTrackPriceIcon));
   icon->SetImageSize(GetIconSize());
   icon->SetProperty(views::kMarginsKey,
                     gfx::Insets::TLBR(0, 0, 0, GetIconMargin()));

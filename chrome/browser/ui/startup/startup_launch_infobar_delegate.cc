@@ -47,7 +47,7 @@ StartupLaunchInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& StartupLaunchInfoBarDelegate::GetVectorIcon() const {
-  return dark_mode() ? omnibox::kProductChromeRefreshIcon
+  return dark_mode() ? omnibox::kProductChromeRefreshOldIcon
                      : vector_icons::kProductRefreshIcon;
 }
 

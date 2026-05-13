@@ -1317,7 +1317,7 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
             GURL()) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kIncognitoCr2023Icon;
+    return omnibox::kIncognitoCr2023OldIcon;
   }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
@@ -1371,7 +1371,7 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kDinoCr2023Icon;
+    return omnibox::kDinoCr2023OldIcon;
   }
 #endif
 
@@ -1999,13 +1999,13 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
 
 const gfx::VectorIcon& GetSharingHubVectorIcon() {
 #if BUILDFLAG(IS_MAC)
-  return omnibox::kShareMacChromeRefreshIcon;
+  return omnibox::kShareMacChromeRefreshOldIcon;
 #elif BUILDFLAG(IS_WIN)
-  return omnibox::kShareWinChromeRefreshIcon;
+  return omnibox::kShareWinChromeRefreshOldIcon;
 #elif BUILDFLAG(IS_LINUX)
-  return omnibox::kShareLinuxChromeRefreshIcon;
+  return omnibox::kShareLinuxChromeRefreshOldIcon;
 #else
-  return omnibox::kShareChromeRefreshIcon;
+  return omnibox::kShareChromeRefreshOldIcon;
 #endif
 }
 

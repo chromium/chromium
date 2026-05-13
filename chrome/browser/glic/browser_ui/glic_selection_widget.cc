@@ -183,7 +183,7 @@ class GlicSelectionContentsView : public views::View {
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT);
     copy_link_btn_ =
         ask_pill_->AddChildView(views::ImageButton::CreateIconButton(
-            std::move(on_copy_link), omnibox::kShareChromeRefreshIcon,
+            std::move(on_copy_link), omnibox::kShareChromeRefreshOldIcon,
             copy_link_tooltip));
     copy_link_btn_->SetTooltipText(copy_link_tooltip);
     copy_link_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
@@ -191,7 +191,7 @@ class GlicSelectionContentsView : public views::View {
         views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
             views::INSETS_VECTOR_IMAGE_BUTTON)));
     views::SetImageFromVectorIconWithColor(
-        copy_link_btn_, omnibox::kShareChromeRefreshIcon, kIconSize,
+        copy_link_btn_, omnibox::kShareChromeRefreshOldIcon, kIconSize,
         views::IconColors(ui::kColorSysOnSurfaceVariant,
                           ui::kColorLabelForegroundDisabled,
                           ui::kColorSysOnSurfaceVariant));

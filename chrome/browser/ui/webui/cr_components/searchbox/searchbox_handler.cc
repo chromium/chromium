@@ -583,23 +583,24 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
   // - `omnibox::kB`
   // - `vector_icons::kA`
 
-  if (icon.name == omnibox::kAnswerCurrencyChromeRefreshIcon.name) {
+  if (icon.name == omnibox::kAnswerCurrencyChromeRefreshOldIcon.name) {
     return kAnswerCurrencyIconResourceName;
-  } else if (icon.name == omnibox::kAnswerDefaultIcon.name) {
+  } else if (icon.name == omnibox::kAnswerDefaultOldIcon.name) {
     return kAnswerDefaultIconResourceName;
-  } else if (icon.name == omnibox::kAnswerDictionaryChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kAnswerDictionaryChromeRefreshOldIcon.name) {
     return kAnswerDictionaryIconResourceName;
-  } else if (icon.name == omnibox::kAnswerFinanceChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kAnswerFinanceChromeRefreshOldIcon.name) {
     return kAnswerFinanceIconResourceName;
-  } else if (icon.name == omnibox::kAnswerSunriseChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kAnswerSunriseChromeRefreshOldIcon.name) {
     return kAnswerSunriseIconResourceName;
-  } else if (icon.name == omnibox::kAnswerTranslationChromeRefreshIcon.name) {
+  } else if (icon.name ==
+             omnibox::kAnswerTranslationChromeRefreshOldIcon.name) {
     return kAnswerTranslationIconResourceName;
-  } else if (icon.name == omnibox::kBookmarkChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kBookmarkChromeRefreshOldIcon.name) {
     return kBookmarkIconResourceName;
-  } else if (icon.name == omnibox::kCalculatorChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kCalculatorChromeRefreshOldIcon.name) {
     return kCalculatorIconResourceName;
-  } else if (icon.name == omnibox::kDinoCr2023Icon.name) {
+  } else if (icon.name == omnibox::kDinoCr2023OldIcon.name) {
     return kDinoIconResourceName;
   } else if (icon.name == omnibox::kDriveDocsIcon.name) {
     return kDriveDocsIconResourceName;
@@ -619,35 +620,35 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
     return kDriveSlidesIconResourceName;
   } else if (icon.name == omnibox::kDriveVideoIcon.name) {
     return kDriveVideoIconResourceName;
-  } else if (icon.name == omnibox::kEnterpriseIcon.name) {
+  } else if (icon.name == omnibox::kEnterpriseOldIcon.name) {
     return kEnterpriseIconResourceName;
-  } else if (icon.name == omnibox::kExtensionAppIcon.name) {
+  } else if (icon.name == omnibox::kExtensionAppOldIcon.name) {
     return kExtensionAppIconResourceName;
-  } else if (icon.name == omnibox::kIncognitoCr2023Icon.name) {
+  } else if (icon.name == omnibox::kIncognitoCr2023OldIcon.name) {
     return kIncognitoIconResourceName;
-  } else if (icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kJourneysChromeRefreshOldIcon.name) {
     return kJourneysIconResourceName;
-  } else if (icon.name == omnibox::kJourneysIcon.name) {
+  } else if (icon.name == omnibox::kJourneysOldIcon.name) {
     return kJourneysIconResourceName;
-  } else if (icon.name == omnibox::kNotesSparkIcon.name) {
+  } else if (icon.name == omnibox::kNotesSparkOldIcon.name) {
     return kNotesSparkIconResourceName;
-  } else if (icon.name == omnibox::kPageChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kPageChromeRefreshOldIcon.name) {
     return kPageIconResourceName;
-  } else if (icon.name == omnibox::kProductChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kProductChromeRefreshOldIcon.name) {
     return kPedalsIconResourceName;
   } else if (icon.name == omnibox::kReplyRotated180Icon.name) {
     return searchbox_internal::kReplyRotated180IconResourceName;
-  } else if (icon.name == omnibox::kSearchSparkIcon.name) {
+  } else if (icon.name == omnibox::kSearchSparkOldIcon.name) {
     return searchbox_internal::kSearchSparkIconResourceName;
   } else if (icon.name == omnibox::kSparkIcon.name) {
     return kSparkIconResourceName;
-  } else if (icon.name == omnibox::kStarActiveChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kStarActiveChromeRefreshOldIcon.name) {
     return kStarActiveIconResourceName;
-  } else if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
+  } else if (icon.name == omnibox::kSubdirectoryArrowRightOldIcon.name) {
     return kSubdirectoryArrowRightResourceName;
-  } else if (icon.name == omnibox::kSwitchCr2023Icon.name) {
+  } else if (icon.name == omnibox::kSwitchCr2023OldIcon.name) {
     return kTabIconResourceName;
-  } else if (icon.name == omnibox::kTrendingUpChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kTrendingUpChromeRefreshOldIcon.name) {
     return kTrendingUpIconResourceName;
   } else if (icon.name == vector_icons::kHistoryChromeRefreshIcon.name) {
     return kHistoryIconResourceName;
@@ -683,19 +684,19 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  if (icon.name == omnibox::kShareMacChromeRefreshIcon.name) {
+  if (icon.name == omnibox::kShareMacChromeRefreshOldIcon.name) {
     return kMacShareIconResourceName;
   }
 #elif BUILDFLAG(IS_WIN)
-  if (icon.name == omnibox::kShareWinChromeRefreshIcon.name) {
+  if (icon.name == omnibox::kShareWinChromeRefreshOldIcon.name) {
     return kWinShareIconResourceName;
   }
 #elif BUILDFLAG(IS_LINUX)
-  if (icon.name == omnibox::kShareLinuxChromeRefreshIcon.name) {
+  if (icon.name == omnibox::kShareLinuxChromeRefreshOldIcon.name) {
     return kLinuxShareIconResourceName;
   }
 #else
-  if (icon.name == omnibox::kShareChromeRefreshIcon.name) {
+  if (icon.name == omnibox::kShareChromeRefreshOldIcon.name) {
     return kShareIconResourceName;
   }
 #endif

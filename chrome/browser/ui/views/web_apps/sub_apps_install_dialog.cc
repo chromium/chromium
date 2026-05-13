@@ -60,7 +60,7 @@ constexpr int kSubAppIconSize = 32;
 
 ui::ImageModel GetInstallAppIcon() {
   return ui::ImageModel::FromVectorIcon(
-      omnibox::kInstallDesktopIcon, ui::kColorIcon,
+      omnibox::kInstallDesktopOldIcon, ui::kColorIcon,
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }

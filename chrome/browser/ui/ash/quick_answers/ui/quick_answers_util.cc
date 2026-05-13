@@ -110,11 +110,11 @@ const gfx::VectorIcon& GetResultTypeIcon(ResultType result_type) {
     case ResultType::kDefinitionResult:
       return chromeos::kDictionaryIcon;
     case ResultType::kTranslationResult:
-      return omnibox::kAnswerTranslationIcon;
+      return omnibox::kAnswerTranslationOldIcon;
     case ResultType::kUnitConversionResult:
-      return omnibox::kAnswerCalculatorIcon;
+      return omnibox::kAnswerCalculatorOldIcon;
     default:
-      return omnibox::kAnswerDefaultIcon;
+      return omnibox::kAnswerDefaultOldIcon;
   }
 }
 

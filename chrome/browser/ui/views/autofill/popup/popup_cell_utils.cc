@@ -476,7 +476,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kSaveAndFill:
       return ImageModelFromVectorIcon(kCreditCardIcon, kIconSize);
     case Suggestion::Icon::kSettings:
-      return ImageModelFromVectorIcon(omnibox::kProductIcon, kIconSize);
+      return ImageModelFromVectorIcon(omnibox::kProductOldIcon, kIconSize);
     case Suggestion::Icon::kUndo:
       return ImageModelFromVectorIcon(vector_icons::kUndoIcon, kIconSize);
     case Suggestion::Icon::kGooglePasswordManager:

@@ -120,9 +120,9 @@ class WebUIBrowserGuestHandler
                       .location_bar_model()
                       ->GetVectorIcon();
     webui_browser::mojom::SecurityIcon icon_type;
-    if (icon == &omnibox::kHttpChromeRefreshIcon) {
+    if (icon == &omnibox::kHttpChromeRefreshOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::HttpChromeRefresh;
-    } else if (icon == &omnibox::kSecurePageInfoChromeRefreshIcon) {
+    } else if (icon == &omnibox::kSecurePageInfoChromeRefreshOldIcon) {
       icon_type =
           webui_browser::mojom::SecurityIcon::SecurePageInfoChromeRefresh;
     } else if (icon == &vector_icons::kNoEncryptionIcon) {
@@ -134,11 +134,11 @@ class WebUIBrowserGuestHandler
       icon_type = webui_browser::mojom::SecurityIcon::BusinessChromeRefresh;
     } else if (icon == &vector_icons::kDangerousChromeRefreshIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::DangerousChromeRefresh;
-    } else if (icon == &omnibox::kProductChromeRefreshIcon) {
+    } else if (icon == &omnibox::kProductChromeRefreshOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::ProductChromeRefresh;
     } else if (icon == &vector_icons::kExtensionChromeRefreshIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::ExtensionChromeRefresh;
-    } else if (icon == &omnibox::kOfflinePinIcon) {
+    } else if (icon == &omnibox::kOfflinePinOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::OfflinePin;
     } else {
       CHECK(false) << "Add new icon to webui_browsers's browser.mojom and "

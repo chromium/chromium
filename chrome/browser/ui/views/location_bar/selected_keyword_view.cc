@@ -114,14 +114,14 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
   } else if (template_url &&
              template_url->starter_pack_id() ==
                  template_url_starter_pack_data::StarterPackId::kAiMode) {
-    vector_icon = &omnibox::kSearchSparkIcon;
+    vector_icon = &omnibox::kSearchSparkOldIcon;
   } else if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
                  profile_) &&
              history_embeddings::GetFeatureParameters().omnibox_scoped &&
              template_url &&
              template_url->starter_pack_id() ==
                  template_url_starter_pack_data::StarterPackId::kHistory) {
-    vector_icon = &omnibox::kSearchSparkIcon;
+    vector_icon = &omnibox::kSearchSparkOldIcon;
   } else if (template_url &&
              template_url->policy_origin() ==
                  TemplateURLData::PolicyOrigin::kSearchAggregator) {

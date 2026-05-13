@@ -32,7 +32,7 @@ void TabSwitchAction::Execute(ExecutionContext& context) const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& TabSwitchAction::GetVectorIcon() const {
-  return omnibox::kSwitchCr2023Icon;
+  return omnibox::kSwitchCr2023OldIcon;
 }
 #endif
 

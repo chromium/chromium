@@ -49,17 +49,17 @@ ChromeSearchResult::IconInfo CreateAnswerIconInfo(
 const gfx::VectorIcon& AnswerTypeToVectorIcon(OmniboxResultAnswerType type) {
   switch (type) {
     case OmniboxResultAnswerType::kCurrency:
-      return omnibox::kAnswerCurrencyIcon;
+      return omnibox::kAnswerCurrencyOldIcon;
     case OmniboxResultAnswerType::kDictionary:
-      return omnibox::kAnswerDictionaryIcon;
+      return omnibox::kAnswerDictionaryOldIcon;
     case OmniboxResultAnswerType::kFinance:
-      return omnibox::kAnswerFinanceIcon;
+      return omnibox::kAnswerFinanceOldIcon;
     case OmniboxResultAnswerType::kSunrise:
-      return omnibox::kAnswerSunriseIcon;
+      return omnibox::kAnswerSunriseOldIcon;
     case OmniboxResultAnswerType::kTranslation:
-      return omnibox::kAnswerTranslationIcon;
+      return omnibox::kAnswerTranslationOldIcon;
     default:
-      return omnibox::kAnswerDefaultIcon;
+      return omnibox::kAnswerDefaultOldIcon;
   }
 }
 
@@ -166,7 +166,7 @@ void OmniboxAnswerResult::OnColorModeChanged(bool dark_mode_enabled) {
 
 void OmniboxAnswerResult::UpdateIcon() {
   if (IsCalculatorResult()) {
-    SetIcon(CreateAnswerIconInfo(omnibox::kCalculatorIcon));
+    SetIcon(CreateAnswerIconInfo(omnibox::kCalculatorOldIcon));
   } else if (IsWeatherResult() &&
              search_result_->image_url.value_or(GURL()).is_valid()) {
     // Weather icons are downloaded. Check this first so that the local

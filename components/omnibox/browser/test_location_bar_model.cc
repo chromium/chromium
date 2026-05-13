@@ -13,7 +13,7 @@
 TestLocationBarModel::TestLocationBarModel()
     : security_level_(security_state::NONE),
 #if defined(TOOLKIT_VIEWS)
-      icon_(&omnibox::kHttpIcon),
+      icon_(&omnibox::kHttpOldIcon),
 #endif
       should_display_url_(true) {
 }

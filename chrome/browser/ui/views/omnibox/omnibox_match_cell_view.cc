@@ -289,7 +289,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
             icon)));
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
-    apply_vector_icon(omnibox::kAnswerCalculatorIcon);
+    apply_vector_icon(omnibox::kAnswerCalculatorOldIcon);
     separator_view_->SetSize(gfx::Size());
   } else if (layout_style_ != LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE) {
     answer_image_view_->SetImage(ui::ImageModel());

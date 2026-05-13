@@ -170,7 +170,7 @@ gfx::ImageSkia OSIconProviderMac::GetIcon() const {
                                    features::kGlicChromeStatusIconSizePx.Get(),
                                    SK_ColorWHITE);
     }
-    return gfx::CreateVectorIcon(omnibox::kProductChromeRefreshIcon,
+    return gfx::CreateVectorIcon(omnibox::kProductChromeRefreshOldIcon,
                                  features::kGlicChromeStatusIconSizePx.Get(),
                                  SK_ColorWHITE);
   }

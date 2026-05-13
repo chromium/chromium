@@ -165,7 +165,7 @@ void StarterPackBookmarksAction::Execute(ExecutionContext& context) const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& StarterPackBookmarksAction::GetVectorIcon() const {
-  return omnibox::kStarActiveChromeRefreshIcon;
+  return omnibox::kStarActiveChromeRefreshOldIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
@@ -229,7 +229,7 @@ void StarterPackTabsAction::Execute(ExecutionContext& context) const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& StarterPackTabsAction::GetVectorIcon() const {
-  return omnibox::kProductChromeRefreshIcon;
+  return omnibox::kProductChromeRefreshOldIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
@@ -261,7 +261,7 @@ void StarterPackAiModeAction::Execute(ExecutionContext& context) const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& StarterPackAiModeAction::GetVectorIcon() const {
-  return omnibox::kSearchSparkIcon;
+  return omnibox::kSearchSparkOldIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 

@@ -252,7 +252,7 @@ void OmniboxPedal::SetNavigationUrl(const GURL& url) {
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 // static
 const gfx::VectorIcon& OmniboxPedal::GetDefaultVectorIcon() {
-  return omnibox::kProductChromeRefreshIcon;
+  return omnibox::kProductChromeRefreshOldIcon;
 }
 
 const gfx::VectorIcon& OmniboxPedal::GetVectorIcon() const {

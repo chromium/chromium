@@ -141,7 +141,7 @@ SessionRestoreInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& SessionRestoreInfoBarDelegate::GetVectorIcon() const {
-  return dark_mode() ? omnibox::kProductChromeRefreshIcon
+  return dark_mode() ? omnibox::kProductChromeRefreshOldIcon
                      : vector_icons::kProductRefreshIcon;
 }
 

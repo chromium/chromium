@@ -109,13 +109,13 @@ TEST_F(SecurityChipStateHelperTest, SecurityChipIconEnum) {
       GetSecurityChipIconEnum(model(), /*is_add_context_button_shown=*/true));
 
   model()->set_security_level(security_state::SecurityLevel::SECURE);
-  model()->set_icon(omnibox::kHttpIcon);
+  model()->set_icon(omnibox::kHttpOldIcon);
   EXPECT_EQ(
       SecurityChipIcon::kSecurePageInfo,
       GetSecurityChipIconEnum(model(), /*is_add_context_button_shown=*/false));
 
   model()->set_security_level(security_state::SecurityLevel::DANGEROUS);
-  model()->set_icon(omnibox::kHttpIcon);
+  model()->set_icon(omnibox::kHttpOldIcon);
   EXPECT_EQ(
       SecurityChipIcon::kDangerous,
       GetSecurityChipIconEnum(model(), /*is_add_context_button_shown=*/false));
@@ -160,7 +160,7 @@ TEST_F(SecurityChipStateHelperTest, IsGradientGoogleSuperGIcon) {
   EXPECT_FALSE(location_bar::IsGradientGoogleSuperGIcon(empty_icon));
 
   ui::ImageModel vector_icon =
-      ui::ImageModel::FromVectorIcon(omnibox::kHttpIcon);
+      ui::ImageModel::FromVectorIcon(omnibox::kHttpOldIcon);
   EXPECT_FALSE(location_bar::IsGradientGoogleSuperGIcon(vector_icon));
 
   gfx::ImageSkia target_16 =

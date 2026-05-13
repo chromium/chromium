@@ -97,7 +97,7 @@ infobars::InfoBarDelegate::InfoBarIdentifier PinInfoBarDelegate::GetIdentifier()
 }
 
 const gfx::VectorIcon& PinInfoBarDelegate::GetVectorIcon() const {
-  return dark_mode() ? omnibox::kProductChromeRefreshIcon
+  return dark_mode() ? omnibox::kProductChromeRefreshOldIcon
                      : vector_icons::kProductRefreshIcon;
 }
 

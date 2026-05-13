@@ -265,7 +265,7 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
     return *icon_override;
 
   if (IsOfflinePage())
-    return omnibox::kOfflinePinIcon;
+    return omnibox::kOfflinePinOldIcon;
 #endif
 
   return location_bar_model::GetSecurityVectorIcon(

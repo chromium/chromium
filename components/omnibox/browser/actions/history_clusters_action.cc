@@ -135,7 +135,7 @@ OmniboxActionId HistoryClustersAction::ActionId() const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& HistoryClustersAction::GetVectorIcon() const {
-  return omnibox::kJourneysIcon;
+  return omnibox::kJourneysOldIcon;
 }
 #endif
 

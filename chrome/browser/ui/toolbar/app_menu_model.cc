@@ -2243,7 +2243,7 @@ bool AppMenuModel::AddDefaultBrowserMenuItems() {
     AddItemWithIcon(
         IDC_SET_BROWSER_AS_DEFAULT,
         l10n_util::GetStringUTF16(IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM),
-        ui::ImageModel::FromVectorIcon(omnibox::kProductChromeRefreshIcon,
+        ui::ImageModel::FromVectorIcon(omnibox::kProductChromeRefreshOldIcon,
                                        ui::kColorMenuIcon, kDefaultIconSize));
     SetElementIdentifierAt(GetItemCount() - 1,
                            AppMenuModel::kSetBrowserAsDefaultMenuItem);

@@ -547,7 +547,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     const char search_icon[] =
         "//resources/cr_components/searchbox/icons/search_spark.svg";
     const std::string& svg_name = handler_->AutocompleteIconToResourceName(
-        omnibox::kSubdirectoryArrowRightIcon);
+        omnibox::kSubdirectoryArrowRightOldIcon);
 
     EXPECT_EQ(svg_name, search_icon);
   }

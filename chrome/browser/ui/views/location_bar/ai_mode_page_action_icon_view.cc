@@ -79,7 +79,7 @@ views::BubbleDialogDelegate* AiModePageActionIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& AiModePageActionIconView::GetVectorIcon() const {
-  return omnibox::kSearchSparkIcon;
+  return omnibox::kSearchSparkOldIcon;
 }
 
 void AiModePageActionIconView::UpdateIconImage() {

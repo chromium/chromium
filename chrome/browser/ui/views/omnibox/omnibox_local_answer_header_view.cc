@@ -46,7 +46,7 @@ OmniboxLocalAnswerHeaderView::OmniboxLocalAnswerHeaderView() {
 void OmniboxLocalAnswerHeaderView::OnThemeChanged() {
   views::View::OnThemeChanged();
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      omnibox::kSummarizeAutoIcon, kColorOmniboxResultsIcon, kIconSize));
+      omnibox::kSummarizeAutoOldIcon, kColorOmniboxResultsIcon, kIconSize));
   text_->SetEnabledColor(
       GetColorProvider()->GetColor(kColorOmniboxResultsTextDimmed));
 }

@@ -127,16 +127,16 @@ const gfx::Insets GetIconInsets(Design design) {
 
 const gfx::VectorIcon& GetVectorIcon(std::optional<Intent> intent) {
   if (!intent) {
-    return omnibox::kAnswerDefaultIcon;
+    return omnibox::kAnswerDefaultOldIcon;
   }
 
   switch (intent.value()) {
     case Intent::kDefinition:
       return chromeos::kDictionaryIcon;
     case Intent::kTranslation:
-      return omnibox::kAnswerTranslationIcon;
+      return omnibox::kAnswerTranslationOldIcon;
     case Intent::kUnitConversion:
-      return omnibox::kAnswerCalculatorIcon;
+      return omnibox::kAnswerCalculatorOldIcon;
   }
 
   NOTREACHED() << "Invalid intent enum value specified";

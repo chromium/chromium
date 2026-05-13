@@ -27,24 +27,24 @@ aggregate_vector_icons("omnibox_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [
-    "answer_calculator.icon",
-    "answer_currency.icon",
-    "answer_currency_chrome_refresh.icon",
-    "answer_default.icon",
-    "answer_dictionary.icon",
-    "answer_dictionary_chrome_refresh.icon",
-    "answer_finance.icon",
-    "answer_finance_chrome_refresh.icon",
-    "answer_sunrise.icon",
-    "answer_sunrise_chrome_refresh.icon",
-    "answer_translation.icon",
-    "answer_translation_chrome_refresh.icon",
-    "bookmark.icon",
-    "bookmark_chrome_refresh.icon",
-    "calculator.icon",
-    "calculator_chrome_refresh.icon",
-    "clear.icon",
-    "dino_cr2023.icon",
+    "answer_calculator_old.icon",
+    "answer_currency_chrome_refresh_old.icon",
+    "answer_currency_old.icon",
+    "answer_default_old.icon",
+    "answer_dictionary_chrome_refresh_old.icon",
+    "answer_dictionary_old.icon",
+    "answer_finance_chrome_refresh_old.icon",
+    "answer_finance_old.icon",
+    "answer_sunrise_chrome_refresh_old.icon",
+    "answer_sunrise_old.icon",
+    "answer_translation_chrome_refresh_old.icon",
+    "answer_translation_old.icon",
+    "bookmark_chrome_refresh_old.icon",
+    "bookmark_old.icon",
+    "calculator_chrome_refresh_old.icon",
+    "calculator_old.icon",
+    "clear_old.icon",
+    "dino_cr2023_old.icon",
     "drive_docs.icon",
     "drive_folder.icon",
     "drive_forms.icon",
@@ -54,45 +54,45 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "drive_sheets.icon",
     "drive_slides.icon",
     "drive_video.icon",
-    "enterprise.icon",
-    "extension_app.icon",
-    "find_in_page_chrome_refresh.icon",
-    "http.icon",
-    "http_chrome_refresh.icon",
-    "incognito_cr2023.icon",
-    "install_desktop.icon",
-    "journeys.icon",
-    "journeys_chrome_refresh.icon",
-    "notes_spark.icon",
-    "offline_pin.icon",
-    "page_chrome_refresh.icon",
-    "price_tracking_disabled.icon",
-    "product.icon",
-    "product_chrome_refresh.icon",
+    "enterprise_old.icon",
+    "extension_app_old.icon",
+    "find_in_page_chrome_refresh_old.icon",
+    "http_chrome_refresh_old.icon",
+    "http_old.icon",
+    "incognito_cr2023_old.icon",
+    "install_desktop_old.icon",
+    "journeys_chrome_refresh_old.icon",
+    "journeys_old.icon",
+    "notes_spark_old.icon",
+    "offline_pin_old.icon",
+    "page_chrome_refresh_old.icon",
+    "price_tracking_disabled_old.icon",
+    "product_chrome_refresh_old.icon",
+    "product_old.icon",
     "reply_rotated180.icon",
-    "search_spark.icon",
-    "secure_page_info_chrome_refresh.icon",
-    "share_chrome_refresh.icon",
+    "search_spark_old.icon",
+    "secure_page_info_chrome_refresh_old.icon",
+    "share_chrome_refresh_old.icon",
     "spark.icon",
-    "star_active_chrome_refresh.icon",
-    "star_chrome_refresh.icon",
-    "subdirectory_arrow_right.icon",
-    "summarize_auto.icon",
-    "switch.icon",
-    "switch_cr2023.icon",
-    "trending_up_chrome_refresh.icon",
+    "star_active_chrome_refresh_old.icon",
+    "star_chrome_refresh_old.icon",
+    "subdirectory_arrow_right_old.icon",
+    "summarize_auto_old.icon",
+    "switch_cr2023_old.icon",
+    "switch_old.icon",
+    "trending_up_chrome_refresh_old.icon",
   ]
 
   if (is_mac) {
-    sources += [ "share_mac_chrome_refresh.icon" ]
+    sources += [ "share_mac_chrome_refresh_old.icon" ]
   }
 
   if (is_win) {
-    sources += [ "share_win_chrome_refresh.icon" ]
+    sources += [ "share_win_chrome_refresh_old.icon" ]
   }
 
   if (is_linux) {
-    sources += [ "share_linux_chrome_refresh.icon" ]
+    sources += [ "share_linux_chrome_refresh_old.icon" ]
   }
 }
 

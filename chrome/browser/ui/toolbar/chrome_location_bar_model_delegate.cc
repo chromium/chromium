@@ -190,7 +190,7 @@ const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
   }
 
   if (url.SchemeIs(content::kChromeUIScheme)) {
-    return &omnibox::kProductChromeRefreshIcon;
+    return &omnibox::kProductChromeRefreshOldIcon;
   }
 
   if (url.SchemeIs(extensions::kExtensionScheme)) {

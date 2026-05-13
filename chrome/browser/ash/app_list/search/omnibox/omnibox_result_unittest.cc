@@ -277,7 +277,7 @@ TEST_F(OmniboxResultTest, Metrics) {
   const auto bookmarked_result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::HISTORY_URL);
   EXPECT_EQ(ash::OMNIBOX_BOOKMARK, bookmarked_result->metrics_type());
-  EXPECT_EQ(&omnibox::kBookmarkIcon,
+  EXPECT_EQ(&omnibox::kBookmarkOldIcon,
             bookmarked_result->icon().icon.GetVectorIcon().vector_icon());
 
   // Unbookmarked URLs belong to the general "recently visited" category and

@@ -1723,7 +1723,7 @@ void LocationBarView::RefreshPageActionContainerViewAndIconsVisibility(
 void LocationBarView::RefreshClearAllButtonIcon() {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   const gfx::VectorIcon& icon =
-      touch_ui ? omnibox::kClearIcon : kTabCloseNormalIcon;
+      touch_ui ? omnibox::kClearOldIcon : kTabCloseNormalIcon;
   SetImageFromVectorIconWithColor(
       clear_all_button_, icon,
       {kColorLocationBarClearAllButtonIcon,

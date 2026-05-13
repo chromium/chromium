@@ -131,7 +131,7 @@ infobars::InfoBarDelegate::InfoBarIdentifier PdfInfoBarDelegate::GetIdentifier()
 }
 
 const gfx::VectorIcon& PdfInfoBarDelegate::GetVectorIcon() const {
-  return dark_mode() ? omnibox::kProductChromeRefreshIcon
+  return dark_mode() ? omnibox::kProductChromeRefreshOldIcon
                      : vector_icons::kProductRefreshIcon;
 }
 
