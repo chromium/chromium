@@ -813,7 +813,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // especially when the matches is empty. Remove this logic once a long term
     // fix is found.
     if (this.composeboxNoFlickerSuggestionsFix && this.showTypedSuggest &&
-        !this.haveReceivedAutcompleteResponse) {
+        !this.haveReceivedSynchronousAutocompleteResponse) {
       // The first autcomplete response for ZPS contains no matches, since
       // composebox doesn't support ZPS from local providers (ex. history
       // suggestion). Similarly, since composebox doesn't support local
@@ -826,9 +826,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         result.matches.push(...this.result.matches.filter(
             match => match.type !== 'search-what-you-typed'));
       }
-      this.haveReceivedAutcompleteResponse = true;
+      this.haveReceivedSynchronousAutocompleteResponse = true;
     }
-    this.haveReceivedAutcompleteResponse = true;
     this.result = result;
     /* Indicates when suggestion results have changed so that zero state
      * suggestion results in contextual tasks composebox can update accordingly.
@@ -858,20 +857,28 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.$.matches.unselect();
     }
 
-    // Populate the smart compose suggestion.
-    const nextHint = this.result.smartComposeInlineHint?.trim() ?
-        this.result.smartComposeInlineHint :
-        '';
-    if (this.smartComposeInlineHint !== nextHint) {
-      this.smartComposeInlineHint = nextHint;
+    // Smart compose hints should only be updated from the async response.
+    // This prevents the hint flicker from an empty smart compose response
+    // in the synchronous pass.
+    if (this.haveReceivedSynchronousAutocompleteResponse) {
+      // Populate the smart compose suggestion.
+      const nextHint = this.result.smartComposeInlineHint?.trim() ?
+          this.result.smartComposeInlineHint :
+          '';
+      if (this.smartComposeInlineHint !== nextHint) {
+        this.smartComposeInlineHint = nextHint;
+      }
+
+      // Smart compose stats are incremented on every response from the
+      // server.
+      if (this.smartComposeInlineHint) {
+        this.smartComposeStats.shownCount++;
+        this.smartComposeStats.shownLength +=
+            this.smartComposeInlineHint.length;
+      }
     }
 
-    // Smart compose stats are incremented on every response from the
-    // server.
-    if (this.smartComposeInlineHint) {
-      this.smartComposeStats.shownCount++;
-      this.smartComposeStats.shownLength += this.smartComposeInlineHint.length;
-    }
+    this.haveReceivedSynchronousAutocompleteResponse = true;
   }
 
 

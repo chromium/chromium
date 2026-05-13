@@ -244,7 +244,7 @@ export const ComposeboxEmbedderMixin =
         showTypedSuggest: boolean =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
         lastQueriedInput: string = '';
-        haveReceivedAutcompleteResponse: boolean = false;
+        haveReceivedSynchronousAutocompleteResponse: boolean = false;
         lensSendRawFileMediaTypesEnabled: boolean =
             loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
 
@@ -564,21 +564,28 @@ export const ComposeboxEmbedderMixin =
             this.getDropdownElement().unselect();
           }
 
-          // Populate the smart compose suggestion.
-          const nextHint = this.result.smartComposeInlineHint?.trim() ?
-              this.result.smartComposeInlineHint :
-              '';
-          if (this.smartComposeInlineHint !== nextHint) {
-            this.smartComposeInlineHint = nextHint;
+          // Smart compose hints should only be updated from the async response.
+          // This prevents the hint flicker from an empty smart compose response
+          // in the synchronous pass.
+          if (this.haveReceivedSynchronousAutocompleteResponse) {
+            // Populate the smart compose suggestion.
+            const nextHint = this.result.smartComposeInlineHint?.trim() ?
+                this.result.smartComposeInlineHint :
+                '';
+            if (this.smartComposeInlineHint !== nextHint) {
+              this.smartComposeInlineHint = nextHint;
+            }
+
+            // Smart compose stats are incremented on every response from the
+            // server.
+            if (this.smartComposeInlineHint) {
+              this.smartComposeStats.shownCount++;
+              this.smartComposeStats.shownLength +=
+                  this.smartComposeInlineHint.length;
+            }
           }
 
-          // Smart compose stats are incremented on every response from the
-          // server.
-          if (this.smartComposeInlineHint) {
-            this.smartComposeStats.shownCount++;
-            this.smartComposeStats.shownLength +=
-                this.smartComposeInlineHint.length;
-          }
+          this.haveReceivedSynchronousAutocompleteResponse = true;
         }
 
         onContextualInputStatusChanged(
@@ -1479,7 +1486,7 @@ export const ComposeboxEmbedderMixin =
             this.clearAutocompleteMatches();
           }
           this.lastQueriedInput = this.input;
-          this.haveReceivedAutcompleteResponse = false;
+          this.haveReceivedSynchronousAutocompleteResponse = false;
           this.getSearchboxHandler().queryAutocomplete(this.input, false);
         }
 
@@ -2052,7 +2059,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   searchboxListenerIds: number[];
   showTypedSuggest: boolean;
   lastQueriedInput: string;
-  haveReceivedAutcompleteResponse: boolean;
+  haveReceivedSynchronousAutocompleteResponse: boolean;
   lensSendRawFileMediaTypesEnabled: boolean;
   hasVoiceSearchError: boolean;
   isListening: boolean;

@@ -135,6 +135,7 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
       allowedToBeDefaultMatch: true,
     })];
     testProxy.element.lastQueriedInput = 'test';
+    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           input: 'test',
@@ -173,6 +174,7 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
     // Delivering fresh results including a SECOND hint to verify accumulation.
     const hint2 = ' and more';
     testProxy.element.lastQueriedInput = 'test hint';
+    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           input: 'test hint',
@@ -208,6 +210,7 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
 
     // Delivering one last fresh result sets the final state for selection.
     testProxy.element.lastQueriedInput = 'test hint and more';
+    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           input: 'test hint and more',

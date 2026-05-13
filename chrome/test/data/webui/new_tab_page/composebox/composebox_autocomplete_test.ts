@@ -860,6 +860,7 @@ suite('NewTabPageComposeboxAutocompleteSmartComposeTest', () => {
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
 
+    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           input: 'smart ',
@@ -887,6 +888,7 @@ suite('NewTabPageComposeboxAutocompleteSmartComposeTest', () => {
     assertEquals(
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
 
+    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           input: 'smart ',
@@ -928,6 +930,7 @@ suite('NewTabPageComposeboxAutocompleteSmartComposeTest', () => {
     testProxy.element.getInputElement().inputElement.value = 'awesome';
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
+    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           input: 'awesome',
