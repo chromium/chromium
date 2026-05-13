@@ -3554,7 +3554,7 @@ deps = {
 
   'src/chrome/browser/glic/e2e_test/internal': {
       'url': Var('chrome_git') + '/chrome/browser/glic/test/internal.git' + '@' +
-        '9192d5b6a8b817df92978a9a80bfa5fa3d3e823f',
+        'c357f42e1ff8b10a4dcbf4bf2dfe07786a0b4bc3',
       'condition': 'checkout_glic_e2e_tests',
   },
 
