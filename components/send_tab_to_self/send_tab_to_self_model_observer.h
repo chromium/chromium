@@ -33,19 +33,19 @@ class SendTabToSelfModelObserver : public base::CheckedObserver {
   // have a way to ensure that the model is active before interacting with it.
   virtual void OnSendTabToSelfModelLoaded() = 0;
 
-  // Invoked when elements of the model are added, removed, or updated. This is
-  // the mechanism for the sync server to push changes in the state of the model
-  // to clients.
+  // Invoked when new entries are added to the model by the  sync server.
   // TODO(crbug.com/40619926) move OnEntriesAddedRemotely to use const refs to
   // clarify ownership.
   virtual void OnEntriesAddedRemotely(
       const std::vector<const SendTabToSelfEntry*>& new_entries) = 0;
   // Invoked when a new entry is added on the local device.
   virtual void OnEntryAddedLocally(const SendTabToSelfEntry* entry) {}
+  // Invoked when entries are removed from the model by the sync server.
+  // `guids` contains the unique identifiers of the removed entries.
   virtual void OnEntriesRemovedRemotely(
       const std::vector<std::string>& guids) = 0;
-  // This observer will notify listeners of new and existing entries
-  // that have been marked as opened.
+  // Invoked when new and existing entries have been marked as opened by the
+  // sync server.
   virtual void OnEntriesOpenedRemotely(
       const std::vector<const SendTabToSelfEntry*>& opened_entries) {}
 };
