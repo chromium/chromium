@@ -74,6 +74,8 @@ component("compositor") {
     "property_change_reason.h",
     "scoped_layer_animation_settings.cc",
     "scoped_layer_animation_settings.h",
+    "scoped_layer_request.cc",
+    "scoped_layer_request.h",
     "total_animation_throughput_reporter.cc",
     "total_animation_throughput_reporter.h",
     "transform_animation_curve_adapter.cc",
@@ -253,6 +255,7 @@ test("compositor_unittests") {
     "layer_unittest.cc",
     "presentation_time_recorder_unittest.cc",
     "run_all_unittests.cc",
+    "scoped_layer_request_unittest.cc",
     "transform_animation_curve_adapter_unittest.cc",
   ]
 

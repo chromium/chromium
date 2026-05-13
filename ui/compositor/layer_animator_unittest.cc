@@ -28,6 +28,7 @@
 #include "ui/compositor/layer_animator_collection.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/compositor/scoped_layer_request.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_compositor_host.h"
 #include "ui/compositor/test/test_context_factories.h"
@@ -1913,7 +1914,7 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceInTwoAnimations) {
   }
 
   // Case 2: the original cache status if true.
-  layer.AddCacheRenderSurfaceRequest();
+  ScopedCacheRenderSurfaceLock lock(&layer);
   EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
   animator->SetBrightness(1.0f);
   animator->SetOpacity(1.0f);
@@ -2067,7 +2068,7 @@ TEST(LayerAnimatorTest, DeferredPaintInTwoAnimations) {
   }
 
   // Case 2: the original cache status if true.
-  layer.AddDeferredPaintRequest();
+  ScopedPaintLock lock(&layer);
   EXPECT_TRUE(layer.IsPaintDeferredForTesting());
   animator->SetBrightness(1.0f);
   animator->SetOpacity(1.0f);
@@ -2301,7 +2302,7 @@ TEST(LayerAnimatorTest, TrilinearFilteringInTwoAnimations) {
   }
 
   // Case 2: the original original trilinear status if true.
-  layer.AddTrilinearFilteringRequest();
+  ScopedTrilinearFilteringLock lock(&layer);
   EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
   animator->SetBrightness(1.0f);
   animator->SetOpacity(1.0f);

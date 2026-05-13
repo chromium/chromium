@@ -61,6 +61,7 @@
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/compositor/scoped_layer_request.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_compositor_host.h"
@@ -856,8 +857,6 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   layer->SetLayerSepia(initial_sepia_amount);
   layer->SetLayerHueRotation(initial_hue_amount);
   layer->SetLayerCustomColorMatrix(color_matrix);
-  layer->AddCacheRenderSurfaceRequest();
-  layer->AddTrilinearFilteringRequest();
   layer->SetClipRect(clip_rect);
   layer->SetRoundedCornerRadius({1, 2, 4, 5});
   layer->SetGradientMask(gradient_mask);
@@ -876,12 +875,6 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   EXPECT_FLOAT_EQ(initial_hue_amount, clone->layer_hue_rotation());
   EXPECT_TRUE(clone->LayerHasCustomColorMatrix());
   EXPECT_EQ(*(clone->GetLayerCustomColorMatrix()), color_matrix);
-  // Cloning should not preserve cache_render_surface flag.
-  EXPECT_NE(layer->cc_layer_for_testing()->cache_render_surface(),
-            clone->cc_layer_for_testing()->cache_render_surface());
-  // Cloning should not preserve trilinear_filtering flag.
-  EXPECT_NE(layer->cc_layer_for_testing()->trilinear_filtering(),
-            clone->cc_layer_for_testing()->trilinear_filtering());
   EXPECT_EQ(clip_rect, clone->clip_rect());
   EXPECT_EQ(layer->rounded_corner_radii(), clone->rounded_corner_radii());
   EXPECT_EQ(layer->gradient_mask(), clone->gradient_mask());
@@ -964,6 +957,38 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   EXPECT_FALSE(clone->visible());
   EXPECT_EQ(0.0f, clone->opacity());
   EXPECT_EQ(SK_ColorGREEN, clone->background_color());
+}
+
+TEST_P(LayerWithDelegateTest, CloneWithCacheRenderSurface) {
+  std::unique_ptr<Layer> layer = CreateLayer(LAYER_SOLID_COLOR);
+  EXPECT_FALSE(layer->cc_layer_for_testing()->cache_render_surface());
+
+  {
+    ScopedCacheRenderSurfaceLock lock(layer.get());
+    EXPECT_TRUE(layer->cc_layer_for_testing()->cache_render_surface());
+
+    auto clone = layer->Clone();
+    // Cloning should not preserve cache_render_surface flag.
+    EXPECT_FALSE(clone->cc_layer_for_testing()->cache_render_surface());
+  }
+
+  EXPECT_FALSE(layer->cc_layer_for_testing()->cache_render_surface());
+}
+
+TEST_P(LayerWithDelegateTest, CloneWithTrilinearFiltering) {
+  std::unique_ptr<Layer> layer = CreateLayer(LAYER_SOLID_COLOR);
+  EXPECT_FALSE(layer->cc_layer_for_testing()->trilinear_filtering());
+
+  {
+    ScopedTrilinearFilteringLock lock(layer.get());
+    EXPECT_TRUE(layer->cc_layer_for_testing()->trilinear_filtering());
+
+    auto clone = layer->Clone();
+    // Cloning should not preserve trilinear_filtering flag.
+    EXPECT_FALSE(clone->cc_layer_for_testing()->trilinear_filtering());
+  }
+
+  EXPECT_FALSE(layer->cc_layer_for_testing()->trilinear_filtering());
 }
 
 TEST_P(LayerWithDelegateTest, CloneDamagedRegion) {
@@ -1659,39 +1684,41 @@ TEST_P(LayerWithNullDelegateTest, UpdateDamageInDeferredPaint) {
   EXPECT_EQ(gfx::Rect(), root->damaged_region_for_testing());
   EXPECT_EQ(bound, LastInvalidation());
 
+  gfx::Rect expected_invalidation;
+
   // Deferring paint.
-  root->AddDeferredPaintRequest();
+  {
+    ScopedPaintLock paint_lock(root.get());
 
-  // During deferring paint request, invalid_rect will not be set to
-  // cc_layer_->inputs_->update_rect, and the paint_region is empty.
-  gfx::Rect bound1(gfx::Rect(100, 100));
-  root->SchedulePaint(bound1);
-  EXPECT_EQ(bound1, root->damaged_region_for_testing());
-  root->SendDamagedRects();
-  EXPECT_EQ(gfx::Rect(), root->cc_layer_for_testing()->update_rect());
-  root->PaintContentsToDisplayList();
-  EXPECT_EQ(gfx::Rect(), LastInvalidation());
+    // During deferring paint request, invalid_rect will not be set to
+    // cc_layer_->inputs_->update_rect, and the paint_region is empty.
+    gfx::Rect bound1(gfx::Rect(100, 100));
+    root->SchedulePaint(bound1);
+    expected_invalidation.Union(bound1);
+    EXPECT_EQ(expected_invalidation, root->damaged_region_for_testing());
+    root->SendDamagedRects();
+    EXPECT_EQ(gfx::Rect(), root->cc_layer_for_testing()->update_rect());
+    root->PaintContentsToDisplayList();
+    EXPECT_EQ(gfx::Rect(), LastInvalidation());
 
-  // During deferring paint request, a new invalid_rect will be accumulated.
-  gfx::Rect bound2(gfx::Rect(100, 200, 100, 100));
-  gfx::Rect bound_union(bound1);
-  bound_union.Union(bound2);
-  root->SchedulePaint(bound2);
-  EXPECT_EQ(bound_union, root->damaged_region_for_testing().bounds());
-  root->SendDamagedRects();
-  EXPECT_EQ(gfx::Rect(), root->cc_layer_for_testing()->update_rect());
-  root->PaintContentsToDisplayList();
-  EXPECT_EQ(gfx::Rect(), LastInvalidation());
-
-  // Remove deferring paint request.
-  root->RemoveDeferredPaintRequest();
+    // During deferring paint request, a new invalid_rect will be accumulated.
+    gfx::Rect bound2(gfx::Rect(100, 200, 100, 100));
+    expected_invalidation.Union(bound2);
+    root->SchedulePaint(bound2);
+    EXPECT_EQ(expected_invalidation,
+              root->damaged_region_for_testing().bounds());
+    root->SendDamagedRects();
+    EXPECT_EQ(gfx::Rect(), root->cc_layer_for_testing()->update_rect());
+    root->PaintContentsToDisplayList();
+    EXPECT_EQ(gfx::Rect(), LastInvalidation());
+  }
 
   // The invalidation region should be accumulated invalid_rect during deferred
   // paint, i.e. union of bound1 and bound2.
   root->SendDamagedRects();
-  EXPECT_EQ(bound_union, root->cc_layer_for_testing()->update_rect());
+  EXPECT_EQ(expected_invalidation, root->cc_layer_for_testing()->update_rect());
   root->PaintContentsToDisplayList();
-  EXPECT_EQ(bound_union, LastInvalidation());
+  EXPECT_EQ(expected_invalidation, LastInvalidation());
 }
 
 // Tests that Layer::SendDamagedRects() always recurses into its mask layer, if
@@ -2979,7 +3006,7 @@ TEST_P(LayerWithRealCompositorTest, SwitchCCLayerCacheRenderSurface) {
   GetCompositor()->SetRootLayer(root.get());
   root->Add(l1.get());
 
-  l1->AddCacheRenderSurfaceRequest();
+  ScopedCacheRenderSurfaceLock cache_render_surface_lock(l1.get());
 
   // Change l1's cc::Layer.
   ASSERT_TRUE(l1->SwitchCCLayerForTest());
@@ -2996,7 +3023,7 @@ TEST_P(LayerWithRealCompositorTest, SwitchCCLayerTrilinearFiltering) {
   GetCompositor()->SetRootLayer(root.get());
   root->Add(l1.get());
 
-  l1->AddTrilinearFilteringRequest();
+  ScopedTrilinearFilteringLock trilinear_lock(l1.get());
 
   // Change l1's cc::Layer.
   ASSERT_TRUE(l1->SwitchCCLayerForTest());

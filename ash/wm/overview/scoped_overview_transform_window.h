@@ -18,6 +18,7 @@
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/scoped_layer_request.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -162,7 +163,6 @@ class ASH_EXPORT ScopedOverviewTransformWindow
  private:
   friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(OverviewSessionTest, CloseAnimationShadow);
-  class LayerCachingAndFilteringObserver;
 
   // Closes the window managed by |this|.
   void CloseWidget();
@@ -195,11 +195,13 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // Specifies how the window is laid out in the grid.
   OverviewItemFillMode fill_mode_ = OverviewItemFillMode::kNormal;
 
-  // The observers associated with the layers we requested caching render
-  // surface and trilinear filtering. The requests will be removed in dtor if
-  // the layer has not been destroyed.
-  std::vector<std::unique_ptr<LayerCachingAndFilteringObserver>>
-      cached_and_filtered_layer_observers_;
+  // The locks associated with the layers we requested caching render surface
+  // and trilinear filtering. The requests will be removed in dtor if the layer
+  // has not been destroyed.
+  std::vector<std::unique_ptr<ui::ScopedCacheRenderSurfaceLock>>
+      cache_render_surface_locks_;
+  std::vector<std::unique_ptr<ui::ScopedTrilinearFilteringLock>>
+      trilinear_filtering_locks_;
 
   // For the duration of this object |window_| and its transient childrens'
   // event targeting policy will be sent to NONE. In addition, bubble should not

@@ -45,6 +45,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_observer.h"
+#include "ui/compositor/scoped_layer_request.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -113,38 +114,6 @@ class UndoPropertyObserver : public ui::ImplicitAnimationObserver,
 };
 
 }  // namespace
-
-class ScopedOverviewTransformWindow::LayerCachingAndFilteringObserver
-    : public ui::LayerObserver {
- public:
-  explicit LayerCachingAndFilteringObserver(ui::Layer* layer) : layer_(layer) {
-    layer_->AddObserver(this);
-    layer_->AddCacheRenderSurfaceRequest();
-    layer_->AddTrilinearFilteringRequest();
-  }
-
-  LayerCachingAndFilteringObserver(const LayerCachingAndFilteringObserver&) =
-      delete;
-  LayerCachingAndFilteringObserver& operator=(
-      const LayerCachingAndFilteringObserver&) = delete;
-
-  ~LayerCachingAndFilteringObserver() override {
-    if (layer_) {
-      layer_->RemoveTrilinearFilteringRequest();
-      layer_->RemoveCacheRenderSurfaceRequest();
-      layer_->RemoveObserver(this);
-    }
-  }
-
-  // ui::LayerObserver overrides:
-  void LayerDestroyed(ui::Layer* layer) override {
-    layer_->RemoveObserver(this);
-    layer_ = nullptr;
-  }
-
- private:
-  raw_ptr<ui::Layer> layer_;
-};
 
 ScopedOverviewTransformWindow::TransientInfo::TransientInfo(
     aura::Window* transient)
@@ -524,8 +493,10 @@ void ScopedOverviewTransformWindow::PrepareForOverview() {
   if (features::IsTrilinearFilteringEnabled()) {
     for (auto* window :
          window_util::GetVisibleTransientTreeIterator(GetOverviewWindow())) {
-      cached_and_filtered_layer_observers_.push_back(
-          std::make_unique<LayerCachingAndFilteringObserver>(window->layer()));
+      cache_render_surface_locks_.push_back(
+          std::make_unique<ui::ScopedCacheRenderSurfaceLock>(window->layer()));
+      trilinear_filtering_locks_.push_back(
+          std::make_unique<ui::ScopedTrilinearFilteringLock>(window->layer()));
     }
   }
 }
