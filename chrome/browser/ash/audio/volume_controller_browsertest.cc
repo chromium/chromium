@@ -35,7 +35,8 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
 
   bool Initialize(SoundKey key,
                   std::string_view /* data */,
-                  media::AudioCodec codec) override {
+                  media::AudioCodec codec,
+                  bool /* loop */) override {
     is_sound_initialized_[key] = true;
     return true;
   }
