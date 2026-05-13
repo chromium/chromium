@@ -613,6 +613,21 @@ bool HttpStreamPool::JobController::MaybeStartAlternativeJob() {
     return false;
   }
 
+  CHECK(alternative_->stream_key.alt_service().has_value());
+  if (!IsPortAllowedForScheme(
+          alternative_->stream_key.alt_service()->port,
+          alternative_->stream_key.destination().scheme())) {
+    net_log_.AddEvent(
+        NetLogEventType::
+            HTTP_STREAM_POOL_JOB_CONTROLLER_SKIPPED_ALTSVC_RESTRICTED_PORT,
+        [&] {
+          base::DictValue dict;
+          dict.Set("port", alternative_->stream_key.alt_service()->port);
+          return dict;
+        });
+    return false;
+  }
+
   Group& alternative_group = pool_->GetOrCreateGroup(alternative_->stream_key);
 
   // We never put streams that are negotiated to use HTTP/2 as idle streams.

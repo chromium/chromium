@@ -1613,6 +1613,14 @@ EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE)
 
+// Emitted when an HttpStreamPool::JobController skips an alternative service
+// because its port is not allowed for the scheme.
+// The event parameters are:
+//   {
+//      "port": <The port of the alternative service>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_SKIPPED_ALTSVC_RESTRICTED_PORT)
+
 // Emitted when an HttpStreamPool::JobController found an existing SPDY session.
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_SPDY_SESSION)
 

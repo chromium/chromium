@@ -562,6 +562,8 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
     return quic::ParsedQuicVersion::RFCv1();
   }
 
+  RecordingNetLogObserver& net_log_observer() { return net_log_observer_; }
+
   base::WeakPtr<SpdySession> CreateFakeSpdySession(
       const HttpStreamKey& stream_key,
       IPEndPoint peer_addr = IPEndPoint(IPAddress(192, 0, 2, 1), 443)) {
@@ -6844,6 +6846,48 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcH2OkOriginFail) {
   requester.ResetRequest();
   EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
       alternative_service, NetworkAnonymizationKey()));
+}
+
+// Tests that if an alternative service destination uses a restricted port,
+// connection attempt to the alternative service is skipped and the request
+// falls back to the origin connection.
+// Regression test for crbug.com/501851312
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcH2UnsafePort) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 10080);
+
+  const AlternativeService alternative_service(NextProto::kProtoHTTP2,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+          alternative_service, expiration));
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For the origin. The connection is refused.
+  StaticSocketDataProvider origin_data;
+  origin_data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+  socket_factory()->AddSocketDataProvider(&origin_data);
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+
+  // The alternative job is not started because of the unsafe port,
+  // and the origin job fails with ERR_CONNECTION_REFUSED.
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_CONNECTION_REFUSED)));
+
+  auto entries = net_log_observer().GetEntriesWithType(
+      NetLogEventType::
+          HTTP_STREAM_POOL_JOB_CONTROLLER_SKIPPED_ALTSVC_RESTRICTED_PORT);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_THAT(entries[0].params.FindInt("port"), Optional(10080));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcFailOriginOk) {
