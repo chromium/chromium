@@ -117,6 +117,11 @@
   border-radius: var(--expanded-border-radius);
 }
 
+:host([energy-effect-animation-enabled]) {
+  /* Energy Effect Motion Curves */
+  --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
+}
+
 #errorScrim {
   border-radius: inherit;
 }
@@ -178,6 +183,21 @@ search-animated-glow {
 :host([is-collapsible][expanding_]) #composebox {
   min-height: 136px;
   max-height: 254px;
+}
+
+:host([energy-effect-animation-enabled_][animation-state='expanding']) #composebox {
+  will-change: opacity;
+  animation: zero-state-composebox-fade-in 50ms
+      var(--emphasized-accelerate-curve) both;
+}
+
+@keyframes zero-state-composebox-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 :host([is-collapsible][expanding_][show-file-carousel][carousel-on-top_]) #composebox {
