@@ -342,6 +342,27 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void beginEndInput_propagatesSessionStateToProcessors() {
+        // beginInput must notify processors that the session is active so per-session
+        // state (e.g. cached suggestion images) can be set up.
+        mMediator.beginInput(createEmptySession());
+        verify(mMockProcessor, atLeastOnce()).onOmniboxSessionStateChange(true);
+        verify(mMockHeaderProcessor, atLeastOnce()).onOmniboxSessionStateChange(true);
+
+        clearInvocations(mMockProcessor, mMockHeaderProcessor);
+
+        // endInput must notify processors that the session has ended so per-session
+        // state can be released. Regression test: this used to be propagated as `true`,
+        // preventing DropdownItemViewInfoListBuilder from clearing its image cache.
+        mMediator.endInput();
+        verify(mMockProcessor, atLeastOnce()).onOmniboxSessionStateChange(false);
+        verify(mMockHeaderProcessor, atLeastOnce()).onOmniboxSessionStateChange(false);
+        verify(mMockProcessor, never()).onOmniboxSessionStateChange(true);
+        verify(mMockHeaderProcessor, never()).onOmniboxSessionStateChange(true);
+    }
+
+    @Test
+    @SmallTest
     public void endInput_clearsSiteSearchChip() {
         var session = createEmptySession();
         mMediator.beginInput(session);

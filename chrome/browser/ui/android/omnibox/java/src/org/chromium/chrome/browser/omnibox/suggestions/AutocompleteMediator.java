@@ -556,13 +556,9 @@ class AutocompleteMediator
 
         propagateOmniboxSessionStateChange(false);
 
-        // Propagate the information about omnibox session state change to all the processors first.
-        // Processors need this for accounting purposes.
-        // The change information should be passed before Processors receive first
-        // batch of suggestions, that is:
-        // - before any call to startZeroSuggest() (when first suggestions are populated), and
-        // - before stopAutocomplete() (when current suggestions are erased).
-        mDropdownViewInfoListBuilder.onOmniboxSessionStateChange(true);
+        // Notify processors that the omnibox session has ended so they can release
+        // per-session state (e.g. cached suggestion images in the image supplier).
+        mDropdownViewInfoListBuilder.onOmniboxSessionStateChange(false);
 
         mFuseboxCoordinator.notifyOmniboxSessionEnded(mOmniboxFocusResultedInNavigation);
         mDeferredIMEWindowInsetApplicationCallback.detach();
