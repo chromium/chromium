@@ -4,7 +4,10 @@
 
 #include "chromeos/ash/components/geolocation/geoposition.h"
 
+#include <array>
+
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 
 namespace {
@@ -31,16 +34,24 @@ bool Geoposition::Valid() const {
 }
 
 std::string Geoposition::ToString() const {
-  static const char* const status2string[] = {"NONE", "OK", "SERVER_ERROR",
-                                              "NETWORK_ERROR", "TIMEOUT"};
+  static constexpr auto kStatusStrings = std::to_array<const char*>(
+      {"NONE", "OK", "SERVER_ERROR", "NETWORK_ERROR", "TIMEOUT"});
+
+  // Construct a span from the fixed-size array.
+  base::span<const char* const> status_span(kStatusStrings);
+
+  const char* status_str = "unknown";
+  // Ensure the enum value is within the valid range of the span.
+  if (status >= 0 && static_cast<size_t>(status) < status_span.size()) {
+    // SAFETY: The if-condition guarantees that the index is within bounds.
+    status_str = status_span[status];
+  }
 
   return base::StringPrintf(
       "latitude=%f, longitude=%f, accuracy=%f, error_code=%u, "
       "error_message='%s', status=%u (%s)",
       latitude, longitude, accuracy, error_code, error_message.c_str(),
-      (unsigned)status,
-      (status < std::size(status2string) ? UNSAFE_TODO(status2string[status])
-                                         : "unknown"));
+      static_cast<unsigned>(status), status_str);
 }
 
 }  // namespace ash
