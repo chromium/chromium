@@ -3142,8 +3142,6 @@ crbug.com/469481567 external/wpt/css/css-text-decor/text-decoration-thickness-le
 crbug.com/469467862 [ Win ] external/wpt/css/motion/animation/offset-path-interpolation-002.html [ Pass Timeout ]
 crbug.com/469460898 external/wpt/editing/run/delete.html?7001-last [ Crash Failure Timeout ]
 crbug.com/469467863 [ Win ] external/wpt/resource-timing/idlharness.any.html [ Pass Timeout ]
-crbug.com/469481625 external/wpt/webrtc/RTCPeerConnection-remote-track-properties.https.html?rest [ Failure ]
-crbug.com/469481625 external/wpt/webrtc/RTCPeerConnection-remote-track-properties.https.html?interop-2026 [ Failure ]
 crbug.com/467728926 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_timezone_override/contexts.py [ Failure ]
 crbug.com/467435140 [ Win ] external/wpt/html/browsers/origin/api/origin-from-messageevent.window.html [ Crash Pass ]
 crbug.com/467185802 external/wpt/css/css-anchor-position/grid-position-area-basic.html [ Failure ]

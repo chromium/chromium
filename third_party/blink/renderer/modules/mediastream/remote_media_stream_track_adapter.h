@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -25,6 +26,12 @@ class SingleThreadTaskRunner;
 }
 
 namespace blink {
+
+// Killswitch for setting the remote MediaStreamTrack label to "remote <kind>"
+// per https://w3c.github.io/webrtc-pc/#rtcrtpreceiver-interface. When disabled,
+// the label falls back to the track id.
+// TODO(crbug.com/40684245): Remove after the new behavior has rolled out.
+MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcRemoteTrackLabel);
 
 class TrackObserver;
 
@@ -88,8 +95,13 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
     DCHECK(main_thread_->BelongsToCurrentThread());
     DCHECK(!component_);
 
+    String label = id_;
+    if (base::FeatureList::IsEnabled(kWebRtcRemoteTrackLabel)) {
+      label = (type == MediaStreamSource::kTypeAudio) ? String("remote audio")
+                                                      : String("remote video");
+    }
     auto* source = MakeGarbageCollected<MediaStreamSource>(
-        id_, type, id_, true /*remote*/, std::move(platform_source));
+        id_, type, label, /*remote=*/true, std::move(platform_source));
     component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         id_, source, std::move(platform_track));
     // If we have a reference to a window frame where the track was created,

@@ -20,6 +20,8 @@
 
 namespace blink {
 
+BASE_FEATURE(kWebRtcRemoteTrackLabel, base::FEATURE_ENABLED_BY_DEFAULT);
+
 RemoteVideoTrackAdapter::RemoteVideoTrackAdapter(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
     webrtc::VideoTrackInterface* webrtc_track,
