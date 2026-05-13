@@ -276,3 +276,9 @@ printf("elapsedTime = %f\n", end - start);
 **will not** give you meaningful results.
 
 [Trace Event Profiling]: https://sites.google.com/a/chromium.org/dev/developers/how-tos/trace-event-profiling-tool
+
+When diagnosing a specific regressed benchmark, the `tools/perf/run_benchmark`
+script can be configured to collect profile data for the gpu process that then
+can be visualized/analyzed with pprof.
+See [Catapult's docs](https://source.chromium.org/chromium/chromium/src/+/main:third_party/catapult/telemetry/docs/cpu_profiling.md)
+for more.
