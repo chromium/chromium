@@ -109,7 +109,7 @@ void LogChangePasswordURLTypeUsed(
 }  // namespace
 
 BASE_FEATURE(kCachePSLExtensions, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kFetchChangePasswordPatterns, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFetchChangePasswordPatterns, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kGetChangePasswordURLMetricName[] =
     "PasswordManager.AffiliationService.GetChangePasswordUsage";
