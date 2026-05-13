@@ -37,12 +37,13 @@ bool CompositorMutatorClient::Mutate(
 void CompositorMutatorClient::SetMutationUpdate(
     std::unique_ptr<cc::MutatorOutputState> output_state) {
   TRACE_EVENT0("cc", "CompositorMutatorClient::SetMutationUpdate");
-  client_->SetMutationUpdate(std::move(output_state));
+  delegate_->SetMutationUpdate(std::move(output_state));
 }
 
-void CompositorMutatorClient::SetClient(cc::LayerTreeMutatorClient* client) {
-  TRACE_EVENT0("cc", "CompositorMutatorClient::SetClient");
-  client_ = client;
+void CompositorMutatorClient::SetDelegate(
+    cc::LayerTreeMutatorDelegate* delegate) {
+  TRACE_EVENT0("cc", "CompositorMutatorClient::SetDelegate");
+  delegate_ = delegate;
 }
 
 bool CompositorMutatorClient::HasMutators() {

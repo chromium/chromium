@@ -980,7 +980,7 @@ AnimationHost::element_animations_for_testing() const {
 void AnimationHost::SetLayerTreeMutator(
     std::unique_ptr<LayerTreeMutator> mutator) {
   mutator_.Write(*this) = std::move(mutator);
-  mutator_.Write(*this)->SetClient(this);
+  mutator_.Write(*this)->SetDelegate(this);
 }
 
 WorkletAnimation* AnimationHost::FindWorkletAnimation(WorkletAnimationId id) {

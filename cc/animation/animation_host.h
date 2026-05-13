@@ -45,7 +45,7 @@ enum class ThreadInstance { kMain, kImpl };
 // An AnimationHost talks to its correspondent LayerTreeHost via
 // MutatorHostDelegate interface.
 class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
-                                          public LayerTreeMutatorClient,
+                                          public LayerTreeMutatorDelegate,
                                           public ProtectedSequenceSynchronizer {
  public:
   using ElementToAnimationsMap =
@@ -229,7 +229,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   const AnimationsList& ticking_animations_for_testing() const;
   const ElementToAnimationsMap& element_animations_for_testing() const;
 
-  // LayerTreeMutatorClient.
+  // LayerTreeMutatorDelegate.
   void SetMutationUpdate(
       std::unique_ptr<MutatorOutputState> output_state) override;
 

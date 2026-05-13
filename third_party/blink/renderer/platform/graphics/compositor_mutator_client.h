@@ -26,7 +26,7 @@ class PLATFORM_EXPORT CompositorMutatorClient : public cc::LayerTreeMutator,
   void SetMutationUpdate(std::unique_ptr<cc::MutatorOutputState>) override;
 
   // cc::LayerTreeMutator
-  void SetClient(cc::LayerTreeMutatorClient*) override;
+  void SetDelegate(cc::LayerTreeMutatorDelegate*) override;
   bool Mutate(std::unique_ptr<cc::MutatorInputState>,
               MutateQueuingStrategy,
               DoneCallback) override;
@@ -34,7 +34,7 @@ class PLATFORM_EXPORT CompositorMutatorClient : public cc::LayerTreeMutator,
 
  private:
   std::unique_ptr<AnimationWorkletMutatorDispatcherImpl> mutator_;
-  raw_ptr<cc::LayerTreeMutatorClient> client_;
+  raw_ptr<cc::LayerTreeMutatorDelegate> delegate_;
 };
 
 }  // namespace blink

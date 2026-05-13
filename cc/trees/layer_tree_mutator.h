@@ -155,11 +155,11 @@ struct CC_EXPORT AnimationWorkletOutput {
   std::vector<AnimationState> animations;
 };
 
-// LayerTreeMutatorClient processes worklet outputs individually so we can
+// LayerTreeMutatorDelegate processes worklet outputs individually so we can
 // define mutator output to be the same as animation worklet output.
 using MutatorOutputState = AnimationWorkletOutput;
 
-class LayerTreeMutatorClient {
+class LayerTreeMutatorDelegate {
  public:
   // Called when mutator needs to update its output.
   //
@@ -172,7 +172,7 @@ class CC_EXPORT LayerTreeMutator {
  public:
   virtual ~LayerTreeMutator() {}
 
-  virtual void SetClient(LayerTreeMutatorClient* client) = 0;
+  virtual void SetDelegate(LayerTreeMutatorDelegate* delegate) = 0;
 
   using DoneCallback = base::OnceCallback<void(MutateStatus)>;
 
