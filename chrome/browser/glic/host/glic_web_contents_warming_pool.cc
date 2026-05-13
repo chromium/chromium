@@ -98,15 +98,14 @@ GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() = default;
 
 std::unique_ptr<WebUIContentsContainer>
 GlicWebContentsWarmingPool::TakeContainer() {
-  if (warmed_container_) {
-    expiry_timer_.Stop();
-  }
   metrics_->RecordTakeContainerStatus(warmed_container_);
   reload_count_ = 0;
 
   EnsurePreload();
   std::unique_ptr<WebUIContentsContainer> result = std::move(warmed_container_);
   warmed_container_ = nullptr;
+  expiry_timer_.Stop();
+
   EnsurePreloadDelayed();
   return result;
 }
