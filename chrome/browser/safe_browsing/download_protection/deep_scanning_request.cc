@@ -878,6 +878,11 @@ void DeepScanningRequest::OnDownloadDestroyed(
   // scan has finished.
   callback_.Reset();
 
+  // Store a weak pointer to `this` before executing cancellation. If the cancel
+  // request processes synchronously, it might execute request callbacks that
+  // synchronously trigger `CallbackAndCleanup()` and destroy this instance.
+  base::WeakPtr<DeepScanningRequest> weak_this = weak_ptr_factory_.GetWeakPtr();
+
   Profile* profile =
       Profile::FromBrowserContext(metadata_->GetBrowserContext());
   enterprise_connectors::BinaryUploadService* upload_service =
@@ -890,13 +895,18 @@ void DeepScanningRequest::OnDownloadDestroyed(
     cancel->set_user_action_id(user_action_id_);
 
     // We do the best effort to cancel the requests in upload service.
+    // 'This' may be destroyed in the call below.
     upload_service->MaybeCancelRequests(std::move(cancel));
   }
 
-  // `FinishRequest` always clears the `download_observation` and `metadata`,
-  // preventing use-after-free issues for `download_item` after it's been
-  // destroyed.
-  FinishRequest(DownloadCheckResult::UNKNOWN);
+  // Only proceed to finish the request and clean up if this instance has not
+  // been synchronously destroyed during the cancel call above.
+  if (weak_this) {
+    // `FinishRequest` always clears the `download_observation` and `metadata`,
+    // preventing use-after-free issues for `download_item` after it's been
+    // destroyed.
+    FinishRequest(DownloadCheckResult::UNKNOWN);
+  }
 }
 
 const enterprise_connectors::AnalysisSettings& DeepScanningRequest::settings()

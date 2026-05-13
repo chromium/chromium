@@ -492,6 +492,9 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
   enterprise_connectors::BinaryUploadService* GetBinaryUploadService(
       Profile* profile,
       const enterprise_connectors::AnalysisSettings&) override {
+    if (binary_upload_service_override_) {
+      return binary_upload_service_override_;
+    }
     return &binary_upload_service_;
   }
 
@@ -499,8 +502,15 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
     return &binary_upload_service_;
   }
 
+  void set_binary_upload_service(
+      enterprise_connectors::BinaryUploadService* service) {
+    binary_upload_service_override_ = service;
+  }
+
  private:
   FakeBinaryUploadService binary_upload_service_;
+  raw_ptr<enterprise_connectors::BinaryUploadService>
+      binary_upload_service_override_ = nullptr;
 };
 
 class DeepScanningRequestTest : public testing::Test {
@@ -960,6 +970,76 @@ TEST_P(DeepScanningRequestAllFeaturesEnabledTest,
 }
 
 class DeepScanningAPPRequestTest : public DeepScanningRequestTest {};
+
+class TestCancellationFakeBinaryUploadService : public FakeBinaryUploadService {
+ public:
+  void set_synchronous_cancel(bool sync) { synchronous_cancel_ = sync; }
+
+  void MaybeUploadForDeepScanning(
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request)
+      override {
+    pending_request_ = std::move(request);
+  }
+
+  void MaybeCancelRequests(
+      std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel)
+      override {
+    FakeBinaryUploadService::MaybeCancelRequests(std::move(cancel));
+    if (pending_request_ && synchronous_cancel_) {
+      pending_request_->FinishRequest(
+          enterprise_connectors::ScanRequestUploadResult::kUserCancelled,
+          enterprise_connectors::ContentAnalysisResponse());
+      pending_request_.reset();
+    }
+  }
+
+ private:
+  std::unique_ptr<enterprise_connectors::BinaryUploadRequest> pending_request_;
+  bool synchronous_cancel_ = false;
+};
+
+class TouchObserver : public DeepScanningRequest::Observer {
+ public:
+  void OnFinish(DeepScanningRequest* request) override { ++on_finish_called_; }
+
+  int on_finish_called() const { return on_finish_called_; }
+
+ private:
+  int on_finish_called_ = 0;
+};
+
+TEST_F(DeepScanningAPPRequestTest, FinishRequestCalledOnceWithCancellation) {
+  for (bool synchronous_cancel : {true, false}) {
+    TestCancellationFakeBinaryUploadService cancel_upload_service;
+    cancel_upload_service.set_synchronous_cancel(synchronous_cancel);
+    download_protection_service_.set_binary_upload_service(
+        &cancel_upload_service);
+
+    enterprise_connectors::AnalysisSettings settings;
+    settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
+
+    std::unique_ptr<DeepScanningRequest> request =
+        std::make_unique<DeepScanningRequest>(
+            CreateMetadata(),
+            DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
+            DownloadCheckResult::SAFE, base::DoNothing(),
+            &download_protection_service_, std::move(settings),
+            /*password=*/std::nullopt);
+
+    TouchObserver touch_observer;
+    request->AddObserver(&touch_observer);
+
+    request->Start();
+    request->OnDownloadDestroyed(&item_);
+
+    // Regardless of whether the cancellation executes synchronously or
+    // asynchronously, the WeakPtr guard inside OnDownloadDestroyed ensures
+    // FinishRequest (and thus OnFinish) is called exactly once to clear state.
+    EXPECT_EQ(touch_observer.on_finish_called(), 1);
+
+    download_protection_service_.set_binary_upload_service(nullptr);
+  }
+}
 
 TEST_F(DeepScanningAPPRequestTest, CancelsUploadOnDownloadDestroyed) {
   enterprise_connectors::AnalysisSettings settings;
