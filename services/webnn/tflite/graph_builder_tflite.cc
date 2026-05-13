@@ -82,6 +82,19 @@ base::CheckedNumeric<int32_t> RoundUp(base::CheckedNumeric<int32_t> value,
   return (value + block_size - 1) / block_size * block_size;
 }
 
+// Returns true if XNNPACK will use the subconv2d path for deconvolution.
+// See is_subconv2d() in
+// third_party/xnnpack/src/src/operators/deconvolution-nhwc.c.
+// For convTranspose2d in WebNN, dilations are always 1 and
+// XNN_FLAG_INLINE_LHS_PACKING is not set, so those conditions from
+// the original check are always satisfied.
+bool IsXnnpackSubconv2d(const mojom::Size2d& strides,
+                        const webnn::Size2d<uint32_t>& filter_size) {
+  return std::max(strides.height, strides.width) > 1 &&
+         strides.width <= filter_size.width &&
+         strides.height <= filter_size.height;
+}
+
 // The name of the external buffer group for weights. This is used by the LiteRT
 // runtime to identify which external buffers contain weights data.
 constexpr base::cstring_view kWeightsGroupName = "webnn_weights";
@@ -4282,6 +4295,19 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
   const webnn::Size2d<uint32_t> filter_size2d = {.height = filter_shape[1],
                                                  .width = filter_shape[2]};
 
+  // Conservative upper bounds for runtime-determined XNNPACK config
+  // parameters, used to validate buffer sizes at graph build time.
+  constexpr int32_t kMaxMr = 16;
+  constexpr int32_t kMaxNr = 128;
+  constexpr int32_t kMaxKrSr = 8;
+  constexpr int32_t kMaxPrimaryTile = 25;
+  constexpr int32_t kMaxChannelTile = 32;
+  constexpr int32_t kMaxFilterElementSize = 4;  // sizeof(float32)
+  // bias_element_size (max 4) + extra_weights_bytes (max 8).
+  constexpr int32_t kMaxBiasAndExtraBytes = 12;
+  // XNN_ALLOCATION_ALIGNMENT is platform-dependent (max 128 on Hexagon).
+  constexpr int32_t kMaxAllocationAlignment = 128;
+
   if (conv2d.kind == mojom::Conv2d::Kind::kDirect) {
     // Calculate the im2col temp tensor size [batch_size * output_height *
     // output_width * input_channels * filter_height * filter_width].
@@ -4301,11 +4327,6 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     // Check indirection buffer size for the XNNPack kernel. The formula
     // depends on whether XNNPack uses the dwconv path or the igemm path.
     // See third_party/xnnpack/src/src/operators/convolution-nhwc.c.
-    //
-    // `mr` is a runtime GEMM tile size chosen by XNNPack based on hardware;
-    // use a conservative upper bound since the exact value is unknown at
-    // graph build time.
-    constexpr int32_t kMaxMr = 16;
     auto checked_kernel_size =
         base::CheckedNumeric<int32_t>(filter_size2d.height);
     checked_kernel_size *= base::CheckedNumeric<int32_t>(filter_size2d.width);
@@ -4319,14 +4340,9 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
       //     output_height * (kernel_size + (output_width - 1) * step_width *
       //     kernel_height))
       //
-      // Use a conservative upper bound for primary_tile value (max 25 across
-      // all architectures). See
-      // third_party/xnnpack/src/src/configs/dwconv-config.c
-      //
       // Use kernel_width as a conservative upper bound for step_width
       // (step_width = min(stride_width, kernel_width) when dilation == 1,
       // or kernel_width otherwise).
-      constexpr int32_t kMaxPrimaryTile = 25;
       checked_output_width -= 1;
       checked_output_width *=
           base::CheckedNumeric<int32_t>(filter_size2d.width);
@@ -4350,6 +4366,55 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
       return base::unexpected(
           "Conv2d doesn't support configurations that require an internal "
           "computation buffer exceeding the maximum size.");
+    }
+
+    // Check XNNPACK packed weights buffer size to prevent overflow.
+    // See third_party/xnnpack/src/src/operators/convolution-nhwc.c.
+    if (webnn::IsDepthwiseConv2d(input_channels, output_channels,
+                                 conv2d.groups)) {
+      // dwconv path: aligned_total_weights_size = round_up_po2(
+      //   (primary_tile * filter_element_size + bias_element_size +
+      //   extra_weights_bytes) * c_stride, XNN_ALLOCATION_ALIGNMENT)
+      // where c_stride = round_up_po2(groups, channel_tile).
+      auto checked_packed_weights =
+          base::CheckedNumeric<int32_t>(kMaxPrimaryTile);
+      checked_packed_weights *= kMaxFilterElementSize;
+      checked_packed_weights += kMaxBiasAndExtraBytes;
+      checked_packed_weights *= RoundUp(
+          base::CheckedNumeric<int32_t>(conv2d.groups), kMaxChannelTile);
+      checked_packed_weights =
+          RoundUp(checked_packed_weights, kMaxAllocationAlignment);
+      if (!checked_packed_weights.IsValid()) {
+        return base::unexpected(
+            "Conv2d doesn't support configurations that require "
+            "packed weights exceeding the maximum size.");
+      }
+    } else {
+      // igemm path: aligned_total_weights_size = round_up_po2(
+      //   ((kernel_size * k_stride * filter_element_size) + bias_element_size +
+      //   extra_weights_bytes) * n_stride * groups, XNN_ALLOCATION_ALIGNMENT)
+      // where k_stride = round_up_po2(group_input_channels, kr * sr),
+      //       n_stride = round_up(group_output_channels, nr).
+      auto checked_group_input_channels =
+          base::CheckedNumeric<int32_t>(input_channels) /
+          base::CheckedNumeric<int32_t>(conv2d.groups);
+      auto checked_group_output_channels =
+          base::CheckedNumeric<int32_t>(output_channels) /
+          base::CheckedNumeric<int32_t>(conv2d.groups);
+      auto checked_k_stride = RoundUp(checked_group_input_channels, kMaxKrSr);
+      auto checked_n_stride = RoundUp(checked_group_output_channels, kMaxNr);
+      auto checked_packed_weights = checked_kernel_size * checked_k_stride;
+      checked_packed_weights *= kMaxFilterElementSize;
+      checked_packed_weights += kMaxBiasAndExtraBytes;
+      checked_packed_weights *= checked_n_stride;
+      checked_packed_weights *= base::CheckedNumeric<int32_t>(conv2d.groups);
+      checked_packed_weights =
+          RoundUp(checked_packed_weights, kMaxAllocationAlignment);
+      if (!checked_packed_weights.IsValid()) {
+        return base::unexpected(
+            "Conv2d doesn't support configurations that require "
+            "packed weights exceeding the maximum size.");
+      }
     }
   }
 
@@ -4402,19 +4467,12 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     // Check indirection buffer size for the XNNPack kernel. The formula
     // depends on whether XNNPack uses the subconv2d path or the igemm path.
     // See third_party/xnnpack/src/src/operators/deconvolution-nhwc.c.
-    //
-    // `mr` is a runtime GEMM tile size chosen by XNNPack based on hardware;
-    // use a conservative upper bound since the exact value is unknown at
-    // graph build time.
-    constexpr int32_t kMaxMr = 16;
     auto checked_kernel_size =
         base::CheckedNumeric<int32_t>(filter_size2d.height);
     checked_kernel_size *= base::CheckedNumeric<int32_t>(filter_size2d.width);
     auto checked_indirection_buffer_size =
         base::CheckedNumeric<int32_t>(sizeof(void*));
-    if (std::max(conv2d.strides->height, conv2d.strides->width) > 1 &&
-        conv2d.strides->width <= filter_size2d.width &&
-        conv2d.strides->height <= filter_size2d.height) {
+    if (IsXnnpackSubconv2d(*conv2d.strides, filter_size2d)) {
       // subconv2d path: sizeof(void*) * kernel_size * output_height *
       //     stride_width * round_up(ceil(output_width / stride_width), mr)
       auto checked_stride_width =
@@ -4440,6 +4498,50 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
       return base::unexpected(
           "convTranspose2d doesn't support configurations that require an "
           "internal computation buffer exceeding the maximum size.");
+    }
+
+    // Check XNNPACK packed weights buffer size to prevent overflow. The formula
+    // depends on whether XNNPack uses the subconv2d path or the igemm path:
+    // aligned_total_weights_size = round_up_po2(packed_group_weights_size *
+    //   groups, XNN_ALLOCATION_ALIGNMENT)
+    // subconv2d: packed_group_weights_size =
+    //   (kernel_size * k_stride * filter_element_size + (bias_element_size +
+    //   extra_weights_bytes) * subkernels) * n_stride
+    // igemm: packed_group_weights_size =
+    //   (kernel_size * k_stride * filter_element_size + bias_element_size +
+    //   extra_weights_bytes) * n_stride
+    // where k_stride = round_up_po2(group_input_channels, kr * sr),
+    //       n_stride = round_up(group_output_channels, nr).
+    // See third_party/xnnpack/src/src/operators/deconvolution-nhwc.c.
+    auto checked_group_output_channels =
+        base::CheckedNumeric<int32_t>(output_channels) /
+        base::CheckedNumeric<int32_t>(conv2d.groups);
+    auto checked_group_input_channels =
+        base::CheckedNumeric<int32_t>(input_channels) /
+        base::CheckedNumeric<int32_t>(conv2d.groups);
+    auto checked_n_stride = RoundUp(checked_group_output_channels, kMaxNr);
+    auto checked_k_stride = RoundUp(checked_group_input_channels, kMaxKrSr);
+    auto checked_packed_weights = checked_kernel_size * checked_k_stride;
+    checked_packed_weights *= kMaxFilterElementSize;
+    if (IsXnnpackSubconv2d(*conv2d.strides, filter_size2d)) {
+      auto checked_subkernels =
+          base::CheckedNumeric<int32_t>(conv2d.strides->height);
+      checked_subkernels *=
+          base::CheckedNumeric<int32_t>(conv2d.strides->width);
+      checked_subkernels *= kMaxBiasAndExtraBytes;
+      checked_packed_weights += checked_subkernels;
+    } else {
+      checked_packed_weights += kMaxBiasAndExtraBytes;
+    }
+
+    checked_packed_weights *= checked_n_stride;
+    checked_packed_weights *= base::CheckedNumeric<int32_t>(conv2d.groups);
+    checked_packed_weights =
+        RoundUp(checked_packed_weights, kMaxAllocationAlignment);
+    if (!checked_packed_weights.IsValid()) {
+      return base::unexpected(
+          "convTranspose2d doesn't support configurations that require "
+          "packed weights exceeding the maximum size.");
     }
   }
 
