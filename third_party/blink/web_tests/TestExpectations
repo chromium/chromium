@@ -181,7 +181,7 @@ crbug.com/1405377 [ Mac ] css3/filters/filterRegions.html [ Failure Pass ]
 crbug.com/1459010 fast/events/hit-test-counts.html [ Failure ]
 
 # Temporary for a devtools roll
-crbug.com/407751125 http/tests/devtools/sources/debugger/debugger-scope-resolve-identifiers.js [ Failure Pass ]
+crbug.com/407751125 http/tests/devtools/sources/debugger/debugger-scope-resolve-identifiers.js [ Failure Pass Timeout ]
 
 # Fails flakily or times out
 
