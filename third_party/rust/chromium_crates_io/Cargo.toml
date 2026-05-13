@@ -67,6 +67,7 @@ uds = "0.4.2" # TODO(crbug.com/496920769): Remove once libafl is added as a depe
 wait-timeout = "0.2.1" # TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 wide = "0.7.33" # TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 xml = "1.3.0"
+xxhash-rust = "0.8.15" # TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 
 [dependencies.bytemuck]
 version = "1"

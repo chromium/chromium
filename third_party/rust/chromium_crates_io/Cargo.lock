@@ -290,6 +290,7 @@ dependencies = [
  "wait-timeout",
  "wide",
  "xml",
+ "xxhash-rust",
  "zip",
 ]
 
@@ -2248,6 +2249,11 @@ dependencies = [
 [[package]]
 name = "xml"
 version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "xxhash-rust"
+version = "0.8.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
