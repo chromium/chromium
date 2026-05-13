@@ -298,7 +298,7 @@ public class TabGridDialogView extends FrameLayout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mCurrentDialogAnimator = null;
-                        if (mBackButton != null) {
+                        if (mBackButton != null && !mBackButton.isInTouchMode()) {
                             mBackButton.requestFocus();
                         }
                         mDialogContainerView.sendAccessibilityEvent(

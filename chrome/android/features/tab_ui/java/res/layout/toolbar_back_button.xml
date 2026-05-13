@@ -9,9 +9,9 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/toolbar_back_button"
+    android:layout_height="@dimen/min_touch_target_size"
     android:focusable="true"
-    android:focusableInTouchMode="true"
-    style="@style/BottomToolbarButton"
+    style="@style/ToolbarHoverableButton"
     android:src="@drawable/ic_arrow_back_24dp"
     app:tint="@color/default_icon_color_tint_list"
     android:contentDescription="@string/accessibility_bottom_tab_grid_close_tab_sheet" />

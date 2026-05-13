@@ -402,7 +402,7 @@ public class TabGridDialogViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
-                    assertTrue(mTabGridDialogView.getBackButtonForTesting().isFocused());
+                    assertFalse(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
 
         // Hide the dialog with zoom-in animation.
@@ -474,7 +474,7 @@ public class TabGridDialogViewTest {
                 () -> {
                     assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
-                    assertTrue(mTabGridDialogView.getBackButtonForTesting().isFocused());
+                    assertFalse(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
 
         // Hide the dialog with basic fade-out animation.
@@ -537,7 +537,7 @@ public class TabGridDialogViewTest {
                 () -> {
                     assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
-                    assertTrue(mTabGridDialogView.getBackButtonForTesting().isFocused());
+                    assertFalse(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
 
         // Hide the dialog with basic fade-out animation.
