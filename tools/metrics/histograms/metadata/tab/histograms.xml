@@ -521,6 +521,7 @@ chromium-metrics-reviews@google.com.
         summary="Request without user interaction."/>
     <variant name=".Repeated"
         summary="Repeated request to open external application.."/>
+    <variant name=".ShortcutsURL" summary="Request to open a shortcuts URL."/>
   </token>
 </histogram>
 

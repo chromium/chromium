@@ -139,6 +139,15 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
     return;
   }
 
+  // Prompt user before launching shortcuts. See crbug.com/476591032 for more
+  // context.
+  constexpr char kShortcutsScheme[] = "shortcuts";
+  constexpr char kWorkflowScheme[] = "workflow";
+  if (url.SchemeIs(kShortcutsScheme) || url.SchemeIs(kWorkflowScheme)) {
+    ShowAppLaunchAlert(AppLauncherAlertCause::kShortcutsURL, url);
+    return;
+  }
+
   // Show the a dialog for app store launches and external URL navigations that
   // did not originate from a link tap.
   if (UrlHasAppStoreScheme(url) || !link_transition) {

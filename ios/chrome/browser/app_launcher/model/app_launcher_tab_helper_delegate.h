@@ -16,6 +16,7 @@ enum class AppLauncherAlertCause {
   kRepeatedLaunchDetected,
   kOpenFromIncognito,
   kNoUserInteraction,
+  kShortcutsURL,
   kAppLaunchFailed,
 };
 

@@ -17,6 +17,7 @@ enum class AppLaunchConfirmationRequestCause {
   kOpenFromIncognito,
   kNoUserInteraction,
   kAppLaunchFailed,
+  kShortcutsURL,
 };
 
 // Configuration object for OverlayRequests for alerts notifying the user that

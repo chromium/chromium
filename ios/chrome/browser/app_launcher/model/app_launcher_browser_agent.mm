@@ -98,6 +98,11 @@ void RecordAppLaunchRequestMetrics(
       UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened.Failed",
                             user_accepted);
       break;
+    case app_launcher_overlays::AppLaunchConfirmationRequestCause::
+        kShortcutsURL:
+      UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened.ShortcutsURL",
+                            user_accepted);
+      break;
   }
 }
 
@@ -147,6 +152,9 @@ RequestCauseFromActionCause(AppLauncherAlertCause cause) {
     case AppLauncherAlertCause::kAppLaunchFailed:
       return app_launcher_overlays::AppLaunchConfirmationRequestCause::
           kAppLaunchFailed;
+    case AppLauncherAlertCause::kShortcutsURL:
+      return app_launcher_overlays::AppLaunchConfirmationRequestCause::
+          kShortcutsURL;
   }
 }
 

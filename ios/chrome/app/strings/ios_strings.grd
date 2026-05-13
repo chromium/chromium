@@ -4892,6 +4892,9 @@
       <message name="IDS_IOS_OPEN_SETTINGS" desc="Text of the button that will take the user to the Settings page to configure the default browser [iOS only]">
         Open Settings
       </message>
+      <message name="IDS_IOS_OPEN_SHORTCUTS_URL" desc="Alert to let the user know that the website is trying to open the Shortcuts application. [iOS only]">
+        This site is trying to open the &quot;Shortcuts&quot; application.
+      </message>
       <message name="IDS_IOS_OPEN_SOURCE_LICENSES" desc="The label to access the open source licenses, displayed in the application settings [Length: 30em] [iOS only]">
         Open source licenses
       </message>

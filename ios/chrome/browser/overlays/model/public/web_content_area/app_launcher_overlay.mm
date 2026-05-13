@@ -77,6 +77,13 @@ void AppLaunchConfirmationRequest::CreateAuxiliaryData(
       reject_button_title =
           l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK);
       break;
+    case AppLaunchConfirmationRequestCause::kShortcutsURL:
+      alert_message = l10n_util::GetNSString(IDS_IOS_OPEN_SHORTCUTS_URL);
+      allow_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW);
+      reject_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK);
+      break;
     case AppLaunchConfirmationRequestCause::kAppLaunchFailed:
       alert_message = l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_FAILED);
       reject_button_title =
