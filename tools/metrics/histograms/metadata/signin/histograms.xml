@@ -3342,7 +3342,7 @@ OAuth Multilogin call. -->
 <!-- LINT.ThenChange(//chrome/browser/signin/services/android/java/src/org/chromium/chrome/browser/signin/services/SigninFlowTimestampsLogger.java:SigninFlowTimestamps) -->
 
 <histogram name="Signin.SigninAbortedAccessPoint" enum="SigninAccessPoint"
-    expires_after="2026-06-21">
+    expires_after="2027-05-12">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
