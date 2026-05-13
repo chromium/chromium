@@ -47,8 +47,11 @@ ScrollJankV4Frame::~ScrollJankV4Frame() = default;
 
 ScrollJankV4Frame::Stage::ScrollUpdates::ScrollUpdates(
     std::optional<Real> real,
-    std::optional<Synthetic> synthetic)
-    : real_(std::move(real)), synthetic_(std::move(synthetic)) {
+    std::optional<Synthetic> synthetic,
+    std::optional<base::TimeTicks> scroll_begin_arrival_timestamp)
+    : real_(std::move(real)),
+      synthetic_(std::move(synthetic)),
+      scroll_begin_arrival_timestamp_(scroll_begin_arrival_timestamp) {
   CHECK(real_.has_value() || synthetic_.has_value());
 }
 

@@ -102,6 +102,11 @@ void PopulateScrollUpdatesProto(
                     SYNTHETIC_WITHOUT_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP;
           }},
       result.first_scroll_update));
+  if (updates.scroll_begin_arrival_timestamp().has_value()) {
+    out.set_scroll_begin_arrival_us(updates.scroll_begin_arrival_timestamp()
+                                        ->since_origin()
+                                        .InMicroseconds());
+  }
 }
 
 void PopulateScrollJankV4ResultProto(

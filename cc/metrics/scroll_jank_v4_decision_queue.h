@@ -127,9 +127,10 @@ class CC_EXPORT ScrollJankV4DecisionQueue {
   // (`deferred_synthetic_frames_.rbegin()->args.frame_time`). Furthermore, if
   // this vector contains any damaging frames,
   // `last_provided_valid_presentation_ts_` is equal to the presentation time of
-  // the last damaging frame in this vector.
+  // the last damaging frame in this vector. For each frame in
+  // `deferred_synthetic_frames_`, `updates.real()` is guaranteed to be empty.
   struct DeferredSyntheticFrame {
-    ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic synthetic_updates;
+    ScrollJankV4Frame::Stage::ScrollUpdates updates;
     ScrollJankV4Frame::ScrollDamage damage;
     ScrollJankV4Frame::BeginFrameArgsForScrollJank args;
   };

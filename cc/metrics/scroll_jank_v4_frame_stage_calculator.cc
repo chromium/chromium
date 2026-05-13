@@ -18,6 +18,7 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
@@ -30,6 +31,15 @@ template <typename EventMetricsPtr>
 ScrollJankV4Frame::StageList CalculateStagesDefaultImpl(
     std::vector<EventMetricsPtr>& events_metrics,
     uint64_t result_id) {
+  TRACE_EVENT("input.scrolling",
+              "Processing ScrollJankV4Frame stages (default)",
+              [&](perfetto::EventContext context) {
+                auto* scroll_jank_v4 =
+                    context.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                        ->set_scroll_jank_v4();
+                scroll_jank_v4->set_result_id(result_id);
+              });
+
   ScrollJankV4Frame::StageList stages;
 
   // Any scroll updates (real or synthetic).
@@ -368,6 +378,7 @@ class ScrollIdBasedCalculator : public ScrollJankV4FrameStageCalculator {
   };
 
   // What the calculator has seen for the current / most recent scroll.
+  // LINT.IfChange(HasSeen)
   enum class HasSeen {
     // The calculator hasn't seen any GSUs or GSE for the current scroll yet.
     //
@@ -396,11 +407,33 @@ class ScrollIdBasedCalculator : public ScrollJankV4FrameStageCalculator {
     // to `current_scroll_id_`.
     kEnd
   };
+  // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:ScrollJankV4FrameStageCalculationHasSeen)
 
   template <typename EventMetricsPtr>
   ScrollJankV4Frame::StageList CalculateStagesBasedOnScrollId(
       std::vector<EventMetricsPtr>& events_metrics,
       uint64_t result_id) {
+    TRACE_EVENT(
+        "input.scrolling",
+        "Processing ScrollJankV4Frame stages (based on scroll IDs)",
+        [&](perfetto::EventContext context) {
+          auto* scroll_jank_v4 =
+              context.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                  ->set_scroll_jank_v4();
+          scroll_jank_v4->set_result_id(result_id);
+          auto* frame_stage_calculation =
+              scroll_jank_v4->set_frame_stage_calculation();
+          frame_stage_calculation->set_current_scroll_begin_arrival_us(
+              current_scroll_id_.since_origin().InMicroseconds());
+          // The perfetto `HasSeen` proto enum values are incremented by 1 to
+          // leave 0 for the `UNKNOWN` value.
+          frame_stage_calculation->set_has_seen_in_current_scroll(
+              static_cast<
+                  perfetto::protos::pbzero::EventLatency::ScrollJankV4Result::
+                      FrameStageCalculation::HasSeen>(
+                  static_cast<int>(has_seen_in_current_scroll_) + 1));
+        });
+
     ScrollJankV4Frame::StageList stages;
 
     auto [has_ineligible_updates, eligible_update_scroll_id_range,
@@ -698,8 +731,8 @@ class ScrollIdBasedCalculator : public ScrollJankV4FrameStageCalculator {
                               first_synthetic_input_trace_id,
                       })
                 : std::nullopt;
-    return ScrollJankV4Frame::Stage::ScrollUpdates(real_updates,
-                                                   synthetic_updates);
+    return ScrollJankV4Frame::Stage::ScrollUpdates(
+        real_updates, synthetic_updates, scroll_id);
   }
 
   base::TimeTicks current_scroll_id_ = base::TimeTicks::Min();

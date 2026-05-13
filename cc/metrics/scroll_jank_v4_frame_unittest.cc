@@ -113,7 +113,8 @@ TEST(ScrollJankV4FrameTest, ScrollUpdatesToOstream) {
           .abs_total_raw_delta_pixels = 10,
           .max_abs_inertial_raw_delta_pixels = 0,
       },
-      /* synthetic= */ std::nullopt)};
+      /* synthetic= */ std::nullopt,
+      /* scroll_begin_arrival_timestamp= */ std::nullopt)};
 
   std::ostringstream out;
   auto& result = out << stage;

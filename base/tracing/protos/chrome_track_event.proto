@@ -908,9 +908,8 @@ message EventLatency {
   // and the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow histogram's
   // documentation for more information.
   //
-  // LINT.IfChange
   message ScrollJankV4Result {
-    // Next ID: 14
+    // Next ID: 15
 
     // This field is a new version of `EventLatency.is_janky_scrolled_frame`
     // based on the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow
@@ -1075,6 +1074,14 @@ message EventLatency {
         SYNTHETIC_WITHOUT_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP = 3;
       }
       optional FirstScrollUpdateType first_scroll_update_type = 3;
+
+      // The timestamp of when the scroll begin event which started the scroll
+      // containing this frame's scroll updates arrived in the renderer
+      // compositor.
+      //
+      // This value effectively serves as the ID of the scroll that this frame
+      // belongs to. Can be joined with `EventLatency.scroll_begin_arrival_us`.
+      optional int64 scroll_begin_arrival_us = 4;
     }
     optional ScrollUpdates updates = 10;
 
@@ -1133,8 +1140,34 @@ message EventLatency {
     // The ID of this frame's result. Used to associate sub-slices (e.g.
     // "Presentation") with the main slice ("ScrollJankV4").
     optional int64 result_id = 13;
+
+    // The state of `cc::ScrollJankV4FrameStageCalculator` before processing a
+    // frame.
+    message FrameStageCalculation {
+      // The timestamp of when the scroll begin event which started the scroll
+      // that the calculator most recently encountered. Effectively the ID of
+      // the current / most recent scroll. Can be joined with
+      // `EventLatency.scroll_begin_arrival_us`.
+      optional int64 current_scroll_begin_arrival_us = 1;
+
+      // What the calculator has seen for the current / most recent scroll.
+      // LINT.IfChange(ScrollJankV4FrameStageCalculationHasSeen)
+      enum HasSeen {
+        UNKNOWN = 0;
+        // The calculator hasn't seen any GSUs or GSE for the current scroll
+        // yet.
+        NO_UPDATES = 1;
+        // The calculator has seen one or more GSUs for the current scroll (but
+        // no GSE).
+        ONE_OR_MORE_UPDATES = 2;
+        // The calculator has seen a GSE for the most recent scroll.
+        END = 3;
+      }
+      // LINT.ThenChange(//cc/metrics/scroll_jank_v4_frame_stage_calculator.cc:HasSeen)
+      optional HasSeen has_seen_in_current_scroll = 2;
+    }
+    optional FrameStageCalculation frame_stage_calculation = 14;
   }
-  // LINT.ThenChange(//base/tracing/stdlib/chrome/scroll_jank_v4.sql)
 
   // Deprecated in favor of top-level `ChromeTrackEvent.scroll_jank_v4`.
   optional ScrollJankV4Result scroll_jank_v4 = 10 [deprecated = true];
