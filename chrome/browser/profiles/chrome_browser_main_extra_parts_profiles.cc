@@ -334,6 +334,7 @@
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
+#include "chrome/browser/password_manager/android/delayed_password_field_classification_model_handler_factory.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
 #include "chrome/browser/ui/android/android_profile_browser_collection_service_factory.h"
@@ -1218,6 +1219,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   webauthn::PasskeyUnlockManagerFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  DelayedPasswordFieldClassificationModelHandlerFactory::GetInstance();
 #endif
   password_manager::PasswordManagerLogRouterFactory::GetInstance();
   password_manager::PasswordRequirementsServiceFactory::GetInstance();

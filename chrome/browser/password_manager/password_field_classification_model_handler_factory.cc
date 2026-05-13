@@ -85,7 +85,6 @@ PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
     return context;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   // Special case for ActorLogin which uses a model in a very limited scope.
   auto* glic_service = glic::GlicKeyedService::Get(profile);
   if (glic_service && glic_service->enabling().GetUserEnabledActuationOnWeb() &&
@@ -93,7 +92,6 @@ PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
           password_manager::features::kActorLoginLocalClassificationModel)) {
     return context;
   }
-#endif
 
   return nullptr;
 }
