@@ -5519,7 +5519,23 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillPaymentsRequestResult) -->
 
-<!-- LINT.IfChange(SaveAndFillSuggestionNotShownReason) -->
+<!-- LINT.IfChange(SaveAndFillSuggestionEvent) -->
+
+<enum name="SaveAndFillSuggestionEvent">
+  <int value="0" label="The Save and Fill suggestion was shown"/>
+  <int value="1" label="Suggestion not shown: user is in incognito mode"/>
+  <int value="2"
+      label="Suggestion not shown: credit card form is not complete"/>
+  <int value="3"
+      label="Suggestion not shown: strike database required delay not met"/>
+  <int value="4"
+      label="Suggestion not shown: strike database max strike limit reached"/>
+  <int value="5"
+      label="Suggestion not shown: user already has cards saved in profile"/>
+  <int value="6" label="The Save and Fill suggestion was accepted"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillSuggestionEvent) -->
 
 <enum name="SaveAndFillSuggestionNotShownReason">
   <int value="0"
@@ -5528,8 +5544,6 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="The user is in incognito mode"/>
   <int value="3" label="The credit card form is not complete"/>
 </enum>
-
-<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillSuggestionNotShownReason) -->
 
 <!-- LINT.IfChange(SaveCreditCardPromptResultIOS) -->
 

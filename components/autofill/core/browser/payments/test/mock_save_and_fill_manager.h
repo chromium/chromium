@@ -22,10 +22,13 @@ class MockSaveAndFillManager : public payments::SaveAndFillManager {
               (override));
   MOCK_METHOD(void, OnSuggestionOffered, (), (override));
   MOCK_METHOD(void, MaybeAddStrikeForSaveAndFill, (), (override));
-  MOCK_METHOD(bool, ShouldBlockFeature, (), (override));
+  MOCK_METHOD(std::optional<autofill_metrics::SaveAndFillSuggestionEvent>,
+              GetBlockReason,
+              (),
+              (override));
   MOCK_METHOD(void,
               MaybeLogSaveAndFillSuggestionNotShownReason,
-              (autofill_metrics::SaveAndFillSuggestionNotShownReason reason),
+              (autofill_metrics::SaveAndFillSuggestionEvent reason),
               (override));
   MOCK_METHOD(void, LogCreditCardFormFilled, (), (override));
   MOCK_METHOD(void, LogCreditCardFormSubmitted, (), (override));

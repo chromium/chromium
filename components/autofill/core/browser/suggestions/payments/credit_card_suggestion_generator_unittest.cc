@@ -3285,8 +3285,8 @@ TEST_F(CreditCardSuggestionGeneratorTest,
       static_cast<MockSaveAndFillManager&>(
           *payments_autofill_client().GetSaveAndFillManager());
 
-  EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
-      .WillOnce(testing::Return(false));
+  EXPECT_CALL(mock_save_and_fill_manager, GetBlockReason())
+      .WillOnce(testing::Return(std::nullopt));
 
   // Complete credit card form (passes FormStructure::IsCompleteCreditCardForm)
   FormBundle form_bundle = GetFormWithTypes(
@@ -3342,8 +3342,8 @@ TEST_F(CreditCardSuggestionGeneratorTest,
       static_cast<MockSaveAndFillManager&>(
           *payments_autofill_client().GetSaveAndFillManager());
 
-  EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
-      .WillOnce(testing::Return(false));
+  EXPECT_CALL(mock_save_and_fill_manager, GetBlockReason())
+      .WillOnce(testing::Return(std::nullopt));
 
   // Complete credit card form (passes FormStructure::IsCompleteCreditCardForm)
   FormBundle form_bundle = GetFormWithTypes(
@@ -3423,8 +3423,8 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 
   EXPECT_CALL(mock_save_and_fill_manager,
               MaybeLogSaveAndFillSuggestionNotShownReason(
-                  autofill_metrics::SaveAndFillSuggestionNotShownReason::
-                      kHasSavedCards))
+                  autofill_metrics::SaveAndFillSuggestionEvent::
+                      kSuggestionNotShownHaveCardsOnFile))
       .Times(1);
 
   payments_data().AddCreditCard(test::GetCreditCard());
@@ -3468,8 +3468,8 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 
   EXPECT_CALL(mock_save_and_fill_manager,
               MaybeLogSaveAndFillSuggestionNotShownReason(
-                  autofill_metrics::SaveAndFillSuggestionNotShownReason::
-                      kIncompleteCreditCardForm))
+                  autofill_metrics::SaveAndFillSuggestionEvent::
+                      kSuggestionNotShownIncompleteForm))
       .Times(1);
 
   FormBundle form_bundle = GetFormWithTypes(
@@ -3506,8 +3506,8 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 
   EXPECT_CALL(mock_save_and_fill_manager,
               MaybeLogSaveAndFillSuggestionNotShownReason(
-                  autofill_metrics::SaveAndFillSuggestionNotShownReason::
-                      kUserInIncognito))
+                  autofill_metrics::SaveAndFillSuggestionEvent::
+                      kSuggestionNotShownIncognitoMode))
       .Times(1);
 
   // Complete credit card form (passes FormStructure::IsCompleteCreditCardForm)
@@ -3611,13 +3611,15 @@ TEST_F(CreditCardSuggestionGeneratorTest,
       static_cast<MockSaveAndFillManager&>(
           *payments_autofill_client().GetSaveAndFillManager());
 
-  EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_save_and_fill_manager, GetBlockReason())
+      .WillOnce(testing::Return(
+          autofill_metrics::SaveAndFillSuggestionEvent::
+              kSuggestionNotShownStrikeDbMaxStrikeLimitReached));
 
   EXPECT_CALL(mock_save_and_fill_manager,
               MaybeLogSaveAndFillSuggestionNotShownReason(
-                  autofill_metrics::SaveAndFillSuggestionNotShownReason::
-                      kBlockedByStrikeDatabase))
+                  autofill_metrics::SaveAndFillSuggestionEvent::
+                      kSuggestionNotShownStrikeDbMaxStrikeLimitReached))
       .Times(1);
 
   ASSERT_FALSE(autofill_client().IsOffTheRecord());
@@ -3662,8 +3664,8 @@ TEST_F(CreditCardSuggestionGeneratorTest,
       static_cast<MockSaveAndFillManager&>(
           *payments_autofill_client().GetSaveAndFillManager());
 
-  EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
-      .WillOnce(testing::Return(false));
+  EXPECT_CALL(mock_save_and_fill_manager, GetBlockReason())
+      .WillOnce(testing::Return(std::nullopt));
 
   // Verify user is not in incognito mode.
   ASSERT_FALSE(autofill_client().IsOffTheRecord());

@@ -1424,31 +1424,32 @@ bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
            .GetCreditCards()
            .empty()) {
     save_and_fill_manager->MaybeLogSaveAndFillSuggestionNotShownReason(
-        autofill_metrics::SaveAndFillSuggestionNotShownReason::kHasSavedCards);
+        autofill_metrics::SaveAndFillSuggestionEvent::
+            kSuggestionNotShownHaveCardsOnFile);
     return false;
   }
   // Verify that the feature isn't blocked by the strike database. This can
   // happen when the maximum number of strikes is reached or the cooldown
   // period hasn't passed.
-  if (save_and_fill_manager->ShouldBlockFeature()) {
+  if (std::optional<autofill_metrics::SaveAndFillSuggestionEvent> block_reason =
+          save_and_fill_manager->GetBlockReason()) {
     save_and_fill_manager->MaybeLogSaveAndFillSuggestionNotShownReason(
-        autofill_metrics::SaveAndFillSuggestionNotShownReason::
-            kBlockedByStrikeDatabase);
+        *block_reason);
     return false;
   }
   // Verify the user is not in incognito mode.
   if (client.IsOffTheRecord()) {
     save_and_fill_manager->MaybeLogSaveAndFillSuggestionNotShownReason(
-        autofill_metrics::SaveAndFillSuggestionNotShownReason::
-            kUserInIncognito);
+        autofill_metrics::SaveAndFillSuggestionEvent::
+            kSuggestionNotShownIncognitoMode);
     return false;
   }
   // Verify the credit card form is complete for the purposes of "Save and
   // Fill".
   if (!is_complete_form) {
     save_and_fill_manager->MaybeLogSaveAndFillSuggestionNotShownReason(
-        autofill_metrics::SaveAndFillSuggestionNotShownReason::
-            kIncompleteCreditCardForm);
+        autofill_metrics::SaveAndFillSuggestionEvent::
+            kSuggestionNotShownIncompleteForm);
     return false;
   }
   // Verify a field within the credit card form is clicked and has no more than

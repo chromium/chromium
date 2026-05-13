@@ -4392,10 +4392,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.SaveAndFill"
-    enum="SaveAndFillFormEvent" expires_after="2027-04-30">
+    enum="SaveAndFillFormEvent" expires_after="M155">
   <owner>averina@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
+    Deprecated. Replaced by Autofill.SaveAndFill.SuggestionEvent in May 2026.
     This histogram logs form events related to the Save and Fill suggestion on
     credit card forms. Logged once per page load when the suggestion is shown.
   </summary>
@@ -7360,12 +7361,26 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="RequestResult" variants="Autofill.RequestResult"/>
 </histogram>
 
-<histogram name="Autofill.SaveAndFill.SuggestionNotShownReason"
-    enum="SaveAndFillSuggestionNotShownReason" expires_after="2027-04-30">
+<histogram name="Autofill.SaveAndFill.SuggestionEvent"
+    enum="SaveAndFillSuggestionEvent" expires_after="2027-04-30">
   <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
+    Logs events related to the Save and Fill suggestion popup. Recorded when the
+    suggestion is shown to the user, when it is accepted, or when it is not
+    shown due to a specific reason. Recorded at most once per event type per
+    page load.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.SaveAndFill.SuggestionNotShownReason"
+    enum="SaveAndFillSuggestionNotShownReason" expires_after="M155">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Obsolete. Replaced by Autofill.SaveAndFill.SuggestionEvent in May 2026.
     Logged when the Save and Fill suggestion is not shown to the user,
     indicating the reason for it not being shown. Logged once per page load when
     the conditions for showing the suggestion are checked and not met.

@@ -40,6 +40,14 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
 
     autofill_metrics::SaveAndFillFlowScenario flow_scenario =
         autofill_metrics::SaveAndFillFlowScenario::kUnknown;
+
+    // True if the suggestion shown event has been logged in the current flow.
+    bool has_logged_suggestion_shown = false;
+    // True if the suggestion accepted event has been logged in the current
+    // flow.
+    bool has_logged_suggestion_accepted = false;
+    // True if any strike has been logged for form submission in this session.
+    bool has_logged_strikes_for_form_submission = false;
   };
 
   explicit SaveAndFillManagerImpl(AutofillClient* autofill_client);
@@ -53,9 +61,10 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
       FillCardCallback fill_card_callback) override;
   void OnSuggestionOffered() override;
   void MaybeAddStrikeForSaveAndFill() override;
-  bool ShouldBlockFeature() override;
+  std::optional<autofill_metrics::SaveAndFillSuggestionEvent> GetBlockReason()
+      override;
   void MaybeLogSaveAndFillSuggestionNotShownReason(
-      autofill_metrics::SaveAndFillSuggestionNotShownReason reason) override;
+      autofill_metrics::SaveAndFillSuggestionEvent reason) override;
   void LogCreditCardFormFilled() override;
   void LogCreditCardFormSubmitted() override;
 
@@ -159,16 +168,6 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   // Boolean value indicates whether the upload Save and Fill dialog has been
   // accepted.
   bool upload_save_and_fill_dialog_accepted_ = false;
-  // True if the Save and Fill suggestion was offered to the user.
-  bool save_and_fill_suggestion_offered_ = false;
-  // True if the user accepted the Save and Fill suggestion.
-  bool save_and_fill_suggestion_selected_ = false;
-  // True if any strike has been logged for form submission in this session.
-  // Note this variable is not reset once set to true, meaning that a
-  // SaveAndFillManagerImpl instance only adds at most one strike for cases
-  // where a Save-and-Fill suggestion is shown but not accepted.
-  bool has_logged_strikes_for_form_submission_ = false;
-
   LoggingContext logging_context_;
 
   // StrikeDatabase used to check whether to show the Save and Fill suggestion.

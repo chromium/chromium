@@ -30,20 +30,29 @@ enum class SaveAndFillFormEvent {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// LINT.IfChange(SaveAndFillSuggestionNotShownReason)
-enum class SaveAndFillSuggestionNotShownReason {
-  // The user has at least one credit card saved.
-  kHasSavedCards = 0,
-  // The suggestion is blocked by the strike database (e.g., max strikes
-  // reached or required delay has not passed).
-  kBlockedByStrikeDatabase = 1,
-  // The user is in incognito mode.
-  kUserInIncognito = 2,
-  // The credit card form is not complete.
-  kIncompleteCreditCardForm = 3,
-  kMaxValue = kIncompleteCreditCardForm,
+// LINT.IfChange(SaveAndFillSuggestionEvent)
+enum class SaveAndFillSuggestionEvent {
+  // The Save and Fill suggestion was shown to the user.
+  kSuggestionShown = 0,
+  // The Save and Fill suggestion was not shown because the user was in
+  // incognito mode.
+  kSuggestionNotShownIncognitoMode = 1,
+  // The Save and Fill suggestion was not shown because the form was incomplete.
+  kSuggestionNotShownIncompleteForm = 2,
+  // The Save and Fill suggestion was not shown because the strike database
+  // cooldown delay was not met.
+  kSuggestionNotShownStrikeDbRequiredDelayNotMet = 3,
+  // The Save and Fill suggestion was not shown because the strike database max
+  // strike limit was reached.
+  kSuggestionNotShownStrikeDbMaxStrikeLimitReached = 4,
+  // The Save and Fill suggestion was not shown because the user already has
+  // cards saved.
+  kSuggestionNotShownHaveCardsOnFile = 5,
+  // The Save and Fill suggestion was accepted by the user.
+  kSuggestionAccepted = 6,
+  kMaxValue = kSuggestionAccepted,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillSuggestionNotShownReason)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillSuggestionEvent)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -143,9 +152,8 @@ enum class SaveAndFillFlowScenario {
 
 void LogSaveAndFillFormEvent(SaveAndFillFormEvent event);
 
-// Logs the reason why the Save and Fill suggestion was not shown.
-void LogSaveAndFillSuggestionNotShownReason(
-    SaveAndFillSuggestionNotShownReason reason);
+// Logs a suggestion event in the Save and Fill flow.
+void LogSaveAndFillSuggestionEvent(SaveAndFillSuggestionEvent event);
 
 // Logs the latency for the GetDetailsForCreateCard & CreateCard request. Logs
 // to parent histogram with no breakdown by result and child histograms with

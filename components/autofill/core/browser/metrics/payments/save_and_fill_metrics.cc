@@ -46,10 +46,8 @@ void LogSaveAndFillFormEvent(SaveAndFillFormEvent event) {
                                 event);
 }
 
-void LogSaveAndFillSuggestionNotShownReason(
-    SaveAndFillSuggestionNotShownReason reason) {
-  base::UmaHistogramEnumeration("Autofill.SaveAndFill.SuggestionNotShownReason",
-                                reason);
+void LogSaveAndFillSuggestionEvent(SaveAndFillSuggestionEvent event) {
+  base::UmaHistogramEnumeration("Autofill.SaveAndFill.SuggestionEvent", event);
 }
 
 void LogSaveAndFillGetDetailsForCreateCardResultAndLatency(

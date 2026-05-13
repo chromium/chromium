@@ -814,8 +814,8 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_ServerSave) {
             std::move(callback).Run(
                 CardSaveAndFillDialogUserDecision::kAccepted,
                 user_provided_details);
-            EXPECT_TRUE(
-                save_and_fill_manager().save_and_fill_suggestion_selected_);
+            EXPECT_TRUE(save_and_fill_manager()
+                            .logging_context_.has_logged_suggestion_accepted);
             EXPECT_EQ(save_and_fill_manager().upload_details_.card.number(),
                       u"1111222233334444");
           });
@@ -823,7 +823,8 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_ServerSave) {
       .WillByDefault(RunOnceCallback<0>("some risk data"));
 
   save_and_fill_manager().OnSuggestionOffered();
-  EXPECT_TRUE(save_and_fill_manager().save_and_fill_suggestion_offered_);
+  EXPECT_TRUE(
+      save_and_fill_manager().logging_context_.has_logged_suggestion_shown);
 
   save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
       base::DoNothing());
@@ -836,8 +837,10 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_ServerSave) {
   // when flow ends.
   EXPECT_FALSE(save_and_fill_manager().weak_ptr_factory_.HasWeakPtrs());
   EXPECT_FALSE(save_and_fill_manager().upload_save_and_fill_dialog_accepted_);
-  EXPECT_FALSE(save_and_fill_manager().save_and_fill_suggestion_offered_);
-  EXPECT_FALSE(save_and_fill_manager().save_and_fill_suggestion_selected_);
+  EXPECT_FALSE(
+      save_and_fill_manager().logging_context_.has_logged_suggestion_shown);
+  EXPECT_FALSE(
+      save_and_fill_manager().logging_context_.has_logged_suggestion_accepted);
   EXPECT_TRUE(save_and_fill_manager().fill_card_callback_.is_null());
   EXPECT_TRUE(save_and_fill_manager().upload_details_.card.number().empty());
 }
@@ -846,11 +849,13 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_LocalSave) {
   save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(false);
 
   save_and_fill_manager().OnSuggestionOffered();
-  EXPECT_TRUE(save_and_fill_manager().save_and_fill_suggestion_offered_);
+  EXPECT_TRUE(
+      save_and_fill_manager().logging_context_.has_logged_suggestion_shown);
 
   save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
       base::DoNothing());
-  EXPECT_TRUE(save_and_fill_manager().save_and_fill_suggestion_selected_);
+  EXPECT_TRUE(
+      save_and_fill_manager().logging_context_.has_logged_suggestion_accepted);
   EXPECT_FALSE(save_and_fill_manager().fill_card_callback_.is_null());
 
   save_and_fill_manager().OnUserDidDecideOnLocalSave(
@@ -864,8 +869,10 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_LocalSave) {
   // Verifies that the states variable in the SaveAndFillManagerImpl get reset
   // when flow ends.
   EXPECT_FALSE(save_and_fill_manager().weak_ptr_factory_.HasWeakPtrs());
-  EXPECT_FALSE(save_and_fill_manager().save_and_fill_suggestion_offered_);
-  EXPECT_FALSE(save_and_fill_manager().save_and_fill_suggestion_selected_);
+  EXPECT_FALSE(
+      save_and_fill_manager().logging_context_.has_logged_suggestion_shown);
+  EXPECT_FALSE(
+      save_and_fill_manager().logging_context_.has_logged_suggestion_accepted);
   EXPECT_TRUE(save_and_fill_manager().fill_card_callback_.is_null());
 }
 
@@ -879,7 +886,9 @@ TEST_F(SaveAndFillManagerImplTest, StrikeDatabaseMetrics) {
       "Autofill.StrikeDatabase.NthStrikeAdded.SaveAndFill",
       /*sample=*/1, /*expected_bucket_count=*/1);
 
-  EXPECT_EQ(save_and_fill_manager().ShouldBlockFeature(), true);
+  EXPECT_EQ(save_and_fill_manager().GetBlockReason(),
+            autofill_metrics::SaveAndFillSuggestionEvent::
+                kSuggestionNotShownStrikeDbRequiredDelayNotMet);
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason",
       /*sample=*/1, 1);
@@ -887,7 +896,9 @@ TEST_F(SaveAndFillManagerImplTest, StrikeDatabaseMetrics) {
   save_and_fill_strike_database.AddStrikes(
       save_and_fill_strike_database.GetMaxStrikesLimit() - 1);
 
-  EXPECT_EQ(save_and_fill_manager().ShouldBlockFeature(), true);
+  EXPECT_EQ(save_and_fill_manager().GetBlockReason(),
+            autofill_metrics::SaveAndFillSuggestionEvent::
+                kSuggestionNotShownStrikeDbMaxStrikeLimitReached);
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason",
       /*sample=*/0, 1);
