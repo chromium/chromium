@@ -215,6 +215,17 @@ void AutofillAiManager::OnSuggestionsShown(
     const AutofillField& field,
     base::span<const Suggestion> shown_suggestions,
     ukm::SourceId ukm_source_id) {
+  if (last_logged_ukm_source_id_ != ukm_source_id &&
+      !form.server_predictions_received_timestamp().is_null()) {
+    base::TimeDelta duration =
+        base::TimeTicks::Now() - form.server_predictions_received_timestamp();
+    base::UmaHistogramLongTimes(
+        "Autofill.Ai.TimingInterval."
+        "LoadedServerPredictionsToSuggestionsShown",
+        duration);
+    last_logged_ukm_source_id_ = ukm_source_id;
+  }
+
   std::vector<const EntityInstance*> entities_suggested;
   for (const Suggestion& suggestion : shown_suggestions) {
     if (const auto* payload =
