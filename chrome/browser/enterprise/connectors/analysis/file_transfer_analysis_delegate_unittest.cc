@@ -164,20 +164,6 @@ constexpr char kBlockingScansForMalware[] = R"(
 
 constexpr char kNothingEnabled[] = R"({ "service_provider": "google" })";
 
-const std::set<std::string>* DocMimeTypes() {
-  static std::set<std::string> set = {
-      "application/msword", "text/plain",
-      // The 50 MB file can result in no mimetype being found.
-      ""};
-  return &set;
-}
-
-const std::set<std::string>* ZipMimeTypes() {
-  static std::set<std::string> set = {"application/zip",
-                                      "application/x-zip-compressed"};
-  return &set;
-}
-
 chrome::cros::reporting::proto::DlpSensitiveDataEvent
 CreateDlpSensitiveDataEvent(
     const std::string& profile_identifier,
@@ -1037,47 +1023,22 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    auto expected_event = CreateDlpSensitiveDataEvent(
-        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
-        /*file_name=*/"foo.doc",
-        /*source=*/kSourceVolumeInfo.fs_config_string,
-        /*destination=*/kDestinationVolumeInfo.fs_config_string,
-        /*sha256=*/
-        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-        /*mimetype=*/"application/msword",
-        /*content_size=*/std::string("content").size(),
-        /*rule_action=*/
-        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK,
-        /*event_result=*/
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED,
-        /*user_justification=*/std::nullopt);
+  auto expected_event = CreateDlpSensitiveDataEvent(
+      /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+      /*file_name=*/"foo.doc",
+      /*source=*/kSourceVolumeInfo.fs_config_string,
+      /*destination=*/kDestinationVolumeInfo.fs_config_string,
+      /*sha256=*/
+      "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+      /*mimetype=*/"application/msword",
+      /*content_size=*/std::string("content").size(),
+      /*rule_action=*/
+      chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK,
+      /*event_result=*/
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED,
+      /*user_justification=*/std::nullopt);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ "",
-        /*tab_url*/ "",
-        /*source*/ kSourceVolumeInfo.fs_config_string,
-        /*destination*/ kDestinationVolumeInfo.fs_config_string,
-        /*filename*/ "foo.doc",
-        // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-        /*sha*/
-        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-        /*trigger*/
-        kFileTransferDataTransferEventTrigger,
-        /*dlp_verdict*/ response.results()[0],
-        /*mimetype*/ DocMimeTypes(),
-        /*size*/ std::string("content").size(),
-        /*result*/
-        EventResultToString(EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ scan_id,
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   ScanUpload(source_url, destination_directory_url_);
   run_loop.Run();
@@ -1115,47 +1076,22 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
     base::RunLoop run_loop;
     validator.SetDoneClosure(run_loop.QuitClosure());
 
-    if (base::FeatureList::IsEnabled(
-            policy::kUploadRealtimeReportingEventsUsingProto)) {
-      auto expected_event = CreateDlpSensitiveDataEvent(
-          /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
-          /*file_name=*/"foo.doc",
-          /*source=*/kSourceVolumeInfo.fs_config_string,
-          /*destination=*/kDestinationVolumeInfo.fs_config_string,
-          /*sha256=*/
-          "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-          /*mimetype=*/"application/msword",
-          /*content_size=*/std::string("content").size(),
-          /*rule_action=*/
-          chrome::cros::reporting::proto::TriggeredRuleInfo::WARN,
-          /*event_result=*/
-          chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED,
-          /*user_justification=*/std::nullopt);
+    auto expected_event = CreateDlpSensitiveDataEvent(
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*file_name=*/"foo.doc",
+        /*source=*/kSourceVolumeInfo.fs_config_string,
+        /*destination=*/kDestinationVolumeInfo.fs_config_string,
+        /*sha256=*/
+        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+        /*mimetype=*/"application/msword",
+        /*content_size=*/std::string("content").size(),
+        /*rule_action=*/
+        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN,
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED,
+        /*user_justification=*/std::nullopt);
 
-      validator.ExpectSensitiveDataEvent(std::move(expected_event));
-    } else {
-      validator.ExpectSensitiveDataEvent(
-          /*url*/ "",
-          /*tab_url*/ "",
-          /*source*/ kSourceVolumeInfo.fs_config_string,
-          /*destination*/ kDestinationVolumeInfo.fs_config_string,
-          /*filename*/ "foo.doc",
-          // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-          /*sha*/
-          "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-          /*trigger*/
-          kFileTransferDataTransferEventTrigger,
-          /*dlp_verdict*/ response.results()[0],
-          /*mimetype*/ DocMimeTypes(),
-          /*size*/ std::string("content").size(),
-          /*result*/
-          EventResultToString(EventResult::WARNED),
-          /*username*/ kUserName,
-          /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-          /*scan_id*/ scan_id,
-          /*content_transfer_method*/ std::nullopt,
-          /*user_justification*/ std::nullopt);
-    }
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
     ScanUpload(source_url, destination_directory_url_);
     run_loop.Run();
@@ -1200,47 +1136,22 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
     base::RunLoop run_loop;
     validator.SetDoneClosure(run_loop.QuitClosure());
 
-    if (base::FeatureList::IsEnabled(
-            policy::kUploadRealtimeReportingEventsUsingProto)) {
-      auto expected_event = CreateDlpSensitiveDataEvent(
-          /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
-          /*file_name=*/"foo.doc",
-          /*source=*/kSourceVolumeInfo.fs_config_string,
-          /*destination=*/kDestinationVolumeInfo.fs_config_string,
-          /*sha256=*/
-          "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-          /*mimetype=*/"application/msword",
-          /*content_size=*/std::string("content").size(),
-          /*rule_action=*/
-          chrome::cros::reporting::proto::TriggeredRuleInfo::WARN,
-          /*event_result=*/
-          chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED,
-          /*user_justification=*/std::nullopt);
+    auto expected_event = CreateDlpSensitiveDataEvent(
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*file_name=*/"foo.doc",
+        /*source=*/kSourceVolumeInfo.fs_config_string,
+        /*destination=*/kDestinationVolumeInfo.fs_config_string,
+        /*sha256=*/
+        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+        /*mimetype=*/"application/msword",
+        /*content_size=*/std::string("content").size(),
+        /*rule_action=*/
+        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN,
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED,
+        /*user_justification=*/std::nullopt);
 
-      validator.ExpectSensitiveDataEvent(std::move(expected_event));
-    } else {
-      validator.ExpectSensitiveDataEvent(
-          /*url*/ "",
-          /*tab_url*/ "",
-          /*source*/ kSourceVolumeInfo.fs_config_string,
-          /*destination*/ kDestinationVolumeInfo.fs_config_string,
-          /*filename*/ "foo.doc",
-          // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-          /*sha*/
-          "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-          /*trigger*/
-          kFileTransferDataTransferEventTrigger,
-          /*dlp_verdict*/ response.results()[0],
-          /*mimetype*/ DocMimeTypes(),
-          /*size*/ std::string("content").size(),
-          /*result*/
-          EventResultToString(EventResult::WARNED),
-          /*username*/ kUserName,
-          /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-          /*scan_id*/ scan_id,
-          /*content_transfer_method*/ std::nullopt,
-          /*user_justification*/ std::nullopt);
-    }
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
     ScanUpload(source_url, destination_directory_url_);
     run_loop.Run();
@@ -1264,47 +1175,22 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
     base::RunLoop run_loop;
     validator.SetDoneClosure(run_loop.QuitClosure());
 
-    if (base::FeatureList::IsEnabled(
-            policy::kUploadRealtimeReportingEventsUsingProto)) {
-      auto expected_event = CreateDlpSensitiveDataEvent(
-          /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
-          /*file_name=*/"foo.doc",
-          /*source=*/kSourceVolumeInfo.fs_config_string,
-          /*destination=*/kDestinationVolumeInfo.fs_config_string,
-          /*sha256=*/
-          "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-          /*mimetype=*/"application/msword",
-          /*content_size=*/std::string("content").size(),
-          /*rule_action=*/
-          chrome::cros::reporting::proto::TriggeredRuleInfo::WARN,
-          /*event_result=*/
-          chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED,
-          /*user_justification=*/"User justification");
+    auto expected_event = CreateDlpSensitiveDataEvent(
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*file_name=*/"foo.doc",
+        /*source=*/kSourceVolumeInfo.fs_config_string,
+        /*destination=*/kDestinationVolumeInfo.fs_config_string,
+        /*sha256=*/
+        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+        /*mimetype=*/"application/msword",
+        /*content_size=*/std::string("content").size(),
+        /*rule_action=*/
+        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN,
+        /*event_result=*/
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED,
+        /*user_justification=*/"User justification");
 
-      validator.ExpectSensitiveDataEvent(std::move(expected_event));
-    } else {
-      validator.ExpectSensitiveDataEvent(
-          /*url*/ "",
-          /*tab_url*/ "",
-          /*source*/ kSourceVolumeInfo.fs_config_string,
-          /*destination*/ kDestinationVolumeInfo.fs_config_string,
-          /*filename*/ "foo.doc",
-          // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-          /*sha*/
-          "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-          /*trigger*/
-          kFileTransferDataTransferEventTrigger,
-          /*dlp_verdict*/ response.results()[0],
-          /*mimetype*/ DocMimeTypes(),
-          /*size*/ std::string("content").size(),
-          /*result*/
-          EventResultToString(EventResult::BYPASSED),
-          /*username*/ kUserName,
-          /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-          /*scan_id*/ scan_id,
-          /*content_transfer_method*/ std::nullopt,
-          /*user_justification*/ kUserJustification);
-    }
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
     file_transfer_analysis_delegate_->BypassWarnings(kUserJustification);
     run_loop.Run();
@@ -1464,47 +1350,22 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    auto expected_event = CreateDlpSensitiveDataEvent(
-        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
-        /*file_name=*/"foo.doc",
-        /*source=*/kSourceVolumeInfo.fs_config_string,
-        /*destination=*/kDestinationVolumeInfo.fs_config_string,
-        /*sha256=*/
-        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-        /*mimetype=*/"application/msword",
-        /*content_size=*/std::string("content").size(),
-        /*rule_action=*/
-        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK,
-        /*event_result=*/
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED,
-        /*user_justification=*/std::nullopt);
+  auto expected_event = CreateDlpSensitiveDataEvent(
+      /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+      /*file_name=*/"foo.doc",
+      /*source=*/kSourceVolumeInfo.fs_config_string,
+      /*destination=*/kDestinationVolumeInfo.fs_config_string,
+      /*sha256=*/
+      "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+      /*mimetype=*/"application/msword",
+      /*content_size=*/std::string("content").size(),
+      /*rule_action=*/
+      chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK,
+      /*event_result=*/
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED,
+      /*user_justification=*/std::nullopt);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ "",
-        /*tab_url*/ "",
-        /*source*/ kSourceVolumeInfo.fs_config_string,
-        /*destination*/ kDestinationVolumeInfo.fs_config_string,
-        /*filename*/ "foo.doc",
-        // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-        /*sha*/
-        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-        /*trigger*/
-        kFileTransferDataTransferEventTrigger,
-        /*dlp_verdict*/ response.results()[0],
-        /*mimetype*/ DocMimeTypes(),
-        /*size*/ std::string("content").size(),
-        /*result*/
-        EventResultToString(EventResult::ALLOWED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ scan_id,
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   ScanUpload(source_url, destination_url);
   run_loop.Run();
@@ -1543,55 +1404,32 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
-        expected_event;
+  chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+      expected_event;
 
-    expected_event.set_url("");
-    expected_event.set_tab_url("");
-    expected_event.set_source(kSourceVolumeInfo.fs_config_string);
-    expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
-    expected_event.set_download_digest_sha256(
-        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73");
-    expected_event.set_threat_type(
-        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
-            DANGEROUS);
-    expected_event.set_file_name("foo.doc");
-    expected_event.set_content_type("application/msword");
-    expected_event.set_content_size(std::string("content").size());
-    expected_event.set_scan_id(scan_id);
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_TRANSFER);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
-    expected_event.set_clicked_through(false);
+  expected_event.set_url("");
+  expected_event.set_tab_url("");
+  expected_event.set_source(kSourceVolumeInfo.fs_config_string);
+  expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
+  expected_event.set_download_digest_sha256(
+      "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73");
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+          DANGEROUS);
+  expected_event.set_file_name("foo.doc");
+  expected_event.set_content_type("application/msword");
+  expected_event.set_content_size(std::string("content").size());
+  expected_event.set_scan_id(scan_id);
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_TRANSFER);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+  expected_event.set_clicked_through(false);
 
-    expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
-    expected_event.set_profile_user_name(kUserName);
+  expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
+  expected_event.set_profile_user_name(kUserName);
 
-    validator.ExpectDangerousDownloadEvent(std::move(expected_event));
-  } else {
-    validator.ExpectDangerousDeepScanningResult(
-        /*url*/ "",
-        /*tab_url*/ "",
-        /*source*/ kSourceVolumeInfo.fs_config_string,
-        /*destination*/ kDestinationVolumeInfo.fs_config_string,
-        /*filename*/ "foo.doc",
-        // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-        /*sha*/
-        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-        /*thread_type*/ "DANGEROUS",
-        /*trigger*/
-        kFileTransferDataTransferEventTrigger,
-        /*mimetype*/ DocMimeTypes(),
-        /*size*/ std::string("content").size(),
-        /*result*/
-        EventResultToString(EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ scan_id);
-  }
+  validator.ExpectDangerousDownloadEvent(std::move(expected_event));
 
   ScanUpload(source_url, destination_directory_url_);
   run_loop.Run();
@@ -1637,47 +1475,22 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncryptedd) {
   validator.SetDoneClosure(run_loop.QuitClosure());
   // When resumable upload is in use and the policy does not block encrypted
   // files by default, the file's metadata is uploaded for scanning.
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    auto expected_event = CreateDlpSensitiveDataEvent(
-        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
-        /*file_name=*/"encrypted.zip",
-        /*source=*/kSourceVolumeInfo.fs_config_string,
-        /*destination=*/kDestinationVolumeInfo.fs_config_string,
-        /*sha256=*/
-        "701FCEA8B2112FFAB257A8A8DFD3382ABCF047689AB028D42903E3B3AA488D9A",
-        /*mimetype=*/"application/zip",
-        /*content_size=*/20015,
-        /*rule_action=*/
-        chrome::cros::reporting::proto::TriggeredRuleInfo::REPORT_ONLY,
-        /*event_result=*/
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED,
-        /*user_justification=*/std::nullopt);
+  auto expected_event = CreateDlpSensitiveDataEvent(
+      /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+      /*file_name=*/"encrypted.zip",
+      /*source=*/kSourceVolumeInfo.fs_config_string,
+      /*destination=*/kDestinationVolumeInfo.fs_config_string,
+      /*sha256=*/
+      "701FCEA8B2112FFAB257A8A8DFD3382ABCF047689AB028D42903E3B3AA488D9A",
+      /*mimetype=*/"application/zip",
+      /*content_size=*/20015,
+      /*rule_action=*/
+      chrome::cros::reporting::proto::TriggeredRuleInfo::REPORT_ONLY,
+      /*event_result=*/
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED,
+      /*user_justification=*/std::nullopt);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ "",
-        /*tab_url*/ "",
-        /*source*/ kSourceVolumeInfo.fs_config_string,
-        /*destination*/ kDestinationVolumeInfo.fs_config_string,
-        /*filename*/ "encrypted.zip",
-        // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-        /*sha*/
-        "701FCEA8B2112FFAB257A8A8DFD3382ABCF047689AB028D42903E3B3AA488D9A",
-        /*trigger*/
-        kFileTransferDataTransferEventTrigger,
-        /*dlp_verdict*/ response.results()[0],
-        /*mimetype*/ ZipMimeTypes(),
-        /*size*/ 20015,
-        /*result*/
-        EventResultToString(EventResult::ALLOWED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ scan_id,
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   ScanUpload(source_url, destination_directory_url_);
   run_loop.Run();
@@ -1735,47 +1548,22 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    auto expected_event = CreateDlpSensitiveDataEvent(
-        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
-        /*file_name=*/"foo.doc",
-        /*source=*/kSourceVolumeInfo.fs_config_string,
-        /*destination=*/kDestinationVolumeInfo.fs_config_string,
-        /*sha256=*/
-        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-        /*mimetype=*/"application/msword",
-        /*content_size=*/std::string("content").size(),
-        /*rule_action=*/
-        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK,
-        /*event_result=*/
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED,
-        /*user_justification=*/std::nullopt);
+  auto expected_event = CreateDlpSensitiveDataEvent(
+      /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+      /*file_name=*/"foo.doc",
+      /*source=*/kSourceVolumeInfo.fs_config_string,
+      /*destination=*/kDestinationVolumeInfo.fs_config_string,
+      /*sha256=*/
+      "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+      /*mimetype=*/"application/msword",
+      /*content_size=*/std::string("content").size(),
+      /*rule_action=*/
+      chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK,
+      /*event_result=*/
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED,
+      /*user_justification=*/std::nullopt);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ "",
-        /*tab_url*/ "",
-        /*source*/ kSourceVolumeInfo.fs_config_string,
-        /*destination*/ kDestinationVolumeInfo.fs_config_string,
-        /*filename*/ "foo.doc",
-        // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-        /*sha*/
-        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-        /*trigger*/
-        kFileTransferDataTransferEventTrigger,
-        /*dlp_verdict*/ response.results()[0],
-        /*mimetype*/ DocMimeTypes(),
-        /*size*/ std::string("content").size(),
-        /*result*/
-        EventResultToString(EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_id*/ scan_id,
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   ScanUpload(source_directory_url_, destination_directory_url_);
   run_loop.Run();
@@ -1838,73 +1626,43 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
-        expected_events;
+  std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+      expected_events;
 
-    for (size_t i = 0; i < paths.size(); ++i) {
-      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  for (size_t i = 0; i < paths.size(); ++i) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
 
-      expected_event.set_url("");
-      expected_event.set_tab_url("");
-      expected_event.set_source(kSourceVolumeInfo.fs_config_string);
-      expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
+    expected_event.set_url("");
+    expected_event.set_tab_url("");
+    expected_event.set_source(kSourceVolumeInfo.fs_config_string);
+    expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
 
-      expected_event.set_content_type("application/msword");
-      expected_event.set_content_size(std::string("content").size());
-      expected_event.set_trigger(chrome::cros::reporting::proto::
-                                     DataTransferEventTrigger::FILE_TRANSFER);
-      expected_event.set_clicked_through(false);
+    expected_event.set_content_type("application/msword");
+    expected_event.set_content_size(std::string("content").size());
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::FILE_TRANSFER);
+    expected_event.set_clicked_through(false);
 
-      auto* triggered_rule = expected_event.add_triggered_rule_info();
-      triggered_rule->set_rule_name("rule");
-      triggered_rule->set_action(
-          chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+    auto* triggered_rule = expected_event.add_triggered_rule_info();
+    triggered_rule->set_rule_name("rule");
+    triggered_rule->set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
 
-      expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
-      expected_event.set_profile_user_name(kUserName);
+    expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
 
-      expected_events.emplace_back(expected_event);
-    }
-
-    validator.ExpectSensitiveDataEvents(
-        std::move(expected_events), {"foo.doc", "baa.doc", "blub.doc"},
-        {"ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
-        {EventResultToString(EventResult::BLOCKED),
-         EventResultToString(EventResult::BLOCKED),
-         EventResultToString(EventResult::BLOCKED)},
-        {scan_id, scan_id, scan_id});
-  } else {
-    validator.ExpectSensitiveDataEvents(
-        /*url*/ "",
-        /*tab_url*/ "",
-        /*source*/ kSourceVolumeInfo.fs_config_string,
-        /*destination*/ kDestinationVolumeInfo.fs_config_string,
-        /*filenames*/ {"foo.doc", "baa.doc", "blub.doc"},
-        // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-        /*sha256s*/
-        {"ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
-        /*trigger*/
-        kFileTransferDataTransferEventTrigger,
-        /*dlp_verdicts*/
-        {response.results()[0], response.results()[0], response.results()[0]},
-        /*mimetype*/ DocMimeTypes(),
-        /*size*/ std::string("content").size(),
-        /*result*/
-        {EventResultToString(EventResult::BLOCKED),
-         EventResultToString(EventResult::BLOCKED),
-         EventResultToString(EventResult::BLOCKED)},
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_ids*/ {scan_id, scan_id, scan_id},
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
+    expected_events.emplace_back(expected_event);
   }
+
+  validator.ExpectSensitiveDataEvents(
+      std::move(expected_events), {"foo.doc", "baa.doc", "blub.doc"},
+      {"ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
+      {EventResultToString(EventResult::BLOCKED),
+       EventResultToString(EventResult::BLOCKED),
+       EventResultToString(EventResult::BLOCKED)},
+      {scan_id, scan_id, scan_id});
 
   ScanUpload(source_directory_url_, destination_directory_url_);
   run_loop.Run();
@@ -1951,70 +1709,41 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
-        expected_events;
+  std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+      expected_events;
 
-    for (size_t i = 0; i < 2; ++i) {
-      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  for (size_t i = 0; i < 2; ++i) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
 
-      expected_event.set_url("");
-      expected_event.set_tab_url("");
-      expected_event.set_source(kSourceVolumeInfo.fs_config_string);
-      expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
+    expected_event.set_url("");
+    expected_event.set_tab_url("");
+    expected_event.set_source(kSourceVolumeInfo.fs_config_string);
+    expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
 
-      expected_event.set_content_type("application/msword");
-      expected_event.set_content_size(std::string("content").size());
-      expected_event.set_trigger(chrome::cros::reporting::proto::
-                                     DataTransferEventTrigger::FILE_TRANSFER);
-      expected_event.set_clicked_through(false);
+    expected_event.set_content_type("application/msword");
+    expected_event.set_content_size(std::string("content").size());
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::FILE_TRANSFER);
+    expected_event.set_clicked_through(false);
 
-      auto* triggered_rule = expected_event.add_triggered_rule_info();
-      triggered_rule->set_rule_name("rule");
-      triggered_rule->set_action(
-          chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+    auto* triggered_rule = expected_event.add_triggered_rule_info();
+    triggered_rule->set_rule_name("rule");
+    triggered_rule->set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
 
-      expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
-      expected_event.set_profile_user_name(kUserName);
+    expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
 
-      expected_events.emplace_back(expected_event);
-    }
-
-    validator.ExpectSensitiveDataEvents(
-        std::move(expected_events), {"bad1.doc", "bad2.doc"},
-        {"ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
-        {EventResultToString(EventResult::BLOCKED),
-         EventResultToString(EventResult::BLOCKED)},
-        {scan_id, scan_id});
-
-  } else {
-    validator.ExpectSensitiveDataEvents(
-        /*url*/ "",
-        /*tab_url*/ "",
-        /*source*/ kSourceVolumeInfo.fs_config_string,
-        /*destination*/ kDestinationVolumeInfo.fs_config_string,
-        /*filenames*/ {"bad1.doc", "bad2.doc"},
-        // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-        /*sha256s*/
-        {"ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
-         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
-        /*trigger*/
-        kFileTransferDataTransferEventTrigger,
-        /*dlp_verdicts*/
-        {result, result},
-        /*mimetype*/ DocMimeTypes(),
-        /*size*/ std::string("content").size(),
-        /*result*/
-        {EventResultToString(EventResult::BLOCKED),
-         EventResultToString(EventResult::BLOCKED)},
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_ids*/ {scan_id, scan_id},
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
+    expected_events.emplace_back(expected_event);
   }
+
+  validator.ExpectSensitiveDataEvents(
+      std::move(expected_events), {"bad1.doc", "bad2.doc"},
+      {"ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
+      {EventResultToString(EventResult::BLOCKED),
+       EventResultToString(EventResult::BLOCKED)},
+      {scan_id, scan_id});
 
   ScanUpload(source_directory_url_, destination_directory_url_);
   run_loop.Run();
@@ -2088,63 +1817,37 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
-        expected_events;
+  std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+      expected_events;
 
-    for (size_t i = 0; i < expected_filenames.size(); ++i) {
-      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  for (size_t i = 0; i < expected_filenames.size(); ++i) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
 
-      expected_event.set_url("");
-      expected_event.set_tab_url("");
-      expected_event.set_source(kSourceVolumeInfo.fs_config_string);
-      expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
+    expected_event.set_url("");
+    expected_event.set_tab_url("");
+    expected_event.set_source(kSourceVolumeInfo.fs_config_string);
+    expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
 
-      expected_event.set_content_type("application/msword");
-      expected_event.set_content_size(std::string("content").size());
-      expected_event.set_trigger(chrome::cros::reporting::proto::
-                                     DataTransferEventTrigger::FILE_TRANSFER);
-      expected_event.set_clicked_through(false);
+    expected_event.set_content_type("application/msword");
+    expected_event.set_content_size(std::string("content").size());
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::FILE_TRANSFER);
+    expected_event.set_clicked_through(false);
 
-      auto* triggered_rule = expected_event.add_triggered_rule_info();
-      triggered_rule->set_rule_name(expected_rule_names[i]);
-      triggered_rule->set_action(
-          chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+    auto* triggered_rule = expected_event.add_triggered_rule_info();
+    triggered_rule->set_rule_name(expected_rule_names[i]);
+    triggered_rule->set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
 
-      expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
-      expected_event.set_profile_user_name(kUserName);
+    expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
 
-      expected_events.emplace_back(expected_event);
-    }
-
-    validator.ExpectSensitiveDataEvents(std::move(expected_events),
-                                        expected_filenames, expected_shas,
-                                        expected_results, expected_scan_ids);
-  } else {
-    validator.ExpectSensitiveDataEvents(
-        /*url*/ "",
-        /*tab_url*/ "",
-        /*source*/ kSourceVolumeInfo.fs_config_string,
-        /*destination*/ kDestinationVolumeInfo.fs_config_string,
-        /*filenames*/ expected_filenames,
-        // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-        /*sha256s*/
-        expected_shas,
-        /*trigger*/
-        kFileTransferDataTransferEventTrigger,
-        /*dlp_verdicts*/
-        expected_dlp_verdicts,
-        /*mimetype*/ DocMimeTypes(),
-        /*size*/ std::string("content").size(),
-        /*result*/
-        expected_results,
-        /*username*/ kUserName,
-        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*scan_ids*/ expected_scan_ids,
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
+    expected_events.emplace_back(expected_event);
   }
+
+  validator.ExpectSensitiveDataEvents(std::move(expected_events),
+                                      expected_filenames, expected_shas,
+                                      expected_results, expected_scan_ids);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
   run_loop.Run();
@@ -2239,62 +1942,35 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
     base::RunLoop run_loop;
     validator.SetDoneClosure(run_loop.QuitClosure());
 
-    if (base::FeatureList::IsEnabled(
-            policy::kUploadRealtimeReportingEventsUsingProto)) {
-      std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
-          expected_events;
-      for (size_t i = 0; i < expected_filenames.size(); ++i) {
-        chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+        expected_events;
+    for (size_t i = 0; i < expected_filenames.size(); ++i) {
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
 
-        expected_event.set_url("");
-        expected_event.set_tab_url("");
-        expected_event.set_source(kSourceVolumeInfo.fs_config_string);
-        expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
+      expected_event.set_url("");
+      expected_event.set_tab_url("");
+      expected_event.set_source(kSourceVolumeInfo.fs_config_string);
+      expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
 
-        expected_event.set_content_type("application/msword");
-        expected_event.set_content_size(std::string("content").size());
-        expected_event.set_trigger(chrome::cros::reporting::proto::
-                                       DataTransferEventTrigger::FILE_TRANSFER);
-        expected_event.set_clicked_through(false);
+      expected_event.set_content_type("application/msword");
+      expected_event.set_content_size(std::string("content").size());
+      expected_event.set_trigger(chrome::cros::reporting::proto::
+                                     DataTransferEventTrigger::FILE_TRANSFER);
+      expected_event.set_clicked_through(false);
 
-        auto* triggered_rule = expected_event.add_triggered_rule_info();
-        triggered_rule->set_rule_name(expected_rule_names[i]);
-        triggered_rule->set_action(expected_rule_actions[i]);
+      auto* triggered_rule = expected_event.add_triggered_rule_info();
+      triggered_rule->set_rule_name(expected_rule_names[i]);
+      triggered_rule->set_action(expected_rule_actions[i]);
 
-        expected_event.set_profile_identifier(
-            profile_->GetPath().AsUTF8Unsafe());
-        expected_event.set_profile_user_name(kUserName);
+      expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
+      expected_event.set_profile_user_name(kUserName);
 
-        expected_events.emplace_back(expected_event);
-      }
-
-      validator.ExpectSensitiveDataEvents(std::move(expected_events),
-                                          expected_filenames, expected_shas,
-                                          expected_results, expected_scan_ids);
-    } else {
-      validator.ExpectSensitiveDataEvents(
-          /*url*/ "",
-          /*tab_url*/ "",
-          /*source*/ kSourceVolumeInfo.fs_config_string,
-          /*destination*/ kDestinationVolumeInfo.fs_config_string,
-          /*filenames*/ expected_filenames,
-          // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-          /*sha256s*/
-          expected_shas,
-          /*trigger*/
-          kFileTransferDataTransferEventTrigger,
-          /*dlp_verdicts*/
-          expected_dlp_verdicts,
-          /*mimetype*/ DocMimeTypes(),
-          /*size*/ std::string("content").size(),
-          /*result*/
-          expected_results,
-          /*username*/ kUserName,
-          /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-          /*scan_ids*/ expected_scan_ids,
-          /*content_transfer_method*/ std::nullopt,
-          /*user_justification*/ std::nullopt);
+      expected_events.emplace_back(expected_event);
     }
+
+    validator.ExpectSensitiveDataEvents(std::move(expected_events),
+                                        expected_filenames, expected_shas,
+                                        expected_results, expected_scan_ids);
     ScanUpload(source_directory_url_, destination_directory_url_);
     run_loop.Run();
   }
@@ -2357,64 +2033,37 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
     base::RunLoop run_loop;
     validator.SetDoneClosure(run_loop.QuitClosure());
 
-    if (base::FeatureList::IsEnabled(
-            policy::kUploadRealtimeReportingEventsUsingProto)) {
-      std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
-          expected_events;
-      for (size_t i = 0; i < expected_filenames.size(); ++i) {
-        chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
+        expected_events;
+    for (size_t i = 0; i < expected_filenames.size(); ++i) {
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
 
-        expected_event.set_url("");
-        expected_event.set_tab_url("");
-        expected_event.set_source(kSourceVolumeInfo.fs_config_string);
-        expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
+      expected_event.set_url("");
+      expected_event.set_tab_url("");
+      expected_event.set_source(kSourceVolumeInfo.fs_config_string);
+      expected_event.set_destination(kDestinationVolumeInfo.fs_config_string);
 
-        expected_event.set_content_type("application/msword");
-        expected_event.set_content_size(std::string("content").size());
-        expected_event.set_trigger(chrome::cros::reporting::proto::
-                                       DataTransferEventTrigger::FILE_TRANSFER);
-        expected_event.set_clicked_through(true);
-        expected_event.set_user_justification("User justification");
+      expected_event.set_content_type("application/msword");
+      expected_event.set_content_size(std::string("content").size());
+      expected_event.set_trigger(chrome::cros::reporting::proto::
+                                     DataTransferEventTrigger::FILE_TRANSFER);
+      expected_event.set_clicked_through(true);
+      expected_event.set_user_justification("User justification");
 
-        auto* triggered_rule = expected_event.add_triggered_rule_info();
-        triggered_rule->set_rule_name(expected_rule_names[i]);
-        triggered_rule->set_action(
-            ::chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
+      auto* triggered_rule = expected_event.add_triggered_rule_info();
+      triggered_rule->set_rule_name(expected_rule_names[i]);
+      triggered_rule->set_action(
+          ::chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
 
-        expected_event.set_profile_identifier(
-            profile_->GetPath().AsUTF8Unsafe());
-        expected_event.set_profile_user_name(kUserName);
+      expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
+      expected_event.set_profile_user_name(kUserName);
 
-        expected_events.emplace_back(expected_event);
-      }
-
-      validator.ExpectSensitiveDataEvents(std::move(expected_events),
-                                          expected_filenames, expected_shas,
-                                          expected_results, expected_scan_ids);
-    } else {
-      validator.ExpectSensitiveDataEvents(
-          /*url*/ "",
-          /*tab_url*/ "",
-          /*source*/ kSourceVolumeInfo.fs_config_string,
-          /*destination*/ kDestinationVolumeInfo.fs_config_string,
-          /*filenames*/ expected_filenames,
-          // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
-          /*sha256s*/
-          expected_shas,
-          /*trigger*/
-          kFileTransferDataTransferEventTrigger,
-          /*dlp_verdicts*/
-          expected_dlp_verdicts,
-          /*mimetype*/ DocMimeTypes(),
-          /*size*/ std::string("content").size(),
-          /*result*/
-          expected_results,
-          /*username*/ kUserName,
-          /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-          /*scan_ids*/ expected_scan_ids,
-          /*content_transfer_method*/ std::nullopt,
-          /*user_justification*/ kUserJustification);
+      expected_events.emplace_back(expected_event);
     }
+
+    validator.ExpectSensitiveDataEvents(std::move(expected_events),
+                                        expected_filenames, expected_shas,
+                                        expected_results, expected_scan_ids);
 
     file_transfer_analysis_delegate_->BypassWarnings(kUserJustification);
     run_loop.Run();
