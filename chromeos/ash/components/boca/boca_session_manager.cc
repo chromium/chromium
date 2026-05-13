@@ -508,6 +508,26 @@ void BocaSessionManager::CleanupPresenters() {
   teacher_screen_presenter_.reset();
 }
 
+void BocaSessionManager::OnNewTabAdded(int32_t id, ::boca::UrlType url_type) {
+  if (url_type == ::boca::URL_TYPE_GEMINI_REGULAR ||
+      url_type == ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING) {
+    gemini_tab_ = {id, url_type};
+  }
+}
+
+void BocaSessionManager::OnTabRemoved(int32_t id) {
+  if (gemini_tab_.has_value() && gemini_tab_->id == id) {
+    gemini_tab_.reset();
+  }
+}
+
+::boca::UrlType BocaSessionManager::GetTabUrlType(int32_t id) {
+  if (gemini_tab_.has_value() && gemini_tab_->id == id) {
+    return gemini_tab_->gemini_url_type;
+  }
+  return ::boca::URL_TYPE_UNSPECIFIED;
+}
+
 void BocaSessionManager::LoadInitialNetworkState() {
   cros_network_config_->GetNetworkStateList(
       chromeos::network_config::mojom::NetworkFilter::New(
@@ -549,8 +569,8 @@ void BocaSessionManager::OnActiveNetworksChanged(
   }
 
   // Explicitly trigger a session reload either when go back online, or stay
-  // online but managed network status changed. Do not reset session if changing
-  // from online to offline.
+  // online but managed network status changed. Do not reset session if
+  // changing from online to offline.
   bool should_load_session = false;
 
   bool should_disable_on_non_managed_network =
@@ -643,6 +663,7 @@ void BocaSessionManager::NotifySessionUpdate() {
       VLOG(1) << "[Boca] notifying session ended";
       StartSessionPolling(/*in_session=*/false);
       observer.OnSessionEnded(previous_session_->session_id());
+      gemini_tab_.reset();
       if (is_producer_) {
         notification_handler_.HandleSessionEndedNotification(
             message_center::MessageCenter::Get());

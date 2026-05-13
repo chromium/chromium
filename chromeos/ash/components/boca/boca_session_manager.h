@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_MANAGER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -23,6 +24,7 @@
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
 #include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
+#include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
@@ -274,6 +276,12 @@ class BocaSessionManager
       std::string_view student_id);
   virtual void CleanupPresenters();
 
+  void OnNewTabAdded(int32_t id, ::boca::UrlType url_type);
+
+  void OnTabRemoved(int32_t id);
+
+  ::boca::UrlType GetTabUrlType(int32_t id);
+
   base::ObserverList<Observer>& observers() { return observers_; }
 
   AccountId& account_id() { return account_id_; }
@@ -293,6 +301,11 @@ class BocaSessionManager
   }
 
  private:
+  struct GeminiTab {
+    int32_t id;
+    ::boca::UrlType gemini_url_type;
+  };
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   void LoadInitialNetworkState();
@@ -382,6 +395,7 @@ class BocaSessionManager
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
+  std::optional<GeminiTab> gemini_tab_;
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };
 }  // namespace ash::boca

@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/screen_presenter_factory.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
@@ -56,8 +57,8 @@
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -462,6 +463,68 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionEnded) {
   EXPECT_CALL(*observer(), OnSessionEnded(kInitialSessionId)).Times(1);
   task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 1 +
                                     base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerTest, OnNewTabAddedStoresGeminiTab) {
+  int32_t tab_id_1 = 123;
+  int32_t tab_id_2 = 456;
+  int32_t tab_id_3 = 789;
+
+  boca_session_manager()->OnNewTabAdded(tab_id_1,
+                                        ::boca::URL_TYPE_GEMINI_REGULAR);
+  ::boca::UrlType url_type_1 = boca_session_manager()->GetTabUrlType(tab_id_1);
+  boca_session_manager()->OnNewTabAdded(
+      tab_id_2, ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING);
+  ::boca::UrlType url_type_2 = boca_session_manager()->GetTabUrlType(tab_id_2);
+  ::boca::UrlType url_type_3 = boca_session_manager()->GetTabUrlType(tab_id_3);
+
+  EXPECT_EQ(url_type_1, ::boca::URL_TYPE_GEMINI_REGULAR);
+  EXPECT_EQ(url_type_2, ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING);
+  EXPECT_EQ(url_type_3, ::boca::URL_TYPE_UNSPECIFIED);
+}
+
+TEST_F(BocaSessionManagerTest, OnNewTabAddedIgnoresNonGeminiTab) {
+  int32_t tab_id_1 = 123;
+  int32_t tab_id_2 = 456;
+
+  boca_session_manager()->OnNewTabAdded(
+      tab_id_1, ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING);
+  boca_session_manager()->OnNewTabAdded(tab_id_2, ::boca::URL_TYPE_UNSPECIFIED);
+
+  EXPECT_EQ(boca_session_manager()->GetTabUrlType(tab_id_1),
+            ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING);
+  EXPECT_EQ(boca_session_manager()->GetTabUrlType(tab_id_2),
+            ::boca::URL_TYPE_UNSPECIFIED);
+}
+
+TEST_F(BocaSessionManagerTest, OnTabRemovedClearsGeminiTab) {
+  int32_t tab_id = 123;
+  ::boca::UrlType url_type = ::boca::URL_TYPE_GEMINI_REGULAR;
+  boca_session_manager()->OnNewTabAdded(tab_id, url_type);
+  boca_session_manager()->OnTabRemoved(tab_id);
+  EXPECT_EQ(::boca::URL_TYPE_UNSPECIFIED,
+            boca_session_manager()->GetTabUrlType(tab_id));
+}
+
+TEST_F(BocaSessionManagerTest, SessionEndResetsGeminiTab) {
+  int32_t tab_id = 123;
+  ::boca::UrlType url_type = ::boca::URL_TYPE_GEMINI_REGULAR;
+  boca_session_manager()->OnNewTabAdded(tab_id, url_type);
+  EXPECT_EQ(url_type, boca_session_manager()->GetTabUrlType(tab_id));
+
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     base::ok(nullptr));
+      }));
+
+  EXPECT_CALL(*observer(), OnSessionEnded(kInitialSessionId)).Times(1);
+  task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 1 +
+                                    base::Seconds(1));
+
+  EXPECT_EQ(::boca::URL_TYPE_UNSPECIFIED,
+            boca_session_manager()->GetTabUrlType(tab_id));
 }
 
 TEST_F(BocaSessionManagerTest, DoNothingWhenBothSessionIsEmpty) {
