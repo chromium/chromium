@@ -896,6 +896,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_LAZY_FETCH_HAND_WRITING_ICON, "Fetch Hand Writing icon lazily"),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_FORCE_WEB_AUTHN,
+                "Force all WebView instances to enable WebAuthn by default in APP mode. This has"
+                        + " no effect for apps which explicitly choose a WebAuthn mode."),
+        Flag.baseFeature(
                 ContentFeatures.IGNORE_DUPLICATE_NAVS,
                 "Ignore duplicate navigations, keeping the older navigations instead."),
         Flag.baseFeature("OverrideAPIKey"),

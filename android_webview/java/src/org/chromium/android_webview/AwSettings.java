@@ -458,6 +458,10 @@ public class AwSettings {
                                 | HyperlinkContextMenuItems.COPY_LINK_TEXT
                                 | HyperlinkContextMenuItems.OPEN_LINK;
             }
+
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_FORCE_WEB_AUTHN)) {
+                mWebauthnMode = WebauthnMode.APP;
+            }
         }
         // Defer initializing the native side until a native WebContents instance is set.
     }

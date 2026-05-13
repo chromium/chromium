@@ -42,6 +42,9 @@ BASE_FEATURE(kWebViewContentRestrictionSupport,
 // longer supported.
 BASE_FEATURE(kWebViewFileSystemAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Force the default WebAuthn state to be APP mode.
+BASE_FEATURE(kWebViewForceWebAuthn, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Fetch Hand Writing icon lazily.
 BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
              base::FEATURE_ENABLED_BY_DEFAULT);
