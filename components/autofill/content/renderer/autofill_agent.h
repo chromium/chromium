@@ -137,7 +137,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   class EmailVerificationObserver : public blink::WebLocalFrameObserver {
    public:
-    explicit EmailVerificationObserver(content::RenderFrame* render_frame);
+    explicit EmailVerificationObserver(AutofillAgent* agent);
     ~EmailVerificationObserver() override;
     void StoreEmailVerificationToken(FieldRendererId field_id,
                                      const std::string& token);
@@ -147,6 +147,7 @@ class AutofillAgent : public content::RenderFrameObserver,
     void Reset() { email_verification_tokens_.clear(); }
 
    private:
+    const raw_ptr<AutofillAgent> agent_;
     base::flat_map<FieldRendererId, std::string> email_verification_tokens_;
   };
 

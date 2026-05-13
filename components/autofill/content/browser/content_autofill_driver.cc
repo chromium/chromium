@@ -578,6 +578,10 @@ void ContentAutofillDriver::SendEmailVerificationToken(
                token);
 }
 
+void ContentAutofillDriver::OnEmailVerificationTokenShared() {
+  GetAutofillClient().ShowEmailVerifiedToast();
+}
+
 void ContentAutofillDriver::FormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormRendererId>& removed_forms) {

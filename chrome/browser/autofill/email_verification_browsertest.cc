@@ -13,6 +13,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/email_verifier_delegate.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -95,12 +97,30 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
     return response;
   }
 
+  class TestEmailVerificationAutofillClient : public TestContentAutofillClient {
+   public:
+    explicit TestEmailVerificationAutofillClient(
+        content::WebContents* web_contents)
+        : TestContentAutofillClient(web_contents) {}
+    MOCK_METHOD(void, ShowEmailVerifiedToast, (), (override));
+
+   private:
+    EmailVerifierDelegate email_verifier_delegate_{this};
+  };
+
  protected:
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  TestEmailVerificationAutofillClient* client() {
+    return autofill_client_injector_[web_contents()];
+  }
+
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  TestAutofillClientInjector<
+      testing::NiceMock<TestEmailVerificationAutofillClient>>
+      autofill_client_injector_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockEmailVerifier> email_verifier_;
 };
@@ -160,6 +180,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
   // This will trigger FormTracker::WillSendSubmitEvent ->
   // AutofillAgent::OnBeforeFormSubmitted. The attribute is injected
   // SYNCHRONOUSLY.
+  TestEmailVerificationAutofillClient* mock_client = client();
+  EXPECT_CALL(*mock_client, ShowEmailVerifiedToast);
   ASSERT_TRUE(content::ExecJs(
       web_contents(), "document.getElementById('testform').requestSubmit();"));
 

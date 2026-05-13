@@ -472,6 +472,9 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
     DeferMsg(&mojom::AutofillDriver::JavaScriptChangedAutofilledValue, form,
              field_id, old_value);
   }
+  void OnEmailVerificationTokenShared() override {
+    DeferMsg(&mojom::AutofillDriver::OnEmailVerificationTokenShared);
+  }
 
   const raw_ref<AutofillAgent> agent_;
   base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
@@ -523,7 +526,7 @@ AutofillAgent::AutofillAgent(
       password_generation_agent_(std::move(password_generation_agent)),
       replace_form_element_observer_(base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)),
-      email_verification_observer_(render_frame) {
+      email_verification_observer_(this) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
   form_tracker_ = std::make_unique<FormTracker>(unsafe_render_frame(), *this,
@@ -823,8 +826,9 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
 }
 
 AutofillAgent::EmailVerificationObserver::EmailVerificationObserver(
-    content::RenderFrame* render_frame)
-    : blink::WebLocalFrameObserver(render_frame->GetWebFrame()) {}
+    AutofillAgent* agent)
+    : blink::WebLocalFrameObserver(agent->unsafe_render_frame()->GetWebFrame()),
+      agent_(agent) {}
 
 AutofillAgent::EmailVerificationObserver::~EmailVerificationObserver() =
     default;
@@ -880,6 +884,11 @@ void AutofillAgent::EmailVerificationObserver::WillSendSubmitEvent(
         email_verification_tokens_.find(form_util::GetFieldRendererId(control));
     if (it != email_verification_tokens_.end()) {
       field.SetValue(WebString::FromUtf8(it->second));
+
+      if (auto* driver = agent_->unsafe_autofill_driver()) {
+        driver->OnEmailVerificationTokenShared();
+      }
+
       return;
     }
   }

@@ -101,7 +101,6 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
               return;
             }
 
-            manager->client().ShowEmailVerifiedToast();
             manager->driver().SendEmailVerificationToken(field_id,
                                                          *presentation_token);
           },

@@ -148,6 +148,9 @@ interface AutofillDriver {
   JavaScriptChangedAutofilledValue(FormData form,
                                    FieldRendererId field_id,
                                    mojo_base.mojom.String16 old_value);
+
+  // Notification that an email verification token was shared with a form.
+  OnEmailVerificationTokenShared();
 };
 
 // There is one instance of this interface per web contents in the browser

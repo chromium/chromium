@@ -489,6 +489,7 @@ class FakeAutofillDriver : public mojom::AutofillDriver {
               (const autofill::FormData& form),
               (override));
   MOCK_METHOD(void, DidEndTextFieldEditing, (), (override));
+  MOCK_METHOD(void, OnEmailVerificationTokenShared, (), (override));
 
  private:
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};

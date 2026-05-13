@@ -137,7 +137,6 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
 
   EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(0)->global_id(),
                                                    "test_token"));
-  EXPECT_CALL(client(), ShowEmailVerifiedToast);
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");

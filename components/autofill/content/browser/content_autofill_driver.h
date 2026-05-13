@@ -299,6 +299,7 @@ class ContentAutofillDriver : public AutofillDriver,
                              base::TimeTicks timestamp) override;
   void TextFieldDidScroll(const FormData& form,
                           FieldRendererId field_id) override;
+  void OnEmailVerificationTokenShared() override;
 
   void LiftForTest(FormData& form);
 
