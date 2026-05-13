@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFailsWindowClosed) {
   ExecuteJsTest();
 }
 
-// TODO(crbug.com/503936424): Re-enable the test.
+// TODO(https://crbug.com/503936424): Flaky on Android.
 #if (defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)) || BUILDFLAG(IS_MAC)
 #define MAYBE_testInitializeFailsWindowOpen \
   DISABLED_testInitializeFailsWindowOpen
@@ -642,7 +642,16 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInvokeWaitsForNotifyPanelWillOpen) {
+// TODO(crbug.com/512876414): Re-enable on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_testInvokeWaitsForNotifyPanelWillOpen \
+  DISABLED_testInvokeWaitsForNotifyPanelWillOpen
+#else
+#define MAYBE_testInvokeWaitsForNotifyPanelWillOpen \
+  testInvokeWaitsForNotifyPanelWillOpen
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testInvokeWaitsForNotifyPanelWillOpen) {
   ASSERT_OK(OpenGlicForActiveTab());
   GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
   options.target.surface = DefaultSurface{
