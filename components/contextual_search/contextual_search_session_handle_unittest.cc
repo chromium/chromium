@@ -108,8 +108,12 @@ TEST_F(ContextualSearchSessionHandleTest,
         EXPECT_EQ(input_data->mime_type_string, test_mime_type);
       });
 
-  handle_->StartDriveContextUploadFlow(token, test_drive_id, test_resource_key,
-                                       test_mime_type);
+  ContextualSearchSessionHandle::DriveUploadParams params;
+  params.drive_id = test_drive_id;
+  params.resource_key = test_resource_key;
+  params.mime_type = test_mime_type;
+  params.file_name = "test.doc";
+  handle_->StartDriveContextUploadFlow(token, params);
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
@@ -118,7 +122,12 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _)).Times(0);
 
-  handle_->StartDriveContextUploadFlow(token, "id", "key", "type");
+  ContextualSearchSessionHandle::DriveUploadParams params;
+  params.drive_id = "id";
+  params.resource_key = "key";
+  params.mime_type = "type";
+  params.file_name = "name";
+  handle_->StartDriveContextUploadFlow(token, params);
 }
 
 }  // namespace contextual_search

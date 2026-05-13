@@ -789,8 +789,12 @@ void ContextualSearchboxHandler::OnSelection(
 
     base::UnguessableToken token =
         contextual_session_handle->CreateContextToken();
-    contextual_session_handle->StartDriveContextUploadFlow(
-        token, file.drive_id, file.resource_key, file.mime_type);
+    contextual_search::ContextualSearchSessionHandle::DriveUploadParams params;
+    params.drive_id = file.drive_id;
+    params.resource_key = file.resource_key;
+    params.mime_type = file.mime_type;
+    params.file_name = file.file_name;
+    contextual_session_handle->StartDriveContextUploadFlow(token, params);
 
     auto success_file = searchbox::mojom::DriveFile::New();
     success_file->token = token;

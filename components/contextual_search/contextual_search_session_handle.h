@@ -124,13 +124,18 @@ class ContextualSearchSessionHandle {
       const base::UnguessableToken& file_token,
       const GURL& url);
 
+  struct DriveUploadParams {
+    std::string drive_id;
+    std::optional<std::string> resource_key;
+    std::string mime_type;
+    std::string file_name;
+  };
+
   // Starts the Drive context upload flow for the given file token. The file
   // token must have been previously returned by `CreateContextToken`.
   virtual void StartDriveContextUploadFlow(
       const base::UnguessableToken& file_token,
-      const std::string& drive_id,
-      std::optional<std::string> resource_key,
-      const std::string& mime_type_string);
+      const DriveUploadParams& params);
 
   // Starts the Modality Chip upload flow for the given file token. The file
   // token must have been previously returned by `CreateContextToken`.
