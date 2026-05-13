@@ -109,7 +109,7 @@ class IsolatedWebAppInstallerViewController
   void OnInstallProgressUpdated(double progress);
   void OnIconMaskedUpdateShelf(SkBitmap mask_bitmap);
 
-  void OnInstallComplete(
+  void StoreIwaUpdateChannel(
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError> result);
 

@@ -230,18 +230,12 @@ IsolationData::Builder&& IsolationData::Builder::SetUpdateManifestUrl(
 
 IsolationData::Builder& IsolationData::Builder::SetUpdateChannel(
     UpdateChannel update_channel) & {
-  CHECK(location_.dev_mode())
-      << "This field is supposed to be used only with dev mode installs via "
-         "chrome://web-app-internals.";
   update_channel_ = std::move(update_channel);
   return *this;
 }
 
 IsolationData::Builder&& IsolationData::Builder::SetUpdateChannel(
     UpdateChannel update_channel) && {
-  CHECK(location_.dev_mode())
-      << "This field is supposed to be used only with dev mode installs via "
-         "chrome://web-app-internals.";
   update_channel_ = std::move(update_channel);
   return std::move(*this);
 }

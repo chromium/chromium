@@ -28,9 +28,13 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_user_installed_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -141,6 +145,24 @@ bool IsUserInstallEnabledForProfile(Profile* profile) {
   return true;
 }
 
+void UpdateIwaChannelInDatabase(webapps::AppId app_id,
+                                UpdateChannel update_channel,
+                                AppLock& lock,
+                                base::DictValue& debug_value) {
+  debug_value.Set("update_channel", update_channel.ToString());
+
+  ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
+  WebApp* web_app = update->UpdateApp(app_id);
+
+  if (!web_app || !web_app->isolation_data()) {
+    LOG(ERROR) << "Failed to update IWA channel in database.";
+    return;
+  }
+
+  web_app->SetIsolationData(IsolationData::Builder(*web_app->isolation_data())
+                                .SetUpdateChannel(std::move(update_channel))
+                                .Build());
+}
 }  // namespace
 
 struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
@@ -548,10 +570,24 @@ void IsolatedWebAppInstallerViewController::OnIconMaskedUpdateShelf(
   AddOrUpdateWindowToShelf();
 }
 
-void IsolatedWebAppInstallerViewController::OnInstallComplete(
+void IsolatedWebAppInstallerViewController::StoreIwaUpdateChannel(
     base::expected<InstallIsolatedWebAppCommandSuccess,
                    InstallIsolatedWebAppCommandError> result) {
   if (result.has_value()) {
+    if (base::FeatureList::IsEnabled(kIwaUpdateChannelsInInstaller)) {
+      std::optional<UpdateChannel> selected_channel =
+          view_->GetSelectedUpdateChannel();
+
+      if (selected_channel.has_value()) {
+        web_app_provider_->scheduler().ScheduleCallback(
+            "StoreIwaUpdateChannel",
+            AppLockDescription(model_->bundle_metadata().app_id()),
+            base::BindOnce(&UpdateIwaChannelInDatabase,
+                           model_->bundle_metadata().app_id(),
+                           std::move(selected_channel.value())),
+            base::DoNothing());
+      }
+    }
     model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstallSuccess);
   } else {
     model_->SetDialog(IsolatedWebAppInstallerModel::InstallationFailedDialog{});
@@ -594,7 +630,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
                                           IwaSourceBundleDevFileOp::kCopy)),
           metadata.version(),
           callback_delayer_->StartDelayingCallback(base::BindOnce(
-              &IsolatedWebAppInstallerViewController::OnInstallComplete,
+              &IsolatedWebAppInstallerViewController::StoreIwaUpdateChannel,
               weak_ptr_factory_.GetWeakPtr())));
       break;
     }
@@ -641,7 +677,8 @@ void IsolatedWebAppInstallerViewController::OnStepChanged() {
     case IsolatedWebAppInstallerModel::Step::kShowMetadata:
       IsolatedWebAppInstallerView::SetDialogButtons(
           dialog_delegate_, IDS_APP_CANCEL, IDS_INSTALL);
-      view_->ShowMetadataScreen(model_->bundle_metadata());
+      view_->ShowMetadataScreen(model_->bundle_metadata(),
+                                model_->available_channels());
       break;
 
     case IsolatedWebAppInstallerModel::Step::kInstall:

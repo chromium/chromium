@@ -88,6 +88,7 @@ using ::testing::VariantWith;
 using Step = IsolatedWebAppInstallerModel::Step;
 
 constexpr std::string_view kIconPath = "/icon.png";
+const std::optional<UpdateChannel> kNoChannelSelected = std::nullopt;
 
 MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
   return ExplainMatchResult(
@@ -143,8 +144,13 @@ class MockView : public IsolatedWebAppInstallerView {
   MOCK_METHOD(void, UpdateGetMetadataProgress, (double progress), (override));
   MOCK_METHOD(void,
               ShowMetadataScreen,
-              (const SignedWebBundleMetadata& bundle_metadata),
+              (const SignedWebBundleMetadata& bundle_metadata,
+               const std::vector<UpdateChannel>& available_channels),
               (override));
+  MOCK_METHOD(const std::optional<UpdateChannel>&,
+              GetSelectedUpdateChannel,
+              (),
+              (const, override));
   MOCK_METHOD(void,
               ShowInstallScreen,
               (const SignedWebBundleMetadata& bundle_metadata),
@@ -282,7 +288,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   EXPECT_CALL(view, ShowGetMetadataScreen());
   EXPECT_CALL(
       view, ShowMetadataScreen(WithMetadata("hoealecpbefphiclhampllbdbdpfmfpi",
-                                            u"test app name", "7.7.7")));
+                                            u"test app name", "7.7.7"),
+                               _));
 
   controller.Start(base::DoNothing(), base::DoNothing());
 
@@ -431,6 +438,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
        SuccessfulInstallationMovesToSuccessScreen) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIwaUpdateChannelsInInstaller);
+
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
   MockIconAndPageState(url_info, "1.0");
@@ -454,6 +464,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   EXPECT_CALL(view, UpdateInstallProgress(_)).Times(AnyNumber());
   EXPECT_CALL(view, ShowInstallScreen(metadata));
+  EXPECT_CALL(view, GetSelectedUpdateChannel())
+      .WillOnce(testing::ReturnRef(kNoChannelSelected));
   EXPECT_CALL(view, ShowInstallSuccessScreen(metadata));
 
   controller.OnChildDialogAccepted();
@@ -591,7 +603,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   EXPECT_CALL(view, UpdateGetMetadataProgress(_)).Times(AnyNumber());
   EXPECT_CALL(view, ShowGetMetadataScreen());
-  EXPECT_CALL(view, ShowMetadataScreen(_));
+  EXPECT_CALL(view, ShowMetadataScreen(_, _));
 
   controller.Start(base::DoNothing(), base::DoNothing());
 
@@ -609,6 +621,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ChannelsEmptyWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kIwaUpdateChannelsInInstaller);
+
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
   MockIconAndPageState(url_info);
@@ -621,7 +636,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   EXPECT_CALL(view, UpdateGetMetadataProgress(_)).Times(AnyNumber());
   EXPECT_CALL(view, ShowGetMetadataScreen());
-  EXPECT_CALL(view, ShowMetadataScreen(_));
+  EXPECT_CALL(view, ShowMetadataScreen(_, _));
 
   controller.Start(base::DoNothing(), base::DoNothing());
 
@@ -679,7 +694,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   EXPECT_CALL(view, ShowGetMetadataScreen());
   EXPECT_CALL(
       view, ShowMetadataScreen(WithMetadata("hoealecpbefphiclhampllbdbdpfmfpi",
-                                            u"test app name", "7.7.7")));
+                                            u"test app name", "7.7.7"),
+                               _));
 
   controller.Start(base::DoNothing(), base::DoNothing());
 
@@ -720,7 +736,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   EXPECT_CALL(view, ShowGetMetadataScreen());
   EXPECT_CALL(
       view, ShowMetadataScreen(WithMetadata("hoealecpbefphiclhampllbdbdpfmfpi",
-                                            u"test app name", "7.7.7")));
+                                            u"test app name", "7.7.7"),
+                               _));
 
   profile()->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled, true);
 
@@ -793,5 +810,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, DisabledViewAccessibility) {
   // Prevent dangling pointer (the view is destroyed first)
   controller.SetViewForTesting(nullptr);
 }
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace web_app

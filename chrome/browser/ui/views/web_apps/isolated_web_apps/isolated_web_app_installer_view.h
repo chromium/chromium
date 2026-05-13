@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -64,7 +65,8 @@ class IsolatedWebAppInstallerView : public views::View {
   virtual void UpdateGetMetadataProgress(double percent) = 0;
 
   virtual void ShowMetadataScreen(
-      const SignedWebBundleMetadata& bundle_metadata) = 0;
+      const SignedWebBundleMetadata& bundle_metadata,
+      const std::vector<UpdateChannel>& available_channels) = 0;
 
   virtual void ShowInstallScreen(
       const SignedWebBundleMetadata& bundle_metadata) = 0;
@@ -76,6 +78,9 @@ class IsolatedWebAppInstallerView : public views::View {
   virtual views::Widget* ShowDialog(
       const IsolatedWebAppInstallerModel::Dialog& dialog,
       const views::DialogDelegate* dialog_delegate) = 0;
+
+  virtual const std::optional<UpdateChannel>& GetSelectedUpdateChannel()
+      const = 0;
 };
 
 }  // namespace web_app

@@ -48,7 +48,8 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   void UpdateGetMetadataProgress(double percent) override;
 
   void ShowMetadataScreen(
-      const SignedWebBundleMetadata& bundle_metadata) override;
+      const SignedWebBundleMetadata& bundle_metadata,
+      const std::vector<UpdateChannel>& available_channels) override;
 
   void ShowInstallScreen(
       const SignedWebBundleMetadata& bundle_metadata) override;
@@ -60,6 +61,8 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   views::Widget* ShowDialog(
       const IsolatedWebAppInstallerModel::Dialog& dialog,
       const views::DialogDelegate* dialog_delegate) override;
+
+  const std::optional<UpdateChannel>& GetSelectedUpdateChannel() const override;
 
  private:
   template <class T, class... Args>

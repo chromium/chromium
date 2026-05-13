@@ -194,8 +194,7 @@ class IsolationData {
     Builder& SetUpdateManifestUrl(GURL update_manifest_url) &;
     Builder&& SetUpdateManifestUrl(GURL update_manifest_url) &&;
 
-    // Update channel is supposed to be set only for selected dev-mode
-    // installs. Will `CHECK`-fail if applied to a prod-mode location.
+    // Update channel can be set either in dev mode or in user installed app.
     Builder& SetUpdateChannel(UpdateChannel update_channel) &;
     Builder&& SetUpdateChannel(UpdateChannel update_channel) &&;
 

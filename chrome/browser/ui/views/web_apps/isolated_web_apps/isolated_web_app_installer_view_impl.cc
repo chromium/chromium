@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -549,7 +550,8 @@ void IsolatedWebAppInstallerViewImpl::UpdateGetMetadataProgress(
 }
 
 void IsolatedWebAppInstallerViewImpl::ShowMetadataScreen(
-    const SignedWebBundleMetadata& bundle_metadata) {
+    const SignedWebBundleMetadata& bundle_metadata,
+    const std::vector<UpdateChannel>& available_channels) {
   std::vector<std::pair<int, std::u16string>> data = {
       {IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL,
        bundle_metadata.app_name()},
@@ -685,6 +687,14 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 std::nullopt);
           }},
       dialog);
+}
+
+const std::optional<UpdateChannel>&
+IsolatedWebAppInstallerViewImpl::GetSelectedUpdateChannel() const {
+  // TODO(crbug.com/500326341): Implement this.
+  static const base::NoDestructor<std::optional<UpdateChannel>> default_channel(
+      UpdateChannel::default_channel());
+  return *default_channel;
 }
 
 views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(
