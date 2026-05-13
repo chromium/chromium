@@ -28,6 +28,10 @@ class ScenarioBuilder final {
   ScenarioBuilder& AddBaseModel(const std::string& name);
   ScenarioBuilder& AddBaseModel(const std::string& name,
                                 BaseModelRecipeArgs args);
+  ScenarioBuilder& AddBaseModel(const std::string& name,
+                                BaseModelRecipeArgs args,
+                                const FakeBaseModelAsset::Content& content,
+                                const std::string& version);
   ScenarioBuilder& AddSafetyModel(const std::string& name);
   ScenarioBuilder& AddAdaptation(const std::string& name,
                                  const std::string& base_model);

@@ -484,7 +484,7 @@ OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
   model_paths.adapter_cache =
       model_metadata_->model_path().Append(kAdapterCacheFile);
   // TODO(crbug.com/461547475): GPU cache is experimental for now, remove
-  // once feature flag it's no longer needed.
+  // once feature flag is no longer needed.
   if (base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelGpuCache) &&
       backend_type == ml::ModelBackendType::kGpuBackend) {

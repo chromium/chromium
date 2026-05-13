@@ -32,17 +32,27 @@ ScenarioBuilder& ScenarioBuilder::AddBaseModel(const std::string& name) {
 
 ScenarioBuilder& ScenarioBuilder::AddBaseModel(const std::string& name,
                                                BaseModelRecipeArgs args) {
-  state_->UpdateBaseModel(name + "_key", []() {
-    auto base_model_asset =
-        std::make_unique<FakeBaseModelAsset>(FakeBaseModelAsset::Content{
-            .cache_weight = 1015,
-            .encoder_cache_weight = 1016,
-            .adapter_cache_weight = 1017,
-        });
-    base_model_asset->set_version("1.0.0.0");
+  AddBaseModel(name, args,
+               FakeBaseModelAsset::Content{
+                   .cache_weight = 1015,
+                   .encoder_cache_weight = 1016,
+                   .adapter_cache_weight = 1017,
+               },
+               "1.0.0.0");
+  return *this;
+}
+
+ScenarioBuilder& ScenarioBuilder::AddBaseModel(
+    const std::string& name,
+    BaseModelRecipeArgs args,
+    const FakeBaseModelAsset::Content& content,
+    const std::string& version) {
+  state_->UpdateBaseModel(name + "_key", [&]() {
+    auto base_model_asset = std::make_unique<FakeBaseModelAsset>(content);
+    base_model_asset->set_version(version);
     return base_model_asset;
   }());
-  builder.Add(name + "_asset", OnDemandComponent(name + "_key", "1.0.0.0"));
+  builder.Add(name + "_asset", OnDemandComponent(name + "_key", version));
   builder.Add(
       name + "_recipe",
       BaseModelRecipe(FileReference(name + "_asset", "weights.bin"), args));

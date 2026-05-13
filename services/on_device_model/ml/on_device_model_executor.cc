@@ -790,7 +790,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
     data.adapter_cache_file = assets.adapter_cache.TakePlatformFile();
   }
   // TODO(crbug.com/461547475): GPU cache is experimental for now, remove
-  // once feature flag it's no longer needed.
+  // once feature flag is no longer needed.
   if (base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelGpuCache) &&
       params->backend_type == ml::ModelBackendType::kGpuBackend &&

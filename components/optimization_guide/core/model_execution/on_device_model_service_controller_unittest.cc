@@ -466,6 +466,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
       std::vector<proto::OnDeviceModelPerformanceHint>{
           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE},
       FakeBaseModelAsset::Content{
+          .cache_weight = 1015,
+          .encoder_cache_weight = 1016,
+          .adapter_cache_weight = 1017,
           .shader_cache_data = "0xcafebabe",
       }));
   Initialize(InitializeParams{
@@ -481,6 +484,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(),
             "Fastest inference"
+            "Encoder cache weight: 1016"
+            "Adapter cache weight: 1017"
             "Shader cache data: 0xcafebabe"
             "execute:foo max:1024");
   // Destroy the session and run until the service is no longer running.

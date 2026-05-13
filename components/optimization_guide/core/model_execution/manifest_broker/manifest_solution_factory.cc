@@ -25,6 +25,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
 namespace optimization_guide {
@@ -575,6 +576,14 @@ void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
   }
   paths.encoder_cache = paths.weights.DirName().Append(kEncoderCacheFile);
   paths.adapter_cache = paths.weights.DirName().Append(kAdapterCacheFile);
+  // TODO(crbug.com/461547475): GPU cache is experimental for now, remove
+  // once feature flag is no longer needed.
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelGpuCache) &&
+      recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_GPU) {
+    // Program cache will be used for GPU backend only.
+    paths.program_cache = paths.weights.DirName().Append(kProgramCacheFile);
+  }
 
   service_client_->AddPendingUsage();
   base::ThreadPool::PostTaskAndReplyWithResult(

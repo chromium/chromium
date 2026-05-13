@@ -139,6 +139,57 @@ TEST_F(ManifestSolutionFactoryTest, ExecuteTestFeature) {
   EXPECT_EQ(*response.value(), expected_response);
 }
 
+// Test that the GPU cache feature can be executed successfully.
+TEST_F(ManifestSolutionFactoryTest, ExecuteTestGpuCacheFeature) {
+  base::test::ScopedFeatureList feature_list;
+  // TODO(crbug.com/461547475): GPU cache flag is experimental for now, remove
+  // once it's no longer needed.
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOptimizationGuideOnDeviceModel,
+        {{"on_device_model_topk", "1"}, {"on_device_model_temperature", "0"}}},
+       {on_device_model::features::kOnDeviceModelGpuCache, {}}},
+      {});
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel(
+          "gpu_model_A",
+          BaseModelRecipeArgs(
+              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+              proto::BaseModelRecipe::PERFORMANCE_HINT_FASTEST_INFERENCE,
+              /* supported_ranks= */ {},
+              /* max_tokens= */ 100),
+          FakeBaseModelAsset::Content{.cache_weight = 1015,
+                                      .encoder_cache_weight = 1016,
+                                      .adapter_cache_weight = 1017,
+                                      .shader_cache_data = "0xcafebabe"},
+          "1.0.0.1")
+      .AddUnsafeSolution("test", "gpu_model_A")
+      .Finish();
+  fake_.Startup();
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
+
+  proto::ExampleForTestingRequest request;
+  request.set_string_value("hello");
+
+  ResponseHolder response;
+  session->ExecuteModel(request, response.GetStreamingCallback());
+
+  EXPECT_TRUE(response.GetFinalStatus());
+
+  std::string expected_response =
+      ("Fastest inference"
+       "Encoder cache weight: 1016"
+       "Adapter cache weight: 1017"
+       "Shader cache data: 0xcafebabe"
+       "hello max:1024");
+  EXPECT_EQ(*response.value(), expected_response);
+}
+
 // Test that a simple feature can be executed successfully.
 TEST_F(ManifestSolutionFactoryTest, ExecuteTestFeatureWithHints) {
   ScenarioBuilder(fake_.component_state())
