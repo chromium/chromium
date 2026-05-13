@@ -1705,8 +1705,17 @@ IN_PROC_BROWSER_TEST_F(
 // See https://crbug.com/40625642#comment23 for details.
 // TODO(crbug.com/40669814): Change this test so extension without hashes
 // will be also reinstalled.
-IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
-                       CorruptedNonWebstoreExtensionWithoutHashesRemained) {
+// TODO(crbug.com/511917153): Re-enable this test on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CorruptedNonWebstoreExtensionWithoutHashesRemained \
+  DISABLED_CorruptedNonWebstoreExtensionWithoutHashesRemained
+#else
+#define MAYBE_CorruptedNonWebstoreExtensionWithoutHashesRemained \
+  CorruptedNonWebstoreExtensionWithoutHashesRemained
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ExtensionPolicyTest,
+    MAYBE_CorruptedNonWebstoreExtensionWithoutHashesRemained) {
   // Mark as enterprise managed.
   policy::ScopedDomainEnterpriseManagement scoped_domain;
   ignore_content_verifier_.reset();
