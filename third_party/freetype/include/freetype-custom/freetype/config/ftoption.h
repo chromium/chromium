@@ -442,8 +442,10 @@ FT_BEGIN_HEADER
 
   /**************************************************************************
    *
-   * The size in bytes of the render pool used by the scan-line converter to
-   * do all of its work.
+   * The size in bytes of the stack render pool used by the scan-line
+   * converters.  Use this option to limit the stack usage.  The memory
+   * requirements are proportional to size and complexity of a given glyph.
+   * FreeType's rasterizers switch to dynamic allocations when necessary.
    */
 #define FT_RENDER_POOL_SIZE  16384L
 
