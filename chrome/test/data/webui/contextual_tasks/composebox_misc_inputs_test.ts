@@ -381,7 +381,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         assertEquals(
             1,
             metrics.count(
-                'ContextualTasks.VoiceSearch.State',
+                'ContextualTasks.VoiceSearch.StateV2',
                 /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
             'Voice search button clicked metric count is incorrect');
       });
@@ -401,7 +401,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertEquals(
         1,
         metrics.count(
-            'ContextualTasks.VoiceSearch.State',
+            'ContextualTasks.VoiceSearch.StateV2',
             /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
         'Voice search button clicked metric count is incorrect');
     const [callback] = await windowProxy.whenCalled('setTimeout');
@@ -439,7 +439,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertEquals(
         1,
         metrics.count(
-            'ContextualTasks.VoiceSearch.State',
+            'ContextualTasks.VoiceSearch.StateV2',
             /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 1),
         'Voice transcription success metric count is wrong: helloworld2');
     await new Promise(resolve => requestAnimationFrame(resolve));
@@ -494,7 +494,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertEquals(
         1,
         metrics.count(
-            'ContextualTasks.VoiceSearch.State',
+            'ContextualTasks.VoiceSearch.StateV2',
             /* VOICE_SEARCH_ERROR */ 2),
         'Voice search error metric count is incorrect');
   });
@@ -519,7 +519,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         assertEquals(
             1,
             metrics.count(
-                'ContextualTasks.VoiceSearch.State',
+                'ContextualTasks.VoiceSearch.StateV2',
                 /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
             'Voice search button clicked metric count is incorrect');
 
@@ -553,7 +553,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         assertEquals(
             1,
             metrics.count(
-                'ContextualTasks.VoiceSearch.State',
+                'ContextualTasks.VoiceSearch.StateV2',
                 /* VOICE_SEARCH_ERROR */ 2),
             'Voice search error metric count is incorrect');
       });
@@ -593,7 +593,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertEquals(
         1,
         metrics.count(
-            'ContextualTasks.VoiceSearch.State',
+            'ContextualTasks.VoiceSearch.StateV2',
             /* VOICE_SEARCH_USER_CANCELED*/ 4),
         'Voice search canceled metric count is incorrect');
   });
