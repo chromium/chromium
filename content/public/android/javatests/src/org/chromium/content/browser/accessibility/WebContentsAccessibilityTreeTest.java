@@ -1350,18 +1350,14 @@ public class WebContentsAccessibilityTreeTest {
         performApgPatternTest("aria-slider-vertical.html");
     }
 
-    // TODO(crbug.com/508658153): re-enable this test
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/508658153")
     public void test_ariaTreeviewFileDirectoryComputedProperties() {
         performApgPatternTest("aria-treeview-file-directory-computed-properties.html");
     }
 
-    // TODO(crbug.com/508658153): re-enable this test
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/508658153")
     public void test_ariaTreeviewFileDirectoryDeclaredProperties() {
         performApgPatternTest("aria-treeview-file-directory-declared-properties.html");
     }
@@ -2375,10 +2371,8 @@ public class WebContentsAccessibilityTreeTest {
         performHtmlTest("legend.html");
     }
 
-    // TODO(crbug.com/508658153): re-enable this test
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/508658153")
     public void test_li() {
         performHtmlTest("li.html");
     }
