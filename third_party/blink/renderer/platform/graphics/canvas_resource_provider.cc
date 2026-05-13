@@ -1354,17 +1354,14 @@ Canvas2DResourceProviderSharedImage::CreateWithClear(
   auto provider = std::make_unique<Canvas2DResourceProviderSharedImage>(
       size, format, alpha_type, color_space, context_provider_wrapper,
       is_accelerated, shared_image_usage_flags, delegate);
-  if (provider->IsValid()) {
-    provider->ClearAtCreationForCanvas2D();
-
-    // Check whether an error occurred while flushing the recording.
-    if (!provider->IsValid()) {
-      return nullptr;
-    }
-    return provider;
+  if (!provider->IsValid()) {
+    return nullptr;
   }
 
-  return nullptr;
+  provider->ClearAtCreationForCanvas2D();
+
+  // An error might have occurred while clearing.
+  return provider->IsValid() ? std::move(provider) : nullptr;
 }
 
 std::unique_ptr<Canvas2DResourceProviderSharedImage>
