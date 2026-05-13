@@ -23,6 +23,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
+#include "device/fido/public/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/action_id.h"
@@ -86,6 +87,31 @@ TEST_F(AmbientSigninControllerTest, ShowSinglePasskey) {
               OverrideText(kActionWebAuthnAmbientSignin,
                            l10n_util::GetStringFUTF16(
                                IDS_WEBAUTHN_SIGN_IN_AS_PROMPT, u"username")));
+
+  controller()->Show(model.get());
+}
+
+TEST_F(AmbientSigninControllerTest, ShowSinglePasskey_AnchoredMessage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      device::kWebAuthnAmbientSignin, {{"display", "anchored_message"}});
+
+  auto model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+  model->relying_party_id = "example.com";
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Credential(
+          {device::AuthenticatorType::kEnclave, {4, 5, 6}, std::nullopt}),
+      u"username", vector_icons::kPasskeyIcon, base::DoNothing());
+
+  EXPECT_CALL(*page_action_controller(), Show(kActionWebAuthnAmbientSignin));
+  EXPECT_CALL(*page_action_controller(),
+              SetAnchoredMessageText(kActionWebAuthnAmbientSignin, _));
+  EXPECT_CALL(*page_action_controller(),
+              SetAnchoredMessageIcon(kActionWebAuthnAmbientSignin, _));
+  EXPECT_CALL(*page_action_controller(),
+              ShowAnchoredMessage(kActionWebAuthnAmbientSignin,
+                                  page_actions::AnchoredMessageConfig()));
 
   controller()->Show(model.get());
 }

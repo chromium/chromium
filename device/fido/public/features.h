@@ -73,6 +73,15 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnAmbientSignin);
 
+enum class WebAuthnAmbientSigninDisplay {
+  kSuggestionChip,
+  kAnchoredMessage,
+};
+
+COMPONENT_EXPORT(FIDO_PUBLIC)
+extern const base::FeatureParam<WebAuthnAmbientSigninDisplay>
+    kWebAuthnAmbientSigninDisplayParam;
+
 // Enables publishing prelinking information on Android.
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(FIDO_PUBLIC)

@@ -1292,9 +1292,6 @@ class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
     virtual_device_factory->SetTransport(
         device::FidoTransportProtocol::kInternal);
     virtual_device_factory->SetCtap2Config(std::move(config));
-    virtual_device_factory->mutable_state()->simulate_press_callback =
-        base::BindLambdaForTesting(
-            [](device::VirtualFidoDevice* device) { return false; });
     auth_env_ =
         std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
             std::move(virtual_device_factory));
@@ -1322,10 +1319,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPageAction) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
-
-  virtual_device_factory_->mutable_state()->simulate_press_callback =
-      base::BindLambdaForTesting(
-          [](device::VirtualFidoDevice* device) { return true; });
 
   content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
   observer_->WaitForUI();
@@ -1364,10 +1357,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIBubble) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
-
-  virtual_device_factory_->mutable_state()->simulate_press_callback =
-      base::BindLambdaForTesting(
-          [](device::VirtualFidoDevice* device) { return true; });
 
   content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
   observer_->WaitForUI();
@@ -1408,10 +1397,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIDeduplication) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
-
-  virtual_device_factory_->mutable_state()->simulate_press_callback =
-      base::BindLambdaForTesting(
-          [](device::VirtualFidoDevice* device) { return true; });
 
   content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
   observer_->WaitForUI();
@@ -1467,10 +1452,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPasswordDeduplication) {
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
 
-  virtual_device_factory_->mutable_state()->simulate_press_callback =
-      base::BindLambdaForTesting(
-          [](device::VirtualFidoDevice* device) { return true; });
-
   content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequestWithPassword);
   observer_->WaitForUI();
 
@@ -1488,6 +1469,51 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPasswordDeduplication) {
                        base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
   action_view->NotifyClick(click);
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
+}
+
+class WebAuthnAmbientUIAnchoredMessageTest : public WebAuthnAmbientUITest {
+ public:
+  WebAuthnAmbientUIAnchoredMessageTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        device::kWebAuthnAmbientSignin, {{"display", "anchored_message"}});
+    // kWebAuthnImmediateGet is necessary because the uiMode attribute is not
+    // supported without it.
+    scoped_feature_list_immediate_.InitAndEnableFeature(
+        device::kWebAuthnImmediateGet);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_immediate_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUIAnchoredMessageTest,
+                       AmbientUIAnchoredMessage) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
+  observer_->WaitForUI();
+
+  // Verify that the anchored message is shown.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* controller = browser_view->browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+  EXPECT_EQ(controller->GetActiveAnchoredMessage(),
+            kActionWebAuthnAmbientSignin);
+
+  ambient_signin::AmbientSigninController* ambient_controller =
+      ambient_signin::AmbientSigninController::GetForCurrentDocument(
+          web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(ambient_controller);
+  ambient_controller->TriggerPageActionSignIn();
 
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));

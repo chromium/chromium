@@ -34,6 +34,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "device/fido/public/features.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/style/typography.h"
@@ -98,15 +99,35 @@ void AmbientSigninController::ShowPageAction() {
 
   CHECK_EQ(credential_indices_.size(), 1u);
   const auto& mechanism = model_->mechanisms.at(credential_indices_.at(0));
-  controller->OverrideText(kActionWebAuthnAmbientSignin,
-                           l10n_util::GetStringFUTF16(
-                               IDS_WEBAUTHN_SIGN_IN_AS_PROMPT, mechanism.name));
   controller->OverrideImage(
       kActionWebAuthnAmbientSignin,
       ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon));
 
+  if (device::kWebAuthnAmbientSigninDisplayParam.Get() ==
+      device::WebAuthnAmbientSigninDisplay::kAnchoredMessage) {
+    // TODO(https://crbug.com/358119268): This would need a new string if this
+    // text is going to remain as is. There is a trailing space without a
+    // username being added. Right now it is this way so "Sign in as"
+    // appears before the button in the anchor, and the username is inside the
+    // button.
+    controller->SetAnchoredMessageText(
+        kActionWebAuthnAmbientSignin,
+        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SIGN_IN_AS_PROMPT,
+                                   std::u16string()));
+    controller->OverrideText(kActionWebAuthnAmbientSignin, mechanism.name);
+    controller->SetAnchoredMessageIcon(
+        kActionWebAuthnAmbientSignin,
+        ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon));
+    controller->ShowAnchoredMessage(kActionWebAuthnAmbientSignin,
+                                    page_actions::AnchoredMessageConfig());
+  } else {
+    controller->OverrideText(
+        kActionWebAuthnAmbientSignin,
+        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SIGN_IN_AS_PROMPT,
+                                   mechanism.name));
+    controller->ShowSuggestionChip(kActionWebAuthnAmbientSignin);
+  }
   controller->Show(kActionWebAuthnAmbientSignin);
-  controller->ShowSuggestionChip(kActionWebAuthnAmbientSignin);
 }
 
 void AmbientSigninController::TriggerPageActionSignIn() {
@@ -181,7 +202,12 @@ void AmbientSigninController::Close() {
   }
   if (auto* controller = GetPageActionController()) {
     controller->Hide(kActionWebAuthnAmbientSignin);
-    controller->HideSuggestionChip(kActionWebAuthnAmbientSignin);
+    if (device::kWebAuthnAmbientSigninDisplayParam.Get() ==
+        device::WebAuthnAmbientSigninDisplay::kAnchoredMessage) {
+      controller->HideAnchoredMessage(kActionWebAuthnAmbientSignin);
+    } else {
+      controller->HideSuggestionChip(kActionWebAuthnAmbientSignin);
+    }
   }
 }
 

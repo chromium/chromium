@@ -4629,6 +4629,12 @@ const FeatureEntry::FeatureVariation
         {"Rust and C++", kChildProcessSecurityPolicyRustRustAndCpp, nullptr},
 };
 
+const FeatureEntry::FeatureParam kWebAuthnAmbientSignin_AnchoredMessage[] = {
+    {"display", "anchored_message"}};
+
+const FeatureEntry::FeatureVariation kWebAuthnAmbientSigninVariations[] = {
+    {"Anchored Message", kWebAuthnAmbientSignin_AnchoredMessage, nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -12492,7 +12498,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-authentication-ambient-signin",
      flag_descriptions::kWebAuthnAmbientSigninName,
      flag_descriptions::kWebAuthnAmbientSigninDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(device::kWebAuthnAmbientSignin)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(device::kWebAuthnAmbientSignin,
+                                    kWebAuthnAmbientSigninVariations,
+                                    "WebAuthenticationAmbientSignin")},
 
     {"devtools-protocol-monitor",
      flag_descriptions::kDevToolsProtocolMonitorName,
