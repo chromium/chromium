@@ -18674,25 +18674,6 @@
             ]
         }
     ],
-    "PersistentCacheCollectionWalMode": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "windows",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PersistentCacheCollectionWalMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "PersistentDefaultBrowserPromo": [
         {
             "platforms": [
@@ -24114,6 +24095,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "PersistentCacheCollectionWalMode",
                         "UsePersistentCacheForCodeCache"
                     ]
                 }
