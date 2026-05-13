@@ -791,14 +791,14 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
                 GetFocusDirectionFromKeyboardEvent(key)) {
           if (*direction == Direction::kPrevious) {
             if (auto* previous_option =
-                    options.FindPreviousElement(*this, is_option_focusable)) {
+                    options.FindPreviousOption(*this, is_option_focusable)) {
               previous_option->Focus(focus_params);
             }
             event.SetDefaultHandled();
             return;
           } else {
             if (auto* next_option =
-                    options.FindNextElement(*this, is_option_focusable)) {
+                    options.FindNextOption(*this, is_option_focusable)) {
               next_option->Focus(focus_params);
             }
             event.SetDefaultHandled();
@@ -806,14 +806,14 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           }
         }
       } else if (key == keywords::kHome) {
-        if (auto* first_option = options.FindNextElement(
+        if (auto* first_option = options.FindNextOption(
                 *options.begin(), is_option_focusable, /*inclusive*/ true)) {
           first_option->Focus(focus_params);
         }
         event.SetDefaultHandled();
         return;
       } else if (key == keywords::kEnd) {
-        if (auto* last_option = options.FindPreviousElement(
+        if (auto* last_option = options.FindPreviousOption(
                 *options.last(), is_option_focusable, /*inclusive*/ true)) {
           last_option->Focus(focus_params);
         }
@@ -826,7 +826,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           scrollIntoViewIfNeeded(/*center_if_needed*/ false);
         } else {
           auto* next_option =
-              options.FindNextElement(*this, is_option_focusable);
+              options.FindNextOption(*this, is_option_focusable);
           if (next_option && !next_option->IsVisibleInViewport()) {
             // The next option isn't visible, which means we were at the very
             // bottom. Scroll the current option to the top, and then focus the
@@ -843,7 +843,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           HTMLOptionElement* next_focus = this;
           for (auto* current = this; current && current->IsVisibleInViewport();
                current =
-                   options.FindNextElement(*current, is_option_focusable)) {
+                   options.FindNextOption(*current, is_option_focusable)) {
             next_focus = current;
           }
           next_focus->Focus(focus_params);
@@ -856,7 +856,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           scrollIntoViewIfNeeded(/*center_if_needed*/ false);
         } else {
           auto* previous_option =
-              options.FindPreviousElement(*this, is_option_focusable);
+              options.FindPreviousOption(*this, is_option_focusable);
           if (previous_option && !previous_option->IsVisibleInViewport()) {
             // The previous option isn't visible, which means we were at the
             // very top. Scroll the current option to the bottom, and then focus
@@ -873,7 +873,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           HTMLOptionElement* next_focus = this;
           for (auto* current = this; current && current->IsVisibleInViewport();
                current =
-                   options.FindPreviousElement(*current, is_option_focusable)) {
+                   options.FindPreviousOption(*current, is_option_focusable)) {
             next_focus = current;
           }
           next_focus->Focus(focus_params);

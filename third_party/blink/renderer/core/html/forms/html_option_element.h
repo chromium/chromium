@@ -88,10 +88,6 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
     return nearest_ancestor_select_;
   }
 
-  HTMLSelectElement* OwnerElementForList() const {
-    return nearest_ancestor_select_;
-  }
-
   HTMLOptGroupElement* NearestAncestorOptgroup() const {
     return nearest_ancestor_optgroup_;
   }

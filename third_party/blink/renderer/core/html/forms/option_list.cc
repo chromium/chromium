@@ -5,68 +5,94 @@
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_hr_element.h"
 
 namespace blink {
 
-// This function returns any T descendant of owner_.
-template <typename OwnerType, typename ItemType>
-void ElementListIterator<OwnerType, ItemType>::Advance(ItemType* previous) {
+void OptionListIterator::Advance(HTMLOptionElement* previous) {
+  // This function returns any <option> descendant of select_.
+
   Element* current;
   if (previous) {
-    current = ElementTraversal::NextSkippingChildren(*previous, &owner_);
+    current = ElementTraversal::NextSkippingChildren(*previous, &select_);
   } else {
-    current = ElementTraversal::FirstChild(owner_);
+    current = ElementTraversal::FirstChild(select_);
   }
   while (current) {
-    if (auto* element = DynamicTo<ItemType>(current)) {
-      current_ = element;
+    if (auto* option = DynamicTo<HTMLOptionElement>(current)) {
+      current_ = option;
       return;
     }
-    if (owner_.ShouldIgnoreDescendantsForElementTraversals(current)) {
-      current = ElementTraversal::NextSkippingChildren(*current, &owner_);
+    if (HTMLSelectElement::ShouldIgnoreDescendantsForOptionTraversals(
+            current)) {
+      current = ElementTraversal::NextSkippingChildren(*current, &select_);
+    } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(current)) {
+      // optgroup->OwnerSelectElement() might be null because this method may
+      // be called before InsertedInto is called on the optgroup. Like the
+      // same check for option elements above, we have to skip DCHECKs inside
+      // the call to OwnerSelectElement.
+      // TODO(crbug.com/398887837): Remove the skip_check parameter.
+      if (optgroup->OwnerSelectElement(/*skip_check=*/true) == select_ ||
+          HTMLSelectElement::WalkAncestorsForRelatedParts(*optgroup).select ==
+              select_) {
+        current = ElementTraversal::Next(*current, &select_);
+      } else {
+        // Don't track elements inside nested <optgroup>s.
+        current = ElementTraversal::NextSkippingChildren(*current, &select_);
+      }
     } else {
-      current = ElementTraversal::Next(*current, &owner_);
+      current = ElementTraversal::Next(*current, &select_);
     }
   }
   current_ = nullptr;
 }
 
-template <typename OwnerType, typename ItemType>
-void ElementListIterator<OwnerType, ItemType>::Retreat(ItemType* next) {
+void OptionListIterator::Retreat(HTMLOptionElement* next) {
   Element* current;
   if (next) {
-    DCHECK_EQ(next->OwnerElementForList(), owner_);
-    current = ElementTraversal::Previous(*next, &owner_);
+    DCHECK_EQ(next->OwnerSelectElement(), select_);
+    current = ElementTraversal::Previous(*next, &select_);
   } else {
-    current = ElementTraversal::LastWithin(owner_);
+    current = ElementTraversal::LastWithin(select_);
   }
 
   while (current) {
-    if (auto* element = DynamicTo<ItemType>(current)) {
-      current_ = element;
+    if (auto* option = DynamicTo<HTMLOptionElement>(current)) {
+      current_ = option;
       return;
     }
 
-    if (current == owner_) {
+    if (current == select_) {
       current = nullptr;
-    } else if (owner_.ShouldIgnoreDescendantsForElementTraversals(current)) {
-      current = ElementTraversal::PreviousAbsoluteSibling(*current, &owner_);
+    } else if (HTMLSelectElement::ShouldIgnoreDescendantsForOptionTraversals(
+                   current)) {
+      current = ElementTraversal::PreviousAbsoluteSibling(*current, &select_);
+    } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(current)) {
+      // optgroup->OwnerSelectElement() might be null because this method may
+      // be called before InsertedInto is called on the optgroup.
+      if (optgroup->OwnerSelectElement() == select_ ||
+          HTMLSelectElement::WalkAncestorsForRelatedParts(*optgroup).select ==
+              select_) {
+        current = ElementTraversal::Previous(*current, &select_);
+      } else {
+        // Don't track elements inside nested <optgroup>s.
+        current = ElementTraversal::PreviousAbsoluteSibling(*current, &select_);
+      }
     } else {
-      current = ElementTraversal::Previous(*current, &owner_);
+      current = ElementTraversal::Previous(*current, &select_);
     }
   }
 
   current_ = nullptr;
 }
 
-template <typename OwnerType, typename ItemType>
-unsigned ElementList<OwnerType, ItemType>::size() const {
+unsigned OptionList::size() const {
   unsigned count = 0;
-  auto iterator = Iterator(
-      owner_,
-      ElementListIterator<OwnerType, ItemType>::IteratorStartingPoint::kStart);
+  auto iterator = Iterator(select_, OptionListIterator::StartingPoint::kStart);
   while (iterator) {
     ++count;
     ++iterator;
@@ -74,38 +100,33 @@ unsigned ElementList<OwnerType, ItemType>::size() const {
   return count;
 }
 
-template <typename OwnerType, typename ItemType>
-ItemType* ElementList<OwnerType, ItemType>::FindElement(
-    ItemType& element,
-    ElementMatchingPredicate predicate,
-    bool forward,
-    bool inclusive) {
-  DCHECK_EQ(element.OwnerElementForList(), owner_);
+HTMLOptionElement* OptionList::FindOption(HTMLOptionElement& option,
+                                          OptionMatchingPredicate predicate,
+                                          bool forward,
+                                          bool inclusive) {
+  DCHECK_EQ(option.OwnerSelectElement(), select_);
   DCHECK(!Empty());
-  ElementListIterator<OwnerType, ItemType> it = begin();
-  while (it && *it != element) {
-    ++it;
+  OptionListIterator option_list_iterator = begin();
+  while (option_list_iterator && *option_list_iterator != option) {
+    ++option_list_iterator;
   }
-  CHECK_EQ(*it, element);
+  CHECK_EQ(*option_list_iterator, option);
   while (true) {
     if (!inclusive) {
       if (forward) {
-        ++it;
+        ++option_list_iterator;
       } else {
-        --it;
+        --option_list_iterator;
       }
     }
-    if (!it) {
+    if (!option_list_iterator) {
       return nullptr;
     }
     inclusive = false;
-    if (predicate(*it)) {
-      return &*it;
+    if (predicate(*option_list_iterator)) {
+      return &*option_list_iterator;
     }
   }
 }
-
-template class CORE_TEMPLATE_EXPORT
-    ElementList<HTMLSelectElement, HTMLOptionElement>;
 
 }  // namespace blink

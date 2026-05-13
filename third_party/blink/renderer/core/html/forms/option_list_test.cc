@@ -172,7 +172,7 @@ TEST_F(OptionListTest, RetreatFromLast) {
 
   OptionList list2 = Select().GetOptionList();
   HTMLOptionElement* last_option =
-      list2.FindPreviousElement(*list2.last(), return_true, /*inclusive=*/true);
+      list2.FindPreviousOption(*list2.last(), return_true, /*inclusive=*/true);
   EXPECT_EQ("o3", Id(*last_option));
 }
 

@@ -13,119 +13,101 @@ namespace blink {
 class HTMLSelectElement;
 class HTMLOptionElement;
 
-template <typename OwnerType, typename ItemType>
-class CORE_EXPORT ElementListIterator final {
+class CORE_EXPORT OptionListIterator final {
   STACK_ALLOCATED();
 
  public:
-  enum class IteratorStartingPoint {
+  enum class StartingPoint {
     kStart,
     kEnd,
     kLast,
   };
-
-  explicit ElementListIterator(
-      const OwnerType& owner,
-      IteratorStartingPoint starting_point = IteratorStartingPoint::kStart)
-      : owner_(owner), current_(nullptr) {
+  explicit OptionListIterator(
+      const HTMLSelectElement& select,
+      StartingPoint starting_point = StartingPoint::kStart)
+      : select_(select), current_(nullptr) {
     switch (starting_point) {
-      case IteratorStartingPoint::kStart:
+      case StartingPoint::kStart:
         Advance(nullptr);
         break;
-      case IteratorStartingPoint::kLast:
+      case StartingPoint::kLast:
         Retreat(nullptr);
         break;
-      case IteratorStartingPoint::kEnd:
+      case StartingPoint::kEnd:
         break;
     }
   }
-  ItemType& operator*() {
+  HTMLOptionElement& operator*() {
     DCHECK(current_);
     return *current_;
   }
-  ItemType* operator->() { return current_; }
-  ElementListIterator<OwnerType, ItemType>& operator++() {
+  HTMLOptionElement* operator->() { return current_; }
+  OptionListIterator& operator++() {
     if (current_) {
       Advance(current_);
     }
     return *this;
   }
-  ElementListIterator<OwnerType, ItemType>& operator--() {
+  OptionListIterator& operator--() {
     if (current_) {
       Retreat(current_);
     }
     return *this;
   }
   operator bool() const { return current_; }
-  bool operator==(const ElementListIterator<OwnerType, ItemType>& other) const {
+  bool operator==(const OptionListIterator& other) const {
     return current_ == other.current_;
   }
 
  private:
-  void Advance(ItemType* current);
-  void Retreat(ItemType* current);
+  void Advance(HTMLOptionElement* current);
+  void Retreat(HTMLOptionElement* current);
 
-  const OwnerType& owner_;
-  ItemType* current_;  // nullptr means we reached the end.
+  const HTMLSelectElement& select_;
+  HTMLOptionElement* current_;  // nullptr means we reached the end.
 };
 
-template <typename OwnerType, typename ItemType>
-class ElementList final {
+// OptionList class is a lightweight version of HTMLOptionsCollection.
+class CORE_EXPORT OptionList final {
   STACK_ALLOCATED();
 
  public:
-  explicit ElementList(const OwnerType& owner) : owner_(owner) {}
-  using Iterator = ElementListIterator<OwnerType, ItemType>;
+  explicit OptionList(const HTMLSelectElement& select) : select_(select) {}
+  using Iterator = OptionListIterator;
   Iterator begin() {
-    return Iterator(
-        owner_, ElementListIterator<OwnerType,
-                                    ItemType>::IteratorStartingPoint::kStart);
+    return Iterator(select_, OptionListIterator::StartingPoint::kStart);
   }
   Iterator end() {
-    return Iterator(
-        owner_,
-        ElementListIterator<OwnerType, ItemType>::IteratorStartingPoint::kEnd);
+    return Iterator(select_, OptionListIterator::StartingPoint::kEnd);
   }
   Iterator last() {
-    return Iterator(
-        owner_,
-        ElementListIterator<OwnerType, ItemType>::IteratorStartingPoint::kLast);
+    return Iterator(select_, OptionListIterator::StartingPoint::kLast);
   }
   bool Empty() {
-    return !Iterator(
-        owner_, ElementListIterator<OwnerType,
-                                    ItemType>::IteratorStartingPoint::kStart);
+    return !Iterator(select_, OptionListIterator::StartingPoint::kStart);
   }
   unsigned size() const;
 
-  typedef bool (*ElementMatchingPredicate)(ItemType& element);
-  ItemType* FindNextElement(ItemType& element,
-                            ElementMatchingPredicate predicate,
-                            bool inclusive = false) {
-    return FindElement(element, predicate, /*forward*/ true, inclusive);
+  typedef bool (*OptionMatchingPredicate)(HTMLOptionElement& option);
+  HTMLOptionElement* FindNextOption(HTMLOptionElement& option,
+                                    OptionMatchingPredicate predicate,
+                                    bool inclusive = false) {
+    return FindOption(option, predicate, /*forward*/ true, inclusive);
   }
-  ItemType* FindPreviousElement(ItemType& element,
-                                ElementMatchingPredicate predicate,
-                                bool inclusive = false) {
-    return FindElement(element, predicate, /*forward*/ false, inclusive);
+  HTMLOptionElement* FindPreviousOption(HTMLOptionElement& option,
+                                        OptionMatchingPredicate predicate,
+                                        bool inclusive = false) {
+    return FindOption(option, predicate, /*forward*/ false, inclusive);
   }
 
  private:
-  ItemType* FindElement(ItemType& element,
-                        ElementMatchingPredicate predicate,
-                        bool forward,
-                        bool inclusive);
+  HTMLOptionElement* FindOption(HTMLOptionElement& option,
+                                OptionMatchingPredicate predicate,
+                                bool forward,
+                                bool inclusive);
 
-  const OwnerType& owner_;
+  const HTMLSelectElement& select_;
 };
-
-// Defining the template implementation in the cc file instead of this header
-// should reduce compiled object size.
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    ElementList<HTMLSelectElement, HTMLOptionElement>;
-
-// OptionList class is a lightweight version of HTMLOptionsCollection.
-using OptionList = ElementList<HTMLSelectElement, HTMLOptionElement>;
 
 }  // namespace blink
 
