@@ -4,10 +4,13 @@
 
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "gpu/vulkan/buildflags.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
@@ -73,9 +76,13 @@ VulkanInProcessContextProvider::VulkanInProcessContextProvider(
     base::TimeDelta cooldown_duration_at_memory_pressure_critical)
     : vulkan_implementation_(vulkan_implementation),
       heap_memory_limit_(heap_memory_limit),
-      sync_cpu_memory_limit_(sync_cpu_memory_limit),
+      sync_cpu_memory_limit_(sync_cpu_memory_limit > 0
+                                 ? std::make_optional(sync_cpu_memory_limit)
+                                 : std::nullopt),
       cooldown_duration_at_memory_pressure_critical_(
-          cooldown_duration_at_memory_pressure_critical) {
+          cooldown_duration_at_memory_pressure_critical),
+      critical_memory_pressure_expiration_time_(base::TimeTicks()),
+      active_sync_cpu_memory_limit_(sync_cpu_memory_limit) {
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE,
@@ -238,24 +245,48 @@ void VulkanInProcessContextProvider::EnqueueSecondaryCBPostSubmitTask(
 
 std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
     const {
-  // Return false to indicate that there's no limit.
+  // Return nullopt to indicate that there's no limit.
   if (!sync_cpu_memory_limit_) {
     return std::nullopt;
   }
-  return base::TimeTicks::Now() < critical_memory_pressure_expiration_time_
+
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    return active_sync_cpu_memory_limit_.load(std::memory_order_relaxed);
+  }
+
+  return base::TimeTicks::Now() <
+                 critical_memory_pressure_expiration_time_.load(
+                     std::memory_order_relaxed)
              ? std::optional<uint32_t>(
                    kSyncCpuMemoryLimitAtMemoryPressureCritical)
-             : std::optional<uint32_t>(sync_cpu_memory_limit_);
+             : sync_cpu_memory_limit_;
 }
 
 void VulkanInProcessContextProvider::OnMemoryPressure(
     base::MemoryPressureLevel level) {
+  if (!sync_cpu_memory_limit_) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    // We cap the ratio to 1.0 to ensure that we never exceed the
+    // user-provided sync_cpu_memory_limit, even if the memory coordinator
+    // allows for more memory usage (ratio > 1.0).
+    int capped_memory_limit = std::min(100, GetMemoryLimit());
+    uint32_t new_sync_cpu_memory_limit =
+        base::ScaleByMemoryLimit(*sync_cpu_memory_limit_, capped_memory_limit);
+    active_sync_cpu_memory_limit_.store(new_sync_cpu_memory_limit,
+                                        std::memory_order_relaxed);
+    return;
+  }
+
   if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
 
-  critical_memory_pressure_expiration_time_ =
-      base::TimeTicks::Now() + cooldown_duration_at_memory_pressure_critical_;
+  critical_memory_pressure_expiration_time_.store(
+      base::TimeTicks::Now() + cooldown_duration_at_memory_pressure_critical_,
+      std::memory_order_relaxed);
 }
 
 }  // namespace viz
