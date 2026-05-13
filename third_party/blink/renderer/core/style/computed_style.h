@@ -1090,7 +1090,8 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsGapDecorationsContainer() const {
     // `SpecifiesColumns()` signifies we are in a multicol context. Return false
     // if we are not in a multicol, grid, or flex context.
-    return SpecifiesColumns() || IsDisplayFlex() || IsDisplayGrid();
+    return SpecifiesColumns() || IsDisplayFlex() || IsDisplayWebkitBox() ||
+           IsDisplayGrid();
   }
 
   // Flex utility functions.
