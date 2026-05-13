@@ -540,6 +540,9 @@ class WrappedOverlayCompoundImageRepresentation
   gfx::ScopedIOSurface GetIOSurface() const final {
     return wrapped_->GetIOSurface();
   }
+  std::vector<gfx::MTLSharedEventFence> GetBackpressureFences() const final {
+    return wrapped_->GetBackpressureFences();
+  }
   bool IsInUseByWindowServer() const final {
     return wrapped_->IsInUseByWindowServer();
   }
