@@ -323,3 +323,73 @@ cr-spinner {
     box-sizing: border-box;
   }
 }
+
+@keyframes slide-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(30px);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes shrink-out {
+  0% {
+    opacity: 1;
+    width: var(--file-chip-width, 154px);
+    margin-inline-end: 0;
+  }
+  100% {
+    opacity: 0;
+    width: 0;
+    /* Offset the gap to avoid a glitch. */
+    margin-inline-end: calc(0px - var(--composebox-thumbnail-gap, 6px));
+  }
+}
+
+:host(.exiting) {
+  animation: var(--cr-composebox-file-thumbnail-exit-animation, none);
+}
+
+:host(.exiting:last-of-type) {
+  animation: var(--cr-composebox-file-thumbnail-exit-animation-last, none);
+}
+
+:host(.exiting:only-of-type) {
+  animation: none;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(30px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:host(.entering) {
+  animation: var(--cr-composebox-file-thumbnail-entry-animation, none);
+}
+
+:host(.entering:first-of-type) {
+  animation: none;
+}
