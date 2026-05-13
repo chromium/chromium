@@ -12,6 +12,7 @@ import androidx.annotation.CallSuper;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
@@ -42,11 +43,13 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
     @Override
     protected void onStart() {
         super.onStart();
-        getProfileSupplier()
-                .runSyncOrOnAvailable(
-                        (profile) -> {
-                            GlicHelper.maybeShowGlicTaskInProgressSnackbar(this, profile, this);
-                        });
+        if (ChromeFeatureList.sGlicShowTaskInProgressSnackbar.getValue()) {
+            getProfileSupplier()
+                    .runSyncOrOnAvailable(
+                            (profile) -> {
+                                GlicHelper.maybeShowGlicTaskInProgressSnackbar(this, profile, this);
+                            });
+        }
     }
 
     @Override

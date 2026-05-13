@@ -815,7 +815,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        GlicHelper.maybeShowGlicTaskInProgressSnackbar(this, mProfile, this);
+        if (ChromeFeatureList.sGlicShowTaskInProgressSnackbar.getValue()) {
+            GlicHelper.maybeShowGlicTaskInProgressSnackbar(this, mProfile, this);
+        }
     }
 
     @Override

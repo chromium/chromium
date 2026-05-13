@@ -1770,6 +1770,9 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(
                     GESTURE_USER_EDUCATION_BACK_SWIPE, "gesture-user-education-page-delay", 4000);
 
+    public static final BooleanCachedFeatureParam sGlicShowTaskInProgressSnackbar =
+            newBooleanCachedFeatureParam(GLIC, "show_task_in_progress_snackbar", true);
+
     public static final BooleanCachedFeatureParam sHomeButtonRemovalKeepOnNtp =
             newBooleanCachedFeatureParam(HOME_BUTTON_REMOVAL, "keep_home_button_on_ntp", false);
 
@@ -1927,6 +1930,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeUseBackupNavbarInsetsUseGestures,
                     sEnableAndroidSidePanelDisableAnimations,
                     sGestureUserEducationPageDelay,
+                    sGlicShowTaskInProgressSnackbar,
                     sHomeButtonRemovalKeepOnNtp,
                     sInitFeatureListEarly,
                     sLockTopControlsForceAdjustHeightOnStartup,
