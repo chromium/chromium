@@ -7460,6 +7460,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_DESCRIPTION" desc="Description of the Tips Opt In bottom sheet promo.">
         Turn on notifications for useful tips to help you get the best of Chrome
       </message>
+      <message name="IDS_TIPS_OPT_IN_SNACKBAR_MESSAGE" desc="Snackbar message shown when the user opts in to receive tips notifications.">
+        Tips notifications turned on
+      </message>
+      <message name="IDS_TIPS_OPT_IN_SNACKBAR_ACTION_TEXT" desc="Action button of the Tips snackbar on user opt-in. [CHAR_LIMIT=10]">
+        Manage
+      </message>
 
       <!-- Caret Browsing -->
       <message name="IDS_CARET_BROWSING_DIALOG_TITLE" desc="Title of the caret browsing confirmation dialog" formatter_data="android_java">

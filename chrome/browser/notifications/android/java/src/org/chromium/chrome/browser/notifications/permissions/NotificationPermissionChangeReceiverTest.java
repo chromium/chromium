@@ -67,14 +67,14 @@ public class NotificationPermissionChangeReceiverTest {
         NotificationPermissionChangeReceiver receiver = new NotificationPermissionChangeReceiver();
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Mobile.SystemNotification.Permission.Change.Tips", false);
+                        "Mobile.SystemNotification.Permission.Change.TipsV2", false);
 
         // Broadcast sent by Android when the user changes a notification channel's state.
         Intent broadcastIntent =
                 new Intent(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
         broadcastIntent.putExtra(
                 NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID,
-                ChromeChannelDefinitions.ChannelId.TIPS);
+                ChromeChannelDefinitions.ChannelId.TIPS_V2);
         broadcastIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, true);
 
         receiver.onReceive(ApplicationProvider.getApplicationContext(), broadcastIntent);
@@ -86,14 +86,14 @@ public class NotificationPermissionChangeReceiverTest {
         NotificationPermissionChangeReceiver receiver = new NotificationPermissionChangeReceiver();
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Mobile.SystemNotification.Permission.Change.Tips", true);
+                        "Mobile.SystemNotification.Permission.Change.TipsV2", true);
 
         // Broadcast sent by Android when the user changes a notification channel's state.
         Intent broadcastIntent =
                 new Intent(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
         broadcastIntent.putExtra(
                 NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID,
-                ChromeChannelDefinitions.ChannelId.TIPS);
+                ChromeChannelDefinitions.ChannelId.TIPS_V2);
         broadcastIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
 
         receiver.onReceive(ApplicationProvider.getApplicationContext(), broadcastIntent);

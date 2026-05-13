@@ -254,7 +254,7 @@ public class DisplayAgent {
     private static @ChannelId String getNotificationChannel(@SchedulerClientType int type) {
         switch (type) {
             case SchedulerClientType.TIPS:
-                return ChannelId.TIPS;
+                return ChannelId.TIPS_V2;
             case SchedulerClientType.CHROME_FINDS:
                 return ChannelId.CHROME_FINDS;
             default:

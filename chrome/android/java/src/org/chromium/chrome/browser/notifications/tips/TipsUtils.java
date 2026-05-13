@@ -337,7 +337,7 @@ public class TipsUtils {
         }
         BaseNotificationManagerProxyFactory.create()
                 .getNotificationChannel(
-                        ChromeChannelDefinitions.ChannelId.TIPS,
+                        ChromeChannelDefinitions.ChannelId.TIPS_V2,
                         (channel) -> {
                             if (channel != null
                                     && channel.getImportance()
@@ -346,6 +346,20 @@ public class TipsUtils {
                             } else {
                                 callback.onResult(false);
                             }
+                        });
+    }
+
+    /**
+     * Checks if the Tips notification channel has been created.
+     *
+     * @param callback Callback to return true if the channel exists, false otherwise.
+     */
+    public static void isTipsChannelCreated(Callback<Boolean> callback) {
+        BaseNotificationManagerProxyFactory.create()
+                .getNotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.TIPS_V2,
+                        (channel) -> {
+                            callback.onResult(channel != null);
                         });
     }
 
@@ -365,7 +379,7 @@ public class TipsUtils {
         if (areAppNotificationsEnabled()) {
             intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
-            intent.putExtra(Settings.EXTRA_CHANNEL_ID, ChromeChannelDefinitions.ChannelId.TIPS);
+            intent.putExtra(Settings.EXTRA_CHANNEL_ID, ChromeChannelDefinitions.ChannelId.TIPS_V2);
         } else {
             intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
@@ -383,7 +397,7 @@ public class TipsUtils {
                         BaseNotificationManagerProxyFactory.create(),
                         ChromeChannelDefinitions.getInstance(),
                         context.getResources())
-                .ensureInitialized(ChromeChannelDefinitions.ChannelId.TIPS);
+                .ensureInitialized(ChromeChannelDefinitions.ChannelId.TIPS_V2);
     }
 
     /**

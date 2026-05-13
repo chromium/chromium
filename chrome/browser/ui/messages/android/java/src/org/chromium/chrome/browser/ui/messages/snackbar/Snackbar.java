@@ -146,6 +146,7 @@ public class Snackbar {
     public static final int UMA_CONTEXTUAL_TASKS_BOTTOM_SHEET_CLOSED_UNDO = 88;
     public static final int UMA_ACTOR = 89;
     public static final int UMA_GLIC = 90;
+    public static final int UMA_TIPS_OPT_IN = 91;
     // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:SnackbarIdentifier)
 
     private final @Nullable SnackbarController mController;

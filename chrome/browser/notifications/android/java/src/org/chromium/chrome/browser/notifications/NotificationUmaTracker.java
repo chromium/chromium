@@ -909,6 +909,8 @@ public class NotificationUmaTracker {
                 return "Serial";
             case ChannelId.TIPS:
                 return "Tips";
+            case ChannelId.TIPS_V2:
+                return "TipsV2";
             case ChannelId.CHROME_FINDS:
                 return "ChromeFinds";
             default:

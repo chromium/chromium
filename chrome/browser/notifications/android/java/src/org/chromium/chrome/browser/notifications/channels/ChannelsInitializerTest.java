@@ -109,8 +109,7 @@ public class ChannelsInitializerTest {
                         ChromeChannelDefinitions.ChannelId.BROWSER,
                         ChromeChannelDefinitions.ChannelId.DOWNLOADS,
                         ChromeChannelDefinitions.ChannelId.INCOGNITO,
-                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK,
-                        ChromeChannelDefinitions.ChannelId.TIPS));
+                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK));
     }
 
     @Test

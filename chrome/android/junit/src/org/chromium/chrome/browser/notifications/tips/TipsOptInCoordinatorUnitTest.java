@@ -16,7 +16,9 @@ import static org.chromium.chrome.browser.notifications.tips.TipsUtils.LOGO_IMAG
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.res.Configuration;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -32,30 +34,37 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.notifications.tips.TipsOptInCoordinator.TipsOptInSheetContent;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
 /** Unit tests for {@link TipsOptInCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures("CacheNotificationsEnabled")
 public class TipsOptInCoordinatorUnitTest {
     private static final int NARROW_SCREEN_WIDTH_DP = 300;
     private static final int WIDE_SCREEN_WIDTH_DP = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private SnackbarManager mSnackbarManager;
 
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
@@ -69,7 +78,8 @@ public class TipsOptInCoordinatorUnitTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mTipsOptInCoordinator = new TipsOptInCoordinator(mActivity, mBottomSheetController);
+        mTipsOptInCoordinator =
+                new TipsOptInCoordinator(mActivity, mBottomSheetController, mSnackbarManager);
         mView = mTipsOptInCoordinator.getViewForTesting();
         verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         mBottomSheetContent = mTipsOptInCoordinator.getBottomSheetContentForTesting();
@@ -135,6 +145,66 @@ public class TipsOptInCoordinatorUnitTest {
         verify(mBottomSheetController).removeObserver(eq(observer));
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnOptInAccepted() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Notifications.Tips.OptInPromo.EventType",
+                        TipsOptInCoordinator.OptInPromoEventType.ACCEPTED);
+
+        mTipsOptInCoordinator.onOptInAccepted();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+
+        // Simulate sheet closure to trigger snackbar.
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+        observer.onSheetClosed(StateChangeReason.NONE);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        // Verify snackbar was shown.
+        verify(mSnackbarManager).showSnackbar(any());
+
+        histogramWatcher.assertExpected();
+
+        // Verify channel exists and is enabled.
+        BaseNotificationManagerProxyFactory.create()
+                .getNotificationChannel(
+                        ChannelId.TIPS_V2,
+                        (channel) -> {
+                            assertTrue(channel != null);
+                            assertEquals(
+                                    NotificationManager.IMPORTANCE_DEFAULT,
+                                    channel.getImportance());
+                        });
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+    }
+
+    @Test
+    public void testOnOptInDeclined() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Notifications.Tips.OptInPromo.EventType",
+                        TipsOptInCoordinator.OptInPromoEventType.IGNORED);
+
+        mTipsOptInCoordinator.onOptInDeclined();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+        histogramWatcher.assertExpected();
+
+        // Verify channel exists and is disabled.
+        BaseNotificationManagerProxyFactory.create()
+                .getNotificationChannel(
+                        ChannelId.TIPS_V2,
+                        (channel) -> {
+                            assertTrue(channel != null);
+                            assertEquals(
+                                    NotificationManager.IMPORTANCE_NONE, channel.getImportance());
+                        });
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
 
     @Test

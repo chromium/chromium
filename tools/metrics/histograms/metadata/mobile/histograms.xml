@@ -749,6 +749,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ShoppingPriceDropAlertsDefault"/>
     <variant name="Sites"/>
     <variant name="Tips"/>
+    <variant name="TipsV2"/>
     <variant name="TwaDisclosureInitial"/>
     <variant name="TwaDisclosureSubsequent"/>
     <variant name="Unknown"/>

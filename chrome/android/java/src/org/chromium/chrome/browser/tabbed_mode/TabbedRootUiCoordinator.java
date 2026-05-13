@@ -1646,7 +1646,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             var bottomSheetController = getBottomSheetController();
                             assert bottomSheetController != null;
                             mTipsOptInCoordinator =
-                                    new TipsOptInCoordinator(mActivity, bottomSheetController);
+                                    new TipsOptInCoordinator(
+                                            mActivity,
+                                            bottomSheetController,
+                                            mSnackbarManagerSupplier.asNonNull().get());
                             mTipsOptInCoordinator.showBottomSheet();
                         }
                     });

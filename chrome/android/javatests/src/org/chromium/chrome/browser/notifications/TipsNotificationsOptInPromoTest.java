@@ -132,7 +132,7 @@ public class TipsNotificationsOptInPromoTest {
                                 hasAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS),
                                 hasExtra(
                                         Settings.EXTRA_CHANNEL_ID,
-                                        ChromeChannelDefinitions.ChannelId.TIPS)))
+                                        ChromeChannelDefinitions.ChannelId.TIPS_V2)))
                 .respondWith(intentResult);
 
         // Check that accept dismisses the opt in bottom sheet.
