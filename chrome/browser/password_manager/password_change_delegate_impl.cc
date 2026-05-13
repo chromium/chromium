@@ -801,5 +801,6 @@ void PasswordChangeDelegateImpl::ResetInternalState() {
   form_submission_helper_.reset();
   submission_verifier_.reset();
   form_manager_.reset();
+  otp_fields_submitted_subscription_ = {};
   otp_fields_detected_subscription_ = {};
 }
