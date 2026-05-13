@@ -1533,34 +1533,6 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void testMaxAttachments() {
-        for (int i = 0; i < FuseboxAttachmentModelList.getMaxAttachments(); i++) {
-            addAttachment("title", "token" + i, FuseboxAttachmentType.ATTACHMENT_FILE);
-        }
-
-        assertEquals(FuseboxAttachmentModelList.getMaxAttachments(), mAttachments.size());
-
-        mockTab(101, /* webContentsReady= */ true);
-        mockTab(102, /* webContentsReady= */ false);
-        mockTab(103, /* webContentsReady= */ true);
-        mockTab(104, /* webContentsReady= */ false);
-        Set<Integer> newlySelectedIds = new HashSet<>();
-        newlySelectedIds.add(102);
-        newlySelectedIds.add(103);
-        newlySelectedIds.add(104);
-        mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
-        assertEquals(FuseboxAttachmentModelList.getMaxAttachments(), mAttachments.size());
-
-        mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED).run();
-        mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED).run();
-        mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
-        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
-        mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED).run();
-
-        verify(mWindowAndroid, never()).showCancelableIntent(any(Intent.class), any(), any());
-    }
-
-    @Test
     public void testOnTabPickerResult_modelListNotEmpty_activatesAiMode() {
         mockTab(101, /* webContentsReady= */ true);
         mockTab(102, /* webContentsReady= */ false);
@@ -1595,71 +1567,6 @@ public class FuseboxMediatorUnitTest {
     public void testFailedUpload() {
         mMediator.onAttachmentUploadFailed();
         verify(mSnackbarManager).showSnackbar(any());
-    }
-
-    @Test
-    public void testIsMaxAttachmentCountReached_imageInImageGeneration() {
-        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE));
-
-        addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
-        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE));
-    }
-
-    @Test
-    public void testIsMaxAttachmentCountReached_imageNoThumbnailInImageGeneration() {
-        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-        assertFalse(
-                mMediator.isMaxAttachmentCountReached(
-                        FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL));
-
-        addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
-        assertFalse(
-                mMediator.isMaxAttachmentCountReached(
-                        FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL));
-    }
-
-    @Test
-    public void testIsMaxAttachmentCountReached_nonImageInImageGeneration() {
-        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-        assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-    }
-
-    @Test
-    public void testIsMaxAttachmentCountReached_tabReselection() {
-        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-    }
-
-    @Test
-    public void testIsMaxAttachmentCountReached_listFull_noTabs() {
-        while (mAttachments.getRemainingAttachments() > 0) {
-            addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_FILE);
-        }
-
-        assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-    }
-
-    @Test
-    public void testIsMaxAttachmentCountReached_listFull_withTabs() {
-        while (mAttachments.getRemainingAttachments() > 1) {
-            addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_FILE);
-        }
-        addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_TAB);
-
-        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-    }
-
-    @Test
-    public void testIsMaxAttachmentCountReached_remainingAttachments() {
-        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE));
-    }
-
-    @Test
-    public void testIsMaxAttachmentCountReached_maxAttachmentsReached() {
-        for (int i = 0; i < FuseboxAttachmentModelList.getMaxAttachments(); i++) {
-            addAttachment("title" + i, "token" + i, FuseboxAttachmentType.ATTACHMENT_FILE);
-        }
-        assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE));
     }
 
     @Test

@@ -586,38 +586,6 @@ import java.util.function.Supplier;
         mModelList.add(attachment);
     }
 
-    /**
-     * Check whether additional attachments of a specific kind are allowed, showing a snackbar when
-     * limit is reached.
-     */
-    @VisibleForTesting
-    /* package */ boolean isMaxAttachmentCountReached(@FuseboxAttachmentType int attachmentType) {
-        if (!isInInputSession()) return true;
-
-        boolean isImageGenerationUsed =
-                mInput.getRequestType() == AutocompleteRequestType.IMAGE_GENERATION;
-
-        // Permit image reselection when image generation is picked.
-        if ((attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE
-                        || attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL)
-                && isImageGenerationUsed) {
-            return false;
-        }
-
-        // Permit tab reselection (except image generation).
-        if (attachmentType == FuseboxAttachmentType.ATTACHMENT_TAB
-                && !isImageGenerationUsed
-                && !mModelList.getAttachedTabIds().isEmpty()) {
-            return false;
-        }
-
-        // Permit additional attachments, except when creating images.
-        if (mModelList.getRemainingAttachments() > 0 && !isImageGenerationUsed) {
-            return false;
-        }
-        return true;
-    }
-
     private void onAttachmentsChanged() {
         if (!isInInputSession()) return;
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
@@ -655,7 +623,6 @@ import java.util.function.Supplier;
         mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
-        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB)) return;
 
         Intent intent = ChromeItemPickerUtils.createChromeItemPickerIntent(mContext);
         if (intent == null) return;
@@ -781,7 +748,6 @@ import java.util.function.Supplier;
         mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CAMERA);
-        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
 
         if (mPermissionDelegate.hasPermission(Manifest.permission.CAMERA)) {
             launchCamera();
@@ -910,7 +876,6 @@ import java.util.function.Supplier;
         mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
-        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
 
         boolean allowMultipleAttachments =
                 mInput.getRequestType() != AutocompleteRequestType.IMAGE_GENERATION;
@@ -956,7 +921,6 @@ import java.util.function.Supplier;
         mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.FILES);
-        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE)) return;
 
         String mimeType =
                 ChromeFeatureList.sLensSendRawFileMediaTypes.isEnabled()
@@ -996,7 +960,6 @@ import java.util.function.Supplier;
         mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CLIPBOARD);
-        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
 
         long startTime = SystemClock.elapsedRealtime();
         new AsyncTask<byte[]>() {
