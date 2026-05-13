@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel_container/internal/android/dev/side_panel_tab_scoped_dev_feature.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
@@ -42,6 +43,10 @@
 namespace tabs {
 
 TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
+  TabInterface* const tab = TabInterface::GetFromContents(web_contents);
+  CHECK(tab);
+  tab_subscription_ = webui::InitEmbeddingContext(tab);
+
   sync_sessions_router_ =
       std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
           web_contents,
@@ -57,8 +62,6 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   new_tab_page_preload_pipeline_manager_ =
       std::make_unique<NewTabPagePreloadPipelineManager>(web_contents);
-
-  TabInterface* const tab = TabInterface::GetFromContents(web_contents);
 
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsFirstDialogUi)) {

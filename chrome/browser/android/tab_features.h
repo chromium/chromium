@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -88,6 +89,9 @@ class TabFeatures {
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
   std::unique_ptr<actor::ui::ActorUiTabControllerInterface>
       actor_ui_tab_controller_;
+
+  // Holds the WebUI embedding context subscription.
+  base::CallbackListSubscription tab_subscription_;
 };
 
 }  // namespace tabs

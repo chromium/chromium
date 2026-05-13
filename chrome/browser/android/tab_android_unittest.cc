@@ -14,11 +14,13 @@
 #include "base/test/task_environment.h"
 #include "chrome/android/chrome_jni_headers/TabAndroidTestHelper_jni.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/android/tab_interface_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -123,6 +125,33 @@ TEST_F(TabAndroidTest, TabGroupTabCollectionParent) {
       std::make_unique<TabInterfaceAndroid>(tab_android_), 0);
 
   EXPECT_EQ(tab_group_id, *(tab_android_->GetGroup()));
+}
+
+TEST_F(TabAndroidTest, WebUIEmbeddingContext) {
+  // Create a test WebContents.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+
+  content::WebContents* raw_web_contents = web_contents.get();
+
+  // Create TabAndroid for testing.
+  // Use a different tab ID than kTabId to avoid any potential conflicts.
+  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
+      profile_.get(), kTabId + 1, std::move(web_contents));
+
+  // Register the tab lookup helper.
+  tabs::TabLookupFromWebContents::CreateForWebContents(raw_web_contents,
+                                                       tab.get());
+
+  // Verify context is initially empty.
+  EXPECT_FALSE(webui::GetTabInterface(raw_web_contents));
+
+  // Construct TabFeatures. This should initialize the embedding context.
+  tabs::TabFeatures tab_features(raw_web_contents, profile_.get());
+
+  // Verify that GetTabInterface returns correct tab.
+  EXPECT_EQ(tab.get(), webui::GetTabInterface(raw_web_contents));
 }
 
 DEFINE_JNI(TabAndroidTestHelper)
