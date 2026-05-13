@@ -36,7 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget.h"
 
@@ -167,10 +167,10 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, RestoreFromCrashBubble) {
   ASSERT_EQ(ExitType::kCrashed, GetLastSessionExitType());
   EXPECT_FALSE(IsSessionServiceSavingEnabled());
 
-  views::BubbleDialogDelegate* crash_bubble_delegate =
-      SessionCrashedBubbleView::GetInstanceForTest();
-  ASSERT_TRUE(crash_bubble_delegate);
-  ClickButton(crash_bubble_delegate, crash_bubble_delegate->GetOkButton());
+  views::BubbleDialogModelHost* model_host =
+      SessionCrashedBubbleView::GetModelHostForTesting();
+  ASSERT_TRUE(model_host);
+  ClickButton(model_host, model_host->GetOkButton());
   ASSERT_TRUE(SessionRestore::IsRestoring(browser()->profile()));
   EXPECT_TRUE(GetExitTypeService()->waiting_for_user_to_ack_crash());
   base::RunLoop run_loop;
@@ -225,12 +225,12 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest,
   ASSERT_EQ(ExitType::kCrashed, GetLastSessionExitType());
   EXPECT_FALSE(IsSessionServiceSavingEnabled());
 
-  views::BubbleDialogDelegate* crash_bubble_delegate =
-      SessionCrashedBubbleView::GetInstanceForTest();
-  ASSERT_TRUE(crash_bubble_delegate);
+  views::BubbleDialogModelHost* model_host =
+      SessionCrashedBubbleView::GetModelHostForTesting();
+  ASSERT_TRUE(model_host);
   base::RunLoop run_loop;
   GetExitTypeService()->AddCrashAckCallback(run_loop.QuitClosure());
-  crash_bubble_delegate->GetBubbleFrameView()->GetWidget()->Close();
+  model_host->GetBubbleFrameView()->GetWidget()->Close();
   EXPECT_FALSE(SessionRestore::IsRestoring(browser()->profile()));
   run_loop.Run();
   EXPECT_FALSE(GetExitTypeService()->waiting_for_user_to_ack_crash());

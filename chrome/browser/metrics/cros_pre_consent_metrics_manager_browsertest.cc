@@ -23,6 +23,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
+#include "components/metrics/metrics_reporting_level.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,8 +53,8 @@ class CrOSPreConsentMetricsManagerTest : public InProcessBrowserTest {
 
   void WaitOnConsentToPropagate() {
     base::RunLoop run_loop;
-    GoogleUpdateSettings::CollectStatsConsentTaskRunner()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
+    GoogleUpdateSettings::CollectStatsConsentTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -125,6 +127,28 @@ IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
       run_loop2.QuitClosure());
   run_loop2.Run();
   EXPECT_TRUE(closure_ran);
+}
+
+IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
+                       EnableSetsBasicLevelWithRestructure) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(
+      metrics::prefs::kMetricsConsentRestructureFeatureState, true);
+  local_state->SetBoolean(metrics::prefs::kMetricsReportingMigrationDone, true);
+  metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
+  ASSERT_TRUE(metrics::MetricsReportingChoiceService::
+                  ShouldUseMetricsConsentRestructure(local_state));
+
+  CrOSPreConsentMetricsManager* manager = CrOSPreConsentMetricsManager::Get();
+  ASSERT_NE(manager, nullptr);
+
+  manager->Enable();
+  WaitOnConsentToPropagate();
+
+  EXPECT_TRUE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+  EXPECT_EQ(static_cast<int>(metrics::MetricsReportingLevel::kBasic),
+            local_state->GetInteger(metrics::prefs::kMetricsReportingLevel));
 }
 
 class OwnedDeviceCrOSPreConsentMetricsManagerTest

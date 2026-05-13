@@ -122,6 +122,8 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   void Close() override;
   void OnDialogButtonChanged() override;
 
+  ui::DialogModel* GetModelForTesting() { return model_.get(); }
+
  private:
   // This class observes the ContentsView theme to make sure that the window
   // icon updates with the theme.

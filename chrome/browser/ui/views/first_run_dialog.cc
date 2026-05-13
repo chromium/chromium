@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/first_run_dialog.h"
 
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/process/process.h"
@@ -68,11 +69,21 @@ void ShowFirstRunDialog() {
 
 }  // namespace first_run
 
+void FirstRunDialog::TestApi::
+    SetChangeMetricsReportingStateCallbackForTesting(  // IN-TEST
+        ChangeMetricsReportingStateCallback callback) {
+  dialog_->change_metrics_reporting_state_callback_ = std::move(callback);
+}
+
 // FirstRunDialog::TestApi
 FirstRunDialog::TestApi::TestApi(FirstRunDialog* dialog) : dialog_(dialog) {}
 
 void FirstRunDialog::TestApi::SetMakeDefaultCheckboxChecked(bool checked) {
   dialog_->make_default_->SetChecked(checked);
+}
+
+void FirstRunDialog::TestApi::SetReportCrashesCheckboxChecked(bool checked) {
+  dialog_->report_crashes_->SetChecked(checked);
 }
 
 // static
@@ -110,6 +121,12 @@ FirstRunDialog::FirstRunDialog(base::RepeatingClosure learn_more_callback,
       l10n_util::GetStringUTF16(IDS_FR_ENABLE_LOGGING)));
   // Having this box checked means the user has to opt-out of metrics recording.
   report_crashes_->SetChecked(true);
+
+  change_metrics_reporting_state_callback_ =
+      base::BindRepeating([](metrics::MetricsReportingLevel level) {
+        metrics::ChangeMetricsReportingState(
+            level, metrics::ChangeMetricsReportingStateCalledFrom::kUiFirstRun);
+      });
 }
 
 FirstRunDialog::~FirstRunDialog() = default;
@@ -117,9 +134,11 @@ FirstRunDialog::~FirstRunDialog() = default;
 bool FirstRunDialog::Accept() {
   closed_through_accept_button_ = true;
 
-  metrics::ChangeMetricsReportingState(
-      report_crashes_->GetChecked(),
-      metrics::ChangeMetricsReportingStateCalledFrom::kUiFirstRun);
+  bool enabled = report_crashes_->GetChecked();
+
+  change_metrics_reporting_state_callback_.Run(
+      enabled ? metrics::MetricsReportingLevel::kBasic
+              : metrics::MetricsReportingLevel::kNone);
 
   if (make_default_->GetChecked()) {
     shell_integration::SetAsDefaultBrowser();

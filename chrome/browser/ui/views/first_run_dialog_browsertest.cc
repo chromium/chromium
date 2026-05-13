@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/views/first_run_dialog.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "components/metrics/metrics_reporting_level.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/test/dialog_test.h"
@@ -33,7 +36,7 @@ class FirstRunDialogTest : public DialogBrowserTest {
   // Needs to be set by each test to verify the callback result. This would
   // ideally be optional, but because we can't capture `this` and because the
   // callback requires a `bool`, we're stuck with this approach.
-  bool closed_through_accept_button_;
+  bool closed_through_accept_button_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(FirstRunDialogTest, InvokeUi_default) {
@@ -76,4 +79,26 @@ IN_PROC_BROWSER_TEST_F(FirstRunDialogTest, CallbackFalseIfNotAccepted) {
 
   views::test::CancelDialog(dialog_widget);
   EXPECT_FALSE(closed_through_accept_button_);
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunDialogTest,
+                       AcceptSetsBasicLevelWithRestructure) {
+  views::NamedWidgetShownWaiter dialog_waiter(
+      views::test::AnyWidgetTestPasskey(), "FirstRunDialog");
+  ShowUi("AcceptSetsBasicLevelWithRestructure");
+  views::Widget* dialog_widget = dialog_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(dialog_widget, nullptr);
+
+  base::test::TestFuture<metrics::MetricsReportingLevel> future;
+  {
+    FirstRunDialog::TestApi test_api(
+        static_cast<FirstRunDialog*>(dialog_widget->widget_delegate()));
+    test_api.SetMakeDefaultCheckboxChecked(false);
+    test_api.SetReportCrashesCheckboxChecked(true);
+    test_api.SetChangeMetricsReportingStateCallbackForTesting(
+        future.GetRepeatingCallback());
+  }
+
+  views::test::AcceptDialog(dialog_widget);
+  EXPECT_EQ(metrics::MetricsReportingLevel::kBasic, future.Get<0>());
 }
