@@ -305,6 +305,7 @@ void ExtensionSettingsOverriddenDialog::MaybeShowHatsSurvey(
   data_map[kHatsPsdTimeDialogVisible] = base::NumberToString(
       ukm::GetExponentialBucketMinForUserTiming(duration.InSeconds()));
   data_map[kHatsPsdNewExtensionName] = extension_name;
+  data_map[kHatsPsdNewExtensionId] = extension_id;
 
   hats_service->LaunchDelayedSurvey(survey_trigger, /*timeout_ms=*/5000, {},
                                     data_map);
