@@ -48,20 +48,17 @@
 #data
 <!DOCTYPE html><body><select><math></math></select>
 #errors
-(1,35) unexpected-start-tag-in-select
-(1,42) unexpected-end-tag-in-select
 #document
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <select>
+|       <math math>
 
 #data
 <!DOCTYPE html><body><select><option><math></math></option></select>
 #errors
-(1,43) unexpected-start-tag-in-select
-(1,50) unexpected-end-tag-in-select
 #document
 | <!DOCTYPE html>
 | <html>
@@ -69,6 +66,7 @@
 |   <body>
 |     <select>
 |       <option>
+|         <math math>
 
 #data
 <!DOCTYPE html><body><table><math></math></table>
@@ -301,13 +299,8 @@
 #data
 <!DOCTYPE html><body><table><tr><td><select><math><mi>foo</mi><mi>bar</mi><p>baz</table><p>quux
 #errors
-(1,50) unexpected-start-tag-in-select
-(1,54) unexpected-start-tag-in-select
-(1,62) unexpected-end-tag-in-select
-(1,66) unexpected-start-tag-in-select
-(1,74) unexpected-end-tag-in-select
-(1,77) unexpected-start-tag-in-select
-(1,88) unexpected-table-element-end-tag-in-select-in-table
+1:75: ERROR: Start tag 'p' isn't allowed here. Currently open tags: html, body, table, tbody, tr, td, select, math.
+1:81: ERROR: End tag 'table' isn't allowed here. Currently open tags: html, body, table, tbody, tr, td, select.
 #document
 | <!DOCTYPE html>
 | <html>
@@ -318,28 +311,45 @@
 |         <tr>
 |           <td>
 |             <select>
-|               "foobarbaz"
+|               <math math>
+|                 <math mi>
+|                   "foo"
+|                 <math mi>
+|                   "bar"
+|               <p>
+|                 "baz"
 |     <p>
 |       "quux"
 
 #data
 <!DOCTYPE html><body><table><select><math><mi>foo</mi><mi>bar</mi><p>baz</table><p>quux
 #errors
-(1,36) unexpected-start-tag-implies-table-voodoo
-(1,42) unexpected-start-tag-in-select
-(1,46) unexpected-start-tag-in-select
-(1,54) unexpected-end-tag-in-select
-(1,58) unexpected-start-tag-in-select
-(1,66) unexpected-end-tag-in-select
-(1,69) unexpected-start-tag-in-select
-(1,80) unexpected-table-element-end-tag-in-select-in-table
+1:29: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, table.
+1:37: ERROR: Start tag 'math' isn't allowed here. Currently open tags: html, body, table, select.
+1:47: ERROR: Character tokens aren't legal here
+1:48: ERROR: Character tokens aren't legal here
+1:49: ERROR: Character tokens aren't legal here
+1:59: ERROR: Character tokens aren't legal here
+1:60: ERROR: Character tokens aren't legal here
+1:61: ERROR: Character tokens aren't legal here
+1:67: ERROR: Start tag 'p' isn't allowed here. Currently open tags: html, body, table, select, math.
+1:67: ERROR: Start tag 'p' isn't allowed here. Currently open tags: html, body, table, select.
+1:70: ERROR: Character tokens aren't legal here
+1:71: ERROR: Character tokens aren't legal here
+1:72: ERROR: Character tokens aren't legal here
 #document
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <select>
-|       "foobarbaz"
+|       <math math>
+|         <math mi>
+|           "foo"
+|         <math mi>
+|           "bar"
+|       <p>
+|         "baz"
 |     <table>
 |     <p>
 |       "quux"

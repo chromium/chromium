@@ -35,20 +35,17 @@
 #data
 <!DOCTYPE html><body><select><svg></svg></select>
 #errors
-(1,34) unexpected-start-tag-in-select
-(1,40) unexpected-end-tag-in-select
 #document
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <select>
+|       <svg svg>
 
 #data
 <!DOCTYPE html><body><select><option><svg></svg></option></select>
 #errors
-(1,42) unexpected-start-tag-in-select
-(1,48) unexpected-end-tag-in-select
 #document
 | <!DOCTYPE html>
 | <html>
@@ -56,6 +53,7 @@
 |   <body>
 |     <select>
 |       <option>
+|         <svg svg>
 
 #data
 <!DOCTYPE html><body><table><svg></svg></table>
@@ -261,13 +259,8 @@
 #data
 <!DOCTYPE html><body><table><tr><td><select><svg><g>foo</g><g>bar</g><p>baz</table><p>quux
 #errors
-(1,49) unexpected-start-tag-in-select
-(1,52) unexpected-start-tag-in-select
-(1,59) unexpected-end-tag-in-select
-(1,62) unexpected-start-tag-in-select
-(1,69) unexpected-end-tag-in-select
-(1,72) unexpected-start-tag-in-select
-(1,83) unexpected-table-element-end-tag-in-select-in-table
+1:70: ERROR: Start tag 'p' isn't allowed here. Currently open tags: html, body, table, tbody, tr, td, select, svg.
+1:76: ERROR: End tag 'table' isn't allowed here. Currently open tags: html, body, table, tbody, tr, td, select.
 #document
 | <!DOCTYPE html>
 | <html>
@@ -278,28 +271,39 @@
 |         <tr>
 |           <td>
 |             <select>
-|               "foobarbaz"
+|               <svg svg>
+|                 <svg g>
+|                   "foo"
+|                 <svg g>
+|                   "bar"
+|               <p>
+|                 "baz"
 |     <p>
 |       "quux"
 
 #data
 <!DOCTYPE html><body><table><select><svg><g>foo</g><g>bar</g><p>baz</table><p>quux
 #errors
-(1,36) unexpected-start-tag-implies-table-voodoo
-(1,41) unexpected-start-tag-in-select
-(1,44) unexpected-start-tag-in-select
-(1,51) unexpected-end-tag-in-select
-(1,54) unexpected-start-tag-in-select
-(1,61) unexpected-end-tag-in-select
-(1,64) unexpected-start-tag-in-select
-(1,75) unexpected-table-element-end-tag-in-select-in-table
+1:29: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, table.
+1:37: ERROR: Start tag 'svg' isn't allowed here. Currently open tags: html, body, table, select.
+1:62: ERROR: Start tag 'p' isn't allowed here. Currently open tags: html, body, table, select, svg.
+1:62: ERROR: Start tag 'p' isn't allowed here. Currently open tags: html, body, table, select.
+1:65: ERROR: Character tokens aren't legal here
+1:66: ERROR: Character tokens aren't legal here
+1:67: ERROR: Character tokens aren't legal here
 #document
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <select>
-|       "foobarbaz"
+|       <svg svg>
+|         <svg g>
+|           "foo"
+|         <svg g>
+|           "bar"
+|       <p>
+|         "baz"
 |     <table>
 |     <p>
 |       "quux"

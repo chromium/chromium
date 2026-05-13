@@ -309,12 +309,13 @@ div
 #data
 <option><XH<optgroup></optgroup>
 #errors
-(1,21): unexpected-start-tag-in-select
-(1,32): unexpected-end-tag-in-select
+1:22: ERROR: End tag 'optgroup' isn't allowed here. Currently open tags: html, option, xh<optgroup.
+1:33: ERROR: Premature end of file. Currently open tags: html, option, xh<optgroup.
 #document-fragment
 select
 #document
 | <option>
+|   <xh<optgroup>
 
 #data
 <svg><foreignObject><div>foo</div><plaintext></foreignObject></svg><div>bar</div>
@@ -444,7 +445,7 @@ eof-in-math
 <select><optgroup><hr>
 #errors
 1:1: ERROR: Expected a doctype token
-1:23: ERROR: Premature end of file. Currently open tags: html, body, select.
+1:23: ERROR: Premature end of file. Currently open tags: html, body, select, optgroup.
 #document
 | <html>
 |   <head>
@@ -457,7 +458,7 @@ eof-in-math
 <select><option><optgroup><hr>
 #errors
 1:1: ERROR: Expected a doctype token
-1:31: ERROR: Premature end of file. Currently open tags: html, body, select.
+1:31: ERROR: Premature end of file. Currently open tags: html, body, select, optgroup.
 #document
 | <html>
 |   <head>
@@ -504,7 +505,7 @@ eof-in-math
 <table><tr><td><select><optgroup><option><hr>
 #errors
 1:1: ERROR: Expected a doctype token
-1:46: ERROR: Premature end of file. Currently open tags: html, body, table, tbody, tr, td, select.
+1:46: ERROR: Premature end of file. Currently open tags: html, body, table, tbody, tr, td, select, optgroup.
 #document
 | <html>
 |   <head>
@@ -522,7 +523,7 @@ eof-in-math
 <table><tr><td><select><optgroup><hr>
 #errors
 1:1: ERROR: Expected a doctype token
-1:38: ERROR: Premature end of file. Currently open tags: html, body, table, tbody, tr, td, select.
+1:38: ERROR: Premature end of file. Currently open tags: html, body, table, tbody, tr, td, select, optgroup.
 #document
 | <html>
 |   <head>
@@ -539,7 +540,7 @@ eof-in-math
 <table><tr><td><select><option><optgroup><hr>
 #errors
 1:1: ERROR: Expected a doctype token
-1:46: ERROR: Premature end of file. Currently open tags: html, body, table, tbody, tr, td, select.
+1:38: ERROR: Premature end of file. Currently open tags: html, body, table, tbody, tr, td, select, optgroup.
 #document
 | <html>
 |   <head>
@@ -552,3 +553,223 @@ eof-in-math
 |               <option>
 |               <optgroup>
 |               <hr>
+
+#data
+<select><div><i></div><option>option
+#errors
+1:1: ERROR: Expected a doctype token
+1:17: ERROR: End tag 'div' isn't allowed here. Currently open tags: html, body, select, div, i.
+1:37: ERROR: Premature end of file. Currently open tags: html, body, select, option, i.
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <div>
+|         <i>
+|       <i>
+|         <option>
+|           "option"
+
+#data
+<div><i></div><option>option
+#errors
+1:1: ERROR: Expected a doctype token
+1:9: ERROR: End tag 'div' isn't allowed here. Currently open tags: html, body, div, i.
+1:29: ERROR: Premature end of file. Currently open tags: html, body, i, option.
+#document
+| <html>
+|   <head>
+|   <body>
+|     <div>
+|       <i>
+|     <i>
+|       <option>
+|         "option"
+
+#data
+<select><div>div 1</div><button>button</button><div>div 2</div><datalist><option>option</option></datalist><div>div 3</div></select>
+#errors
+1:1: ERROR: Expected a doctype token
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <div>
+|         "div 1"
+|       <button>
+|         "button"
+|       <div>
+|         "div 2"
+|       <datalist>
+|         <option>
+|           "option"
+|       <div>
+|         "div 3"
+
+#data
+<select><button>button</select>
+#errors
+1:1: ERROR: Expected a doctype token
+1:23: ERROR: End tag 'select' isn't allowed here. Currently open tags: html, body, select, button.
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <button>
+|         "button"
+
+#data
+<select><datalist>datalist</select>
+#errors
+1:1: ERROR: Expected a doctype token
+1:27: ERROR: End tag 'select' isn't allowed here. Currently open tags: html, body, select, datalist.
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <datalist>
+|         "datalist"
+
+#data
+<select><button><select></select></button></select>
+#errors
+1:1: ERROR: Expected a doctype token
+1:17: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, select, button.
+1:25: ERROR: End tag 'select' isn't allowed here. Currently open tags: html, body.
+1:34: ERROR: End tag 'button' isn't allowed here. Currently open tags: html, body.
+1:43: ERROR: End tag 'select' isn't allowed here. Currently open tags: html, body.
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <button>
+
+#data
+<select><button><div><select></select>
+#errors
+1:1: ERROR: Expected a doctype token
+1:22: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, select, button, div.
+1:30: ERROR: End tag 'select' isn't allowed here. Currently open tags: html, body.
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <button>
+|         <div>
+
+#data
+<select><div><option><img>option</option></div></select>
+#errors
+1:1: ERROR: Expected a doctype token
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <div>
+|         <option>
+|           <img>
+|           "option"
+
+#data
+<select><input>
+#errors
+1:1: ERROR: Expected a doctype token
+1:16: ERROR: Premature end of file. Currently open tags: html, body, select.
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|     <input>
+
+#data
+<select><button><selectedcontent></button><option>X
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <button>
+|         <selectedcontent>
+|           "X"
+|       <option>
+|         "X"
+
+#data
+<select><button><selectedcontent></button><option>x<i>i<b>ib</i>b
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <button>
+|         <selectedcontent>
+|           "x"
+|           <i>
+|             "i"
+|             <b>
+|               "ib"
+|           <b>
+|             "b"
+|       <option>
+|         "x"
+|         <i>
+|           "i"
+|           <b>
+|             "ib"
+|         <b>
+|           "b"
+
+#data
+<select><button><selectedcontent></button><option>X<option>Y
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <button>
+|         <selectedcontent>
+|           "X"
+|       <option>
+|         "X"
+|       <option>
+|         "Y"
+
+#data
+<select><button><selectedcontent></button><option>X<option selected>Y
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <button>
+|         <selectedcontent>
+|           "Y"
+|       <option>
+|         "X"
+|       <option>
+|         selected=""
+|         "Y"
+
+#data
+<font><select><option>a</option></font></select>
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     <font>
+|       <select>
+|         <option>
+|           "a"

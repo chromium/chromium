@@ -161,13 +161,14 @@
 #data
 <!DOCTYPE html><select><menuitem></select>
 #errors
-33: Stray start tag “menuitem”.
+1:34: ERROR: End tag 'select' isn't allowed here. Currently open tags: html, body, select, menuitem.
 #document
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <select>
+|       <menuitem>
 
 #data
 <!DOCTYPE html><option><menuitem>

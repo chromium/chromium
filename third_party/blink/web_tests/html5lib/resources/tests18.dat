@@ -227,34 +227,42 @@
 #data
 <!doctype html><select><plaintext></plaintext>X
 #errors
-34: Stray start tag “plaintext”.
-46: Stray end tag “plaintext”.
-47: End of file seen and there were open elements.
+1:48: ERROR: Premature end of file. Currently open tags: html, body, select, plaintext.
 #document
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <select>
-|       "X"
+|       <plaintext>
+|         "</plaintext>X"
 
 #data
 <!doctype html><table><select><plaintext>a<caption>b
 #errors
-30: Start tag “select” seen in “table”.
-41: Stray start tag “plaintext”.
-51: “caption” start tag with “select” open.
-52: End of file seen and there were open elements.
+1:23: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, table.
+1:31: ERROR: Start tag 'plaintext' isn't allowed here. Currently open tags: html, body, table, select.
+1:42: ERROR: Character tokens aren't legal here
+1:43: ERROR: Character tokens aren't legal here
+1:44: ERROR: Character tokens aren't legal here
+1:45: ERROR: Character tokens aren't legal here
+1:46: ERROR: Character tokens aren't legal here
+1:47: ERROR: Character tokens aren't legal here
+1:48: ERROR: Character tokens aren't legal here
+1:49: ERROR: Character tokens aren't legal here
+1:50: ERROR: Character tokens aren't legal here
+1:51: ERROR: Character tokens aren't legal here
+1:52: ERROR: Character tokens aren't legal here
+1:53: ERROR: Premature end of file. Currently open tags: html, body, table, select, plaintext.
 #document
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <select>
-|       "a"
+|       <plaintext>
+|         "a<caption>b"
 |     <table>
-|       <caption>
-|         "b"
 
 #data
 <!doctype html><template><plaintext>a</template>b
@@ -446,8 +454,11 @@
 #data
 <!doctype html><table><select><script></style></script>abc
 #errors
-(1,30): unexpected-start-tag-implies-table-voodoo
-(1,58): eof-in-select
+1:23: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, table.
+1:56: ERROR: Character tokens aren't legal here
+1:57: ERROR: Character tokens aren't legal here
+1:58: ERROR: Character tokens aren't legal here
+1:59: ERROR: Premature end of file. Currently open tags: html, body, table, select.
 #document
 | <!DOCTYPE html>
 | <html>
@@ -462,8 +473,11 @@
 #data
 <!doctype html><table><tr><select><script></style></script>abc
 #errors
-(1,34): unexpected-start-tag-implies-table-voodoo
-(1,62): eof-in-select
+1:27: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, table, tbody, tr.
+1:60: ERROR: Character tokens aren't legal here
+1:61: ERROR: Character tokens aren't legal here
+1:62: ERROR: Character tokens aren't legal here
+1:63: ERROR: Premature end of file. Currently open tags: html, body, table, tbody, tr, select.
 #document
 | <!DOCTYPE html>
 | <html>

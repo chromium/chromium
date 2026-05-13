@@ -100,8 +100,11 @@
 #data
 <table><select><option>3</select></table>
 #errors
-(1,7): expected-doctype-but-got-start-tag
-(1,15): unexpected-start-tag-implies-table-voodoo
+1:1: ERROR: Expected a doctype token
+1:8: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, table.
+1:16: ERROR: Start tag 'option' isn't allowed here. Currently open tags: html, body, table, select.
+1:24: ERROR: Character tokens aren't legal here
+1:25: ERROR: End tag 'select' isn't allowed here. Currently open tags: html, body, table, select, option.
 #document
 | <html>
 |   <head>
@@ -114,12 +117,11 @@
 #data
 <table><select><table></table></select></table>
 #errors
-(1,7): expected-doctype-but-got-start-tag
-(1,15): unexpected-start-tag-implies-table-voodoo
-(1,22): unexpected-table-element-start-tag-in-select-in-table
-(1,22): unexpected-start-tag-implies-end-tag
-(1,39): unexpected-end-tag
-(1,47): unexpected-end-tag
+1:1: ERROR: Expected a doctype token
+1:8: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, table.
+1:16: ERROR: Start tag 'table' isn't allowed here. Currently open tags: html, body, table, select.
+1:31: ERROR: End tag 'select' isn't allowed here. Currently open tags: html, body.
+1:40: ERROR: End tag 'table' isn't allowed here. Currently open tags: html, body.
 #document
 | <html>
 |   <head>
@@ -131,9 +133,8 @@
 #data
 <table><select></table>
 #errors
-(1,7): expected-doctype-but-got-start-tag
-(1,15): unexpected-start-tag-implies-table-voodoo
-(1,23): unexpected-table-element-end-tag-in-select-in-table
+1:1: ERROR: Expected a doctype token
+1:8: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, table.
 #document
 | <html>
 |   <head>
@@ -144,9 +145,10 @@
 #data
 <table><select><option>A<tr><td>B</td></tr></table>
 #errors
-(1,7): expected-doctype-but-got-start-tag
-(1,15): unexpected-start-tag-implies-table-voodoo
-(1,28): unexpected-table-element-start-tag-in-select-in-table
+1:1: ERROR: Expected a doctype token
+1:8: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, table.
+1:16: ERROR: Start tag 'option' isn't allowed here. Currently open tags: html, body, table, select.
+1:24: ERROR: Character tokens aren't legal here
 #document
 | <html>
 |   <head>
@@ -292,7 +294,6 @@
 1:13: 'svg' tag isn't allowed here. Currently open tags: html, body, div, table.
 1:33: 'select' tag isn't allowed here. Currently open tags: html, body, div, table, svg, foreignobject.
 1:41: 'table' tag isn't allowed here. Currently open tags: html, body, div, table, svg, foreignobject, select.
-1:41: 'table' tag isn't allowed here. Currently open tags: html, body, div, table, svg, foreignobject.
 1:48: 's' tag isn't allowed here. Currently open tags: html, body, div, table.
 1:51: Premature end of file. Currently open tags: html, body, div, table, s.
 #document

@@ -437,11 +437,11 @@ no-doctype
 #data
 <select><option>A<select><option>B<select><option>C<select><option>D<select><option>E<select><option>F<select><option>G<select>
 #errors
-(1,8): expected-doctype-but-got-start-tag
-(1,25): unexpected-select-in-select
-(1,59): unexpected-select-in-select
-(1,93): unexpected-select-in-select
-(1,127): unexpected-select-in-select
+1:1: ERROR: Expected a doctype token
+1:18: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, select, option.
+1:52: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, select, option.
+1:86: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, select, option.
+1:120: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, select, option.
 #document
 | <html>
 |   <head>
@@ -528,12 +528,11 @@ no-doctype
 #data
 <kbd><table></kbd><col><select><tr>
 #errors
-(1,5): expected-doctype-but-got-start-tag
-(1,18): unexpected-end-tag-implies-table-voodoo
-(1,18): unexpected-end-tag
-(1,31): unexpected-start-tag-implies-table-voodoo
-(1,35): unexpected-table-element-start-tag-in-select-in-table
-(1,35): eof-in-table
+1:1: ERROR: Expected a doctype token
+1:13: ERROR: End tag 'kbd' isn't allowed here. Currently open tags: html, body, kbd, table.
+1:13: ERROR: End tag 'kbd' isn't allowed here. Currently open tags: html, body, kbd, table.
+1:24: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, kbd, table.
+1:36: ERROR: Premature end of file. Currently open tags: html, body, kbd, table, tbody, tr.
 #document
 | <html>
 |   <head>
@@ -549,12 +548,11 @@ no-doctype
 #data
 <kbd><table></kbd><col><select><tr></table><div>
 #errors
-(1,5): expected-doctype-but-got-start-tag
-(1,18): unexpected-end-tag-implies-table-voodoo
-(1,18): unexpected-end-tag
-(1,31): unexpected-start-tag-implies-table-voodoo
-(1,35): unexpected-table-element-start-tag-in-select-in-table
-(1,48): expected-closing-tag-but-got-eof
+1:1: ERROR: Expected a doctype token
+1:13: ERROR: End tag 'kbd' isn't allowed here. Currently open tags: html, body, kbd, table.
+1:13: ERROR: End tag 'kbd' isn't allowed here. Currently open tags: html, body, kbd, table.
+1:24: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, kbd, table.
+1:49: ERROR: Premature end of file. Currently open tags: html, body, kbd, div.
 #document
 | <html>
 |   <head>

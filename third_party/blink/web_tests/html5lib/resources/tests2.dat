@@ -500,7 +500,7 @@
 #data
 <!DOCTYPE html><select><optgroup><option></optgroup><option><select><option>
 #errors
-(1,68): unexpected-select-in-select
+1:61: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, select, option.
 #document
 | <!DOCTYPE html>
 | <html>

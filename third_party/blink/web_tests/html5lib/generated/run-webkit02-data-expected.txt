@@ -1,8 +1,10 @@
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select>. Please add the missing </select> end tag.
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select>. Please add the missing </select> end tag.
 ../resources/webkit02.dat:
 3
-19
+44
 
-Test 3 of 35 in ../resources/webkit02.dat failed. Input:
+Test 3 of 49 in ../resources/webkit02.dat failed. Input:
 <p id="status"><noscript><strong>A</strong></noscript><span>B</span></p>
 Got:
 | <html>
@@ -26,10 +28,17 @@ Expected:
 |       <span>
 |         "B"
 
-Test 19 of 35 in ../resources/webkit02.dat failed. Input:
-<option><XH<optgroup></optgroup>
+Test 44 of 49 in ../resources/webkit02.dat failed. Input:
+<select><input>
 Got:
-| <option>
-|   <xh<optgroup>
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <input>
 Expected:
-| <option>
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|     <input>

@@ -790,7 +790,7 @@ select
 #data
 <input><option>
 #errors
-(1,7): unexpected-input-in-select
+(1,7): XXX-undefined-error
 #document-fragment
 select
 #document
@@ -799,20 +799,21 @@ select
 #data
 <keygen><option>
 #errors
-(1,8): unexpected-input-in-select
 #document-fragment
 select
 #document
+| <keygen>
 | <option>
 
 #data
 <textarea><option>
 #errors
-(1,10): unexpected-input-in-select
+1:19: ERROR: Premature end of file. Currently open tags: html, textarea.
 #document-fragment
 select
 #document
-| <option>
+| <textarea>
+|   "<option>"
 
 #data
 </html><!--abc-->

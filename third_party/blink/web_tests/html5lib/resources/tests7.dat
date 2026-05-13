@@ -200,7 +200,7 @@ X</listing>
 #data
 <!doctype html><select><input>X
 #errors
-(1,30): unexpected-input-in-select
+1:32: ERROR: Premature end of file. Currently open tags: html, body, select.
 #document
 | <!DOCTYPE html>
 | <html>
@@ -213,7 +213,7 @@ X</listing>
 #data
 <!doctype html><select><select>X
 #errors
-(1,31): unexpected-select-in-select
+1:24: ERROR: Start tag 'select' isn't allowed here. Currently open tags: html, body, select.
 #document
 | <!DOCTYPE html>
 | <html>
@@ -443,11 +443,11 @@ A<table><tr> B</tr> </em>C</table>
 #data
 <select><keygen>
 #errors
-(1,8): expected-doctype-but-got-start-tag
-(1,16): unexpected-input-in-select
+1:1: ERROR: Expected a doctype token
+1:17: ERROR: Premature end of file. Currently open tags: html, body, select.
 #document
 | <html>
 |   <head>
 |   <body>
 |     <select>
-|     <keygen>
+|       <keygen>
