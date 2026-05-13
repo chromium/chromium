@@ -57,14 +57,18 @@ JNI_ChromeSiteSettingsDelegate_GetFileSystemAccessGrants(
       paths.push_back(grant.path.value());
       display_names.push_back(grant.display_name);
     }
+
+    std::ranges::sort(grants.file_write_grants);
     for (const content::PathInfo& grant : grants.file_read_grants) {
-      if (!std::ranges::contains(grants.file_write_grants, grant)) {
+      if (!std::ranges::binary_search(grants.file_write_grants, grant)) {
         paths.push_back(grant.path.value());
         display_names.push_back(grant.display_name);
       }
     }
+
+    std::ranges::sort(grants.directory_write_grants);
     for (const content::PathInfo& grant : grants.directory_read_grants) {
-      if (!std::ranges::contains(grants.directory_write_grants, grant)) {
+      if (!std::ranges::binary_search(grants.directory_write_grants, grant)) {
         paths.push_back(grant.path.value());
         display_names.push_back(grant.display_name);
       }

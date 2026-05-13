@@ -85,7 +85,7 @@ struct PathInfo {
     CHECK(!this->display_name.empty());
   }
 
-  bool operator==(const PathInfo& other) const = default;
+  auto operator<=>(const PathInfo& other) const = default;
 };
 
 // For testing only.

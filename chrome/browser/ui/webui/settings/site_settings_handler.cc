@@ -2742,8 +2742,8 @@ base::ListValue SiteSettingsHandler::PopulateFileSystemGrantData() {
     base::DictValue origin_file_system_permission_grants;
     base::ListValue view_grants;
     base::ListValue edit_grants;
-    std::vector<std::string> directory_edit_grants_file_paths;
-    std::vector<std::string> file_edit_grants_file_paths;
+    std::set<std::string> directory_edit_grants_file_paths;
+    std::set<std::string> file_edit_grants_file_paths;
 
     std::string origin_string = origin.GetURL().spec();
     origin_file_system_permission_grants.Set(site_settings::kOrigin,
@@ -2760,15 +2760,14 @@ base::ListValue SiteSettingsHandler::PopulateFileSystemGrantData() {
                                 file_path_string);
       directory_write_grant.Set(site_settings::kDisplayName, file_path_string);
       directory_write_grant.Set(site_settings::kFileSystemIsDirectory, true);
-      directory_edit_grants_file_paths.push_back(file_path_string);
+      directory_edit_grants_file_paths.insert(file_path_string);
       edit_grants.Append(std::move(directory_write_grant));
     }
 
     for (auto& path_info : grantObj.directory_read_grants) {
       const std::string file_path_string =
           FilePathToValue(path_info.path).GetString();
-      if (std::ranges::contains(directory_edit_grants_file_paths,
-                                file_path_string)) {
+      if (directory_edit_grants_file_paths.contains(file_path_string)) {
         continue;
       }
       base::DictValue directory_read_grant;
@@ -2789,15 +2788,14 @@ base::ListValue SiteSettingsHandler::PopulateFileSystemGrantData() {
                            file_path_string);
       file_write_grant.Set(site_settings::kDisplayName, file_path_string);
       file_write_grant.Set(site_settings::kFileSystemIsDirectory, false);
-      file_edit_grants_file_paths.push_back(file_path_string);
+      file_edit_grants_file_paths.insert(file_path_string);
       edit_grants.Append(std::move(file_write_grant));
     }
 
     for (auto& path_info : grantObj.file_read_grants) {
       const std::string file_path_string =
           FilePathToValue(path_info.path).GetString();
-      if (std::ranges::contains(file_edit_grants_file_paths,
-                                file_path_string)) {
+      if (file_edit_grants_file_paths.contains(file_path_string)) {
         continue;
       }
       base::DictValue file_read_grant;
