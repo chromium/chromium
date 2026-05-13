@@ -79,6 +79,7 @@ class ChromeMetricsServicesManagerClient
   std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient(
       variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
   metrics::MetricsStateManager* GetMetricsStateManager() override;
+  PrefService* GetLocalState() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   const metrics::EnabledStateProvider& GetEnabledStateProvider() override;
   bool IsOffTheRecordSessionActive() override;

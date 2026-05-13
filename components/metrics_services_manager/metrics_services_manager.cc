@@ -14,6 +14,7 @@
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/enabled_state_provider.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -49,6 +50,17 @@ MetricsServicesManager::GetSyntheticTrialRegistry() {
         std::make_unique<variations::SyntheticTrialRegistry>();
   }
   return synthetic_trial_registry_.get();
+}
+
+metrics::MetricsReportingChoiceService*
+MetricsServicesManager::GetMetricsReportingChoiceService() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!metrics_reporting_choice_service_) {
+    metrics_reporting_choice_service_ =
+        std::make_unique<metrics::MetricsReportingChoiceService>(
+            client_->GetLocalState());
+  }
+  return metrics_reporting_choice_service_.get();
 }
 
 metrics::MetricsService* MetricsServicesManager::GetMetricsService() {

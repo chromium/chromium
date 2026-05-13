@@ -336,6 +336,10 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   return metrics_state_manager_.get();
 }
 
+PrefService* ChromeMetricsServicesManagerClient::GetLocalState() {
+  return local_state_;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeMetricsServicesManagerClient::GetURLLoaderFactory() {
   return g_browser_process->system_network_context_manager()

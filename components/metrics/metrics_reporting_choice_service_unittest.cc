@@ -4,6 +4,7 @@
 
 #include "components/metrics/metrics_reporting_choice_service.h"
 
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/metrics/metrics_features.h"
@@ -257,6 +258,26 @@ TEST_F(
   EXPECT_FALSE(
       MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
           &prefs_));
+}
+
+TEST_F(MetricsReportingChoiceServiceTest, ObserverTriggersCallback) {
+  MetricsReportingChoiceService service(&prefs_);
+  base::MockRepeatingClosure mock_callback;
+  base::CallbackListSubscription subscription =
+      service.AddOnMetricsReportingLevelChangedCallback(mock_callback.Get());
+
+  EXPECT_CALL(mock_callback, Run()).Times(1);
+  prefs_.SetInteger(prefs::kMetricsReportingLevel,
+                    static_cast<int>(MetricsReportingLevel::kAdvanced));
+
+  EXPECT_CALL(mock_callback, Run()).Times(1);
+  prefs_.SetInteger(prefs::kMetricsReportingLevel,
+                    static_cast<int>(MetricsReportingLevel::kBasic));
+
+  subscription = {};
+  EXPECT_CALL(mock_callback, Run()).Times(0);
+  prefs_.SetInteger(prefs::kMetricsReportingLevel,
+                    static_cast<int>(MetricsReportingLevel::kNone));
 }
 
 }  // namespace metrics

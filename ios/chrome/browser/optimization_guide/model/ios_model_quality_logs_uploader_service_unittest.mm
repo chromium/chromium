@@ -47,6 +47,9 @@ class TestMetricsServicesManagerClient
   metrics::MetricsStateManager* GetMetricsStateManager() override {
     return metrics_state_manager_;
   }
+  PrefService* GetLocalState() override {
+    return GetApplicationContext()->GetLocalState();
+  }
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
     return test_shared_url_loader_factory_;

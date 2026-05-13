@@ -8,6 +8,8 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_level.h"
@@ -22,6 +24,20 @@ namespace {
 // session. This is set only once and remains immutable for the session.
 std::optional<bool> g_session_feature_state;
 }  // namespace
+
+MetricsReportingChoiceService::MetricsReportingChoiceService(
+    PrefService* local_state)
+    : local_state_(local_state) {
+  CHECK(local_state_);
+  pref_registrar_.Init(local_state_);
+  pref_registrar_.Add(
+      prefs::kMetricsReportingLevel,
+      base::BindRepeating(
+          &MetricsReportingChoiceService::OnReportingLevelPrefChanged,
+          base::Unretained(this)));
+}
+
+MetricsReportingChoiceService::~MetricsReportingChoiceService() = default;
 
 // static
 void MetricsReportingChoiceService::RegisterPrefs(
@@ -51,6 +67,12 @@ void MetricsReportingChoiceService::InitSyntheticFieldTrial(
       variations::SyntheticTrialGroup(
           "RestructureMetricsConsent", session_state ? "Enabled" : "Disabled",
           variations::SyntheticTrialAnnotationMode::kCurrentLog));
+}
+
+base::CallbackListSubscription
+MetricsReportingChoiceService::AddOnMetricsReportingLevelChangedCallback(
+    base::RepeatingClosure callback) {
+  return callback_list_.Add(std::move(callback));
 }
 
 // static
@@ -128,6 +150,10 @@ bool MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
   }
   return local_state->IsManagedPreference(prefs::kMetricsReportingEnabled) &&
          !IsBasicMetricsReportingEnabled(local_state);
+}
+
+void MetricsReportingChoiceService::OnReportingLevelPrefChanged() {
+  callback_list_.Notify();
 }
 
 }  // namespace metrics

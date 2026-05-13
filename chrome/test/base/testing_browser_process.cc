@@ -40,6 +40,7 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/permissions/permissions_client.h"
@@ -333,7 +334,7 @@ void TestingBrowserProcess::EndSession() {}
 
 metrics_services_manager::MetricsServicesManager*
 TestingBrowserProcess::GetMetricsServicesManager() {
-  return nullptr;
+  return metrics_services_manager_;
 }
 
 metrics::MetricsService* TestingBrowserProcess::metrics_service() {
@@ -370,6 +371,12 @@ TestingBrowserProcess::network_quality_tracker() {
 
 ProfileManager* TestingBrowserProcess::profile_manager() {
   return profile_manager_.get();
+}
+
+void TestingBrowserProcess::SetMetricsServicesManager(
+    metrics_services_manager::MetricsServicesManager*
+        metrics_services_manager) {
+  metrics_services_manager_ = metrics_services_manager;
 }
 
 void TestingBrowserProcess::SetMetricsService(

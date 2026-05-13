@@ -16,6 +16,7 @@
 namespace metrics {
 class MetricsService;
 class MetricsServiceClient;
+class MetricsReportingChoiceService;
 class ClonedInstallDetector;
 class ReportingService;
 }  // namespace metrics
@@ -135,6 +136,10 @@ class MetricsServicesManager {
   // Returns the ClonedInstallDetector associated with the `client_`.
   metrics::ClonedInstallDetector* GetClonedInstallDetectorForTesting();
 
+  // Returns the MetricsReportingChoiceService, creating it if it hasn't been
+  // created yet.
+  metrics::MetricsReportingChoiceService* GetMetricsReportingChoiceService();
+
  private:
   friend class search_engines::SearchEngineChoiceServiceClient;
 
@@ -191,6 +196,10 @@ class MetricsServicesManager {
   bool consent_given_ = false;
 
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
+
+  // The MetricsReportingChoiceService, for metrics reporting level management.
+  std::unique_ptr<metrics::MetricsReportingChoiceService>
+      metrics_reporting_choice_service_;
 
   // The MetricsServiceClient. Owns the MetricsService.
   std::unique_ptr<metrics::MetricsServiceClient> metrics_service_client_;

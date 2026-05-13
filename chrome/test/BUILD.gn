@@ -196,6 +196,7 @@ static_library("test_support") {
     "//chrome/test/data/webui:resources",
     "//components/activity_reporter",
     "//components/affiliations/core/browser:test_support",
+    "//components/metrics_services_manager",
     "//components/record_replay/core/common",
     "//components/supervised_user/core/browser:device_parental_controls",
     "//components/supervised_user/core/browser:test_support",

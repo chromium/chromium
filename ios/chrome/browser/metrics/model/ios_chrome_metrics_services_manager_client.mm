@@ -86,6 +86,11 @@ IOSChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   return metrics_state_manager_.get();
 }
 
+PrefService* IOSChromeMetricsServicesManagerClient::GetLocalState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return local_state_;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 IOSChromeMetricsServicesManagerClient::GetURLLoaderFactory() {
   return GetApplicationContext()->GetSharedURLLoaderFactory();
