@@ -29,7 +29,7 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
     private final PageInfoRowView mRowView;
     private @Nullable ConnectionSecurityView mActiveView;
     private final ConnectionSecurityView.ViewParams mViewParams;
-    private final long mNativeConnectionSecurityController;
+    private long mNativeConnectionSecurityController;
 
     public PageInfoConnectionSecurityController(
             PageInfoMainController mainController,
@@ -75,6 +75,8 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
     }
 
     private void loadIdentityInfo() {
+        if (mNativeConnectionSecurityController == 0) return;
+
         PageInfoConnectionSecurityControllerJni.get()
                 .loadIdentityInfo(mNativeConnectionSecurityController);
     }
@@ -141,6 +143,8 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
     public void updateSubpageIfNeeded() {}
 
     public void resetCertDecision() {
+        if (mNativeConnectionSecurityController == 0) return;
+
         PageInfoConnectionSecurityControllerJni.get()
                 .resetCertDecisions(mNativeConnectionSecurityController);
         mMainController.dismiss();
@@ -148,6 +152,7 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
 
     public void destroy() {
         PageInfoConnectionSecurityControllerJni.get().destroy(mNativeConnectionSecurityController);
+        mNativeConnectionSecurityController = 0;
     }
 
     @NativeMethods
