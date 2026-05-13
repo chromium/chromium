@@ -201,7 +201,13 @@ PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void InstallCustomDispatchForTesting(AllocatorDispatch* dispatch);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void InstallCustomDispatchForTesting(const AllocatorDispatch* dispatch);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void UninstallCustomDispatch();
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+const AllocatorDispatch* GetCustomDispatchForTesting();
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Provide a ConfigurePartitions() helper, to mimic what Chromium uses. This way

@@ -11,6 +11,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -88,16 +89,15 @@ class SchedulerLoopQuarantineWebContentsObserverBrowserTest
           }},
          { base::features::kPartitionAllocWithAdvancedChecks,
            {} }},
-        // Disable preloading `kPrewarm` because it causes the browser to load a
-        // webpage before each test starts (during SetUp) which breaks our
-        // tests.
-        {});
+        // Disable the task observer because the test body is not considered
+        // to be inside a "task".
+        // TODO(https://crbug.com/351974425): Convert the test to run inside a
+        // task.
+        {features::
+             kPartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread});
 #else
     feature_list_.InitWithFeatures(
         {},
-        // Disable preloading `kPrewarm` because it causes the browser to load a
-        // webpage before each test starts (during SetUp) which breaks our
-        // tests.
         {});
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     // Ensure even when USE_PARTITION_ALLOC_AS_MALLOC is false we use the

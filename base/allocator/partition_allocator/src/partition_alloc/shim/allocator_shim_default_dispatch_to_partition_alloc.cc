@@ -968,12 +968,22 @@ void InstallPartitionAllocWithAdvancedChecks() {
 }
 
 void InstallCustomDispatchForTesting(AllocatorDispatch* dispatch) {
-  InstallCustomDispatch(dispatch);
+  dispatch->next = &internal::kPartitionAllocDispatch;
+  g_delegate_dispatch.store(dispatch, std::memory_order_relaxed);
+}
+
+void InstallCustomDispatchForTesting(const AllocatorDispatch* dispatch) {
+  PA_CHECK(dispatch->next == &internal::kPartitionAllocDispatch);
+  g_delegate_dispatch.store(dispatch, std::memory_order_relaxed);
 }
 
 void UninstallCustomDispatch() {
   g_delegate_dispatch.store(&internal::kPartitionAllocDispatch,
                             std::memory_order_relaxed);
+}
+
+const AllocatorDispatch* GetCustomDispatchForTesting() {
+  return GetDelegate();
 }
 
 void EnablePartitionAllocMemoryReclaimer() {

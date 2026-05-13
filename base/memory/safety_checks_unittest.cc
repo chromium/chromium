@@ -8,6 +8,8 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "partition_alloc/tagging.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -163,12 +165,15 @@ TEST(MemorySafetyCheckTest, AllocatorFunctions) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
-  // The check is performed only if `kPartitionAllocSchedulerLoopQuarantine` is
-  // enabled. `base::ScopedFeatureList` does not work here because the default
-  // `PartitionRoot` is configured before running this test.
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocSchedulerLoopQuarantine)) {
-    return;
+  auto* root = allocator_shim::internal::PartitionAllocMalloc::Allocator();
+  auto& branch =
+      root->scheduler_loop_quarantine_for_advanced_memory_safety_checks_;
+
+  // Skip if AMSC quarantine is not configured. `base::ScopedFeatureList` does
+  // not work here because the default `PartitionRoot` is configured before
+  // running this test.
+  if (!branch.GetConfigurationForTesting().enable_quarantine) {
+    GTEST_SKIP();
   }
 
   static_assert(
@@ -178,20 +183,16 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
       is_memory_safety_checked<AdvancedChecks,
                                MemorySafetyCheck::kSchedulerLoopQuarantine>);
 
-  auto* root = allocator_shim::internal::PartitionAllocMalloc::Allocator();
-  partition_alloc::internal::
-      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(root);
-
   auto* ptr1 = new DefaultChecks();
   ASSERT_NE(ptr1, nullptr);
   delete ptr1;
-  EXPECT_FALSE(branch.IsQuarantined(ptr1));
+  EXPECT_FALSE(branch.IsQuarantinedForTesting(ptr1));
 
   auto* ptr2 = new AdvancedChecks();
   ASSERT_NE(ptr2, nullptr);
   UNSAFE_TODO(memset(ptr2->data, 'A', sizeof(ptr2->data)));
   delete ptr2;
-  EXPECT_TRUE(branch.IsQuarantined(ptr2));
+  EXPECT_TRUE(branch.IsQuarantinedForTesting(ptr2));
 
   // Dereferencing `ptr` is still undefined behavior, but we can say it is
   // somewhat defined as this test is gated behind

@@ -1875,6 +1875,20 @@ void MockAlignedFreeWithAdvancedChecks(void* address, void* context) {
                                                                   context);
 }
 
+class ScopedCustomDispatchSwapForTesting {
+ public:
+  explicit ScopedCustomDispatchSwapForTesting(AllocatorDispatch* dispatch) {
+    original_dispatch_ = GetCustomDispatchForTesting();
+    InstallCustomDispatchForTesting(dispatch);
+  }
+  ~ScopedCustomDispatchSwapForTesting() {
+    InstallCustomDispatchForTesting(original_dispatch_);
+  }
+
+ private:
+  const AllocatorDispatch* original_dispatch_;
+};
+
 TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
   // To prevent flakiness introduced by sampling-based dispatch inserted,
   // replace the chain head within this test.
@@ -1895,16 +1909,18 @@ TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
   EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
   EXPECT_EQ(g_mock_free_with_advanced_checks_count, 0u);
 
-  InstallCustomDispatchForTesting(&g_mock_dispatch_for_advanced_checks);
+  {
+    ScopedCustomDispatchSwapForTesting swap(
+        &g_mock_dispatch_for_advanced_checks);
 
-  alloc_ptr = new int;
-  delete alloc_ptr;
+    alloc_ptr = new int;
+    delete alloc_ptr;
 
-  // `free()` -> `g_mock_dispatch` -> `dispatch` -> default allocator.
-  EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
-  EXPECT_GE(g_mock_free_with_advanced_checks_count, 1u);
+    // `free()` -> `g_mock_dispatch` -> `dispatch` -> default allocator.
+    EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+    EXPECT_GE(g_mock_free_with_advanced_checks_count, 1u);
+  }
 
-  UninstallCustomDispatch();
   g_mock_free_with_advanced_checks_count = 0u;
 
   alloc_ptr = new int;

@@ -99,7 +99,7 @@ BASE_FEATURE_PARAM(int,
                    "ring-size",
                    partition_alloc::internal::SlotSpanRingMaxSize::kMedium);
 
-BASE_FEATURE(kPartitionAllocWithAdvancedChecks, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPartitionAllocWithAdvancedChecks, FEATURE_ENABLED_BY_DEFAULT);
 constexpr FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>::Option
     kPartitionAllocWithAdvancedChecksEnabledProcessesOptions[] = {
         {PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserOnly,
@@ -121,14 +121,27 @@ constinit const FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>
         PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserOnly,
         &kPartitionAllocWithAdvancedChecksEnabledProcessesOptions};
 
+// Enabled-by-default. Without proper
+// `PartitionAllocSchedulerLoopQuarantineConfig` configuration, the feature
+// remains effectively disabled.
 BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantine,
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 // Scheduler Loop Quarantine's config.
 // Note: Do not use the prepared macro as of no need for a local cache.
 constinit const FeatureParam<std::string>
     kPartitionAllocSchedulerLoopQuarantineConfig{
         &kPartitionAllocSchedulerLoopQuarantine,
-        "PartitionAllocSchedulerLoopQuarantineConfig", "{}"};
+        "PartitionAllocSchedulerLoopQuarantineConfig",
+        R"({
+          "browser":{
+            "main":{
+              "branch-capacity-in-bytes":524288,
+              "enable-quarantine":true,
+              "enable-zapping":true,
+              "leak-on-destruction":false
+            }
+          }
+        })"};
 
 BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantineTaskControlledPurge,
              FEATURE_DISABLED_BY_DEFAULT);

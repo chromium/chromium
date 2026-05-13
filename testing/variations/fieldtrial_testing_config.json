@@ -17927,6 +17927,36 @@
             ]
         }
     ],
+    "PartitionAllocMiracleObject": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled_512K_20260420",
+                    "params": {
+                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"*\":{\"main\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false},\"amsc\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}}}",
+                        "enabled-processes": "browser-only"
+                    },
+                    "enable_features": [
+                        "PartitionAllocSchedulerLoopQuarantine",
+                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
+                        "PartitionAllocWithAdvancedChecks"
+                    ],
+                    "disable_features": [
+                        "ScreenAIPartitionAllocAdvancedChecksEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocParameterTuning": [
         {
             "platforms": [
@@ -18014,89 +18044,6 @@
                     },
                     "enable_features": [
                         "PartitionAllocUnretainedDanglingPtr"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocWithAdvancedChecks": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled_512K_20260203",
-                    "params": {
-                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"browser\":{\"main\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}}}",
-                        "enabled-processes": "browser-only"
-                    },
-                    "enable_features": [
-                        "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
-                        "PartitionAllocWithAdvancedChecks"
-                    ],
-                    "disable_features": [
-                        "ScreenAIPartitionAllocAdvancedChecksEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocWithAdvancedChecksAMSC": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled_amsc_macro_only_all_processes_20260416",
-                    "params": {
-                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"*\":{\"amsc\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}}}",
-                        "enabled-processes": "browser-only"
-                    },
-                    "enable_features": [
-                        "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocWithAdvancedChecks",
-                        "ScreenAIPartitionAllocAdvancedChecksEnabled"
-                    ],
-                    "disable_features": [
-                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread"
-                    ]
-                },
-                {
-                    "name": "enabled_amsc_macro_only_non_renderer_20260416",
-                    "params": {
-                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"*\":{\"amsc\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}},\"renderer\":{\"amsc\":{\"branch-capacity-in-bytes\":0,\"enable-quarantine\":false,\"enable-zapping\":false,\"leak-on-destruction\":false}}}",
-                        "enabled-processes": "browser-only"
-                    },
-                    "enable_features": [
-                        "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocWithAdvancedChecks",
-                        "ScreenAIPartitionAllocAdvancedChecksEnabled"
-                    ],
-                    "disable_features": [
-                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread"
-                    ]
-                },
-                {
-                    "name": "enabled_amsc_macro_only_20260130",
-                    "params": {
-                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"browser\":{\"amsc\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}}}",
-                        "enabled-processes": "browser-only"
-                    },
-                    "enable_features": [
-                        "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocWithAdvancedChecks",
-                        "ScreenAIPartitionAllocAdvancedChecksEnabled"
-                    ],
-                    "disable_features": [
-                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread"
                     ]
                 }
             ]
