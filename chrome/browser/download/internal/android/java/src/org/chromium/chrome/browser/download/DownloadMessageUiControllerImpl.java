@@ -379,6 +379,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     public void showIncognitoDownloadMessage(Callback<Boolean> callback) {
         Context context = ContextUtils.getApplicationContext();
 
+        mDelegate.maybeSwitchToFocusedActivity();
         MessageDispatcher dispatcher = getMessageDispatcher();
         // TODO(crbug.com/40234025): Fix the issue with dispatcher
         //                                  being Null and remove the following if clause
