@@ -9,14 +9,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/on_device_translation/service/test/test_util.h"
-#include "components/on_device_translation/test/fake_installer.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -303,37 +300,6 @@ void TestTranslationAvailable(Browser* browser,
                                       sourceLang, targetLang))
                 .ExtractString(),
             result);
-}
-
-void WriteMockLanguagePackFiles(
-    FakeOnDeviceTranslationInstaller& fake_installer,
-    LanguagePackKey language_pack_key) {
-  base::ScopedAllowBlockingForTesting allow_io;
-  const auto dict_dir_path =
-      fake_installer.GetLanguagePackPath(language_pack_key);
-  const auto dict_path = dict_dir_path.AppendASCII("dict.dat");
-  ASSERT_TRUE(base::CreateDirectory(dict_dir_path));
-  ASSERT_TRUE(
-      base::File(dict_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE)
-          .WriteAndCheck(0, base::as_byte_span(CreateFakeDictionaryData(
-                                GetSourceLanguageCode(language_pack_key),
-                                GetTargetLanguageCode(language_pack_key)))));
-}
-
-void SetupFakeInstaller(Profile* profile,
-                        FakeOnDeviceTranslationInstaller& fake_installer,
-                        LanguagePackKey language_pack_key) {
-  fake_installer.InitNow(base::DoNothing());
-  fake_installer.InstallLanguagePackNow(language_pack_key);
-
-  WriteMockLanguagePackFiles(fake_installer, language_pack_key);
-
-  base::ScopedAllowBlockingForTesting allow_io;
-  ASSERT_TRUE(
-      base::CopyFile(GetMockLibraryPath(), fake_installer.GetLibraryPath()));
-
-  auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(profile);
-  manager->SetInstallerForTesting(&fake_installer);
 }
 
 bool MockTranslationManagerImpl::CrashesAllowed() {
