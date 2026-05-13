@@ -160,6 +160,12 @@ class TabStripModelDelegate {
   // Notifies the tab restore service that the group is no longer closing.
   virtual void GroupCloseStopped(const tab_groups::TabGroupId& group) = 0;
 
+  // Notifies the tab restore service that the split view is done closing.
+  virtual void SplitClosed(const split_tabs::SplitTabId& split_id) = 0;
+
+  // Notifies the tab restore service that the split view is no longer closing.
+  virtual void SplitCloseStopped(const split_tabs::SplitTabId& split_id) = 0;
+
   // Runs any unload listeners associated with the specified WebContents
   // before it is closed. If there are unload listeners that need to be run,
   // this function returns true and the TabStripModel will wait before closing

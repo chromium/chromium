@@ -91,6 +91,12 @@ void TestTabStripModelDelegate::WillCloseGroup(
 void TestTabStripModelDelegate::WillCloseSplit(
     const split_tabs::SplitTabId& split_id) {}
 
+void TestTabStripModelDelegate::SplitClosed(
+    const split_tabs::SplitTabId& split_id) {}
+
+void TestTabStripModelDelegate::SplitCloseStopped(
+    const split_tabs::SplitTabId& split_id) {}
+
 void TestTabStripModelDelegate::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {}
 

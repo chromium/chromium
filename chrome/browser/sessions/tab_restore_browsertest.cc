@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -2481,6 +2482,79 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabGroupFromClosedWindow) {
                     ->GetTabGroup(groups_c[0])
                     ->ListTabs()
                     .length());
+}
+
+class SplitTabRestoreTest : public TabRestoreTest {
+ public:
+  SplitTabRestoreTest() {
+    scoped_feature_list_.InitAndEnableFeature(tabs::kSplitViewTabRestore);
+  }
+
+  SplitTabRestoreTest(const SplitTabRestoreTest&) = delete;
+  SplitTabRestoreTest& operator=(const SplitTabRestoreTest&) = delete;
+
+  ~SplitTabRestoreTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Close a split view, then restore it. The tabs should come back as a split
+// view.
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, RestoreSplit) {
+  AddHTTPSSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a split with tabs 1 and 2.
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Close the split view.
+  tab_strip_model->CloseSelectedTabs();
+
+  // Restore.
+  RestoreMostRecentlyClosed(browser());
+
+  // Verify that the tabs are back and in a split.
+  EXPECT_EQ(3, tab_strip_model->count());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->GetSplit().has_value());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(2)->GetSplit().has_value());
+  EXPECT_EQ(tab_strip_model->GetTabAtIndex(1)->GetSplit().value(),
+            tab_strip_model->GetTabAtIndex(2)->GetSplit().value());
+}
+
+// Close a pinned split view, then restore it. The tabs should come back as a
+// pinned split view.
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, RestorePinnedSplit) {
+  AddHTTPSSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Pin tabs 1 and 2.
+  tab_strip_model->SetTabPinned(1, true);
+  tab_strip_model->SetTabPinned(2, true);
+
+  // Now at indexes 0 and 1, create the split view with the pinned tabs.
+  tab_strip_model->ActivateTabAt(0);
+  tab_strip_model->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Close the pinned split view.
+  tab_strip_model->CloseSelectedTabs();
+
+  // Restore.
+  RestoreMostRecentlyClosed(browser());
+
+  // Verify that the tabs are back, in a split, and pinned.
+  EXPECT_EQ(3, tab_strip_model->count());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->IsPinned());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->IsPinned());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->GetSplit().has_value());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->GetSplit().has_value());
+  EXPECT_EQ(tab_strip_model->GetTabAtIndex(0)->GetSplit().value(),
+            tab_strip_model->GetTabAtIndex(1)->GetSplit().value());
 }
 
 class SoftNavigationTabRestoreTest : public TabRestoreTest {

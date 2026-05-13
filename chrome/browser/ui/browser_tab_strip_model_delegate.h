@@ -65,6 +65,8 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   void WillCloseGroup(const tab_groups::TabGroupId& group) override;
   void WillCloseSplit(const split_tabs::SplitTabId& split_id) override;
   void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
+  void SplitClosed(const split_tabs::SplitTabId& split_id) override;
+  void SplitCloseStopped(const split_tabs::SplitTabId& split_id) override;
   bool RunUnloadListenerBeforeClosing(content::WebContents* contents) override;
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;
