@@ -861,6 +861,8 @@ bool IsFullscreenNextIAEnabled() {
   _urlLoadingBrowserAgent = nullptr;
   _tabUsageRecorderBrowserAgent = nullptr;
   _snapshotBrowserAgent = nullptr;
+  _fullscreenUIUpdater = nullptr;
+  _fullscreenController = nullptr;
   _fullscreenBrowserAgentObserverBridge = nullptr;
   _fullscreenBrowserAgent = nullptr;
 }
@@ -2028,6 +2030,9 @@ bool IsFullscreenNextIAEnabled() {
 #pragma mark - FullscreenUIElement methods
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
+  if (_isShutdown) {
+    return;
+  }
   [self updateHeadersForFullscreenProgress:progress];
   [self updateFootersForFullscreenProgress:progress];
   if (!IsFullscreenRefactoringEnabled() &&
