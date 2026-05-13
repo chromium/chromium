@@ -7593,10 +7593,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_PAGE_ARIA_LABEL" desc="The aria-label for the button that allows the user to ask a question about the content of their current page. The $1 is a placeholder for the page title.">
         Ask Google about this page: <ph name="PAGE_TITLE">$1</ph>
       </message>
-      <message name="IDS_WEBUI_OMNIBOX_COMPOSE_LENS_OVERLAY"
-        desc="The name of the Lens overlay command in the content area context menu">
-        Search with Google Lens
-      </message>
       <message name="IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_YOUR_TABS"
         desc="Label for a button that guides the user to composebox's context menu using a suggestion like label.">
         Ask about your tabs
