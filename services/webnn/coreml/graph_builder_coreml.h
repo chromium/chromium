@@ -563,6 +563,24 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForWhere(
       const mojom::Where& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForWhere(
+      OperandId condition_operand_id,
+      OperandId true_value_operand_id,
+      OperandId false_value_operand_id,
+      OperandId output_operand_id,
+      CoreML::Specification::MILSpec::Block& block);
+
+  // Sanitize the indices of gather-like operation.
+  base::expected<OperandId, mojom::ErrorPtr> SanitizeIndices(
+      OperandId input_operand_id,
+      OperandId indices_operand_id,
+      std::optional<uint32_t> axis,
+      CoreML::Specification::MILSpec::Block& block);
+  base::expected<OperandId, mojom::ErrorPtr> SanitizeIndicesForDim(
+      OperandId indices_operand_id,
+      uint32_t axis_dim,
+      base::span<const uint32_t> dimensions,
+      CoreML::Specification::MILSpec::Block& block);
 
   // Helpers.
   const mojom::Operand& GetOperand(OperandId operand_id) const;
