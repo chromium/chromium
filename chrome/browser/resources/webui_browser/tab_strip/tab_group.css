@@ -8,5 +8,65 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: contents;
+  --tab-group-color-grey: rgb(73, 77, 82);
+  --tab-group-color-blue: rgb(50, 92, 205);
+  --tab-group-color-red: rgb(223, 0, 12);
+  --tab-group-color-pink: rgb(204, 6, 171);
+  --tab-group-color-green: rgb(26, 119, 54);
+  --tab-group-color-yellow: rgb(99, 117, 5);
+  --tab-group-color-purple: rgb(124, 49, 230);
+  --tab-group-color-cyan: rgb(5, 124, 132);
+  --tab-group-color-orange: rgb(204, 78, 0);
+
+  --foreground-color-on-grey-background: white;
+  --foreground-color-on-blue-background: white;
+  --foreground-color-on-red-background: white;
+  --foreground-color-on-pink-background: white;
+  --foreground-color-on-green-background: white;
+  --foreground-color-on-yellow-background: var(--google-grey-900);
+  --foreground-color-on-purple-background: white;
+  --foreground-color-on-cyan-background: white;
+  --foreground-color-on-orange-background: var(--google-grey-900);
+
+  display: inline-block;
+  margin: 0 4px 7px 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --tab-group-color-grey: rgb(208, 213, 221);
+    --tab-group-color-blue: rgb(200, 211, 255);
+    --tab-group-color-red: rgb(255, 199, 193);
+    --tab-group-color-pink: rgb(255, 195, 232);
+    --tab-group-color-green: rgb(198, 255, 199);
+    --tab-group-color-yellow: rgb(238, 255, 165);
+    --tab-group-color-purple: rgb(224, 203, 255);
+    --tab-group-color-cyan: rgb(199, 250, 255);
+    --tab-group-color-orange: rgb(255, 222, 167);
+
+    --foreground-color-on-grey-background: var(--google-grey-900);
+    --foreground-color-on-blue-background: var(--google-grey-900);
+    --foreground-color-on-red-background: var(--google-grey-900);
+    --foreground-color-on-pink-background: var(--google-grey-900);
+    --foreground-color-on-green-background: var(--google-grey-900);
+    --foreground-color-on-yellow-background: var(--google-grey-900);
+    --foreground-color-on-purple-background: var(--google-grey-900);
+    --foreground-color-on-cyan-background: var(--google-grey-900);
+    --foreground-color-on-orange-background: var(--google-grey-900);
+  }
+}
+
+#chip {
+  align-items: center;
+  background-color: var(--tab-group-color);
+  border-radius: 6px;
+  color: var(--tab-group-foreground-color);
+  display: flex;
+  height: 20px;
+  padding: 2px 6px;
+}
+
+#title {
+  font-size: 12px;
+  font-weight: 500;
 }
