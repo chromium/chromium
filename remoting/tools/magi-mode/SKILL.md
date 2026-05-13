@@ -193,7 +193,11 @@ next expert.
   requirements and `src/remoting/tools/magi-mode/PERSONAS.md` (the routing
   catalog) to assess and select the most appropriate Domain Experts required
   to implement the stubs. It returns the absolute file paths of their definition
-  files to the Orchestrator.
+  files to the Orchestrator. The Engineering Manager MUST also read its own
+  persona file from
+  `src/remoting/tools/magi-mode/personas/core/engineering_manager.json` and
+  evaluate the selection checklist to ensure all technical dimensions are
+  covered. It MUST include the checklist evaluation in its JSON output.
 - **Checklist Initialization:** The Orchestrator MUST read the `checklist` from
   every selected persona JSON file, compute the **Union Set** of all checklist
   keys, and initialize `state_block.magi.json#checklist` with all these keys
