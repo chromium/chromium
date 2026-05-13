@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
@@ -32,8 +33,10 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -510,6 +513,41 @@ TEST_F(IndigoPageActionControllerTest, OnboardingCancelledDoesNotTrigger) {
 
   EXPECT_FALSE(fetcher_called.IsReady());
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kIndigoHasOnboarded));
+}
+
+TEST_F(IndigoPageActionControllerTest, OnCloseResetsReplacements) {
+  CreateController();
+
+  GURL url("https://example.com");
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  content::WebContents* web_contents = tab_interface_->GetContents();
+  auto* manager = IndigoImageReplacementManager::GetOrCreateForPage(
+      web_contents->GetPrimaryPage());
+
+  base::test::TestFuture<void> disconnect_future;
+
+  class FakeImageReplacement : public blink::mojom::ImageReplacement {
+   public:
+    FakeImageReplacement() = default;
+    void StartReplacement(
+        mojo::PendingRemote<blink::mojom::ImageReplacementHost> host) override {
+      // Do nothing.
+    }
+    void RenderReplacement() override {}
+  };
+
+  FakeImageReplacement fake_replacement;
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&fake_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  receiver.set_disconnect_handler(disconnect_future.GetCallback());
+
+  controller_->OnClose(nullptr);
+
+  EXPECT_TRUE(disconnect_future.Wait());
 }
 
 }  // namespace

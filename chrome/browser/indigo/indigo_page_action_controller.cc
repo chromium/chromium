@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
+#include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
@@ -235,7 +236,18 @@ void IndigoPageActionController::DidFinishNavigation(
 }
 
 void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
-  NOTIMPLEMENTED();
+  if (toolbar_) {
+    toolbar_->Hide();
+    toolbar_.reset();
+  }
+  content::WebContents* web_contents = tab().GetContents();
+  if (web_contents) {
+    auto* manager = IndigoImageReplacementManager::GetForPage(
+        web_contents->GetPrimaryPage());
+    if (manager) {
+      manager->ResetAllReplacements();
+    }
+  }
 }
 
 void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
