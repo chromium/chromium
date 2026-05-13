@@ -673,19 +673,13 @@ class ReadAnythingAppModel {
     FindRange(std::u16string_view query) const;
   };
 
-  // Identifies all AXNodes that contribute to a given range from
-  // |global_ax_tree_text_| and creates MappingSegments with offsets relative to
-  // the distilled block.
-  // Args:
-  //  |ax_start|:  The start index of the match in |global_ax_tree_text|.
-  //  |ax_end|:    The end index (exclusive) in |global_ax_tree_text|.
-  //  |block_internal_offset|: The starting character position of this match
-  //                          within the rendered Readability block (usually 0
-  //                          for whole-block matches).
-  std::vector<MappingSegment> CreateSegmentsForMatch(
-      size_t ax_start,
-      size_t ax_end,
-      size_t block_internal_offset);
+  // A confirmed alignment point between a distilled Readability block and a
+  // character range in the global flattened AXTree text.
+  struct AlignmentAnchor {
+    size_t block_index;
+    size_t ax_start;
+    size_t ax_end;
+  };
 
   struct SelectionEndpoint {
     enum class Source {
@@ -735,10 +729,40 @@ class ReadAnythingAppModel {
 
   // Identifies blocks that appear exactly once in both the original AXTree
   // and the distilled Readability output.
-  void FindGloballyUniqueBlocks(
+  std::vector<AlignmentAnchor> FindGloballyUniqueBlocks(
       const std::vector<std::u16string>& blocks,
       const SuffixArray& index,
       const base::flat_map<std::u16string_view, int>& block_counts);
+
+  // Filters alignment anchor candidates using the Longest Increasing
+  // Subsequence (LIS) algorithm based on AXTree positions. Establishing a
+  // monotonic order is required for the recursive gap alignment step in the
+  // text selection mapping algorithm, as it  ensures that the search ranges
+  // between anchors are valid and sequential.
+  std::vector<AlignmentAnchor> FilterMonotonicAnchors(
+      std::vector<AlignmentAnchor> candidates);
+
+  // Recursively fills the gaps between established anchors by searching for the
+  // longest common unique substrings.
+  void AlignGaps(const std::vector<std::u16string>& blocks,
+                 const SuffixArray& index,
+                 size_t block_start,
+                 size_t block_end,
+                 size_t ax_start,
+                 size_t ax_end);
+
+  // Identifies all AXNodes that contribute to a given range from
+  // |global_ax_tree_text_| and creates MappingSegments with offsets relative to
+  // the distilled block.
+  // Args:
+  //  |ax_start|:  The start index of the match in |global_ax_tree_text|.
+  //  |ax_end|:    The end index (exclusive) in |global_ax_tree_text|.
+  //  |block_internal_offset|: The starting character position of this match
+  // within the rendered Readability block (usually 0 for whole-block matches).
+  std::vector<MappingSegment> CreateSegmentsForMatch(
+      size_t ax_start,
+      size_t ax_end,
+      size_t block_internal_offset);
 
   // Traverses the AXTree to create a flattened text representation for the text
   // selection mapping algorithm.

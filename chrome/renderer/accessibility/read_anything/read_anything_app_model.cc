@@ -1477,7 +1477,11 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
     }
   }
 
-  FindGloballyUniqueBlocks(blocks, index, readability_block_counts);
+  std::vector<AlignmentAnchor> candidates =
+      FindGloballyUniqueBlocks(blocks, index, readability_block_counts);
+
+  std::vector<AlignmentAnchor> major_anchors =
+      FilterMonotonicAnchors(std::move(candidates));
 
   // TODO: crbug.com/507461126 - Implement part2 of the algorithm. Gap substring
   // alignment.
@@ -1488,10 +1492,14 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   return true;
 }
 
-void ReadAnythingAppModel::FindGloballyUniqueBlocks(
+std::vector<ReadAnythingAppModel::AlignmentAnchor>
+ReadAnythingAppModel::FindGloballyUniqueBlocks(
     const std::vector<std::u16string>& blocks,
     const SuffixArray& index,
     const base::flat_map<std::u16string_view, int>& block_counts) {
+  CHECK_EQ(blocks.size(), text_to_ax_map_.size());
+
+  std::vector<AlignmentAnchor> candidates;
   for (size_t i = 0; i < blocks.size(); ++i) {
     const std::u16string& block = blocks[i];
 
@@ -1503,16 +1511,77 @@ void ReadAnythingAppModel::FindGloballyUniqueBlocks(
     auto range = index.FindRange(block);
 
     // If the block exists exactly once in the source page and in the distilled
-    // output, set the AXNode segments for this block in [text_to_ax_map_|.
+    // output, set the AXNode segments for this block in [text_to_ax_map_| and
+    // add it as a candidate for a major anchor.
     auto it = block_counts.find(block);
     if (std::distance(range.first, range.second) == 1 &&
         it != block_counts.end() && it->second == 1) {
-      size_t ax_start_offset = *range.first;
-      text_to_ax_map_[i] = CreateSegmentsForMatch(
-          ax_start_offset, ax_start_offset + block.size(), 0);
+      size_t ax_start = *range.first;
+      size_t ax_end = ax_start + block.size();
+      DUMP_WILL_BE_CHECK(ax_end <= global_ax_tree_text_.size())
+          << "Block exceeds total text length";
+      if (ax_end > global_ax_tree_text_.size()) {
+        continue;
+      }
+
+      text_to_ax_map_[i] = CreateSegmentsForMatch(ax_start, ax_end, 0);
+      candidates.push_back({i, ax_start, ax_end});
     }
   }
+  return candidates;
 }
+
+std::vector<ReadAnythingAppModel::AlignmentAnchor>
+ReadAnythingAppModel::FilterMonotonicAnchors(
+    std::vector<AlignmentAnchor> candidates) {
+  if (candidates.empty()) {
+    return {};
+  }
+
+  size_t n = candidates.size();
+  std::vector<size_t> tails_indices(n, 0);
+  std::vector<int> prev(n, -1);
+  size_t len = 0;
+
+  // Find the longest increasing anchor set using the LIS algorithm.
+  for (size_t i = 0; i < n; ++i) {
+    // Find the smallest tail that is >= the current anchor's AX position.
+    auto it =
+        std::lower_bound(tails_indices.begin(), tails_indices.begin() + len, i,
+                         [&candidates](size_t tail_idx, size_t current_idx) {
+                           return candidates[tail_idx].ax_start <
+                                  candidates[current_idx].ax_start;
+                         });
+    size_t pos = std::distance(tails_indices.begin(), it);
+
+    if (pos > 0) {
+      prev[i] = static_cast<int>(tails_indices[pos - 1]);
+    }
+
+    tails_indices[pos] = i;
+    if (pos == len) {
+      len++;
+    }
+  }
+
+  // Reconstruct the monotonic subsequence via backtracking.
+  std::vector<AlignmentAnchor> result;
+  for (int i = static_cast<int>(tails_indices[len - 1]); i != -1; i = prev[i]) {
+    result.push_back(candidates[i]);
+  }
+  std::reverse(result.begin(), result.end());
+  return result;
+}
+
+void ReadAnythingAppModel::AlignGaps(const std::vector<std::u16string>& blocks,
+                                     const SuffixArray& index,
+                                     size_t block_start,
+                                     size_t block_end,
+                                     size_t ax_start,
+                                     size_t ax_end) {
+  // TODO: crbug.com/507461126 - Implement recursive gap alignment.
+}
+
 // TODO: crbug.com/509578412 - Evaluate consolidating logic with existing text
 // traversal methods.
 void ReadAnythingAppModel::FlattenAXTree(ui::AXSerializableTree* tree) {
