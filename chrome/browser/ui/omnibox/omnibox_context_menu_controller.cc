@@ -495,7 +495,8 @@ void OmniboxContextMenuController::AddTabContext(const TabInfo& tab_info) {
 
 void OmniboxContextMenuController::UpdateSearchboxContext(
     std::optional<TabInfo> tab_info,
-    std::optional<omnibox::ToolMode> tool_mode) {
+    std::optional<omnibox::ToolMode> tool_mode,
+    std::vector<searchbox::mojom::SearchContextAttachmentPtr> attachments) {
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_.get());
   if (!browser_window_interface) {
@@ -521,6 +522,10 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
             std::move(tab_attachment)));
   }
 
+  for (auto& attachment : attachments) {
+    context->file_infos.push_back(std::move(attachment));
+  }
+
   if (tool_mode) {
     context->mode = *tool_mode;
   }
@@ -537,6 +542,30 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
   } else {
     searchbox_context_data->SetPendingContext(std::move(context));
   }
+}
+
+void OmniboxContextMenuController::OnDriveUploadResponse(
+    searchbox::mojom::DriveUploadResponsePtr response) {
+  if (!response) {
+    return;
+  }
+
+  std::vector<searchbox::mojom::SearchContextAttachmentPtr> file_attachments;
+  for (const auto& file : response->files) {
+    auto file_attachment = searchbox::mojom::FileAttachment::New();
+    file_attachment->uuid = file->token;
+    file_attachment->name = file->file_name;
+    file_attachment->mime_type = file->mime_type;
+    file_attachment->image_data_url = file->thumbnail_url;
+
+    file_attachments.push_back(
+        searchbox::mojom::SearchContextAttachment::NewFileAttachment(
+            std::move(file_attachment)));
+  }
+
+  UpdateSearchboxContext(/*tab_info=*/std::nullopt, /*tool_mode=*/std::nullopt,
+                         std::move(file_attachments));
+  GetEditModel()->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/true);
 }
 
 bool OmniboxContextMenuController::IsContentSharingEnabled() const {
@@ -915,10 +944,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         if (it->second == omnibox::InputType::INPUT_TYPE_DRIVE) {
           if (composebox_handler) {
             composebox_handler->OnDriveUploadClicked(base::BindOnce(
-                [](searchbox::mojom::DriveUploadResponsePtr response) {
-                  // TODO(crbug.com/493562277): Add Drive files as context to
-                  // the composebox.
-                }));
+                &OmniboxContextMenuController::OnDriveUploadResponse,
+                weak_ptr_factory_.GetWeakPtr()));
           }
           return;
         }
