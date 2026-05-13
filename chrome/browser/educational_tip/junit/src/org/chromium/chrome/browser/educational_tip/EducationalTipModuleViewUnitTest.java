@@ -11,10 +11,12 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.StaticLayout;
 import android.view.LayoutInflater;
 import android.view.View.OnLayoutChangeListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -151,6 +153,17 @@ public class EducationalTipModuleViewUnitTest {
         // In the current implementation, setCompleted(false) doesn't revert the changes.
         // So, the styles should still be the disabled ones.
         verifySetCompleted();
+    }
+
+    @Test
+    @SmallTest
+    public void testSetUseTransparentIconBackground() {
+        ImageView imageView = mModuleView.findViewById(R.id.educational_tip_module_content_image);
+        Drawable background = imageView.getBackground();
+        Assert.assertNotNull(background);
+
+        mModuleView.setUseTransparentIconBackground(true);
+        Assert.assertNull(imageView.getBackground());
     }
 
     private void verifySetCompleted() {

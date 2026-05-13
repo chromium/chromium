@@ -21,4 +21,7 @@ found in the LICENSE file.
   <color name="setup_list_celebratory_promo_gradient_blue_end">@color/setup_list_celebratory_promo_blue_dark_base</color>
   <color name="setup_list_celebratory_promo_gradient_green_start">@color/baseline_tertiary_80</color>
   <color name="setup_list_celebratory_promo_gradient_green_end">@color/setup_list_celebratory_promo_green_dark_base</color>
+
+  <!-- Ntp theme promo colors -->
+  <color name="ntp_theme_promo_image_background">@color/color_primary_with_alpha_20</color>
 </resources>

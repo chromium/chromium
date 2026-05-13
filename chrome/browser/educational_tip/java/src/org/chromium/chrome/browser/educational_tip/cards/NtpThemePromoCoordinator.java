@@ -67,4 +67,9 @@ public class NtpThemePromoCoordinator implements EducationalTipCardProvider {
     public void onCardClicked() {
         mOnClickedRunnable.run();
     }
+
+    @Override
+    public boolean useTransparentIconBackground() {
+        return true;
+    }
 }

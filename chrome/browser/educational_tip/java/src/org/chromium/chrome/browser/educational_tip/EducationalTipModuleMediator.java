@@ -117,6 +117,9 @@ public class EducationalTipModuleMediator {
                     if (mEducationalTipCardProvider == null) return;
                     mEducationalTipCardProvider.onCardClicked();
                 });
+        mModel.set(
+                EducationalTipModuleProperties.USE_TRANSPARENT_ICON_BACKGROUND,
+                mEducationalTipCardProvider.useTransparentIconBackground());
 
         mModuleDelegate.onDataReady(mModuleType, mModel);
     }

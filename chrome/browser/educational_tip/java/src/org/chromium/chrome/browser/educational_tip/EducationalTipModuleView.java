@@ -108,6 +108,12 @@ public class EducationalTipModuleView extends LinearLayout {
         SetupListModuleUtils.updateIconWithAnimation(mContentImageView, imageResource);
     }
 
+    void setUseTransparentIconBackground(boolean useTransparentIconBackground) {
+        if (useTransparentIconBackground) {
+            mContentImageView.setBackground(null);
+        }
+    }
+
     void setModuleButtonOnClickListener(View.OnClickListener onClickListener) {
         mModuleButtonView.setOnClickListener(onClickListener);
     }

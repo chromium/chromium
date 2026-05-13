@@ -474,6 +474,9 @@ public class EducationalTipModuleMediatorUnitTest {
                 mModel.get(EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING));
         assertEquals(
                 imageResource, mModel.get(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE));
+        assertEquals(
+                moduleType == ModuleType.NTP_THEME_PROMO,
+                mModel.get(EducationalTipModuleProperties.USE_TRANSPARENT_ICON_BACKGROUND));
 
         verify(mModuleDelegate).onDataReady(moduleType, mModel);
         verify(mModuleDelegate, never()).onDataFetchFailed(moduleType);
