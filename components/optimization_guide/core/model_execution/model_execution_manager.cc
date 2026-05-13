@@ -118,6 +118,16 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
   }
 }
 
+bool IsEligibleForPrivateAI(ModelBasedCapabilityKey feature) {
+  switch (feature) {
+    case ModelBasedCapabilityKey::kZeroStateSuggestions:
+    case ModelBasedCapabilityKey::kContextualCueing:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 using ModelExecutionError =
@@ -219,10 +229,8 @@ void ModelExecutionManager::ExecuteModel(
     fetchers_for_feature.erase(fetchers_for_feature.begin());
   }
   FetcherId fetcher_id = next_model_execution_fetcher_id++;
-  // Currently only ZSS is supported by PrivateAI. Update or remove this CHECK
-  // when other features are supported too.
   CHECK(service_type != ModelExecutionServiceType::kPrivateAi ||
-        feature == ModelBasedCapabilityKey::kZeroStateSuggestions)
+        IsEligibleForPrivateAI(feature))
       << feature;
   base::TimeTicks start_time = base::TimeTicks::Now();
   auto fetcher = CreateModelExecutionFetcher(service_type);
