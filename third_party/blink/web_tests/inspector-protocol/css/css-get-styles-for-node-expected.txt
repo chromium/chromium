@@ -154,23 +154,23 @@ checking parsed longhand components from shorthand properties
     }
     [12] : {
         name : border-image-source
-        value : initial
+        value : none
     }
     [13] : {
         name : border-image-slice
-        value : initial
+        value : 100%
     }
     [14] : {
         name : border-image-width
-        value : initial
+        value : 1
     }
     [15] : {
         name : border-image-outset
-        value : initial
+        value : 0
     }
     [16] : {
         name : border-image-repeat
-        value : initial
+        value : stretch
     }
 ]
 [
