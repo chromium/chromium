@@ -8,6 +8,7 @@ import android.net.http.HttpEngine;
 import android.os.Build;
 import android.os.ext.SdkExtensions;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
@@ -18,8 +19,17 @@ public final class AndroidProxyOptions {
 
     public static void apply(
             HttpEngine.Builder backend, org.chromium.net.ProxyOptions proxyOptions) {
-        if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S) >= 22)) {
+        // When Cronet is being built in the Android repo, HttpEngine is always up to date. This
+        // means that the proxy APIs are always available.
+        //
+        // When Cronet is being built in the Chromium repo, whether HttpEngine is up to date depends
+        // on the device state. This means we must check the available SDK extension before calling
+        // into the new proxy APIs.
+        boolean proxyApisAvailable =
+                BuildConfig.CRONET_FOR_AOSP_BUILD
+                        || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                                && SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S) >= 22);
+        if (!proxyApisAvailable) {
             throw new UnsupportedOperationException(
                     "This Cronet implementation does not support ProxyOptions");
         }
