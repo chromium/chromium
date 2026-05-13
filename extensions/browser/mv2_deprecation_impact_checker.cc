@@ -62,9 +62,12 @@ bool MV2DeprecationImpactChecker::IsExtensionAffected(
     return false;
   }
 
-  // Only extensions (not platform apps, etc).
+  // Only extensions (not platform apps, etc). User scripts are treated as
+  // extensions for the sake of APIs and in presentation to the user, so we
+  // include them here.
   if (manifest_type != Manifest::TYPE_EXTENSION &&
-      manifest_type != Manifest::TYPE_LOGIN_SCREEN_EXTENSION) {
+      manifest_type != Manifest::TYPE_LOGIN_SCREEN_EXTENSION &&
+      manifest_type != Manifest::TYPE_USER_SCRIPT) {
     return false;
   }
 

@@ -511,6 +511,22 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest, NonExtensionsAreNotAffected) {
   EXPECT_FALSE(impact_checker()->IsExtensionAffected(*hosted_app));
 }
 
+// Tests that user script MV2 extensions are properly considered affected by
+// the MV2 deprecation experiment.
+TEST_P(MV2DeprecationImpactCheckerUnitTest, UserScriptsAreAffected) {
+  scoped_refptr<const Extension> user_script =
+      ExtensionBuilder("user script")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .SetManifestVersion(2)
+          .SetManifestKey("converted_from_user_script", true)
+          .Build();
+  ASSERT_EQ(Manifest::TYPE_USER_SCRIPT, user_script->GetType());
+
+  bool expected_affected = policy_level() != MV2PolicyLevel::kAllowed;
+  EXPECT_EQ(expected_affected,
+            impact_checker()->IsExtensionAffected(*user_script));
+}
+
 // Tests the allowlist is taken into account.
 TEST_P(MV2DeprecationImpactCheckerUnitTestWithAllowlist, AllowlistWorks) {
   scoped_refptr<const Extension> ext_a =

@@ -375,10 +375,12 @@ bool ExtensionManagement::IsAllowedManifestVersion(
           extensions_features::kExtensionsManifestV3Only) ||
       manifest_version >= 3;
 
-  // Manifest version policy only supports normal extensions and Chrome OS login
-  // screen extension.
+  // Manifest version policy only supports normal extensions, Chrome OS login
+  // screen extensions, and user scripts (which are largely treated as
+  // extensions).
   if (manifest_type != Manifest::Type::TYPE_EXTENSION &&
-      manifest_type != Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION) {
+      manifest_type != Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION &&
+      manifest_type != Manifest::Type::TYPE_USER_SCRIPT) {
     return enabled_by_default;
   }
   switch (global_settings_->manifest_v2_setting) {
@@ -411,7 +413,8 @@ bool ExtensionManagement::IsExemptFromMV2DeprecationByPolicy(
     return false;
   }
   if (manifest_type != Manifest::Type::TYPE_EXTENSION &&
-      manifest_type != Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION) {
+      manifest_type != Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION &&
+      manifest_type != Manifest::Type::TYPE_USER_SCRIPT) {
     return false;
   }
 
