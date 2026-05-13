@@ -6752,6 +6752,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ScanCard.EndToEndLatency" units="ms"
+    expires_after="2027-04-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the total elapsed time from the initiation of the scan card session
+    to the successful extraction of card attributes. Recorded when the scanner
+    finished scan and card details are set.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ScanCardBottomSheet.ExitReason"
     enum="ScanCardSuggestionBottomSheetExitReason" expires_after="2027-03-31">
   <owner>qihuizhao@google.com</owner>

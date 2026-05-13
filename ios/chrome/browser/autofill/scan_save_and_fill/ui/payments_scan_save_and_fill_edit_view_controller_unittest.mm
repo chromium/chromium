@@ -547,6 +547,7 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestMetricsOnScan) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample("IOS.ScanCardOfferToSave.ValidExpYear",
                                       true, 1);
+  histogram_tester.ExpectTotalCount("IOS.ScanCard.EndToEndLatency", 1);
 }
 
 TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,

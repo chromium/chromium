@@ -8,6 +8,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/elapsed_timer.h"
 #import "build/branding_buildflags.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -114,6 +115,9 @@ NSString* const kDateSeparator = @"/";
 
   // Track if the user action has been logged to avoid duplicate logging.
   BOOL _actionLogged;
+
+  // Timer to track the end-to-end latency of the card scanning session.
+  base::ElapsedTimer _sessionTimer;
 }
 
 #pragma mark - Initialization
@@ -343,6 +347,9 @@ NSString* const kDateSeparator = @"/";
 - (void)setCreditCardNumber:(NSString*)cardNumber
             expirationMonth:(NSString*)expirationMonth
              expirationYear:(NSString*)expirationYear {
+  base::UmaHistogramTimes("IOS.ScanCard.EndToEndLatency",
+                          _sessionTimer.Elapsed());
+
   _scannedCardNumber = cardNumber;
   _scannedExpirationMonth = expirationMonth;
   _scannedExpirationYear = expirationYear;
