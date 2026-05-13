@@ -817,7 +817,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoBootstrap) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
+// TODO(https:  // crbug.com/512642226): Fix flakes.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_testInitializeTimesOut DISABLED_testInitializeTimesOut
+#else
+#define MAYBE_testInitializeTimesOut testInitializeTimesOut
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
+                       MAYBE_testInitializeTimesOut) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
@@ -1537,7 +1544,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testShowProfilePicker) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPanelActive) {
+// TODO(https://crbug.com/512641949): Fix flakes.
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
+#define MAYBE_testPanelActive DISABLED_testPanelActive
+#else
+#define MAYBE_testPanelActive testPanelActive
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, MAYBE_testPanelActive) {
   // Explicitly track this glic instance by ID. When a new browser window is
   // created below, it will become the most recently activated browser. Without
   // explicit tracking, GetBrowser() would return the new window (based on
