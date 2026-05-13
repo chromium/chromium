@@ -1593,6 +1593,12 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
   CHECK(!url.is_empty());
   CHECK(contextual_tasks_service_);
 
+  // Abort if the tab is no longer active to prevent opening the panel on the
+  // wrong tab.
+  if (!tab_interface || !tab_interface->IsActivated()) {
+    return;
+  }
+
   // Get the controller for the current window.
   auto* controller =
       ContextualTasksPanelController::From(browser_window_interface);
@@ -1667,6 +1673,12 @@ void ContextualTasksUiService::StartTaskUiInSidePanelWithErrorPage(
     tabs::TabInterface* tab_interface,
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle) {
+  // Abort if the tab is no longer active to prevent opening the panel on the
+  // wrong tab.
+  if (!tab_interface || !tab_interface->IsActivated()) {
+    return;
+  }
+
   // Create a new task.
   ContextualTask task = contextual_tasks_service_->CreateTask();
   auto* controller =
