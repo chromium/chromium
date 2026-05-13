@@ -238,7 +238,7 @@ String Locale::ValidationMessageTooShortText(unsigned value_length,
                      ConvertToLocalizedNumber(String::Number(min_length)));
 }
 
-String Locale::WeekFormatInLDML() {
+String Locale::WeekFormatInLdml() {
   String templ = QueryString(IDS_FORM_INPUT_WEEK_TEMPLATE);
   // Converts a string like "Week $2, $1" to an LDML date format pattern like
   // "'Week 'ww', 'yyyy".
@@ -296,7 +296,7 @@ void Locale::SetLocaleData(const Vector<String, kDecimalSymbolsSize>& symbols,
   if (decimal_symbols_[kDecimalSeparatorIndex].length() == 1 &&
       positive_prefix_.length() <= 1 && negative_prefix_.length() == 1 &&
       positive_suffix_.length() == 0 && negative_suffix_.length() == 0 &&
-      !IsRTL()) {
+      !IsRtl()) {
     uses_single_char_number_filtering_ = true;
     for (wtf_size_t i = 0; i <= 9; ++i) {
       if (decimal_symbols_[i].length() != 1) {
@@ -533,7 +533,7 @@ String Locale::FormatDateTime(const DateComponents& date,
                                                     : MonthFormat());
       break;
     case DateComponents::kWeek:
-      builder.Build(WeekFormatInLDML());
+      builder.Build(WeekFormatInLdml());
       break;
     case DateComponents::kDateTimeLocal:
       builder.Build(format_type == kFormatTypeShort

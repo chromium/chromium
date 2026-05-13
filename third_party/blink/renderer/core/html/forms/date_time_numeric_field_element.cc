@@ -68,7 +68,7 @@ DateTimeNumericFieldElement::DateTimeNumericFieldElement(
 
   // We show a direction-neutral string such as "--" as a placeholder. It
   // should follow the direction of numeric values.
-  if (LocaleForOwner().IsRTL()) {
+  if (LocaleForOwner().IsRtl()) {
     unicode::CharDirection dir = unicode::Direction(FormatValue(Maximum())[0]);
     if (dir == unicode::kLeftToRight || dir == unicode::kEuropeanNumber ||
         dir == unicode::kArabicNumber) {

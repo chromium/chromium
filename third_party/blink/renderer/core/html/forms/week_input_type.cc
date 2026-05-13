@@ -98,7 +98,7 @@ String WeekInputType::FormatDateTimeFieldsState(
 void WeekInputType::SetupLayoutParameters(
     DateTimeEditElement::LayoutParameters& layout_parameters,
     const DateComponents&) const {
-  layout_parameters.date_time_format = GetLocale().WeekFormatInLDML();
+  layout_parameters.date_time_format = GetLocale().WeekFormatInLdml();
   layout_parameters.fallback_date_time_format = "yyyy-'W'ww";
   if (!ParseToDateComponents(
           GetElement().FastGetAttribute(html_names::kMinAttr),

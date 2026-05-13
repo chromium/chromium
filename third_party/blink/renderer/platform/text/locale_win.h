@@ -47,7 +47,7 @@ class PLATFORM_EXPORT LocaleWin : public Locale {
   ~LocaleWin() override;
   const Vector<String>& WeekDayShortLabels() override;
   unsigned FirstDayOfWeek() override;
-  bool IsRTL() override;
+  bool IsRtl() override;
   String DateFormat() override;
   String MonthFormat() override;
   String ShortMonthFormat() override;

@@ -93,8 +93,10 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
       return;
     // FIXME: We'd like to use FocusController::advanceFocus(FocusDirectionLeft,
     // ...) but it doesn't work for shadow nodes. webkit.org/b/104650
-    if (!LocaleForOwner().IsRTL() && field_owner_->FocusOnPreviousField(*this))
+    if (!LocaleForOwner().IsRtl() &&
+        field_owner_->FocusOnPreviousField(*this)) {
       keyboard_event.SetDefaultHandled();
+    }
     return;
   }
 
@@ -104,8 +106,9 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     // FIXME: We'd like to use
     // FocusController::advanceFocus(FocusDirectionRight, ...)
     // but it doesn't work for shadow nodes. webkit.org/b/104650
-    if (!LocaleForOwner().IsRTL() && field_owner_->FocusOnNextField(*this))
+    if (!LocaleForOwner().IsRtl() && field_owner_->FocusOnNextField(*this)) {
       keyboard_event.SetDefaultHandled();
+    }
     return;
   }
 

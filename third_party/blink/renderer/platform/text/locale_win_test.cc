@@ -116,10 +116,10 @@ class LocaleWinTest : public testing::Test {
     return locale->WeekDayShortLabels()[index];
   }
 
-  bool IsRTL(LCID lcid) {
+  bool IsRtl(LCID lcid) {
     std::unique_ptr<LocaleWin> locale =
         LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
-    return locale->IsRTL();
+    return locale->IsRtl();
   }
 
   String MonthFormat(LCID lcid) {
@@ -201,9 +201,9 @@ TEST_F(LocaleWinTest, weekDayShortLabels) {
   EXPECT_EQ("\xE5\x9C\x9F", WeekDayShortLabel(kJapaneseJP, kSaturday).Utf8());
 }
 
-TEST_F(LocaleWinTest, isRTL) {
-  EXPECT_TRUE(IsRTL(kArabicEG));
-  EXPECT_FALSE(IsRTL(kEnglishUS));
+TEST_F(LocaleWinTest, IsRtl) {
+  EXPECT_TRUE(IsRtl(kArabicEG));
+  EXPECT_FALSE(IsRtl(kEnglishUS));
 }
 
 TEST_F(LocaleWinTest, dateFormat) {

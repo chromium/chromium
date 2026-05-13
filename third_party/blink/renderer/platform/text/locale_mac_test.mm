@@ -147,9 +147,9 @@ class LocaleMacTest : public testing::Test {
     return locale->WeekDayShortLabels()[index];
   }
 
-  bool IsRTL(const String& locale_string) {
+  bool IsRtl(const String& locale_string) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
-    return locale->IsRTL();
+    return locale->IsRtl();
   }
 
   String MonthFormat(const String& locale_string) {
@@ -284,11 +284,11 @@ TEST_F(LocaleMacTest, weekDayShortLabels) {
   EXPECT_EQ("\xE5\x9C\x9F", WeekDayShortLabel("ja_JP", kSaturday).Utf8());
 }
 
-TEST_F(LocaleMacTest, isRTL) {
-  EXPECT_TRUE(IsRTL("ar-eg"));
-  EXPECT_FALSE(IsRTL("en-us"));
-  EXPECT_FALSE(IsRTL("ja-jp"));
-  EXPECT_FALSE(IsRTL("**invalid**"));
+TEST_F(LocaleMacTest, IsRtl) {
+  EXPECT_TRUE(IsRtl("ar-eg"));
+  EXPECT_FALSE(IsRtl("en-us"));
+  EXPECT_FALSE(IsRtl("ja-jp"));
+  EXPECT_FALSE(IsRtl("**invalid**"));
 }
 
 TEST_F(LocaleMacTest, monthFormat) {

@@ -268,7 +268,7 @@ unsigned LocaleIcu::FirstDayOfWeek() {
   return first_day_of_week_.value();
 }
 
-bool LocaleIcu::IsRTL() {
+bool LocaleIcu::IsRtl() {
   UErrorCode status = U_ZERO_ERROR;
   return uloc_getCharacterOrientation(locale_.c_str(), &status) ==
          ULOC_LAYOUT_RTL;

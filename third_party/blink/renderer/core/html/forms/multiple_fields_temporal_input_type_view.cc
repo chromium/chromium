@@ -727,7 +727,7 @@ void MultipleFieldsTemporalInputTypeView::UpdateClearButtonVisibility() {
 }
 
 TextDirection MultipleFieldsTemporalInputTypeView::ComputedTextDirection() {
-  return GetElement().GetLocale().IsRTL() ? TextDirection::kRtl
+  return GetElement().GetLocale().IsRtl() ? TextDirection::kRtl
                                           : TextDirection::kLtr;
 }
 

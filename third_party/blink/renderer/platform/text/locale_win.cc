@@ -415,7 +415,7 @@ unsigned LocaleWin::FirstDayOfWeek() {
   return first_day_of_week_;
 }
 
-bool LocaleWin::IsRTL() {
+bool LocaleWin::IsRtl() {
   unicode::CharDirection dir = unicode::Direction(MonthLabels()[0][0]);
   return dir == unicode::kRightToLeft || dir == unicode::kRightToLeftArabic;
 }

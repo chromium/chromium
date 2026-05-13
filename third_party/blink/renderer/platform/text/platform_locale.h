@@ -130,9 +130,9 @@ class PLATFORM_EXPORT Locale {
   // field.
   virtual String DateTimeFormatWithoutSeconds() = 0;
 
-  // weekFormatInLDML() returns week and year format in LDML, Unicode
+  // WeekFormatInLdml() returns week and year format in LDML, Unicode
   // technical standard 35, Locale Data Markup Language, e.g. "'Week' ww, yyyy"
-  String WeekFormatInLDML();
+  String WeekFormatInLdml();
 
   // Returns a vector of string of which size is 12. The first item is a
   // localized string of Jan and the last item is a localized string of
@@ -166,7 +166,7 @@ class PLATFORM_EXPORT Locale {
 
   // Returns true if people use right-to-left writing in the locale for this
   // object.
-  virtual bool IsRTL() = 0;
+  virtual bool IsRtl() = 0;
 
   enum FormatType {
     kFormatTypeUnspecified,

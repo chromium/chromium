@@ -163,7 +163,7 @@ unsigned LocaleMac::FirstDayOfWeek() {
   return static_cast<unsigned>(gregorian_calendar_.firstWeekday - 1);
 }
 
-bool LocaleMac::IsRTL() {
+bool LocaleMac::IsRtl() {
   return NSLocaleLanguageDirectionRightToLeft ==
          [NSLocale characterDirectionForLanguage:
                        [NSLocale canonicalLanguageIdentifierFromString:

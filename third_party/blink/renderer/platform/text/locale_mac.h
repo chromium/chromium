@@ -52,7 +52,7 @@ class PLATFORM_EXPORT LocaleMac : public Locale {
 
   const Vector<String>& WeekDayShortLabels() override;
   unsigned FirstDayOfWeek() override;
-  bool IsRTL() override;
+  bool IsRtl() override;
 
   String DateFormat() override;
   String MonthFormat() override;
