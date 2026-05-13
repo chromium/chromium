@@ -80,6 +80,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         BackPressHandler bottomControlsBackPressHandler =
                 mBottomControlsBackPressHandlerSupplier.get();
         if (bottomControlsBackPressHandler != null
+                && Boolean.TRUE.equals(
+                        bottomControlsBackPressHandler.getHandleBackPressChangedSupplier().get())
                 && bottomControlsBackPressHandler.handleBackPress() == BackPressResult.SUCCESS) {
             return true;
         }
