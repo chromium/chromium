@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -34,7 +35,6 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   DCHECK(settings_object->HasValidContext());
   ScriptState* script_state = settings_object->GetScriptState();
   ScriptState::Scope scope(script_state);
-  v8::Isolate* isolate = script_state->GetIsolate();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   auto* context_window = DynamicTo<LocalDOMWindow>(execution_context);
   DCHECK(context_window)
@@ -45,16 +45,9 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   // are always the same for CSS module scripts.
   DCHECK_EQ(params.BaseURL(), params.SourceURL());
 
-  v8::TryCatch try_catch(isolate);
-  CSSStyleSheet* style_sheet =
-      CSSStyleSheet::Create(*context_window->document(), params.BaseURL(), init,
-                            PassThroughException(isolate));
+  CSSStyleSheet* style_sheet = CSSStyleSheet::Create(
+      *context_window->document(), params.BaseURL(), init, ASSERT_NO_EXCEPTION);
   style_sheet->SetIsForCSSModuleScript();
-  if (try_catch.HasCaught()) {
-    return ValueWrapperSyntheticModuleScript::CreateWithError(
-        v8::Local<v8::Value>(), settings_object, params.SourceURL(), NullUrl(),
-        ScriptFetchOptions(), try_catch.Exception());
-  }
 
   v8::Local<v8::Value> v8_value_stylesheet =
       ToV8Traits<CSSStyleSheet>::ToV8(script_state, style_sheet);
@@ -89,13 +82,7 @@ ValueWrapperSyntheticModuleScript::UpdateCSSModuleScript(
       V8CSSStyleSheet::ToWrappable(isolate, module_script->GetExport(isolate));
   CHECK(style_sheet);
 
-  v8::TryCatch try_catch(isolate);
-  style_sheet->replaceSync(source_text, PassThroughException(isolate));
-  if (try_catch.HasCaught()) {
-    return ValueWrapperSyntheticModuleScript::CreateWithError(
-        v8::Local<v8::Value>(), settings_object, module_script->SourceUrl(),
-        NullUrl(), ScriptFetchOptions(), try_catch.Exception());
-  }
+  style_sheet->replaceSync(source_text, ASSERT_NO_EXCEPTION);
 
   return module_script;
 }
