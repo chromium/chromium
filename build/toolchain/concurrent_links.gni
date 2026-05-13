@@ -54,8 +54,9 @@ if (concurrent_links == -1) {
     _args = [ "--mem_per_link_gb=16" ]
   } else if (is_win && symbol_level == 1 && !is_debug && is_component_build) {
     _args = [ "--mem_per_link_gb=3" ]
-  } else if (is_win && target_cpu == "arm64" && !is_component_build) {
+  } else if (is_win && target_cpu == "arm64") {
     # crbug.com/340979111: OOM quite frequently for win-arm64-rel.
+    # crbug.com/512405078: OOM for win-arm64-dbg.
     _args = [ "--mem_per_link_gb=10" ]
   } else if (is_win) {
     _args = [ "--mem_per_link_gb=6" ]
