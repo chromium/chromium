@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
@@ -266,7 +267,7 @@ bool FeaturePromoLifecycle::MaybeEndPromo() {
   state_ = State::kClosed;
   if (!is_demo() && !tracker_dismissed_) {
     tracker_dismissed_ = true;
-    tracker_->Dismissed(*iph_feature_);
+    tracker_->Dismissed(*iph_feature_, base::PassKey<FeaturePromoLifecycle>());
   }
   return true;
 }

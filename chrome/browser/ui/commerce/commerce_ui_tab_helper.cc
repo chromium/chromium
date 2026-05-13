@@ -13,7 +13,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -49,7 +49,6 @@
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -516,9 +515,6 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
     return;
   }
 
-  auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
-
   // TODO(b:301440117): Splitting the triggering logic for each icon into
   //                    delegates would make this much easier to test.
   if (discounts_page_action_controller_->WantsExpandedUi()) {
@@ -533,14 +529,10 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
         GetPriceInsightsIconLabelTypeForPage();
     bool icon_has_label = label_type != PriceInsightsIconLabelType::kNone;
 
-    if (icon_has_label && tracker &&
-        tracker->ShouldTriggerHelpUI(
+    if (icon_has_label &&
+        feature_engagement::NonIphPromo::RequestPermissionToShow(
+            web_contents()->GetBrowserContext(),
             feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature)) {
-      // Note that `Dismiss()` in these cases does not dismiss the UI. It's
-      // telling the FE backend that the promo is done so that other promos can
-      // run. Showing the label should not block other promos from displaying.
-      tracker->Dismissed(
-          feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature);
       page_action_to_expand_ = PageActionIconType::kPriceInsights;
       MaybeRecordShoppingInformationUKM(PageActionIconType::kPriceInsights);
       price_insights_label_type_ = label_type;

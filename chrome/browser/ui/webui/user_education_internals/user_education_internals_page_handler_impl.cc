@@ -343,63 +343,6 @@ auto FormatDemoPageData(const char* key, base::Time value) {
   return FeaturePromoDemoPageData::New(key, result);
 }
 
-auto GetPromoData(
-    const user_education::FeaturePromoSpecification& spec,
-    const user_education::UserEducationStorageService* storage_service,
-    const feature_engagement::Tracker* tracker) {
-  std::vector<FeaturePromoDemoPageDataPtr> result;
-  if (storage_service) {
-    auto promo_data = storage_service->ReadPromoData(*spec.feature());
-    if (promo_data.has_value()) {
-      if (spec.promo_subtype() == user_education::FeaturePromoSpecification::
-                                      PromoSubtype::kKeyedNotice) {
-        result.emplace_back(FormatDemoPageData(
-            "Shown for keys", promo_data->shown_for_keys.size()));
-      } else {
-        result.emplace_back(
-            FormatDemoPageData("Show count", promo_data->show_count));
-        result.emplace_back(
-            FormatDemoPageData("First show time", promo_data->first_show_time));
-        result.emplace_back(
-            FormatDemoPageData("Last show time", promo_data->last_show_time));
-        if (spec.promo_type() ==
-                user_education::FeaturePromoSpecification::PromoType::kSnooze ||
-            spec.promo_type() == user_education::FeaturePromoSpecification::
-                                     PromoType::kTutorial) {
-          result.emplace_back(
-              FormatDemoPageData("Snooze count", promo_data->snooze_count));
-          result.emplace_back(FormatDemoPageData("Last snooze time",
-                                                 promo_data->last_snooze_time));
-        }
-        result.emplace_back(
-            FormatDemoPageData("Dismissed?", promo_data->is_dismissed));
-        result.emplace_back(FormatDemoPageData("Last dismissed by",
-                                               promo_data->last_dismissed_by,
-                                               /*is_constant=*/true));
-      }
-      if (spec.promo_type() ==
-          user_education::FeaturePromoSpecification::PromoType::kRotating) {
-        result.emplace_back(FormatDemoPageData("Rotating promo index",
-                                               promo_data->promo_index));
-      }
-    }
-  }
-  const bool is_enabled = base::FeatureList::IsEnabled(*spec.feature());
-  result.emplace_back(FormatDemoPageData("Feature enabled?", is_enabled));
-  for (const auto& [config, count] : tracker->ListEvents(*spec.feature())) {
-    std::ostringstream oss;
-    oss << "Required condition: " << config.name << config.comparator
-        << " Actual:";
-    result.emplace_back(FormatDemoPageData(oss.str().c_str(), count));
-  }
-  if (is_enabled) {
-    result.emplace_back(
-        FormatDemoPageData("Feature Engagement Tracker OK?",
-                           tracker->WouldTriggerHelpUI(*spec.feature())));
-  }
-  return result;
-}
-
 auto GetNewBadgeData(
     const base::Feature& feature,
     const user_education::UserEducationStorageService* storage_service) {
@@ -1015,4 +958,65 @@ void UserEducationInternalsPageHandlerImpl::ClearNtpPromoPreferences(
   }
   storage_service->ResetNtpPromoPreferences();
   std::move(callback).Run(std::string());
+}
+
+// static
+std::vector<mojom::user_education_internals::FeaturePromoDemoPageDataPtr>
+UserEducationInternalsPageHandlerImpl::GetPromoData(
+    const user_education::FeaturePromoSpecification& spec,
+    const user_education::UserEducationStorageService* storage_service,
+    const feature_engagement::Tracker* tracker) {
+  std::vector<FeaturePromoDemoPageDataPtr> result;
+  if (storage_service) {
+    auto promo_data = storage_service->ReadPromoData(*spec.feature());
+    if (promo_data.has_value()) {
+      if (spec.promo_subtype() == user_education::FeaturePromoSpecification::
+                                      PromoSubtype::kKeyedNotice) {
+        result.emplace_back(FormatDemoPageData(
+            "Shown for keys", promo_data->shown_for_keys.size()));
+      } else {
+        result.emplace_back(
+            FormatDemoPageData("Show count", promo_data->show_count));
+        result.emplace_back(
+            FormatDemoPageData("First show time", promo_data->first_show_time));
+        result.emplace_back(
+            FormatDemoPageData("Last show time", promo_data->last_show_time));
+        if (spec.promo_type() ==
+                user_education::FeaturePromoSpecification::PromoType::kSnooze ||
+            spec.promo_type() == user_education::FeaturePromoSpecification::
+                                     PromoType::kTutorial) {
+          result.emplace_back(
+              FormatDemoPageData("Snooze count", promo_data->snooze_count));
+          result.emplace_back(FormatDemoPageData("Last snooze time",
+                                                 promo_data->last_snooze_time));
+        }
+        result.emplace_back(
+            FormatDemoPageData("Dismissed?", promo_data->is_dismissed));
+        result.emplace_back(FormatDemoPageData("Last dismissed by",
+                                               promo_data->last_dismissed_by,
+                                               /*is_constant=*/true));
+      }
+      if (spec.promo_type() ==
+          user_education::FeaturePromoSpecification::PromoType::kRotating) {
+        result.emplace_back(FormatDemoPageData("Rotating promo index",
+                                               promo_data->promo_index));
+      }
+    }
+  }
+  const bool is_enabled = base::FeatureList::IsEnabled(*spec.feature());
+  result.emplace_back(FormatDemoPageData("Feature enabled?", is_enabled));
+  for (const auto& [config, count] : tracker->ListEvents(*spec.feature())) {
+    std::ostringstream oss;
+    oss << "Required condition: " << config.name << config.comparator
+        << " Actual:";
+    result.emplace_back(FormatDemoPageData(oss.str().c_str(), count));
+  }
+  if (is_enabled) {
+    result.emplace_back(FormatDemoPageData(
+        "Feature Engagement Tracker OK?",
+        tracker->WouldTriggerHelpUI(
+            *spec.feature(),
+            base::PassKey<UserEducationInternalsPageHandlerImpl>())));
+  }
+  return result;
 }

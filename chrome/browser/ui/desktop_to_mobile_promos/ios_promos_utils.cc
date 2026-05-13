@@ -7,7 +7,7 @@
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -26,8 +26,6 @@
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -164,12 +162,12 @@ void OnIOSPromoClassificationResult(
     return;
   }
 
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser->profile());
-
+  // TODO(https://crbug.com/511194274): Convert this to a scoped handle that
+  // prevents other promos until the promo dialog is closed. This was originally
+  // released in `IOSPromoBubble::IOSPromoBubbleDelegate::OnDismissal()`.
   if (promos_utils::UserNotClassifiedAsMobileDeviceSwitcher(result) &&
-      tracker->ShouldTriggerHelpUI(
+      feature_engagement::NonIphPromo::RequestPermissionToShow(
+          browser->profile(),
           promos_utils::GetIOSDesktopPromoFeatureEngagement(promo_type))) {
     RunCallback(std::move(promo_will_be_shown_callback));
     promos_utils::IOSDesktopPromoShown(browser->profile(), promo_type);

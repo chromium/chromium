@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_TRACKER_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_TRACKER_H_
 
+#include <concepts>
 #include <memory>
 #include <optional>
 #include <string>
@@ -16,6 +17,7 @@
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
@@ -37,10 +39,18 @@ class ProtoDatabaseProvider;
 
 class PrefService;
 
+namespace user_education {
+class FeaturePromoControllerImpl;
+class FeaturePromoLifecycle;
+}  // namespace user_education
+
+class UserEducationInternalsPageHandlerImpl;
+
 namespace feature_engagement {
 
 class Configuration;
 class FeatureActivation;
+class NonIphPromo;
 class Tracker;
 class SessionController;
 
@@ -200,6 +210,54 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   virtual EventList ListEvents(const base::Feature& feature) const = 0;
 #endif
 
+  // DESKTOP AND SHARED DESKTOP/MOBILE API
+
+  // These methods are only used by a limited number of classes in and around
+  // `components/user_education`.
+  //
+  // If you want to interact with the feature engagement system directly on
+  // desktop, use `NonIphPromo`, which allows you to create and configure custom
+  // promos in a way that is safe and compatible with IPH.
+
+  // See `ShouldTriggerHelpUI(const base::Feature& feature)` below for
+  // documentation.
+  template <typename T>
+    requires std::same_as<T, user_education::FeaturePromoControllerImpl> ||
+             std::same_as<T, NonIphPromo>
+  [[nodiscard]] inline bool ShouldTriggerHelpUI(const base::Feature& feature,
+                                                base::PassKey<T>) {
+    return ShouldTriggerHelpUI(feature);
+  }
+
+  // See `WouldTriggerHelpUI(const base::Feature& feature)` below for
+  // documentation.
+  template <typename T>
+    requires std::same_as<T, user_education::FeaturePromoControllerImpl> ||
+             std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
+             std::same_as<T, NonIphPromo>
+  inline bool WouldTriggerHelpUI(const base::Feature& feature,
+                                 base::PassKey<T>) const {
+    return WouldTriggerHelpUI(feature);
+  }
+
+  // See `Dismissed(const base::Feature& feature)` below for documentation.
+  template <typename T>
+    requires std::same_as<T, user_education::FeaturePromoControllerImpl> ||
+             std::same_as<T, user_education::FeaturePromoLifecycle> ||
+             std::same_as<T, NonIphPromo>
+  inline void Dismissed(const base::Feature& feature, base::PassKey<T>) {
+    Dismissed(feature);
+  }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // TODO(https://crbug.com/511194274): For now, allow calling the base API in
+  // chromeos-only code; remove the exception for ChromeOS when we've migrated
+  // those calls.
+ protected:
+#endif
+
+  // BEGIN MOBILE-ONLY API
+
   // This function must be called whenever the triggering condition for a
   // specific feature happens. Returns true iff the display of the in-product
   // help must happen.
@@ -293,6 +351,9 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   virtual void UnregisterPriorityNotificationHandler(
       const base::Feature& feature) = 0;
 
+  // END OF MOBILE-ONLY API
+
+ public:
   // Returns whether the tracker has been successfully initialized. During
   // startup, this will be false until the internal models have been loaded at
   // which point it is set to true if the initialization was successful. The
@@ -331,6 +392,19 @@ class Tracker : public KeyedService, public base::SupportsUserData {
 
   // Returns the default set of configuration providers.
   static ConfigurationProviderList GetDefaultConfigurationProviders();
+
+  // The following are provided for compatibility on desktop.
+
+  [[nodiscard]] inline bool ShouldTriggerHelpUIForTesting(
+      const base::Feature& feature) {
+    return ShouldTriggerHelpUI(feature);
+  }
+  inline bool WouldTriggerHelpUIForTesting(const base::Feature& feature) const {
+    return WouldTriggerHelpUI(feature);
+  }
+  inline void DismissedForTesting(const base::Feature& feature) {
+    Dismissed(feature);
+  }
 
  protected:
   Tracker() = default;

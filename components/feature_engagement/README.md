@@ -7,6 +7,13 @@ input about user behavior. Whenever the frontend gives a trigger signal that
 in-product help could be displayed, the backend will provide an answer to
 whether it is appropriate to show it or not.
 
+**Important Note for Desktop Developers:** This system is not used directly on
+Desktop. Instead, use the [User Education](/components/user_education/README.md)
+component. If you need to create UI that uses Feature Engagement outside of User
+Education, please use
+[NonIphPromo](/chrome/browser/feature_engagement/non_iph_promo.h)
+rather than calling this system directly.
+
 [TOC]
 
 ## Objectives
@@ -203,8 +210,8 @@ configuration:
 ### Using the feature_engagement::Tracker
 
 To retrieve the `feature_engagement::Tracker` you need to use your platform
-specific way for how to retrieve a `KeyedService`. For example for desktop
-platforms and Android, you can use the `feature_engagement::TrackerFactory` in
+specific way for how to retrieve a `KeyedService`. For example for Android, you
+can use the `feature_engagement::TrackerFactory` in
 `//chrome/browser/feature_engagement/tracker_factory.h` to retrieve it from the
 `Profile` or `BrowserContext`:
 

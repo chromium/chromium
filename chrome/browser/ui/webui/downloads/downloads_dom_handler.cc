@@ -35,6 +35,7 @@
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/platform_util.h"
@@ -731,17 +732,9 @@ void DownloadsDOMHandler::IsEligibleForEsbPromo(
     std::move(callback).Run(false);
     return;
   }
-  bool should_show_esb_promo = false;
-  if (feature_engagement::Tracker* tracker =
-          feature_engagement::TrackerFactory::GetForBrowserContext(
-              browser_context);
-      tracker && tracker->ShouldTriggerHelpUI(
-                     feature_engagement::kEsbDownloadRowPromoFeature)) {
-    should_show_esb_promo = true;
-    // since the promotion row is not an IPH, it never calls dismissed, so we
-    // need to do it artificially here or we can trigger a DCHECK.
-    tracker->Dismissed(feature_engagement::kEsbDownloadRowPromoFeature);
-  }
+  const bool should_show_esb_promo =
+      feature_engagement::NonIphPromo::RequestPermissionToShow(
+          browser_context, feature_engagement::kEsbDownloadRowPromoFeature);
   std::move(callback).Run(should_show_esb_promo);
 }
 

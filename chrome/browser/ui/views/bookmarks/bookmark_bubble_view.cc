@@ -13,7 +13,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/platform_util.h"
@@ -50,7 +50,6 @@
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/page_image_service/image_service.h"
@@ -149,19 +148,8 @@ bool ShouldShowShoppingCollectionFootnote(Profile* profile,
     return false;
   }
 
-  auto* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
-
-  if (!tracker || !tracker->ShouldTriggerHelpUI(
-                      feature_engagement::kIPHShoppingCollectionFeature)) {
-    return false;
-  }
-
-  // Immediately dismiss the explainer so that it doesn't prevent the IPH
-  // for other features from showing.
-  tracker->Dismissed(feature_engagement::kIPHShoppingCollectionFeature);
-
-  return true;
+  return feature_engagement::NonIphPromo::RequestPermissionToShow(
+      profile, feature_engagement::kIPHShoppingCollectionFeature);
 }
 
 actions::ActionItem& GetBookmarkActionItem(BrowserWindowInterface* bwi) {
@@ -252,11 +240,11 @@ class BookmarkBubbleViewPromoHelper {
       return base::DoNothing();
     }
 
-    // Make sure we don't over-trigger the dialog.
-    auto* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserContext(profile);
-    if (!tracker ||
-        !tracker->ShouldTriggerHelpUI(
+    // TODO(https://crbug.com/511194274): Maybe convert this to a scoped handle
+    // that prevents other promos until the promo dialog is closed. This was
+    // previously released in `PriceTrackingEmailDialogView::OnClosed()`.
+    if (!feature_engagement::NonIphPromo::RequestPermissionToShow(
+            profile,
             feature_engagement::kIPHPriceTrackingEmailConsentFeature)) {
       return base::DoNothing();
     }

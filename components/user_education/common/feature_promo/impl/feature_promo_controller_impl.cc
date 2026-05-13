@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -231,7 +232,9 @@ FeaturePromoResult FeaturePromoControllerImpl::CanShowPromo(
     return FeaturePromoResult::kError;
   }
   auto result = private_->queues.CanShow(*spec, params, context);
-  if (result && !private_->tracker_->WouldTriggerHelpUI(*params.feature)) {
+  if (result &&
+      !private_->tracker_->WouldTriggerHelpUI(
+          *params.feature, base::PassKey<FeaturePromoControllerImpl>())) {
     // This can happen if a non-IPH promo is showing.
     // These are strongly advised against but they can happen.
     result = FeaturePromoResult::kBlockedByConfig;
@@ -610,7 +613,8 @@ FeaturePromoResult FeaturePromoControllerImpl::ShowPromo(
   // starting. Since this is also one of the preconditions for the promo,
   //
   if (!promo_data.for_demo &&
-      !feature_engagement_tracker()->ShouldTriggerHelpUI(feature)) {
+      !feature_engagement_tracker()->ShouldTriggerHelpUI(
+          feature, base::PassKey<FeaturePromoControllerImpl>())) {
     return FeaturePromoResult::kBlockedByConfig;
   }
 
@@ -626,7 +630,8 @@ FeaturePromoResult FeaturePromoControllerImpl::ShowPromo(
   if (!bubble) {
     set_current_promo(nullptr);
     if (!promo_data.for_demo) {
-      feature_engagement_tracker()->Dismissed(feature);
+      feature_engagement_tracker()->Dismissed(
+          feature, base::PassKey<FeaturePromoControllerImpl>());
     }
     return FeaturePromoResult::kError;
   }
@@ -892,14 +897,16 @@ bool FeaturePromoControllerImpl::CheckExtendedPropertiesPromptAvailable(
   const base::Feature* const prompt_feature =
       GetScreenReaderPromptPromoFeature();
   if (!prompt_feature ||
-      !feature_engagement_tracker_->ShouldTriggerHelpUI(*prompt_feature)) {
+      !feature_engagement_tracker_->ShouldTriggerHelpUI(
+          *prompt_feature, base::PassKey<FeaturePromoControllerImpl>())) {
     return false;
   }
 
   // TODO(crbug.com/40200981): Once we have our answer, immediately dismiss
   // so that this doesn't interfere with actually showing the bubble. This
   // dismiss can be moved elsewhere once we support concurrency.
-  feature_engagement_tracker_->Dismissed(*prompt_feature);
+  feature_engagement_tracker_->Dismissed(
+      *prompt_feature, base::PassKey<FeaturePromoControllerImpl>());
 
   return true;
 }

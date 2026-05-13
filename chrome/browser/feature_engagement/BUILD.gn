@@ -29,7 +29,10 @@ if (is_android) {
 }
 
 source_set("feature_engagement") {
-  sources = [ "tracker_factory.h" ]
+  sources = [
+    "non_iph_promo.h",
+    "tracker_factory.h",
+  ]
   public_deps = [
     "//chrome/browser/profiles",
     "//components/feature_engagement/public",
@@ -37,7 +40,10 @@ source_set("feature_engagement") {
 }
 
 source_set("impl") {
-  sources = [ "tracker_factory.cc" ]
+  sources = [
+    "non_iph_promo.cc",
+    "tracker_factory.cc",
+  ]
   deps = [
     ":feature_engagement",
     "//base",

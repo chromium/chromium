@@ -62,9 +62,9 @@ class PerformanceInterventionButtonControllerUnitTest : public testing::Test {
         controller()->ShouldShowNotification(feature_engagement_tracker);
 
     if (should_show) {
-      CHECK(feature_engagement_tracker->ShouldTriggerHelpUI(
+      CHECK(feature_engagement_tracker->ShouldTriggerHelpUIForTesting(
           feature_engagement::kIPHPerformanceInterventionDialogFeature));
-      feature_engagement_tracker->Dismissed(
+      feature_engagement_tracker->DismissedForTesting(
           feature_engagement::kIPHPerformanceInterventionDialogFeature);
       g_browser_process->local_state()->SetTime(
           performance_manager::user_tuning::prefs::

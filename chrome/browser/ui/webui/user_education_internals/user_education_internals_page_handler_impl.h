@@ -19,6 +19,15 @@ namespace content {
 class WebUI;
 }  // namespace content
 
+namespace user_education {
+class FeaturePromoSpecification;
+class UserEducationStorageService;
+}  // namespace user_education
+
+namespace feature_engagement {
+class Tracker;
+}
+
 class UserEducationInternalsPageHandlerImpl
     : public mojom::user_education_internals::
           UserEducationInternalsPageHandler {
@@ -67,6 +76,13 @@ class UserEducationInternalsPageHandlerImpl
 
  private:
   void OnFeaturePromoShowResult(user_education::FeaturePromoResult show_result);
+
+  static std::vector<
+      mojom::user_education_internals::FeaturePromoDemoPageDataPtr>
+  GetPromoData(
+      const user_education::FeaturePromoSpecification& spec,
+      const user_education::UserEducationStorageService* storage_service,
+      const feature_engagement::Tracker* tracker);
 
   raw_ptr<content::WebUI> web_ui_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;

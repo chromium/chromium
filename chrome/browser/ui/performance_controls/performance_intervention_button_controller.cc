@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -294,10 +295,6 @@ void PerformanceInterventionButtonController::MaybeShowUi(
   }
 
   Profile* const profile = browser_->profile();
-  auto* const tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
-  CHECK(tracker);
-
   InterventionMessageTriggerResult trigger_result =
       InterventionMessageTriggerResult::kShown;
 
@@ -307,15 +304,12 @@ void PerformanceInterventionButtonController::MaybeShowUi(
                  performance_manager::features::
                      kPerformanceInterventionDemoMode)) {
     trigger_result = InterventionMessageTriggerResult::kShown;
-  } else if (ShouldShowNotification(tracker) &&
-             tracker->ShouldTriggerHelpUI(
-                 feature_engagement::
-                     kIPHPerformanceInterventionDialogFeature)) {
-    // Immediately dismiss the feature engagement tracker because the
-    // performance intervention UI shouldn't prevent other promos from
-    // showing.
-    tracker->Dismissed(
-        feature_engagement::kIPHPerformanceInterventionDialogFeature);
+  } else if (ShouldShowNotification(
+                 feature_engagement::TrackerFactory::GetForBrowserContext(
+                     profile)) &&
+             feature_engagement::NonIphPromo::RequestPermissionToShow(
+                 profile, feature_engagement::
+                              kIPHPerformanceInterventionDialogFeature)) {
     trigger_result = InterventionMessageTriggerResult::kShown;
     RecordInterventionMessageCount(type, pref_service);
   } else {
