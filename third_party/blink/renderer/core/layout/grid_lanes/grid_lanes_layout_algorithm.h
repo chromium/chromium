@@ -279,13 +279,12 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   LayoutUnit CalculateItemInlineContribution(
       const GridSizingSubtree& sizing_subtree,
       const GridItemData& grid_lanes_item,
-      const GridLayoutTrackCollection& track_collection,
       SizingConstraint sizing_constraint);
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const SubgriddedItemData& subgridded_item,
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
-      const GridLayoutTrackCollection* track_collection = nullptr,
+      bool make_grid_axis_definite = false,
       bool is_for_min_max_sizing = false) const;
 
   // Computes the shared baseline for items within a single virtual item group

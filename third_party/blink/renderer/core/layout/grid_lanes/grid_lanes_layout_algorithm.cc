@@ -291,7 +291,6 @@ LayoutUnit CalculateSynthesizedBaselineShim(
 LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
     const GridSizingSubtree& sizing_subtree,
     const GridItemData& grid_lanes_item,
-    const GridLayoutTrackCollection& track_collection,
     SizingConstraint sizing_constraint) {
   CHECK_NE(sizing_constraint, SizingConstraint::kLayout);
   // We need to compute the available space for the item if we are using it
@@ -301,9 +300,10 @@ LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
           ? sizing_subtree.LookupSubgriddedItemData(grid_lanes_item)
           : SubgriddedItemData(grid_lanes_item, &sizing_subtree.LayoutData(),
                                GetConstraintSpace().GetWritingMode());
-  const ConstraintSpace space_for_measure = CreateConstraintSpaceForMeasure(
-      subgridded_item,
-      /*opt_fixed_inline_size=*/std::nullopt, &track_collection);
+  const ConstraintSpace space_for_measure =
+      CreateConstraintSpaceForMeasure(subgridded_item,
+                                      /*opt_fixed_inline_size=*/std::nullopt,
+                                      /*make_grid_axis_definite=*/true);
   const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
                                 grid_lanes_item.node, space_for_measure)
                                 .sizes;
@@ -583,9 +583,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
                       : SubgriddedItemData(grid_lanes_item, &layout_data,
                                            container_writing_mode),
                   CalculateItemInlineContribution(
-                      *opt_sizing_subtree, grid_lanes_item, track_collection,
-                      *sizing_constraint),
-                  &track_collection,
+                      *opt_sizing_subtree, grid_lanes_item, *sizing_constraint),
+                  /*make_grid_axis_definite=*/true,
                   /*is_for_min_max_sizing=*/true);
 
     const auto& item_node = grid_lanes_item.node;
@@ -2103,13 +2102,6 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
   // margins). This ensures the subgrid's tracks line up with the parent's
   // and that the subgrid doesn't size itself independently in that
   // dimension.
-  //
-  // TODO(almaher): For the standalone axis of a subgrid, we should also
-  // derive `containing_size` from the parent subgrid's track collection
-  // (rather than the grid-lanes' own available size) so subgridded
-  // descendants are measured against the correct subgrid-relative
-  // containing block. See `GridLayoutAlgorithm::CreateConstraintSpaceFor*`
-  // for the analogous handling in regular grid.
   if (subgridded_item.IsSubgrid()) {
     const auto subgrid_margins = ComputeMarginsFor(
         subgridded_item->node.Style(), containing_size.inline_size,
@@ -2131,13 +2123,14 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
 ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const SubgriddedItemData& subgridded_item,
     std::optional<LayoutUnit> opt_fixed_inline_size,
-    const GridLayoutTrackCollection* track_collection,
+    bool make_grid_axis_definite,
     bool is_for_min_max_sizing) const {
   LogicalSize containing_size = grid_lanes_available_size_;
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
   const bool is_parallel_with_root_grid =
       subgridded_item->is_parallel_with_root_grid;
+  const auto* parent_layout_data = subgridded_item.ParentLayoutData();
 
   // Check against columns, as opposed to whether the item is parallel, because
   // the ConstraintSpaceBuilder takes care of handling orthogonal items.
@@ -2148,10 +2141,26 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     // block and inline constraints get swapped for such items later on, and
     // unlike the inline constraint, the block constraint can be definite in
     // a measure pass.
-    if (track_collection && !is_parallel_with_root_grid) {
+    if (make_grid_axis_definite && !is_parallel_with_root_grid) {
       LayoutUnit start_offset;
       containing_size.inline_size = subgridded_item->CalculateAvailableSize(
-          *track_collection, &start_offset);
+          subgridded_item.Columns(writing_mode), &start_offset);
+    }
+
+    // For subgridded items, derive the stacking-axis containing block from the
+    // subgrid's tracks instead of the grid-lanes' own available size. This
+    // ensures subgridded items are measured against the correct
+    // subgrid-relative containing block.
+    if (parent_layout_data &&
+        parent_layout_data->HasTrackCollection(kForRows)) {
+      const auto& stacking_track_collection =
+          subgridded_item.Rows(writing_mode);
+      DCHECK_NE(
+          subgridded_item->SetIndices(stacking_track_collection.Direction())
+              .begin,
+          kNotFound);
+      containing_size.block_size =
+          subgridded_item->CalculateAvailableSize(stacking_track_collection);
     }
   } else {
     if (is_for_min_max_sizing) {
@@ -2165,19 +2174,34 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     // Don't set a definite block size if the item is orthogonal because the
     // block and inline constraints get swapped later on for such items, and the
     // inline constraint should always be indefinite in a measure pass.
-    if (track_collection && is_parallel_with_root_grid) {
+    if (make_grid_axis_definite && is_parallel_with_root_grid) {
       LayoutUnit start_offset;
       containing_size.block_size = subgridded_item->CalculateAvailableSize(
-          *track_collection, &start_offset);
+          subgridded_item.Rows(writing_mode), &start_offset);
+    }
+
+    // For subgridded items, derive the stacking-axis containing block from the
+    // subgrid's tracks instead of the grid-lanes' own available size. This
+    // ensures subgridded items are measured against the correct
+    // subgrid-relative containing block.
+    if (parent_layout_data &&
+        parent_layout_data->HasTrackCollection(kForColumns)) {
+      const auto& stacking_track_collection =
+          subgridded_item.Columns(writing_mode);
+      DCHECK_NE(
+          subgridded_item->SetIndices(stacking_track_collection.Direction())
+              .begin,
+          kNotFound);
+      containing_size.inline_size =
+          subgridded_item->CalculateAvailableSize(stacking_track_collection);
     }
   }
 
-  // TODO(almaher): For the standalone axis of a subgrid, we should also
-  // derive `containing_size` from the parent subgrid's track collection
-  // (rather than the grid-lanes' own available size) so subgridded
-  // descendants are measured against the correct subgrid-relative
-  // containing block. See `GridLayoutAlgorithm::CreateConstraintSpaceFor*`
-  // for the analogous handling in regular grid.
+  // For subgrid items, fix the available size along the subgridded axis to
+  // the size carved out by the parent grid-lanes (minus the subgrid's own
+  // margins). This ensures the subgrid's tracks line up with the parent's
+  // and that the subgrid doesn't size itself independently in that
+  // dimension.
   LogicalSize fixed_available_size = kIndefiniteLogicalSize;
   if (subgridded_item.IsSubgrid()) {
     const auto subgrid_margins = ComputeMarginsFor(

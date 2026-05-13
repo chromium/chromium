@@ -99,6 +99,10 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
                : !(rows_ && rows_->IsForSizing());
   }
 
+  bool HasTrackCollection(GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? !!columns_ : !!rows_;
+  }
+
   bool IsSubgridWithStandaloneAxis(
       GridTrackSizingDirection track_direction) const {
     return columns_ && rows_ &&
