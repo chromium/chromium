@@ -100,8 +100,6 @@ declare_args() {
   # Extra rpath to use for standalone services.
   iot_service_rpath = ""
 
-  # Set to true to enable media overlay for volume bar, etc.
-  enable_media_overlay = false
 
   # Set to true to forward crashes to the system's crash handler instead of
   # handling them internally.  This disables the built-in crash handler.
