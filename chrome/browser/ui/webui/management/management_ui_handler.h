@@ -83,7 +83,8 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   }
 
  protected:
-  void AddReportingInfo(base::ListValue* report_sources, bool is_browser);
+  void AddBrowserReportingInfo(base::ListValue* report_sources);
+  void AddProfileReportingInfo(base::ListValue* report_sources);
 
   virtual base::DictValue GetContextualManagedData(Profile* profile);
   base::DictValue GetThreatProtectionInfo(Profile* profile);

@@ -264,7 +264,11 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
                        : device_signals::UserPermission::kMissingConsent));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     base::ListValue report_sources;
-    AddReportingInfo(&report_sources, is_browser);
+    if (is_browser) {
+      AddBrowserReportingInfo(&report_sources);
+    } else {
+      AddProfileReportingInfo(&report_sources);
+    }
     return report_sources;
   }
 
