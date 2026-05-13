@@ -235,26 +235,46 @@ struct PasswordGenerationAgent::GenerationItemInfo {
   // button. In this case, the generation popup should not be shown again in
   // this navigation unless explicitly triggered from the context menu.
   bool generation_rejected_ = false;
+
+  base::WeakPtrFactory<GenerationItemInfo> weak_ptr_factory_{this};
 };
 
 class PasswordGenerationAgent::ScopedUpdatingOtherPasswordFields {
  public:
   explicit ScopedUpdatingOtherPasswordFields(PasswordGenerationAgent* owner)
       : owner_(*owner) {
-    owner_->current_generation_item_->updating_other_password_fields_ = true;
+    if (owner_->current_generation_item_) {
+      // We cache the weak pointer to the current GenerationItemInfo to handle
+      // the case where it might be destroyed or replaced during synchronous
+      // event dispatching (e.g., if a JavaScript event listener triggers
+      // a new generation flow). This ensures we don't access freed memory or
+      // modify the state of a different item in the destructor.
+      item_ = owner_->current_generation_item_->weak_ptr_factory_.GetWeakPtr();
+
+      // We cache the old value to restore it in the destructor, ensuring we
+      // don't blindly overwrite it if it was already set to true by an outer
+      // scope.
+      old_value_ = item_->updating_other_password_fields_;
+      item_->updating_other_password_fields_ = true;
+    }
   }
 
   ~ScopedUpdatingOtherPasswordFields() {
-    // Gracefully handle the case where owner_->current_generation_item_ may
-    // have changed since the constructor.
-    owner_->current_generation_item_->updating_other_password_fields_ =
-        old_value_;
+    // If the item is still valid, restore its state. If it was destroyed
+    // during re-entrancy, doing nothing is the safe choice.
+    if (item_) {
+      item_->updating_other_password_fields_ = old_value_;
+    }
   }
 
  private:
   const raw_ref<PasswordGenerationAgent> owner_;
-  const bool old_value_ =
-      owner_->current_generation_item_->updating_other_password_fields_;
+
+  // Weak reference to the item we are updating, to handle re-entrancy safely.
+  base::WeakPtr<GenerationItemInfo> item_;
+
+  // The value of updating_other_password_fields_ before we set it to true.
+  bool old_value_ = false;
 };
 
 PasswordGenerationAgent::PasswordGenerationAgent(
@@ -401,8 +421,8 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
   CHECK(std::ranges::contains(current_generation_item_->password_elements_,
                               current_generation_item_->generation_element_));
 
-  std::optional<FormData> presaved_form_data =
-      CreateFormDataToPresave(/*form_cache=*/{});
+  std::optional<FormData> presaved_form_data = CreateFormDataToPresave(
+      current_generation_item_->generation_element_, /*form_cache=*/{});
   const std::u16string generated_password =
       current_generation_item_->generation_element_.Value().Utf16();
   if (presaved_form_data) {
@@ -445,14 +465,12 @@ void PasswordGenerationAgent::FocusNextFieldAfterPasswords() {
 }
 
 std::optional<FormData> PasswordGenerationAgent::CreateFormDataToPresave(
+    WebInputElement generation_element,
     const SynchronousFormCache& form_cache) {
-  DCHECK(current_generation_item_);
-  DCHECK(current_generation_item_->generation_element_);
+  CHECK(!generation_element.IsNull());
   // Since the form for presaving should match a form in the browser, create it
   // with the same algorithm (to match html attributes, action, etc.).
-  std::unique_ptr<FormData> form_data;
-  WebFormElement form =
-      current_generation_item_->generation_element_.GetOwningFormForAutofill();
+  WebFormElement form = generation_element.GetOwningFormForAutofill();
   return form
              ? password_agent_->GetFormDataFromWebForm(form, form_cache)
              : password_agent_->GetFormDataFromUnownedInputElements(form_cache);
@@ -648,8 +666,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
         // left the generation state.
         PasswordNoLongerGenerated();
       } else {
-        std::optional<FormData> presaved_form_data =
-            CreateFormDataToPresave(form_cache);
+        std::optional<FormData> presaved_form_data = CreateFormDataToPresave(
+            current_generation_item_->generation_element_, form_cache);
         if (presaved_form_data) {
           GetPasswordGenerationDriver().PresaveGeneratedPassword(
               *presaved_form_data, generated_password);
@@ -698,8 +716,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
       // `CopyElementValueToOtherInputElements()` which triggers
       // `WebFormControlElement::SetValue()`, dispatching events that might
       // change the DOM. Therefore `form_cache` may be outdated.
-      std::optional<FormData> presaved_form_data =
-          CreateFormDataToPresave(/*form_cache=*/{});
+      std::optional<FormData> presaved_form_data = CreateFormDataToPresave(
+          current_generation_item_->generation_element_, /*form_cache=*/{});
       std::u16string generated_password =
           current_generation_item_->generation_element_.Value().Utf16();
       if (presaved_form_data) {
@@ -775,7 +793,8 @@ void PasswordGenerationAgent::ShowEditingPopup(
   gfx::RectF bounding_box(render_frame()->ConvertViewportToWindow(
       current_generation_item_->generation_element_.BoundsInWidget()));
 
-  std::optional<FormData> form_data = CreateFormDataToPresave(form_cache);
+  std::optional<FormData> form_data = CreateFormDataToPresave(
+      current_generation_item_->generation_element_, form_cache);
   DCHECK(form_data);
 
   FieldRendererId generation_element_renderer_id =
@@ -796,25 +815,34 @@ void PasswordGenerationAgent::PasswordNoLongerGenerated() {
   // Do not treat the password as generated, either here or in the browser.
   current_generation_item_->password_is_generated_ = false;
   current_generation_item_->password_edited_ = false;
-  for (WebInputElement& password :
-       current_generation_item_->password_elements_) {
+
+  // Copy elements to local variables to avoid UAF if current_generation_item_
+  // is replaced.
+  std::vector<WebInputElement> password_elements =
+      current_generation_item_->password_elements_;
+  WebInputElement generation_element =
+      current_generation_item_->generation_element_;
+
+  for (WebInputElement& password : password_elements) {
     password.SetAutofillState(WebAutofillState::kNotFilled);
   }
   password_generation::LogPasswordGenerationEvent(
       password_generation::PASSWORD_DELETED);
+
   // Clear all other password fields.
-  for (WebInputElement& element :
-       current_generation_item_->password_elements_) {
+  for (WebInputElement& element : password_elements) {
     ScopedUpdatingOtherPasswordFields auto_reset_update_confirmation_password(
         this);
-    if (current_generation_item_->generation_element_ != element)
+    if (generation_element != element) {
       element.SetAutofillValue(blink::WebString());
+    }
   }
+
   // The above call to SetAutofillValue() dispatches events that may change the
   // DOM. Therefore, any cached FormData may be outdated, and we must not use a
   // form cache.
   std::optional<FormData> presaved_form_data =
-      CreateFormDataToPresave(/*form_cache=*/{});
+      CreateFormDataToPresave(generation_element, /*form_cache=*/{});
   if (presaved_form_data)
     GetPasswordGenerationDriver().PasswordNoLongerGenerated(
         *presaved_form_data);

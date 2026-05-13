@@ -178,6 +178,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // to optimize form extractions occurring synchronously after this function
   // call.
   std::optional<FormData> CreateFormDataToPresave(
+      blink::WebInputElement generation_element,
       const SynchronousFormCache& form_cache);
 
   // Contains the current element where generation is offered at the moment. It
