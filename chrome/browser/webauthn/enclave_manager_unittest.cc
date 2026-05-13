@@ -1723,12 +1723,13 @@ TEST_P(EnclaveManagerRenewPINTest, NoKeyStoreDowngrade) {
   // Downgrade the recovery key store.
   recovery_key_store_->DowngradeCohort();
 
-  // Attempting to renew the PIN should result in an error.
+  // Attempting to renew the PIN should update the last renewal time to prevent
+  // retries.
   BoolFuture renew_future;
   manager_.RenewPIN(renew_future.GetCallback());
   EXPECT_TRUE(renew_future.Wait());
   EXPECT_FALSE(renew_future.Get());
-  EXPECT_EQ(LastPINRenewalTime(), initial_time);
+  EXPECT_GT(*LastPINRenewalTime(), *initial_time);
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
   histogram_tester.ExpectUniqueSample(

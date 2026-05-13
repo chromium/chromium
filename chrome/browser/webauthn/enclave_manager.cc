@@ -2666,8 +2666,13 @@ class EnclaveManager::StateMachine {
           Stop(ActionOutcome::kDoRenewingPINFailedCohortNotYetDeprecated);
           return;
         case device::enclave::RequestError::kRecoveryKeyStoreDowngrade:
-          FIDO_LOG(ERROR) << "Not renewing PIN because it would result in "
+          // This is expected when a client moves from a Finch keychain cohort
+          // experiment group to a control group.
+          FIDO_LOG(EVENT) << "Not renewing PIN because it would result in "
                              "downgrading the recovery store";
+          user_->set_last_refreshed_pin_epoch_secs(
+              base::Time::Now().InSecondsFSinceUnixEpoch());
+          manager_->WriteState(&local_state_);
           Stop(ActionOutcome::kDoRenewingPINFailedRecoveryStoreDowngrade);
           return;
         default:
