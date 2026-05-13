@@ -371,10 +371,7 @@ void AddSearchboxColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) 
       SkColorSetRGB(0x04, 0x1E, 0x49)};
   mixer[kColorSearchboxBackground] = {SK_ColorWHITE};
   mixer[kColorSearchboxBackgroundHovered] = {SK_ColorWHITE};
-  mixer[kColorSearchboxBorder] = {
-      key.contrast_mode == ui::ColorProviderKey::ContrastMode::kHigh
-          ? kColorLocationBarBorder
-          : gfx::kGoogleGrey300};
+  mixer[kColorSearchboxBorder] = {SkColorSetRGB(0xF0, 0xF2, 0xF5)};
   mixer[kColorSearchboxForeground] = {SK_ColorBLACK};
   mixer[kColorSearchboxPlaceholder] = {gfx::kGoogleGrey700};
   mixer[kColorSearchboxResultsBackground] = {SK_ColorWHITE};
