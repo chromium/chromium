@@ -72,6 +72,9 @@ constexpr char kCloudSearchQueryOAuth2Scope[] =
 // OAuth2 scope for read-write access to contacts.
 constexpr char kContactsOAuth2Scope[] =
     "https://www.googleapis.com/auth/contacts";
+// OAuth2 scope for access to Context Memory Service API.
+constexpr char kContextMemoryServiceOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chrome-context-memory";
 constexpr char kCryptAuthOAuth2Scope[] =
     "https://www.googleapis.com/auth/cryptauth";
 // OAuth2 scope for Discovery Engine suggestion API.
@@ -329,6 +332,7 @@ constexpr char kGapisServiceName[] = "gapis_service";
 constexpr char kOneTimeTokenServiceName[] = "one_time_token_service";
 constexpr char kDrivePickerHostName[] = "drive_picker_host";
 constexpr char kMultistepFilterName[] = "multistep_filter";
+constexpr char kContextMemoryServiceName[] = "context_memory_service";
 }  // namespace
 
 namespace signin {
@@ -783,6 +787,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kDrivePickerHostName,
           /*scopes=*/{kDriveReadOnlyOAuth2Scope});
+    case OAuthConsumerId::kContextMemoryService:
+      return OAuthConsumer(
+          /*name=*/kContextMemoryServiceName,
+          /*scopes=*/{kContextMemoryServiceOAuth2Scope});
   }
 }
 
