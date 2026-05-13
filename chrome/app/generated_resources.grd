@@ -19421,7 +19421,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Change your preferences
     </message>
     <message name="IDS_IWA_INSTALLER_DISABLED_SUBTITLE" desc="Subtitle of the feature disabled screen of the IWA installer. $1 = IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE">
-      You security preferences do not allow installations of Isolated Apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>.
+      Your security preferences do not allow installation of isolated web apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>.
     </message>
     <message name="IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE" desc="Title of an error dialog shown when the bundle trying to be installed is already installed.">
       <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> is already installed
