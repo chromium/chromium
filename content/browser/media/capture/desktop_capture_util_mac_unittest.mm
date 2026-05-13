@@ -205,7 +205,8 @@ struct BundleIdTestParams {
 };
 
 class DesktopCaptureUtilBrowserTest
-    : public testing::TestWithParam<BundleIdTestParams> {};
+    : public DesktopCaptureUtilTest,
+      public testing::WithParamInterface<BundleIdTestParams> {};
 
 TEST_P(DesktopCaptureUtilBrowserTest, TruncatesCorrectly) {
   const BundleIdTestParams& params = GetParam();
@@ -252,8 +253,9 @@ struct PwaTestParams {
   std::string expected_id;
 };
 
-class DesktopCaptureUtilPwaTest : public testing::TestWithParam<PwaTestParams> {
-};
+class DesktopCaptureUtilPwaTest
+    : public DesktopCaptureUtilTest,
+      public testing::WithParamInterface<PwaTestParams> {};
 
 TEST_P(DesktopCaptureUtilPwaTest, ResolvesToBrowser) {
   const PwaTestParams& params = GetParam();

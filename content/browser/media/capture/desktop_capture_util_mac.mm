@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/timer/elapsed_timer.h"
@@ -101,9 +102,10 @@ GetApplicationAudioCaptureIdForProcess(pid_t pid) {
   std::optional<std::string> bundle_id = GetBundleIdForProcess(pid);
 
   if (!bundle_id) {
-    LOG(ERROR) << "GetApplicationAudioCaptureIdForProcess: Failed to find "
-                  "Bundle ID for PID "
-               << pid << ". Duration: " << timer.Elapsed();
+    MediaStreamManager::SendMessageToNativeLog(
+        base::StringPrintf("AudioCaptureId: Failed to find Bundle ID for PID "
+                           "%d. Duration: %.3f ms",
+                           pid, timer.Elapsed().InMillisecondsF()));
     RecordGetAppAudioCaptureIdMetrics(
         timer.Elapsed(), GetAppAudioCaptureIdMacResult::kFailedToFindBundleId);
     return std::nullopt;
@@ -114,6 +116,10 @@ GetApplicationAudioCaptureIdForProcess(pid_t pid) {
 
   if (!truncated_chromium_bundle_id) {
     // Capturing non-Chromium application window.
+    MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
+        "AudioCaptureId: Found non-Chromium application. PID: %d, Bundle ID: "
+        "%s. Duration: %.3f ms",
+        pid, bundle_id->c_str(), timer.Elapsed().InMillisecondsF()));
     RecordGetAppAudioCaptureIdMetrics(timer.Elapsed(),
                                       GetAppAudioCaptureIdMacResult::kSuccess);
     return std::make_optional<desktop_capture::ApplicationAudioCaptureId>(
@@ -125,6 +131,11 @@ GetApplicationAudioCaptureIdForProcess(pid_t pid) {
   if (!pwa_installer_bundle_id) {
     // Capturing Chromium browser window. Window PID is the main PID of the
     // browser.
+    MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
+        "AudioCaptureId: Found Chromium browser. PID: %d, Bundle ID: %s, "
+        "Truncated Bundle ID: %s. Duration: %.3f ms",
+        pid, bundle_id->c_str(), truncated_chromium_bundle_id->c_str(),
+        timer.Elapsed().InMillisecondsF()));
     RecordGetAppAudioCaptureIdMetrics(timer.Elapsed(),
                                       GetAppAudioCaptureIdMacResult::kSuccess);
     return std::make_optional<desktop_capture::ApplicationAudioCaptureId>(
@@ -138,18 +149,24 @@ GetApplicationAudioCaptureIdForProcess(pid_t pid) {
       runningApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
                                                   *pwa_installer_bundle_id)];
   if (browser_apps.count != 1) {
-    LOG(ERROR)
-        << "GetApplicationAudioCaptureIdForProcess: Failed to uniquely resolve"
-           " browser for PWA PID "
-        << pid << ", PWA Bundle ID: " << *bundle_id
-        << ", Installer Bundle ID: " << *pwa_installer_bundle_id
-        << ", running browsers count: " << browser_apps.count
-        << ". Duration: " << timer.Elapsed();
+    MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
+        "AudioCaptureId: Failed to uniquely resolve browser for PWA PID %d, "
+        "PWA Bundle ID: %s, Browser Bundle ID: %s, running browsers count: "
+        "%lu. Duration: %.3f ms",
+        pid, bundle_id->c_str(), pwa_installer_bundle_id->c_str(),
+        (unsigned long)browser_apps.count, timer.Elapsed().InMillisecondsF()));
     RecordGetAppAudioCaptureIdMetrics(
         timer.Elapsed(),
         GetAppAudioCaptureIdMacResult::kFailedToFindBrowserForPWA);
     return std::nullopt;
   }
+  MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
+      "AudioCaptureId: Found Chromium PWA. PWA PID: %d, PWA Bundle ID: %s, "
+      "Browser PID: %d, Browser Bundle ID: %s, Truncated Bundle ID: %s. "
+      "Duration: %.3f ms",
+      pid, bundle_id->c_str(), browser_apps[0].processIdentifier,
+      pwa_installer_bundle_id->c_str(), truncated_chromium_bundle_id->c_str(),
+      timer.Elapsed().InMillisecondsF()));
   RecordGetAppAudioCaptureIdMetrics(timer.Elapsed(),
                                     GetAppAudioCaptureIdMacResult::kSuccess);
   return std::make_optional<desktop_capture::ApplicationAudioCaptureId>(
