@@ -7,8 +7,6 @@ include_rules = [
   "+components/keyed_service",
   "+components/user_manager",
   "+extensions",
-  # app_shell may depend on apps, but not vice versa.
-  "-extensions/shell",
   "+net/base",
   "+services/service_manager",
 ]
