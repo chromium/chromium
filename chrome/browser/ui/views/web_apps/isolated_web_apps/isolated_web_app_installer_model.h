@@ -15,6 +15,7 @@
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 
 namespace web_app {
 
@@ -81,12 +82,20 @@ class IsolatedWebAppInstallerModel {
   bool has_dialog() { return dialog_.has_value(); }
   const Dialog& dialog() { return dialog_.value(); }
 
+  const std::vector<UpdateChannel>& available_channels() const {
+    return available_channels_;
+  }
+  void SetAvailableChannels(std::vector<UpdateChannel> channels) {
+    available_channels_ = std::move(channels);
+  }
+
  private:
   base::ObserverList<Observer> observers_;
   IwaSourceBundleWithMode source_;
   Step step_;
   std::optional<SignedWebBundleMetadata> bundle_metadata_;
   std::optional<Dialog> dialog_;
+  std::vector<UpdateChannel> available_channels_;
 };
 
 }  // namespace web_app

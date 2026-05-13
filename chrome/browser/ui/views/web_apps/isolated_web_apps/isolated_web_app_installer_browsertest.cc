@@ -35,6 +35,10 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/test/dialog_test.h"
@@ -64,7 +68,8 @@ class IsolatedWebAppInstallerBrowserTest : public WebAppBrowserTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
-         features::kIsolatedWebAppUnmanagedInstall},
+         features::kIsolatedWebAppUnmanagedInstall,
+         kIwaUpdateChannelsInInstaller},
         {});
     WebAppBrowserTestBase::SetUp();
   }
@@ -149,6 +154,85 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   AcceptDialogAndContinue(main_widget);
 
   // Installer closed.
+  ASSERT_TRUE(on_closed_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
+                       ParsesUpdateManifestChannels) {
+  // Serve fake update manifest json with custom update channels.
+  net::EmbeddedTestServer test_server;
+  test_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/update_manifest.json") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("application/json");
+          response->set_content(
+              R"({
+                "versions": [
+                  {
+                    "version": "1.0.0",
+                    "src": "https://example.com/app.swbn",
+                    "channels": ["beta", "dev"]
+                  }
+                ]
+              })");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(test_server.Start());
+
+  // Build the bundle and inject the local test server url into the manifest.
+  GURL update_manifest_url = test_server.GetURL("/update_manifest.json");
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(
+          ManifestBuilder().SetUpdateManifestUrl(update_manifest_url))
+          .BuildBundle();
+  app->TrustSigningKey();
+
+  // Allowlist the app.
+  data_provider_->Update([&](auto& update) {
+    update.AddToUserInstallAllowlist(
+        app->web_bundle_id(),
+        ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+            /*enterprise_name=*/"fancy comp"));
+  });
+
+  // Start the installer.
+  base::test::TestFuture<void> on_closed_future;
+  IsolatedWebAppInstallerCoordinator* coordinator =
+      IsolatedWebAppInstallerCoordinator::CreateAndStart(
+          profile(), app->path(), on_closed_future.GetCallback());
+
+  IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
+  ASSERT_TRUE(model);
+
+  IsolatedWebAppInstallerViewController* controller =
+      coordinator->GetControllerForTesting();
+  ASSERT_TRUE(controller);
+
+  // Wait for the bundle to be checked, the network request to finish,
+  // the json to be parsed, and the UI to reach the Metadata screen.
+  TestIsolatedWebAppInstallerModelObserver model_observer(model);
+  model_observer.WaitForStepChange(
+      IsolatedWebAppInstallerModel::Step::kShowMetadata);
+
+  // Check that the model parsed the channels correctly.
+  std::vector<std::string> parsed_channel_names;
+  for (const auto& channel : model->available_channels()) {
+    parsed_channel_names.push_back(channel.ToString());
+  }
+
+  EXPECT_THAT(parsed_channel_names,
+              testing::UnorderedElementsAre("beta", "dev"));
+
+  // Cleanup
+  views::Widget* main_widget = controller->GetWidgetForTesting();
+  ASSERT_TRUE(main_widget);
+  views::test::CancelDialog(main_widget);
   ASSERT_TRUE(on_closed_future.Wait());
 }
 

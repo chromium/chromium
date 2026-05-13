@@ -5,17 +5,18 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 
 #include <algorithm>
-#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
 #include <variant>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/callback_delayer.h"
@@ -34,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/storage_partition.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -64,7 +66,36 @@
 
 namespace web_app {
 
+BASE_FEATURE(kIwaUpdateChannelsInInstaller, base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+
+constexpr auto kUpdateManifestFetchTrafficAnnotation =
+    net::DefinePartialNetworkTrafficAnnotation("iwa_installer_view_controller",
+                                               "iwa_update_manifest_fetcher",
+                                               R"(
+  semantics {
+    sender: "Isolated Web App Installer View Controller"
+    description:
+      "Downloads the update manifest of an Isolated Web App during a "
+      "user-initiated graphical installation. The update manifest contains "
+      "the list of available update channels."
+    trigger:
+      "The user selects an Isolated Web App bundle (.swbn) to install via "
+      "the graphical installer, and the installer checks for available "
+      "update channels to display in the UI."
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+      "This feature cannot be disabled in settings, but it is only "
+      "triggered by explicit user action (installing an IWA)."
+    chrome_policy {
+      IsolatedWebAppUserInstallationEnabled {
+        IsolatedWebAppUserInstallationEnabled: false
+      }
+    }
+  })");
 
 constexpr base::TimeDelta kGetMetadataMinimumDelay = base::Seconds(2);
 constexpr base::TimeDelta kInstallationMinimumDelay = base::Seconds(2);
@@ -138,7 +169,7 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
       controller_->AddOrUpdateWindowToShelf();
     }
     model_->SetSignedWebBundleMetadata(installable.metadata);
-    model_->SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
+    controller_->LoadChannelsAndShowMetadata();
   }
 
   void operator()(const InstallabilityChecker::BundleUpdatable& updatable) {
@@ -389,6 +420,65 @@ void IsolatedWebAppInstallerViewController::Close() {
   if (dialog_delegate_) {
     dialog_delegate_->CancelDialog();
   }
+}
+
+void IsolatedWebAppInstallerViewController::LoadChannelsAndShowMetadata() {
+  if (!base::FeatureList::IsEnabled(kIwaUpdateChannelsInInstaller)) {
+    model_->SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
+    return;
+  }
+
+  const std::optional<GURL>& update_manifest_url =
+      model_->bundle_metadata().update_manifest_url();
+
+  if (!update_manifest_url.has_value() || !update_manifest_url->is_valid()) {
+    model_->SetAvailableChannels({UpdateChannel::default_channel()});
+    model_->SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
+    return;
+  }
+
+  update_manifest_fetcher_ = std::make_unique<UpdateManifestFetcher>(
+      update_manifest_url.value(), kUpdateManifestFetchTrafficAnnotation,
+      profile_->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
+
+  update_manifest_fetcher_->FetchUpdateManifest(base::BindOnce(
+      &IsolatedWebAppInstallerViewController::OnUpdateManifestFetched,
+      weak_ptr_factory_.GetWeakPtr()));
+
+  update_manifest_timer_.Start(
+      FROM_HERE, base::Seconds(10),
+      base::BindOnce(
+          &IsolatedWebAppInstallerViewController::OnUpdateManifestTimeout,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IsolatedWebAppInstallerViewController::OnUpdateManifestFetched(
+    base::expected<UpdateManifest, UpdateManifestFetcher::Error> fetch_result) {
+  update_manifest_fetcher_.reset();
+  update_manifest_timer_.Stop();
+
+  base::flat_set<UpdateChannel> unique_channels;
+
+  if (fetch_result.has_value()) {
+    for (const auto& version : fetch_result->versions()) {
+      unique_channels.insert(version.channels().begin(),
+                             version.channels().end());
+    }
+  }
+
+  if (unique_channels.empty()) {
+    unique_channels.insert(UpdateChannel::default_channel());
+  }
+
+  model_->SetAvailableChannels(std::vector<UpdateChannel>(
+      unique_channels.begin(), unique_channels.end()));
+  model_->SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
+}
+
+void IsolatedWebAppInstallerViewController::OnUpdateManifestTimeout() {
+  OnUpdateManifestFetched(
+      base::unexpected(UpdateManifestFetcher::Error::kDownloadFailed));
 }
 
 void IsolatedWebAppInstallerViewController::

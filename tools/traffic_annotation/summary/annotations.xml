@@ -530,4 +530,5 @@ Refer to README.md for content description and update process.
  <item id="private_verification_tokens_service_get_tokens" added_in_milestone="149" content_hash_code="04a115b2" os_list="linux,windows,android,chromeos" file_path="components/private_verification_tokens/common/private_verification_tokens_fetcher.cc" />
  <item id="safe_browsing_v5_update" added_in_milestone="150" content_hash_code="03eccc50" os_list="linux,windows,android,chromeos" file_path="components/safe_browsing/core/browser/db/v5_update_protocol_manager.cc" />
  <item id="skills_fetcher" added_in_milestone="150" content_hash_code="023f2b7e" os_list="linux,windows,chromeos" file_path="components/skills/internal/skills_fetcher.cc" />
+ <item id="iwa_installer_view_controller" added_in_milestone="149" type="partial" second_id="iwa_update_manifest_fetcher" content_hash_code="06e97185" os_list="chromeos,windows,linux" semantics_fields="1,2,3" policy_fields="-1,3,4" file_path="chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.cc" />
 </annotations>
