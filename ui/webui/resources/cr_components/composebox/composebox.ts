@@ -760,15 +760,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.submitQuery(e);
   }
 
-  protected onRecordingStopped_(e: CustomEvent<string>) {
-    const newTranscript = e.detail;
-    if (newTranscript && newTranscript.trim().length > 0) {
-      this.input = newTranscript;
-      this.queryAutocomplete(/* clearMatches= */ false);
-    }
-    this.voiceSearchEndCleanup();
-  }
-
   protected onLinkClicked_(e: CustomEvent<{ event: Event }>) {
     // Manually handle navigation to support WebView environments where default
     // link clicks may be ignored.

@@ -616,6 +616,15 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        onRecordingStopped(e: CustomEvent<string>) {
+          const newTranscript = e.detail;
+          if (newTranscript && newTranscript.trim().length > 0) {
+            this.input = newTranscript;
+            this.queryAutocomplete(/* clearMatches= */ false);
+          }
+          this.voiceSearchEndCleanup();
+        }
+
         isFocusInInput(): boolean {
           return this.getActiveElement() === this.getInputElement();
         }
@@ -1866,6 +1875,7 @@ export interface ComposeboxEmbedderMixinInterface extends
       errorType: ContextUploadErrorType|null): void;
   onInputInput(e: CustomEvent<Event>): void;
   onInputFocusin(): void;
+  onRecordingStopped(e: CustomEvent<string>): void;
   onKeydown(e: KeyboardEvent): void;
   handleEscapeKeyLogic(): void;
   isTogglingOff(tool: ToolMode): boolean;
