@@ -4830,8 +4830,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GetDisplayMedia.BasicFlow.Win.GetApplicationIdResult"
-    enum="GetAppMainProcessIdWinResult" expires_after="2026-05-11">
-  <owner>eladalon@chromium.org</owner>
+    enum="GetAppMainProcessIdWinResult" expires_after="2027-05-11">
+  <owner>kron@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <summary>
@@ -5456,7 +5456,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaDevices.GetDisplayMedia.Audio.PermissionDeniedBySystem"
-    enum="Boolean" expires_after="2026-05-01">
+    enum="Boolean" expires_after="2027-05-01">
   <owner>kron@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>
@@ -7199,12 +7199,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderInitializationLatencyMs" units="ms"
-    expires_after="2026-05-11">
+    expires_after="2027-05-11">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     Initialization latency of the hardware video decoder that is used in the RTC
-    pipeline.
+    pipeline. Recorded directly after a decoder is initialized.
   </summary>
 </histogram>
 
@@ -7231,12 +7231,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderReinitializationLatencyMs" units="ms"
-    expires_after="2026-04-27">
+    expires_after="2027-04-27">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     Reinitialization latency of the hardware video decoder that is used in the
-    RTC pipeline.
+    RTC pipeline. Recorded directly after a decoder is reinitialized.
   </summary>
 </histogram>
 
