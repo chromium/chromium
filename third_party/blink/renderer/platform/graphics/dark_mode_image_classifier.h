@@ -42,11 +42,6 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
 
     // Ratio of high luminance pixels to all sampled pixels in the image.
     float high_luminance_ratio;
-
-    // Ratio of highly saturated (vivid) pixels to all sampled pixels in the
-    // image. Used to detect images dominated by vivid flat colors whose
-    // colors carry meaning and should be preserved rather than inverted.
-    float saturated_pixel_ratio;
   };
 
   DarkModeResult Classify(const SkPixmap& pixmap, const SkIRect& src) const;

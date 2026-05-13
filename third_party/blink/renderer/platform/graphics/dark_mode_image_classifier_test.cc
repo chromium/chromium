@@ -13,28 +13,12 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 namespace {
 
 const float kEpsilon = 0.00001;
-
-SkBitmap MakeStripedBitmap(SkColor background,
-                           SkColor foreground,
-                           int foreground_x,
-                           int foreground_width) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(100, 100);
-  bitmap.eraseColor(background);
-  if (foreground_width > 0) {
-    bitmap.erase(foreground,
-                 SkIRect::MakeXYWH(foreground_x, 0, foreground_width, 100));
-  }
-  return bitmap;
-}
 
 }  // namespace
 
@@ -421,7 +405,7 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   // Test Case 5:
   // Color
   // Color Buckets Ratio: Medium
-  // Decision Tree: Do Not Apply
+  // Decision Tree: Apply
   // Neural Network: NA.
   image = GetImage("/images/resources/ycbcr-444-float.jpg");
   bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
@@ -431,65 +415,14 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
                                SkIRect::MakeWH(image->width(), image->height()))
                  .value();
   EXPECT_EQ(image_classifier()->ClassifyWithFeatures(features),
-            DarkModeResult::kDoNotApplyFilter);
+            DarkModeResult::kApplyFilter);
   EXPECT_EQ(image_classifier()->ClassifyUsingDecisionTree(features),
-            DarkModeResult::kDoNotApplyFilter);
+            DarkModeResult::kApplyFilter);
   EXPECT_TRUE(features.is_colorful);
   EXPECT_NEAR(0.0151367f, features.color_buckets_ratio, kEpsilon);
   EXPECT_NEAR(0.0f, features.transparency_ratio, kEpsilon);
   EXPECT_NEAR(0.0f, features.background_ratio, kEpsilon);
   EXPECT_NEAR(0.9255555272102356f, features.high_luminance_ratio, kEpsilon);
-}
-
-TEST_F(DarkModeImageClassifierTest, ImageWithHighlySaturatedColors) {
-  scoped_refptr<BitmapImage> image =
-      GetImage("/dark-mode/images/resources/country-flags-sprite.png");
-  SkBitmap bitmap =
-      image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
-  SkPixmap pixmap;
-  bitmap.peekPixels(&pixmap);
-
-  EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 192, 48, 32)),
-      DarkModeResult::kDoNotApplyFilter);
-
-  EXPECT_EQ(
-      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 48, 48, 32)),
-      DarkModeResult::kDoNotApplyFilter);
-}
-
-TEST_F(DarkModeImageClassifierTest,
-       SyntheticImageWithTransparentBackgroundLightForeground) {
-  // Image with mostly-transparent background and predominantly light foreground
-  // pixels.
-  SkBitmap bitmap =
-      MakeStripedBitmap(SK_ColorTRANSPARENT, SK_ColorWHITE, 50, 50);
-  SkPixmap pixmap;
-  ASSERT_TRUE(bitmap.peekPixels(&pixmap));
-  EXPECT_EQ(image_classifier()->Classify(pixmap, bitmap.bounds()),
-            DarkModeResult::kDoNotApplyFilter);
-}
-
-TEST_F(DarkModeImageClassifierTest,
-       SyntheticImageWithFullySaturatedBackground) {
-  // Colorful, low-palette image with a saturated-dominant pixel distribution
-  // (e.g. dominated by vivid flat colors)
-  SkBitmap bitmap = MakeStripedBitmap(SK_ColorRED, SK_ColorRED, 0, 0);
-  SkPixmap pixmap;
-  ASSERT_TRUE(bitmap.peekPixels(&pixmap));
-  EXPECT_EQ(image_classifier()->Classify(pixmap, bitmap.bounds()),
-            DarkModeResult::kDoNotApplyFilter);
-}
-
-TEST_F(DarkModeImageClassifierTest,
-       SyntheticImageWithLightBackgroundAndSaturatedForeground) {
-  // Colorful, mostly-light image with a smaller saturated region (e.g.
-  // light-field image with a smaller area of vivid colors).
-  SkBitmap bitmap = MakeStripedBitmap(SK_ColorWHITE, SK_ColorRED, 0, 15);
-  SkPixmap pixmap;
-  ASSERT_TRUE(bitmap.peekPixels(&pixmap));
-  EXPECT_EQ(image_classifier()->Classify(pixmap, bitmap.bounds()),
-            DarkModeResult::kDoNotApplyFilter);
 }
 
 }  // namespace blink

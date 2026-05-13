@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 
-#include <algorithm>
 #include <array>
 #include <optional>
 #include <set>
@@ -23,12 +22,6 @@ const float kMinOpaquePixelPercentageForForeground = 0.2;
 // Color is considered light if its luma is above this threshold.
 constexpr int kHighLightnessThreshold = 96;
 
-// Per-pixel chroma (max channel - min channel, in 0..255) at or above which
-// the pixel is considered vivid / highly saturated. Tuned to count both
-// fully saturated colors and their anti-aliased fringes, while excluding
-// typical photographic colors which usually have chroma below 60.
-constexpr int kHighSaturationThreshold = 80;
-
 // Decision tree thresholds for classifying images
 
 // Lower and upper color thresholds for grayscale and color images.
@@ -42,16 +35,6 @@ constexpr float kFeatureTransparencyRatioThreshold = 0.4f;
 
 // Luminance ratio threshold above which the image is classified as light.
 constexpr float kFeatureHighLuminanceThreshold = 0.5f;
-
-// Saturated pixel ratio threshold above which a low-color-bucket image is
-// considered to have a vivid-color theme and is skipped from inversion.
-constexpr float kFeatureHighSaturationRatioThreshold = 0.3f;
-
-// Lower saturation threshold used together with a high luminance gate to
-// catch images with a mostly-light field and a smaller saturated region,
-// where the dominant light pixels pull the overall saturated_pixel_ratio
-// below kFeatureHighSaturationRatioThreshold.
-constexpr float kFeatureLowSaturationRatioThreshold = 0.1f;
 
 bool IsColorGray(const SkColor& color) {
   return abs(static_cast<int>(SkColorGetR(color)) -
@@ -71,17 +54,6 @@ bool IsColorLight(const SkColor& color) {
               SkColorGetB(color) * 114) /
              1000;
   return luma >= kHighLightnessThreshold;
-}
-
-bool IsColorSaturated(const SkColor& color) {
-  // Approximate HSV chroma: max(R,G,B) - min(R,G,B). A high value indicates
-  // a vivid/saturated color, while neutral grays and pastels have a low
-  // value.
-  int r = SkColorGetR(color);
-  int g = SkColorGetG(color);
-  int b = SkColorGetB(color);
-  int chroma = std::max({r, g, b}) - std::min({r, g, b});
-  return chroma >= kHighSaturationThreshold;
 }
 
 }  // namespace
@@ -228,7 +200,6 @@ DarkModeImageClassifier::Features DarkModeImageClassifier::ComputeFeatures(
 
   int color_pixels = 0;
   int high_luma_pixels = 0;
-  int saturated_pixels = 0;
   for (const SkColor& sample : sampled_pixels) {
     if (!IsColorGray(sample)) {
       color_pixels++;
@@ -236,10 +207,6 @@ DarkModeImageClassifier::Features DarkModeImageClassifier::ComputeFeatures(
 
     if (IsColorLight(sample)) {
       high_luma_pixels++;
-    }
-
-    if (IsColorSaturated(sample)) {
-      saturated_pixels++;
     }
   }
 
@@ -255,8 +222,6 @@ DarkModeImageClassifier::Features DarkModeImageClassifier::ComputeFeatures(
   features.background_ratio = background_ratio;
   features.high_luminance_ratio =
       static_cast<float>(high_luma_pixels) / samples_count;
-  features.saturated_pixel_ratio =
-      static_cast<float>(saturated_pixels) / samples_count;
 
   return features;
 }
@@ -326,31 +291,6 @@ DarkModeResult DarkModeImageClassifier::ClassifyUsingDecisionTree(
   // not apply filter.
   if (features.transparency_ratio > kFeatureTransparencyRatioThreshold &&
       features.high_luminance_ratio > kFeatureHighLuminanceThreshold) {
-    return DarkModeResult::kDoNotApplyFilter;
-  }
-
-  // Skip filtering for images with a limited palette dominated by highly
-  // saturated colors. Inverting such images would replace their semantic
-  // colors with the complements, which is usually wrong (a saturated red
-  // should not become teal). Use the upper bucket threshold to remain
-  // robust to compression artifacts that can inflate the bucket count.
-  if (features.is_colorful &&
-      features.color_buckets_ratio <
-          kFeatureHighColorCountThreshold[features.is_colorful] &&
-      features.saturated_pixel_ratio > kFeatureHighSaturationRatioThreshold) {
-    return DarkModeResult::kDoNotApplyFilter;
-  }
-
-  // Also skip images with a mostly-light field and a smaller saturated
-  // region. These have a low overall saturated_pixel_ratio because light
-  // pixels dominate, but the combination of few colors, high luminance, and
-  // some saturated content indicates an asset whose colors carry meaning
-  // and should be preserved rather than inverted.
-  if (features.is_colorful &&
-      features.color_buckets_ratio <
-          kFeatureHighColorCountThreshold[features.is_colorful] &&
-      features.high_luminance_ratio > kFeatureHighLuminanceThreshold &&
-      features.saturated_pixel_ratio > kFeatureLowSaturationRatioThreshold) {
     return DarkModeResult::kDoNotApplyFilter;
   }
 
