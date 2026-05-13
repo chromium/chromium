@@ -920,6 +920,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.Floaty.OpenSource2" enum="GlicInvocationSource"
+    expires_after="2026-10-04">
+  <owner>basiaz@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the source of the invocation when the Glic Floaty panel becomes
+    visible for the first time after being closed, for the new metrics behavior.
+    Recorded when detached from Side Panel, when opened directly via os button /
+    hotkey, or when the conversation is switched.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.Floaty.ToggleSource" enum="GlicInvocationSource"
     expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
@@ -1277,6 +1289,19 @@ chromium-metrics-reviews@google.com.
     side panel and it was not already showing. Note that this may be recorded
     even if the side panel UI container was already open for a different
     instance (e.g., when invoking a new conversation).
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.SidePanel.OpenSource2"
+    enum="GlicInvocationSource" expires_after="2026-10-04">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the source of the invocation when the Glic panel becomes visible for
+    the first time after being closed, for the new metrics behavior. Recorded
+    when first visible (for foreground and background instance creation), when
+    popped back from Floaty, for a conversation switch. It is not logged on tab
+    switches.
   </summary>
 </histogram>
 
@@ -2879,6 +2904,11 @@ chromium-metrics-reviews@google.com.
   <token key="Suffix">
     <variant name="OnOpen"
         summary="when the Glic panel is opened by the user."/>
+    <variant name="OnOpen2"
+        summary="when the Glic panel is opened by the user for the first time
+                 from a closed state, for the new metrics behavior (see
+                 Glic.Instance.{SidePanel,Floaty}.OpenSource2) for detailed
+                 definitions."/>
     <variant name="SteadyState"
         summary="periodically for active users (those who have completed the
                  Glic FRE)."/>

@@ -450,11 +450,18 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 
   MaybeShowHostUi(embedder_to_show, options.invocation_source,
                   options.prompt_suggestion, options.fre_override);
-  if (new_embedder_will_show) {
-    instance_metrics().OnOpen(options.invocation_source, options);
+
+  // Order matters: MarkShownAndCheckIfFirstTime has side effects and
+  // must be called even if new_embedder_will_show is true.
+  if (instance_metrics().MarkShownAndCheckIfFirstTime(new_key) ||
+      new_embedder_will_show) {
+    instance_metrics().OnOpen(
+        options.invocation_source, options,
+        /* should_log_old_metric=*/new_embedder_will_show);
     service_->metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
                                                     options.invocation_source);
   }
+
   embedder_to_show->Show(options);
   if (options.focus_on_show) {
     embedder_to_show->Focus();
@@ -516,6 +523,7 @@ void GlicInstanceImpl::CloseInternal(EmbedderKey key,
                                      const CloseOptions& options) {
   service_->metrics()->OnInstanceClosed();
   instance_metrics_.OnClose();
+  instance_metrics_.ResetShownState(key);
   if (entry.embedder) {
     // May delete this.
     entry.embedder->Close(options);
@@ -1121,6 +1129,14 @@ void GlicInstanceImpl::SwitchConversation(
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   instance_metrics_.OnSwitchFromConversation(options, active_embedder_key_);
 
+  // For Floaty: reset the flag, so the conversation switch logs OnOpen when
+  // switching from default Floaty state to a new conversation. This is an edge
+  // case where Floaty embedder is reused without being closed.
+  if (active_embedder_key_ &&
+      std::holds_alternative<FloatingEmbedderKey>(*active_embedder_key_)) {
+    instance_metrics_.ResetShownState(*active_embedder_key_);
+  }
+
   if (coordinator_delegate_) {
     coordinator_delegate_->SwitchConversation(*this, options, std::move(info),
                                               std::move(callback));
@@ -1248,11 +1264,18 @@ void GlicInstanceImpl::MaybeInitializeHiddenClient(
 
 void GlicInstanceImpl::DidCloseFor(EmbedderKey key,
                                    EmbedderCloseReason reason) {
+  // Must be called early to avoid use-after-free if instance is deleted.
+  if (reason == EmbedderCloseReason::kExplicitlyClosed) {
+    instance_metrics().ResetShownState(key);
+  }
+
+  // Deactivation might delete 'this'
   MaybeDeactivateEmbedder(key);
 
   auto* entry = GetEmbedderEntry(key);
   if (reason == EmbedderCloseReason::kExplicitlyClosed && entry &&
       ShouldUnbindOnClose(key, *entry)) {
+    // Unbind might delete 'this'
     UnbindEmbedder(key);
   }
 }

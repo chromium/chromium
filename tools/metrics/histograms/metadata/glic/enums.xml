@@ -445,6 +445,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="Shown"/>
   <int value="48" label="Open"/>
   <int value="49" label="WebUI State Warmed"/>
+  <int value="50" label="Open2"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.h:GlicInstanceEvent) -->

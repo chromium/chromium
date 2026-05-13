@@ -15341,6 +15341,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.Open2">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when opening a new or closed instance. Note that this may be logged
+    when a new conversation creates a new instance to replace an existing one in
+    an already open UI container, or when detaching/ attaching Floaty from side
+    panel.
+  </description>
+</action>
+
 <action name="Glic.Instance.PauseActorTask">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

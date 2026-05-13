@@ -465,6 +465,29 @@ TEST_F(GlicInstanceMetricsTest, InstanceEvents_LogsEventCountsAndHadEvent) {
       GlicInstanceEvent::kTurnCompleted, 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, InstanceEvents_OpenAndOpen2) {
+  ShowOptions show_options{FloatingShowOptions{}};
+
+  // Call OnOpen with should_log_old_metric = true (default)
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+
+  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
+                                      GlicInstanceEvent::kOpen, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
+                                      GlicInstanceEvent::kOpen2, 1);
+
+  // Call OnOpen with should_log_old_metric = false
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options,
+                  false);
+
+  // kOpen should still be 1.
+  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
+                                      GlicInstanceEvent::kOpen, 1);
+  // kOpen2 should be 2.
+  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
+                                      GlicInstanceEvent::kOpen2, 2);
+}
+
 TEST_F(GlicInstanceMetricsTest,
        InstanceEvents_NoCrashWithoutInitialEntrypoint) {
   // We ensure we don't crash before the initial entrypoint gets assigned.

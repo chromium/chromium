@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -47,6 +48,8 @@ namespace glic {
 
 class GlicSharingManager;
 struct ShowOptions;
+
+using SafeEmbedderKey = std::variant<tabs::TabHandle, FloatingEmbedderKey>;
 
 // This enumerates a set of possible lifecycle errors which are logged when the
 // sequence of received events was not expected.
@@ -123,7 +126,8 @@ enum class GlicInstanceEvent {
   kShown = 47,
   kOpen = 48,
   kWebUiStateWarmed = 49,
-  kMaxValue = kWebUiStateWarmed,
+  kOpen2 = 50,
+  kMaxValue = kOpen2,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 
@@ -255,7 +259,15 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Called when the UI is shown and it was not already showing for this
   // instance.
-  void OnOpen(glic::mojom::InvocationSource source, const ShowOptions& options);
+  void OnOpen(glic::mojom::InvocationSource source,
+              const ShowOptions& options,
+              bool should_log_old_metric = true);
+
+  // Returns true if this is the first time this specific embedder is becoming
+  // visible after being opened/closed.
+  bool MarkShownAndCheckIfFirstTime(EmbedderKey key);
+
+  void ResetShownState(EmbedderKey key);
 
   // Called when a tab that was bound to this instance is destroyed.
   void OnBoundTabDestroyed();
@@ -444,6 +456,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // The number of zoom change attempts (tracked per instance and reset when
   // the instance is destroyed).
   int zoom_change_count_ = 0;
+
+  base::flat_set<SafeEmbedderKey> seen_embedders_;
 };
 
 }  // namespace glic

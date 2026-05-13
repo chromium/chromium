@@ -44,6 +44,16 @@ namespace glic {
 
 namespace {
 
+SafeEmbedderKey ToSafeKey(const EmbedderKey& key) {
+  return std::visit(absl::Overload{[](tabs::TabInterface* tab) {
+                                     return SafeEmbedderKey(tab->GetHandle());
+                                   },
+                                   [](const FloatingEmbedderKey& fkey) {
+                                     return SafeEmbedderKey(fkey);
+                                   }},
+                    key);
+}
+
 std::string_view GetInputModeString(mojom::WebClientMode input_mode) {
   switch (input_mode) {
     case mojom::WebClientMode::kText:
@@ -606,28 +616,67 @@ void GlicInstanceMetrics::OnClose() {
                                 last_web_ui_state_);
 }
 
+bool GlicInstanceMetrics::MarkShownAndCheckIfFirstTime(EmbedderKey key) {
+  // Returns true if the key was NOT in the set, and inserts it.
+  // Returns false if the key WAS already in the set.
+  return seen_embedders_.insert(ToSafeKey(key)).second;
+}
+
+void GlicInstanceMetrics::ResetShownState(EmbedderKey key) {
+  seen_embedders_.erase(ToSafeKey(key));
+}
+
 void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
-                                 const ShowOptions& options) {
+                                 const ShowOptions& options,
+                                 bool should_log_old_metric) {
   invocation_start_time_ = base::TimeTicks::Now();
   last_invocation_source_ = source;
+
+  // 1. Log Events
+  LogEvent(GlicInstanceEvent::kOpen2);
+  if (should_log_old_metric) {
+    LogEvent(GlicInstanceEvent::kOpen);
+  }
+
+  // 2. Log Initial Invocation Source
   if (!initial_invocation_source_.has_value()) {
     initial_invocation_source_ = source;
-    base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource",
+    base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource2",
                                   source);
-  }
-  base::RecordAction(base::UserMetricsAction("Glic.Instance.Open"));
-  LogEvent(GlicInstanceEvent::kOpen);
-  if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
-    base::UmaHistogramEnumeration("Glic.Instance.Floaty.OpenSource", source);
-  } else {
-    base::UmaHistogramEnumeration("Glic.Instance.SidePanel.OpenSource", source);
+    if (should_log_old_metric) {
+      base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource",
+                                    source);
+    }
   }
 
+  // 3. Record Actions
+  base::RecordAction(base::UserMetricsAction("Glic.Instance.Open2"));
+  if (should_log_old_metric) {
+    base::RecordAction(base::UserMetricsAction("Glic.Instance.Open"));
+  }
+
+  // 4. Log Open Source
+  bool is_floaty =
+      std::holds_alternative<FloatingShowOptions>(options.embedder_options);
+  std::string open_source_base = is_floaty
+                                     ? "Glic.Instance.Floaty.OpenSource"
+                                     : "Glic.Instance.SidePanel.OpenSource";
+
+  base::UmaHistogramEnumeration(open_source_base + "2", source);
+  if (should_log_old_metric) {
+    base::UmaHistogramEnumeration(open_source_base, source);
+  }
+
+  // 5. Log Zoom Level
   if (pref_service_) {
-    base::UmaHistogramSparse("Glic.ZoomLevel.OnOpen",
-                             pref_service_->GetInteger(prefs::kGlicZoomLevel));
+    int zoom_level = pref_service_->GetInteger(prefs::kGlicZoomLevel);
+    base::UmaHistogramSparse("Glic.ZoomLevel.OnOpen2", zoom_level);
+    if (should_log_old_metric) {
+      base::UmaHistogramSparse("Glic.ZoomLevel.OnOpen", zoom_level);
+    }
   }
 
+  // 6. SaaS Usage
   if (saas_usage_reporting_controller_ && !saas_usage_recorded_) {
     saas_usage_reporting_controller_->RecordGeminiInChromeUsage();
     saas_usage_recorded_ = true;
