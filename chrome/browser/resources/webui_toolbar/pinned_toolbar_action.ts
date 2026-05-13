@@ -39,6 +39,7 @@ export class PinnedToolbarActionElement extends CrLitElement {
   static override get properties() {
     return {
       state: {type: Object},
+      trackedHighlighted: {type: Boolean},
     };
   }
 
@@ -55,6 +56,8 @@ export class PinnedToolbarActionElement extends CrLitElement {
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private trackedElementManager_: TrackedElementManager =
       TrackedElementManager.getInstance();
+
+  protected accessor trackedHighlighted: boolean = false;
 
   override disconnectedCallback() {
     super.disconnectedCallback();
@@ -74,7 +77,11 @@ export class PinnedToolbarActionElement extends CrLitElement {
           this.trackedElementManager_.stopTracking(this);
         }
         if (newId) {
-          this.trackedElementManager_.startTracking(this, newId);
+          this.trackedElementManager_.startTracking(this, newId, {
+            onHighlightChanged: (highlighted: boolean) => {
+              this.trackedHighlighted = highlighted;
+            },
+          });
         }
       }
     }

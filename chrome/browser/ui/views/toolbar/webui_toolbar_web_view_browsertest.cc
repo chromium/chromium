@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -72,6 +73,8 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/translate/core/browser/translate_step.h"
+#include "components/translate/core/common/translate_errors.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/zoom/zoom_controller.h"
@@ -3209,6 +3212,34 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, InvokeActions) {
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return !IsPinnedButtonVisible(web_contents, mojom_action); }));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       HighlightOnShowTranslateBubble) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  content::WebContents* web_ui_contents =
+      webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
+
+  actions::ActionId action_id = kActionShowTranslate;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kShowTranslate;
+
+  // Pin Translate action.
+  PinAction(action_id, mojom_action);
+
+  // Show translate bubble.
+  browser()->window()->ShowTranslateBubble(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "fr", "en",
+      translate::TranslateErrors::NONE, true);
+
+  // Verify it's highlighted.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsOnPinnedButton(web_ui_contents, mojom_action,
+                                "return !!btn && "
+                                "btn.hasAttribute('is-menu-open');")
+        .ExtractBool();
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, EphemeralActions) {
