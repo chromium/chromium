@@ -4,12 +4,14 @@
 
 #include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/channel.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace {
 
@@ -30,12 +32,15 @@ bool ShouldReportFullNames() {
 
 BASE_FEATURE(kReportFullAVProductDetails, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReportEmptyAVMetricsOnFailure, base::FEATURE_DISABLED_BY_DEFAULT);
+
 AntiVirusMetricsProvider::AntiVirusMetricsProvider() = default;
 
 AntiVirusMetricsProvider::~AntiVirusMetricsProvider() = default;
 
 void AntiVirusMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& av_product : av_products_) {
     metrics::SystemProfileProto_AntiVirusProduct* product =
         system_profile_proto->add_antivirus_product();
@@ -44,35 +49,45 @@ void AntiVirusMetricsProvider::ProvideSystemProfileMetrics(
 }
 
 void AntiVirusMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
-  base::ElapsedTimer timer;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  done_callback_ = std::move(done_callback);
+  CHECK(!timer_.has_value()) << "AsyncInit should only be called once.";
+  timer_.emplace();
 
   if (!remote_util_win_) {
     remote_util_win_ = LaunchUtilWinServiceInstance();
     remote_util_win_.reset_on_idle_timeout(base::Seconds(5));
   }
 
-  // Intentionally don't handle connection errors as not reporting this metric
-  // is acceptable in the rare cases it'll happen. The usage of
-  // base::Unretained(this) is safe here because |remote_util_win_|, which owns
-  // the callback, will be destroyed once this instance goes away.
-  remote_util_win_->GetAntiVirusProducts(
-      ShouldReportFullNames(),
-      base::BindOnce(&AntiVirusMetricsProvider::GotAntiVirusProducts,
-                     base::Unretained(this), std::move(done_callback),
-                     std::move(timer)));
+  // The usage of base::Unretained(this) is safe here because
+  // |remote_util_win_|, which owns the callback, will be destroyed once this
+  // instance goes away.
+  auto callback = base::BindOnce(
+      &AntiVirusMetricsProvider::GotAntiVirusProducts, base::Unretained(this));
+
+  if (base::FeatureList::IsEnabled(kReportEmptyAVMetricsOnFailure)) {
+    remote_util_win_->GetAntiVirusProducts(
+        ShouldReportFullNames(),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            std::move(callback),
+            std::vector<metrics::SystemProfileProto::AntiVirusProduct>()));
+  } else {
+    remote_util_win_->GetAntiVirusProducts(ShouldReportFullNames(),
+                                           std::move(callback));
+  }
 }
 
 void AntiVirusMetricsProvider::GotAntiVirusProducts(
-    base::OnceClosure done_callback,
-    base::ElapsedTimer timer,
     const std::vector<metrics::SystemProfileProto::AntiVirusProduct>& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   remote_util_win_.reset();
   av_products_ = result;
   if (!av_products_.empty()) {
     base::UmaHistogramTimes("UMA.AntiVirusMetricsProvider.Latency",
-                            timer.Elapsed());
+                            timer_->Elapsed());
   }
+  timer_.reset();
 
-  std::move(done_callback).Run();
+  std::move(done_callback_).Run();
 }
