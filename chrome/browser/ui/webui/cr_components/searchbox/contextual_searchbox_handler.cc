@@ -68,7 +68,9 @@
 #include "ui/base/window_open_disposition_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -828,6 +830,41 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
+    content::WebContents* active_web_contents,
+    contextual_search::ContextualSearchSessionHandle* session_handle) {
+  // In order to open in the lens side panel the following must be
+  // true:
+  // 1) User is not eligible for contextual tasks
+  // 2) Lens M3 is enabled
+  // 3) There is only one submitted context token
+  // 4) The submitted context token is the active tab
+  // 5) Lens Overlay is enabled.
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  auto* eligibility_manager =
+      browser_window_interface
+          ? contextual_tasks::EntryPointEligibilityManager::From(
+                browser_window_interface)
+          : nullptr;
+
+  bool lens_overlay_enabled = false;
+#if !BUILDFLAG(IS_ANDROID)
+  auto* entry_point_controller =
+      lens::LensOverlayEntryPointController::From(browser_window_interface);
+  lens_overlay_enabled =
+      entry_point_controller && entry_point_controller->IsEnabled();
+#endif
+
+  return active_web_contents &&
+         (!eligibility_manager ||
+          !eligibility_manager->AreEntryPointsEligible()) &&
+         lens::IsAimM3Enabled(profile_) && lens_overlay_enabled &&
+         session_handle->GetSubmittedContextTokens().size() == 1 &&
+         session_handle->IsTabInContext(
+             sessions::SessionTabHelper::IdForTab(active_web_contents));
+}
+
 void ContextualSearchboxHandler::DeleteContext(
     const base::UnguessableToken& context_token,
     bool from_automatic_chip) {
@@ -1232,14 +1269,9 @@ void ContextualSearchboxHandler::OpenUrl(
     auto* active_tab = tab_list ? tab_list->GetActiveTab() : nullptr;
     auto* active_web_contents =
         active_tab ? active_tab->GetContents() : nullptr;
-    auto* eligibility_manager =
-        contextual_tasks::EntryPointEligibilityManager::From(
-            browser_window_interface);
-    if (active_web_contents &&
-        (!eligibility_manager ||
-         !eligibility_manager->AreEntryPointsEligible()) &&
-        contextual_session_handle->IsTabInContext(
-            sessions::SessionTabHelper::IdForTab(active_web_contents))) {
+
+    if (ShouldOpenInLensSidePanel(active_web_contents,
+                                  contextual_session_handle)) {
       // Open in AIM in lens side panel.
       if (auto* lens_search_controller =
               LensSearchController::FromWebUIWebContents(active_web_contents)) {
