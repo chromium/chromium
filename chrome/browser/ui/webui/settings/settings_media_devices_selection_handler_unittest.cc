@@ -253,7 +253,7 @@ TEST_F(MediaDevicesSelectionHandlerTest, SanitizeAirPodsDeviceName) {
   ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kMic));
 
   media::AudioDeviceDescription sanitizedAirpods = kAirpods;
-  sanitizedAirpods.device_name = "AirPods";
+  sanitizedAirpods.device_name = "AirPods (Bluetooth)";
 
   // Verify that the airPods device name has been sanitized.
   ASSERT_NO_FATAL_FAILURE(

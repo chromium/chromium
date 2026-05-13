@@ -330,7 +330,7 @@ TEST_F(MicCoordinatorTest, SanitizeAirPodsDeviceName) {
   EXPECT_EQ(GetComboboxModel().GetItemCount(), 0u);
 
   constexpr char kAirPods[] = "AirPods (Bluetooth)";
-  constexpr char kSanitizedAirPods[] = "AirPods";
+  constexpr char kSanitizedAirPods[] = "AirPods (Bluetooth)";
 
   // Add airPods mic.
   ASSERT_TRUE(AddFakeInputDevice({kAirPods, kDeviceId, kGroupId}));

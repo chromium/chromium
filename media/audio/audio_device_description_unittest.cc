@@ -42,6 +42,71 @@ TEST(AudioDeviceDescriptionTest, LocalizedUserNameInDefaultDeviceIsSanitized) {
   EXPECT_EQ(device_descriptions[3].device_name, "AirPods Stereo");
 }
 
+TEST(AudioDeviceDescriptionTest,
+     LocalizedUserNameWithFormFactorAndConnectionIsSanitized) {
+  std::vector<AudioDeviceDescription> device_descriptions{
+      // Simulates Windows native device naming formatting, which often includes
+      // form factor prefixes and connection type suffixes.
+      AudioDeviceDescription("Headphones (User's AirPods) (Bluetooth)",
+                             "uniqueId", "groupId"),
+      AudioDeviceDescription("Headset (User's AirPods) (Bluetooth)", "uniqueId",
+                             "groupId"),
+      AudioDeviceDescription("Headphones (User's AirPods Stereo) (Bluetooth)",
+                             "uniqueId", "groupId"),
+      AudioDeviceDescription(
+          "Headset (User's AirPods Hands-Free AG Audio) (Bluetooth)",
+          "uniqueId", "groupId"),
+      AudioDeviceDescription("Headset (User's AirPods Hands-Free) (Bluetooth)",
+                             "uniqueId", "groupId"),
+  };
+
+  AudioDeviceDescription::LocalizeDeviceDescriptions(&device_descriptions);
+
+  // Verify that the form factor prefix, parentheses structure, and connection
+  // suffix are preserved while the user name is redacted.
+  EXPECT_EQ(device_descriptions[0].device_name,
+            "Headphones (AirPods) (Bluetooth)");
+  EXPECT_EQ(device_descriptions[1].device_name,
+            "Headset (AirPods) (Bluetooth)");
+  EXPECT_EQ(device_descriptions[2].device_name,
+            "Headphones (AirPods Stereo) (Bluetooth)");
+  EXPECT_EQ(device_descriptions[3].device_name,
+            "Headset (AirPods Hands-Free AG Audio) (Bluetooth)");
+  EXPECT_EQ(device_descriptions[4].device_name,
+            "Headset (AirPods Hands-Free) (Bluetooth)");
+}
+
+TEST(AudioDeviceDescriptionTest,
+     LocalizedUserNameWithUnknownFormattingIsSanitized) {
+  std::vector<AudioDeviceDescription> device_descriptions{
+      // Unknown form factor (Spanish "Auriculares" means "Headphones"),
+      // known connection.
+      AudioDeviceDescription("Auriculares (User's AirPods) (Bluetooth)",
+                             "uniqueId", "groupId"),
+      // Unknown profile (French "mains libres" means "Hands-free"),
+      // no connection suffix.
+      AudioDeviceDescription("User's AirPods (mains libres)", "uniqueId",
+                             "groupId"),
+      // Unknown form factor (French "Casque" means "Headset" or "Headphones"),
+      // known profile, known connection.
+      AudioDeviceDescription("Casque (User's AirPods Stereo) (Bluetooth)",
+                             "uniqueId", "groupId"),
+      // Pure gibberish around the name.
+      AudioDeviceDescription("Some Random Prefix User's AirPods With Suffix",
+                             "uniqueId", "groupId"),
+  };
+
+  AudioDeviceDescription::LocalizeDeviceDescriptions(&device_descriptions);
+
+  // Verify that the user name is safely redacted even if the surrounding
+  // formatting is not recognized. Recognized components like "(Bluetooth)"
+  // and "Stereo" should still be preserved without the parentheses structure.
+  EXPECT_EQ(device_descriptions[0].device_name, "AirPods (Bluetooth)");
+  EXPECT_EQ(device_descriptions[1].device_name, "AirPods");
+  EXPECT_EQ(device_descriptions[2].device_name, "AirPods Stereo (Bluetooth)");
+  EXPECT_EQ(device_descriptions[3].device_name, "AirPods");
+}
+
 TEST(AudioDeviceDescriptionTest, GetDefaultDeviceName) {
   auto default_name = AudioDeviceDescription::GetDefaultDeviceName();
 
