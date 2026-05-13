@@ -8,6 +8,11 @@
     "consider_memory_safety": "Did you check for pointer manipulation, buffer usage, or ownership transfers? If so, did you include the Security Expert?",
     "consider_threading": "Did you check if the changes cross sequence boundaries or use locks? If so, did you include the Concurrency Expert?",
     "consider_privacy": "Did you check if any user data or metrics are being logged or transmitted? If so, did you include the Privacy Expert?",
-    "consider_testability": "Did you ensure that the Test Expert is included to verify coverage for complex edge cases?"
+    "consider_testability": "Did you ensure that the Test Expert is included to verify coverage for complex edge cases?",
+    "ensure_language_expert": "Did you ensure that a C++ or platform-specific language expert is included to review code idioms and modern usage?",
+    "ensure_domain_expert": "Did you include domain specialists (e.g., WebRTC, Codec) if the change touches those technical areas?",
+    "ensure_independent_perspective": "Did you include at least one reviewer who was not involved in the implementation phase to provide a fresh, unbiased perspective?",
+    "ensure_mandate_overlap": "For critical aspects like security or data safety, did you ensure that at least two independent reviewers will evaluate the same checklist items to achieve consensus?",
+    "ensure_cross_component_coverage": "If the change spans multiple components or layers, did you ensure you have at least one reviewer specialized in each affected area?"
   }
 }
