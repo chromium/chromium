@@ -40,11 +40,12 @@ public class TabSwitcherActionPropertiesUnitTest {
         assertTrue(keys.contains(ActionProperties.IPH_INTENT));
         assertTrue(keys.contains(ActionProperties.USER_EDUCATION_HELPER));
         assertTrue(keys.contains(ActionProperties.BUTTON_STATE));
+        assertTrue(keys.contains(ActionProperties.IS_SELECTED));
         assertTrue(keys.contains(TabSwitcherActionProperties.TAB_COUNT));
         assertTrue(keys.contains(TabSwitcherActionProperties.HAS_NOTIFICATION_DOT));
         assertTrue(keys.contains(TabSwitcherActionProperties.SHOW_TAB_SWITCHER_TRIGGER));
         assertTrue(keys.contains(TabSwitcherActionProperties.IS_INCOGNITO));
 
-        assertEquals(12, keys.size());
+        assertEquals(13, keys.size());
     }
 }

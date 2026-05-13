@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.ui.actions.glic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -111,9 +113,20 @@ public class GlicActionCoordinatorUnitTest {
 
     @Test
     public void testClick_callsToggle() {
-        Callback<android.view.View> callback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
+        Callback<View> callback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
         callback.onResult(null);
         verify(mToggleGlicCallback).onClick(false);
+    }
+
+    @Test
+    public void testClick_togglesSelection() {
+        Callback<View> callback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
+
+        // Initial state should be false in the real controller.
+        callback.onResult(null);
+
+        // Verify optimistic toggle sets it to true (since it was closed).
+        assertTrue(mActionModel.get(ActionProperties.IS_SELECTED));
     }
 
     @Test
@@ -159,10 +172,11 @@ public class GlicActionCoordinatorUnitTest {
     @Test
     public void testOnStateChanged_updatesModel() {
         mCoordinator.onStateChanged(
-                GlicButtonStateController.ButtonState.WORKING, /* isPanelOpen= */ false);
+                GlicButtonStateController.ButtonState.WORKING, /* isPanelOpen= */ true);
 
         assertEquals(
                 GlicButtonStateController.ButtonState.WORKING,
                 mActionModel.get(GlicActionProperties.GLIC_STATE));
+        assertTrue(mActionModel.get(ActionProperties.IS_SELECTED));
     }
 }

@@ -98,10 +98,10 @@ public class GlicActionCoordinator {
     @VisibleForTesting
     /* package */ void onStateChanged(
             @GlicButtonStateController.ButtonState int state, boolean isPanelOpen) {
-        PropertyModel model =
-                mGlicActionModelSupplier != null ? mGlicActionModelSupplier.get() : null;
+        PropertyModel model = getModelSupplierOrNull();
         if (model != null) {
             model.set(GlicActionProperties.GLIC_STATE, state);
+            model.set(ActionProperties.IS_SELECTED, isPanelOpen);
         }
     }
 
@@ -116,8 +116,15 @@ public class GlicActionCoordinator {
         // If there are no tasks, or we are already on the tab with the active task, just toggle
         // Glic.
         if (tasks == null || tasks.isEmpty() || isOnActingTab) {
+            boolean wasOpen = mStateController.isPanelOpen();
             mToggleGlicCallback.onClick(false);
             mStateController.updateButtonState();
+
+            // Optimistically toggle selection state based on previous panel state.
+            PropertyModel model = getModelSupplierOrNull();
+            if (model != null) {
+                model.set(ActionProperties.IS_SELECTED, !wasOpen);
+            }
             return;
         }
 
@@ -131,8 +138,7 @@ public class GlicActionCoordinator {
     }
 
     private void updateButtonState() {
-        PropertyModel model =
-                mGlicActionModelSupplier != null ? mGlicActionModelSupplier.get() : null;
+        PropertyModel model = getModelSupplierOrNull();
         if (model == null) return;
 
         Tab currentTab = mTabSupplier.get();
@@ -142,6 +148,10 @@ public class GlicActionCoordinator {
                         && !UrlUtilities.isNtpUrl(currentTab.getUrl());
 
         model.set(ActionProperties.BUTTON_STATE, isEnabled ? DEFAULT : UNCLICKABLE);
+    }
+
+    private @Nullable PropertyModel getModelSupplierOrNull() {
+        return mGlicActionModelSupplier != null ? mGlicActionModelSupplier.get() : null;
     }
 
     public void destroy() {

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -34,6 +35,9 @@ public class ActionProperties {
 
     /** This property should have a {@link ButtonState} value. */
     public static final WritableIntPropertyKey BUTTON_STATE = new WritableIntPropertyKey();
+
+    /** Property to track if the action is currently selected/active. */
+    public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<TextResolver> CONTENT_DESCRIPTION_RESOLVER =
             new WritableObjectPropertyKey<>();
@@ -55,6 +59,7 @@ public class ActionProperties {
                 ICON_ID,
                 ICON_TINT,
                 ICON_DRAWABLE,
+                IS_SELECTED,
                 CONTENT_DESCRIPTION_RESOLVER,
                 TOOLTIP_TEXT_RESOLVER,
                 ON_PRESS_CALLBACK,
@@ -71,6 +76,7 @@ public class ActionProperties {
             new PropertyKey[] {
                 ICON_TINT,
                 BUTTON_STATE,
+                IS_SELECTED,
                 CONTENT_DESCRIPTION_RESOLVER,
                 TOOLTIP_TEXT_RESOLVER,
                 ON_PRESS_CALLBACK,

@@ -80,7 +80,7 @@ public class ActionUtils {
                 registry,
                 ActionId.GLIC,
                 GlicActionProperties.ALL_KEYS,
-                R.drawable.ic_spark_24dp,
+                R.drawable.ic_spark_selector,
                 R.string.glic_button_entrypoint_ask_gemini_label,
                 R.string.glic_button_entrypoint_ask_gemini_label);
 

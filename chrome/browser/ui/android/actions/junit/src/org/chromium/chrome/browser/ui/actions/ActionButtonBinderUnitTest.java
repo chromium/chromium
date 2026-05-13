@@ -305,6 +305,16 @@ public class ActionButtonBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testIsSelected() {
+        mModel.set(ActionProperties.IS_SELECTED, true);
+        assertTrue(mView.isSelected());
+
+        mModel.set(ActionProperties.IS_SELECTED, false);
+        assertFalse(mView.isSelected());
+    }
+
+    @Test
+    @SmallTest
     public void testIphIntent() {
         mModel.set(ActionProperties.USER_EDUCATION_HELPER, mUserEducationHelper);
         mModel.set(ActionProperties.IPH_INTENT, mIphIntent);
