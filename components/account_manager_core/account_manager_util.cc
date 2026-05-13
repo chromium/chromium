@@ -225,8 +225,9 @@ std::optional<account_manager::Account> FromMojoAccount(
 
   const std::optional<account_manager::AccountKey> account_key =
       FromMojoAccountKey(mojom_account->key);
-  if (!account_key.has_value())
+  if (!account_key.has_value()) {
     return std::nullopt;
+  }
 
   account_manager::Account account{account_key.value(),
                                    mojom_account->raw_email};
@@ -249,10 +250,12 @@ std::optional<account_manager::AccountKey> FromMojoAccountKey(
 
   const std::optional<account_manager::AccountType> account_type =
       FromMojoAccountType(mojom_account_key->account_type);
-  if (!account_type.has_value())
+  if (!account_type.has_value()) {
     return std::nullopt;
-  if (mojom_account_key->id.empty())
+  }
+  if (mojom_account_key->id.empty()) {
     return std::nullopt;
+  }
 
   return account_manager::AccountKey(mojom_account_key->id,
                                      account_type.value());
@@ -317,14 +320,11 @@ std::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
       return GoogleServiceAuthError::FromUnexpectedServiceResponse(
           mojo_error->error_message);
     case cm::GoogleServiceAuthError::State::kAccountNotFound:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
+      return GoogleServiceAuthError::CreateAccountNotFound();
     case cm::GoogleServiceAuthError::State::kServiceUnavailable:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);
+      return GoogleServiceAuthError::FromServiceUnavailable("");
     case cm::GoogleServiceAuthError::State::kRequestCanceled:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::REQUEST_CANCELED);
+      return GoogleServiceAuthError::CreateRequestCanceled();
     case cm::GoogleServiceAuthError::State::kScopeLimitedUnrecoverableError:
       return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
           FromMojoScopeLimitedUnrecoverableErrorReason(
@@ -377,23 +377,26 @@ FromMojoAccountUpsertionResult(
 
   std::optional<account_manager::AccountUpsertionResult::Status> status =
       FromMojoAccountAdditionStatus(mojo_result->status);
-  if (!status.has_value())
+  if (!status.has_value()) {
     return std::nullopt;
+  }
 
   switch (status.value()) {
     case account_manager::AccountUpsertionResult::Status::kSuccess: {
       std::optional<account_manager::Account> account =
           FromMojoAccount(mojo_result->account);
-      if (!account.has_value())
+      if (!account.has_value()) {
         return std::nullopt;
+      }
       return account_manager::AccountUpsertionResult::FromAccount(
           account.value());
     }
     case account_manager::AccountUpsertionResult::Status::kNetworkError: {
       std::optional<GoogleServiceAuthError> net_error =
           FromMojoGoogleServiceAuthError(mojo_result->error);
-      if (!net_error.has_value())
+      if (!net_error.has_value()) {
         return std::nullopt;
+      }
       return account_manager::AccountUpsertionResult::FromError(
           net_error.value());
     }

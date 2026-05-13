@@ -227,16 +227,14 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
     is_request_pending_ = false;
 
     if (account_key_.account_type() != ::account_manager::AccountType::kGaia) {
-      FireOnGetTokenFailure(GoogleServiceAuthError(
-          GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND));
+      FireOnGetTokenFailure(GoogleServiceAuthError::CreateAccountNotFound());
       return;
     }
 
     std::optional<std::string> maybe_token =
         account_manager_->GetRefreshToken(account_key_);
     if (!maybe_token.has_value()) {
-      FireOnGetTokenFailure(GoogleServiceAuthError(
-          GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND));
+      FireOnGetTokenFailure(GoogleServiceAuthError::CreateAccountNotFound());
       return;
     }
 
