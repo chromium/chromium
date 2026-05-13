@@ -349,6 +349,9 @@ class RenderViewContextMenu
   // Helper function for checking policies.
   bool IsSaveAsItemAllowedByPolicy(const GURL& item_url) const;
 
+  // Helper functions for checking policies.
+  bool IsSearchAllowedByPolicy() const;
+
   // Helper function for checking if text query should be opened in Lens. Checks
   // whether Lens is available and whether the text selection entrypoint flag is
   // enabled.

@@ -2089,6 +2089,10 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
     return;
   }
 
+  if (!IsSearchAllowedByPolicy()) {
+    return;
+  }
+
   const auto* provider = GetImageSearchProvider();
   if (!provider) {
     return;
@@ -2223,7 +2227,8 @@ void RenderViewContextMenu::AppendVideoItems() {
   }
 
   // Search for video frame menu item.
-  if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
+  if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame) &&
+      IsSearchAllowedByPolicy()) {
     const int search_for_video_frame_idc = GetSearchForVideoFrameIdc();
     auto* entry_point_controller =
         GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
@@ -2519,8 +2524,7 @@ void RenderViewContextMenu::AppendRotationItems() {
 void RenderViewContextMenu::AppendSearchProvider() {
   DCHECK(browser_context_);
 
-  if (!enterprise_data_protection::IsSearchWithAllowed(
-          GetWebContentsForDataControls())) {
+  if (!IsSearchAllowedByPolicy()) {
     return;
   }
 
@@ -3393,11 +3397,13 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME:
-      ExecSearchForVideoFrame(event_flags, /*is_lens_query=*/true);
-      break;
-
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME:
-      ExecSearchForVideoFrame(event_flags, /*is_lens_query=*/false);
+      enterprise_data_protection::ShouldAllowSearchWith(
+          GetWebContentsForDataControls(), /*selection_size=*/0,
+          base::BindOnce(&RenderViewContextMenu::ExecSearchForVideoFrame,
+                         weak_pointer_factory_.GetWeakPtr(), event_flags,
+                         /*is_lens_query=*/id ==
+                             IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
       break;
 
     case IDC_CONTENT_CONTEXT_GLIC:
@@ -3847,6 +3853,11 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
   return true;
 }
 
+bool RenderViewContextMenu::IsSearchAllowedByPolicy() const {
+  return enterprise_data_protection::IsSearchWithAllowed(
+      GetWebContentsForDataControls());
+}
+
 bool RenderViewContextMenu::ShouldOpenTextQueryInLens() const {
   BrowserWindowInterface* browser = GetBrowser();
   return lens::features::
@@ -4107,9 +4118,19 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 }
 
 bool RenderViewContextMenu::IsVideoFrameItemEnabled(int id) const {
-  return (params_.media_flags & ContextMenuData::kMediaEncrypted) == 0 &&
-         (params_.media_flags & ContextMenuData::kMediaHasReadableVideoFrame) !=
-             0;
+  if ((params_.media_flags & ContextMenuData::kMediaEncrypted) != 0 ||
+      (params_.media_flags & ContextMenuData::kMediaHasReadableVideoFrame) ==
+          0) {
+    return false;
+  }
+
+  switch (id) {
+    case IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME:
+    case IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME:
+      return IsSearchAllowedByPolicy();
+    default:
+      return true;
+  }
 }
 
 // Returns true if the item was appended.

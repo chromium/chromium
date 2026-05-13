@@ -1511,6 +1511,41 @@ class DataControlsContextMenuBrowserTest : public ContextMenuBrowserTest {
     return menu;
   }
 
+  std::unique_ptr<TestRenderViewContextMenu> SetUpVideoAndCreateMenu(
+      const std::string& data_controls_rule) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+    TemplateURLService* model =
+        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+    EXPECT_NE(model, nullptr);
+    search_test_utils::WaitForTemplateURLServiceToLoad(model);
+
+    TemplateURLData data;
+    data.SetShortName(u"TestSearch");
+    data.SetKeyword(u"test.com");
+    data.SetURL("http://www.test.com/search?q={searchTerms}");
+    data.image_url = "http://www.test.com/searchbyimage/upload";
+    data.new_tab_url = "https://www.test.com/newtab";
+    TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+    model->SetUserSelectedDefaultSearchProvider(template_url);
+
+    data_controls::SetDataControls(browser()->profile()->GetPrefs(),
+                                   {data_controls_rule});
+
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kVideo;
+    params.media_flags = blink::ContextMenuData::kMediaHasReadableVideoFrame;
+    params.src_url = GURL("https://www.example.com/video.mp4");
+    params.page_url = GURL("https://www.example.com/");
+
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents->GetPrimaryMainFrame(), params);
+    menu->SetBrowser(browser());
+    menu->Init();
+    return menu;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1551,6 +1586,55 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DataControls.SearchWith.Verdict",
       data_controls::Rule::Level::kWarn, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
+                       DataControlsSearchWith_VideoBlock) {
+  auto menu = SetUpVideoAndCreateMenu(R"({
+                                   "name": "block_rule",
+                                   "rule_id": "123",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })");
+
+  // Search items should be hidden by clipboard policy.
+  EXPECT_FALSE(
+      menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME));
+}
+
+IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
+                       DataControlsSearchWith_VideoWarn) {
+  auto menu = SetUpVideoAndCreateMenu(R"({
+                                   "name": "warn_rule",
+                                   "rule_id": "123",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "WARN"}
+                                   ]
+                                 })");
+
+  // Only the web search item should be visible because it's a non-Google
+  // provider and it's only a warning.
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME));
+  EXPECT_FALSE(
+      menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
+
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardActionWarn);
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME,
+                       /*event_flags=*/0);
+
+  helper.WaitForDialogToInitialize();
+  helper.CloseDialogWithoutBypass();
+  helper.WaitForDialogToClose();
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
