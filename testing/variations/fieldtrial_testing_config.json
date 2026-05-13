@@ -26844,7 +26844,7 @@
             ]
         }
     ],
-    "ZeroSuggestPrefetchingForComposebox": [
+    "ZeroSuggestPrefetchingForComposeboxDesktop": [
         {
             "platforms": [
                 "chromeos",
