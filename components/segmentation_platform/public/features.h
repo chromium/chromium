@@ -189,6 +189,8 @@ BASE_DECLARE_FEATURE(kNewTabPageCustomizationV2);
 extern const base::FeatureParam<int> kNewTabPageCustomizationV2IphMaxImpression;
 extern const base::FeatureParam<int>
     kNewTabPageCustomizationV2IphDisplayIntervalDays;
+// Parameter to control whether the New Tab Page theme promo should be shown.
+extern const base::FeatureParam<bool> kNewTabPageCustomizationV2ShowPromo;
 
 }  // namespace segmentation_platform::features
 
