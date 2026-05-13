@@ -124,6 +124,22 @@ Result LocalNetworkAccessChecker::CheckAddressSpace(
 
   Policy policy = client_security_state_->local_network_access_request_policy;
 
+  // `required_address_space_` is the IP address space the website claimed the
+  // subresource to be. If it doesn't meet the real situation, then we should
+  // fail the request.
+  //
+  // Note: This check must occur before the check for Policy::kAllow below, as
+  // otherwise sites could use targetAddressSpace to bypass mixed content
+  // blocking in embedders with a kAllow policy.
+  //
+  // TODO(crbug.com/395895368): consider collapsing the address spaces for LNA
+  // checks.
+  if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks) &&
+      required_address_space_ != mojom::IPAddressSpace::kUnknown &&
+      resource_address_space != required_address_space_) {
+    return Result::kBlockedByRequiredIpAddressSpaceMismatch;
+  }
+
   if (policy == Policy::kAllow) {
     return Result::kAllowedByPolicyAllow;
   }
@@ -140,18 +156,6 @@ Result LocalNetworkAccessChecker::CheckAddressSpace(
     }
 
     return Result::kBlockedByInconsistentIpAddressSpace;
-  }
-
-  // `required_address_space_` is the IP address space the website claimed the
-  // subresource to be. If it doesn't meet the real situation, then we should
-  // fail the request.
-  //
-  // TODO(crbug.com/395895368): consider collapsing the address spaces for LNA
-  // checks.
-  if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks) &&
-      required_address_space_ != mojom::IPAddressSpace::kUnknown &&
-      resource_address_space != required_address_space_) {
-    return Result::kBlockedByRequiredIpAddressSpaceMismatch;
   }
 
   // Currently for LNA we are only blocking public -> local/private/loopback

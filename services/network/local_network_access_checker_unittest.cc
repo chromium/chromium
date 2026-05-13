@@ -525,6 +525,31 @@ TEST(LocalNetworkAccessCheckerTest,
                                       Result::kLNAPermissionRequired, 1);
 }
 
+// Regression test for crbug.com/511815165. Ensures that address space
+// mismatches are blocked even when the policy is `kAllow`. This prevents HTTPS
+// origins on certain platforms from using `targetAddressSpace` to bypass mixed
+// content checks and fetch public HTTP resources.
+TEST(LocalNetworkAccessCheckerTest,
+     CheckBlockedByRequiredIpAddressSpaceMismatchWithPolicyAllow) {
+  base::HistogramTester histogram_tester;
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.local_network_access_request_policy =
+      mojom::LocalNetworkAccessRequestPolicy::kAllow;
+
+  ResourceRequest request;
+  request.required_ip_address_space = mojom::IPAddressSpace::kLocal;
+  LocalNetworkAccessChecker checker(request, &client_security_state,
+                                    mojom::kURLLoadOptionNone);
+
+  // Mismatch should be blocked even if policy is kAllow.
+  EXPECT_EQ(checker.Check(DirectTransport(PublicEndpoint())),
+            Result::kBlockedByRequiredIpAddressSpaceMismatch);
+  histogram_tester.ExpectUniqueSample(
+      kCheckResultHistogramName,
+      Result::kBlockedByRequiredIpAddressSpaceMismatch, 1);
+}
+
 TEST(LocalNetworkAccessCheckerTest, ResponseAddressSpace) {
   LocalNetworkAccessChecker checker(ResourceRequest(), kNullClientSecurityState,
                                     mojom::kURLLoadOptionNone);
