@@ -428,6 +428,11 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   private stepSelection_(direction: SelectionDirection, step: SelectionStep) {
     this.setSelection_(
         this.getNextSelection_(this.selection_, direction, step));
+    const dropdown = this.getDropdown();
+    if (dropdown.selectableMatchElements.length > 0) {
+      announceElementAriaLabel(
+          dropdown.selectableMatchElements[dropdown.selectedMatchIndex]!);
+    }
   }
 
   // Given a current `from` selection, finds the next selection in the order
