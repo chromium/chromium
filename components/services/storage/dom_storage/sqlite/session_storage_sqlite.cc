@@ -349,10 +349,11 @@ SessionStorageSqlite::ReadAllMapMetadata() const {
 bool SessionStorageSqlite::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  return ReportDatabaseMemoryUsage(
+  ReportDatabaseMemoryUsage(
       database_.get(), memory_dump_id_, pmd,
       base::StringPrintf("site_storage/sessionstorage/sqlite/db_0x%" PRIXPTR,
                          reinterpret_cast<uintptr_t>(this)));
+  return true;
 }
 
 }  // namespace storage

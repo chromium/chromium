@@ -280,19 +280,19 @@ scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
       database_path);
 }
 
-bool ReportDatabaseMemoryUsage(
+void ReportDatabaseMemoryUsage(
     sql::Database* database,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     base::trace_event::ProcessMemoryDump* pmd,
     std::string dump_name) {
   if (!database || !memory_dump_id) {
-    return true;
+    return;
   }
 
   int memory_usage = database->GetMemoryUsage();
   if (memory_usage == 0) {
-    return true;
+    return;
   }
 
   auto* db_dump = pmd->CreateAllocatorDump(dump_name);
@@ -304,7 +304,6 @@ bool ReportDatabaseMemoryUsage(
   global_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                          base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                          memory_usage);
-  return true;
 }
 
 DbStatus PurgeOrigins(DomStorageDatabase& database,

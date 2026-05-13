@@ -399,8 +399,8 @@ scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
 
 // Reports the memory usage of `database` into `pmd`. Creates an allocator
 // dump named `dump_name` and links it to the shared global dump identified by
-// `memory_dump_id`. Returns true always.
-bool ReportDatabaseMemoryUsage(
+// `memory_dump_id`.
+void ReportDatabaseMemoryUsage(
     sql::Database* database,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
