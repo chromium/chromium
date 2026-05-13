@@ -104,6 +104,22 @@
 
 namespace {
 
+// OAuth2 scopes for Contextual Tasks.
+inline constexpr char kCalendarEventsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/calendar.events";
+inline constexpr char kCalendarFreeBusyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/calendar.freebusy";
+inline constexpr char kCalendarListOAuth2Scope[] =
+    "https://www.googleapis.com/auth/calendar.calendarlist";
+inline constexpr char kDocumentsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/documents";
+inline constexpr char kGmailModifyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/gmail.modify";
+inline constexpr char kPeopleReadOnlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/peopleapi.readonly";
+inline constexpr char kSpreadsheetsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/spreadsheets";
+
 // List of sources for which sign out is always allowed.
 // TODO(crbug.com/40162614): core product logic should not rely on metric
 // sources/callsites.  Consider removing such logic, potentially as part of
@@ -207,8 +223,16 @@ class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
         contextual_tasks::ShouldUseSearchResultsScope()
             ? GaiaConstants::kSearchResultsOAuth2Scope
             : GaiaConstants::kChromeSyncOAuth2Scope,
+        kCalendarEventsOAuth2Scope,
+        kCalendarFreeBusyOAuth2Scope,
+        kCalendarListOAuth2Scope,
         GaiaConstants::kClearCutOAuth2Scope,
+        kDocumentsOAuth2Scope,
+        GaiaConstants::kDriveOAuth2Scope,
+        kGmailModifyOAuth2Scope,
         GaiaConstants::kLensOAuth2Scope,
+        kPeopleReadOnlyOAuth2Scope,
+        kSpreadsheetsOAuth2Scope,
     };
     if (base::FeatureList::IsEnabled(
             contextual_tasks::kContextualTasksExtraOauthScopes)) {
