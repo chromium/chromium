@@ -193,7 +193,7 @@ TEST_F(ChromePoliciesValueProviderTest, GetNames) {
 #endif
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionInstallPoliciesValueProviderTest
     : public PolicyValueProviderTestBase {
  public:

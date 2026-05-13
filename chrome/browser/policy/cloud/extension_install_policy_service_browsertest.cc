@@ -80,7 +80,6 @@ ClientStorage::ClientInfo CreateTestClientInfo() {
 
 }  // namespace
 
-#if !BUILDFLAG(IS_CHROMEOS)
 class ExtensionInstallPolicyServiceTest : public PolicyTest {
  public:
   ExtensionInstallPolicyServiceTest() {
@@ -612,6 +611,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                                               /*is_from_webstore=*/true,
                                               /*expected_result=*/true));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

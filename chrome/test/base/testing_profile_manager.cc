@@ -31,11 +31,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
-#endif
+#else
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kGuestProfileName[] = "$guest";
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
@@ -86,7 +89,13 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     bool is_supervised_profile,
     std::optional<bool> is_new_profile,
     std::optional<std::unique_ptr<policy::PolicyService>> policy_service,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+#if BUILDFLAG(IS_CHROMEOS)
+    std::unique_ptr<policy::UserCloudPolicyManagerAsh>
+        user_cloud_policy_manager) {
+#else
+    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager) {
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   DCHECK(called_set_up_);
 
   base::FilePath profile_path = GetProfilePath(profile_name);
@@ -102,6 +111,13 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   builder.SetIsNewProfile(is_new_profile.value_or(false));
   if (policy_service)
     builder.SetPolicyService(std::move(*policy_service));
+  if (user_cloud_policy_manager) {
+#if BUILDFLAG(IS_CHROMEOS)
+    builder.SetUserCloudPolicyManagerAsh(std::move(user_cloud_policy_manager));
+#else
+    builder.SetUserCloudPolicyManager(std::move(user_cloud_policy_manager));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   builder.AddTestingFactories(std::move(testing_factories));
 
