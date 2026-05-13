@@ -5286,6 +5286,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SEND_TAB_TO_SELF_SHARE_ACTIVITY_TITLE" desc="Title of the Send Tab To Self Share activity that will appear in the Android share dialog.">
         Send to your devices
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_CONTEXT_MENU_TITLE" desc="Title of the Send Tab To Self option in the tab context menu.">
+        Send to your device
+      </message>
 
       <!-- Omnibox Suggestions -->
       <message name="IDS_OMNIBOX_CONFIRM_DELETE" desc="A message within a modal dialog that confirms the user wants to delete a suggestion from the list dropdown in the omnibox">

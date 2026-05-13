@@ -52217,6 +52217,9 @@ should be able to be added at any place in this file.
     <variant name=".SelectTabs"
         summary="Recorded when the 'Select tabs' option in the context menu
                  is selected."/>
+    <variant name=".SendTabToSelf"
+        summary="Recorded when the 'Send tab to self' option in the context
+                 menu is selected."/>
     <variant name=".ShareTab"
         summary="Recorded when the 'Share' option in the context menu is
                  selected."/>

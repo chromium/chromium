@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -203,6 +204,12 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
             } else if (menuId == R.id.add_to_bookmarks) {
                 tabBookmarker.addOrEditBookmark(tab);
                 recordUserActionWithPrefix("AddBookmark");
+            } else if (menuId == R.id.send_tab_to_self) {
+                assert ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS);
+                assert !tab.isIncognitoBranded();
+                assumeNonNull(shareDelegateSupplier.get()).sendTabToSelf(tab);
+                recordUserActionWithPrefix("SendTabToSelf");
             } else if (menuId == R.id.select_tabs) {
                 showTabListEditor.show(tab.getId());
                 recordUserActionWithPrefix("SelectTabs");
@@ -285,6 +292,25 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                             .withStartIconRes(R.drawable.tab_list_editor_share_icon)
                             .withIsIncognito(isIncognito)
                             .build());
+        }
+
+        if (!isIncognito
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)) {
+            Integer sendTabToSelfDisplayReason =
+                    SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                            assumeNonNull(mTabModel.getProfile()), tab.getUrl().getSpec());
+            if (sendTabToSelfDisplayReason != null) {
+                itemList.add(
+                        new ListItemBuilder()
+                                .withTitleRes(
+                                        org.chromium.chrome.R.string
+                                                .send_tab_to_self_context_menu_title)
+                                .withMenuId(R.id.send_tab_to_self)
+                                .withStartIconRes(org.chromium.chrome.R.drawable.send_tab)
+                                .withIsIncognito(isIncognito)
+                                .build());
+            }
         }
 
         itemList.add(buildTogglePinStateItem(tab));

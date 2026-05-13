@@ -71,4 +71,11 @@ public interface ShareDelegate {
 
     /** Check if the custom share sheet is enabled. */
     boolean isSharingHubEnabled();
+
+    /**
+     * Initiate Send Tab To Self for the provided Tab.
+     *
+     * @param tab The Tab to be sent.
+     */
+    void sendTabToSelf(Tab tab);
 }

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
 import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingController;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -429,6 +430,46 @@ public class ShareDelegateImpl implements ShareDelegate {
             return true;
         }
         return !(mIsCustomTab || Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
+    }
+
+    @Override
+    public void sendTabToSelf(Tab tab) {
+        // Early return if critical dependencies are missing.
+        if (mBottomSheetController == null) return;
+
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+
+        // WindowAndroid hosts the STTS bottom sheet and sign-in promo.
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null) return;
+
+        // Safely resolve the Activity (weak reference might be null during teardown).
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity == null) {
+            if (mContext instanceof Activity) {
+                activity = (Activity) mContext;
+            } else {
+                return;
+            }
+        }
+
+        SendTabToSelfCoordinator sttsCoordinator =
+                new SendTabToSelfCoordinator(
+                        mContext,
+                        windowAndroid,
+                        tab.getUrl().getSpec(),
+                        tab.getTitle(),
+                        mBottomSheetController,
+                        profile,
+                        DeviceLockActivityLauncherImpl.get(),
+                        () -> tab,
+                        activity,
+                        mSigninAndHistorySyncActivityLauncher,
+                        mActivityResultTracker,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManager);
+        sttsCoordinator.show();
     }
 
     public static void setShowShareSheetHookForTesting(Callback<Boolean> hook) {
