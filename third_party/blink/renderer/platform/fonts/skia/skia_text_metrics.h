@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 
 class SkFont;
+class SkStrikeRef;
 
 namespace blink {
 
@@ -20,10 +21,12 @@ namespace blink {
 // https://bugs.chromium.org/p/skia/issues/detail?id=10123 in Skia, which
 // currently does not return trak-free advances on Mac OS 10.15.
 
-void SkFontGetGlyphWidthForHarfBuzz(const SkFont&,
+void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef&,
+                                    bool subpixel,
                                     hb_codepoint_t,
                                     hb_position_t* width);
-void SkFontGetGlyphWidthForHarfBuzz(const SkFont&,
+void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef&,
+                                    bool subpixel,
                                     unsigned count,
                                     const hb_codepoint_t* first_glyph,
                                     unsigned glyph_stride,

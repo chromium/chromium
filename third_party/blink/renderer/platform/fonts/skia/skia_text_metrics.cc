@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkStrikeRef.h"
 
 namespace blink {
 
@@ -29,7 +30,8 @@ const T* advance_by_byte_size(const T* p, unsigned byte_size) {
 
 }  // namespace
 
-void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
+void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef& strike_ref,
+                                    bool subpixel,
                                     hb_codepoint_t codepoint,
                                     hb_position_t* width) {
   // We don't want to compute glyph extents for kUnmatchedVSGlyphId
@@ -41,15 +43,16 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
   DCHECK_LE(codepoint, 0xFFFFu);
   CHECK(width);
 
-  uint16_t glyph = codepoint;
-  SkScalar sk_width = font.getWidth(glyph);
+  SkScalar sk_width = strike_ref.getWidth(static_cast<SkGlyphID>(codepoint));
 
-  if (!font.isSubpixel())
+  if (!subpixel) {
     sk_width = SkScalarRoundToInt(sk_width);
+  }
   *width = SkiaScalarToHarfBuzzPosition(sk_width);
 }
 
-void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
+void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef& strike_ref,
+                                    bool subpixel,
                                     unsigned count,
                                     const hb_codepoint_t* glyphs,
                                     const unsigned glyph_stride,
@@ -64,9 +67,9 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
     glyph_array[i] = *glyphs;
   }
   Vector<SkScalar, 512> sk_width_array(count);
-  font.getWidths(glyph_array, sk_width_array);
+  strike_ref.getWidths(glyph_array, sk_width_array);
 
-  if (font.isSubpixel()) {
+  if (subpixel) {
     for (unsigned i = 0; i < count;
          i++, advances = advance_by_byte_size(advances, advance_stride)) {
       *advances = SkiaScalarToHarfBuzzPosition(sk_width_array[i]);

@@ -253,8 +253,9 @@ static hb_position_t HarfBuzzGetGlyphHorizontalAdvance(hb_font_t* hb_font,
   HarfBuzzFontData* hb_font_data =
       reinterpret_cast<HarfBuzzFontData*>(font_data);
   hb_position_t advance = 0;
-
-  SkFontGetGlyphWidthForHarfBuzz(hb_font_data->font_, glyph, &advance);
+  SkFontGetGlyphWidthForHarfBuzz(hb_font_data->EnsureStrikeRef(),
+                                 hb_font_data->font_.isSubpixel(), glyph,
+                                 &advance);
   return advance;
 }
 
@@ -269,8 +270,9 @@ static void HarfBuzzGetGlyphHorizontalAdvances(
     void* user_data) {
   HarfBuzzFontData* hb_font_data =
       reinterpret_cast<HarfBuzzFontData*>(font_data);
-  SkFontGetGlyphWidthForHarfBuzz(hb_font_data->font_, count, first_glyph,
-                                 glyph_stride, first_advance, advance_stride);
+  SkFontGetGlyphWidthForHarfBuzz(
+      hb_font_data->EnsureStrikeRef(), hb_font_data->font_.isSubpixel(), count,
+      first_glyph, glyph_stride, first_advance, advance_stride);
 }
 
 static hb_bool_t HarfBuzzGetGlyphVerticalOrigin(hb_font_t* hb_font,
