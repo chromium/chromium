@@ -65,6 +65,29 @@ suite('CrComponentsSearchboxIconTest', () => {
     assertTrue(isVisible(image));
   });
 
+  test('image and icon URLs are encoded', async () => {
+    // Regression test for crbug.com/501729582.
+    const match = createAutocompleteMatch();
+    const unsafeUrl = 'https://example.com/image.png?a=b&c=d';
+    match.imageUrl = unsafeUrl;
+    match.iconUrl = unsafeUrl;
+    icon.match = match;
+
+    await microtasksFinished();
+
+    const image = icon.$.image;
+    assertTrue(!!image);
+    assertEquals(
+        image.getAttribute('src'),
+        '//image?staticEncode=true&encodeType=webp&url=https%3A%2F%2Fexample.com%2Fimage.png%3Fa%3Db%26c%3Dd');
+
+    const iconImg = icon.$.iconImg;
+    assertTrue(!!iconImg);
+    assertEquals(
+        iconImg.getAttribute('src'),
+        '//image?staticEncode=true&encodeType=webp&url=https%3A%2F%2Fexample.com%2Fimage.png%3Fa%3Db%26c%3Dd');
+  });
+
   test('entity image hidden on error', async () => {
     const match = createAutocompleteMatch();
     match.imageUrl = '#';
