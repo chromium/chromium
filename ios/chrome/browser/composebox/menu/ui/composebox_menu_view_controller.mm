@@ -410,7 +410,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
 // Focuses the first item in the menu for accessibility.
 - (void)focusFirstMenuItem {
-  if ([_collectionView numberOfItemsInSection:0] > 0) {
+  if (_collectionView.numberOfSections > 0 &&
+      [_collectionView numberOfItemsInSection:0] > 0) {
     NSIndexPath* firstIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
     UICollectionViewCell* cell =
         [_collectionView cellForItemAtIndexPath:firstIndexPath];
