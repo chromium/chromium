@@ -81,8 +81,7 @@ public class SettingsUtils {
         Drawable icon = AppCompatResources.getDrawable(context, resId);
         // DrawableCompat.setTint() doesn't work well on BitmapDrawables on older versions.
         icon.setColorFilter(
-                AppCompatResources.getColorStateList(context, colorId).getDefaultColor(),
-                PorterDuff.Mode.SRC_IN);
+                context.getColorStateList(colorId).getDefaultColor(), PorterDuff.Mode.SRC_IN);
         return icon;
     }
 
@@ -117,9 +116,7 @@ public class SettingsUtils {
 
         Drawable tintableDrawable = DrawableCompat.wrap(builder.build());
         DrawableCompat.setTintList(
-                tintableDrawable,
-                AppCompatResources.getColorStateList(
-                        context, R.color.default_icon_color_tint_list));
+                tintableDrawable, context.getColorStateList(R.color.default_icon_color_tint_list));
         return tintableDrawable;
     }
 

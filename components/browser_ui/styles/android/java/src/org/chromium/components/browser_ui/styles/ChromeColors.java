@@ -11,7 +11,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
@@ -96,11 +95,11 @@ public class ChromeColors {
      *
      * @param context The {@link Context} used to retrieve colors.
      * @param isIncognito When true, returns the baseline light tint list; otherwise returns the
-     *         default primary icon tint list that is adaptive and can be dynamic.
+     *     default primary icon tint list that is adaptive and can be dynamic.
      * @return The {@link ColorStateList} for the icon tint.
      */
     public static ColorStateList getPrimaryIconTint(Context context, boolean isIncognito) {
-        return AppCompatResources.getColorStateList(context, getPrimaryIconTintRes(isIncognito));
+        return context.getColorStateList(getPrimaryIconTintRes(isIncognito));
     }
 
     /**
@@ -118,17 +117,16 @@ public class ChromeColors {
     }
 
     /**
-     * Returns the secondary icon tint to use based on the current parameters and whether the app
-     * is in night mode.
+     * Returns the secondary icon tint to use based on the current parameters and whether the app is
+     * in night mode.
      *
      * @param context The {@link Context} used to retrieve colors.
      * @param forceLightIconTint When true, returns the light tint color res; otherwise returns
-     *         adaptive secondary icon tint color res.
+     *     adaptive secondary icon tint color res.
      * @return The {@link ColorStateList} for the icon tint.
      */
     public static ColorStateList getSecondaryIconTint(Context context, boolean forceLightIconTint) {
-        return AppCompatResources.getColorStateList(
-                context, getSecondaryIconTintRes(forceLightIconTint));
+        return context.getColorStateList(getSecondaryIconTintRes(forceLightIconTint));
     }
 
     /**

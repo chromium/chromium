@@ -146,8 +146,7 @@ public class MessageBannerView extends RelativeLayout {
         mDescription.setVisibility(drawable == null ? GONE : VISIBLE);
         mDescriptionDrawable = drawable;
         mDescription.setDrawableTintColor(
-                AppCompatResources.getColorStateList(
-                        getContext(), R.color.default_icon_color_secondary_tint_list));
+                getContext().getColorStateList(R.color.default_icon_color_secondary_tint_list));
         ((TextView) mDescription).setCompoundDrawablesRelative(drawable, null, null, null);
     }
 

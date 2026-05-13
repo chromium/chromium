@@ -22,7 +22,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
@@ -1120,9 +1119,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                             return true;
                         });
                 if (info.getContentSettingType() == mHighlightedPermission) {
-                    preference.setBackgroundColor(
-                            AppCompatResources.getColorStateList(getContext(), mHighlightColor)
-                                    .getDefaultColor());
+                    preference.setBackgroundColor(getContext().getColor(mHighlightColor));
                 }
 
                 preference.setOrder(++mMaxPermissionOrder);
@@ -1418,9 +1415,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             }
 
             if (contentType == mHighlightedPermission) {
-                switchPreference.setBackgroundColor(
-                        AppCompatResources.getColorStateList(getContext(), mHighlightColor)
-                                .getDefaultColor());
+                switchPreference.setBackgroundColor(getContext().getColor(mHighlightColor));
             }
         }
     }

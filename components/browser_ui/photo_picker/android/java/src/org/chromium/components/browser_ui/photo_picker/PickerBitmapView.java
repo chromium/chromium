@@ -27,7 +27,6 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ResettersForTesting;
@@ -418,8 +417,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         mSpecialTileIcon.setImageDrawable(image);
         ImageViewCompat.setImageTintList(
                 mSpecialTileIcon,
-                AppCompatResources.getColorStateList(
-                        mContext, R.color.default_icon_color_secondary_tint_list));
+                mContext.getColorStateList(R.color.default_icon_color_secondary_tint_list));
         ImageViewCompat.setImageTintMode(mSpecialTileIcon, PorterDuff.Mode.SRC_IN);
         mSpecialTileLabel.setText(labelStringId);
 

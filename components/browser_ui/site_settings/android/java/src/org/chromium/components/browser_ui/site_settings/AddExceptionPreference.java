@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -92,8 +91,7 @@ public class AddExceptionPreference extends Preference
         setKey(key);
         Resources resources = context.getResources();
         mErrorColor = context.getColor(R.color.default_red);
-        ColorStateList textColorList =
-                AppCompatResources.getColorStateList(context, R.color.default_text_color_list);
+        ColorStateList textColorList = context.getColorStateList(R.color.default_text_color_list);
         mDefaultColor = textColorList.getDefaultColor();
 
         int enabledAccentColor = SemanticColorUtils.getDefaultControlColorActive(context);

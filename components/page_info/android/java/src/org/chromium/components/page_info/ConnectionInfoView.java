@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.widget.ImageViewCompat;
 
@@ -133,8 +132,7 @@ public class ConnectionInfoView implements OnClickListener {
             i.setVisibility(View.INVISIBLE);
         } else {
             i.setImageResource(iconId);
-            ImageViewCompat.setImageTintList(
-                    i, AppCompatResources.getColorStateList(mContext, iconColorId));
+            ImageViewCompat.setImageTintList(i, mContext.getColorStateList(iconColorId));
         }
 
         TextView d = section.findViewById(R.id.connection_info_description);

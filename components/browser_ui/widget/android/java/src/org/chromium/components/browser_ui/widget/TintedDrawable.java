@@ -36,7 +36,7 @@ public class TintedDrawable extends BitmapDrawable {
 
     public TintedDrawable(Context context, Bitmap bitmap) {
         super(context.getResources(), bitmap);
-        mTint = AppCompatResources.getColorStateList(context, R.color.default_icon_color_tint_list);
+        mTint = context.getColorStateList(R.color.default_icon_color_tint_list);
     }
 
     @Override
@@ -92,11 +92,13 @@ public class TintedDrawable extends BitmapDrawable {
         return new TintedDrawable(context, icon);
     }
 
-    /** Factory method for creating a {@link TintedDrawable} with a resource id and specific tint. */
+    /**
+     * Factory method for creating a {@link TintedDrawable} with a resource id and specific tint.
+     */
     public static TintedDrawable constructTintedDrawable(
             Context context, int drawableId, int tintColorId) {
         TintedDrawable drawable = constructTintedDrawable(context, drawableId);
-        drawable.setTint(AppCompatResources.getColorStateList(context, tintColorId));
+        drawable.setTint(context.getColorStateList(tintColorId));
         return drawable;
     }
 

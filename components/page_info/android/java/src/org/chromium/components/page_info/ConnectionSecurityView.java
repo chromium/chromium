@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
@@ -97,8 +96,7 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
                 mIcon,
                 params.iconTint != 0
                         ? ColorStateList.valueOf(mContext.getColor(params.iconTint))
-                        : AppCompatResources.getColorStateList(
-                                mContext, R.color.default_icon_color_tint_list));
+                        : mContext.getColorStateList(R.color.default_icon_color_tint_list));
 
         mSummary.setText(params.summary);
         mSummary.setVisibility(params.summary.length() != 0 ? VISIBLE : GONE);

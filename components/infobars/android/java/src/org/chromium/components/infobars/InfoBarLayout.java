@@ -554,8 +554,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         if (iconResourceId != 0) {
             iconView.setImageDrawable(AppCompatResources.getDrawable(context, iconResourceId));
             if (iconTintId != 0) {
-                ImageViewCompat.setImageTintList(
-                        iconView, AppCompatResources.getColorStateList(context, iconTintId));
+                ImageViewCompat.setImageTintList(iconView, context.getColorStateList(iconTintId));
             }
         } else {
             iconView.setImageBitmap(iconBitmap);
@@ -569,12 +568,12 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
 
     /**
      * Creates a close button that can be inserted into an infobar.
+     *
      * @param context Context to grab resources from.
      * @return {@link ImageButton} that represents a close button.
      */
     public static ImageButton createCloseButton(Context context) {
-        final ColorStateList tint =
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_tint_list);
+        final ColorStateList tint = context.getColorStateList(R.color.default_icon_color_tint_list);
         TypedArray a =
                 context.obtainStyledAttributes(new int[] {android.R.attr.selectableItemBackground});
         Drawable closeButtonBackground = a.getDrawable(0);

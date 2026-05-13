@@ -12,7 +12,6 @@ import android.widget.Button;
 import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
@@ -149,9 +148,7 @@ public class ChromeButtonPreference extends ChromeBasePreference {
 
     private void updateBackground() {
         if (mView == null || mBackgroundColorRes == null) return;
-        mView.setBackgroundColor(
-                AppCompatResources.getColorStateList(getContext(), mBackgroundColorRes)
-                        .getDefaultColor());
+        mView.setBackgroundColor(getContext().getColor(mBackgroundColorRes));
     }
 
     @VisibleForTesting

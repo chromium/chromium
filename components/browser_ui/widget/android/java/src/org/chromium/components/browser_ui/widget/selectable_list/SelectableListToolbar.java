@@ -270,9 +270,7 @@ public class SelectableListToolbar<E> extends Toolbar
         mNormalBackgroundColor = SemanticColorUtils.getDefaultBgColor(getContext());
         setBackgroundColor(mNormalBackgroundColor);
 
-        mIconColorList =
-                AppCompatResources.getColorStateList(
-                        getContext(), R.color.default_icon_color_tint_list);
+        mIconColorList = getContext().getColorStateList(R.color.default_icon_color_tint_list);
 
         setTitleTextAppearance(getContext(), R.style.TextAppearance_Headline_Primary);
         if (mTitleResId != 0) setTitle(mTitleResId);
@@ -508,8 +506,8 @@ public class SelectableListToolbar<E> extends Toolbar
             case NavigationButton.NORMAL_VIEW_BACK:
                 DrawableCompat.setTintList(
                         mNavigationIconDrawable,
-                        AppCompatResources.getColorStateList(
-                                getContext(), R.color.default_icon_color_secondary_tint_list));
+                        getContext()
+                                .getColorStateList(R.color.default_icon_color_secondary_tint_list));
                 contentDescriptionId = R.string.accessibility_toolbar_btn_back;
                 break;
             default:

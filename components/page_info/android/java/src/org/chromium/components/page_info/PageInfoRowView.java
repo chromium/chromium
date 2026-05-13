@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -72,8 +71,7 @@ public class PageInfoRowView extends FrameLayout {
                 mIcon,
                 params.iconTint != 0
                         ? ColorStateList.valueOf(context.getColor(params.iconTint))
-                        : AppCompatResources.getColorStateList(
-                                context, R.color.default_icon_color_tint_list));
+                        : context.getColorStateList(R.color.default_icon_color_tint_list));
 
         mTitle.setText(params.title);
         mTitle.setVisibility(params.title != null ? VISIBLE : GONE);
@@ -90,9 +88,7 @@ public class PageInfoRowView extends FrameLayout {
             setOnClickListener(v -> clickCallback.run());
         }
         if (params.rowTint != 0) {
-            setBackgroundColor(
-                    AppCompatResources.getColorStateList(context, params.rowTint)
-                            .getDefaultColor());
+            setBackgroundColor(context.getColor(params.rowTint));
         }
     }
 

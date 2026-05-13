@@ -22,7 +22,6 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.jni_zero.CalledByNative;
@@ -204,9 +203,7 @@ public class BluetoothChooserDialog
                 assumeNonNull(
                         TraceEventVectorDrawableCompat.create(res, icon, mContext.getTheme()));
         DrawableCompat.setTintList(
-                drawable,
-                AppCompatResources.getColorStateList(
-                        mContext, R.color.item_chooser_row_icon_color));
+                drawable, mContext.getColorStateList(R.color.item_chooser_row_icon_color));
         return drawable;
     }
 
