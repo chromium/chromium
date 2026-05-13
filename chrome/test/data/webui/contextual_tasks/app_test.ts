@@ -547,7 +547,7 @@ suite('ContextualTasksAppTest', function() {
     const frameRect = appElement.$.threadFrame.getBoundingClientRect();
 
     // Verify styles applied
-    assertEquals('fixed', composebox.style.position);
+    assertEquals('absolute', composebox.style.position);
     assertEquals(
         `${window.innerHeight - (frameRect.top + rect.bottom)}px`,
         composebox.style.bottom);
@@ -590,7 +590,7 @@ suite('ContextualTasksAppTest', function() {
     const frameRect = appElement.$.threadFrame.getBoundingClientRect();
 
     // Verify styles applied
-    assertEquals('fixed', composebox.style.position);
+    assertEquals('absolute', composebox.style.position);
 
     // Verify zero state clears styles
     appElement.setIsZeroStateForTesting(true);
