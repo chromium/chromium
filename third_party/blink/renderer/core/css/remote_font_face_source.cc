@@ -364,9 +364,7 @@ const SimpleFontData* RemoteFontFaceSource::CreateLoadingFallbackFontData(
   const SimpleFontData* temporary_font =
       FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {
-    SCOPED_CRASH_KEY_STRING256("FontFallback", "requested_description",
-                               font_description.ToString().Utf8());
-    DUMP_WILL_BE_NOTREACHED();
+    DCHECK(temporary_font);
     return nullptr;
   }
   CSSCustomFontData* css_font_data = MakeGarbageCollected<CSSCustomFontData>(
