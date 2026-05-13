@@ -185,6 +185,15 @@ std::optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
     return std::nullopt;
   }
 
+  // If a split is being closed, prevent individual tab restores from being
+  // created.
+  SessionID current_tab_id = live_tab->GetSessionID();
+  for (const auto& [cached_id, cached_session_ids] : closing_split_tabs_) {
+    if (cached_session_ids.contains(current_tab_id)) {
+      return std::nullopt;
+    }
+  }
+
   // Save the Window as well as the Tab if this is the last tab of an app
   // browser to ensure the tab will reopen in the correct app window.
   if (context && context->GetTabCount() == 1 &&
@@ -288,6 +297,30 @@ void TabRestoreServiceHelper::CreateHistoricalGroup(
   }
 }
 
+void TabRestoreServiceHelper::CreateHistoricalSplit(
+    LiveTabContext* context,
+    const split_tabs::SplitTabId& id) {
+  std::vector<std::pair<int, LiveTab*>> split_tabs;
+  for (int tab_index = 0; tab_index < context->GetTabCount(); ++tab_index) {
+    if (context->GetSplitForTab(tab_index) == id) {
+      LiveTab* live_tab = context->GetLiveTabAt(tab_index);
+      closing_split_tabs_[id].insert(live_tab->GetSessionID());
+      split_tabs.emplace_back(tab_index, live_tab);
+    }
+  }
+
+  auto split = CreateHistoricalSplitImpl(context, id, split_tabs);
+
+  if (split && split->leading_tab && split->trailing_tab) {
+    CHECK(ValidateSplit(*split));
+    AddEntry(std::move(split), true, true);
+  } else {
+    // In the case of an error, clear the cache so that the history can proceed
+    // normally.
+    closing_split_tabs_.erase(id);
+  }
+}
+
 void TabRestoreServiceHelper::GroupClosed(const tab_groups::TabGroupId& group) {
   closing_groups_.erase(group);
 }
@@ -298,6 +331,39 @@ void TabRestoreServiceHelper::GroupCloseStopped(
   // created, or adjust the group entry here to account for any unclosed tabs.
 
   closing_groups_.erase(group);
+}
+
+void TabRestoreServiceHelper::SplitClosed(const split_tabs::SplitTabId& id) {
+  closing_split_tabs_.erase(id);
+}
+
+void TabRestoreServiceHelper::SplitCloseStopped(
+    const split_tabs::SplitTabId& id) {
+  closing_split_tabs_.erase(id);
+}
+
+std::unique_ptr<tab_restore::Split>
+TabRestoreServiceHelper::CreateHistoricalSplitImpl(
+    LiveTabContext* context,
+    const split_tabs::SplitTabId& id,
+    const std::vector<std::pair<int, LiveTab*>>& split_tabs) {
+  if (split_tabs.size() != 2) {
+    return nullptr;
+  }
+
+  auto split = std::make_unique<tab_restore::Split>();
+  split->split_id = id;
+  split->timestamp = TimeNow();
+
+  split->leading_tab = std::make_unique<Tab>();
+  PopulateTab(split->leading_tab.get(), split_tabs[0].first, context,
+              split_tabs[0].second);
+
+  split->trailing_tab = std::make_unique<Tab>();
+  PopulateTab(split->trailing_tab.get(), split_tabs[1].first, context,
+              split_tabs[1].second);
+
+  return split;
 }
 
 void TabRestoreServiceHelper::ClearEntries() {
@@ -391,6 +457,25 @@ bool TabRestoreServiceHelper::DeleteFromGroup(
   return group->tabs.empty();
 }
 
+bool TabRestoreServiceHelper::DeleteFromSplit(
+    const DeletionPredicate& predicate,
+    Split* split,
+    std::unique_ptr<Tab>& remaining_tab) {
+  CHECK(ValidateSplit(*split));
+  bool leading_deleted = DeleteFromTab(predicate, split->leading_tab.get());
+  bool trailing_deleted = DeleteFromTab(predicate, split->trailing_tab.get());
+
+  if (leading_deleted && trailing_deleted) {
+    return true;
+  }
+  if (leading_deleted) {
+    remaining_tab = std::move(split->trailing_tab);
+  } else if (trailing_deleted) {
+    remaining_tab = std::move(split->leading_tab);
+  }
+  return false;
+}
+
 void TabRestoreServiceHelper::DeleteNavigationEntries(
     const DeletionPredicate& predicate) {
   Entries new_entries;
@@ -423,7 +508,15 @@ void TabRestoreServiceHelper::DeleteNavigationEntries(
         break;
       }
       case tab_restore::Type::SPLIT: {
-        // TODO(crbug.com/508275923): Support split tabs restore.
+        Split* split = static_cast<Split*>(entry.get());
+        std::unique_ptr<Tab> remaining_tab;
+        if (!DeleteFromSplit(predicate, split, remaining_tab)) {
+          if (remaining_tab) {
+            new_entries.push_back(std::move(remaining_tab));
+          } else {
+            new_entries.push_back(std::move(entry));
+          }
+        }
         break;
       }
     }
@@ -804,7 +897,44 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       break;
     }
     case tab_restore::Type::SPLIT: {
-      // TODO(crbug.com/508275923): Support split tabs restore.
+      auto& split = static_cast<tab_restore::Split&>(entry);
+      CHECK(ValidateSplit(split));
+
+      if (split.timestamp != base::Time() &&
+          !split.timestamp.ToDeltaSinceWindowsEpoch().is_zero()) {
+        UMA_HISTOGRAM_LONG_TIMES(
+            "TabRestore.Split.TimeBetweenClosedAndRestored",
+            TimeNow() - split.timestamp);
+      }
+
+      LiveTab* restored_leading_tab = nullptr;
+      context = RestoreTab(*split.leading_tab, context, disposition, entry.type,
+                           &restored_leading_tab, false);
+      if (restored_leading_tab) {
+        live_tabs.push_back(restored_leading_tab);
+      }
+
+      // Directly restore the trailing tab into the same context as the leading
+      // tab to ensure that they remain unified in a single browser window.
+      LiveTab* restored_trailing_tab =
+          context->AddRestoredTab(*split.trailing_tab, context->GetTabCount(),
+                                  false, false, entry.type);
+      if (restored_trailing_tab && !split.trailing_tab->navigations.empty()) {
+        int nav_index = std::clamp(
+            split.trailing_tab->current_navigation_index, 0,
+            static_cast<int>(split.trailing_tab->navigations.size() - 1));
+        client_->OnTabRestored(
+            split.trailing_tab->navigations.at(nav_index).virtual_url());
+        live_tabs.push_back(restored_trailing_tab);
+      }
+
+      if (restored_leading_tab && restored_trailing_tab &&
+          split.split_id.has_value()) {
+        context->ReconstructSplit(restored_leading_tab, restored_trailing_tab,
+                                  split.split_id.value());
+      }
+
+      context->ShowBrowserWindow();
       break;
     }
   }
@@ -962,7 +1092,6 @@ bool TabRestoreServiceHelper::OnMemoryDump(
         type_string = "group";
         break;
       case tab_restore::Type::SPLIT:
-        // TODO(crbug.com/508275923): Support split tabs restore.
         type_string = "split";
         break;
     }
@@ -1030,6 +1159,7 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
     tab->browser_id = context->GetSessionID().id();
     tab->pinned = context->IsTabPinned(tab->tabstrip_index);
     tab->group = context->GetTabGroupForTab(tab->tabstrip_index);
+    tab->split_id = context->GetSplitForTab(tab->tabstrip_index);
 
     if (tab->group.has_value()) {
       tab->saved_group_id =

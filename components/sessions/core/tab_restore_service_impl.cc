@@ -1596,8 +1596,7 @@ void TabRestoreServiceImpl::CreateHistoricalGroup(
 void TabRestoreServiceImpl::CreateHistoricalSplit(
     LiveTabContext* context,
     const split_tabs::SplitTabId& id) {
-  // TODO(crbug.com/508275923): Add Support for Split View Restoration.
-  NOTIMPLEMENTED();
+  helper_.CreateHistoricalSplit(context, id);
 }
 
 void TabRestoreServiceImpl::GroupClosed(const tab_groups::TabGroupId& group) {
@@ -1610,14 +1609,12 @@ void TabRestoreServiceImpl::GroupCloseStopped(
 }
 
 void TabRestoreServiceImpl::SplitClosed(const split_tabs::SplitTabId& id) {
-  // TODO(crbug.com/508275923): Add Support for Split View Restoration.
-  NOTIMPLEMENTED();
+  helper_.SplitClosed(id);
 }
 
 void TabRestoreServiceImpl::SplitCloseStopped(
     const split_tabs::SplitTabId& id) {
-  // TODO(crbug.com/508275923): Add Support for Split View Restoration.
-  NOTIMPLEMENTED();
+  helper_.SplitCloseStopped(id);
 }
 
 void TabRestoreServiceImpl::ClearEntries() {

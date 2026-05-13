@@ -99,6 +99,7 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual void ReconstructSplit(LiveTab* leading_tab,
                                 LiveTab* trailing_tab,
                                 split_tabs::SplitTabId split_id) = 0;
+
   virtual void CloseTab() = 0;
 
  protected:

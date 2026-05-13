@@ -141,6 +141,11 @@ class TabStripModelDelegate {
   // |group|.
   virtual void CreateHistoricalGroup(const tab_groups::TabGroupId& group) = 0;
 
+  // Creates an entry in the historical split database for the specified
+  // |split_id|.
+  virtual void CreateHistoricalSplit(
+      const split_tabs::SplitTabId& split_id) = 0;
+
   // Called on group creation after the group has been added to the tabstrip and
   // all tabs have been added.
   virtual void GroupAdded(const tab_groups::TabGroupId& group) = 0;

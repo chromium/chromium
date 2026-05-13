@@ -60,6 +60,7 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   std::optional<SessionID> CreateHistoricalTab(
       content::WebContents* contents) override;
   void CreateHistoricalGroup(const tab_groups::TabGroupId& group) override;
+  void CreateHistoricalSplit(const split_tabs::SplitTabId& split_id) override;
   void GroupAdded(const tab_groups::TabGroupId& group) override;
   void WillCloseGroup(const tab_groups::TabGroupId& group) override;
   void WillCloseSplit(const split_tabs::SplitTabId& split_id) override;

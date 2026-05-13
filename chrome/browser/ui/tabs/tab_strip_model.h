@@ -1413,6 +1413,12 @@ class TabStripModel {
   // tabs not in `indices`.
   void MaybeRemoveSplitsForUpdate(const std::vector<int>& indices);
 
+  // Checks if both tabs of a split view are closing simultaneously and, if so,
+  // creates a historical split entry in the tab restore service.
+  void CreateHistoricalSplitIfClosing(
+      const std::vector<tabs::TabInterface*>& tabs,
+      uint32_t close_types);
+
   void NotifyForegroundTabsWillEnterBackground();
 
   // Prior to a split being removed, if the split is currently active, notify

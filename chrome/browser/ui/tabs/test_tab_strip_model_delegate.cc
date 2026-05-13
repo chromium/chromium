@@ -79,6 +79,9 @@ std::optional<SessionID> TestTabStripModelDelegate::CreateHistoricalTab(
 void TestTabStripModelDelegate::CreateHistoricalGroup(
     const tab_groups::TabGroupId& group) {}
 
+void TestTabStripModelDelegate::CreateHistoricalSplit(
+    const split_tabs::SplitTabId& split_id) {}
+
 void TestTabStripModelDelegate::GroupAdded(
     const tab_groups::TabGroupId& group) {}
 

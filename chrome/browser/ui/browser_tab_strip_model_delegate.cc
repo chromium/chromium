@@ -257,6 +257,20 @@ void BrowserTabStripModelDelegate::CreateHistoricalGroup(
   }
 }
 
+void BrowserTabStripModelDelegate::CreateHistoricalSplit(
+    const split_tabs::SplitTabId& split_id) {
+  if (!BrowserSupportsHistoricalEntries()) {
+    return;
+  }
+
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser_->profile());
+  if (service) {
+    service->CreateHistoricalSplit(browser_->GetFeatures().live_tab_context(),
+                                   split_id);
+  }
+}
+
 void BrowserTabStripModelDelegate::GroupAdded(
     const tab_groups::TabGroupId& group) {}
 

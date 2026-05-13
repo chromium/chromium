@@ -25,6 +25,7 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_utils.h"
+#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/common/url_constants.h"
@@ -36,6 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_test_helper.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service_client.h"
@@ -226,6 +228,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
   // testing::Test:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    CreateSessionServiceTabHelper(web_contents());
     live_tab_ = base::WrapUnique(new sessions::ContentLiveTab(web_contents()));
     time_factory_ = new TabRestoreTimeFactory();
 
@@ -364,6 +367,39 @@ class TabRestoreServiceImplWithMockClientTest
     service_ = std::make_unique<sessions::TabRestoreServiceImpl>(
         std::move(service_client), profile()->GetPrefs(), time_factory_,
         os_crypt_async_.get());
+  }
+
+  void SetupMockSplit(MockLiveTabContext* context,
+                      MockLiveTab* tab1,
+                      MockLiveTab* tab2,
+                      const GURL& url1,
+                      const GURL& url2,
+                      const split_tabs::SplitTabId& split_id) {
+    SessionID id1 = SessionID::NewUnique();
+    SessionID id2 = SessionID::NewUnique();
+
+    ON_CALL(*context, GetSessionID())
+        .WillByDefault(Return(SessionID::NewUnique()));
+    ON_CALL(*context, GetTabCount()).WillByDefault(Return(2));
+
+    ON_CALL(*tab1, GetSessionID()).WillByDefault(Return(id1));
+    ON_CALL(*tab2, GetSessionID()).WillByDefault(Return(id2));
+
+    ON_CALL(*tab1, GetEntryCount()).WillByDefault(Return(1));
+    ON_CALL(*tab2, GetEntryCount()).WillByDefault(Return(1));
+    ON_CALL(*tab1, GetEntryAtIndex(_))
+        .WillByDefault(Return(
+            sessions::ContentTestHelper::CreateNavigation(url1.spec(), "T1")));
+    ON_CALL(*tab2, GetEntryAtIndex(_))
+        .WillByDefault(Return(
+            sessions::ContentTestHelper::CreateNavigation(url2.spec(), "T2")));
+
+    ON_CALL(*context, GetLiveTabAt(0)).WillByDefault(Return(tab1));
+    ON_CALL(*context, GetLiveTabAt(1)).WillByDefault(Return(tab2));
+    ON_CALL(*context, GetSplitForTab(_)).WillByDefault(Return(split_id));
+
+    ON_CALL(*mock_tab_restore_service_client_, FindLiveTabContextForTab(_))
+        .WillByDefault(Return(context));
   }
 
   raw_ptr<MockTabRestoreServiceClient, DanglingUntriaged>
@@ -1352,4 +1388,48 @@ TEST_F(TabRestoreServiceImplTest, TabExtraDataRestoredFromSessionData) {
   ASSERT_EQ(1U, window->tabs.size());
   ASSERT_EQ(1U, window->tabs[0]->extra_data.size());
   EXPECT_EQ(kSampleData, window->tabs[0]->extra_data[kSampleKey]);
+}
+
+// Ensures split tab data is saved as an entry type, that the correct tabs
+// are restored, and that the creation and suppression of tabs is handled
+// correctly.
+TEST_F(TabRestoreServiceImplWithMockClientTest, SplitCreationAndSuppression) {
+  testing::NiceMock<MockLiveTabContext> mock_live_tab_context;
+  testing::NiceMock<MockLiveTab> mock_tab1, mock_tab2;
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+
+  SetupMockSplit(&mock_live_tab_context, &mock_tab1, &mock_tab2,
+                 GURL("http://split1"), GURL("http://split2"), split_id);
+
+  // Create the Historical Split
+  service_->CreateHistoricalSplit(&mock_live_tab_context, split_id);
+  ASSERT_EQ(1U, service_->entries().size());
+  ASSERT_EQ(sessions::tab_restore::Type::SPLIT,
+            service_->entries().front()->type);
+
+  // Simulate closure of the component tabs. Verify that the system prevents
+  // duplicate history creation.
+  EXPECT_FALSE(service_->CreateHistoricalTab(&mock_tab1, 0).has_value());
+  EXPECT_FALSE(service_->CreateHistoricalTab(&mock_tab2, 1).has_value());
+  EXPECT_EQ(1U, service_->entries().size());
+
+  // Verify that a third unrelated tab is not suppressed while the split
+  // closure is active.
+  testing::NiceMock<MockLiveTab> mock_tab3;
+  ON_CALL(mock_tab3, GetSessionID())
+      .WillByDefault(Return(SessionID::NewUnique()));
+  ON_CALL(mock_tab3, GetEntryCount()).WillByDefault(Return(1));
+  ON_CALL(mock_tab3, GetEntryAtIndex(_))
+      .WillByDefault(Return(
+          sessions::ContentTestHelper::CreateNavigation("http://tab3", "T3")));
+  EXPECT_TRUE(service_->CreateHistoricalTab(&mock_tab3, 2).has_value());
+  EXPECT_EQ(2U, service_->entries().size());
+
+  // An additional closure attempt on the same tab now processes normally as a
+  // standard tab entry.
+  service_->SplitClosed(split_id);
+  EXPECT_TRUE(service_->CreateHistoricalTab(&mock_tab1, 0).has_value());
+  ASSERT_EQ(3U, service_->entries().size());
+  EXPECT_EQ(sessions::tab_restore::Type::TAB,
+            service_->entries().front()->type);
 }

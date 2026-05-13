@@ -1878,6 +1878,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="RestoreType">
     <variant name="Group" summary="tab group"/>
+    <variant name="Split" summary="split view"/>
     <variant name="Tab" summary="tab"/>
     <variant name="Window" summary="window"/>
   </token>

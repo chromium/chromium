@@ -20,8 +20,11 @@ ContentLiveTab::ContentLiveTab(content::WebContents* contents)
 ContentLiveTab::~ContentLiveTab() = default;
 
 SessionID ContentLiveTab::GetSessionID() const {
-  return sessions::SessionTabHelper::FromWebContents(&GetWebContents())
-      ->session_id();
+  // Can be null during tests.
+  const sessions::SessionTabHelper* helper =
+      sessions::SessionTabHelper::FromWebContents(&GetWebContents());
+
+  return helper ? helper->session_id() : SessionID::InvalidValue();
 }
 
 bool ContentLiveTab::IsInitialBlankNavigation() {
