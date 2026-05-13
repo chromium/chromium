@@ -406,6 +406,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
     "BrowserManagerService",
     "BrowsingDataLifetimeManager",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+    "ChromeDeviceAuthenticator",
+#endif
     "ContextualSearchService",
     "ContextualTasksService",
     "ContextualTasksUiService",
