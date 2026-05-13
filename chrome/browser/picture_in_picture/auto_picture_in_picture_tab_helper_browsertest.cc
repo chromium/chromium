@@ -8,6 +8,7 @@
 
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
@@ -80,6 +81,7 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -914,6 +916,23 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     return overlay_view;
   }
 
+  void WaitForAutoPipSettingView(AutoPipSettingOverlayView* overlay_view) {
+    if (overlay_view->get_view_for_testing()) {
+      return;
+    }
+    base::RunLoop run_loop;
+    views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+    observer.set_initialized_callback(base::BindRepeating(
+        [](AutoPipSettingOverlayView* overlay_view, base::RunLoop* run_loop,
+           views::Widget* widget) {
+          if (overlay_view->get_view_for_testing()) {
+            run_loop->Quit();
+          }
+        },
+        base::Unretained(overlay_view), base::Unretained(&run_loop)));
+    run_loop.Run();
+  }
+
   void CheckPromptResultUkmRecorded(GURL url,
                                     std::string_view expected_metric_name,
                                     PromptResult expected_prompt_result) {
@@ -1447,15 +1466,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                                         /*should_document_pip=*/true);
 }
 
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_OverlaySettingViewIsShownForDocumentPip \
-  DISABLED_OverlaySettingViewIsShownForDocumentPip
-#else
-#define MAYBE_OverlaySettingViewIsShownForDocumentPip \
-  OverlaySettingViewIsShownForDocumentPip
-#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
-                       MAYBE_OverlaySettingViewIsShownForDocumentPip) {
+                       OverlaySettingViewIsShownForDocumentPip) {
   auto* window_manager = PictureInPictureWindowManager::GetInstance();
 
   LoadCameraMicrophonePage(browser());
@@ -1482,6 +1494,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   auto* overlay_view = GetOverlayViewFromDocumentPipWindow();
   // The overlay should be shown.
   ASSERT_TRUE(overlay_view);
+  WaitForAutoPipSettingView(overlay_view);
+  ASSERT_TRUE(overlay_view->get_view_for_testing());
 
   // Verify that input has been blocked.
   CheckIfEventsAreForwarded(pip_contents, /*expect_events=*/false);
@@ -1510,6 +1524,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
 
   auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  ASSERT_TRUE(overlay_view);
+  WaitForAutoPipSettingView(overlay_view);
+  ASSERT_TRUE(overlay_view->get_view_for_testing());
   overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
 
@@ -2391,12 +2408,18 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   // Open and switch to a new tab.
   OpenNewTab(browser());
 
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(original_web_contents);
+  tab_helper->MaybeFireEnterTimerForTesting();
+
   // Immediately switch back to the original tab.
   SwitchToExistingTab(original_web_contents);
 
   // When the page enters autopip after its delay it should immediately be
   // exited.
   enter_pip_observer.Wait();
+
+  tab_helper->MaybeFireCloseTimerForTesting();
   exit_pip_observer.Wait();
 
   // The page should no longer be in picture-in-picture.
@@ -2715,6 +2738,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
 
   auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  ASSERT_TRUE(overlay_view);
+  WaitForAutoPipSettingView(overlay_view);
+  ASSERT_TRUE(overlay_view->get_view_for_testing());
   overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
 
@@ -2786,6 +2812,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
 
   auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  ASSERT_TRUE(overlay_view);
+  WaitForAutoPipSettingView(overlay_view);
+  ASSERT_TRUE(overlay_view->get_view_for_testing());
   overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
 
@@ -3683,6 +3712,8 @@ IN_PROC_BROWSER_TEST_P(AutoPictureInPictureTabHelperHatsDocumentPipBrowserTest,
     case AutoPipSettingHelper::PromptResult::kBlock: {
       auto* overlay_view = GetOverlayViewFromDocumentPipWindow();
       ASSERT_TRUE(overlay_view);
+      WaitForAutoPipSettingView(overlay_view);
+      ASSERT_TRUE(overlay_view->get_view_for_testing());
       overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
           GetParam().prompt_result == AutoPipSettingHelper::PromptResult::kBlock
               ? AutoPipSettingView::UiResult::kBlock
@@ -3768,6 +3799,39 @@ IN_PROC_BROWSER_TEST_P(AutoPictureInPictureTabHelperHatsVideoPipBrowserTest,
 
   SwitchToExistingTab(web_contents);
   EXPECT_TRUE(survey_launched.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       AutoPipOverDelayedClosingAutopip) {
+  // Load Page A.
+  LoadAutoVideoPipPage(browser());
+  auto* contents_a = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(contents_a);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(contents_a);
+  WaitForWasRecentlyAudible(contents_a);
+
+  // Load Page B in a new tab.
+  OpenNewTab(browser());
+  LoadAutoVideoPipPage(browser());
+  auto* contents_b = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(contents_b);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(contents_b);
+  WaitForWasRecentlyAudible(contents_b);
+
+  SetExpectedHasHighEngagement(true);
+
+  // Make Page A enter PiP by switching to Page B.
+  SwitchToExistingTab(contents_b);
+  WaitForAutoPip(contents_a);
+  EXPECT_TRUE(contents_a->HasPictureInPictureVideo());
+
+  // Switching back to A should trigger a delayed exit for A, and trigger an
+  // entry for B.
+  SwitchToExistingTab(contents_a);
+  WaitForAutoPip(contents_b);
+  EXPECT_TRUE(contents_b->HasPictureInPictureVideo());
 }
 
 INSTANTIATE_TEST_SUITE_P(
