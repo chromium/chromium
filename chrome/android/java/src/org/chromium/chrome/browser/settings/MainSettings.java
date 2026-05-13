@@ -222,15 +222,17 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     /** Saves the preference list view state. */
     public void saveListState() {
-        mSavedListState = assumeNonNull(getListView().getLayoutManager()).onSaveInstanceState();
+        var layoutManager = getListView() != null ? getListView().getLayoutManager() : null;
+        if (layoutManager != null) mSavedListState = layoutManager.onSaveInstanceState();
     }
 
     /** Restores the preference list view state. */
     public void restoreListState() {
-        if (mSavedListState != null) {
-            assumeNonNull(getListView().getLayoutManager()).onRestoreInstanceState(mSavedListState);
-            mSavedListState = null;
-        }
+        if (mSavedListState == null) return;
+
+        var layoutManager = getListView() != null ? getListView().getLayoutManager() : null;
+        if (layoutManager != null) layoutManager.onRestoreInstanceState(mSavedListState);
+        mSavedListState = null;
     }
 
     @Override
