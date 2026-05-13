@@ -13,10 +13,12 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
+import android.content.ComponentName;
 import android.content.Intent;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +36,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -48,6 +51,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
@@ -76,6 +80,11 @@ public class ChromeTabCreatorTest {
         mTestServer = mActivityTestRule.getTestServer();
         mPage = mActivityTestRule.startOnBlankPage();
         IntentUtils.setForceIsTrustedIntentForTesting(/* isTrusted= */ true);
+    }
+
+    @After
+    public void tearDown() {
+        AsyncTabParamsManagerSingleton.getInstance().remove(Tab.INVALID_TAB_ID);
     }
 
     /** Verify that tabs opened in background on regular devices are loaded eagerly. */
@@ -501,6 +510,65 @@ public class ChromeTabCreatorTest {
                     2,
                     getTabCountOnUiThread(mActivityTestRule.getActivity().getCurrentTabModel()));
         }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testIsReparenting() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabCreator tabCreator = mActivityTestRule.getActivity().getCurrentTabCreator();
+                    assertFalse(tabCreator.isReparenting(Tab.INVALID_TAB_ID));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testIsReparentingTrue() {
+        final Tab fgTab = mPage.loadedTabElement.value();
+
+        AsyncTabParams fakeParams =
+                new AsyncTabParams() {
+                    @Override
+                    public LoadUrlParams getLoadUrlParams() {
+                        return null;
+                    }
+
+                    @Override
+                    public Integer getRequestId() {
+                        return Tab.INVALID_TAB_ID;
+                    }
+
+                    @Override
+                    public WebContents getWebContents() {
+                        return null;
+                    }
+
+                    @Override
+                    public ComponentName getComponentName() {
+                        return null;
+                    }
+
+                    @Override
+                    public Tab getTabToReparent() {
+                        return fgTab;
+                    }
+
+                    @Override
+                    public void destroy() {}
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AsyncTabParamsManagerSingleton.getInstance()
+                            .add(Tab.INVALID_TAB_ID, fakeParams);
+                    TabCreator tabCreator = mActivityTestRule.getActivity().getCurrentTabCreator();
+
+                    assertTrue(tabCreator.isReparenting(Tab.INVALID_TAB_ID));
+                    AsyncTabParamsManagerSingleton.getInstance().remove(Tab.INVALID_TAB_ID);
+                });
     }
 
     private Intent createIntent(int tabIndex) {

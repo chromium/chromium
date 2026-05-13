@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -79,6 +80,15 @@ public interface TabCreator {
      *     doesn't create tabs.
      */
     @Nullable Tab createFrozenTab(TabState state, int id, int index);
+
+    /**
+     * Returns true if a tab with this ID is being reparented.
+     *
+     * @param id The tab ID to check.
+     */
+    default boolean isReparenting(@TabId int id) {
+        return false;
+    }
 
     /**
      * Creates a new tab and loads the specified URL in it. This is a convenience method for {@link

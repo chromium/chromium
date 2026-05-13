@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabParentIntent;
 import org.chromium.chrome.browser.tab.TabResolver;
@@ -336,6 +337,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
 
             // Check if the tab is being created asynchronously.
             int assignedTabId = IntentHandler.getTabId(intent);
+            boolean isReparenting = isReparenting(assignedTabId);
             AsyncTabParams asyncParams = mAsyncTabParamsManager.remove(assignedTabId);
 
             boolean openInForeground = mOrderController.willOpenInForeground(type, mIncognito);
@@ -343,7 +345,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                     parent == null ? createDefaultTabDelegateFactory() : null;
             Tab tab;
             @TabCreationState int creationState = TabCreationState.LIVE_IN_FOREGROUND;
-            if (asyncParams != null && asyncParams.getTabToReparent() != null) {
+            if (isReparenting) {
                 TabReparentingParams params = (TabReparentingParams) asyncParams;
                 tab = params.getTabToReparent();
 
@@ -674,11 +676,12 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 };
         boolean selectTab =
                 mOrderController.willOpenInForeground(TabLaunchType.FROM_RESTORE, mIncognito);
+        boolean isReparenting = isReparenting(id);
         AsyncTabParams asyncParams = mAsyncTabParamsManager.remove(id);
         Tab tab = null;
         @TabLaunchType int launchType = TabLaunchType.FROM_RESTORE;
         @TabCreationState int creationState = TabCreationState.FROZEN_ON_RESTORE;
-        if (asyncParams != null && asyncParams.getTabToReparent() != null) {
+        if (isReparenting) {
             creationState = TabCreationState.LIVE_IN_BACKGROUND;
 
             TabReparentingParams params = (TabReparentingParams) asyncParams;
@@ -720,6 +723,12 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
 
         mTabModel.addTab(tab, index, launchType, creationState);
         return tab;
+    }
+
+    @Override
+    public boolean isReparenting(@TabId int id) {
+        AsyncTabParams params = mAsyncTabParamsManager.getAsyncTabParams().get(id);
+        return params != null && params.getTabToReparent() != null;
     }
 
     /**
