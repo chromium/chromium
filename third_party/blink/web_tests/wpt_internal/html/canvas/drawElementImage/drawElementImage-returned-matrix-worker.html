@@ -87,6 +87,14 @@ const workerCode = `
           input_transform = new DOMMatrix().translateSelf(17, -9).scaleSelf(2, 2).translateSelf(-2, -3);
           element_transform = ctx.canvas.getElementTransform(e.data.elementImage, input_transform);
           break;
+        case 13:
+          element_transform = ctx.canvas.getElementTransform(e.data.elementImage, new DOMMatrix());
+          self.postMessage({is2D: element_transform.is2D});
+          return;
+        case 14:
+          element_transform = ctx.canvas.getElementTransform(e.data.elementImage, new DOMMatrix().scale3d(2));
+          self.postMessage({is2D: element_transform.is2D});
+          return;
       }
       self.postMessage({draw_transform, element_transform});
     }
@@ -285,6 +293,22 @@ function runTest() {
     assert_array_approx_equals(result.draw_transform.toFloat64Array(), expected.toFloat64Array(), 0.001);
     assert_array_approx_equals(result.element_transform.toFloat64Array(), expected.toFloat64Array(), 0.001);
   }, 'Draw/Element transform should account for sx and sy offset');
+
+  promise_test(async t => {
+    await waitForCanvasPaint(canvas);
+    let elementImage = canvas.captureElementImage(element);
+    worker.postMessage({ testId: 13, elementImage }, [elementImage]);
+    let result = await getWorkerResult();
+    assert_true(result.is2D);
+  }, 'Draw/Element transform should preserve is2D for 2D matrices');
+
+  promise_test(async t => {
+    await waitForCanvasPaint(canvas);
+    let elementImage = canvas.captureElementImage(element);
+    worker.postMessage({ testId: 14, elementImage }, [elementImage]);
+    let result = await getWorkerResult();
+    assert_false(result.is2D);
+  }, 'Draw/Element transform should preserve is2D for 3D matrices');
 }
 
 window.onload = runTest;

@@ -36,7 +36,7 @@ class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
   static DOMMatrix* fromMatrix(DOMMatrixInit*, ExceptionState&);
   static DOMMatrix* CreateForSerialization(base::span<const double>);
 
-  explicit DOMMatrix(const gfx::Transform&, bool is2d = true);
+  explicit DOMMatrix(const gfx::Transform&, bool is2d);
   template <typename T>
   explicit DOMMatrix(base::span<T> sequence);
 

@@ -12,12 +12,12 @@
 namespace blink {
 
 DOMMatrix* DOMMatrix::Create() {
-  return MakeGarbageCollected<DOMMatrix>(gfx::Transform());
+  return MakeGarbageCollected<DOMMatrix>(gfx::Transform(), true);
 }
 
 DOMMatrix* DOMMatrix::Create(ExecutionContext* execution_context,
                              ExceptionState& exception_state) {
-  return MakeGarbageCollected<DOMMatrix>(gfx::Transform());
+  return MakeGarbageCollected<DOMMatrix>(gfx::Transform(), true);
 }
 
 DOMMatrix* DOMMatrix::Create(
@@ -34,7 +34,8 @@ DOMMatrix* DOMMatrix::Create(
         return nullptr;
       }
 
-      DOMMatrix* matrix = MakeGarbageCollected<DOMMatrix>(gfx::Transform());
+      DOMMatrix* matrix =
+          MakeGarbageCollected<DOMMatrix>(gfx::Transform(), true);
       matrix->SetMatrixValueFromString(execution_context, init->GetAsString(),
                                        exception_state);
       return matrix;

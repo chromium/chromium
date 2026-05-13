@@ -105,7 +105,7 @@ bool DOMMatrixReadOnly::ValidateAndFixup(DOMMatrixInit* other,
 DOMMatrixReadOnly* DOMMatrixReadOnly::Create(
     ExecutionContext* execution_context,
     ExceptionState& exception_state) {
-  return MakeGarbageCollected<DOMMatrixReadOnly>(gfx::Transform());
+  return MakeGarbageCollected<DOMMatrixReadOnly>(gfx::Transform(), true);
 }
 
 DOMMatrixReadOnly* DOMMatrixReadOnly::Create(
@@ -123,7 +123,7 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::Create(
       }
 
       DOMMatrixReadOnly* matrix =
-          MakeGarbageCollected<DOMMatrixReadOnly>(gfx::Transform());
+          MakeGarbageCollected<DOMMatrixReadOnly>(gfx::Transform(), true);
       matrix->SetMatrixValueFromString(execution_context, init->GetAsString(),
                                        exception_state);
       return matrix;
