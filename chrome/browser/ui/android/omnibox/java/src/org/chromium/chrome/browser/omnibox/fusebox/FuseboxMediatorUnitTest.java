@@ -21,6 +21,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -102,6 +103,7 @@ import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
@@ -139,6 +141,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Tracker mTracker;
     @Mock private ScrimManager mScrimManager;
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -172,6 +175,7 @@ public class FuseboxMediatorUnitTest {
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         TrackerFactory.setTrackerForTests(mTracker);
+        lenient().doReturn(mKeyboardVisibilityDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
         mContext =
                 new ContextThemeWrapper(
@@ -518,20 +522,44 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onPlusButtonClicked_recordsMetrics() {
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.AttachmentsPopupToggled", true);
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertEquals(PopupState.FLOATING, (int) mModel.get(FuseboxProperties.POPUP_STATE));
-        histogramWatcher.assertExpected();
+    public void onAddButtonClicked_bottomSheet_hidesKeyboard() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        recreateMediator();
+        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
+        assertNotNull(runnable);
 
-        var dismissWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.AttachmentsPopupToggled", false);
+        // Show popup.
+        runnable.run();
+        verify(mKeyboardVisibilityDelegate).hideKeyboard(mViewHolder.parentView);
+    }
+
+    @Test
+    public void onHidePopup_bottomSheet_showsKeyboardIfFocused() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        ConstraintLayout spyParentView = spy(mViewHolder.parentView);
+        doReturn(mViewHolder.addButton).when(spyParentView).findFocus();
+        mViewHolder = new FuseboxViewHolder(spyParentView, mPopup);
+        recreateMediator();
+
+        // Show popup first
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
-        dismissWatcher.assertExpected();
+
+        // Hide popup
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+
+        verify(mKeyboardVisibilityDelegate).showKeyboard(mViewHolder.addButton);
+    }
+
+    @Test
+    public void onAddButtonClicked_floatingPopup_doesNotHideKeyboard() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
+        recreateMediator();
+        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
+        assertNotNull(runnable);
+
+        // Show popup.
+        runnable.run();
+        verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
     }
 
     @Test

@@ -494,13 +494,15 @@ import java.util.function.Supplier;
 
     private void showPopup() {
         if (!isInInputSession()) return;
+        boolean shouldShowBottomSheetPopup = OmniboxFeatures.shouldShowBottomSheetPopup();
+        if (shouldShowBottomSheetPopup) {
+            mWindowAndroid.getKeyboardDelegate().hideKeyboard(mViewHolder.parentView);
+        }
         updateModelForCurrentTab();
         mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE, mClipboard.hasImage());
         mModel.set(
                 FuseboxProperties.POPUP_STATE,
-                OmniboxFeatures.shouldShowBottomSheetPopup()
-                        ? PopupState.BOTTOM
-                        : PopupState.FLOATING);
+                shouldShowBottomSheetPopup ? PopupState.BOTTOM : PopupState.FLOATING);
         if (mScrimManager != null
                 && mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.BOTTOM) {
             View scrimAnchor = mScrimAnchorViewSupplier.get();
@@ -529,9 +531,16 @@ import java.util.function.Supplier;
     }
 
     private void hidePopup() {
+        boolean wasBottomSheet = mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.BOTTOM;
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         if (mScrimModel != null) {
             mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
+        }
+        if (wasBottomSheet) {
+            View focusedView = mViewHolder.parentView.findFocus();
+            if (focusedView != null) {
+                mWindowAndroid.getKeyboardDelegate().showKeyboard(focusedView);
+            }
         }
     }
 
