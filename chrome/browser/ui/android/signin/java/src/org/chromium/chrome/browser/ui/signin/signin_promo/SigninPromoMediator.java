@@ -65,7 +65,7 @@ final class SigninPromoMediator
     }
 
     private final IdentityManager mIdentityManager;
-    private final SyncService mSyncService;
+    private final @Nullable SyncService mSyncService;
     private final AccountManagerFacade mAccountManagerFacade;
     private final ProfileDataCache mProfileDataCache;
     private final SigninPromoDelegate mPromoDelegate;
@@ -78,7 +78,7 @@ final class SigninPromoMediator
 
     SigninPromoMediator(
             IdentityManager identityManager,
-            SyncService syncService,
+            @Nullable SyncService syncService,
             AccountManagerFacade accountManagerFacade,
             ProfileDataCache profileDataCache,
             SigninPromoDelegate promoDelegate,

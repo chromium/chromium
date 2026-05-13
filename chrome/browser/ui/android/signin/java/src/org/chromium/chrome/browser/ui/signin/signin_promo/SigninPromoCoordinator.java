@@ -83,7 +83,6 @@ public class SigninPromoCoordinator
         ProfileDataCache profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext, identityManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        assumeNonNull(syncService);
         mMediator =
                 new SigninPromoMediator(
                         identityManager,
