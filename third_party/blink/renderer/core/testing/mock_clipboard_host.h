@@ -59,6 +59,20 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
     return read_available_formats_call_count_;
   }
 
+  // Test helpers used to simulate a slow OS clipboard read so callers can
+  // verify that renderer-side Async Clipboard read paths are truly
+  // non-blocking. When deferred mode is enabled, the next ReadText() call
+  // stashes its reply callback instead of invoking it immediately. The
+  // stashed callback can be invoked later via RunDeferredReadTextCallback().
+  // See crbug.com/474131935.
+  void SetReadTextCallbackDeferred(bool deferred) {
+    defer_read_text_callback_ = deferred;
+  }
+  bool HasDeferredReadTextCallback() const {
+    return !deferred_read_text_callback_.is_null();
+  }
+  void RunDeferredReadTextCallback();
+
  private:
   // mojom::ClipboardHost
   void GetSequenceNumber(mojom::ClipboardBuffer clipboard_buffer,
@@ -135,6 +149,10 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   int read_text_call_count_ = 0;
   int read_html_call_count_ = 0;
   int read_available_formats_call_count_ = 0;
+
+  // Deferred-callback machinery for the truly-async-read regression test.
+  bool defer_read_text_callback_ = false;
+  ReadTextCallback deferred_read_text_callback_;
 };
 
 }  // namespace blink

@@ -264,6 +264,23 @@ mojo_base::BigBuffer SystemClipboard::ReadPng(
   return png;
 }
 
+void SystemClipboard::ReadPng(
+    mojom::blink::ClipboardBuffer buffer,
+    mojom::blink::ClipboardHost::ReadPngCallback callback) {
+  if (!IsValidBufferType(buffer) || !clipboard_.is_bound()) {
+    std::move(callback).Run(mojo_base::BigBuffer());
+    return;
+  }
+  // The async overload intentionally does not consult or populate
+  // `snapshot_`. `snapshot_` is only entered via
+  // ScopedSystemClipboardSnapshot, used by the synchronous DataTransfer
+  // paste pipeline; mixing the two would require thread-hopping the
+  // BigBuffer back into the snapshot before the outer scope exits, with
+  // no observable benefit (Async Clipboard callers do not enter a
+  // snapshot scope).
+  clipboard_->ReadPng(buffer, std::move(callback));
+}
+
 String SystemClipboard::ReadImageAsImageMarkup(
     mojom::blink::ClipboardBuffer buffer) {
   mojo_base::BigBuffer png_data = ReadPng(buffer);

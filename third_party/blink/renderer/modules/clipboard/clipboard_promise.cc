@@ -438,6 +438,14 @@ void ClipboardPromise::OnRead(Blob* blob, const String& mime_type) {
   ReadNextRepresentation();
 }
 
+void ClipboardPromise::OnReadPlainText(const String& text) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!GetExecutionContext()) {
+    return;
+  }
+  script_promise_resolver_->DowncastTo<IDLString>()->Resolve(text);
+}
+
 void ClipboardPromise::HandleReadTextWithPermission(
     mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -459,10 +467,12 @@ void ClipboardPromise::HandleReadTextWithPermission(
     return;
   }
 #endif
-  // Non-Mac platforms or when flag is disabled proceed directly
-  String text = GetSystemClipboard()->ReadPlainText(
-      mojom::blink::ClipboardBuffer::kStandard);
-  script_promise_resolver_->DowncastTo<IDLString>()->Resolve(text);
+  // Non-Mac platforms (or after the macOS platform permission check) proceed
+  // directly to an asynchronous OS clipboard read so the renderer main thread
+  // is not blocked. Tracks crbug.com/474131935.
+  GetSystemClipboard()->ReadPlainText(
+      mojom::blink::ClipboardBuffer::kStandard,
+      BindOnce(&ClipboardPromise::OnReadPlainText, WrapPersistent(this)));
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -481,9 +491,9 @@ void ClipboardPromise::OnPlatformPermissionResultForReadText(
     return;
   }
 
-  String text = GetSystemClipboard()->ReadPlainText(
-      mojom::blink::ClipboardBuffer::kStandard);
-  script_promise_resolver_->DowncastTo<IDLString>()->Resolve(text);
+  GetSystemClipboard()->ReadPlainText(
+      mojom::blink::ClipboardBuffer::kStandard,
+      BindOnce(&ClipboardPromise::OnReadPlainText, WrapPersistent(this)));
 }
 
 void ClipboardPromise::OnPlatformPermissionResultForRead(

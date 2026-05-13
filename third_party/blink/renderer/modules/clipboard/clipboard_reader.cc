@@ -44,9 +44,16 @@ class ClipboardPngReader final : public ClipboardReader {
 
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    mojo_base::BigBuffer data =
-        system_clipboard()->ReadPng(mojom::blink::ClipboardBuffer::kStandard);
+    // Async path (crbug.com/474131935): keep the renderer main thread
+    // responsive while the OS clipboard read is in flight.
+    system_clipboard()->ReadPng(
+        mojom::blink::ClipboardBuffer::kStandard,
+        BindOnce(&ClipboardPngReader::OnReadPng, WrapPersistent(this)));
+  }
 
+ private:
+  void OnReadPng(mojo_base::BigBuffer data) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (RuntimeEnabledFeatures::
             ReadClipboardDataOnClipboardItemGetTypeEnabled() ||
@@ -58,7 +65,6 @@ class ClipboardPngReader final : public ClipboardReader {
     result_handler_->OnRead(blob, ui::kMimeTypePng);
   }
 
- private:
   void NextRead(Vector<uint8_t> utf8_bytes) override { NOTREACHED(); }
 };
 

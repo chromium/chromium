@@ -746,4 +746,53 @@ TEST_F(ClipboardTest, LazyReadGetTypeRejected_Histogram) {
       "Blink.Clipboard.LazyRead.GetTypeRejected", true, 1);
 }
 
+// Regression test for crbug.com/474131935: readText() must not block the
+// renderer thread while waiting for the host's reply.
+TEST_F(ClipboardTest, ReadTextIsAsyncWhenClipboardReadIsSlow) {
+  V8TestingScope scope;
+  ExecutionContext* executionContext = GetFrame().DomWindow();
+  String testing_string = "DelayedClipboardText";
+  WritePlainTextToClipboard(testing_string);
+
+  EXPECT_CALL(permission_service_, RequestPermission)
+      .WillOnce(WithArg<1>(
+          [](mojom::blink::PermissionService::RequestPermissionCallback
+                 callback) {
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::GRANTED, nullptr));
+          }));
+  BindMockPermissionService(executionContext);
+  SetSecureOrigin(executionContext);
+  SetPageFocus(true);
+
+  // Defer the host's ReadText reply to simulate a slow OS clipboard read.
+  mock_clipboard_host()->SetReadTextCallbackDeferred(true);
+
+  ScriptPromise<IDLString> promise = ClipboardPromise::CreateForReadText(
+      executionContext, scope.GetScriptState(), scope.GetExceptionState());
+  ScriptPromiseTester promise_tester(scope.GetScriptState(), promise);
+
+  // Drain the message loop so the IPC reaches the host. If the renderer were
+  // blocking on the OS read, control would never return here.
+  test::RunPendingTasks();
+
+  // The host received the request, but the promise is still pending.
+  EXPECT_EQ(mock_clipboard_host()->ReadTextCallCount(), 1);
+  EXPECT_TRUE(mock_clipboard_host()->HasDeferredReadTextCallback());
+  EXPECT_FALSE(promise_tester.IsFulfilled());
+  EXPECT_FALSE(promise_tester.IsRejected());
+
+  // Let the host respond; the promise must fulfill with the text.
+  mock_clipboard_host()->RunDeferredReadTextCallback();
+  promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(promise_tester.IsFulfilled());
+  String returned_string;
+  promise_tester.Value().ToString(returned_string);
+  EXPECT_EQ(returned_string, testing_string);
+
+  executionContext->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::PermissionService::Name_, {});
+}
+
 }  // namespace blink

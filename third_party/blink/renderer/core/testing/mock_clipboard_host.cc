@@ -124,7 +124,20 @@ void MockClipboardHost::IsFormatAvailable(
 void MockClipboardHost::ReadText(mojom::ClipboardBuffer clipboard_buffer,
                                  ReadTextCallback callback) {
   ++read_text_call_count_;
+  if (defer_read_text_callback_) {
+    // Stash the reply callback so the test can verify that the renderer
+    // does not block on this IPC. The callback will be invoked later via
+    // RunDeferredReadTextCallback().
+    deferred_read_text_callback_ = std::move(callback);
+    return;
+  }
   std::move(callback).Run(plain_text_);
+}
+
+void MockClipboardHost::RunDeferredReadTextCallback() {
+  CHECK(deferred_read_text_callback_)
+      << "RunDeferredReadTextCallback called with no pending callback";
+  std::move(deferred_read_text_callback_).Run(plain_text_);
 }
 
 void MockClipboardHost::ReadHtml(mojom::ClipboardBuffer clipboard_buffer,

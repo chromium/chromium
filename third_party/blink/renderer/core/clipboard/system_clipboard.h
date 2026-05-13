@@ -88,7 +88,16 @@ class CORE_EXPORT SystemClipboard final
 
   String ReadRTF();
 
+  // Synchronous overload. Used by legacy DataTransfer paths.
+  // Async Clipboard API call sites should use the callback overload below
+  // to avoid blocking the renderer main thread.
   mojo_base::BigBuffer ReadPng(mojom::blink::ClipboardBuffer);
+
+  // Asynchronous overload for the Async Clipboard API. If the remote is
+  // unbound or the buffer is invalid, the callback is invoked synchronously
+  // with an empty BigBuffer. Tracks crbug.com/474131935.
+  void ReadPng(mojom::blink::ClipboardBuffer buffer,
+               mojom::blink::ClipboardHost::ReadPngCallback callback);
   String ReadImageAsImageMarkup(mojom::blink::ClipboardBuffer);
 
   // Write the image and its associated tag (bookmark/HTML types).
