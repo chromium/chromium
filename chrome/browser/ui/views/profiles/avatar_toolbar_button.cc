@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -326,6 +327,19 @@ void AvatarToolbarButton::UpdateText() {
   InvalidateLayout();
 }
 
+void AvatarToolbarButton::SetAnnounceCallbackForTesting(
+    base::OnceCallback<void(std::u16string)> callback) {
+  CHECK_IS_TEST();
+  announce_callback_for_testing_ = std::move(callback);
+}
+
+void AvatarToolbarButton::AnnounceInternal(std::u16string text) {
+  if (announce_callback_for_testing_) {
+    std::move(announce_callback_for_testing_).Run(text);
+  }
+  GetViewAccessibility().AnnounceAlert(std::move(text));
+}
+
 void AvatarToolbarButton::UpdateAccessibilityLabel() {
   auto [name, description] = state_manager_->GetAccessibilityLabels(GetText());
 
@@ -421,8 +435,22 @@ bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
 base::ScopedClosureRunner AvatarToolbarButton::SetExplicitButtonState(
     const std::u16string& text,
     std::optional<std::u16string> accessibility_label,
-    std::optional<base::RepeatingCallback<void(bool)>> explicit_action) {
+    std::optional<base::RepeatingCallback<void(bool)>> explicit_action,
+    bool should_announce) {
   CHECK(state_manager_);
+
+  if (should_announce) {
+    // Announce with a delay: if passwords are being uploaded, the OS may be
+    // showing a keychain dialog. The keychain dialog is closing and focus is
+    // moving back to Chrome. Announcing during this process may result in the
+    // announcement to be dropped.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AvatarToolbarButton::AnnounceInternal,
+                       weak_ptr_factory_.GetWeakPtr(), text),
+        AvatarToolbarButtonInterface::kAccessibilityAnnouncementDelay);
+  }
+
   return state_manager_->SetExplicitState(text, std::move(accessibility_label),
                                           std::move(explicit_action));
 }

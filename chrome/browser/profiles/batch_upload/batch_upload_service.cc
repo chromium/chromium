@@ -352,7 +352,9 @@ void BatchUploadService::TriggerAvatarButtonSavingDataText(Browser* browser) {
               l10n_util::GetStringUTF16(
                   IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT),
               /*accessibility_label=*/std::nullopt,
-              /*explicit_action=*/std::nullopt);
+              /*explicit_action=*/std::nullopt,
+              /*should_announce=*/true);
+
   // Prepare the timer to stop the overridden text from showing.
   state_.saving_browser_state_->avatar_override_timer_.Start(
       FROM_HERE, kBatchUploadAvatarButtonOverrideTextDuration,

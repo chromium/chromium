@@ -173,6 +173,13 @@ void AvatarToolbarButtonTestAccessor::Click() {
   }
 }
 
+void AvatarToolbarButtonTestAccessor::SetAnnounceCallbackForTesting(
+    base::OnceCallback<void(std::u16string)> callback) {
+  if (AvatarToolbarButtonInterface* interface = GetInterface()) {
+    interface->SetAnnounceCallbackForTesting(std::move(callback));
+  }
+}
+
 views::Widget* AvatarToolbarButtonTestAccessor::GetWidget() {
   if (AvatarToolbarButton* button = GetButton()) {
     return button->GetWidget();

@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
@@ -305,25 +306,26 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
                        CloseDialogWithSaveButtonAllSelected) {
   SigninWithFullInfo();
+  AvatarToolbarButtonTestAccessor avatar_accessor(browser());
   test_helper().SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
   test_helper().SetReturnDescriptions(syncer::DataType::CONTACT_INFO, 1);
+  const std::u16string expected_avatar_text = l10n_util::GetStringUTF16(
+      IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT);
 
-  ASSERT_NE(AvatarToolbarButtonTestAccessor(browser()).GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT));
-
+  ASSERT_NE(avatar_accessor.GetText(), expected_avatar_text);
   ASSERT_FALSE(batch_upload()->IsDialogOpened());
-
   ASSERT_TRUE(OpenBatchUploadWithFakeDelegate(browser()));
   ASSERT_TRUE(batch_upload()->IsDialogOpened());
+
+  base::test::TestFuture<std::u16string> announce_future;
+  avatar_accessor.SetAnnounceCallbackForTesting(announce_future.GetCallback());
 
   BatchUploadDelegateFake* delegate = GetFakeDelegate();
   delegate->SimulateSaveWithAllSelected();
 
   EXPECT_FALSE(batch_upload()->IsDialogOpened());
-  EXPECT_EQ(AvatarToolbarButtonTestAccessor(browser()).GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT));
+  EXPECT_EQ(avatar_accessor.GetText(), expected_avatar_text);
+  EXPECT_EQ(announce_future.Get(), expected_avatar_text);
 }
 
 // Test suite that makes the sync service unavailable to test the factory.

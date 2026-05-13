@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
@@ -37,11 +38,14 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
   void RemoveObserver(
       AvatarToolbarButtonInterface::Observer* observer) override;
   void ButtonPressed(bool is_source_accelerator) override;
+  void SetAnnounceCallbackForTesting(
+      base::OnceCallback<void(std::u16string)> callback) override;
   base::ScopedClosureRunner SetExplicitButtonState(
       const std::u16string& text,
       std::optional<std::u16string> accessibility_label,
       std::optional<base::RepeatingCallback<void(bool is_source_accelerator)>>
-          explicit_action) override;
+          explicit_action,
+      bool should_announce) override;
   bool HasExplicitButtonState() const override;
   void MaybeShowProfileSwitchIPH() override;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -62,6 +66,8 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
  private:
   void UpdateState();
   void UpdateAccessibilityLabel();
+  void AnnounceInternal(std::u16string text);
+  base::OnceCallback<void(std::u16string)> announce_callback_for_testing_;
 
   const raw_ptr<WebUIToolbarControlDelegate> delegate_;
 

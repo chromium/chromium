@@ -38,8 +38,9 @@ class AvatarToolbarButtonTestAccessor {
   views::Widget* GetWidget();
   gfx::ImageSkia GetImage(views::Button::ButtonState state);
   std::u16string GetRenderedTooltipText(const gfx::Point& p);
-
   void Click();
+  void SetAnnounceCallbackForTesting(
+      base::OnceCallback<void(std::u16string)> callback);
 
  private:
   AvatarToolbarButtonInterface* GetInterface();

@@ -7,7 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -60,12 +60,15 @@ class AvatarToolbarButton : public ToolbarButton,
       const std::u16string& text,
       std::optional<std::u16string> accessibility_label,
       std::optional<base::RepeatingCallback<void(bool is_source_accelerator)>>
-          explicit_action) override;
+          explicit_action,
+      bool should_announce) override;
   bool HasExplicitButtonState() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   // void UpdateIcon() also overrides ToolbarButton
   void UpdateText() override;
+  void SetAnnounceCallbackForTesting(
+      base::OnceCallback<void(std::u16string)> callback) override;
   void MaybeShowProfileSwitchIPH() override;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void MaybeShowSupervisedUserSignInIPH() override;
@@ -114,6 +117,7 @@ class AvatarToolbarButton : public ToolbarButton,
   void AnimateTextChange(StateProvider* state_provider,
                          const ui::ColorProvider* color_provider);
   void UpdateAccessibilityLabel();
+  void AnnounceInternal(std::u16string text);
 
   // LabelButton:
   gfx::Size CalculatePreferredSize(
@@ -135,6 +139,8 @@ class AvatarToolbarButton : public ToolbarButton,
   base::CallbackListSubscription ink_drop_highlight_subscription_;
 
   gfx::SlideAnimation slide_animation_;
+
+  base::OnceCallback<void(std::u16string)> announce_callback_for_testing_;
 
   base::WeakPtrFactory<AvatarToolbarButton> weak_ptr_factory_{this};
 };

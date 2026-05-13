@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_types.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "ui/views/bubble/bubble_anchor.h"
@@ -59,7 +61,8 @@ class AvatarToolbarButtonInterface {
       const std::u16string& text,
       std::optional<std::u16string> accessibility_label,
       std::optional<base::RepeatingCallback<void(bool is_source_accelerator)>>
-          explicit_action) = 0;
+          explicit_action,
+      bool should_announce = false) = 0;
   // Returns whether the button currently has an explicit state set.
   virtual bool HasExplicitButtonState() const = 0;
 
@@ -72,6 +75,10 @@ class AvatarToolbarButtonInterface {
 
   // Triggers an update of the avatar text.
   virtual void UpdateText() = 0;
+
+  // Sets a callback for testing announcements.
+  virtual void SetAnnounceCallbackForTesting(
+      base::OnceCallback<void(std::u16string)> callback) = 0;
 
   // Attempts showing the In-Product-Help for profile Switching.
   virtual void MaybeShowProfileSwitchIPH() = 0;
@@ -113,6 +120,8 @@ class AvatarToolbarButtonInterface {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  protected:
+  static constexpr base::TimeDelta kAccessibilityAnnouncementDelay =
+      base::Milliseconds(500);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_AVATAR_TOOLBAR_BUTTON_INTERFACE_H_
