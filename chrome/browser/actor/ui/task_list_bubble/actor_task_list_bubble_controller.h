@@ -11,8 +11,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
@@ -21,7 +21,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
-
 
 // Controller that handles the visibility and display of the
 // ActorTaskListBubble.

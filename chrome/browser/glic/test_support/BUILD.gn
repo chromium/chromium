@@ -56,7 +56,7 @@ source_set("test_support") {
     deps += [
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
-      "//chrome/browser/ui/tabs:glic",
+      "//chrome/browser/glic/browser_ui",
       "//ui/events:test_support",
     ]
   } else {

@@ -20,11 +20,8 @@ namespace glic {
 class GlicButtonController;
 class GlicIphController;
 class GlicNudgeController;
-}  // namespace glic
-
-namespace tabs {
 class GlicActorNudgeController;
-}  // namespace tabs
+}  // namespace glic
 
 class ActorUiWindowController;
 class ContextHighlightWindowFeature;
@@ -667,7 +664,7 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<glic::GlicNudgeController> glic_nudge_controller_;
 
-  std::unique_ptr<tabs::GlicActorNudgeController> glic_actor_nudge_controller_;
+  std::unique_ptr<glic::GlicActorNudgeController> glic_actor_nudge_controller_;
   std::unique_ptr<ActorTaskListBubbleController>
       actor_task_list_bubble_controller_;
   std::unique_ptr<glic::GlicButtonController> glic_button_controller_;

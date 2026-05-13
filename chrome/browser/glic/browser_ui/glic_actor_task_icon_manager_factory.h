@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_GLIC_ACTOR_TASK_ICON_MANAGER_FACTORY_H_
-#define CHROME_BROWSER_UI_TABS_GLIC_ACTOR_TASK_ICON_MANAGER_FACTORY_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ACTOR_TASK_ICON_MANAGER_FACTORY_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ACTOR_TASK_ICON_MANAGER_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 
 class Profile;
 
-namespace tabs {
+namespace glic {
 
 // Handles the glic actor task icon window controllers in chrome, only regular,
 // non-OTR profiles are supported.
@@ -35,6 +35,6 @@ class GlicActorTaskIconManagerFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace tabs
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_TABS_GLIC_ACTOR_TASK_ICON_MANAGER_FACTORY_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ACTOR_TASK_ICON_MANAGER_FACTORY_H_

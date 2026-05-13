@@ -17,6 +17,9 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -34,9 +37,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(
 
   actor_service()->GetTask(task_id2)->Pause(/*from_actor=*/true);
 
-  auto* manager = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
+  auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
       browser()->GetProfile());
   EXPECT_TRUE(RunUntil(
       [&]() { return manager->actor_task_list_bubble_rows().size() == 2; }));
@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   actor::TaskId task_id = CreateTask();
 
-  auto* manager = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
+  auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
       browser()->GetProfile());
 
   actor_service()->GetTask(task_id)->SetState(actor::ActorTask::State::kActing);

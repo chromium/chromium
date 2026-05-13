@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,7 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace tabs {
+namespace glic {
 using actor::ActorKeyedServiceFake;
 using actor::TaskId;
 using ActorTaskNudgeState = actor::ui::ActorTaskNudgeState;
@@ -268,7 +268,7 @@ TEST_F(GlicActorTaskIconManagerTest,
                             actor::ActorTask::StoppedReason::kTaskComplete);
   actor_service()->GetActorUiStateManager()->OnUiEvent(actor::ui::StopTask(
       task_id_1, actor::ActorTask::State::kFinished, "Test Task",
-      /*last_acted_on_tab_handle=*/TabHandle(),
+      /*last_acted_on_tab_handle=*/tabs::TabHandle(),
       actor::ActorTask::TaskDuration::kDefault));
   task_environment().FastForwardBy(base::Seconds(
       features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
@@ -351,4 +351,4 @@ TEST_F(GlicActorTaskIconManagerTest, TransientTaskDoesNotShowBubble) {
   manager()->UpdateTaskIconComponents(task_id);
 }
 
-}  // namespace tabs
+}  // namespace glic

@@ -28,6 +28,7 @@
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
@@ -81,7 +82,6 @@
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -943,7 +943,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
                 *browser_, browser_);
         // Includes browser twice to enable injecting for testing.
         glic_actor_nudge_controller_ =
-            GetUserDataFactory().CreateInstance<tabs::GlicActorNudgeController>(
+            GetUserDataFactory().CreateInstance<glic::GlicActorNudgeController>(
                 *browser_, browser_,
                 BrowserElementsViews::From(browser_view->browser())
                     ->GetViewAs<TabStripActionContainer>(

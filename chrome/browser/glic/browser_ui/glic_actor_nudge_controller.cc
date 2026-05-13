@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -11,10 +11,10 @@
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -23,7 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace tabs {
+namespace glic {
 using actor::ui::ActorTaskNudgeState;
 using glic::GlicInstance;
 using glic::GlicKeyedService;
@@ -198,4 +198,4 @@ void GlicActorNudgeController::OnBubbleVisibilityChange(bool is_bubble_open) {
     toolbar_view_->glic_actor_task_icon()->SetPressedState(is_bubble_open);
   }
 }
-}  // namespace tabs
+}  // namespace glic

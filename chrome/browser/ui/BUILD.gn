@@ -1564,8 +1564,6 @@ static_library("ui") {
       "//chrome/browser/ui/shared_highlighting",
       "//chrome/browser/ui/tab_sharing",
       "//chrome/browser/ui/tab_sharing:impl",
-      "//chrome/browser/ui/tabs:glic",
-      "//chrome/browser/ui/tabs:glic_impl",
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/tabs/saved_tab_groups:impl",
       "//chrome/browser/ui/task_manager",
@@ -1967,7 +1965,7 @@ static_library("ui") {
 
       # TODO(crbug.com/364501603): Remove this circular dependency when
       # c/b/ui/views/tabs/tab_strip_action_container.h gets componentized.
-      "//chrome/browser/ui/tabs:glic_impl",
+      "//chrome/browser/glic/browser_ui:impl",
 
       # TODO(crbug.com/438226511): Remove this circular dependency when the
       # following headers get componentized:

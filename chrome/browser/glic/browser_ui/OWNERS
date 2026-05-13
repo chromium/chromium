@@ -15,3 +15,6 @@ per-file *vector_icon*=vollick@chromium.org
 # Tab indicator and IPH
 per-file *tab_indicator*=dfried@chromium.org
 per-file *iph*=dfried@chromium.org
+
+# Actor
+per-file glic_actor*=file://chrome/browser/actor/ui/OWNERS

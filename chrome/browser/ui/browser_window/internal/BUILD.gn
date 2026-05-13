@@ -93,7 +93,6 @@ source_set("internal") {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs",
-      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/projects:impl",

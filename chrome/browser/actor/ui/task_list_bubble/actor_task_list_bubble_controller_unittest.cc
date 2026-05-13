@@ -14,9 +14,9 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -57,7 +57,7 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
                     &ActorTaskListBubbleControllerTest::BuildActorKeyedService,
                     base::Unretained(this)))
             .AddTestingFactory(
-                tabs::GlicActorTaskIconManagerFactory::GetInstance(),
+                glic::GlicActorTaskIconManagerFactory::GetInstance(),
                 base::BindRepeating(&ActorTaskListBubbleControllerTest::
                                         BuildGlicActorTaskIconManager,
                                     base::Unretained(this)))
@@ -79,7 +79,7 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
     Profile* profile = Profile::FromBrowserContext(context);
     auto* actor_service =
         actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_.get());
-    auto manager = std::make_unique<tabs::GlicActorTaskIconManager>(
+    auto manager = std::make_unique<glic::GlicActorTaskIconManager>(
         profile, actor_service);
     return std::move(manager);
   }
@@ -136,8 +136,8 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
 TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_.get());
-  tabs::GlicActorTaskIconManager* manager =
-      tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
+  glic::GlicActorTaskIconManager* manager =
+      glic::GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->GetTask(task_id)->Pause(true);

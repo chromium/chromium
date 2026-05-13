@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -12,7 +12,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 
-namespace tabs {
+namespace glic {
 namespace {
 
 using actor::ActorKeyedService;
@@ -44,11 +44,11 @@ void GlicActorTaskIconManager::RegisterSubscriptions() {
           base::BindRepeating(
               &GlicActorTaskIconManager::UpdateTaskIconComponents,
               base::Unretained(this))));
-    callback_subscriptions_.push_back(
-        actor_service_->GetActorUiStateManager()->RegisterActorTaskRemoved(
-            base::BindRepeating(
-                &GlicActorTaskIconManager::UpdateTaskIconComponents,
-                base::Unretained(this))));
+  callback_subscriptions_.push_back(
+      actor_service_->GetActorUiStateManager()->RegisterActorTaskRemoved(
+          base::BindRepeating(
+              &GlicActorTaskIconManager::UpdateTaskIconComponents,
+              base::Unretained(this))));
 }
 
 void GlicActorTaskIconManager::UpdateTaskIconComponents(actor::TaskId task_id) {
@@ -94,7 +94,7 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
       show_bubble = true;
     }
 
-    if (tabs::GlicActorTaskIconManager::RequiresAttention(*state)) {
+    if (GlicActorTaskIconManager::RequiresAttention(*state)) {
       // Needs attention prioritized over other text
       needs_attention = true;
       break;
@@ -136,10 +136,10 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
 
 void GlicActorTaskIconManager::ProcessRowInTaskListBubble(
     actor::TaskId task_id) {
-    if (auto it = actor_task_list_bubble_rows_.find(task_id);
-        it != actor_task_list_bubble_rows_.end()) {
-      it->second = false;
-    }
+  if (auto it = actor_task_list_bubble_rows_.find(task_id);
+      it != actor_task_list_bubble_rows_.end()) {
+    it->second = false;
+  }
   UpdateTaskNudge();
 }
 
@@ -210,4 +210,4 @@ bool GlicActorTaskIconManager::ShouldShowBubble(TaskState state,
          duration != ActorTask::TaskDuration::kTransient;
 }
 
-}  // namespace tabs
+}  // namespace glic

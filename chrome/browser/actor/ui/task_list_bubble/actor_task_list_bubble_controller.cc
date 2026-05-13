@@ -14,10 +14,10 @@
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
@@ -36,7 +36,7 @@ ActorTaskListBubbleController::ActorTaskListBubbleController(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  if (auto* manager = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
+  if (auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
           browser_->GetProfile())) {
     bubble_state_change_callback_subscription_.push_back(
         manager->RegisterTaskListBubbleStateChange(
@@ -54,7 +54,7 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
   }
 
   const auto& task_id_to_state =
-      tabs::GlicActorTaskIconManagerFactory::GetForProfile(
+      glic::GlicActorTaskIconManagerFactory::GetForProfile(
           browser_->GetProfile())
           ->actor_task_list_bubble_rows();
   // Do not show bubble if there are no rows to show.
@@ -148,7 +148,7 @@ void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
   // Regardless of tab navigation, process the row and close the bubble when
   // done.
   auto* icon_manager =
-      tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
+      glic::GlicActorTaskIconManagerFactory::GetForProfile(profile);
   icon_manager->ProcessRowInTaskListBubble(task_id);
   if (bubble_widget_) {
     bubble_widget_->Close();

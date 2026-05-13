@@ -41,9 +41,9 @@ int GetPriorityForTaskState(actor::ActorTask::State task_state,
   // 2. Processed tasks needing attention
   // 3. Remaining tasks that need processing
   // 4. All other tasks
-  return tabs::GlicActorTaskIconManager::RequiresAttention(task_state)
+  return glic::GlicActorTaskIconManager::RequiresAttention(task_state)
              ? (requires_processing ? 1 : 2)
-         : tabs::GlicActorTaskIconManager::RequiresTaskProcessing(task_state)
+         : glic::GlicActorTaskIconManager::RequiresTaskProcessing(task_state)
              ? 3
              : 4;
 }

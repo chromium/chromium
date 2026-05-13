@@ -4201,6 +4201,7 @@ if (!is_android) {
       "//chrome/browser/collaboration/messaging",
       "//chrome/browser/contextual_tasks:browser_tests",
       "//chrome/browser/data_sharing",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/glic/suggestions:impl",
       "//chrome/browser/history",
@@ -4233,7 +4234,6 @@ if (!is_android) {
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/sync",
-      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs/alert:tab_alert",
       "//chrome/browser/ui/tabs/back_to_opener:browser_tests",
       "//chrome/browser/ui/tabs/projects:browser_tests",
@@ -10574,8 +10574,8 @@ test("unit_tests") {
         [ "../browser/ui/views/tabs/tab_strip_action_container_unittest.cc" ]
 
     deps += [
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/ui/call_to_action",
-      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:tab_list_bridge",
     ]
     if (is_chromeos) {
@@ -12310,9 +12310,9 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/glic",
       "//chrome/browser/glic:interactive_ui_tests",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/skills:interactive_ui_tests",
-      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/tabs/glic",
     ]

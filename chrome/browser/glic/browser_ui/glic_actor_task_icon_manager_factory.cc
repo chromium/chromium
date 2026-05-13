@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace tabs {
+namespace glic {
 using actor::ActorKeyedServiceFactory;
 
 // static
@@ -37,4 +37,4 @@ GlicActorTaskIconManagerFactory::BuildServiceInstanceForBrowserContext(
       profile, ActorKeyedServiceFactory::GetActorKeyedService(context));
 }
 
-}  // namespace tabs
+}  // namespace glic

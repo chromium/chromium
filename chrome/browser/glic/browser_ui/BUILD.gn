@@ -11,28 +11,39 @@ source_set("browser_ui") {
     "glic_nudge_controller.h",
     "glic_nudge_delegate.h",
   ]
+
+  public_deps = [
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/tab_list",
+    "//components/keyed_service/core",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/contextual_tasks",
+    "//components/tabs:public",
+  ]
+
   if (!is_android) {
     sources += [
       "anchored_nudge_controller.h",
+      "glic_actor_nudge_controller.h",
+      "glic_actor_task_icon_manager.h",
+      "glic_actor_task_icon_manager_factory.h",
       "glic_button_controller.h",
       "glic_iph_controller.h",
       "glic_selection_widget.h",
       "glic_tab_indicator_helper.h",
       "glic_vector_icon_manager.h",
     ]
-  }
 
-  public_deps = [
-    "//chrome/browser/glic",
-    "//chrome/browser/glic:mojo_bindings",
-    "//chrome/browser/tab_list",
-  ]
-  deps = [
-    "//base",
-    "//chrome/browser/contextual_tasks",
-    "//components/keyed_service/core",
-    "//components/tabs:public",
-  ]
+    public_deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/actor:types",
+      "//chrome/browser/actor/ui",
+      "//ui/base/unowned_user_data",
+    ]
+  }
 }
 
 source_set("impl") {
@@ -43,6 +54,9 @@ source_set("impl") {
   if (!is_android) {
     sources += [
       "anchored_nudge_controller.cc",
+      "glic_actor_nudge_controller.cc",
+      "glic_actor_task_icon_manager.cc",
+      "glic_actor_task_icon_manager_factory.cc",
       "glic_button_controller.cc",
       "glic_iph_controller.cc",
       "glic_selection_widget.cc",
@@ -63,15 +77,24 @@ source_set("impl") {
   if (!is_android) {
     deps += [
       "//chrome/browser:primitives",
+      "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
+      "//chrome/browser/actor/ui/task_list_bubble:controller",
+      "//chrome/browser/glic",
       "//chrome/browser/glic/fre",
+      "//chrome/browser/profiles:profile",
       "//chrome/browser/themes",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/common:buildflags",
+      "//chrome/common:chrome_features",
       "//components/omnibox/browser:vector_icons",
       "//components/pdf/common:constants",
+      "//components/prefs",
+      "//content/public/browser",
       "//ui/strings:ui_strings__strings_grit",
     ]
   }
@@ -160,6 +183,7 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "glic_actor_task_icon_manager_unittest.cc",
       "glic_button_controller_unittest.cc",
       "glic_selection_widget_unittest.cc",
     ]

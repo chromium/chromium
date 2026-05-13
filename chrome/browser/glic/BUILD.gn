@@ -476,6 +476,7 @@ source_set("impl") {
 
     deps += [
       "//chrome/browser/actor/ui",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/selection",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/resources/glic/experimental_opt_in:resources",
@@ -484,7 +485,6 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
-      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/toasts",

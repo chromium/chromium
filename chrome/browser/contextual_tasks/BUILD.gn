@@ -240,9 +240,9 @@ source_set("ui") {
   }
   if (!is_android) {
     public_deps += [
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
-      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",

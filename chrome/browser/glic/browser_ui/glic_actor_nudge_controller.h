@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_GLIC_ACTOR_NUDGE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_TABS_GLIC_ACTOR_NUDGE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ACTOR_NUDGE_CONTROLLER_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ACTOR_NUDGE_CONTROLLER_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +16,7 @@ class BrowserWindowInterface;
 class TabStripActionContainer;
 class ToolbarView;
 
-namespace tabs {
+namespace glic {
 
 // Controller that handles Glic Actor notification/nudge handling.
 // TODO(crbug.com/431015299): Move GlicNudgeController logic into this
@@ -77,6 +77,6 @@ class GlicActorNudgeController {
   base::WeakPtrFactory<GlicActorNudgeController> weak_ptr_factory_{this};
 };
 
-}  // namespace tabs
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_TABS_GLIC_ACTOR_NUDGE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ACTOR_NUDGE_CONTROLLER_H_

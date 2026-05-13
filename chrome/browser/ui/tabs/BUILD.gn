@@ -343,49 +343,6 @@ if (!is_android) {
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
-  source_set("glic") {
-    sources = [
-      "glic_actor_nudge_controller.h",
-      "glic_actor_task_icon_manager.h",
-      "glic_actor_task_icon_manager_factory.h",
-    ]
-    public_deps = [
-      "//base",
-      "//chrome/browser/actor",
-      "//chrome/browser/actor:types",
-      "//chrome/browser/actor/ui",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:mojo_bindings",
-      "//components/keyed_service/core",
-      "//ui/base/unowned_user_data",
-    ]
-
-    deps = [ "//chrome/browser/actor" ]
-  }
-
-  source_set("glic_impl") {
-    sources = [
-      "glic_actor_nudge_controller.cc",
-      "glic_actor_task_icon_manager.cc",
-      "glic_actor_task_icon_manager_factory.cc",
-    ]
-    deps = [
-      ":glic",
-      "//base",
-      "//chrome/browser/actor",
-      "//chrome/browser/actor/ui/task_list_bubble:controller",
-      "//chrome/browser/glic",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/call_to_action",
-      "//chrome/browser/ui/views/toolbar",
-      "//chrome/common:buildflags",
-      "//chrome/common:chrome_features",
-      "//components/prefs",
-      "//content/public/browser",
-    ]
-  }
-
   source_set("tabs") {
     sources = [
       "contents_observing_tab_feature.h",
@@ -781,7 +738,6 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "glic_actor_task_icon_manager_unittest.cc",
       "inactive_window_mouse_event_controller_unittest.cc",
       "split_view_iph_controller_unittest.cc",
       "tab_collection_storage_unittest.cc",
@@ -824,6 +780,7 @@ if (!is_android) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/extensions",
       "//chrome/browser/glic",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/prefs",
@@ -833,7 +790,6 @@ if (!is_android) {
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tab_contents",
-      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs/alert:tab_alert",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/user_education",

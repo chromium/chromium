@@ -923,8 +923,8 @@ source_set("profiles_extra_parts_impl") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/password_manager/factories:startup_import_factory",
-      "//chrome/browser/ui/tabs:glic",
     ]
   }
 
