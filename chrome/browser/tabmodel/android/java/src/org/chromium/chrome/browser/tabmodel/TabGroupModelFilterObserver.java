@@ -121,9 +121,9 @@ public interface TabGroupModelFilterObserver {
      * selection editor, or by longpressing a link on a tab and using the context menu.
      *
      * @param destinationTab The destination tab of the group after merge.
-     * @param filter The {@link TabGroupModelFilter} that the new group event triggers on.
+     * @param tabModel The {@link TabModel} that the new group event triggers on.
      */
-    default void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {}
+    default void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {}
 
     /**
      * This method is called after a new title is set on a tab group.

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -163,10 +162,10 @@ public class ModelTrackingOrchestrator {
     private final TabGroupModelFilterObserver mVisualDataUpdateObserver =
             new TabGroupModelFilterObserver() {
                 @Override
-                public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+                public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
                     Token groupId = destinationTab.getTabGroupId();
                     assert groupId != null;
-                    mGroupIncognitoStatus.put(groupId, filter.getTabModel().isOffTheRecord());
+                    mGroupIncognitoStatus.put(groupId, tabModel.isOffTheRecord());
                 }
 
                 @Override

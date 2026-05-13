@@ -61,8 +61,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -93,7 +93,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Mock private TabReparentingDelegate mTabReparentingDelegate;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector1;
 
     @Spy private MultiWindowUtils mMultiWindowUtils;
@@ -1248,7 +1248,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         when(mTab2.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         mTabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        mTabGroupModelFilter,
+                        mTabModel,
                         List.of(mTab1, mTab2),
                         SOURCE_WINDOW_ID,
                         PARENT_TAB_ID_1,

@@ -768,9 +768,9 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+                    public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
                         assertEquals(tab0, destinationTab);
-                        assertEquals(mCollectionModel, filter);
+                        assertEquals(mCollectionModel, tabModel);
                         didCreateNewGroupHelper.notifyCalled();
                     }
                 };
@@ -2213,7 +2213,7 @@ public class TabCollectionTabModelImplTest {
                             new TabGroupModelFilterObserver() {
                                 @Override
                                 public void didCreateNewGroup(
-                                        Tab destinationTab, TabGroupModelFilter filter) {
+                                        Tab destinationTab, TabModel tabModel) {
                                     assertEquals(tab0, destinationTab);
                                     didCreateNewGroupHelper.notifyCalled();
                                 }

@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -275,7 +274,7 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+            public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didCreateNewGroup");
                 LocalTabGroupId localTabGroupId =

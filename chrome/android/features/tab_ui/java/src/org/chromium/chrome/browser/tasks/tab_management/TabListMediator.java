@@ -91,7 +91,6 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -977,7 +976,7 @@ class TabListMediator implements TabListNotificationHandler {
                 }
 
                 @Override
-                public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter tabModel) {
+                public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
                     // On new group creation for the tab group representation in the GTS, update
                     // the tab group color icon.
                     int groupIndex = tabModel.representativeIndexOf(destinationTab);
