@@ -44,6 +44,8 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
 
   // MediaStreamTrackProcessor interface
   ReadableStream* readable(ScriptState* script_state);
+  uint64_t totalFrames() const;
+  uint64_t discardedFrames() const;
 
   // Closes |audio_underlying_source_| and |video_underlying_source_| if they
   // exist.

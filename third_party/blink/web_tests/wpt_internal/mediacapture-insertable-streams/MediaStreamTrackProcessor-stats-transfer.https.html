@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+<head>
+  <title>MediaStreamTrackProcessor Stats with Transfer</title>
+  <link rel="help" href="https://w3c.github.io/mediacapture-insertable-streams">
+</head>
+<body>
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test checks that MediaStreamTrackProcessor stats work correctly when the readable stream is transferred.</p>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="MediaStreamTrackProcessor-stats-helpers.js"></script>
+<script>
+
+const mediaTypes = [
+  { kind: 'video', makeFrame: makeVideoFrame},
+  { kind: 'audio', makeFrame: makeAudioData}
+];
+
+for (const mediaType of mediaTypes) {
+  promise_test(async t => {
+    const generator = new MediaStreamTrackGenerator({kind: mediaType.kind});
+    t.add_cleanup(() => generator.stop());
+    const processor = new MediaStreamTrackProcessor({track: generator, maxBufferSize: 2});
+
+    assert_equals(processor.totalFrames, 0, "Initial totalFrames should be 0");
+
+    const writer = generator.writable.getWriter();
+
+    const worker = makeWorker();
+    t.add_cleanup(() => worker.terminate());
+
+    const workerPromise = new Promise((resolve, reject) => {
+      let count = 0;
+      worker.onmessage = (e) => {
+        if (e.data === 'read') {
+          count++;
+          if (count === 3) resolve(); // Wait for all 3 frames to be read
+        } else if (e.data.startsWith('error:')) {
+          reject(e.data);
+        }
+      };
+    });
+
+    const readable = processor.readable;
+    worker.postMessage({ readable, mode: 'read' }, [readable]);
+
+    // Push frames after transfer.
+    await writer.write(mediaType.makeFrame(1));
+    await new Promise(resolve => t.step_timeout(resolve, 100));
+    await writer.write(mediaType.makeFrame(2));
+    await new Promise(resolve => t.step_timeout(resolve, 100));
+    await writer.write(mediaType.makeFrame(3));
+
+    // Wait for worker to read all frames.
+    await workerPromise;
+
+    // Verify stats in main window.
+    // Since the queue is shared, totalFrames should reflect all frames pushed.
+    await t.step_wait(() => processor.totalFrames === 3, "Waiting for totalFrames to be 3", 1000, 10);
+
+    assert_equals(processor.totalFrames, 3, "totalFrames should include frames processed after transfer");
+
+  }, `Tests that ${mediaType.kind} totalFrames increments correctly after transferring the readable stream`);
+
+  promise_test(async t => {
+    const generator = new MediaStreamTrackGenerator({kind: mediaType.kind});
+    t.add_cleanup(() => generator.stop());
+    const processor = new MediaStreamTrackProcessor({track: generator, maxBufferSize: 1});
+
+    const writer = generator.writable.getWriter();
+
+    // Acquire reader to start the stream and connect to track.
+    const reader = processor.readable.getReader();
+
+    await writer.write(mediaType.makeFrame(1));
+    await t.step_wait(() => processor.totalFrames === 1, "Waiting for totalFrames to be 1", 1000, 10);
+
+    reader.releaseLock(); // Release lock to allow transfer
+
+    const worker = makeWorker();
+    t.add_cleanup(() => worker.terminate());
+
+    const readable = processor.readable;
+    worker.postMessage({ readable }, [readable]);
+
+    // Push more frames quickly to cause overflow.
+    await writer.write(mediaType.makeFrame(2));
+    await writer.write(mediaType.makeFrame(3));
+    await writer.write(mediaType.makeFrame(4));
+
+    // We expect some discards.
+    await t.step_wait(() => processor.discardedFrames > 0, "Waiting for discardedFrames to be > 0", 1000, 10);
+
+    // Wait for all frames to be counted in totalFrames to avoid flakiness
+    await t.step_wait(() => processor.totalFrames === 4, "Waiting for totalFrames to be 4", 1000, 10);
+
+
+
+  }, `Tests that ${mediaType.kind} discardedFrames increments correctly on overflow after transferring the readable stream`);
+
+  promise_test(async t => {
+    const stream = await navigator.mediaDevices.getUserMedia({[mediaType.kind]: true});
+    const track = stream.getTracks()[0];
+    t.add_cleanup(() => track.stop());
+
+    const processor = new MediaStreamTrackProcessor({track: track, maxBufferSize: 2});
+    const reader = processor.readable.getReader();
+    const frames = [];
+
+    // Read frames and keep them to fill the pool and prevent replacement.
+    // We keep reading until we observe discarded frames, indicating the pool is full.
+    let maxFrames = 100;
+    while (processor.discardedFrames === 0 && frames.length < maxFrames) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      frames.push(value);
+      // Wait a bit to allow the queue to fill up.
+      await new Promise(resolve => t.step_timeout(resolve, 100));
+    }
+
+    assert_greater_than(processor.discardedFrames, 0, "discardedFrames should be greater than 0 on drop");
+
+    for (const frame of frames) {
+      frame.close();
+    }
+  }, `Tests that ${mediaType.kind} discardedFrames increments correctly on drop when pool is full`);
+
+  promise_test(async t => {
+    const generator = new MediaStreamTrackGenerator({kind: mediaType.kind});
+    t.add_cleanup(() => generator.stop());
+    const processor = new MediaStreamTrackProcessor({track: generator, maxBufferSize: 1});
+
+    assert_equals(processor.totalFrames, 0, "Initial totalFrames should be 0");
+
+    const writer = generator.writable.getWriter();
+    const reader = processor.readable.getReader();
+
+    await writer.write(mediaType.makeFrame(1));
+    await writer.write(mediaType.makeFrame(1));
+    await t.step_wait(() => processor.totalFrames === 2, "Waiting for totalFrames to be 2", 1000, 10);
+
+    generator.stop();
+
+    assert_equals(processor.totalFrames, 2, "totalFrames should retain count after track stop");
+    assert_greater_than(processor.discardedFrames, 0, "discardedFrames should retain count after track stop");
+
+  }, `Tests that ${mediaType.kind} totalFrames retains its value after the track is stopped`);
+
+  promise_test(async t => {
+    const generator = new MediaStreamTrackGenerator({kind: mediaType.kind});
+    t.add_cleanup(() => generator.stop());
+
+    const processor = new MediaStreamTrackProcessor({track: generator, maxBufferSize: 1});
+    const reader = processor.readable.getReader();
+    const writer = generator.writable.getWriter();
+
+    // Write frames to cause overflow
+    await writer.write(mediaType.makeFrame(1));
+    await writer.write(mediaType.makeFrame(2));
+
+    await t.step_wait(() => processor.discardedFrames > 0, "Waiting for discardedFrames to be > 0", 1000, 10);
+
+    assert_greater_than(processor.discardedFrames, 0, "discardedFrames should be greater than 0 on push overflow");
+  }, `Tests that ${mediaType.kind} discardedFrames increments on push overflow in kPush case`);
+
+  promise_test(async t => {
+    const worker = makeWorker();
+    t.add_cleanup(() => worker.terminate());
+
+    const generator = new MediaStreamTrackGenerator({kind: mediaType.kind});
+    t.add_cleanup(() => generator.stop());
+
+    const processor = new MediaStreamTrackProcessor({track: generator, maxBufferSize: 1});
+    const readable = processor.readable;
+    const writer = generator.writable.getWriter();
+
+    worker.postMessage({readable}, [readable]);
+
+    // Wait for worker to be ready
+    await new Promise(resolve => {
+      worker.onmessage = (e) => {
+        if (e.data === 'ready') resolve();
+      };
+    });
+
+    // Write frames in the worker to cause overflow
+    await writer.write(mediaType.makeFrame(1));
+    await writer.write(mediaType.makeFrame(2));
+
+    // Wait for frames to be generated and forwarded to worker, and then dropped.
+    await t.step_wait(() => processor.discardedFrames > 0, "Waiting for discardedFrames to be > 0 in worker", 5000, 100);
+
+    const discardsBeforeTerminate = processor.discardedFrames;
+    assert_greater_than(discardsBeforeTerminate, 0, "discardedFrames should be > 0 before terminate");
+
+    // Ask worker to cancel the stream
+    worker.postMessage('cancel');
+    await new Promise(resolve => {
+      worker.onmessage = (e) => {
+        if (e.data === 'cancelled') resolve();
+      };
+    });
+
+    assert_greater_than_equal(processor.discardedFrames, discardsBeforeTerminate, "discardedFrames should be retained after worker terminate");
+  }, `Tests that ${mediaType.kind} stats are retained after transferred source is cleared (worker terminated)`);
+
+  promise_test(async t => {
+    const worker = makeWorker();
+    t.add_cleanup(() => worker.terminate());
+
+    const generator = new MediaStreamTrackGenerator({kind: mediaType.kind});
+    t.add_cleanup(() => generator.stop());
+
+    // Use a larger buffer size to prevent early drops
+    const processor = new MediaStreamTrackProcessor({track: generator, maxBufferSize: 10});
+    const readable = processor.readable;
+    const writer = generator.writable.getWriter();
+
+    worker.postMessage({readable}, [readable]);
+
+    // Wait for worker to be ready
+    await new Promise(resolve => {
+      worker.onmessage = (e) => {
+        if (e.data === 'ready') resolve();
+      };
+    });
+
+    // Write 2 frames. They should fit in the queue.
+    await writer.write(mediaType.makeFrame(1));
+    await writer.write(mediaType.makeFrame(2));
+
+    // Wait for frames to be counted in totalFrames
+    await t.step_wait(() => processor.totalFrames === 2, "Waiting for totalFrames to be 2", 1000, 10);
+
+    // Verify that discardedFrames is still 0
+    assert_equals(processor.discardedFrames, 0, "discardedFrames should be 0 before cancel");
+
+    // Terminate the worker to force clearing the transferred source
+    worker.terminate();
+
+    // Wait a bit for the cleanup to happen (ClearTransferredSource)
+    await t.step_timeout(() => {}, 1000);
+
+    await t.step_wait(() => processor.discardedFrames === 2, "Waiting for discardedFrames to be 2 after cancel", 1000, 10);
+
+    // Verify that discardedFrames is retained after worker is closed.
+    assert_equals(processor.discardedFrames, 2, "discardedFrames should be 2 after cancel due to unread frames");
+
+    // Also verify that totalFrames is retained.
+    assert_equals(processor.totalFrames, 2, "totalFrames should be retained after worker terminate");
+  }, `Tests that ${mediaType.kind} stats include unread frames after transferred source is cleared`);
+}
+
+</script>
+</body>
+</html>

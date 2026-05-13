@@ -180,6 +180,10 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
     base::AutoLock locker(lock_);
     num_pending_pulls_ = 0;
     if (transferred_source_) {
+      // Absorb unread frames in the shared queue before clearing reference, as
+      // they will be dropped when the transferred source shuts down.
+      discarded_frames_ += transferred_source_->DiscardedAndQueuedFrames();
+      total_frames_ += transferred_source_->TotalFrames();
       PostCrossThreadTask(
           *transferred_source_->GetRealmRunner(), FROM_HERE,
           CrossThreadBindOnce(
@@ -187,26 +191,48 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
               WrapCrossThreadWeakPersistent(transferred_source_.Get())));
       // The queue will be cleared by |transferred_source_|.
       should_clear_queue = false;
-    }
-    transferred_source_.Clear();
-  }
-  auto frame_queue = frame_queue_handle_.Queue();
-  if (frame_queue && should_clear_queue && MustUseMonitor()) {
-    while (!frame_queue->IsEmpty()) {
-      std::optional<NativeFrameType> popped_frame = frame_queue->Pop();
-      base::AutoLock monitor_locker(GetMonitorLock());
-      MonitorPopFrameLocked(popped_frame.value());
+      transferred_source_.Clear();
     }
   }
-  // Invalidating will clear the queue in the non-monitoring case if there is
-  // no transferred source.
-  frame_queue_handle_.Invalidate();
+  scoped_refptr<FrameQueue<NativeFrameType>> frame_queue;
+  Deque<NativeFrameType> frames_to_destroy;
+  {
+    base::AutoLock locker(lock_);
+    frame_queue = frame_queue_handle_.Queue();
+    if (frame_queue && should_clear_queue) {
+      base::AutoLock queue_locker(frame_queue->GetLock());
+      discarded_frames_ += frame_queue->SizeLocked();
+      if (MustUseMonitor()) {
+        base::AutoLock monitor_locker(GetMonitorLock());
+        while (!frame_queue->IsEmptyLocked()) {
+          std::optional<NativeFrameType> popped_frame =
+              frame_queue->PopLocked();
+          MonitorPopFrameLocked(popped_frame.value());
+
+          // Move the frame into our local container so it isn't
+          // destroyed until the lock_ goes out of scope.
+          frames_to_destroy.push_back(std::move(popped_frame.value()));
+        }
+      }
+    }
+
+    // Invalidating the handle will release our reference to the queue.
+    // If this was the last reference (i.e., not transferred), it will
+    // eventually destroy the queue and any remaining audio frames in it.
+    frame_queue_handle_.Invalidate();
+  }
+
+  // frames_to_destroy goes out of scope here: Popped video frames are destroyed
+  // (if any were popped).
+  // frame_queue goes out of scope here: The queue and remaining audio frames
+  // are destroyed if this was the last reference.
 }
 
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
     NativeFrameType media_frame) {
   bool should_send_frame_to_stream;
+  scoped_refptr<FrameQueue<NativeFrameType>> frame_queue;
   {
     base::AutoLock locker(lock_);
     if (transferred_source_) {
@@ -214,12 +240,18 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
       return;
     }
     should_send_frame_to_stream = num_pending_pulls_ > 0;
+    // Increment total frames after forwarding check, so it only counts frames
+    // that are NOT forwarded to the transferred source.
+    total_frames_++;
+
+    frame_queue = frame_queue_handle_.Queue();
+    if (!frame_queue) {
+      discarded_frames_++;
+      return;
+    }
   }
 
-  auto frame_queue = frame_queue_handle_.Queue();
-  if (!frame_queue)
-    return;
-
+  bool did_discard = false;
   if (MustUseMonitor()) {
     base::AutoLock queue_locker(frame_queue->GetLock());
     base::AutoLock monitor_locker(GetMonitorLock());
@@ -230,35 +262,54 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
         MonitorPushFrameLocked(media_frame);
         std::optional<NativeFrameType> replaced_frame =
             frame_queue->PushLocked(std::move(media_frame));
-        if (replaced_frame.has_value())
+        if (replaced_frame.has_value()) {
           MonitorPopFrameLocked(replaced_frame.value());
+          did_discard = true;
+        }
         break;
       }
-      case NewFrameAction::kReplace:
+      case NewFrameAction::kReplace: {
         MonitorPushFrameLocked(media_frame);
-        if (oldest_frame.has_value())
+        if (oldest_frame.has_value()) {
           MonitorPopFrameLocked(oldest_frame.value());
+        }
+
         // Explicitly pop the old frame and push the new one since the
         // |frame_pool_size_| limit has been reached and it may be smaller
         // than the maximum size of |frame_queue|.
-        frame_queue->PopLocked();
+        if (frame_queue->PopLocked().has_value()) {
+          did_discard = true;
+        }
+        // Pushing should be safe without drop since we just popped a frame.
         frame_queue->PushLocked(std::move(media_frame));
         break;
+      }
       case NewFrameAction::kDrop:
-        // Drop |media_frame| by retuning without doing anything with it.
-        return;
+        // Drop |media_frame| by returning without doing anything with it.
+        did_discard = true;
+        should_send_frame_to_stream = false;
+        break;
     }
   } else {
-    frame_queue->Push(std::move(media_frame));
+    // Push returns the dropped frame if the queue is full.
+    if (frame_queue->Push(std::move(media_frame)).has_value()) {
+      did_discard = true;
+    }
   }
-  if (should_send_frame_to_stream) {
-    PostCrossThreadTask(
-        *realm_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &FrameQueueUnderlyingSource<
-                NativeFrameType>::MaybeSendFrameFromQueueToStream,
-            WrapCrossThreadPersistent(this)));
+
+  if (did_discard) {
+    base::AutoLock locker(lock_);
+    discarded_frames_++;
   }
+  if (!should_send_frame_to_stream) {
+    return;
+  }
+
+  PostCrossThreadTask(
+      *realm_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&FrameQueueUnderlyingSource<
+                              NativeFrameType>::MaybeSendFrameFromQueueToStream,
+                          WrapCrossThreadPersistent(this)));
 }
 
 template <typename NativeFrameType>
@@ -296,6 +347,10 @@ void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::ClearTransferredSource() {
   base::AutoLock locker(lock_);
+  if (transferred_source_) {
+    discarded_frames_ += transferred_source_->DiscardedAndQueuedFrames();
+    total_frames_ += transferred_source_->TotalFrames();
+  }
   transferred_source_.Clear();
 }
 
@@ -487,6 +542,44 @@ template <>
 bool FrameQueueUnderlyingSource<
     scoped_refptr<media::AudioBuffer>>::MustUseMonitor() const {
   return false;
+}
+
+template <typename NativeFrameType>
+uint64_t FrameQueueUnderlyingSource<NativeFrameType>::TotalFrames() const {
+  base::AutoLock locker(lock_);
+  if (transferred_source_) {
+    return total_frames_ + transferred_source_->TotalFrames();
+  }
+  return total_frames_;
+}
+
+template <typename NativeFrameType>
+uint64_t FrameQueueUnderlyingSource<NativeFrameType>::DiscardedFrames() const {
+  base::AutoLock locker(lock_);
+  if (transferred_source_) {
+    return discarded_frames_ + transferred_source_->DiscardedFrames();
+  }
+  return discarded_frames_;
+}
+
+template <typename NativeFrameType>
+uint64_t FrameQueueUnderlyingSource<NativeFrameType>::DiscardedAndQueuedFrames()
+    const {
+  base::AutoLock locker(lock_);
+
+  if (transferred_source_) {
+    return discarded_frames_ + transferred_source_->DiscardedAndQueuedFrames();
+  }
+
+  // Absorb unread frames in the shared queue before clearing reference, as
+  // they will be dropped when the source shuts down.
+  wtf_size_t queue_size = 0;
+  auto queue = frame_queue_handle_.Queue();
+  if (queue) {
+    base::AutoLock queue_locker(queue->GetLock());
+    queue_size = queue->SizeLocked();
+  }
+  return discarded_frames_ + queue_size;
 }
 
 template class MODULES_TEMPLATE_EXPORT

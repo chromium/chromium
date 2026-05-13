@@ -3849,6 +3849,10 @@
       origin_trial_feature_name: "MediaSourceExtensionsForWebCodecs",
     },
     {
+      name: "MediaStreamTrackProcessorStats",
+      status: "experimental",
+    },
+    {
       name: "MediaStreamTrackTransfer",
       status: "test",
       base_feature: "none",

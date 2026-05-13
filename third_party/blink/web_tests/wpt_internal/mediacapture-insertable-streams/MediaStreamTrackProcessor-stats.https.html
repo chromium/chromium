@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+  <title>MediaStreamTrackProcessor Stats</title>
+  <link rel="help" href="https://w3c.github.io/mediacapture-insertable-streams">
+</head>
+<body>
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test checks that MediaStreamTrackProcessor stats work as expected.</p>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="MediaStreamTrackProcessor-stats-helpers.js"></script>
+<script>
+
+const mediaTypes = [
+  { kind: 'video', makeFrame: makeVideoFrame},
+  { kind: 'audio', makeFrame: makeAudioData}
+];
+
+for (const mediaType of mediaTypes) {
+  promise_test(async t => {
+    const generator = new MediaStreamTrackGenerator({kind: mediaType.kind});
+    t.add_cleanup(() => generator.stop());
+    const processor = new MediaStreamTrackProcessor({track: generator, maxBufferSize: 10});
+
+    assert_equals(processor.totalFrames, 0, "Initial totalFrames should be 0");
+    assert_equals(processor.discardedFrames, 0, "Initial discardedFrames should be 0");
+
+    const reader = processor.readable.getReader();
+    const writer = generator.writable.getWriter();
+
+    await writer.write(mediaType.makeFrame(1));
+    await t.step_wait(() => processor.totalFrames === 1, "Waiting for totalFrames to be 1", 1000, 10);
+
+    assert_equals(processor.totalFrames, 1, "totalFrames should be 1 after writing a frame");
+    assert_equals(processor.discardedFrames, 0, "discardedFrames should still be 0");
+
+    await writer.write(mediaType.makeFrame(2));
+    await t.step_wait(() => processor.totalFrames === 2, "Waiting for totalFrames to be 2", 1000, 10);
+
+    assert_equals(processor.totalFrames, 2, "totalFrames should be 2 after writing another frame");
+    assert_equals(processor.discardedFrames, 0, "discardedFrames should still be 0");
+
+  }, `Tests that ${mediaType.kind} totalFrames increments correctly`);
+
+  promise_test(async t => {
+    const generator = new MediaStreamTrackGenerator({kind: mediaType.kind});
+    t.add_cleanup(() => generator.stop());
+    const processor = new MediaStreamTrackProcessor({track: generator, maxBufferSize: 1});
+
+    assert_equals(processor.totalFrames, 0, "Initial totalFrames should be 0");
+    assert_equals(processor.discardedFrames, 0, "Initial discardedFrames should be 0");
+
+    const writer = generator.writable.getWriter();
+    const reader = processor.readable.getReader();
+
+    await writer.write(mediaType.makeFrame(1));
+    await writer.write(mediaType.makeFrame(2));
+    await writer.write(mediaType.makeFrame(3));
+
+    await t.step_wait(() => processor.discardedFrames === 2, "Waiting for discardedFrames to be 2", 1000, 10);
+
+    assert_equals(processor.totalFrames, 3, "totalFrames should be 3");
+    assert_equals(processor.discardedFrames, 2, "discardedFrames should be 2 due to buffer overflow");
+
+  }, `Tests that ${mediaType.kind} discardedFrames increments correctly on overflow`);
+}
+
+</script>
+</body>
+</html>

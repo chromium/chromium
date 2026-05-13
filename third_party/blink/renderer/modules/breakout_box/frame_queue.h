@@ -76,6 +76,10 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
     return queue_.empty();
   }
 
+  wtf_size_t SizeLocked() const EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
+    return queue_.size();
+  }
+
   wtf_size_t MaxSize() const { return max_size_; }
 
   void Clear() {

@@ -73,6 +73,9 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
 
   int NumPendingPullsForTesting() const;
   double DesiredSizeForTesting() const;
+  uint64_t TotalFrames() const;
+  uint64_t DiscardedFrames() const;
+  uint64_t DiscardedAndQueuedFrames() const;
 
   void Trace(Visitor*) const override;
 
@@ -159,6 +162,8 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
       transferred_source_ GUARDED_BY(lock_);
   int num_pending_pulls_ GUARDED_BY(lock_) = 0;
+  uint64_t total_frames_ GUARDED_BY(lock_) = 0;
+  uint64_t discarded_frames_ GUARDED_BY(lock_) = 0;
   // When nonempty, |device_id_| is used to monitor all frames queued by this
   // source or exposed to JS via the stream connected to this source.
   // Frame monitoring applies only to video. Audio is never monitored.

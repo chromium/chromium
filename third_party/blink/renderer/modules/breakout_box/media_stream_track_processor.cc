@@ -153,6 +153,24 @@ MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
   return Create(script_state, init->track(), exception_state);
 }
 
+uint64_t MediaStreamTrackProcessor::totalFrames() const {
+  if (video_underlying_source_) {
+    return video_underlying_source_->TotalFrames();
+  } else if (audio_underlying_source_) {
+    return audio_underlying_source_->TotalFrames();
+  }
+  return 0u;
+}
+
+uint64_t MediaStreamTrackProcessor::discardedFrames() const {
+  if (video_underlying_source_) {
+    return video_underlying_source_->DiscardedFrames();
+  } else if (audio_underlying_source_) {
+    return audio_underlying_source_->DiscardedFrames();
+  }
+  return 0u;
+}
+
 void MediaStreamTrackProcessor::CloseSources() {
   if (audio_underlying_source_ != nullptr) {
     audio_underlying_source_->Close();
