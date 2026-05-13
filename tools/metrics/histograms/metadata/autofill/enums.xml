@@ -2932,6 +2932,8 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Name"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillOptionsReferrer) -->
+
 <enum name="AutofillOptionsReferrer">
   <int value="0" label="User entered the autofill options via main settings."/>
   <int value="1" label="User entered the autofill options via deep link."/>
@@ -2943,7 +2945,12 @@ Called by update_autofill_enums.py.-->
   <int value="4"
       label="User entered the autofill options via autofill and passwords
              fragment."/>
+  <int value="5"
+      label="User entered the autofill options via autofill identity docs
+             fragment."/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/android/java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsFragment.java:AutofillOptionsReferrer) -->
 
 <enum name="AutofillOtpAuthEvent">
   <int value="0" label="Unknown result"/>

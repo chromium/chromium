@@ -23,12 +23,15 @@ import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
@@ -36,6 +39,7 @@ import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -49,6 +53,7 @@ import java.util.Set;
 public class AutofillAiDelegate {
     private static final int DEFAULT_SNACKBAR_DURATION = 10000;
     static final String DISABLED_WALLET_DATA_SHARING = "disabled_wallet_data_sharing";
+    static final String DISABLED_SETTINGS_INFO = "disabled_settings_info";
 
     private final ChromeBaseSettingsFragment mFragment;
     private final EntityDataManager.EntityDataManagerObserver mEntityObserver;
@@ -184,6 +189,74 @@ public class AutofillAiDelegate {
                 });
 
         screen.addPreference(disabledSharingWalletDataPref);
+    }
+
+    /** Adds an information card if Chrome settings are disabled in third-party mode. */
+    void maybeAddDisabledSettingsInfoCard(
+            PreferenceScreen screen, @AutofillOptionsReferrer int referrer) {
+        if (disabledSettingsInThirdPartyMode(mFragment.getProfile())) {
+            addDisabledSettingsInfoCard(screen, referrer);
+        }
+    }
+
+    private void addDisabledSettingsInfoCard(
+            PreferenceScreen screen, @AutofillOptionsReferrer int referrer) {
+        boolean isAutofillAiOn =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
+        // LINT.IfChange(AddDisabledSettingsInfoCard)
+        CardWithButtonPreference disabledSettingsInfoPref =
+                new CardWithButtonPreference(getStyledContext(), null);
+        disabledSettingsInfoPref.setKey(DISABLED_SETTINGS_INFO);
+        disabledSettingsInfoPref.setTitle(R.string.autofill_disable_settings_explanation_title);
+        disabledSettingsInfoPref.setSummary(
+                isAutofillAiOn
+                        ? R.string.autofill_disable_settings_explanation_v2
+                        : R.string.autofill_disable_settings_explanation);
+        // LINT.ThenChange(:DynamicDisabledSettingsInfoCard)
+        disabledSettingsInfoPref.setButtonText(
+                mFragment
+                        .getResources()
+                        .getString(R.string.autofill_disable_settings_button_label));
+        disabledSettingsInfoPref.setIconResource(R.drawable.ic_google_services_24dp);
+        disabledSettingsInfoPref.setOnButtonClick(
+                () -> {
+                    SettingsNavigation settingsNavigation =
+                            SettingsNavigationFactory.createSettingsNavigation();
+                    settingsNavigation.startSettings(
+                            getStyledContext(),
+                            AutofillOptionsFragment.class,
+                            AutofillOptionsFragment.createRequiredArgs(referrer),
+                            /* addToBackStack= */ true);
+                });
+
+        screen.addPreference(disabledSettingsInfoPref);
+    }
+
+    /** Adds an information card to the search index if Chrome settings are disabled. */
+    static void maybeAddDisabledSettingsInfoCard(
+            SettingsIndexData indexData, Profile profile, String prefFragmentName) {
+        if (disabledSettingsInThirdPartyMode(profile)) {
+            if (indexData.getEntryForKey(prefFragmentName, DISABLED_SETTINGS_INFO) == null) {
+                addDisabledSettingsInfoCard(indexData, prefFragmentName);
+            }
+        } else {
+            indexData.removeEntryForKey(prefFragmentName, DISABLED_SETTINGS_INFO);
+        }
+    }
+
+    private static void addDisabledSettingsInfoCard(
+            SettingsIndexData indexData, String prefFragmentName) {
+        boolean isAutofillAiOn =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
+        // LINT.IfChange(DynamicDisabledSettingsInfoCard)
+        indexData.addEntryForKey(
+                prefFragmentName,
+                DISABLED_SETTINGS_INFO,
+                R.string.autofill_disable_settings_explanation_title,
+                isAutofillAiOn
+                        ? R.string.autofill_disable_settings_explanation_v2
+                        : R.string.autofill_disable_settings_explanation);
+        // LINT.ThenChange(:AddDisabledSettingsInfoCard)
     }
 
     /** Adds an information card to the search index if sharing data from Wallet is disabled. */

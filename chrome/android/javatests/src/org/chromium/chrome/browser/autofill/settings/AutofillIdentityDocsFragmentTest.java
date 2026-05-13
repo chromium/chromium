@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -689,6 +690,52 @@ public class AutofillIdentityDocsFragmentTest {
         AutofillIdentityDocsFragment fragment = mSettingsActivityTestRule.getFragment();
 
         assertNull(fragment.findPreference(AutofillAiDelegate.DISABLED_WALLET_DATA_SHARING));
+    }
+
+    @Test
+    @MediumTest
+    public void testDisabledSettingsText_linksToAutofillOptionsPage() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withId(R.id.card_button))
+                .check(matches(withText(R.string.autofill_disable_settings_button_label)))
+                .perform(scrollTo(), click());
+
+        onView(withText(R.string.autofill_third_party_filling_default))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchIndex_addsSettingsInfoInThirdPartyMode() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillIdentityDocsFragment.SEARCH_INDEX_DATA_PROVIDER
+                            .updateDynamicPreferences(
+                                    mSettingsActivityTestRule.getActivity(),
+                                    mSearchIndexDataMock,
+                                    mSettingsActivityTestRule.getFragment().getProfile());
+                });
+
+        verify(mSearchIndexDataMock, atLeastOnce())
+                .addEntryForKey(
+                        eq(AutofillIdentityDocsFragment.class.getName()),
+                        eq(AutofillAiDelegate.DISABLED_SETTINGS_INFO),
+                        any(Integer.class),
+                        any(Integer.class));
     }
 
     // TODO(crbug.com/482994257): Wallet tests

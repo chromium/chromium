@@ -936,7 +936,7 @@ public class AutofillProfilesFragmentTest {
 
         assertNotNull(
                 autofillProfileFragment.findPreference(
-                        AutofillProfilesFragment.DISABLED_SETTINGS_INFO));
+                        AutofillAiDelegate.DISABLED_SETTINGS_INFO));
     }
 
     @Test
@@ -956,7 +956,7 @@ public class AutofillProfilesFragmentTest {
 
         CardWithButtonPreference disabledSettingsInfoPref =
                 autofillProfileFragment.findPreference(
-                        AutofillProfilesFragment.DISABLED_SETTINGS_INFO);
+                        AutofillAiDelegate.DISABLED_SETTINGS_INFO);
         assertNotNull(disabledSettingsInfoPref);
         onView(allOf(withId(R.id.icon), isDescendantOfA(withId(R.id.card_layout))))
                 .check(matches(isDisplayed()));
@@ -998,7 +998,7 @@ public class AutofillProfilesFragmentTest {
 
         CardWithButtonPreference disabledSettingsInfoPref =
                 autofillProfileFragment.findPreference(
-                        AutofillProfilesFragment.DISABLED_SETTINGS_INFO);
+                        AutofillAiDelegate.DISABLED_SETTINGS_INFO);
         assertNotNull(disabledSettingsInfoPref);
         onView(allOf(withId(R.id.icon), isDescendantOfA(withId(R.id.card_layout))))
                 .check(matches(isDisplayed()));

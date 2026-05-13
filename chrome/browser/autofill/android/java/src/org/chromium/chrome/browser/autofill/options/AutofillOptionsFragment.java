@@ -61,12 +61,14 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     // numeric values should never be reused.
     //
     // Needs to stay in sync with AutofillOptionsReferrer in enums.xml.
+    // LINT.IfChange(AutofillOptionsReferrer)
     @IntDef({
         AutofillOptionsReferrer.SETTINGS,
         AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS,
         AutofillOptionsReferrer.PAYMENT_METHODS_FRAGMENT,
         AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT,
         AutofillOptionsReferrer.AUTOFILL_AND_PASSWORDS_FRAGMENT,
+        AutofillOptionsReferrer.AUTOFILL_IDENTITY_DOCS_FRAGMENT,
         AutofillOptionsReferrer.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -86,8 +88,12 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         /** Autofill and passwords in Chrome settings. */
         int AUTOFILL_AND_PASSWORDS_FRAGMENT = 4;
 
-        int COUNT = 5;
+        /** Identity docs fragment in Chrome settings. */
+        int AUTOFILL_IDENTITY_DOCS_FRAGMENT = 5;
+
+        int COUNT = 6;
     }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillOptionsReferrer)
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
