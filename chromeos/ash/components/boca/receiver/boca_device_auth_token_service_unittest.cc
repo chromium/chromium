@@ -156,8 +156,8 @@ TEST_F(BocaDeviceAuthTokenServiceTest, StartAuthenticationAuthFailure) {
                     -> std::unique_ptr<OAuth2AccessTokenManager::Request> {
         consumer->OnGetTokenFailure(
             /*request=*/nullptr,
-            GoogleServiceAuthError(
-                GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
         return nullptr;
       });
   service_->StartAuthentication(base::BindLambdaForTesting(
