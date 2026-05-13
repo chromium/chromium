@@ -766,6 +766,7 @@ source_set("browser_tests") {
       "//chrome/browser/actor/ui:test_support",
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/extensions",
+      "//chrome/browser/glic/browser_ui:browser_tests",
       "//chrome/browser/glic/common",
       "//chrome/browser/glic/common:browser_tests",
       "//chrome/browser/glic/selection",

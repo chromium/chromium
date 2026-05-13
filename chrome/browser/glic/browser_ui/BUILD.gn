@@ -222,7 +222,6 @@ if (!is_android) {
       "glic_iph_controller_interactive_uitest.cc",
       "glic_nudge_controller_interactive_uitest.cc",
       "glic_tab_indicator_helper_interactive_uitest.cc",
-      "tab_underline_view_interactive_uitest.cc",
     ]
     deps = [
       ":browser_ui",
@@ -253,6 +252,32 @@ if (!is_android) {
       "//ui/gfx:gfx_switches",
       "//ui/views",
       "//ui/views:test_support",
+      "//url",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "tab_underline_view_browsertest.cc" ]
+    deps = [
+      ":browser_ui",
+      ":glow",
+      "//base",
+      "//chrome/browser/glic/test_support",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/tabs/alert:tab_alert",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/common:chrome_features",
+      "//chrome/common:non_code_constants",
+      "//chrome/test:test_support",
+      "//components/tabs:public",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/views",
       "//url",
     ]
   }

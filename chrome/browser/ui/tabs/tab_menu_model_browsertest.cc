@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -466,7 +467,8 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, SomeShared) {
   auto* instance =
       service->GetInstanceForTab(browser()->GetActiveTabInterface());
   ASSERT_TRUE(instance);
-  instance->BindTabForTesting(tab_strip()->GetTabAtIndex(0));
+  service->instance_coordinator().ShowInstanceForTabs(
+      {tab_strip()->GetTabAtIndex(0)}, instance->id());
 
   TabMenuModel model(&delegate_,
                      browser()->GetFeatures().tab_menu_model_delegate(),
@@ -487,11 +489,13 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, TooManyShared) {
   const int limit = sharing_manager().GetMaxPinnedTabs();
   for (int i = 0; i < limit; ++i) {
     chrome::NewTab(browser());
-    instance->BindTabForTesting(tab_strip()->GetTabAtIndex(i));
+    service->instance_coordinator().ShowInstanceForTabs(
+        {tab_strip()->GetTabAtIndex(i)}, instance->id());
   }
   chrome::NewTab(browser());
   tab_strip()->SelectTabAt(limit);
-  instance->BindTabForTesting(tab_strip()->GetTabAtIndex(limit));
+  service->instance_coordinator().ShowInstanceForTabs(
+      {tab_strip()->GetTabAtIndex(limit)}, instance->id());
   EXPECT_FALSE(sharing_manager().IsTabPinned(TabHandleAtIndex(limit)));
 
   // No change in the menu when sharing too many.
