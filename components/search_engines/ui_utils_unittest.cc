@@ -384,6 +384,99 @@ TEST_F(OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically,
   EXPECT_FALSE((*comparator)(google_engine.get(), bing_engine.get()));
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+class SortAndFilterRecentlyVisitedURLsTest : public testing::Test {
+ protected:
+  std::unique_ptr<TemplateURL> CreateSearchEngineWithVisitTime(
+      base::Time last_visited) {
+    TemplateURLData data;
+    data.SetShortName(u"Test Engine");
+    data.SetKeyword(u"test");
+    data.SetURL("https://test.com/search?q={searchTerms}");
+    data.last_visited = last_visited;
+    return std::make_unique<TemplateURL>(data);
+  }
+};
+
+// Test that search engines visited longer than 2 days ago are filtered out.
+TEST_F(SortAndFilterRecentlyVisitedURLsTest, FiltersOutOldVisits) {
+  base::Time now = base::Time::Now();
+
+  auto engine_recent_1 = CreateSearchEngineWithVisitTime(now - base::Hours(1));
+  auto engine_recent_2 = CreateSearchEngineWithVisitTime(now - base::Days(1));
+  auto engine_expired_1 =
+      CreateSearchEngineWithVisitTime(now - base::Days(2) - base::Seconds(1));
+  auto engine_expired_2 = CreateSearchEngineWithVisitTime(now - base::Days(10));
+
+  TemplateURL::TemplateURLVector recently_visited = {
+      engine_expired_1.get(), engine_recent_1.get(), engine_expired_2.get(),
+      engine_recent_2.get()};
+
+  internal::SortAndFilterRecentlyVisitedURLs(recently_visited);
+
+  // Only the two non-expired engines should remain, sorted by recency.
+  ASSERT_EQ(recently_visited.size(), 2u);
+  EXPECT_EQ(recently_visited[0], engine_recent_1.get());
+  EXPECT_EQ(recently_visited[1], engine_recent_2.get());
+}
+
+// Test that only the top 3 (kMaxCustomSearchEngines) most recently visited
+// engines are kept.
+TEST_F(SortAndFilterRecentlyVisitedURLsTest, LimitsToMaxThreeEngines) {
+  base::Time now = base::Time::Now();
+
+  // Create 5 engines, all within the valid 2-day window, with distinct visit
+  // times.
+  auto engine_1st = CreateSearchEngineWithVisitTime(now - base::Minutes(5));
+  auto engine_2nd = CreateSearchEngineWithVisitTime(now - base::Hours(1));
+  auto engine_3rd = CreateSearchEngineWithVisitTime(now - base::Hours(12));
+  auto engine_4th = CreateSearchEngineWithVisitTime(now - base::Days(1));
+  auto engine_5th = CreateSearchEngineWithVisitTime(now - base::Hours(36));
+
+  // Push them in an unsorted order
+  TemplateURL::TemplateURLVector recently_visited = {
+      engine_4th.get(), engine_2nd.get(), engine_5th.get(), engine_1st.get(),
+      engine_3rd.get()};
+
+  internal::SortAndFilterRecentlyVisitedURLs(recently_visited);
+
+  // Vector must be capped to exactly 3 elements, sorted by most recent first.
+  ASSERT_EQ(recently_visited.size(), 3u);
+  EXPECT_EQ(recently_visited[0], engine_1st.get());
+  EXPECT_EQ(recently_visited[1], engine_2nd.get());
+  EXPECT_EQ(recently_visited[2], engine_3rd.get());
+}
+
+// Test that empty inputs do not cause crashes or unexpected behaviors.
+TEST_F(SortAndFilterRecentlyVisitedURLsTest, HandlesEmptyVector) {
+  TemplateURL::TemplateURLVector recently_visited;
+
+  internal::SortAndFilterRecentlyVisitedURLs(recently_visited);
+
+  EXPECT_TRUE(recently_visited.empty());
+}
+
+// Test handling of vectors with fewer elements than the maximum allowed
+// capacity.
+TEST_F(SortAndFilterRecentlyVisitedURLsTest, HandlesFewerThanMaxEngines) {
+  base::Time now = base::Time::Now();
+
+  auto engine_newer = CreateSearchEngineWithVisitTime(now - base::Hours(2));
+  auto engine_older = CreateSearchEngineWithVisitTime(now - base::Hours(10));
+
+  TemplateURL::TemplateURLVector recently_visited = {engine_older.get(),
+                                                     engine_newer.get()};
+
+  internal::SortAndFilterRecentlyVisitedURLs(recently_visited);
+
+  // Both should be kept because we are below the limit of 3, but sorted by
+  // recency.
+  ASSERT_EQ(recently_visited.size(), 2u);
+  EXPECT_EQ(recently_visited[0], engine_newer.get());
+  EXPECT_EQ(recently_visited[1], engine_older.get());
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
 class GetDisabledStarterPackIdsTest : public testing::Test {};
 
 TEST_F(GetDisabledStarterPackIdsTest, AiMode) {

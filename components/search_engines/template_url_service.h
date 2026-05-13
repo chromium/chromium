@@ -163,6 +163,22 @@ class TemplateURLService final : public WebDataServiceConsumer,
     TemplateURLVector inactive_feature_shortcuts;
   };
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  struct PrepopulatedAndRecentlyVisitedTemplateUrls {
+    PrepopulatedAndRecentlyVisitedTemplateUrls();
+    ~PrepopulatedAndRecentlyVisitedTemplateUrls();
+    PrepopulatedAndRecentlyVisitedTemplateUrls(
+        const PrepopulatedAndRecentlyVisitedTemplateUrls& other);
+
+    // All prepopulated engines retrieved from `GetPrepopulatedEngines()`. This
+    // always includes the current default search engine.
+    TemplateURLVector prepopulated_urls;
+    // A limited number of recently visited URLs, defined and sorted through
+    // `SortAndFilterRecentlyVisitedURLs()`
+    TemplateURLVector recently_visited_urls;
+  };
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
   // Values for an enumerated histogram used to track keyword conflicts between
   // search engines created by policy and search engines the user manually
   // edited. Keep in sync with `SearchPolicyConflictType` in
@@ -451,6 +467,19 @@ class TemplateURLService final : public WebDataServiceConsumer,
       template_url_starter_pack_data::StarterPackIdSet
           disabled_starter_pack_ids =
               template_url_starter_pack_data::StarterPackIdSet());
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Returns an object containing two lists. The first one contains engines that
+  // are prepopulated (in the order defined by the prepopulate_data_resolver,
+  // created by policy or the default search engine. The second one contains
+  // recently visited engines.
+  // In contrast to `GetCategorizedTemplateURLs()`, this only creates these two
+  // lists and omits any extension or starter pack shortcuts. Additionally, as
+  // there is no way to activate/deactivate engines on platforms that use this
+  // function, there is no notion of "active" here.
+  PrepopulatedAndRecentlyVisitedTemplateUrls
+  GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Returns the Origin of the user's default search engine. If a default search
   // engine is set and its URL is valid, the Origin of that URL is returned.

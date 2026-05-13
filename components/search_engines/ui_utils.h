@@ -6,10 +6,10 @@
 #define COMPONENTS_SEARCH_ENGINES_UI_UTILS_H_
 
 #include "base/containers/flat_map.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
-class TemplateURL;
 struct TemplateURLData;
 
 namespace internal {
@@ -39,6 +39,7 @@ class OrderTemplateUrlsByManagedAndAlphabetically {
 
 // Comparator function to sort `TemplateURL`s by putting first engines in order
 // defined by the `prepopulated_engines`, and then following sorting logic of
+// `OrderTemplateUrlsByManagedAndAlphabetically()`.
 class OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically {
  public:
   explicit OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
@@ -58,6 +59,15 @@ class OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically {
   // order.
   base::flat_map<int, size_t> prepopulated_ranks_;
 };
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// This partially sorts `recently_visited` by last visited time up to a
+// maximum threshold (`kMaxCustomSearchEngines`). Elements not meeting the
+// cut-off, as well as any entries older than `kMaxVisitAge`, are filtered
+// out and erased from the vector.
+void SortAndFilterRecentlyVisitedURLs(
+    TemplateURL::TemplateURLVector& recently_visited);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 template_url_starter_pack_data::StarterPackIdSet GetDisabledStarterPackIds(
     bool ai_mode_enabled,
