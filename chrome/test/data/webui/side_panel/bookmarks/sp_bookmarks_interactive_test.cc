@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -65,7 +66,13 @@ IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, DISABLED_General1) {
       "runMochaSuite('General Part1');");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, General2) {
+// TODO(https://crbug.com/512674938): Reenable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_General2 DISABLED_General2
+#else
+#define MAYBE_General2 General2
+#endif
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, MAYBE_General2) {
   SidePanelBookmarksTest::RunTest(
       "side_panel/bookmarks/power_bookmarks_app_test.js",
       "runMochaSuite('General Part2');");
