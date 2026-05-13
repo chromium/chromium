@@ -69,6 +69,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT,
         AutofillOptionsReferrer.AUTOFILL_AND_PASSWORDS_FRAGMENT,
         AutofillOptionsReferrer.AUTOFILL_IDENTITY_DOCS_FRAGMENT,
+        AutofillOptionsReferrer.AUTOFILL_TRAVEL_FRAGMENT,
         AutofillOptionsReferrer.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -91,7 +92,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         /** Identity docs fragment in Chrome settings. */
         int AUTOFILL_IDENTITY_DOCS_FRAGMENT = 5;
 
-        int COUNT = 6;
+        /** Travel fragment in Chrome settings. */
+        int AUTOFILL_TRAVEL_FRAGMENT = 6;
+
+        int COUNT = 7;
     }
     // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillOptionsReferrer)
 

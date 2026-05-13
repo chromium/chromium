@@ -424,7 +424,10 @@ public class HomeOfTransactionsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
+    })
     public void testClickTravelLaunchesTravel() {
         mSettingsActivityTestRule.startSettingsActivity();
 
