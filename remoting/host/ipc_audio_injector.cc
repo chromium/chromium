@@ -8,7 +8,7 @@
 
 #include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/host/desktop_session_proxy.h"
-#include "remoting/proto/audio.pb.h"
+#include "remoting/protocol/audio_sample_info.h"
 
 namespace remoting {
 
@@ -28,11 +28,12 @@ bool IpcAudioInjector::Start(base::WeakPtr<Delegate> delegate) {
   return true;
 }
 
-void IpcAudioInjector::InjectAudioPacket(std::unique_ptr<AudioPacket> packet) {
-  desktop_session_proxy_->InjectAudioPacket(std::move(packet));
+void IpcAudioInjector::SetSampleInfo(const protocol::AudioSampleInfo& info,
+                                     base::OnceClosure done) {
+  desktop_session_proxy_->SetAudioInjectorSampleInfo(info, std::move(done));
 }
 
-base::WeakPtr<protocol::AudioStub> IpcAudioInjector::GetWeakPtr() {
+base::WeakPtr<AudioInjector> IpcAudioInjector::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

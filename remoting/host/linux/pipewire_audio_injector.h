@@ -15,17 +15,17 @@
 namespace remoting {
 class FifoBufferReader;
 
-class AudioPacket;
-
 // PipeWire implementation of an audio injector. It creates a virtual
-// audio source in PipeWire and feeds audio packets into it.
+// audio source in PipeWire and pumps audio streams from a FifoBufferReader into
+// it.
 class PipewireAudioInjector : public AudioInjector {
  public:
   static bool IsSupported();
   static std::unique_ptr<PipewireAudioInjector> Create(
       std::unique_ptr<FifoBufferReader> audio_reader);
 
-  PipewireAudioInjector();
+  explicit PipewireAudioInjector(
+      std::unique_ptr<FifoBufferReader> audio_reader);
   ~PipewireAudioInjector() override;
 
   PipewireAudioInjector(const PipewireAudioInjector&) = delete;
@@ -33,14 +33,18 @@ class PipewireAudioInjector : public AudioInjector {
 
   // AudioInjector implementation.
   bool Start(base::WeakPtr<Delegate> delegate) override;
-  void InjectAudioPacket(std::unique_ptr<AudioPacket> packet) override;
-  base::WeakPtr<protocol::AudioStub> GetWeakPtr() override;
+  void SetSampleInfo(const protocol::AudioSampleInfo& info,
+                     base::OnceClosure done) override;
+  base::WeakPtr<AudioInjector> GetWeakPtr() override;
 
  private:
   class Core;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  std::unique_ptr<FifoBufferReader> audio_reader_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool format_ready_ = false;
   std::unique_ptr<Core> core_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PipewireAudioInjector> weak_factory_{this};

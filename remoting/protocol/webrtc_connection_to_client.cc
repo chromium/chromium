@@ -18,7 +18,6 @@
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
-#include "remoting/protocol/audio_stub.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
@@ -30,7 +29,6 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_fifo_sink_adapter.h"
 #include "remoting/protocol/webrtc_audio_module.h"
-#include "remoting/protocol/webrtc_audio_sink_adapter.h"
 #include "remoting/protocol/webrtc_audio_stream.h"
 #include "remoting/protocol/webrtc_transport.h"
 #include "remoting/protocol/webrtc_video_encoder_factory.h"
@@ -130,8 +128,9 @@ void WebrtcConnectionToClient::SetAudioWriter(
 
   audio_fifo_sink_adapter_ = std::make_unique<WebrtcAudioFifoSinkAdapter>(
       std::move(writer),
-      base::BindRepeating(&WebrtcConnectionToClient::OnAudioFormatChanged,
-                          weak_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &WebrtcConnectionToClient::OnIncomingAudioFormatChanged,
+          weak_factory_.GetWeakPtr()));
 
   BindAudioFifoSinkAdapter();
 }
@@ -156,17 +155,6 @@ void WebrtcConnectionToClient::set_host_stub(protocol::HostStub* host_stub) {
 void WebrtcConnectionToClient::set_input_stub(protocol::InputStub* input_stub) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   event_dispatcher_->set_input_stub(input_stub);
-}
-
-void WebrtcConnectionToClient::set_audio_stub(
-    base::WeakPtr<AudioStub> audio_stub) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  audio_stub_ = audio_stub;
-  audio_sink_adapter_.reset();
-  if (audio_stub_ && incoming_audio_stream_) {
-    audio_sink_adapter_ = std::make_unique<WebrtcAudioSinkAdapter>(
-        incoming_audio_stream_, audio_stub_);
-  }
 }
 
 void WebrtcConnectionToClient::ApplySessionOptions(
@@ -306,10 +294,6 @@ void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamAdded(
   }
 
   incoming_audio_stream_ = stream;
-  if (audio_stub_) {
-    audio_sink_adapter_ = std::make_unique<WebrtcAudioSinkAdapter>(
-        incoming_audio_stream_, audio_stub_);
-  }
   BindAudioFifoSinkAdapter();
 }
 
@@ -317,7 +301,6 @@ void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamRemoved(
     webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (incoming_audio_stream_ == stream) {
-    audio_sink_adapter_.reset();
     if (audio_fifo_sink_adapter_) {
       audio_fifo_sink_adapter_->SetTrack(nullptr);
     }
@@ -325,11 +308,16 @@ void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamRemoved(
   }
 }
 
-void WebrtcConnectionToClient::OnAudioFormatChanged(
+void WebrtcConnectionToClient::OnIncomingAudioFormatChanged(
     const AudioSampleInfo& info,
     base::OnceClosure acknowledgment_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::move(acknowledgment_callback).Run();
+  if (event_handler_) {
+    event_handler_->OnIncomingAudioFormatChanged(
+        info, std::move(acknowledgment_callback));
+  } else {
+    std::move(acknowledgment_callback).Run();
+  }
 }
 
 void WebrtcConnectionToClient::BindAudioFifoSinkAdapter() {

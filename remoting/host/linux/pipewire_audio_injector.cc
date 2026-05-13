@@ -13,22 +13,23 @@
 #include <set>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "remoting/base/fifo_buffer.h"
-#include "remoting/base/in_memory_fifo_buffer.h"
-#include "remoting/base/jitter_buffer.h"
 #include "remoting/host/linux/pipewire_utils.h"
-#include "remoting/proto/audio.pb.h"
+#include "remoting/protocol/audio_sample_info.h"
 
 namespace remoting {
 
@@ -40,20 +41,6 @@ constexpr uint32_t kAudioRate = 48000;
 constexpr uint32_t kAudioChannels = 2;
 constexpr size_t kBytesPerFrame = kAudioChannels * sizeof(int16_t);
 
-// 256KB is about 1.3s of audio. This must be a power of two.
-static constexpr size_t kJitterBufferCapacity = 256 * 1024;
-
-static constexpr JitterBuffer::Config kJitterBufferConfig = {
-    .frame_size = kBytesPerFrame,
-    // 30ms of audio: 48000 * 4 * 0.03 = 5760 bytes.
-    .max_starvation_bytes = 5760,
-    // 150ms of audio: 192000 * 150 / 1000 = 28800 bytes.
-    .max_latency_bytes = 28800,
-    // 100ms of audio: 48000 * 0.1 * 4 = 19200 bytes.
-    // TODO: crbug.com/502327751 - this is a rather high latency for real-time
-    // audio streaming. See if we can bring it down to ~20ms.
-    .minimum_threshold = 19200,
-};
 }  // namespace
 
 // The core object is started and destroyed on the caller's sequence. `delegate`
@@ -62,13 +49,14 @@ static constexpr JitterBuffer::Config kJitterBufferConfig = {
 // needs to access PipeWire resources to ensure thread safety.
 class PipewireAudioInjector::Core {
  public:
-  Core();
+  explicit Core(std::unique_ptr<FifoBufferReader> reader);
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
   ~Core();
 
   bool Start(base::WeakPtr<Delegate> delegate);
-  void InjectAudioPacket(std::unique_ptr<AudioPacket> packet);
+  void SetFormatReady(bool ready);
+  void ClearBuffer(base::OnceClosure done);
 
  private:
   static void OnStreamStateChanged(void* data,
@@ -117,22 +105,26 @@ class PipewireAudioInjector::Core {
   // `stream_node_id_` is known. Cleared once `stream_node_id_` is known.
   std::map<uint32_t, uint32_t> pending_links_;
 
-  std::unique_ptr<InMemoryFifoBufferWriter> audio_writer_;
-  std::unique_ptr<JitterBuffer> audio_reader_;
+  std::unique_ptr<FifoBufferReader> audio_reader_;
 
   // Flag to defer `JitterBuffer::Clear()` from PipeWire's main thread to the
   // real-time processing thread (`HandleStreamProcess`) to ensure
   // thread-safety.
   std::atomic<bool> pending_clear_{false};
-  std::atomic<bool> has_consumers_{false};
+
+  std::atomic<bool> format_ready_{false};
+  // Guarded by `callback_lock_` to synchronize the main thread with PipeWire's
+  // independent real-time data loop. While `pw_main_loop_` locks control
+  // events, `HandleStreamProcess` executes on a dedicated streaming thread that
+  // does not acquire the main loop lock, making explicit synchronization
+  // necessary.
+  base::Lock callback_lock_;
+  base::OnceClosure on_buffer_cleared_cb_ GUARDED_BY(callback_lock_);
 };
 
-PipewireAudioInjector::Core::Core() {
+PipewireAudioInjector::Core::Core(std::unique_ptr<FifoBufferReader> reader) {
   CHECK(EnsurePipewireInitialized()) << "PipeWire library is not initialized.";
-  std::unique_ptr<InMemoryFifoBufferReader> reader;
-  CHECK(CreateInMemoryFifoBuffer(kJitterBufferCapacity, audio_writer_, reader));
-  audio_reader_ =
-      std::make_unique<JitterBuffer>(kJitterBufferConfig, std::move(reader));
+  audio_reader_ = std::move(reader);
 }
 
 DISABLE_CFI_DLSYM
@@ -219,42 +211,28 @@ bool PipewireAudioInjector::Core::Start(base::WeakPtr<Delegate> delegate) {
                                     &spa_stream_listener_, PW_DIRECTION_OUTPUT,
                                     kAudioRate, kAudioChannels);
   if (!pw_stream_) {
+    LOG(ERROR) << "Failed to create PipeWire stream.";
     return false;
   }
   return true;
 }
 
-void PipewireAudioInjector::Core::InjectAudioPacket(
-    std::unique_ptr<AudioPacket> packet) {
-  if (!has_consumers_.load(std::memory_order_relaxed)) {
-    return;
-  }
+void PipewireAudioInjector::Core::SetFormatReady(bool ready) {
+  format_ready_.store(ready, std::memory_order_relaxed);
+}
 
-  if (packet->encoding() != AudioPacket::ENCODING_RAW) {
-    NOTIMPLEMENTED_LOG_ONCE()
-        << "Unsupported audio encoding: " << packet->encoding();
-    return;
+void PipewireAudioInjector::Core::ClearBuffer(base::OnceClosure done) {
+  ScopedThreadLoopLock lock(pw_main_loop_.get());
+  base::OnceClosure old_on_buffer_cleared_cb;
+  {
+    base::AutoLock auto_lock(callback_lock_);
+    old_on_buffer_cleared_cb = std::move(on_buffer_cleared_cb_);
+    on_buffer_cleared_cb_ = std::move(done);
   }
-
-  if (packet->sampling_rate() != kAudioRate) {
-    NOTIMPLEMENTED_LOG_ONCE()
-        << "Unsupported audio sampling rate: " << packet->sampling_rate();
-    return;
+  if (old_on_buffer_cleared_cb) {
+    std::move(old_on_buffer_cleared_cb).Run();
   }
-
-  if (packet->channels() != kAudioChannels) {
-    NOTIMPLEMENTED_LOG_ONCE()
-        << "Unsupported audio channels: " << packet->channels();
-    return;
-  }
-
-  for (const std::string& data : packet->data()) {
-    if (data.size() % kBytesPerFrame != 0) {
-      LOG(ERROR) << "Dropped misaligned audio data packet.";
-      continue;
-    }
-    audio_writer_->Write(base::as_byte_span(data));
-  }
+  pending_clear_.store(true, std::memory_order_release);
 }
 
 // static
@@ -293,7 +271,6 @@ void PipewireAudioInjector::Core::HandleStreamStateChanged(
 
     if (was_empty && !active_links_.empty()) {
       pending_clear_.store(true, std::memory_order_release);
-      has_consumers_.store(true, std::memory_order_relaxed);
       on_audio_injector_consumers_changed_cb_.Run(true);
     }
   }
@@ -308,6 +285,14 @@ DISABLE_CFI_DLSYM
 void PipewireAudioInjector::Core::HandleStreamProcess() {
   if (pending_clear_.exchange(false, std::memory_order_acquire)) {
     audio_reader_->Clear();
+    base::OnceClosure on_buffer_cleared_cb;
+    {
+      base::AutoLock auto_lock(callback_lock_);
+      on_buffer_cleared_cb = std::move(on_buffer_cleared_cb_);
+    }
+    if (on_buffer_cleared_cb) {
+      std::move(on_buffer_cleared_cb).Run();
+    }
   }
 
   while (struct pw_buffer* b =
@@ -335,8 +320,11 @@ void PipewireAudioInjector::Core::HandleStreamProcess() {
     auto dst_span = UNSAFE_BUFFERS(base::span<uint8_t>(
         static_cast<uint8_t*>(buf->datas[0].data), buf->datas[0].maxsize));
 
-    size_t bytes_read =
-        audio_reader_->Read(dst_span.first(target_bytes)).value_or(0);
+    size_t bytes_read = 0;
+    if (format_ready_.load(std::memory_order_relaxed)) {
+      bytes_read =
+          audio_reader_->Read(dst_span.first(target_bytes)).value_or(0);
+    }
 
     if (bytes_read < target_bytes) {
       // Fill the rest of the buffer with silence.
@@ -396,7 +384,6 @@ void PipewireAudioInjector::Core::HandleRegistryGlobal(
   }
   if (active_links_.empty()) {
     pending_clear_.store(true, std::memory_order_release);
-    has_consumers_.store(true, std::memory_order_relaxed);
     on_audio_injector_consumers_changed_cb_.Run(true);
   }
   active_links_.insert(id);
@@ -411,14 +398,16 @@ void PipewireAudioInjector::Core::OnRegistryGlobalRemove(void* data,
 void PipewireAudioInjector::Core::HandleRegistryGlobalRemove(uint32_t id) {
   pending_links_.erase(id);
   if (active_links_.erase(id) > 0 && active_links_.empty()) {
-    has_consumers_.store(false, std::memory_order_relaxed);
     pending_clear_.store(true, std::memory_order_release);
     on_audio_injector_consumers_changed_cb_.Run(false);
   }
 }
 
-PipewireAudioInjector::PipewireAudioInjector() {
+PipewireAudioInjector::PipewireAudioInjector(
+    std::unique_ptr<FifoBufferReader> audio_reader)
+    : audio_reader_(std::move(audio_reader)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  CHECK(audio_reader_);
 }
 
 PipewireAudioInjector::~PipewireAudioInjector() {
@@ -436,13 +425,23 @@ std::unique_ptr<PipewireAudioInjector> PipewireAudioInjector::Create(
   if (!IsSupported()) {
     return nullptr;
   }
-  return std::make_unique<PipewireAudioInjector>();
+  if (!audio_reader) {
+    LOG(ERROR) << "Cannot create audio injector without an audio reader.";
+    return nullptr;
+  }
+  return std::make_unique<PipewireAudioInjector>(std::move(audio_reader));
 }
 
 bool PipewireAudioInjector::Start(base::WeakPtr<Delegate> delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  core_ = std::make_unique<Core>();
+  if (core_) {
+    LOG(ERROR) << "Audio injector is already started.";
+    return false;
+  }
+
+  core_ = std::make_unique<Core>(std::move(audio_reader_));
+  core_->SetFormatReady(format_ready_);
   if (!core_->Start(delegate)) {
     core_.reset();
     return false;
@@ -450,15 +449,41 @@ bool PipewireAudioInjector::Start(base::WeakPtr<Delegate> delegate) {
   return true;
 }
 
-void PipewireAudioInjector::InjectAudioPacket(
-    std::unique_ptr<AudioPacket> packet) {
+void PipewireAudioInjector::SetSampleInfo(const protocol::AudioSampleInfo& info,
+                                          base::OnceClosure done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(core_) << "Start() has not been called.";
 
-  core_->InjectAudioPacket(std::move(packet));
+  // Clear the incoming buffer to discard stale samples in the old format.
+  // If the injector is active, clearing is deferred to the streaming thread.
+  // The buffer will be filled with samples in the new format after `done` is
+  // called.
+  format_ready_ =
+      info.sampling_rate == kAudioRate && info.channels == kAudioChannels;
+  if (!format_ready_) {
+    LOG(ERROR) << "Unsupported audio sample info: rate=" << info.sampling_rate
+               << ", channels=" << static_cast<int>(info.channels);
+  }
+
+  if (core_) {
+    core_->SetFormatReady(format_ready_);
+    base::OnceClosure wrapped_done =
+        done ? base::BindPostTaskToCurrentDefault(std::move(done))
+             : base::DoNothing();
+    core_->ClearBuffer(std::move(wrapped_done));
+  } else {
+    if (audio_reader_) {
+      audio_reader_->Clear();
+    }
+    if (done) {
+      // TODO: crbug.com/509659010 - Add a parameter to the done callback to
+      // indicate whether the injector supports the new format, so that the
+      // writer can stop writing.
+      std::move(done).Run();
+    }
+  }
 }
 
-base::WeakPtr<protocol::AudioStub> PipewireAudioInjector::GetWeakPtr() {
+base::WeakPtr<AudioInjector> PipewireAudioInjector::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }

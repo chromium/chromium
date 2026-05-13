@@ -609,25 +609,36 @@ void DesktopSessionAgent::StartAudioInjector(
     LOG(ERROR) << "Cannot start audio injector because it is not supported.";
     return;
   }
+  if (pending_audio_sample_info_) {
+    base::OnceClosure done =
+        pending_audio_sample_info_callback_
+            ? std::move(pending_audio_sample_info_callback_)
+            : base::DoNothing();
+    audio_injector_->SetSampleInfo(*pending_audio_sample_info_,
+                                   std::move(done));
+    pending_audio_sample_info_.reset();
+  }
   audio_injector_->Start(weak_factory_.GetWeakPtr());
 }
 
-void DesktopSessionAgent::InjectAudioPacket(
-    std::unique_ptr<AudioPacket> packet) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  if (audio_injector_) {
-    audio_injector_->InjectAudioPacket(std::move(packet));
-  }
+void DesktopSessionAgent::InjectAudioPacket(std::unique_ptr<AudioPacket>) {
+  // TODO: crbug.com/509659010 - Remove InjectAudioPacket from the Mojo
+  // interface once legacy clients are rolled off.
 }
 
 void DesktopSessionAgent::SetAudioInjectorSampleInfo(
     const protocol::AudioSampleInfo& info,
     SetAudioInjectorSampleInfoCallback callback) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  // TODO: crbug.com/509659010 - Forward sample rate and channels to the SPSC
-  // audio injector once implemented, and acknowledge via callback.
-  std::move(callback).Run();
+  if (audio_injector_) {
+    audio_injector_->SetSampleInfo(info, std::move(callback));
+  } else {
+    if (pending_audio_sample_info_callback_) {
+      std::move(pending_audio_sample_info_callback_).Run();
+    }
+    pending_audio_sample_info_ = info;
+    pending_audio_sample_info_callback_ = std::move(callback);
+  }
 }
 
 void DesktopSessionAgent::OnDesktopEnvironmentCreated(

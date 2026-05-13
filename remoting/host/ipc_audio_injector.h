@@ -30,8 +30,10 @@ class IpcAudioInjector : public AudioInjector {
 
   // AudioInjector implementation.
   bool Start(base::WeakPtr<Delegate> delegate) override;
-  void InjectAudioPacket(std::unique_ptr<AudioPacket> packet) override;
-  base::WeakPtr<protocol::AudioStub> GetWeakPtr() override;
+  void SetSampleInfo(const protocol::AudioSampleInfo& info,
+                     base::OnceClosure done) override;
+
+  base::WeakPtr<AudioInjector> GetWeakPtr() override;
 
  private:
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;

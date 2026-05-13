@@ -39,6 +39,7 @@
 #include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
+#include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/errors.h"
@@ -53,7 +54,6 @@ class ChannelProxy;
 
 namespace remoting {
 
-class AudioPacket;
 class ClientSessionControl;
 class DesktopSessionConnector;
 class IpcFifoBufferReader;
@@ -169,7 +169,8 @@ class DesktopSessionProxy
 
   // APIs used to implement the AudioInjector interface.
   void StartAudioInjector(std::unique_ptr<IpcFifoBufferReader> audio_reader);
-  void InjectAudioPacket(std::unique_ptr<AudioPacket> packet);
+  void SetAudioInjectorSampleInfo(const protocol::AudioSampleInfo& info,
+                                  base::OnceClosure done);
 
   // API used to implement the ActionExecutor interface.
   void ExecuteAction(const protocol::ActionRequest& request);
@@ -355,6 +356,10 @@ class DesktopSessionProxy
   bool should_start_audio_injector_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
   std::unique_ptr<IpcFifoBufferReader> pending_audio_reader_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<protocol::AudioSampleInfo> pending_audio_sample_info_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceClosure pending_audio_format_ack_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -7,16 +7,20 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "remoting/protocol/audio_stub.h"
 
 namespace remoting {
 
-class AudioPacket;
 class FifoBufferReader;
 
-// A class for injecting audio packets into a virtual audio input device.
-class AudioInjector : public protocol::AudioStub {
+namespace protocol {
+struct AudioSampleInfo;
+}  // namespace protocol
+
+// A class for injecting audio streams from a FIFO buffer into a virtual audio
+// input device.
+class AudioInjector {
  public:
   // Returns true if the current platform supports audio injection.
   // Note: For multi-process host, returning true only means that the platform
@@ -37,20 +41,18 @@ class AudioInjector : public protocol::AudioStub {
     virtual void OnAudioInjectorConsumersChanged(bool has_consumers) = 0;
   };
 
-  ~AudioInjector() override;
+  virtual ~AudioInjector();
 
-  // protocol::AudioStub implementation.
-  void ProcessAudioPacket(std::unique_ptr<AudioPacket> packet,
-                          base::OnceClosure done) override;
-
-  // Starts a virtual audio input device for injecting audio packets.
+  // Starts pumping audio from the reader into the virtual audio input device.
   virtual bool Start(base::WeakPtr<Delegate> delegate) = 0;
 
-  // Injects an audio packet into the virtual audio input device. Must be called
-  // after Start().
-  virtual void InjectAudioPacket(std::unique_ptr<AudioPacket> packet) = 0;
+  // Sets the sample rate and channels for the injected audio stream. When this
+  // method is called, the writer will stop writing to the buffer until `done`
+  // is called, then it will start writing samples in the new format.
+  virtual void SetSampleInfo(const protocol::AudioSampleInfo& info,
+                             base::OnceClosure done) = 0;
 
-  virtual base::WeakPtr<protocol::AudioStub> GetWeakPtr() = 0;
+  virtual base::WeakPtr<AudioInjector> GetWeakPtr() = 0;
 
  protected:
   AudioInjector();

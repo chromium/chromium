@@ -33,8 +33,6 @@ class WebrtcAudioFifoSinkAdapter;
 class WebrtcVideoEncoderFactory;
 class HostControlDispatcher;
 class HostEventDispatcher;
-class AudioStub;
-class WebrtcAudioSinkAdapter;
 
 class WebrtcConnectionToClient : public ConnectionToClient,
                                  public Session::EventHandler,
@@ -68,7 +66,6 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   void set_clipboard_stub(ClipboardStub* clipboard_stub) override;
   void set_host_stub(HostStub* host_stub) override;
   void set_input_stub(InputStub* input_stub) override;
-  void set_audio_stub(base::WeakPtr<AudioStub> audio_stub) override;
   void ApplySessionOptions(const SessionOptions& options) override;
   void ApplyNetworkSettings(const NetworkSettings& settings) override;
   PeerConnectionControls* peer_connection_controls() override;
@@ -120,21 +117,14 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   std::unique_ptr<HostControlDispatcher> control_dispatcher_;
   std::unique_ptr<HostEventDispatcher> event_dispatcher_;
 
-  // The stub that handles audio packets received from the client.
-  base::WeakPtr<AudioStub> audio_stub_;
-
   // The media stream received from the client. This is cached because it may
   // arrive before the audio stub is set (or vice versa).
   webrtc::scoped_refptr<webrtc::MediaStreamInterface> incoming_audio_stream_;
 
-  // Adapter that handles the plumbing between the WebRTC audio track and the
-  // audio stub. This is created only when both the audio stub and the media
-  // stream are available.
-  std::unique_ptr<WebrtcAudioSinkAdapter> audio_sink_adapter_;
   std::unique_ptr<WebrtcAudioFifoSinkAdapter> audio_fifo_sink_adapter_;
 
-  void OnAudioFormatChanged(const AudioSampleInfo& info,
-                            base::OnceClosure acknowledgment_callback);
+  void OnIncomingAudioFormatChanged(const AudioSampleInfo& info,
+                                    base::OnceClosure acknowledgment_callback);
 
   void BindAudioFifoSinkAdapter();
 

@@ -108,7 +108,10 @@ class MockConnectionToClientEventHandler
               OnRouteChange,
               (const std::string& channel_name, const TransportRoute& route),
               (override));
-
+  MOCK_METHOD(void,
+              OnIncomingAudioFormatChanged,
+              (const AudioSampleInfo&, base::OnceClosure),
+              (override));
   MOCK_METHOD(void,
               OnIncomingDataChannelPtr,
               (const std::string& channel_name, MessagePipe* pipe));

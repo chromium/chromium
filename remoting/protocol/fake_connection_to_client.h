@@ -83,7 +83,6 @@ class FakeConnectionToClient : public ConnectionToClient {
   void set_clipboard_stub(ClipboardStub* clipboard_stub) override;
   void set_host_stub(HostStub* host_stub) override;
   void set_input_stub(InputStub* input_stub) override;
-  void set_audio_stub(base::WeakPtr<AudioStub> audio_stub) override;
 
   PeerConnectionControls* peer_connection_controls() override;
   WebrtcEventLogData* rtc_event_log() override;

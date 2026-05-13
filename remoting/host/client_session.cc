@@ -17,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -72,6 +73,7 @@
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
+#include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/audio_stream.h"
 #include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/client_stub.h"
@@ -829,6 +831,21 @@ void ClientSession::OnIncomingDataChannel(
   data_channel_manager_.OnIncomingDataChannel(channel_name, std::move(pipe));
 }
 
+void ClientSession::OnIncomingAudioFormatChanged(
+    const protocol::AudioSampleInfo& info,
+    base::OnceClosure done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (audio_injector_) {
+    audio_injector_->SetSampleInfo(info, std::move(done));
+  } else {
+    if (pending_audio_format_ack_callback_) {
+      std::move(pending_audio_format_ack_callback_).Run();
+    }
+    pending_audio_sample_info_ = info;
+    pending_audio_format_ack_callback_ = std::move(done);
+  }
+}
+
 const std::string& ClientSession::client_jid() const {
   return client_jid_;
 }
@@ -1107,8 +1124,16 @@ void ClientSession::CreateAudioInjectorAndBuffer() {
     audio_injector_ =
         desktop_environment_->CreateAudioInjector(std::move(reader));
     if (audio_injector_) {
+      if (pending_audio_sample_info_) {
+        base::OnceClosure done =
+            pending_audio_format_ack_callback_
+                ? std::move(pending_audio_format_ack_callback_)
+                : base::DoNothing();
+        audio_injector_->SetSampleInfo(*pending_audio_sample_info_,
+                                       std::move(done));
+        pending_audio_sample_info_.reset();
+      }
       audio_injector_->Start(weak_factory_.GetWeakPtr());
-      connection_->set_audio_stub(audio_injector_->GetWeakPtr());
       if (channels_connected_) {
         connection_->SetAudioWriter(std::move(writer));
       } else {

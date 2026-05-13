@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -716,6 +717,8 @@ TEST_F(ConnectionTest, WebrtcAudioFifoPlayoutBinding) {
   ASSERT_FALSE(source->sinks().empty());
 
   // 5. Inject a frame to trigger format handshake.
+  EXPECT_CALL(host_event_handler_, OnIncomingAudioFormatChanged(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>());
   std::vector<uint8_t> data = {1, 2, 3, 4};
   source->sinks()[0]->OnData(data.data(), 16, 48000, 2, 1);
 

@@ -27,7 +27,7 @@ namespace remoting::protocol {
 
 class AudioSource;
 class AudioStream;
-class AudioStub;
+struct AudioSampleInfo;
 class ClientStub;
 class ClipboardStub;
 class HostStub;
@@ -76,6 +76,10 @@ class ConnectionToClient {
     virtual void OnIncomingDataChannel(const std::string& channel_name,
                                        std::unique_ptr<MessagePipe> pipe) = 0;
 
+    // Called when the format of the incoming audio stream changes.
+    virtual void OnIncomingAudioFormatChanged(const AudioSampleInfo& info,
+                                              base::OnceClosure done) = 0;
+
    protected:
     virtual ~EventHandler() = default;
   };
@@ -121,7 +125,6 @@ class ConnectionToClient {
   virtual void set_clipboard_stub(ClipboardStub* clipboard_stub) = 0;
   virtual void set_host_stub(HostStub* host_stub) = 0;
   virtual void set_input_stub(InputStub* input_stub) = 0;
-  virtual void set_audio_stub(base::WeakPtr<AudioStub> audio_stub) = 0;
 
   // Applies the |options| to current session. SessionOptions usually controls
   // experimental behaviors, implementations can ignore this function if no
