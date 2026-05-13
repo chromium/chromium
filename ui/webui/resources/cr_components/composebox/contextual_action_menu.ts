@@ -360,10 +360,6 @@ export class ContextualActionMenuElement extends
     return false;
   }
 
-  protected isMultiTabSelectionEnabledForShareTabsMode_(): boolean {
-    return this.contextManagementInComposeboxEnabled_ && this.enableMultiTabSelection_;
-  }
-
   // Checks if a tab item in the context menu should be disabled.
   protected isTabDisabled_(tab: TabInfo): boolean {
     let noNewContextAllowed = this.fileNum >= this.maxFileCount_;
@@ -376,7 +372,7 @@ export class ContextualActionMenuElement extends
     // no more context can be added and the tab has not yet been added as
     // context already. Otherwise, don't disable the tab, since we want to allow
     // users to unselect the tab, and remove it from the context.
-    if (this.isMultiTabSelectionEnabledForShareTabsMode_()) {
+    if (this.enableMultiTabSelection_) {
       return noNewContextAllowed && !isTabInContext;
     }
     return noNewContextAllowed || isTabInContext;
@@ -415,7 +411,7 @@ export class ContextualActionMenuElement extends
 
     assert(tabInfo);
 
-    if (this.isMultiTabSelectionEnabledForShareTabsMode_() &&
+    if (this.enableMultiTabSelection_ &&
         this.disabledTabIds.has(tabInfo.tabId)) {
       this.deleteTabContext_(this.disabledTabIds.get(tabInfo.tabId)!);
       return;
@@ -437,7 +433,7 @@ export class ContextualActionMenuElement extends
       delayUpload: false,
       origin: TabUploadOrigin.CONTEXT_MENU,
     });
-    if (!this.isMultiTabSelectionEnabledForShareTabsMode_()) {
+    if (!this.enableMultiTabSelection_) {
       this.$.menu.close();
     }
   }
