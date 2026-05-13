@@ -30,6 +30,21 @@ class UnexportableSigningKeyId : public UnexportableKeyId {
       : UnexportableKeyId(key_id) {}
 };
 
+// A subclass of `UnexportableKeyId` that represents an attestation key
+// specifically.
+//
+// Inheritance is used here instead of a distinct tag to allow implicit
+// conversion to the base `UnexportableKeyId` for type-agnostic APIs,
+// while preventing accidental interchange with other specific key types.
+class UnexportableAttestationKeyId : public UnexportableKeyId {
+ public:
+  using UnexportableKeyId::UnexportableKeyId;
+
+  // Allows explicit conversion from the base class.
+  explicit UnexportableAttestationKeyId(UnexportableKeyId key_id)
+      : UnexportableKeyId(key_id) {}
+};
+
 }  // namespace unexportable_keys
 
 #endif  // COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_ID_H_
