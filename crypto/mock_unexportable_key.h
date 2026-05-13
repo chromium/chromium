@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_UNEXPORTABLE_KEYS_MOCK_UNEXPORTABLE_KEY_H_
-#define COMPONENTS_UNEXPORTABLE_KEYS_MOCK_UNEXPORTABLE_KEY_H_
+#ifndef CRYPTO_MOCK_UNEXPORTABLE_KEY_H_
+#define CRYPTO_MOCK_UNEXPORTABLE_KEY_H_
 
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace unexportable_keys {
+namespace crypto {
 
-class MockUnexportableKey : public crypto::UnexportableSigningKey,
-                            public crypto::StatefulKey {
+class MockUnexportableKey : public UnexportableSigningKey, public StatefulKey {
  public:
   MockUnexportableKey();
   ~MockUnexportableKey() override;
 
-  // crypto::UnexportableSigningKey:
-  MOCK_METHOD(crypto::SignatureVerifier::SignatureAlgorithm,
+  // UnexportableSigningKey:
+  MOCK_METHOD(SignatureVerifier::SignatureAlgorithm,
               Algorithm,
               (),
               (const, override));
@@ -36,12 +35,12 @@ class MockUnexportableKey : public crypto::UnexportableSigningKey,
 #elif BUILDFLAG(IS_WIN)
   MOCK_METHOD(bool, SupportsTls13, (), (override));
 #endif  // BUILDFLAG(IS_APPLE)
-  MOCK_METHOD(const crypto::StatefulKey*, AsStatefulKey, (), (const, override));
+  MOCK_METHOD(const StatefulKey*, AsStatefulKey, (), (const, override));
   // crypto::StatefulKey:
   MOCK_METHOD(std::string, GetKeyTag, (), (const, override));
   MOCK_METHOD(base::Time, GetCreationTime, (), (const, override));
 };
 
-}  // namespace unexportable_keys
+}  // namespace crypto
 
-#endif  // COMPONENTS_UNEXPORTABLE_KEYS_MOCK_UNEXPORTABLE_KEY_H_
+#endif  // CRYPTO_MOCK_UNEXPORTABLE_KEY_H_

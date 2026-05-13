@@ -24,12 +24,12 @@
 #include "base/test/test_future.h"
 #include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/features.h"
-#include "components/unexportable_keys/mock_unexportable_key.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
-#include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "crypto/mock_unexportable_key.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "net/base/features.h"
 #include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/jwk_utils.h"
@@ -2450,12 +2450,11 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
   SessionServiceImpl& service() { return service_; }
   StrictMock<SessionStoreMock>& store() { return *store_; }
 
-  unexportable_keys::ScopedMockUnexportableKeyProvider&
-  SwitchToMockKeyProvider() {
+  crypto::ScopedMockUnexportableKeyProvider& SwitchToMockKeyProvider() {
     // Using `emplace()` to destroy the existing scoped object before
     // constructing a new one.
     return scoped_key_provider_
-        .emplace<unexportable_keys::ScopedMockUnexportableKeyProvider>();
+        .emplace<crypto::ScopedMockUnexportableKeyProvider>();
   }
 
   void OnSessionsLoaded() {
@@ -2482,7 +2481,7 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
-               unexportable_keys::ScopedMockUnexportableKeyProvider>
+               crypto::ScopedMockUnexportableKeyProvider>
       scoped_key_provider_;
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<StrictMock<SessionStoreMock>> store_;

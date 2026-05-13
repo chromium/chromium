@@ -303,7 +303,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/prefs",
-    "//components/unexportable_keys:test_support",
+    "//crypto:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",

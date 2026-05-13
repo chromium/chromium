@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/unexportable_keys/mock_unexportable_key_provider.h"
+#include "crypto/mock_unexportable_key_provider.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace unexportable_keys {
+namespace crypto {
 
 using ::testing::Return;
 
@@ -15,4 +15,4 @@ MockUnexportableKeyProvider::MockUnexportableKeyProvider() {
 }
 MockUnexportableKeyProvider::~MockUnexportableKeyProvider() = default;
 
-}  // namespace unexportable_keys
+}  // namespace crypto

@@ -27,11 +27,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
-#include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +81,7 @@ class UnexportableKeyProfileGarbageCollectionServiceFactoryMacTest
   absl::flat_hash_map<std::string, MockUnexportableKeyService*>
       created_services_;
 
-  ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
 };
 
 TEST_F(UnexportableKeyProfileGarbageCollectionServiceFactoryMacTest,

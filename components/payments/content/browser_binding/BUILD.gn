@@ -132,7 +132,6 @@ if (is_desktop) {
       ":interface",
       "//base",
       "//base/test:test_support",
-      "//components/unexportable_keys:test_support",
       "//content/test:test_support",
       "//crypto",
       "//crypto:test_support",

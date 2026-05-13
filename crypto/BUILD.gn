@@ -284,10 +284,16 @@ test("crypto_unittests") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_unexportable_key.cc",
+    "mock_unexportable_key.h",
+    "mock_unexportable_key_provider.cc",
+    "mock_unexportable_key_provider.h",
     "scoped_fake_unexportable_key_provider.cc",
     "scoped_fake_unexportable_key_provider.h",
     "scoped_fake_user_verifying_key_provider.cc",
     "scoped_fake_user_verifying_key_provider.h",
+    "scoped_mock_unexportable_key_provider.cc",
+    "scoped_mock_unexportable_key_provider.h",
     "test_support.cc",
     "test_support.h",
   ]
@@ -332,6 +338,7 @@ static_library("test_support") {
   deps = [
     ":crypto",
     "//base",
+    "//testing/gmock",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

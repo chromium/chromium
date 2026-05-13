@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_UNEXPORTABLE_KEYS_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
-#define COMPONENTS_UNEXPORTABLE_KEYS_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
+#ifndef CRYPTO_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
+#define CRYPTO_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
 
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "components/unexportable_keys/mock_unexportable_key_provider.h"
+#include "crypto/mock_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
 
-namespace unexportable_keys {
+namespace crypto {
 
 // Causes `GetUnexportableKeyProvider()` to return fully mockable
 // `MockUnexportableKey`s while it is in scope.
@@ -28,15 +28,14 @@ class ScopedMockUnexportableKeyProvider {
 
   MockUnexportableKeyProvider& mock() { return mock_provider_; }
 
-  crypto::UnexportableSigningKey* AddNextGeneratedKey(
-      std::unique_ptr<crypto::UnexportableSigningKey> key);
+  UnexportableSigningKey* AddNextGeneratedKey(
+      std::unique_ptr<UnexportableSigningKey> key);
 
  private:
   MockUnexportableKeyProvider mock_provider_;
-  base::queue<std::unique_ptr<crypto::UnexportableSigningKey>>
-      next_generated_keys_;
+  base::queue<std::unique_ptr<UnexportableSigningKey>> next_generated_keys_;
 };
 
-}  // namespace unexportable_keys
+}  // namespace crypto
 
-#endif  // COMPONENTS_UNEXPORTABLE_KEYS_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
+#endif  // CRYPTO_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_

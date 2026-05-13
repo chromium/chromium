@@ -23,15 +23,15 @@
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/features.h"
-#include "components/unexportable_keys/mock_unexportable_key.h"
-#include "components/unexportable_keys/mock_unexportable_key_provider.h"
-#include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "crypto/mock_unexportable_key.h"
+#include "crypto/mock_unexportable_key_provider.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -68,12 +68,11 @@ class TokenBindingHelperTest : public testing::Test {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  unexportable_keys::ScopedMockUnexportableKeyProvider&
-  SwitchToMockKeyProvider() {
+  crypto::ScopedMockUnexportableKeyProvider& SwitchToMockKeyProvider() {
     // Using `emplace()` to destroy the existing scoped object before
     // constructing a new one.
     return scoped_key_provider_
-        .emplace<unexportable_keys::ScopedMockUnexportableKeyProvider>();
+        .emplace<crypto::ScopedMockUnexportableKeyProvider>();
   }
 
   UnexportableSigningKeyId GenerateNewSigningKey() {
@@ -102,7 +101,7 @@ class TokenBindingHelperTest : public testing::Test {
       // QUEUED - tasks don't run until `RunUntilIdle()` is called.
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
-               unexportable_keys::ScopedMockUnexportableKeyProvider>
+               crypto::ScopedMockUnexportableKeyProvider>
       scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
@@ -274,7 +273,7 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoEphemeralKey) {
 }
 
 TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
-  unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
+  crypto::MockUnexportableKeyProvider& mock_key_provider =
       SwitchToMockKeyProvider().mock();
 
   std::vector<uint8_t> used_wrapped_key_in_memory = {1, 2, 3};
@@ -285,7 +284,7 @@ TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
   std::vector<uint8_t> unused_wrapped_key_new = {13, 14, 15};
 
   auto create_mock_key = [](const std::vector<uint8_t>& wrapped_key) {
-    auto mock_key = std::make_unique<unexportable_keys::MockUnexportableKey>();
+    auto mock_key = std::make_unique<crypto::MockUnexportableKey>();
     ON_CALL(*mock_key, GetWrappedKey).WillByDefault(Return(wrapped_key));
     return mock_key;
   };

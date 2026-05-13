@@ -9,15 +9,17 @@
 #include "base/time/time.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_desktop.h"
-#include "components/unexportable_keys/mock_unexportable_key.h"
-#include "components/unexportable_keys/mock_unexportable_key_provider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/mock_unexportable_key.h"
+#include "crypto/mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "device/fido/public/public_key_credential_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+using crypto::MockUnexportableKey;
+using crypto::MockUnexportableKeyProvider;
 using crypto::SignatureVerifier;
 using device::CoseAlgorithmIdentifier;
 using device::PublicKeyCredentialParams;
@@ -27,8 +29,6 @@ using testing::ElementsAre;
 using testing::IsNull;
 using testing::NotNull;
 using testing::Return;
-using unexportable_keys::MockUnexportableKey;
-using unexportable_keys::MockUnexportableKeyProvider;
 }  // namespace
 
 namespace payments {

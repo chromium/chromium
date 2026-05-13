@@ -11,7 +11,7 @@
 #import "base/test/task_environment.h"
 #import "base/uuid.h"
 #import "components/prefs/json_pref_store.h"
-#import "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
+#import "crypto/scoped_mock_unexportable_key_provider.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -83,8 +83,7 @@ class ProfileDeleterIOSTest : public PlatformTest {
   }
 
  protected:
-  unexportable_keys::ScopedMockUnexportableKeyProvider
-      scoped_mock_key_provider_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
 
  private:
   base::test::TaskEnvironment task_environment_;

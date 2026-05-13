@@ -11,13 +11,13 @@
 #include "base/test/test_future.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/unexportable_keys/background_task_origin.h"
-#include "components/unexportable_keys/mock_unexportable_key.h"
-#include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "crypto/mock_unexportable_key.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -245,8 +245,8 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, FailureEmptyAlgorithms) {
 }
 
 TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
-  auto key_to_generate = std::make_unique<
-      testing::NiceMock<unexportable_keys::MockUnexportableKey>>();
+  auto key_to_generate =
+      std::make_unique<testing::NiceMock<crypto::MockUnexportableKey>>();
   ON_CALL(*key_to_generate, Algorithm)
       .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
   ON_CALL(*key_to_generate, GetWrappedKey)
@@ -254,7 +254,7 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
   EXPECT_CALL(*key_to_generate, SignSlowly)
       .Times(AtLeast(1))
       .WillRepeatedly(Return(std::nullopt));
-  unexportable_keys::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   scoped_mock_key_provider.AddNextGeneratedKey(std::move(key_to_generate));
 
   base::test::TestFuture<

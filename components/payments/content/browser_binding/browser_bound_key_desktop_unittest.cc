@@ -10,18 +10,18 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "components/unexportable_keys/mock_unexportable_key.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/cose.h"
+#include "crypto/mock_unexportable_key.h"
 #include "crypto/test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+using crypto::MockUnexportableKey;
 using crypto::SignatureVerifier;
 using testing::DoAll;
 using testing::Return;
-using unexportable_keys::MockUnexportableKey;
 
 static const SignatureVerifier::SignatureAlgorithm kAllSignatureAlgorithms[] = {
     SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
