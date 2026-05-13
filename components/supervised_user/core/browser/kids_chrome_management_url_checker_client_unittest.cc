@@ -103,8 +103,8 @@ class KidsChromeManagementURLCheckerClientTestBase
 
   void SimulateAccessTokenError() {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-        GoogleServiceAuthError(
-            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   }
 
   void SimulateKidsApiResponse(

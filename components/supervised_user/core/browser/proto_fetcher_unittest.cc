@@ -377,8 +377,8 @@ TEST_P(ProtoFetcherTest, NoAccessTokenStrict) {
   base::HistogramTester histogram_tester;
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   EXPECT_EQ(receiver->GetResult().error().state(),
@@ -826,8 +826,8 @@ TEST_F(BestEffortProtoFetcherTest, NoAccessToken) {
   base::HistogramTester histogram_tester;
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   ASSERT_TRUE(google_apis::test_util::HasAPIKey(
