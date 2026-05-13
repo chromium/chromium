@@ -43,7 +43,7 @@ const char kStubScript[] = R"(
     invoke: function() {
       const img = document.getElementById('target_image');
       if (img) {
-        window.indigo.startImageReplacement(img);
+        window.indigo.startImageReplacement(img, {disposition: 'primary'});
       } else {
         console.error('Target image not found');
       }
@@ -243,7 +243,8 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, CloseResetsReplacements) {
             auto* manager = IndigoImageReplacementManager::GetOrCreateForPage(
                 web_contents->GetPrimaryPage());
             manager->RegisterImageReplacement(
-                receiver.BindNewPipeAndPassRemote());
+                receiver.BindNewPipeAndPassRemote(),
+                /*is_primary=*/false);
             receiver.set_disconnect_handler(disconnect_future.GetCallback());
           })),
 

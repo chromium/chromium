@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "url/gurl.h"
 
 namespace content {
 class Page;
@@ -21,6 +22,19 @@ class Page;
 
 namespace indigo {
 
+// Manages a group of related ImageReplacements created by the content script
+// run by IndigoAgent. The manager uses the "primary" ImageReplacement's
+// original image's bytes to generate the replacement image. The replacement
+// image is then shared with all active ImageReplacements. There can only be
+// one "primary" ImageReplacement registered at any given time.
+//
+// All non-primary image replacements are ignored (and dropped) until the first
+// primary image replacement is registered. If the primary image replacement is
+// disconnected prior to the generated image being available, all replacements
+// are reset and the manager goes back to waiting for the next primary image
+// replacement. When a subsequent primary replacement is registered, the
+// previous primary replacement and all non-primary replacements are
+// disconnected before processing the new primary replacement.
 class IndigoImageReplacementManager
     : public content::PageUserData<IndigoImageReplacementManager>,
       public blink::mojom::ImageReplacementHost {
@@ -32,10 +46,12 @@ class IndigoImageReplacementManager
       const IndigoImageReplacementManager&) = delete;
 
   void RegisterImageReplacement(
-      mojo::PendingRemote<blink::mojom::ImageReplacement> image_replacement);
+      mojo::PendingRemote<blink::mojom::ImageReplacement> image_replacement,
+      bool is_primary);
   IndigoImageReplacement* GetImageReplacementForFrame(
       const content::RenderFrameHost& rfh);
   void ResetAllReplacements();
+  const GURL& generated_image_url() const { return generated_image_url_; }
 
   // blink::mojom::ImageReplacementHost implementation:
   void ReplacementFrameAttached(
@@ -52,9 +68,12 @@ class IndigoImageReplacementManager
   void OnReplacementImageGenerated(
       mojo::ReceiverId receiver_id,
       base::expected<GeneratedImage, GenerateImageError> result);
+  void OnReceiverDisconnected();
 
   mojo::ReceiverSet<blink::mojom::ImageReplacementHost, IndigoImageReplacement>
       receivers_;
+  bool primary_registered_ = false;
+  GURL generated_image_url_;
   base::WeakPtrFactory<IndigoImageReplacementManager> weak_ptr_factory_{this};
 };
 

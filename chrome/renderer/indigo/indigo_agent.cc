@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
+#include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "gin/object_template_builder.h"
@@ -88,14 +89,51 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
     content_agent_.Reset(args->isolate(), content_agent);
   }
 
+  // startImageReplacement(img: HTMLImageElement,
+  //                       params?: {
+  //                         disposition?: 'primary' | 'mirror',
+  //                       }): void
+  // Note: If params.disposition is unspecified, it defaults to 'primary'.
   void StartImageReplacement(v8::Isolate* isolate,
-                             v8::Local<v8::Value> element_wrapper) {
+                             v8::Local<v8::Value> element_wrapper,
+                             gin::Arguments* args) {
     blink::WebElement element =
         blink::WebElement::FromV8Value(isolate, element_wrapper);
     if (element.IsNull()) {
       isolate->ThrowException(v8::Exception::TypeError(
           gin::StringToV8(isolate, "Invalid element wrapper.")));
       return;
+    }
+
+    bool is_primary = true;
+    v8::Local<v8::Value> params_value;
+    if (args->GetNext(&params_value) && !params_value->IsUndefined()) {
+      if (!params_value->IsObject()) {
+        isolate->ThrowException(v8::Exception::TypeError(
+            gin::StringToV8(isolate, "Invalid params object.")));
+        return;
+      }
+      v8::Local<v8::Context> context = isolate->GetCurrentContext();
+      v8::Local<v8::Object> params_obj = params_value.As<v8::Object>();
+      v8::Local<v8::Value> disp_val;
+      if (params_obj->Get(context, gin::StringToV8(isolate, "disposition"))
+              .ToLocal(&disp_val) &&
+          !disp_val->IsUndefined()) {
+        std::string disposition;
+        gin::Converter<std::string>::FromV8(isolate, disp_val, &disposition);
+        if (disposition == "primary") {
+          is_primary = true;
+        } else if (disposition == "mirror") {
+          is_primary = false;
+        } else {
+          isolate->ThrowException(v8::Exception::Error(gin::StringToV8(
+              isolate, disposition.empty()
+                           ? "Invalid disposition value."
+                           : base::StrCat({"Invalid disposition value \"",
+                                           disposition, "\"."}))));
+          return;
+        }
+      }
     }
 
     auto result = blink::WebImageReplacement::CreateAndBindReceiver(element);
@@ -106,8 +144,8 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
     }
 
     if (indigo_agent_) {
-      indigo_agent_->GetHost().StartImageReplacement(std::move(result.value()),
-                                                     base::DoNothing());
+      indigo_agent_->GetHost().StartImageReplacement(
+          std::move(result.value()), is_primary, base::DoNothing());
     }
   }
 

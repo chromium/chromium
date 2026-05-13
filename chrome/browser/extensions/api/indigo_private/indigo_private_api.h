@@ -63,7 +63,7 @@ class IndigoPrivateGetReplacementImageFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnReplacementImageAvailable(GURL replacement_image_url);
+  void OnReplacementImageAvailable(const GURL& replacement_image_url);
 };
 
 }  // namespace extensions
