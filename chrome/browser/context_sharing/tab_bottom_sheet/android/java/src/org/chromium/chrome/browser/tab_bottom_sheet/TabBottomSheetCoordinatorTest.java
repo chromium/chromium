@@ -66,6 +66,9 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabBottomSheetCoordinator}. */
@@ -119,6 +122,9 @@ public class TabBottomSheetCoordinatorTest {
     private ArgumentCaptor<KeyboardVisibilityDelegate.KeyboardVisibilityListener>
             mKeyboardVisibilityListenerCaptor;
 
+    @Mock private ModalDialogManager mMockModalDialogManager;
+    @Captor private ArgumentCaptor<ModalDialogManagerObserver> mModalDialogManagerObserverCaptor;
+
     private CoBrowseViews mCoBrowseViews;
     private Context mContext;
     private View mView;
@@ -147,6 +153,7 @@ public class TabBottomSheetCoordinatorTest {
                 "actor_control_container should be found in CoBrowseViews",
                 mView.findViewById(R.id.actor_control_container));
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
+        when(mWindowAndroid.getModalDialogManager()).thenReturn(mMockModalDialogManager);
 
         when(mWindowAndroid.getWindow()).thenReturn(mMockWindow);
         when(mMockWindow.getDecorView()).thenReturn(mMockDecorView);
@@ -705,5 +712,50 @@ public class TabBottomSheetCoordinatorTest {
 
         listener.keyboardVisibilityChanged(false);
         verify(mMockWebUi).setIgnoreClearFocus(false);
+    }
+
+    @Test
+    public void testModalDialogObserver_RegistrationAndUnregistration() {
+        // 1. Show sheet and verify observer registration
+        simulateShowSuccessAndGetObserver();
+        verify(mMockModalDialogManager).addObserver(mModalDialogManagerObserverCaptor.capture());
+        ModalDialogManagerObserver observer = mModalDialogManagerObserverCaptor.getValue();
+        assertNotNull(observer);
+
+        // 2. Destroy coordinator and verify observer unregistration
+        mCoordinator.destroy();
+        verify(mMockModalDialogManager).removeObserver(observer);
+    }
+
+    @Test
+    public void testModalDialogObserver_TabModalCollapsesSheet() {
+        simulateShowSuccessAndGetObserver();
+        verify(mMockModalDialogManager).addObserver(mModalDialogManagerObserverCaptor.capture());
+        ModalDialogManagerObserver observer = mModalDialogManagerObserverCaptor.getValue();
+
+        // Setup: Mock active tab-modal dialog state
+        when(mMockModalDialogManager.getCurrentType()).thenReturn(ModalDialogType.TAB);
+
+        // Trigger observer
+        observer.onDialogShown(mock(View.class));
+
+        // Verify sheet collapse is called (via bottom sheet controller)
+        verify(mMockBottomSheetController).collapseSheet(eq(true));
+    }
+
+    @Test
+    public void testModalDialogObserver_AppModalDoesNotCollapseSheet() {
+        simulateShowSuccessAndGetObserver();
+        verify(mMockModalDialogManager).addObserver(mModalDialogManagerObserverCaptor.capture());
+        ModalDialogManagerObserver observer = mModalDialogManagerObserverCaptor.getValue();
+
+        // Setup: Mock active app-modal dialog state
+        when(mMockModalDialogManager.getCurrentType()).thenReturn(ModalDialogType.APP);
+
+        // Trigger observer
+        observer.onDialogShown(mock(View.class));
+
+        // Verify collapse is NOT triggered
+        verify(mMockBottomSheetController, never()).collapseSheet(anyBoolean());
     }
 }

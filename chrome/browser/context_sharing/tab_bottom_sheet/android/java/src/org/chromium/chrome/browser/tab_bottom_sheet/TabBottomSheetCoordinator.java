@@ -33,6 +33,9 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -148,6 +151,8 @@ public class TabBottomSheetCoordinator {
     private boolean mInitialContainerSizeChanged;
     private boolean mCanNotBeSuppressed;
     private @Nullable KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private @Nullable ModalDialogManager mObservedModalDialogManager;
+    private @Nullable ModalDialogManagerObserver mModalDialogManagerObserver;
 
     /**
      * @param context The context to use for creating views.
@@ -255,6 +260,15 @@ public class TabBottomSheetCoordinator {
                         .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
             }
 
+            if (mModalDialogManagerObserver == null) {
+                ModalDialogManager modalDialogManager = mWindowAndroid.getModalDialogManager();
+                if (modalDialogManager != null) {
+                    mModalDialogManagerObserver = buildModalDialogManagerObserver();
+                    modalDialogManager.addObserver(mModalDialogManagerObserver);
+                    mObservedModalDialogManager = modalDialogManager;
+                }
+            }
+
             mIsShowingTabBottomSheet = true;
             return true;
         } else {
@@ -341,6 +355,14 @@ public class TabBottomSheetCoordinator {
                     .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
             mKeyboardVisibilityListener = null;
         }
+
+        if (mObservedModalDialogManager != null) {
+            if (mModalDialogManagerObserver != null) {
+                mObservedModalDialogManager.removeObserver(mModalDialogManagerObserver);
+            }
+            mObservedModalDialogManager = null;
+        }
+        mModalDialogManagerObserver = null;
 
         if (mSheetContent != null) {
             mSheetContent.destroy();
@@ -453,6 +475,18 @@ public class TabBottomSheetCoordinator {
             @Override
             public void onInsetAnimationEnd() {
                 mCoBrowseViews.setIgnoreClearFocus(/* ignoreClearFocus= */ false);
+            }
+        };
+    }
+
+    private ModalDialogManagerObserver buildModalDialogManagerObserver() {
+        return new ModalDialogManagerObserver() {
+            @Override
+            public void onDialogShown(View dialogView) {
+                if (mObservedModalDialogManager != null
+                        && mObservedModalDialogManager.getCurrentType() == ModalDialogType.TAB) {
+                    collapseSheet();
+                }
             }
         };
     }
