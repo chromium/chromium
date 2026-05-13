@@ -77,14 +77,7 @@ bool AccentColorObserver::ShouldUseAccentColorForWindowFrame() const {
     return should_use_accent_color_for_window_frame_for_testing_.value();
   }
 
-  if (!dwm_key_) {
-    return false;
-  }
-
-  DWORD color_prevalence = 0;
-  return dwm_key_->ReadValueDW(L"ColorPrevalence", &color_prevalence) ==
-             ERROR_SUCCESS &&
-         color_prevalence == 1;
+  return should_use_accent_color_for_window_frame_;
 }
 
 void AccentColorObserver::SetShouldUseAccentColorForWindowFrameForTesting(
@@ -121,6 +114,12 @@ void AccentColorObserver::UpdateAccentColors() {
   accent_color_.reset();
   accent_color_inactive_.reset();
   accent_border_color_.reset();
+
+  DWORD color_prevalence = 0;
+  should_use_accent_color_for_window_frame_ =
+      dwm_key_->ReadValueDW(L"ColorPrevalence", &color_prevalence) ==
+          ERROR_SUCCESS &&
+      color_prevalence == 1;
 
   // Windows will set unsupported accent color values in the registry, while
   // coercing the value to another color. Use the UISettings API to ensure we

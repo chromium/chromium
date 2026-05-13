@@ -61,6 +61,9 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
   std::optional<SkColor> accent_color_inactive_;
   std::optional<SkColor> accent_border_color_;
 
+  // Cached value of HKCU\...\DWM\ColorPrevalence. Refreshed whenever the DWM
+  // key changes so callers don't have to hit the registry on every query.
+  bool should_use_accent_color_for_window_frame_ = false;
   std::optional<bool> should_use_accent_color_for_window_frame_for_testing_;
 };
 
