@@ -3362,7 +3362,6 @@ crbug.com/431708418 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed
 crbug.com/431708418 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-invalid_integrity_header.tentative.html [ Crash ]
 crbug.com/431715639 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/adapter/adapter-powered-off-getAvailability.https.window.html [ Crash ]
 crbug.com/431715639 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/characteristic/readValue/add-multiple-event-listeners.https.window.html [ Skip Timeout ]
-crbug.com/431715639 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/getDevices/granted-devices-with-services.https.window.html [ Skip Timeout ]
 crbug.com/431715639 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/device-with-name.https.window.html [ Skip Timeout ]
 crbug.com/431715639 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/max-length-exceeded-name.https.window.html [ Crash ]
 crbug.com/431715639 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/server/getPrimaryService/gen-disconnect-called-during-error.https.window.html [ Skip Timeout ]
@@ -9808,3 +9807,6 @@ crbug.com/502696520 http/tests/inspector-protocol/page/subframe-navigation.js [ 
 
 # Gardener 2026-05-12
 crbug.com/512358723 [ Mac ] external/wpt/css/css-overscroll-behavior/overscroll-behavior.html [ Failure Pass Timeout ]
+crbug.com/491563468 [ Mac15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/reject_opaque_origin.https.html [ Failure Pass ]
+crbug.com/491563468 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/getDevices/granted-devices-with-services.https.window.html [ Failure Pass Timeout ]
+crbug.com/491563468 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/optional-services-missing.https.window.html [ Failure Pass ]
