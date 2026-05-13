@@ -747,6 +747,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="21613918653299710">Galeries d'imatges en línia</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162435186600002085">Logotip principal de la capçalera</translation>
+<translation id="2162535140284745414">Obtén suggeriments en temps real que et poden ajudar a trobar noves maneres de navegar amb la IA.</translation>
 <translation id="2162620598375156287">Ara costa <ph name="CURRENT_PRICE" /> a <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Comprova si <ph name="HOST_NAME" /> està ben escrit.</translation>
 <translation id="2166049586286450108">Accés administratiu complet</translation>
@@ -1461,6 +1462,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3261488570342242926">Informació sobre les targetes virtuals</translation>
 <translation id="3262698603497362968">Opcions de compra</translation>
 <translation id="3264315627780269177">Aquesta pestanya no es pot compartir</translation>
+<translation id="3264637689694266148">Si desactives els suggeriments, és possible que els títols i els URL de les pestanyes es continuïn processant per a altres funcions de Chrome. Pots gestionar l'accés del navegador a aquestes dades a la</translation>
 <translation id="3266793032086590337">Valor (en conflicte)</translation>
 <translation id="3268451620468152448">Pestanyes obertes</translation>
 <translation id="3270041629388773465">Desa els CVC per tramitar les compres més ràpidament</translation>
@@ -1998,6 +2000,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4103249731201008433">El número de sèrie del dispositiu no és vàlid</translation>
 <translation id="4103592298805904008">Cartró (doble capa)</translation>
 <translation id="4104702906064390950">S'està desant la informació de l'IBAN</translation>
+<translation id="4106101218644797743">configuració de sincronització</translation>
 <translation id="4106887816571530227">El contingut inserit no està permès</translation>
 <translation id="4107047499377819067">S'han començat a instal·lar els serveis en segon pla de la VPN. Aquest procés pot tardar uns quants minuts.</translation>
 <translation id="4110642094637545339">Logotip de Google Pay, logotip d'AfterPay</translation>
@@ -2334,6 +2337,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4640225694041297329">Mostra els resultats dels 7 darrers dies</translation>
 <translation id="4642296966515958616">Per unir-te a aquest grup de pestanyes, actualitza Chrome</translation>
 <translation id="464342062220857295">Funcions de cerca</translation>
+<translation id="4643958597583594452">Chrome processa els títols i els URL de les pàgines al dispositiu o en un espai privat al núvol</translation>
 <translation id="4644567637638438744">Els fitxers només es poden penjar si tens la sessió iniciada a Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordre invers de cara avall</translation>
 <translation id="4648262692072505866">El valor resum ha de tenir el format SHA-256.</translation>
@@ -2581,6 +2585,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5019293549442035120">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça es desarà al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">sensors de moviment i de llum</translation>
 <translation id="5019952743397118625">La política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> està establerta. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> no controlarà la disponibilitat del mode de desenvolupador a la pàgina d'extensions.</translation>
+<translation id="5020862932518041900">Si selecciones o ignores un suggeriment, Chrome s'adaptarà per assegurar-se que només vegis el que és rellevant per a tu</translation>
 <translation id="5021500396464456616">Contacta amb la persona que t'ha enviat aquest enllaç</translation>
 <translation id="5021557570875267742">Fes un seguiment dels preus amb Chrome</translation>
 <translation id="5023310440958281426">Consulteu les polítiques de l'administrador</translation>
@@ -3524,6 +3529,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6451458296329894277">Confirma el reenviament del formulari</translation>
 <translation id="6452429044474066211">Activitats subaquàtiques i busseig</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Els títols i els URL de les pàgines de les pestanyes obertes s'utilitzen per donar-te suggeriments rellevants</translation>
 <translation id="6455632609396391811">Assegurances mèdiques</translation>
 <translation id="6456955391422100996">L'anunci s'ha suprimit.</translation>
 <translation id="6457206614190510200">Cosit al llom</translation>
@@ -4418,6 +4424,7 @@ Detalls addicionals:
 <translation id="7819605256207059717">Bloquejat per la teva organització</translation>
 <translation id="7822611063308883975">Videoconsoles portàtils</translation>
 <translation id="7825558994363763489">Microones</translation>
+<translation id="7827688884439021871">Obtén suggeriments en temps real que et poden ajudar a trobar noves maneres de navegar amb la IA</translation>
 <translation id="782886543891417279">És possible que la xarxa Wi-Fi (<ph name="WIFI_NAME" />) que esteu fent servir requereixi que visiteu la seva pàgina d'inici de sessió.</translation>
 <translation id="7831993212387676366">Què és la llista de la compra?</translation>
 <translation id="7840103971441592723">La captura de pantalla s'ha iniciat</translation>
@@ -4709,6 +4716,7 @@ Detalls addicionals:
 <translation id="8289355894181816810">Si no esteu segur de què significa això, contacteu amb l'administrador de la xarxa.</translation>
 <translation id="8291367150570302588">Document d'identitat</translation>
 <translation id="829335040383910391">so</translation>
+<translation id="8294425747071240447">Suggeriments, amb la tecnologia de la IA</translation>
 <translation id="8294431847097064396">Font</translation>
 <translation id="8297545700510100061">Les galetes i altres dades dels llocs web s'utilitzen per recordar-te amb finalitats com ara iniciar la teva sessió o personalitzar anuncis. Per gestionar les galetes de tots els llocs web, consulta <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">És possible que la xarxa Wi-Fi (<ph name="WIFI_NAME" />) que esteu fent servir requereixi que visiteu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

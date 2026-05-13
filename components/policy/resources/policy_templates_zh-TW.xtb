@@ -6598,7 +6598,7 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 
       如果不設定這項政策，使用者可以選擇登入畫面上代表自己的顯示圖片。</translation>
 <translation id="5428716437928918274">Privacy Sandbox 設定控制選項</translation>
-<translation id="5430760800138878127">系統將啟用新的 HTML 剖析器行為，允許更多標記。</translation>
+<translation id="5430760800138878127">系統將啟用新的 HTML 剖析器行為，允許使用更多標記。</translation>
 <translation id="5431392643649571773">啟用 <ph name="PRODUCT_NAME" /> 功能時，系統會允許使用往返快取。當使用者離開頁面時，系統可能會將網頁的目前狀態 (文件樹狀結構、指令碼等等) 保存在往返快取中。如果瀏覽器返回該頁面，系統可能會透過往返快取還原頁面，以快取前的狀態顯示頁面。
 
           這項功能可能會讓某些並未預期會受到此快取的網站無法正常運作，尤其是瀏覽器離開頁面時，需要傳送「<ph name="UNLOAD_HANDLER_NAME" />」事件的網站。如果頁面進入往返快取，系統就不會傳送「<ph name="UNLOAD_HANDLER_NAME" />」事件。

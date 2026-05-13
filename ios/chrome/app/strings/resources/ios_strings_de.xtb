@@ -331,7 +331,7 @@
 <translation id="2096716221239095980">Alle Daten löschen</translation>
 <translation id="2104436223719117661">Trends bei Suchanfragen</translation>
 <translation id="21133533946938348">Tab anpinnen</translation>
-<translation id="2117650889962717098">Im Inkognitomodus kannst du deine Browsing-Aktivitäten privat halten</translation>
+<translation id="2117650889962717098">Im Inkognitomodus bleiben deine Browsing-Aktivitäten privat</translation>
 <translation id="2119636449201577317">Öffnen in…</translation>
 <translation id="2119962645034852864">Einige Dienste sind für dein Konto nicht verfügbar</translation>
 <translation id="2120553909046681540">Deine Organisation hat das private Surfen deaktiviert.</translation>
@@ -1698,7 +1698,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="686831807558000905">Nicht anmelden</translation>
 <translation id="686899695320434745">Adressen werden nicht mit deiner Passphrase verschlüsselt. So kannst du sie in anderen Google-Diensten verwenden.</translation>
 <translation id="687135068089457384">Einstellungen anzeigen</translation>
-<translation id="6871397658902960384">Jetzt surfen</translation>
+<translation id="6871397658902960384">Suche starten</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Passwort im Konto speichern}other{Passwörter im Konto speichern}}</translation>
 <translation id="6875166646976836138">Du kannst diese Elemente auch in deinen Lesezeichen, in deiner Leseliste oder im Passwortmanager sehen und verwalten.</translation>
 <translation id="6878052248816456143">Du kannst jederzeit auf Dateien in Google Drive zugreifen.</translation>

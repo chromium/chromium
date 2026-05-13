@@ -133,7 +133,7 @@
 <translation id="2348335408836342058">Chrome skal have tilladelse til at bruge dit kamera og din mikrofon på dette website</translation>
 <translation id="234869673307233423">Chrome kan ikke tjekke dine adgangskoder. Prøv igen senere.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
-<translation id="2403703063067034158">Opstartsfejl: En anden konfigurationen kører i øjeblikket. Prøv igen senere.</translation>
+<translation id="2403703063067034158">Opstartsfejl: En anden konfigurationsinstans kører i øjeblikket. Prøv igen senere.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{En eller flere Chrome-udvidelser havde adgang til 1 HID-enhed}=1{En eller flere Chrome-udvidelser har adgang til 1 HID-enhed}one{En eller flere Chrome-udvidelser har adgang til # HID-enhed}other{En eller flere Chrome-udvidelser har adgang til # HID-enheder}}</translation>
 <translation id="2424440923901031101">Denne udvidelse overtræder politikken for Chrome Webshop og er muligvis ikke sikker. Fjern den fra Chrome, så den ikke længere kan se og ændre dine data på de websites, du besøger, herunder dine personlige oplysninger.</translation>
 <translation id="2467438592969358367">Google Chrome anmoder om at eksportere dine adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
