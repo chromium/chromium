@@ -341,6 +341,9 @@ class OmniboxClientIOS {
   // Returns the current input state if any.
   virtual omnibox::InputState GetInputState() const;
 
+  // Returns whether the omnibox should skip zero suggest requests.
+  virtual bool ShouldSkipZeroSuggestRequest() const;
+
   virtual GURL GetContextualTasksInnerFrameURL() const;
 
   virtual base::WeakPtr<OmniboxClientIOS> AsWeakPtr() = 0;

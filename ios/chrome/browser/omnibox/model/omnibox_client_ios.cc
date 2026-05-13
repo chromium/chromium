@@ -137,6 +137,10 @@ omnibox::InputState OmniboxClientIOS::GetInputState() const {
   return omnibox::InputState();
 }
 
+bool OmniboxClientIOS::ShouldSkipZeroSuggestRequest() const {
+  return false;
+}
+
 GURL OmniboxClientIOS::GetContextualTasksInnerFrameURL() const {
   return GURL();
 }

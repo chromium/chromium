@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
+#import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
@@ -227,6 +228,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 @implementation ComposeboxInputPlateMediator {
   // The ordered list of items for display.
   ComposeboxInputItemCollection* _items;
+  // Whether we are awaiting attachment signals to be ready in order to show
+  // suggestions. This is used during the initial focus flow to skip the
+  // zero-suggest requests, to avoid flashing the suggestions.
+  BOOL _awaitingAttachmentSignals;
   // The C++ session handle for this feature.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       _contextualSearchSession;
@@ -539,8 +544,31 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
               completion:stopAccessScopedResourcesIfNeeded];
   }
 
+  // TODO(crbug.com/512774045): update attachment is called in both embedded an
+  // focus flow. Verify metrics recording in both flows.
   [self attachSelectedTabsWithWebStateIDs:attachments.tabIDs
                         cachedWebStateIDs:attachments.cachedWebStateIDs];
+}
+
+- (void)applyFocusParams:(ComposeboxFocusParams*)params {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!params) {
+    return;
+  }
+
+  if ([params hasInitialAttachments]) {
+    _awaitingAttachmentSignals = YES;
+  }
+
+  _modeHolder.mode = params.toolMode;
+
+  if (params.modelMode != ComposeboxModelOption::kNone) {
+    [self setModelOption:params.modelMode explicitUserAction:YES];
+  }
+
+  if (params.attachmentList) {
+    [self updateAttachments:params.attachmentList];
+  }
 }
 
 #pragma mark - ComposeboxInputPlateMutator
@@ -1097,6 +1125,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       [self handleFailedAttachment:item.identifier];
       break;
     case contextual_search::ContextUploadStatus::kProcessingSuggestSignalsReady:
+      // Signals are ready, we are no longer waiting.
+      _awaitingAttachmentSignals = NO;
       [self reloadSuggestions];
       break;
     case contextual_search::ContextUploadStatus::kNotUploaded:
@@ -1169,6 +1199,33 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [_stateManager onContextChanged];
 }
 
+// Updates the awaiting attachment signals state. Note that this flag is only
+// set to YES during the initial focus flow (triggering the composebox with
+// initial attachments). We stop awaiting signals when there are no more items
+// in the loading or uploading state.
+- (void)updateAwaitingAttachmentSignalsState {
+  if (!_awaitingAttachmentSignals) {
+    return;
+  }
+
+  // Check if there are any items still actively loading or uploading.
+  BOOL hasPendingItems = NO;
+  for (ComposeboxInputItem* item in _items.containedItems) {
+    BOOL isLoadingOrUploading =
+        item.state == ComposeboxInputItemState::kLoading ||
+        item.state == ComposeboxInputItemState::kUploading;
+    if (isLoadingOrUploading) {
+      hasPendingItems = YES;
+      break;
+    }
+  }
+
+  // If no items are pending, we are no longer awaiting signals.
+  if (!hasPendingItems) {
+    _awaitingAttachmentSignals = NO;
+  }
+}
+
 // Adds an item to the collection.
 - (void)addItem:(ComposeboxInputItem*)item {
   [self.debugLogger
@@ -1208,6 +1265,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                withType:[self attachmentEventTypeForItem:item]
                                   title:[self
                                             attachmentEventTitleForItem:item]]];
+  [self updateAwaitingAttachmentSignalsState];
 }
 
 // Returns the attachment evewnt title for a given item.
@@ -1387,6 +1445,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 }
 
+- (BOOL)awaitingAttachmentSignals {
+  return _awaitingAttachmentSignals;
+}
+
 // Centralized entrypoint to record navigation metrics exactly once.
 - (void)recordNavigationInitiated {
   if (_inNavigation) {
@@ -1424,6 +1486,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 // Reloads the displayed suggestions based on the attachments/modeHolder.
 - (void)reloadSuggestions {
+  [self updateAwaitingAttachmentSignalsState];
+
   BOOL shouldRestartAutocomplete = _items.count <= 1;
 
   if (_items.count > 1) {
@@ -1985,6 +2049,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   if (invalidatedItems.count > 0) {
     [self notifyContextChanged];
+    [self updateAwaitingAttachmentSignalsState];
   }
 
   BOOL transitionedToAIMode = mode != ComposeboxMode::kRegularSearch &&

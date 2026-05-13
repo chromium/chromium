@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 
+#import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
+
 @implementation ComposeboxFocusParams
 
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
@@ -26,6 +28,10 @@
 - (BOOL)hasInitialTabIDs {
   return !self.initialSelectedWebStateIDs.empty() ||
          !self.initialCachedWebStateIDs.empty();
+}
+
+- (BOOL)hasInitialAttachments {
+  return [self.attachmentList hasAttachments];
 }
 
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint {

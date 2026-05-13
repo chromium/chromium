@@ -43,6 +43,9 @@ class WebState;
                isSearchQuery:(BOOL)isSearchQuery
          userInputInProgress:(BOOL)userInputInProgress;
 
+/// Returns whether the composebox is awaiting attachment signals to fully load.
+- (BOOL)awaitingAttachmentSignals;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_OMNIBOX_CLIENT_DELEGATE_H_

@@ -105,6 +105,8 @@ class ComposeboxOmniboxClient final : public OmniboxClientIOS {
 
   omnibox::InputState GetInputState() const override;
 
+  bool ShouldSkipZeroSuggestRequest() const override;
+
  private:
   raw_ptr<WebLocationBar> location_bar_;
   raw_ptr<Browser> browser_;

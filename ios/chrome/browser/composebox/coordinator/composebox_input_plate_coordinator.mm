@@ -289,13 +289,13 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   [_omniboxCoordinator.managedViewController
       didMoveToParentViewController:_viewController];
 
+  if (_focusParams) {
+    [_mediator applyFocusParams:_focusParams];
+  }
+
   [_omniboxCoordinator updateOmniboxState];
   if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
     [_omniboxCoordinator focusOmnibox];
-  }
-
-  if (_focusParams) {
-    [self applyFocusParams:_focusParams];
   }
 }
 
@@ -342,18 +342,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
 - (void)endEditing {
   [_omniboxCoordinator endEditing];
-}
-
-- (void)applyFocusParams:(ComposeboxFocusParams*)params {
-  _modeHolder.mode = params.toolMode;
-
-  if (params.modelMode != ComposeboxModelOption::kNone) {
-    [_mediator setModelOption:params.modelMode explicitUserAction:YES];
-  }
-
-  if (params.attachmentList) {
-    [_mediator updateAttachments:params.attachmentList];
-  }
 }
 
 #pragma mark - ComposeboxInputPlateViewControllerDelegate

@@ -28,6 +28,9 @@
 // Initial files to attach.
 @property(nonatomic, readonly) NSArray<NSURL*>* files;
 
+// Whether there are any attachments in this selection.
+@property(nonatomic, readonly) BOOL hasAttachments;
+
 - (instancetype)initWithTabIDs:(std::set<web::WebStateID>)tabIDs
              cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs
                         images:(NSArray<ComposeboxPickerImageResult*>*)images

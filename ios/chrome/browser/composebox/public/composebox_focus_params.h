@@ -44,6 +44,9 @@
 // Whether there are initial tab IDs set.
 @property(nonatomic, readonly) BOOL hasInitialTabIDs;
 
+// Whether there are any attachments (images, files, or tabs) set.
+@property(nonatomic, readonly) BOOL hasInitialAttachments;
+
 // The optional shared metrics recorder.
 @property(nonatomic, strong) ComposeboxMetricsRecorder* metricsRecorder;
 

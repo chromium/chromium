@@ -357,3 +357,7 @@ omnibox::InputState ComposeboxOmniboxClient::GetInputState() const {
   std::optional<contextual_search::InputState> state = [delegate_ inputState];
   return state.value_or(omnibox::InputState());
 }
+
+bool ComposeboxOmniboxClient::ShouldSkipZeroSuggestRequest() const {
+  return [delegate_ awaitingAttachmentSignals];
+}

@@ -45,6 +45,11 @@
                isSearchQuery:(BOOL)isSearchQuery
          userInputInProgress:(BOOL)userInputInProgress {
 }
+
+- (BOOL)awaitingAttachmentSignals {
+  return NO;
+}
+
 @end
 
 class ComposeboxCobrowseOmniboxClientTest : public PlatformTest {

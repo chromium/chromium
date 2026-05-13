@@ -451,6 +451,11 @@ using base::UserMetricsAction;
     return;
   }
 
+  if (_omniboxPresentationContext == OmniboxPresentationContext::kComposebox &&
+      _omniboxClient->ShouldSkipZeroSuggestRequest()) {
+    return;
+  }
+
   if (_omniboxPresentationContext == OmniboxPresentationContext::kLensOverlay) {
     if (_omniboxClient->GetPageClassification(/*is_prefetch=*/false) ==
         metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX) {

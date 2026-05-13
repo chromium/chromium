@@ -20,4 +20,8 @@
   return self;
 }
 
+- (BOOL)hasAttachments {
+  return self.images.count > 0 || self.files.count > 0 || !self.tabIDs.empty();
+}
+
 @end

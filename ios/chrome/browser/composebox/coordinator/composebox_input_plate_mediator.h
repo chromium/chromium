@@ -24,6 +24,7 @@
 
 @protocol BrowserCoordinatorCommands;
 @class ComposeboxAttachmentSelection;
+@class ComposeboxFocusParams;
 @class CobrowseContext;
 class CobrowseBrowserAgent;
 @protocol ComposeboxDebuggerLogger;
@@ -119,6 +120,9 @@ class ContextualSearchSessionHandle;
 
 // Unpacks and attaches all items within the selection wrapper.
 - (void)updateAttachments:(ComposeboxAttachmentSelection*)attachments;
+
+// Applies the focus parameters to initialize the session state.
+- (void)applyFocusParams:(ComposeboxFocusParams*)params;
 
 @end
 
