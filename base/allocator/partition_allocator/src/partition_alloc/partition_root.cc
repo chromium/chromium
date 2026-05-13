@@ -118,6 +118,11 @@ class PartitionRootEnumerator {
 
   void Register(PartitionRoot* root) {
     internal::ScopedGuard guard(PartitionRoot::GetEnumeratorLock());
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    // The global partition_roots_ list can contain thread isolated roots.
+    // We must lift the restrictions to access the prev_root/next_root pointers.
+    LiftThreadIsolationScope lift_thread_isolation_restrictions;
+#endif
     root->next_root = partition_roots_;
     root->prev_root = nullptr;
     if (partition_roots_) {
@@ -128,6 +133,11 @@ class PartitionRootEnumerator {
 
   void Unregister(PartitionRoot* root) {
     internal::ScopedGuard guard(PartitionRoot::GetEnumeratorLock());
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    // The global partition_roots_ list can contain thread isolated roots.
+    // We must lift the restrictions to access the prev_root/next_root pointers.
+    LiftThreadIsolationScope lift_thread_isolation_restrictions;
+#endif
     PartitionRoot* prev = root->prev_root;
     PartitionRoot* next = root->next_root;
     if (prev) {
@@ -174,6 +184,11 @@ namespace {
 
 void LockRoot(PartitionRoot* root, bool) PA_NO_THREAD_SAFETY_ANALYSIS {
   PA_DCHECK(root);
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // The root might be thread isolated. We must lift the restrictions to access
+  // its lock.
+  internal::LiftThreadIsolationScope lift_thread_isolation_restrictions;
+#endif
   internal::PartitionRootLock(root).Acquire();
 }
 
@@ -190,6 +205,11 @@ void UnlockOrReinit(T& lock, bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
 
 void UnlockOrReinitRoot(PartitionRoot* root,
                         bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // The root might be thread isolated. We must lift the restrictions to access
+  // its lock.
+  internal::LiftThreadIsolationScope lift_thread_isolation_restrictions;
+#endif
   UnlockOrReinit(internal::PartitionRootLock(root), in_child);
 }
 

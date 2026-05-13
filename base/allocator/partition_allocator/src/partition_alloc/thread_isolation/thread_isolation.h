@@ -53,19 +53,18 @@ namespace partition_alloc::internal {
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
-
 struct PA_THREAD_ISOLATED_ALIGN ThreadIsolationSettings {
   bool enabled = false;
   PA_CONSTINIT static ThreadIsolationSettings settings;
 };
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+        // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 
 #if PA_BUILDFLAG(ENABLE_PKEYS)
 
 using LiftThreadIsolationScope = LiftPkeyRestrictionsScope;
 
 #endif  // PA_BUILDFLAG(ENABLE_PKEYS)
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
-        // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 
 void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption thread_isolation);
 void UnprotectThreadIsolatedGlobals();

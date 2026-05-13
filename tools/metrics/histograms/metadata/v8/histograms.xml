@@ -77,6 +77,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.CFIPkeyMprotect" enum="PkeyMprotectResult"
+    expires_after="2026-10-01">
+  <owner>emaxx@google.com</owner>
+  <owner>v8-security@google.com</owner>
+  <summary>
+    The result of trying to pkey_mprotect the ThreadIsolationData at runtime.
+
+    This metric is recorded once at renderer startup when the
+    ThreadIsolatedAllocator is initialized.
+  </summary>
+</histogram>
+
 <histogram name="V8.CodeCacheRejectReason" enum="V8CodeCacheRejectReason"
     expires_after="2026-09-20">
   <owner>marja@chromium.org</owner>

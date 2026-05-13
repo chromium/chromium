@@ -12,6 +12,7 @@
 
 #include <cerrno>
 
+#include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
@@ -61,14 +62,15 @@ void Wrpkru(uint32_t pkru) {
   asm volatile(".byte 0x0f,0x01,0xef\n" : : "a"(pkru), "c"(0), "d"(0));
 }
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
-    PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
-
 LiftPkeyRestrictionsScope::LiftPkeyRestrictionsScope()
     : saved_pkey_value_(kDefaultPkeyValue) {
-  if (!ThreadIsolationSettings::settings.enabled) {
+  if (!PartitionAddressSpace::IsThreadIsolatedPoolInitialized()) {
     return;
   }
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+    PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
+  PA_DCHECK(ThreadIsolationSettings::settings.enabled);
+#endif
   saved_pkey_value_ = Rdpkru();
   if (saved_pkey_value_ != kDefaultPkeyValue) {
     Wrpkru(kAllowAllPkeyValue);
@@ -76,16 +78,17 @@ LiftPkeyRestrictionsScope::LiftPkeyRestrictionsScope()
 }
 
 LiftPkeyRestrictionsScope::~LiftPkeyRestrictionsScope() {
-  if (!ThreadIsolationSettings::settings.enabled) {
+  if (!PartitionAddressSpace::IsThreadIsolatedPoolInitialized()) {
     return;
   }
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+    PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
+  PA_DCHECK(ThreadIsolationSettings::settings.enabled);
+#endif
   if (Rdpkru() != saved_pkey_value_) {
     Wrpkru(saved_pkey_value_);
   }
 }
-
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
-        // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 
 }  // namespace partition_alloc::internal
 

@@ -90,6 +90,16 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="kOtherReason"/>
 </enum>
 
+<enum name="PkeyMprotectResult">
+  <int value="-1" label="Missing pkey_mprotect symbol"/>
+  <int value="0" label="Success"/>
+  <int value="1" label="EPERM"/>
+  <int value="4" label="EINTR"/>
+  <int value="12" label="ENOMEM"/>
+  <int value="13" label="EACCES"/>
+  <int value="22" label="EINVAL"/>
+</enum>
+
 <enum name="V8CacheBehaviour">
   <int value="0" label="kProduceCodeCache">
     The compilation produced a code cache
