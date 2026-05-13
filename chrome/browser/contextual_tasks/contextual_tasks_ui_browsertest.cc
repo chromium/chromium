@@ -626,6 +626,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest, CanZoom) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       IncognitoDoesNotCrash) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser, GURL(chrome::kChromeUINewTabPageURL)));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser, GURL(chrome::kChromeUIContextualTasksURL)));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
                        CannotZoomInSidePanel) {
   std::unique_ptr<content::WebContents> side_panel_contents =
       content::WebContents::Create(
