@@ -106,7 +106,7 @@ void CSSPathInterpolationType::ApplyStandardPropertyValue(
   CHECK(non_interpolable_value);
   SetPath(CssProperty(), state.StyleBuilder(),
           PathInterpolationFunctions::AppliedValue(interpolable_value,
-                                                   non_interpolable_value),
+                                                   *non_interpolable_value),
           PathInterpolationFunctions::GetCssBox(*non_interpolable_value));
 }
 

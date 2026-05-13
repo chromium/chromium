@@ -198,13 +198,13 @@ BasicShape* CreateBasicShape(
     const NonInterpolableValue& untyped_non_interpolable_value) {
   if (type == BasicShape::kStylePathType) {
     return PathInterpolationFunctions::AppliedValue(
-        interpolable_value, &untyped_non_interpolable_value);
+        interpolable_value, untyped_non_interpolable_value);
   }
 
   CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   if (type == BasicShape::kStyleShapeType) {
     return CSSShapeInterpolationType::CreateShape(
-        interpolable_value, &untyped_non_interpolable_value, conversion_data);
+        interpolable_value, untyped_non_interpolable_value, conversion_data);
   }
 
   return basic_shape_interpolation_functions::CreateBasicShape(

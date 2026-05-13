@@ -116,16 +116,6 @@ class InheritedBorderShapeChecker
   Member<const StyleBorderShape> inherited_;
 };
 
-template <GeometryBox default_box>
-GeometryBox GeometryBoxForNonInterpolableValue(
-    const NonInterpolableValue* non_interpolable) {
-  if (!non_interpolable) {
-    return GeometryBox::kHalfBorderBox;
-  }
-  return shape_interpolation_functions::GetGeometryBox(*non_interpolable,
-                                                       default_box);
-}
-
 }  // namespace
 
 InterpolationValue CSSBorderShapeInterpolationType::MaybeConvertNeutral(
@@ -301,29 +291,24 @@ void CSSBorderShapeInterpolationType::ApplyStandardPropertyValue(
     return;
   }
 
-  const auto* non_interpolable_list =
-      DynamicTo<NonInterpolableList>(non_interpolable_value);
-  CHECK(non_interpolable_list);
-  CHECK_EQ(non_interpolable_list->length(), length);
+  CHECK(non_interpolable_value);
+  const auto& non_interpolable_list =
+      To<NonInterpolableList>(*non_interpolable_value);
+  CHECK_EQ(non_interpolable_list.length(), length);
 
   BasicShape* outer_shape = shape_interpolation_functions::CreateBasicShape(
-      *interpolable_list.Get(0), *non_interpolable_list->Get(0),
+      *interpolable_list.Get(0), *non_interpolable_list.Get(0),
       state.CssToLengthConversionData());
+  GeometryBox outer_box = shape_interpolation_functions::GetGeometryBox(
+      *non_interpolable_list.Get(0), GeometryBox::kBorderBox);
+  CHECK(outer_shape);
+
   BasicShape* inner_shape = shape_interpolation_functions::CreateBasicShape(
-      *interpolable_list.Get(1), *non_interpolable_list->Get(1),
+      *interpolable_list.Get(1), *non_interpolable_list.Get(1),
       state.CssToLengthConversionData());
-
-  if (!outer_shape || !inner_shape) {
-    state.StyleBuilder().SetBorderShape(nullptr);
-    return;
-  }
-
-  GeometryBox outer_box =
-      GeometryBoxForNonInterpolableValue<GeometryBox::kBorderBox>(
-          non_interpolable_list->Get(0));
-  GeometryBox inner_box =
-      GeometryBoxForNonInterpolableValue<GeometryBox::kPaddingBox>(
-          non_interpolable_list->Get(1));
+  GeometryBox inner_box = shape_interpolation_functions::GetGeometryBox(
+      *non_interpolable_list.Get(1), GeometryBox::kPaddingBox);
+  CHECK(inner_shape);
 
   state.StyleBuilder().SetBorderShape(MakeGarbageCollected<StyleBorderShape>(
       *outer_shape, inner_shape, outer_box, inner_box));

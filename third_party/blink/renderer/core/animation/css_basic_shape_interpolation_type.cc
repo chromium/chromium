@@ -265,21 +265,16 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
           MakeGarbageCollected<ShapeValue>(*shape, ShapeBox::kMissing));
       break;
     case CSSPropertyID::kOffsetPath: {
-      CoordBox coord_box = CoordBox::kBorderBox;
-      if (non_interpolable_value) {
-        coord_box = basic_shape_interpolation_functions::GetCoordBox(
-            *non_interpolable_value);
-      }
+      CoordBox coord_box = basic_shape_interpolation_functions::GetCoordBox(
+          *non_interpolable_value);
       state.StyleBuilder().SetOffsetPath(
           MakeGarbageCollected<ShapeOffsetPathOperation>(*shape, coord_box));
       break;
     }
     case CSSPropertyID::kClipPath: {
-      GeometryBox geometry_box = GeometryBox::kBorderBox;
-      if (non_interpolable_value) {
-        geometry_box = basic_shape_interpolation_functions::GetGeometryBox(
-            *non_interpolable_value);
-      }
+      GeometryBox geometry_box =
+          basic_shape_interpolation_functions::GetGeometryBox(
+              *non_interpolable_value);
       state.StyleBuilder().SetClipPath(
           MakeGarbageCollected<ShapeClipPathOperation>(*shape, geometry_box));
       break;

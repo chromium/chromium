@@ -24,7 +24,7 @@ class CORE_EXPORT PathInterpolationFunctions {
   enum CoordinateConversion { kPreserveCoordinates, kForceAbsolute };
 
   static StylePath* AppliedValue(const InterpolableValue&,
-                                 const NonInterpolableValue*);
+                                 const NonInterpolableValue&);
 
   static void Composite(UnderlyingValueOwner&,
                         double underlying_fraction,

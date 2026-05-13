@@ -252,18 +252,18 @@ void PathInterpolationFunctions::Composite(
 
 StylePath* PathInterpolationFunctions::AppliedValue(
     const InterpolableValue& interpolable_value,
-    const NonInterpolableValue* non_interpolable_value) {
-  auto* non_interpolable_path_value =
+    const NonInterpolableValue& non_interpolable_value) {
+  auto& non_interpolable_path_value =
       To<SVGPathNonInterpolableValue>(non_interpolable_value);
   InterpolatedSVGPathSource source(
       To<InterpolableList>(
           *To<InterpolableList>(interpolable_value).Get(kPathArgsIndex)),
-      non_interpolable_path_value->PathSegTypes());
+      non_interpolable_path_value.PathSegTypes());
   SVGPathByteStreamBuilder builder;
   svg_path_parser::ParsePath(source, builder);
 
   return MakeGarbageCollected<StylePath>(
-      builder.CopyByteStream(), non_interpolable_path_value->GetWindRule());
+      builder.CopyByteStream(), non_interpolable_path_value.GetWindRule());
 }
 
 }  // namespace blink

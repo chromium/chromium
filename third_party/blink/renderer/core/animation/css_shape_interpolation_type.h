@@ -28,7 +28,7 @@ class CSSShapeInterpolationType : public CSSInterpolationType {
       const NonInterpolableValue*);
 
   static CORE_EXPORT BasicShape* CreateShape(const InterpolableValue&,
-                                             const NonInterpolableValue*,
+                                             const NonInterpolableValue&,
                                              const CSSToLengthConversionData&);
 
   static InterpolationValue MaybeConvertCSSValue(
