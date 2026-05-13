@@ -17253,6 +17253,22 @@
             ]
         }
     ],
+    "OnDeviceCategoryClassiferAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OnDeviceCategoryClassifer",
+                        "PassageEmbedder"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDeviceModelBackgroundDownload": [
         {
             "platforms": [
