@@ -44,11 +44,26 @@ void BrowserManagerService::Shutdown() {
 }
 
 bool BrowserManagerService::IsEmpty() const {
-  return browsers_and_subscriptions_.empty();
+  return GetSize() == 0;
 }
 
 size_t BrowserManagerService::GetSize() const {
-  return browsers_and_subscriptions_.size();
+  // TODO(crbug.com/512607471): Remove this once the pending-delete state has
+  // been removed.
+  CHECK(browsers_and_subscriptions_.empty() ||
+        browsers_and_subscriptions_for_testing_.empty());
+  size_t size = 0;
+  for (const auto& entry : browsers_and_subscriptions_) {
+    if (!entry.browser->IsDeleteScheduled()) {
+      size++;
+    }
+  }
+  for (const auto& entry : browsers_and_subscriptions_for_testing_) {
+    if (!entry.browser->IsDeleteScheduled()) {
+      size++;
+    }
+  }
+  return size;
 }
 
 void BrowserManagerService::AddBrowser(std::unique_ptr<Browser> browser) {
@@ -178,6 +193,8 @@ BrowserCollection::BrowserVector BrowserManagerService::GetBrowsers(
     Order order) {
   CHECK(order == Order::kCreation || order == Order::kActivation);
   BrowserCollection::BrowserVector browsers;
+  // TODO(crbug.com/512607471): Remove this once the pending-delete state has
+  // been removed.
   if (order == Order::kActivation) {
     browsers.reserve(browsers_activation_order_.size());
     for (raw_ptr<BrowserWindowInterface>& browser :

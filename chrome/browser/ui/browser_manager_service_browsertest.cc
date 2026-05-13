@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_manager_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -28,6 +29,51 @@ class MockBrowserCollectionObserver : public BrowserCollectionObserver {
   MOCK_METHOD(void, OnBrowserClosed, (BrowserWindowInterface * browser));
   MOCK_METHOD(void, OnBrowserActivated, (BrowserWindowInterface * browser));
   MOCK_METHOD(void, OnBrowserDeactivated, (BrowserWindowInterface * browser));
+};
+
+// Helper class to observe browser close events and verify that the closing
+// browser is correctly filtered out by BrowserManagerService queries while
+// browser objects are in a pending-delete state.
+class FilterVerifier : public BrowserCollectionObserver {
+ public:
+  FilterVerifier(BrowserManagerService* service,
+                 BrowserWindowInterface* closing_browser,
+                 size_t expected_remaining_size)
+      : service_(service),
+        closing_browser_(closing_browser),
+        expected_remaining_size_(expected_remaining_size) {}
+
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    if (browser == closing_browser_) {
+      EXPECT_TRUE(browser->IsDeleteScheduled());
+      EXPECT_EQ(expected_remaining_size_ == 0, service_->IsEmpty());
+      EXPECT_EQ(expected_remaining_size_, service_->GetSize());
+
+      std::vector<BrowserWindowInterface*> visited;
+      service_->ForEach(
+          [&visited](BrowserWindowInterface* b) {
+            visited.push_back(b);
+            return true;
+          },
+          BrowserCollection::Order::kCreation);
+
+      EXPECT_EQ(expected_remaining_size_, visited.size());
+      for (auto* b : visited) {
+        EXPECT_NE(b, closing_browser_);
+      }
+
+      called_ = true;
+      closing_browser_ = nullptr;
+    }
+  }
+
+  bool called() const { return called_; }
+
+ private:
+  raw_ptr<BrowserManagerService> service_;
+  raw_ptr<BrowserWindowInterface> closing_browser_;
+  size_t expected_remaining_size_;
+  bool called_ = false;
 };
 
 class BrowserManagerServiceTest : public InProcessBrowserTest {
@@ -85,6 +131,40 @@ IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
   // Close secondary browser and expect events.
   EXPECT_CALL(observer, OnBrowserClosed(secondary_browser)).Times(1);
   CloseBrowserSynchronously(secondary_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
+                       FilterDeletedScheduledBrowsers) {
+  BrowserManagerService* service =
+      BrowserManagerServiceFactory::GetForProfile(GetProfile());
+  ASSERT_NE(service, nullptr);
+
+  BrowserWindowInterface* second_browser = CreateBrowser(GetProfile());
+
+  FilterVerifier verifier(service, second_browser, 1u);
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      observation{&verifier};
+  observation.Observe(service);
+
+  CloseBrowserSynchronously(second_browser);
+  EXPECT_TRUE(verifier.called());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
+                       FilterDeletedScheduledLastBrowser) {
+  BrowserManagerService* service =
+      BrowserManagerServiceFactory::GetForProfile(GetProfile());
+  ASSERT_NE(service, nullptr);
+
+  BrowserWindowInterface* main_browser = browser();
+
+  FilterVerifier verifier(service, main_browser, 0u);
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      observation{&verifier};
+  observation.Observe(service);
+
+  CloseBrowserSynchronously(main_browser);
+  EXPECT_TRUE(verifier.called());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
