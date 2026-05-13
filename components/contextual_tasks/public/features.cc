@@ -35,9 +35,6 @@ BASE_FEATURE(kContextualTasksExtraOauthScopes,
 BASE_FEATURE(kEnableContextualTasksPinButtonInToolbar,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the use of the kSearchResultsOAuth2Scope instead of the
-// kChromeSyncOAuth2Scope.
-BASE_FEATURE(kContextualTasksScopeChange, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -547,9 +544,6 @@ bool IsCustomNlmUiEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksCustomNlmUi);
 }
 
-bool ShouldUseSearchResultsScope() {
-  return base::FeatureList::IsEnabled(kContextualTasksScopeChange);
-}
 
 bool GetIsBasicModeEnabled() {
   return kContextualTasksEnableBasicMode.Get();

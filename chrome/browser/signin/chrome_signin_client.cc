@@ -220,9 +220,7 @@ class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
   signin::OAuthConsumer GetOAuthConsumerForContextualTasks() const override {
     CHECK(base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks));
     signin::ScopeSet scopes = {
-        contextual_tasks::ShouldUseSearchResultsScope()
-            ? GaiaConstants::kSearchResultsOAuth2Scope
-            : GaiaConstants::kChromeSyncOAuth2Scope,
+        GaiaConstants::kSearchResultsOAuth2Scope,
         kCalendarEventsOAuth2Scope,
         kCalendarFreeBusyOAuth2Scope,
         kCalendarListOAuth2Scope,

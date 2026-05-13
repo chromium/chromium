@@ -16,9 +16,6 @@ namespace contextual_tasks {
 BASE_DECLARE_FEATURE(kContextualTasks);
 BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
-// When enabled, it should instead request the kSearchResultsOAuth2Scope instead
-// of the kChromeSyncOAuth2Scope
-BASE_DECLARE_FEATURE(kContextualTasksScopeChange);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
 BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
 BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
@@ -285,9 +282,6 @@ extern bool GetEnableContextualTasksSmartCompose();
 // zero state suggestions are enabled for Contextual Tasks.
 extern bool GetEnableNativeZeroStateSuggestions();
 
-// Returns whether the kSearchResultsOAuth2Scope should be used instead of the
-// kChromeSyncOAuth2Scope.
-extern bool ShouldUseSearchResultsScope();
 
 // Returns whether basic mode should be enabled.
 extern bool GetIsBasicModeEnabled();
