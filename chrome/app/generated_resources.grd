@@ -19456,6 +19456,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_SHOW_METADATA_APP_ENTERPRISE_NAME_LABEL" desc="Label before the Isolated Web App enterprise name in the pre-install app info summary screen">
       Offered by: <ph name="ENTERPRISE_NAME">$1<ex>Google</ex></ph>
     </message>
+    <message name="IDS_IWA_INSTALLER_UPDATE_SETTINGS" desc="Label of a collapsible area containing advanced settings related to application updates.">
+      Update settings
+    </message>
+    <message name="IDS_IWA_INSTALLER_UPDATE_CHANNEL" desc="Label of a combobox to select an update channel.">
+      Update channel
+    </message>
     <message name="IDS_IWA_INSTALLER_CONFIRM_TITLE" desc="Title of the confirmation popup that appears immediately before Isolated Web App installation">
       Do you want to continue and allow this software to make changes to your device?
     </message>

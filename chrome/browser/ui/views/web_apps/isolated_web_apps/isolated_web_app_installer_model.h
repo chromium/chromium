@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 
@@ -82,10 +83,12 @@ class IsolatedWebAppInstallerModel {
   bool has_dialog() { return dialog_.has_value(); }
   const Dialog& dialog() { return dialog_.value(); }
 
-  const std::vector<UpdateChannel>& available_channels() const {
+  const std::vector<UpdateManifest::ChannelMetadata>& available_channels()
+      const {
     return available_channels_;
   }
-  void SetAvailableChannels(std::vector<UpdateChannel> channels) {
+  void SetAvailableChannels(
+      std::vector<UpdateManifest::ChannelMetadata> channels) {
     available_channels_ = std::move(channels);
   }
 
@@ -95,7 +98,7 @@ class IsolatedWebAppInstallerModel {
   Step step_;
   std::optional<SignedWebBundleMetadata> bundle_metadata_;
   std::optional<Dialog> dialog_;
-  std::vector<UpdateChannel> available_channels_;
+  std::vector<UpdateManifest::ChannelMetadata> available_channels_;
 };
 
 }  // namespace web_app

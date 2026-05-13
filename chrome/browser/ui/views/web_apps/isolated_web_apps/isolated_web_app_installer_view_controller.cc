@@ -10,6 +10,7 @@
 #include <string>
 #include <variant>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -70,7 +71,7 @@
 
 namespace web_app {
 
-BASE_FEATURE(kIwaUpdateChannelsInInstaller, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIwaUpdateChannelsInInstaller, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -454,7 +455,8 @@ void IsolatedWebAppInstallerViewController::LoadChannelsAndShowMetadata() {
       model_->bundle_metadata().update_manifest_url();
 
   if (!update_manifest_url.has_value() || !update_manifest_url->is_valid()) {
-    model_->SetAvailableChannels({UpdateChannel::default_channel()});
+    model_->SetAvailableChannels({UpdateManifest::ChannelMetadata(
+        UpdateChannel::default_channel(), std::nullopt)});
     model_->SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
     return;
   }
@@ -469,7 +471,7 @@ void IsolatedWebAppInstallerViewController::LoadChannelsAndShowMetadata() {
       weak_ptr_factory_.GetWeakPtr()));
 
   update_manifest_timer_.Start(
-      FROM_HERE, base::Seconds(10),
+      FROM_HERE, base::Seconds(15),
       base::BindOnce(
           &IsolatedWebAppInstallerViewController::OnUpdateManifestTimeout,
           weak_ptr_factory_.GetWeakPtr()));
@@ -493,8 +495,15 @@ void IsolatedWebAppInstallerViewController::OnUpdateManifestFetched(
     unique_channels.insert(UpdateChannel::default_channel());
   }
 
-  model_->SetAvailableChannels(std::vector<UpdateChannel>(
-      unique_channels.begin(), unique_channels.end()));
+  std::vector<UpdateManifest::ChannelMetadata> channels_metadata =
+      base::ToVector(unique_channels, [&](const auto& channel) {
+        if (fetch_result.has_value()) {
+          return fetch_result->GetChannelMetadata(channel);
+        }
+        return UpdateManifest::ChannelMetadata(channel, std::nullopt);
+      });
+
+  model_->SetAvailableChannels(std::move(channels_metadata));
   model_->SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
 }
 

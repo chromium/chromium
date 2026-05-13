@@ -47,9 +47,9 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   void ShowGetMetadataScreen() override;
   void UpdateGetMetadataProgress(double percent) override;
 
-  void ShowMetadataScreen(
-      const SignedWebBundleMetadata& bundle_metadata,
-      const std::vector<UpdateChannel>& available_channels) override;
+  void ShowMetadataScreen(const SignedWebBundleMetadata& bundle_metadata,
+                          const std::vector<UpdateManifest::ChannelMetadata>&
+                              available_channels) override;
 
   void ShowInstallScreen(
       const SignedWebBundleMetadata& bundle_metadata) override;

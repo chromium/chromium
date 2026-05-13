@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -66,7 +67,8 @@ class IsolatedWebAppInstallerView : public views::View {
 
   virtual void ShowMetadataScreen(
       const SignedWebBundleMetadata& bundle_metadata,
-      const std::vector<UpdateChannel>& available_channels) = 0;
+      const std::vector<UpdateManifest::ChannelMetadata>&
+          available_channels) = 0;
 
   virtual void ShowInstallScreen(
       const SignedWebBundleMetadata& bundle_metadata) = 0;

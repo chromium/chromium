@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -21,9 +22,11 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -32,6 +35,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/combobox_model.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
@@ -49,6 +53,12 @@
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -189,6 +199,171 @@ class InfoPane : public views::BoxLayoutView {
   }
 };
 BEGIN_METADATA(InfoPane)
+END_METADATA
+
+// Combobox model for the "Update channel" selection.
+class UpdateChannelComboboxModel : public ui::ComboboxModel {
+ public:
+  explicit UpdateChannelComboboxModel(
+      std::vector<UpdateManifest::ChannelMetadata> channels)
+      : channels_(std::move(channels)) {}
+  ~UpdateChannelComboboxModel() override = default;
+
+  size_t GetItemCount() const override { return channels_.size(); }
+
+  std::u16string GetItemAt(size_t index) const override {
+    return base::UTF8ToUTF16(GetChannelAt(index).GetDisplayName());
+  }
+
+  const UpdateManifest::ChannelMetadata& GetChannelAt(size_t index) const {
+    return channels_[index];
+  }
+
+ private:
+  std::vector<UpdateManifest::ChannelMetadata> channels_;
+};
+
+// View containing the update settings with a collapsible area.
+class UpdateSettingsPane : public views::BoxLayoutView {
+  METADATA_HEADER(UpdateSettingsPane, views::BoxLayoutView)
+
+ public:
+  UpdateSettingsPane() {
+    views::LayoutProvider* provider = views::LayoutProvider::Get();
+
+    auto chevron = CreateUpdateSettingsToggle();
+    chevron_ = chevron.get();
+
+    views::Builder<views::BoxLayoutView>(this)
+        .SetOrientation(views::BoxLayout::Orientation::kVertical)
+        .SetInsideBorderInsets(
+            provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG))
+        .SetBackground(views::CreateRoundedRectBackground(
+            ui::kColorSubtleEmphasisBackground, kInfoPaneCornerRadius))
+        .AddChildren(views::Builder<views::BoxLayoutView>(
+                         CreateHeaderRow(std::move(chevron))),
+                     views::Builder<views::BoxLayoutView>(CreateContentRow())
+                         .CopyAddressTo(&settings_container_))
+        .BuildChildren();
+  }
+
+  void ToggleExpanded() {
+    bool is_expanded = !settings_container_->GetVisible();
+    settings_container_->SetVisible(is_expanded);
+    chevron_->SetToggled(is_expanded);
+
+    PreferredSizeChanged();
+
+    // Force the installer dialog box to recalculate its bounds.
+    if (GetWidget()) {
+      GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
+    }
+  }
+
+  void SetUpdateChannels(
+      const std::vector<UpdateManifest::ChannelMetadata>& channels) {
+    combobox_model_ = std::make_unique<UpdateChannelComboboxModel>(channels);
+    combobox_->SetModel(combobox_model_.get());
+
+    combobox_->SetEnabled(channels.size() > 1);
+  }
+
+  const std::optional<UpdateChannel>& GetSelectedChannel() const {
+    return selected_channel_;
+  }
+
+ private:
+  std::unique_ptr<views::BoxLayoutView> CreateHeaderRow(
+      std::unique_ptr<views::View> toggle_button) {
+    auto header_row = std::make_unique<views::BoxLayoutView>();
+    header_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    header_row->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+
+    auto* label = header_row->AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_UPDATE_SETTINGS),
+        views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
+    label->SetFontList(label->font_list().Derive(
+        0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD));
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    auto* header_spacer =
+        header_row->AddChildView(std::make_unique<views::View>());
+    header_row->SetFlexForView(header_spacer, 1);
+
+    header_row->AddChildView(std::move(toggle_button));
+    return header_row;
+  }
+
+  std::unique_ptr<views::ToggleImageButton> CreateUpdateSettingsToggle() {
+    auto button = views::CreateVectorToggleImageButton(base::BindRepeating(
+        &UpdateSettingsPane::ToggleExpanded, base::Unretained(this)));
+
+    button->GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_UPDATE_SETTINGS));
+
+    views::SetImageFromVectorIconWithColor(
+        button.get(), kKeyboardArrowDownIcon, 16,
+        {ui::kColorIcon, ui::kColorIconDisabled});
+    views::SetToggledImageFromVectorIconWithColor(
+        button.get(), kKeyboardArrowUpIcon, 16,
+        {ui::kColorIcon, ui::kColorIconDisabled});
+
+    return button;
+  }
+
+  std::unique_ptr<views::BoxLayoutView> CreateContentRow() {
+    auto content_row = std::make_unique<views::BoxLayoutView>();
+    content_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    content_row->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    content_row->SetVisible(false);  // Collapsed by default.
+
+    content_row->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(views::LayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                          0, 0, 0));
+
+    auto* update_label =
+        content_row->AddChildView(std::make_unique<views::Label>(
+            l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_UPDATE_CHANNEL),
+            views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+    update_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    auto* content_spacer =
+        content_row->AddChildView(std::make_unique<views::View>());
+    content_row->SetFlexForView(content_spacer, 1);
+
+    combobox_model_ = std::make_unique<UpdateChannelComboboxModel>(
+        std::vector<UpdateManifest::ChannelMetadata>());
+    combobox_ = content_row->AddChildView(
+        std::make_unique<views::Combobox>(combobox_model_.get()));
+    combobox_->GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_UPDATE_CHANNEL));
+    combobox_->SetCallback(base::BindRepeating(
+        &UpdateSettingsPane::OnUpdateChannelChanged, base::Unretained(this)));
+
+    return content_row;
+  }
+
+  void OnUpdateChannelChanged() {
+    if (combobox_model_ && combobox_->GetSelectedIndex().has_value()) {
+      selected_channel_ =
+          combobox_model_->GetChannelAt(combobox_->GetSelectedIndex().value())
+              .channel();
+    } else {
+      selected_channel_ = std::nullopt;
+    }
+  }
+
+  raw_ptr<views::ToggleImageButton> chevron_;
+  raw_ptr<views::BoxLayoutView> settings_container_;
+  std::unique_ptr<UpdateChannelComboboxModel> combobox_model_;
+  raw_ptr<views::Combobox> combobox_;
+  std::optional<UpdateChannel> selected_channel_;
+};
+BEGIN_METADATA(UpdateSettingsPane)
 END_METADATA
 
 }  // namespace
@@ -372,15 +547,30 @@ class ShowMetadataView : public InstallerDialogView {
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE) {
-    // Initialize the View with dummy data so the initial height calculation
-    // will be roughly accurate.
+    // Initialize the wrapper view that contains both InfoPane and Settings
+    auto contents_container = std::make_unique<views::BoxLayoutView>();
+    contents_container->SetOrientation(
+        views::BoxLayout::Orientation::kVertical);
+    contents_container->SetBetweenChildSpacing(
+        views::LayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+
     std::vector<std::pair<int, std::u16string>> info = {
         {IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL, u""},
         {IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL, u""},
         {IDS_IWA_INSTALLER_SHOW_METADATA_APP_ENTERPRISE_NAME_LABEL, u""},
     };
-    info_pane_ = SetContentsView(std::make_unique<InfoPane>(info),
-                                 IDS_IWA_INSTALLER_DETAILS_SCREENREADER_NAME);
+
+    info_pane_ =
+        contents_container->AddChildView(std::make_unique<InfoPane>(info));
+
+    if (base::FeatureList::IsEnabled(kIwaUpdateChannelsInInstaller)) {
+      update_settings_pane_ = contents_container->AddChildView(
+          std::make_unique<UpdateSettingsPane>());
+    }
+
+    SetContentsView(std::move(contents_container),
+                    IDS_IWA_INSTALLER_DETAILS_SCREENREADER_NAME);
   }
 
   void UpdateInfoPaneContents(
@@ -388,8 +578,25 @@ class ShowMetadataView : public InstallerDialogView {
     info_pane_->SetData(data);
   }
 
+  void SetUpdateChannels(
+      const std::vector<UpdateManifest::ChannelMetadata>& channels) {
+    if (update_settings_pane_) {
+      update_settings_pane_->SetUpdateChannels(channels);
+    }
+  }
+
+  const std::optional<UpdateChannel>& GetSelectedChannel() const {
+    if (update_settings_pane_) {
+      return update_settings_pane_->GetSelectedChannel();
+    }
+    static const base::NoDestructor<std::optional<UpdateChannel>>
+        default_option(UpdateChannel::default_channel());
+    return *default_option;
+  }
+
  private:
   raw_ptr<InfoPane> info_pane_;
+  raw_ptr<UpdateSettingsPane> update_settings_pane_;
 };
 
 BEGIN_METADATA(ShowMetadataView)
@@ -551,7 +758,7 @@ void IsolatedWebAppInstallerViewImpl::UpdateGetMetadataProgress(
 
 void IsolatedWebAppInstallerViewImpl::ShowMetadataScreen(
     const SignedWebBundleMetadata& bundle_metadata,
-    const std::vector<UpdateChannel>& available_channels) {
+    const std::vector<UpdateManifest::ChannelMetadata>& available_channels) {
   std::vector<std::pair<int, std::u16string>> data = {
       {IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL,
        bundle_metadata.app_name()},
@@ -560,6 +767,7 @@ void IsolatedWebAppInstallerViewImpl::ShowMetadataScreen(
       {IDS_IWA_INSTALLER_SHOW_METADATA_APP_ENTERPRISE_NAME_LABEL,
        base::UTF8ToUTF16(bundle_metadata.enterprise_name().value_or(""))}};
   show_metadata_view_->UpdateInfoPaneContents(data);
+  show_metadata_view_->SetUpdateChannels(available_channels);
   show_metadata_view_->SetTitle(bundle_metadata.app_name());
   show_metadata_view_->SetIcon(
       CreateImageModelFromBundleMetadata(bundle_metadata));
@@ -691,10 +899,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
 
 const std::optional<UpdateChannel>&
 IsolatedWebAppInstallerViewImpl::GetSelectedUpdateChannel() const {
-  // TODO(crbug.com/500326341): Implement this.
-  static const base::NoDestructor<std::optional<UpdateChannel>> default_channel(
-      UpdateChannel::default_channel());
-  return *default_channel;
+  return show_metadata_view_->GetSelectedChannel();
 }
 
 views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(

@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   // Check that the model parsed the channels correctly.
   std::vector<std::string> parsed_channel_names;
   for (const auto& channel : model->available_channels()) {
-    parsed_channel_names.push_back(channel.ToString());
+    parsed_channel_names.push_back(channel.channel().ToString());
   }
 
   EXPECT_THAT(parsed_channel_names,
