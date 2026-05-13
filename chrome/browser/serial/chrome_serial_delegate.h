@@ -39,6 +39,9 @@ class ChromeSerialDelegate : public content::SerialDelegate {
                    Observer* observer) override;
   void RemoveObserver(content::RenderFrameHost* frame,
                       Observer* observer) override;
+
+ private:
+  bool MayUseSerial(content::RenderFrameHost* frame);
 };
 
 #endif  // CHROME_BROWSER_SERIAL_CHROME_SERIAL_DELEGATE_H_
