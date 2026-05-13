@@ -13,12 +13,6 @@
 
 namespace contextual_tasks {
 
-// static
-std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
-    BrowserWindowInterface* browser_window) {
-  return std::make_unique<ContextualTasksPanelHostAndroid>(browser_window);
-}
-
 ContextualTasksPanelHostAndroid::ContextualTasksPanelHostAndroid(
     BrowserWindowInterface* browser_window)
     : browser_window_(browser_window) {}

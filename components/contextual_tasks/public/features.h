@@ -99,6 +99,9 @@ BASE_DECLARE_FEATURE(kContextualTasksWebpageApcComparison);
 // only.
 BASE_DECLARE_FEATURE(kContextualTasksJavaFusebox);
 
+// Enables overriding side panel to show Bottom Sheet on demand.
+BASE_DECLARE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled();
 
 bool GetIsContextualTasksPdfCitationsEnabled();

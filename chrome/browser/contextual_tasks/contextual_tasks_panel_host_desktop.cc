@@ -26,13 +26,6 @@ inline constexpr int kSidePanelPreferredDefaultWidth = 440;
 
 namespace contextual_tasks {
 
-// static
-std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
-    BrowserWindowInterface* browser_window) {
-  return std::make_unique<ContextualTasksPanelHostDesktop>(
-      browser_window, browser_window->GetFeatures().side_panel_ui());
-}
-
 ContextualTasksPanelHostDesktop::ContextualTasksPanelHostDesktop(
     BrowserWindowInterface* browser_window,
     SidePanelUI* side_panel_ui)

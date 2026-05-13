@@ -127,6 +127,10 @@ BASE_FEATURE(kContextualTasksWebpageApcComparison,
 // based fusebox is fully functional.
 BASE_FEATURE(kContextualTasksJavaFusebox, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables overriding side panel to show Bottom Sheet on demand.
+BASE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksUpdateModelOnNavigation);
 }

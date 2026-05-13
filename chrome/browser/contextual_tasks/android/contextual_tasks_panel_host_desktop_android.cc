@@ -30,13 +30,6 @@ constexpr int kSidePanelMinWidth = 440;
 
 namespace contextual_tasks {
 
-// static
-std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
-    BrowserWindowInterface* browser_window) {
-  return std::make_unique<ContextualTasksPanelHostDesktopAndroid>(
-      browser_window);
-}
-
 ContextualTasksPanelHostDesktopAndroid::ContextualTasksPanelHostDesktopAndroid(
     BrowserWindowInterface* browser_window)
     : browser_window_(browser_window) {

@@ -172,11 +172,10 @@ source_set("ui") {
   ]
 
   if (is_android) {
-    if (is_desktop_android) {
-      sources += [ "android/contextual_tasks_panel_host_desktop_android.h" ]
-    } else {
-      sources += [ "android/contextual_tasks_panel_host_android.h" ]
-    }
+    sources += [
+      "android/contextual_tasks_panel_host_android.h",
+      "android/contextual_tasks_panel_host_desktop_android.h",
+    ]
   }
 
   if (!is_android) {
@@ -216,12 +215,10 @@ source_set("ui") {
   ]
 
   if (is_android) {
-    public_deps +=
-        [ "//chrome/browser/context_sharing/tab_bottom_sheet/android" ]
-
-    if (is_desktop_android) {
-      public_deps += [ "//chrome/browser/ui/side_panel" ]
-    }
+    public_deps += [
+      "//chrome/browser/context_sharing/tab_bottom_sheet/android",
+      "//chrome/browser/ui/side_panel",
+    ]
   }
 
   # Required for the shared Composebox and Searchbox handlers to compile on
@@ -294,11 +291,10 @@ source_set("ui_impl") {
   ]
 
   if (is_android) {
-    if (is_desktop_android) {
-      sources += [ "android/contextual_tasks_panel_host_desktop_android.cc" ]
-    } else {
-      sources += [ "android/contextual_tasks_panel_host_android.cc" ]
-    }
+    sources += [
+      "android/contextual_tasks_panel_host_android.cc",
+      "android/contextual_tasks_panel_host_desktop_android.cc",
+    ]
   }
 
   if (!is_android) {
@@ -364,13 +360,9 @@ source_set("ui_impl") {
     deps += [
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
+      "//chrome/browser/ui/side_panel:side_panel_ui_provider",
+      "//chrome/browser/ui/side_panel/android",
     ]
-    if (is_desktop_android) {
-      deps += [
-        "//chrome/browser/ui/side_panel:side_panel_ui_provider",
-        "//chrome/browser/ui/side_panel/android",
-      ]
-    }
   }
 
   if (!is_android) {

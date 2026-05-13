@@ -5,22 +5,35 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "ui/base/device_form_factor.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/android/contextual_tasks_panel_host_android.h"
+#include "chrome/browser/contextual_tasks/android/contextual_tasks_panel_host_desktop_android.h"
+#else
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop.h"
+#endif
 
 namespace contextual_tasks {
 
@@ -210,6 +223,30 @@ void SendInjectedInputRemovedUpdate(
           InjectedInputUpdatePayload_UpdateType_REMOVED);
 
   web_ui_interface->PostMessageToWebview(client_to_aim_message);
+}
+
+// static
+std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
+    BrowserWindowInterface* browser_window) {
+#if BUILDFLAG(IS_ANDROID)
+  bool is_tablet_or_desktop =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ||
+       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP);
+  bool should_show_bottom_sheet =
+      !is_tablet_or_desktop ||
+      base::FeatureList::IsEnabled(
+          kContextualTasksOverrideShowBottomSheetOnLargeScreen);
+
+  if (should_show_bottom_sheet) {
+    return std::make_unique<ContextualTasksPanelHostAndroid>(browser_window);
+  } else {
+    return std::make_unique<ContextualTasksPanelHostDesktopAndroid>(
+        browser_window);
+  }
+#else
+  return std::make_unique<ContextualTasksPanelHostDesktop>(
+      browser_window, browser_window->GetFeatures().side_panel_ui());
+#endif
 }
 
 }  // namespace contextual_tasks
