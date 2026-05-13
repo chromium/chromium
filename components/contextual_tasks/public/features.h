@@ -335,6 +335,9 @@ extern const char kContextualTasksJavaFuseboxName[];
 extern const char kContextualTasksJavaFuseboxDescription[];
 extern const char kContextualTasksBackButtonExpandsSidePanelName[];
 extern const char kContextualTasksBackButtonExpandsSidePanelDescription[];
+extern const char kContextualTasksOverrideShowBottomSheetOnLargeScreenName[];
+extern const char
+    kContextualTasksOverrideShowBottomSheetOnLargeScreenDescription[];
 
 }  // namespace flag_descriptions
 

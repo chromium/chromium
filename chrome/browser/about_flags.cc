@@ -11881,6 +11881,16 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksJavaFusebox)},
 
+    {"contextual-tasks-override-show-bottom-sheet-on-large-screen",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksOverrideShowBottomSheetOnLargeScreenName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksOverrideShowBottomSheetOnLargeScreenDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::
+             kContextualTasksOverrideShowBottomSheetOnLargeScreen)},
+
     {"omnibox-debug-logs", omnibox::flag_descriptions::kOmniboxDebugLogsName,
      omnibox::flag_descriptions::kOmniboxDebugLogsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxDebugLogs)},

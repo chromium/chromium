@@ -619,6 +619,12 @@ const char kContextualTasksBackButtonExpandsSidePanelName[] =
 const char kContextualTasksBackButtonExpandsSidePanelDescription[] =
     "Enables expanding the side panel on back navigations.";
 
+const char kContextualTasksOverrideShowBottomSheetOnLargeScreenName[] =
+    "Override Show Bottom Sheet On Large Screen for Contextual Tasks";
+const char kContextualTasksOverrideShowBottomSheetOnLargeScreenDescription[] =
+    "Enables overriding side panel to show Bottom Sheet on large screens for "
+    "contextual tasks.";
+
 }  // namespace flag_descriptions
 
 }  // namespace contextual_tasks

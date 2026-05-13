@@ -9153,6 +9153,8 @@ from previous Chrome versions.
   <int value="-1623394051" label="NtpRealboxTailSuggest:disabled"/>
   <int value="-1623003151"
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:disabled"/>
+  <int value="-1622455535"
+      label="contextual-tasks-override-show-bottom-sheet-on-large-screen:enabled"/>
   <int value="-1622218661" label="BluetoothFlossCoredump:disabled"/>
   <int value="-1621969940" label="SearchPrefetchServicePrefetching:enabled"/>
   <int value="-1621963267" label="EnableAssistantLauncherUI:enabled"/>
@@ -10606,6 +10608,8 @@ from previous Chrome versions.
   <int value="-1156950420"
       label="CryptAuthV2DeviceActivityStatusUseConnectivity:enabled"/>
   <int value="-1156639003" label="ArcResizeCompat:enabled"/>
+  <int value="-1156603972"
+      label="ContextualTasksOverrideShowBottomSheetOnLargeScreen:disabled"/>
   <int value="-1156179600" label="OmniboxRichEntitySuggestions:enabled"/>
   <int value="-1155543191" label="CopylessPaste:disabled"/>
   <int value="-1155411808" label="HoldingSpacePredictability:enabled"/>
@@ -10871,6 +10875,8 @@ from previous Chrome versions.
   <int value="-1064302126"
       label="OmniboxAlternateMatchDescriptionSeparator:enabled"/>
   <int value="-1063670802" label="AndroidHistoryClustering:disabled"/>
+  <int value="-1062599495"
+      label="contextual-tasks-override-show-bottom-sheet-on-large-screen:disabled"/>
   <int value="-1062534902" label="SyncingCompromisedCredentials:disabled"/>
   <int value="-1062119671" label="enable-password-force-saving"/>
   <int value="-1061944215" label="NewTabPageTriggerForPrefetch:disabled"/>
@@ -12395,6 +12401,8 @@ from previous Chrome versions.
   <int value="-565155800" label="ImprovedScreenCaptureSettings:disabled"/>
   <int value="-563980787" label="disable-webrtc"/>
   <int value="-563600258" label="PhotoPickerVideoSupport:disabled"/>
+  <int value="-563136351"
+      label="ContextualTasksOverrideShowBottomSheetOnLargeScreen:enabled"/>
   <int value="-562875191" label="WebAppDedupeInstallUrls:disabled"/>
   <int value="-562771426" label="InstantStart:disabled"/>
   <int value="-562307460" label="AutofillAiWalletFlightReservation:disabled"/>
