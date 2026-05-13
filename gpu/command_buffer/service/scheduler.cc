@@ -664,7 +664,7 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
   DCHECK_EQ(sequence->task_runner(), task_runner);
 
   // Subsampling these metrics reduced CPU utilization (crbug.com/1295441).
-  const bool log_histograms = metrics_subsampler_.ShouldSample(0.001);
+  const bool log_histograms = base::ShouldRecordSubsampledMetric(0.001);
   const std::string_view priority_str =
       SchedulingPriorityToString(sequence->default_priority_);
 

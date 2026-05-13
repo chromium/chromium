@@ -319,9 +319,6 @@ class FreezingPolicy : public PageNodeObserver,
   // cumulative measurements from `resource_usage_query_`.
   resource_attribution::CPUProportionTracker cpu_proportion_tracker_;
 
-  // Used to subsample the emission of UKM events.
-  base::MetricsSubSampler metrics_subsampler_;
-
   // List of most recently used hidden tabs. A tab becomes the most recently
   // used when it transitions from visible to hidden, or when it's created in a
   // hidden state.

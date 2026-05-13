@@ -419,7 +419,6 @@ class BASE_EXPORT ThreadController {
       base::TimeDelta accumulated_active_time_;
       base::TimeDelta accumulated_active_on_cpu_time_;
       base::TimeDelta accumulated_active_off_cpu_time_;
-      MetricsSubSampler metrics_sub_sampler_;
 
       State state_ = kIdle;
       bool is_nested_;

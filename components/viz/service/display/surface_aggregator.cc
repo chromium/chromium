@@ -1614,7 +1614,7 @@ void SurfaceAggregator::SetRenderPassDamageRect(
                                                     root_damage_rect_);
       copy_pass->damage_rect.Intersect(damage_rect_in_render_pass_space);
 
-      if (metrics_subsampler_.ShouldSample(0.001)) {
+      if (base::ShouldRecordSubsampledMetric(0.001)) {
         gfx::Rect root_clip_in_render_pass_space =
             cc::MathUtil::ProjectEnclosingClippedRect(
                 inverse_transform,
@@ -1650,7 +1650,7 @@ void SurfaceAggregator::SetRenderPassDamageRect(
     if (resolved_pass.IsUnembedded() && can_skip_render_pass) {
       copy_pass->damage_rect.Union(resolved_pass.aggregation().added_damage);
     }
-  } else if (metrics_subsampler_.ShouldSample(0.001)) {
+  } else if (base::ShouldRecordSubsampledMetric(0.001)) {
     UMA_HISTOGRAM_ENUMERATION(
         "Compositing.SurfaceAggregator.RenderPassDamageType",
         RenderPassDamage::kForceFullOutputRect);

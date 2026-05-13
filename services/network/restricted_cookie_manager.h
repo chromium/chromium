@@ -378,8 +378,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   mojo::SharedMemoryVersionController shared_memory_version_controller_;
   base::OneShotTimer shared_memory_invalidation_timer_;
 
-  base::MetricsSubSampler metrics_subsampler_;
-
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
 };
 

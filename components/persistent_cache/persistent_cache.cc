@@ -89,9 +89,8 @@ Backend* PersistentCache::GetBackendForTesting() {
 std::optional<base::ElapsedTimer> PersistentCache::MaybeGetTimerForHistogram() {
   std::optional<base::ElapsedTimer> timer;
 
-  base::AutoLock lock(metrics_subsampler_lock_);
   static constexpr double kTimingLoggingProbability = 0.01;
-  if (metrics_subsampler_.ShouldSample(kTimingLoggingProbability)) {
+  if (base::ShouldRecordSubsampledMetric(kTimingLoggingProbability)) {
     timer.emplace();
   }
 

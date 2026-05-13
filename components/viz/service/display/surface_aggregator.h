@@ -431,9 +431,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // Used to annotate the aggregated frame for debugging.
   std::unique_ptr<FrameAnnotator> frame_annotator_;
 
-  // Used to avoid excessive UMA logging per frame.
-  base::MetricsSubSampler metrics_subsampler_;
-
   // Whether last frame had an extra render pass added to avoid readback from
   // root frame buffer.
   bool last_frame_had_readback_pass_ = false;

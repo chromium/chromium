@@ -328,9 +328,6 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   std::optional<mojo::SharedMemoryVersionClient> shared_memory_version_client_
       GUARDED_BY(shared_memory_version_lock_);
 
-  // Used to reduce frequency of metrics logging.
-  base::MetricsSubSampler metrics_sub_sampler_;
-
   // Image IDs are allocated in sequence.
   base::AtomicSequenceNumber next_image_id_;
 

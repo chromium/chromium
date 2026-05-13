@@ -367,8 +367,6 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
   base::flat_map<SequenceId, Sequence*> scheduler_sequence_map_
       GUARDED_BY(lock());
 
-  base::MetricsSubSampler metrics_subsampler_ GUARDED_BY(lock());
-
   base::flat_map<base::SingleThreadTaskRunner*, PerThreadState>
       per_thread_state_map_ GUARDED_BY(lock());
 

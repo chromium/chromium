@@ -604,7 +604,7 @@ void ExternalBeginFrameSource::OnBeginFrame(const BeginFrameArgs& args) {
         out->set_interval_delta_us(args.interval.InMicroseconds());
       });
 
-  if (metrics_sub_sampler_.ShouldSample(0.01)) {
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
     // We do not expect anything more than 1/24th of a second, but let's support
     // up to 1/10th.
     //

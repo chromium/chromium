@@ -106,7 +106,7 @@ class NetworkServiceTaskObserver : public base::TaskObserver {
     }
 
     // Sample with a 0.001 probability to reduce metrics overhead.
-    if (sampler_.ShouldSample(0.001)) {
+    if (base::ShouldRecordSubsampledMetric(0.001)) {
       base::UmaHistogramCounts1000(
           base::StrCat(
               {"NetworkService.Scheduler.IOThread.NumberOfPendingTasks.",
@@ -125,7 +125,6 @@ class NetworkServiceTaskObserver : public base::TaskObserver {
   const std::string queue_name_;
   // `queue_` outlives this task observer.
   raw_ptr<base::sequence_manager::TaskQueue::Handle> queue_;
-  const base::MetricsSubSampler sampler_;
 };
 
 NetworkServiceTaskQueues::NetworkServiceTaskQueues(

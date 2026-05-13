@@ -495,7 +495,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
  private:
   BeginFrameArgs pending_begin_frame_args_;
-  base::MetricsSubSampler metrics_sub_sampler_;
 };
 
 }  // namespace viz

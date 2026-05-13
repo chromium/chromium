@@ -395,8 +395,6 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT SyncPointManager {
 
   SequenceId::Generator sequence_id_generator_ GUARDED_BY(lock_);
 
-  base::MetricsSubSampler metrics_subsampler_ GUARDED_BY(lock_);
-
   mutable base::Lock lock_;
 
   const bool graph_validation_enabled_ = false;

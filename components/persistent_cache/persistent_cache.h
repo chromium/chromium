@@ -151,10 +151,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
 
   const Client client_;
   std::unique_ptr<Backend> backend_;
-
-  base::MetricsSubSampler metrics_subsampler_
-      GUARDED_BY(metrics_subsampler_lock_);
-  base::Lock metrics_subsampler_lock_;
 };
 
 }  // namespace persistent_cache

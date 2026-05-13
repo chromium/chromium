@@ -1264,7 +1264,7 @@ void FreezingPolicy::RecordFreezingEligibilityUKM() {
   // will start subsampling those UKM events. Thus, it's better to subsample the
   // event emission code itself to increase the proportion of emitted events
   // that are actually recorded.
-  if (!metrics_subsampler_.ShouldSample(0.01)) {
+  if (!base::ShouldRecordSubsampledMetric(0.01)) {
     return;
   }
 

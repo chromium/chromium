@@ -1341,7 +1341,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ThrottleDecider throttle_decider_;
 
   bool downsample_metrics_ = true;
-  base::MetricsSubSampler metrics_subsampler_;
 
   // See `CommitState::screenshot_destination_token`.
   base::UnguessableToken screenshot_destination_;

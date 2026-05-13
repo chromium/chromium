@@ -373,7 +373,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
   std::optional<base::ElapsedTimer> timer;
   std::optional<base::ElapsedThreadTimer> thread_timer;
 
-  if (metrics_subsampler_.ShouldSample(0.001)) {
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
     timer.emplace();
     if (base::ThreadTicks::IsSupported()) {
       thread_timer.emplace();

@@ -232,8 +232,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   static bool allow_external_preflights_for_testing_;
 
-  base::MetricsSubSampler metrics_subsampler_;
-
   // Prevents DeleteIfNeeded() from deleting `this`. Useful for aggregate
   // operations that walk through all URLLoaders and may delete more than one of
   // them.

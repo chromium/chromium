@@ -251,8 +251,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
       client_->worker_context_provider_->RasterInterface();
   DCHECK(ri);
 
-  const bool measure_raster_metric = client_->metrics_subsampler_.ShouldSample(
-      client_->raster_metric_probability_);
+  const bool measure_raster_metric =
+      base::ShouldRecordSubsampledMetric(client_->raster_metric_probability_);
 
   gfx::Rect playback_rect = raster_full_rect;
   if (resource_has_previous_content_) {

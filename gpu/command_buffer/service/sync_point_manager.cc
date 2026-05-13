@@ -450,7 +450,7 @@ void SyncPointManager::EnsureFenceSyncReleased(const SyncToken& release,
   {
     base::AutoLock lock(lock_);
 
-    if (metrics_subsampler_.ShouldSample(0.01)) {
+    if (base::ShouldRecordSubsampledMetric(0.01)) {
       if (graph_validation_enabled_) {
         UMA_HISTOGRAM_ENUMERATION("GPU.FenceSyncRelease.GraphValidation.Cause",
                                   cause);
