@@ -1148,6 +1148,12 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                 std::optional<base::TimeDelta> minimum_cookie_lifetime =
                     existing_session
                         ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime();
+                // Preserve the original creation date across configuration
+                // refreshes. This ensures that long-standing sessions are not
+                // erroneously wiped out whenever a user clears their recent
+                // browsing data.
+                new_session->set_creation_date(
+                    existing_session->creation_date());
                 SchemefulSite new_site(new_session->origin());
                 // Don't bother creating the SessionDisplay if there are no
                 // observers that want to know about it.

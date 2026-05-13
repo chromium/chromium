@@ -1261,6 +1261,64 @@ TEST_F(SessionServiceImplTest, DeleteAllSessionsByCreationTime) {
                                 DeletionReason::kStoragePartitionCleared, 1);
 }
 
+// Verifies that the session's creation date isn't updated when its
+// configuration changes at a refresh.
+// Regression test for https://crbug.com/512365319.
+TEST_F(SessionServiceImplTest, RefreshedSessionKeepsCreationDate) {
+  net::SchemefulSite site(kTestUrl);
+
+  // Register a session on the site.
+  AddSessionsForTesting({{"SessionA", kRefreshUrlString, kOrigin}});
+  Session* session = service().GetSession({site, Session::Id("SessionA")});
+  ASSERT_TRUE(session);
+  base::Time original_creation_time = base::Time::Now();
+
+  // Fast-forward time by 10 days to emulate an "old" session.
+  FastForwardBy(base::Days(10));
+  // Verify session is still at the old creation date before the refresh.
+  EXPECT_EQ(session->creation_date(), original_creation_time);
+
+  // Perform a refresh request.
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      "SessionA", kRefreshUrlString, kOrigin);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request(request.get());
+  base::test::TestFuture<RefreshResult> refresh_future;
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id("SessionA")),
+      refresh_future.GetCallback());
+  EXPECT_EQ(refresh_future.Take(), RefreshResult::kRefreshed);
+
+  // Check that the refresh updated the session while preserving its original
+  // creation date.
+  Session* refreshed_session =
+      service().GetSession({site, Session::Id("SessionA")});
+  ASSERT_TRUE(refreshed_session);
+  EXPECT_EQ(refreshed_session->creation_date(), original_creation_time);
+
+  // Fast-forward time by another 15 minutes so that the refresh is now 15
+  // minutes in the past.
+  FastForwardBy(base::Minutes(15));
+
+  // User triggers a "Clear Browsing Data" for the "Last Hour".
+  // Deletion time range: [Now - 1 Hour, Now].
+  base::Time delete_begin = base::Time::Now() - base::Hours(1);
+  base::Time delete_end = base::Time::Now();
+
+  base::RunLoop run_loop;
+  service().DeleteAllSessions(DeletionReason::kStoragePartitionCleared,
+                              delete_begin, delete_end,
+                              /*origin_and_site_matcher=*/
+                              base::NullCallback(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The session should be preserved because it was created 10 days ago.
+  EXPECT_TRUE(service().GetSession({site, Session::Id("SessionA")}));
+}
+
 TEST_F(SessionServiceImplTest, DeleteAllSessionsBySite) {
   GURL url_a("https://a_example.com");
   GURL url_b("https://b_example.com");
