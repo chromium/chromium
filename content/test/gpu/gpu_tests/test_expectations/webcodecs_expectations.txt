@@ -142,7 +142,6 @@ crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-c
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
-crbug.com/371802469 [ angle-opengl graphite-disabled intel no-asan sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 crbug.com/371802469 [ intel sonoma ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 # Same with prefer-hardware
 crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
@@ -275,8 +274,8 @@ crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_copyTo_o
 crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_1500000 [ Failure ]
 crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_2000000 [ Failure ]
-crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_3000000 [ Failure ]
-crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_variable_1500000 [ Failure ]
+crbug.com/473593123 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_3000000 [ Failure ]
+crbug.com/473593123 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_variable_1500000 [ Failure ]
 
 # Mac ASAN Intel flaky timeouts
 crbug.com/476389233 [ mac intel-0x3e9b asan angle-opengl graphite-disabled ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Slow ]
