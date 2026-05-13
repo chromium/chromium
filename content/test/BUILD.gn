@@ -3127,6 +3127,7 @@ test("content_unittests") {
     "../common/memory_coordinator/mojom/memory_consumer_traits_unittest.cc",
     "../common/pseudonymization_salt_unittest.cc",
     "../common/scheduler_loop_quarantine_task_observer_unittest.cc",
+    "../common/service_worker/forwarded_race_network_request_url_loader_factory_unittest.cc",
     "../common/service_worker/race_network_request_read_buffer_manager_unittest.cc",
     "../common/service_worker/race_network_request_simple_buffer_manager_unittest.cc",
     "../common/service_worker/race_network_request_url_loader_client_unittest.cc",
