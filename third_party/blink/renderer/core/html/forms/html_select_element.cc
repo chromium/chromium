@@ -717,7 +717,7 @@ void HTMLSelectElement::RecalcListItems() const {
         current_ancestor_optgroup = current_optgroup;
         list_items_.push_back(current_html_element);
       }
-    } else if (ShouldIgnoreDescendantsForOptionTraversals(
+    } else if (ShouldIgnoreDescendantsForElementTraversals(
                    current_html_element)) {
       skip_children = true;
     }
@@ -2248,13 +2248,29 @@ bool HTMLSelectElement::SupportsBaseAppearanceInternal(
   return true;
 }
 
-// static
-bool HTMLSelectElement::ShouldIgnoreDescendantsForOptionTraversals(
-    Element* element) {
-  // Nested <optgroup>s also should be ignored in places that call this, but
-  // this method doesn't have enough context to handle that case.
-  return IsA<HTMLDataListElement>(element) || IsA<HTMLSelectElement>(element) ||
-         IsA<HTMLOptionElement>(element) || IsA<HTMLHRElement>(element);
+bool HTMLSelectElement::ShouldIgnoreDescendantsForElementTraversals(
+    Element* element) const {
+  if (IsA<HTMLDataListElement>(element) || IsA<HTMLSelectElement>(element) ||
+      IsA<HTMLOptionElement>(element) || IsA<HTMLHRElement>(element)) {
+    return true;
+  }
+
+  if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(element)) {
+    // optgroup->OwnerElement() might be null because this method may
+    // be called before InsertedInto is called on the optgroup. Like the
+    // same check for option elements above, we have to skip DCHECKs inside
+    // the call to OwnerElement.
+    // TODO(crbug.com/398887837): Remove the skip_check parameter.
+    if (optgroup->OwnerSelectElement(/*skip_check=*/true) == this ||
+        HTMLSelectElement::WalkAncestorsForRelatedParts(*optgroup).select ==
+            this) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void HTMLSelectElement::StartFiltering() {
@@ -2293,7 +2309,7 @@ void HTMLSelectElement::MoveActiveOptionForwards() {
   CHECK(!UsesMenuList());
   CHECK(active_option_);
   if (HTMLOptionElement* new_option =
-          GetOptionList().FindNextOption(*active_option_, &SupportsActive)) {
+          GetOptionList().FindNextElement(*active_option_, &SupportsActive)) {
     HTMLOptionElement* old_active_option = active_option_;
     active_option_ = new_option;
     old_active_option->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
@@ -2306,7 +2322,7 @@ void HTMLSelectElement::MoveActiveOptionBackwards() {
   CHECK(RuntimeEnabledFeatures::FilterableSelectEnabled());
   CHECK(!UsesMenuList());
   CHECK(active_option_);
-  if (HTMLOptionElement* new_option = GetOptionList().FindPreviousOption(
+  if (HTMLOptionElement* new_option = GetOptionList().FindPreviousElement(
           *active_option_, &SupportsActive)) {
     HTMLOptionElement* old_active_option = active_option_;
     active_option_ = new_option;
