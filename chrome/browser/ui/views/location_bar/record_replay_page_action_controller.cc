@@ -75,7 +75,7 @@ void RecordReplayPageActionController::ExecuteAction(
   record_replay::RecordReplayManager& manager = client->GetManager();
   switch (manager.state()) {
     case State::kIdle:
-      if (has_recording_) {
+      if (!recent_recordings_.empty()) {
         views::BubbleAnchor anchor = GetAnchorForBubble(*tab_);
         if (anchor.IsNull()) {
           break;
@@ -84,11 +84,8 @@ void RecordReplayPageActionController::ExecuteAction(
         // TODO(crbug.com/507035858): Remove (UT) when strings are
         // internationalized.
         bubble_widget_ = record_replay::ReplayRecordingBubbleView::Show(
-            anchor, tab_->GetContents(),
-            recording_name_.empty() ? u"Unnamed Recording (UT)"
-                                    : recording_name_,
-            base::BindOnce(&record_replay::RecordReplayManager::StartReplay,
-                           manager.GetWeakPtr()));
+            anchor, tab_->GetContents(), recent_recordings_,
+            manager.GetWeakPtr());
       } else {
         manager.StartRecording();
       }
@@ -138,15 +135,14 @@ void RecordReplayPageActionController::UpdateState() {
   }
   page_action_controller_->Show(kActionRecordReplay);
 
-  client->GetManager().GetMatchingRecording(base::BindOnce(
-      &RecordReplayPageActionController::OnRetrieveRecordingComplete,
+  client->GetManager().GetMatchingRecordings(base::BindOnce(
+      &RecordReplayPageActionController::OnRetrieveRecordingsComplete,
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void RecordReplayPageActionController::OnRetrieveRecordingComplete(
-    std::optional<record_replay::Recording> recording) {
-  has_recording_ = recording.has_value();
-  recording_name_ = recording ? base::UTF8ToUTF16(recording->name()) : u"";
+void RecordReplayPageActionController::OnRetrieveRecordingsComplete(
+    std::vector<record_replay::Recording> recordings) {
+  recent_recordings_ = std::move(recordings);
 
   record_replay::RecordReplayClient* client =
       tab_->GetTabFeatures()->record_replay_client();
@@ -160,23 +156,23 @@ void RecordReplayPageActionController::OnRetrieveRecordingComplete(
 
   switch (client->GetManager().state()) {
     case State::kIdle:
-      if (has_recording_) {
-        tooltip_text = u"Replay";
+      if (!recent_recordings_.empty()) {
+        tooltip_text = u"Replay (UT)";
         icon = &vector_icons::kPlayArrowIcon;
         color = gfx::kGoogleGreen600;
       } else {
-        tooltip_text = u"Record";
+        tooltip_text = u"Record (UT)";
         icon = &vector_icons::kScreenRecordIcon;
         color = gfx::kGoogleRed600;
       }
       break;
     case State::kRecording:
-      tooltip_text = u"Stop recording";
+      tooltip_text = u"Stop recording (UT)";
       icon = &vector_icons::kStopCircleIcon;
       color = gfx::kGoogleRed600;
       break;
     case State::kReplaying:
-      tooltip_text = u"Stop replay";
+      tooltip_text = u"Stop replay (UT)";
       icon = &vector_icons::kStopCircleIcon;
       color = gfx::kGoogleGreen600;
       break;

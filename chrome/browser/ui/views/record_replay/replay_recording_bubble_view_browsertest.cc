@@ -32,11 +32,15 @@ class ReplayRecordingBubbleViewTest : public DialogBrowserTest {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     views::BubbleAnchor anchor(browser_view->toolbar());
-    widget_ = ReplayRecordingBubbleView::Show(
+    record_replay::Recording recording;
+    recording.set_name("Test Recording");
+    auto* bubble = new ReplayRecordingBubbleView(
         anchor, browser()->tab_strip_model()->GetActiveWebContents(),
-        u"Test Recording", on_replay_.Get());
-    bubble_tracker_.SetView(
-        static_cast<ReplayRecordingBubbleView*>(widget_->widget_delegate()));
+        {recording}, nullptr /* manager */);
+    views::BubbleDialogDelegateView::CreateBubble(bubble);
+    bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
+
+    bubble_tracker_.SetView(bubble);
   }
 
   ReplayRecordingBubbleView* GetBubbleView() {
@@ -44,14 +48,12 @@ class ReplayRecordingBubbleViewTest : public DialogBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    widget_.reset();
     DialogBrowserTest::TearDownOnMainThread();
   }
 
  protected:
-  base::MockCallback<base::OnceClosure> on_replay_;
+  base::MockCallback<base::RepeatingClosure> on_replay_;
   views::ViewTracker bubble_tracker_;
-  std::unique_ptr<views::Widget> widget_;
 };
 
 IN_PROC_BROWSER_TEST_F(ReplayRecordingBubbleViewTest, InvokeUi_default) {
@@ -63,8 +65,10 @@ IN_PROC_BROWSER_TEST_F(ReplayRecordingBubbleViewTest, AcceptInvokesCallback) {
   ReplayRecordingBubbleView* bubble = GetBubbleView();
   ASSERT_NE(bubble, nullptr);
 
+  bubble->SetReplayCallbackForTesting(on_replay_.Get());
+
   EXPECT_CALL(on_replay_, Run()).Times(1);
-  bubble->Accept();
+  bubble->OnReplayButtonClicked(0);
 }
 
 IN_PROC_BROWSER_TEST_F(ReplayRecordingBubbleViewTest,
@@ -72,6 +76,8 @@ IN_PROC_BROWSER_TEST_F(ReplayRecordingBubbleViewTest,
   ShowUi("");
   ReplayRecordingBubbleView* bubble = GetBubbleView();
   ASSERT_NE(bubble, nullptr);
+
+  bubble->SetReplayCallbackForTesting(on_replay_.Get());
 
   EXPECT_CALL(on_replay_, Run()).Times(0);
   bubble->Cancel();

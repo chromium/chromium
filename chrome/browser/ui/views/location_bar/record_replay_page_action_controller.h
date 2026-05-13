@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_RECORD_REPLAY_PAGE_ACTION_CONTROLLER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -54,19 +54,21 @@ class RecordReplayPageActionController {
 
   void ExecuteAction(actions::ActionItem* item);
 
-  bool has_recording_for_testing() const { return has_recording_; }
+  bool has_recording_for_testing() const { return !recent_recordings_.empty(); }
 
  private:
   void UpdateState();
-  void OnRetrieveRecordingComplete(
-      std::optional<record_replay::Recording> recording);
+  void OnRetrieveRecordingsComplete(
+      std::vector<record_replay::Recording> recordings);
 
   const raw_ref<tabs::TabInterface> tab_;
   const raw_ref<page_actions::PageActionController> page_action_controller_;
   base::RepeatingTimer timer_;
-  bool has_recording_ = false;
-  std::u16string recording_name_;
+
+  std::vector<record_replay::Recording> recent_recordings_;
+
   std::unique_ptr<views::Widget> bubble_widget_;
+
   base::WeakPtrFactory<RecordReplayPageActionController> weak_ptr_factory_{
       this};
 };

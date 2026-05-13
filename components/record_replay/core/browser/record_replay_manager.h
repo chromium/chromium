@@ -74,12 +74,18 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
   // Starts or stops the replay of the recording for the currently active page,
   // if one exists.
   void StartReplay();
+  void StartReplaySpecific(Recording recording);
   void StopReplay();
 
   // Retrieves the recording for the last committed URL, if there is one, and
   // passes it to `cb`.
   void GetMatchingRecording(
       base::OnceCallback<void(std::optional<Recording>)> cb);
+
+  // Retrieves the recordings for the last committed URL and passes them to
+  // `cb`.
+  void GetMatchingRecordings(
+      base::OnceCallback<void(std::vector<Recording>)> cb);
 
   // Retrieves all elements in all active frames that match `element_selector`.
   void GetMatchingElements(Selector element_selector,
@@ -88,7 +94,7 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
   // Displays a message to the user, typically via the browser's UI or console.
   void ReportToUser(std::string_view message);
 
-  void SetRecordingForTesting(Recording recording);
+  void SetRecordingsForTesting(std::vector<Recording> recordings);
 
   base::WeakPtr<RecordReplayManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -107,7 +113,7 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
   std::optional<Recorder> recorder_;
   std::optional<Replayer> replayer_;
 
-  std::optional<Recording> recording_for_testing_;
+  std::vector<Recording> recordings_for_testing_;
 
   autofill::ScopedAutofillManagersObservation autofill_observation_{this};
   base::WeakPtrFactory<RecordReplayManager> weak_ptr_factory_{this};

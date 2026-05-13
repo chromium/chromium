@@ -8,8 +8,12 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/record_replay/core/browser/record_replay_manager.h"
+#include "components/record_replay/core/browser/recording.pb.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,11 +27,14 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
+#include "ui/views/view_class_properties.h"
+#include "url/gurl.h"
 
 namespace record_replay {
 
@@ -35,15 +42,11 @@ namespace record_replay {
 std::unique_ptr<views::Widget> ReplayRecordingBubbleView::Show(
     views::BubbleAnchor anchor,
     content::WebContents* web_contents,
-    const std::u16string& recording_name,
-    base::OnceClosure on_replay_started) {
+    std::vector<record_replay::Recording> recordings,
+    base::WeakPtr<RecordReplayManager> manager) {
   auto bubble = std::make_unique<ReplayRecordingBubbleView>(
-      anchor, web_contents, recording_name, std::move(on_replay_started));
+      anchor, web_contents, std::move(recordings), std::move(manager));
   auto* bubble_ptr = bubble.get();
-  bubble_ptr->SetMainImage(
-      ui::ImageModel::FromImage(gfx::Image(gfx::CreateVectorIcon(
-          vector_icons::kPlayArrowIcon, /*dip_size=*/100,
-          web_contents->GetColorProvider().GetColor(ui::kColorIcon)))));
   auto widget = base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
       std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   bubble_ptr->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
@@ -53,19 +56,17 @@ std::unique_ptr<views::Widget> ReplayRecordingBubbleView::Show(
 ReplayRecordingBubbleView::ReplayRecordingBubbleView(
     views::BubbleAnchor anchor,
     content::WebContents* web_contents,
-    const std::u16string& recording_name,
-    base::OnceClosure on_replay_started)
+    std::vector<record_replay::Recording> recordings,
+    base::WeakPtr<RecordReplayManager> manager)
     : LocationBarBubbleDelegateView(anchor, web_contents),
-      recording_name_(recording_name),
-      on_replay_started_(std::move(on_replay_started)) {
+      recordings_(std::move(recordings)),
+      manager_(std::move(manager)) {
   SetShowTitle(true);
   SetShowCloseButton(true);
-  // TODO(crbug.com/507035858): Remove (UT) when strings are
-  // internationalized.
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
-             static_cast<int>(ui::mojom::DialogButton::kCancel));
-  SetButtonLabel(ui::mojom::DialogButton::kOk, u"Replay (UT)");
-  SetButtonLabel(ui::mojom::DialogButton::kCancel, u"Cancel (UT)");
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  if (web_contents) {
+    SetSubtitle(base::UTF8ToUTF16(web_contents->GetLastCommittedURL().host()));
+  }
 }
 
 ReplayRecordingBubbleView::~ReplayRecordingBubbleView() = default;
@@ -78,31 +79,121 @@ void ReplayRecordingBubbleView::Init() {
       layout_provider->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  auto* description_label = AddChildView(std::make_unique<views::Label>(
-      u"Do you want to replay the following recording? (UT)"));
-  description_label->SetMultiLine(true);
-  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  // "Record a new task" section
+  auto* record_container = AddChildView(std::make_unique<views::View>());
+  auto* record_layout =
+      record_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          layout_provider->GetDistanceMetric(
+              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+  record_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  auto* name_label =
-      AddChildView(std::make_unique<views::Label>(recording_name_));
-  name_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  name_label->SetFontList(views::Label::GetDefaultFontList().Derive(
-      0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD));
+  auto* record_text_container =
+      record_container->AddChildView(std::make_unique<views::View>());
+  record_text_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  auto* record_title = record_text_container->AddChildView(
+      std::make_unique<views::Label>(u"Record a new task (UT)"));
+  record_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  record_title->SetFontList(views::Label::GetDefaultFontList().Derive(
+      /*size_delta=*/1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD));
+
+  auto* record_subtitle = record_text_container->AddChildView(
+      std::make_unique<views::Label>(u"Automate recurring tasks (UT)"));
+  record_subtitle->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  record_subtitle->SetEnabledColor(ui::kColorSecondaryForeground);
+
+  auto* record_button =
+      record_container->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(&ReplayRecordingBubbleView::OnRecordButtonClicked,
+                              base::Unretained(this)),
+          u"Record (UT)"));
+  record_button->SetStyle(ui::ButtonStyle::kProminent);
+
+  record_layout->SetFlexForView(record_text_container, /*flex=*/1);
+
+  if (!recordings_.empty()) {
+    AddRecentTasks();
+  }
+}
+
+void ReplayRecordingBubbleView::AddRecentTasks() {
+  const auto* layout_provider = views::LayoutProvider::Get();
+  AddChildView(std::make_unique<views::Separator>());
+
+  auto* recent_tasks_label =
+      AddChildView(std::make_unique<views::Label>(u"Recent tasks (UT)"));
+  recent_tasks_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  recent_tasks_label->SetFontList(views::Label::GetDefaultFontList().Derive(
+      /*size_delta=*/0, gfx::Font::FontStyle::NORMAL,
+      gfx::Font::Weight::NORMAL));
+
+  for (size_t i = 0; i < recordings_.size(); ++i) {
+    const auto& recording = recordings_[i];
+    auto* task_container = AddChildView(std::make_unique<views::View>());
+    auto* task_layout =
+        task_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+            layout_provider->GetDistanceMetric(
+                views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+    task_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+
+    auto* icon =
+        task_container->AddChildView(std::make_unique<views::ImageView>());
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kScreenRecordIcon, ui::kColorIcon, /*icon_size=*/32));
+
+    auto* task_text_container =
+        task_container->AddChildView(std::make_unique<views::View>());
+    task_text_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
+    auto* task_title = task_text_container->AddChildView(
+        std::make_unique<views::Label>(base::UTF8ToUTF16(recording.name())));
+    task_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    task_title->SetFontList(views::Label::GetDefaultFontList().Derive(
+        /*size_delta=*/0, gfx::Font::FontStyle::NORMAL,
+        gfx::Font::Weight::BOLD));
+
+    task_layout->SetFlexForView(task_text_container, /*flex=*/1);
+
+    auto* replay_button =
+        task_container->AddChildView(std::make_unique<views::MdTextButton>(
+            base::BindRepeating(
+                &ReplayRecordingBubbleView::OnReplayButtonClicked,
+                base::Unretained(this), i),
+            u"Replay (UT)"));
+    replay_button->SetStyle(ui::ButtonStyle::kText);
+  }
 }
 
 std::u16string ReplayRecordingBubbleView::GetWindowTitle() const {
-  return u"Replay Recording (UT)";
+  return u"Saved tasks (UT)";
 }
 
-bool ReplayRecordingBubbleView::Accept() {
-  if (on_replay_started_) {
-    std::move(on_replay_started_).Run();
+void ReplayRecordingBubbleView::SetReplayCallbackForTesting(
+    base::RepeatingClosure callback) {  // IN-TEST
+  replay_callback_for_testing_ = std::move(callback);
+}
+
+void ReplayRecordingBubbleView::OnReplayButtonClicked(size_t index) {
+  if (replay_callback_for_testing_) {
+    replay_callback_for_testing_.Run();
+    return;
   }
-  return true;
+  if (manager_) {
+    CHECK_LT(index, recordings_.size());
+    manager_->StartReplaySpecific(recordings_[index]);
+  }
+  GetWidget()->Close();
 }
 
-bool ReplayRecordingBubbleView::Cancel() {
-  return true;
+void ReplayRecordingBubbleView::OnRecordButtonClicked() {
+  if (manager_) {
+    manager_->StartRecording();
+  }
+  GetWidget()->Close();
 }
 
 BEGIN_METADATA(ReplayRecordingBubbleView)

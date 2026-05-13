@@ -7,9 +7,13 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "components/record_replay/core/browser/recording.pb.h"
 
 namespace content {
 class WebContents;
@@ -21,6 +25,8 @@ class Widget;
 
 namespace record_replay {
 
+class RecordReplayManager;
+
 // The bubble view for confirming replaying a recording.
 // Shows the name of the recording.
 class ReplayRecordingBubbleView : public LocationBarBubbleDelegateView {
@@ -28,30 +34,36 @@ class ReplayRecordingBubbleView : public LocationBarBubbleDelegateView {
 
  public:
   // Creates and shows the bubble.
-  // `anchor_view` is the view to anchor the bubble to (e.g. page action icon).
-  // `recording_name` is the name of the recording to show.
-  // `on_replay_started` is called when the user confirms replay.
+  // `anchor` is the view to anchor the bubble to (e.g. page action icon).
+  // `recordings` is the list of recordings to show. `manager` is the record
+  // replay manager.
   static std::unique_ptr<views::Widget> Show(
       views::BubbleAnchor anchor,
       content::WebContents* web_contents,
-      const std::u16string& recording_name,
-      base::OnceClosure on_replay_started);
+      std::vector<record_replay::Recording> recordings,
+      base::WeakPtr<RecordReplayManager> manager);
 
   ReplayRecordingBubbleView(views::BubbleAnchor anchor,
                             content::WebContents* web_contents,
-                            const std::u16string& recording_name,
-                            base::OnceClosure on_replay_started);
+                            std::vector<record_replay::Recording> recordings,
+                            base::WeakPtr<RecordReplayManager> manager);
   ~ReplayRecordingBubbleView() override;
 
   // views::BubbleDialogDelegateView:
   void Init() override;
   std::u16string GetWindowTitle() const override;
-  bool Accept() override;
-  bool Cancel() override;
+
+  void SetReplayCallbackForTesting(base::RepeatingClosure callback);  // IN-TEST
+
+  void OnReplayButtonClicked(size_t index);
 
  private:
-  std::u16string recording_name_;
-  base::OnceClosure on_replay_started_;
+  void AddRecentTasks();
+  void OnRecordButtonClicked();
+
+  std::vector<record_replay::Recording> recordings_;
+  base::WeakPtr<RecordReplayManager> manager_;
+  base::RepeatingClosure replay_callback_for_testing_;
 };
 
 }  // namespace record_replay

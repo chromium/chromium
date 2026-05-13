@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <utility>
+#include <vector>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -57,7 +58,9 @@ IN_PROC_BROWSER_TEST_F(RecordReplayPageActionControllerInteractiveTest,
   // Fake a recording.
   record_replay::Recording recording;
   recording.set_name("Test Recording");
-  manager.SetRecordingForTesting(std::move(recording));
+  std::vector<record_replay::Recording> recordings;
+  recordings.push_back(std::move(recording));
+  manager.SetRecordingsForTesting(std::move(recordings));
 
   RecordReplayPageActionController* controller =
       tab->GetTabFeatures()->record_replay_page_action_controller();
@@ -88,7 +91,51 @@ IN_PROC_BROWSER_TEST_F(RecordReplayPageActionControllerInteractiveTest,
   auto* bubble_delegate =
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ASSERT_TRUE(bubble_delegate);
-  EXPECT_EQ(bubble_delegate->GetWindowTitle(), u"Replay Recording (UT)");
+  EXPECT_EQ(bubble_delegate->GetWindowTitle(), u"Saved tasks (UT)");
+}
+
+IN_PROC_BROWSER_TEST_F(RecordReplayPageActionControllerInteractiveTest,
+                       ExecuteAction_ShowsBubbleWithMultipleRecordings) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  record_replay::RecordReplayClient* client =
+      tab->GetTabFeatures()->record_replay_client();
+  ASSERT_TRUE(client);
+  record_replay::RecordReplayManager& manager = client->GetManager();
+
+  // Fake multiple recordings.
+  record_replay::Recording recording1;
+  recording1.set_name("Test Recording 1");
+  record_replay::Recording recording2;
+  recording2.set_name("Test Recording 2");
+
+  manager.SetRecordingsForTesting({recording1, recording2});
+
+  RecordReplayPageActionController* controller =
+      tab->GetTabFeatures()->record_replay_page_action_controller();
+  ASSERT_TRUE(controller);
+
+  base::RunLoop run_loop;
+  base::RepeatingTimer check_timer;
+  check_timer.Start(FROM_HERE, base::Milliseconds(100),
+                    base::BindLambdaForTesting([&]() {
+                      if (controller->has_recording_for_testing()) {
+                        run_loop.Quit();
+                      }
+                    }));
+  run_loop.Run();
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "ReplayRecordingBubbleView");
+
+  controller->ExecuteAction(nullptr);
+
+  views::Widget* bubble_widget = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(bubble_widget);
+
+  auto* bubble_delegate =
+      bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ASSERT_TRUE(bubble_delegate);
+  EXPECT_EQ(bubble_delegate->GetWindowTitle(), u"Saved tasks (UT)");
 }
 
 }  // namespace
