@@ -1764,4 +1764,39 @@ TEST_F(RenderFrameHostImplMimeHandlerStoragePartitioningTest,
   EXPECT_EQ(extension_origin, info.top_frame_origin());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(RenderFrameHostImplTest,
+       UpdateUserGestureCarryoverInfoWithoutActivation) {
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+  MockRenderProcessHost* process =
+      static_cast<MockRenderProcessHost*>(rfh->GetProcess());
+
+  // Initially, there should be no bad messages.
+  EXPECT_EQ(0, process->bad_msg_count());
+  EXPECT_FALSE(rfh->HasTransientUserActivation());
+
+  // Call UpdateUserGestureCarryoverInfo.
+  static_cast<mojom::FrameHost*>(rfh)->UpdateUserGestureCarryoverInfo();
+
+  // This should trigger a bad message because there is no transient activation.
+  EXPECT_EQ(1, process->bad_msg_count());
+}
+
+TEST_F(RenderFrameHostImplTest, UpdateUserGestureCarryoverInfoWithActivation) {
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+  MockRenderProcessHost* process =
+      static_cast<MockRenderProcessHost*>(rfh->GetProcess());
+
+  // Set transient user activation.
+  rfh->SimulateUserActivation();
+  EXPECT_TRUE(rfh->HasTransientUserActivation());
+
+  // Call UpdateUserGestureCarryoverInfo.
+  static_cast<mojom::FrameHost*>(rfh)->UpdateUserGestureCarryoverInfo();
+
+  // This should not trigger a bad message.
+  EXPECT_EQ(0, process->bad_msg_count());
+}
+#endif
+
 }  // namespace content

@@ -8689,6 +8689,11 @@ void RenderFrameHostImpl::UpdateUserGestureCarryoverInfo() {
   if (!IsActive()) {
     return;
   }
+  if (!HasTransientUserActivation()) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_NO_TRANSIENT_USER_ACTIVATION);
+    return;
+  }
   delegate_->UpdateUserGestureCarryoverInfo();
 }
 #endif

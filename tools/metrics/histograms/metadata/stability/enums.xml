@@ -518,6 +518,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="349" label="RFHI_SYNCHONOUS_COMMIT_ORIGIN_MISMATCH"/>
   <int value="350" label="RFHI_WEBMCP_INVALID_TOOL_OWNER"/>
   <int value="351" label="NR_BAD_ORIGIN_HEADER"/>
+  <int value="352" label="RFH_NO_TRANSIENT_USER_ACTIVATION"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
