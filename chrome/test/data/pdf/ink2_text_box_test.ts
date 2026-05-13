@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hexToColor, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PdfViewerPrivateProxyImpl, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {TextAnnotation, TextBoxRect} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {hexToColor, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PdfViewerPrivateProxyImpl, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {TextAnnotation, TextAnnotationMessageData, TextBoxRect} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -22,12 +22,7 @@ document.body.appendChild(textbox);
 function getTestAnnotation(textBoxRect: TextBoxRect): TextAnnotation {
   return {
     id: 0,
-    isEdited: false,
-    isUser: true,
-    mojoTextInfo: new ArrayBuffer(0),
-    newTypefaces: [],
     pageIndex: 0,
-    pdfZoom: 1.0,
     text: 'Hello World',
     textAttributes: {
       alignment: TextAlignment.LEFT,
@@ -112,12 +107,23 @@ async function dragHandleWithKeyboard(
   await microtasksFinished();
 }
 
-function verifyFinishTextAnnotationMessage(expectedAnnotation: TextAnnotation) {
-  const message = mockPlugin.findMessage<{type: string, data: TextAnnotation}>(
-      'finishTextAnnotation');
+function verifyFinishTextAnnotationMessage(
+    expectedAnnotation: TextAnnotation, expectedIsEdited: boolean,
+    expectedPdfZoom: number = 1.0) {
+  const message =
+      mockPlugin.findMessage<{type: string, data: TextAnnotationMessageData}>(
+          'finishTextAnnotation');
   chrome.test.assertTrue(message !== undefined);
   chrome.test.assertEq('finishTextAnnotation', message.type);
-  assertDeepEquals(expectedAnnotation, message.data);
+  const expectedMessageData: TextAnnotationMessageData = {
+    ...expectedAnnotation,
+    isEdited: expectedIsEdited,
+    isUser: true,
+    mojoTextInfo: new ArrayBuffer(0),
+    newTypefaces: [],
+    pdfZoom: expectedPdfZoom,
+  };
+  assertDeepEquals(expectedMessageData, message.data);
 }
 
 chrome.test.runTests([
@@ -752,16 +758,17 @@ chrome.test.runTests([
     const testAnnotation = getTestAnnotation(
         {locationX: 195, locationY: 147, height: 50, width: 50});
 
-    function startNewAnnotationAndVerifyMessage(existing: boolean = false) {
+    function startNewAnnotationAndVerifyMessage(
+        expectedIsEdited: boolean, existing: boolean = false) {
       mockPlugin.clearMessages();
       initializeBox(100, 100, 400, 300, existing);
-      verifyFinishTextAnnotationMessage(testAnnotation);
+      verifyFinishTextAnnotationMessage(testAnnotation, expectedIsEdited, 2.0);
     }
 
     textbox.$.textbox.value = testAnnotation.text;
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
-    startNewAnnotationAndVerifyMessage();
+    startNewAnnotationAndVerifyMessage(true);
     await microtasksFinished();
 
     // Moving (or resizing) the box is an edit. Also need to input some text,
@@ -776,7 +783,7 @@ chrome.test.runTests([
     // coordinates.
     testAnnotation
         .textBoxRect = {height: 50, width: 50, locationX: 245, locationY: 197};
-    startNewAnnotationAndVerifyMessage();
+    startNewAnnotationAndVerifyMessage(true);
     await microtasksFinished();
     // Reset expectation.
     testAnnotation
@@ -790,7 +797,7 @@ chrome.test.runTests([
     manager.setTextTypeface(TextTypeface.MONOSPACE);
     await microtasksFinished();
     testAnnotation.textAttributes.typeface = TextTypeface.MONOSPACE;
-    startNewAnnotationAndVerifyMessage();
+    startNewAnnotationAndVerifyMessage(true);
     await microtasksFinished();
     // Reset expectation.
     testAnnotation.textAttributes.typeface = TextTypeface.SANS_SERIF;
@@ -811,7 +818,7 @@ chrome.test.runTests([
     // regardless of edits or text.
     chrome.test.assertTrue(isVisible(textbox));
     testAnnotation.text = 'Hello World';
-    startNewAnnotationAndVerifyMessage(/* existing= */ true);
+    startNewAnnotationAndVerifyMessage(false, /* existing= */ true);
     await microtasksFinished();
 
     // Existing box, text cleared.
@@ -820,7 +827,7 @@ chrome.test.runTests([
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
     testAnnotation.text = '';
-    startNewAnnotationAndVerifyMessage(/* existing= */ true);
+    startNewAnnotationAndVerifyMessage(true, /* existing= */ true);
     await microtasksFinished();
 
     // Message should also be sent if the element is disconnected.
@@ -830,12 +837,7 @@ chrome.test.runTests([
     mockPlugin.clearMessages();
     // This happens if the user changes annotation mode.
     textbox.remove();
-    const message =
-        mockPlugin.findMessage<{type: string, data: TextAnnotation}>(
-            'finishTextAnnotation');
-    chrome.test.assertTrue(message !== undefined);
-    chrome.test.assertEq('finishTextAnnotation', message.type);
-    assertDeepEquals(testAnnotation, message.data);
+    verifyFinishTextAnnotationMessage(testAnnotation, false, 2.0);
 
     // Reset for future tests.
     document.body.appendChild(textbox);
@@ -982,7 +984,7 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
-    verifyFinishTextAnnotationMessage(testAnnotation);
+    verifyFinishTextAnnotationMessage(testAnnotation, true, 1.0);
 
     chrome.test.succeed();
   },
@@ -1013,7 +1015,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
     // Message is identical to before because 'pointerup' was never fired.
-    verifyFinishTextAnnotationMessage(testAnnotation);
+    verifyFinishTextAnnotationMessage(testAnnotation, true, 1.0);
 
     chrome.test.succeed();
   },
@@ -1056,7 +1058,7 @@ chrome.test.runTests([
     const testAnnotation = getTestAnnotation(
         {locationX: 0, locationY: 7, height: 100, width: 100});
     testAnnotation.text = '';
-    verifyFinishTextAnnotationMessage(testAnnotation);
+    verifyFinishTextAnnotationMessage(testAnnotation, true, 1.0);
 
     chrome.test.succeed();
   },
@@ -1080,7 +1082,7 @@ chrome.test.runTests([
     const testAnnotation = getTestAnnotation(
         {locationX: 0, locationY: 7, height: 100, width: 100});
     testAnnotation.text = '';
-    verifyFinishTextAnnotationMessage(testAnnotation);
+    verifyFinishTextAnnotationMessage(testAnnotation, true, 1.0);
 
     chrome.test.succeed();
   },
@@ -1091,17 +1093,6 @@ chrome.test.runTests([
       textBoxStates.push((e as CustomEvent<TextBoxState>).detail);
     });
 
-    let finishInkStrokeModifiedEvents = 0;
-    let finishInkStrokeUnmodifiedEvents = 0;
-    PluginController.getInstance().getEventTarget().addEventListener(
-        PluginControllerEventType.FINISH_INK_STROKE, e => {
-          if ((e as CustomEvent<boolean>).detail) {
-            finishInkStrokeModifiedEvents++;
-          } else {
-            finishInkStrokeUnmodifiedEvents++;
-          }
-        });
-
     // Initialize to a 100x100 box at 400, 300.
     initializeBox(100, 100, 400, 300);
     await microtasksFinished();
@@ -1109,19 +1100,17 @@ chrome.test.runTests([
     assertDeepEquals([TextBoxState.NEW], textBoxStates);
 
     // When a new box has no edits, commitTextAnnotation() will not trigger a
-    // plugin message or a PluginControllerEventType.FINISH_INK_STROKE event.
+    // plugin message.
     mockPlugin.clearMessages();
     textbox.commitTextAnnotation();
     await microtasksFinished();
     chrome.test.assertFalse(isVisible(textbox));
     chrome.test.assertEq(
         undefined, mockPlugin.findMessage('finishTextAnnotation'));
-    chrome.test.assertEq(0, finishInkStrokeModifiedEvents);
-    chrome.test.assertEq(0, finishInkStrokeUnmodifiedEvents);
     assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
 
-    // When text is edited, commitTextAnnotation() will trigger a plugin message
-    // and a PluginControllerEventType.FINISH_INK_STROKE modified event.
+    // When text is edited, commitTextAnnotation() will trigger a plugin
+    // message.
     textBoxStates = [];
     initializeBox(100, 100, 400, 300);
     await microtasksFinished();
@@ -1132,32 +1121,33 @@ chrome.test.runTests([
     await microtasksFinished();
     assertDeepEquals([TextBoxState.NEW, TextBoxState.EDITED], textBoxStates);
 
+    const expectedEditedAnnotation = getTestAnnotation(
+        {locationX: 400, locationY: 300, height: 100, width: 100});
+    expectedEditedAnnotation.text = 'Hello';
+
     textbox.commitTextAnnotation();
     await microtasksFinished();
     chrome.test.assertFalse(isVisible(textbox));
-    chrome.test.assertTrue(
-        mockPlugin.findMessage('finishTextAnnotation') !== undefined);
-    chrome.test.assertEq(1, finishInkStrokeModifiedEvents);
-    chrome.test.assertEq(0, finishInkStrokeUnmodifiedEvents);
+    verifyFinishTextAnnotationMessage(expectedEditedAnnotation, true, 1.0);
     assertDeepEquals(
         [TextBoxState.NEW, TextBoxState.EDITED, TextBoxState.INACTIVE],
         textBoxStates);
 
     // When existing text is not edited, commitTextAnnotation() will trigger a
-    // plugin message and a PluginControllerEventType.FINISH_INK_STROKE
-    // unmodified event.
+    // plugin message.
     textBoxStates = [];
     initializeBox(100, 100, 400, 300, true);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
     assertDeepEquals([TextBoxState.NEW], textBoxStates);
+
+    const expectedUneditedAnnotation = getTestAnnotation(
+        {locationX: 400, locationY: 300, height: 100, width: 100});
+
     textbox.commitTextAnnotation();
     await microtasksFinished();
     chrome.test.assertFalse(isVisible(textbox));
-    chrome.test.assertTrue(
-        mockPlugin.findMessage('finishTextAnnotation') !== undefined);
-    chrome.test.assertEq(1, finishInkStrokeModifiedEvents);
-    chrome.test.assertEq(1, finishInkStrokeUnmodifiedEvents);
+    verifyFinishTextAnnotationMessage(expectedUneditedAnnotation, false, 1.0);
     assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
 
     chrome.test.succeed();

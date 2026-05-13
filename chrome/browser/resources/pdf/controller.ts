@@ -7,7 +7,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 // clang-format off
 // <if expr="enable_pdf_ink2">
-import type {AnnotationBrush, AnnotationBrushType, AnnotationMode, TextAnnotation} from './constants.js';
+import type {AnnotationBrush, AnnotationBrushType, AnnotationMode, TextAnnotation, TextAnnotationMessageData} from './constants.js';
 // </if>
 import type {NamedDestinationMessageData, Rect} from './constants.js';
 // clang-format on
@@ -80,7 +80,7 @@ interface EditTextAnnotationMessage {
 // finishTextAnnotation goes from the viewer to the plugin.
 interface FinishTextAnnotationMessage {
   type: 'finishTextAnnotation';
-  data: TextAnnotation;
+  data: TextAnnotationMessageData;
 }
 // </if>
 
@@ -448,7 +448,7 @@ export class PluginController implements ContentController {
     this.postMessage_(message);
   }
 
-  finishTextAnnotation(annotation: TextAnnotation) {
+  finishTextAnnotation(annotation: TextAnnotationMessageData) {
     const message: FinishTextAnnotationMessage = {
       type: 'finishTextAnnotation',
       data: annotation,

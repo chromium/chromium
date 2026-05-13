@@ -5,9 +5,10 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
+import type {AnnotationBrush, Color, Point, TextAnnotation, TextAnnotationMessageData, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
+import type {GetTextInfoResult} from './pdf_viewer_private_proxy.js';
 import {UndoRedoStack} from './undo_redo_stack.js';
 import type {Viewport, ViewportRect} from './viewport.js';
 
@@ -231,7 +232,6 @@ export class Ink2Manager extends EventTarget {
         // this is triggered by a user action, and isn't undo/redo.
         existing = structuredClone(annotation);
         existing.textBoxRect = screenBox;
-        existing.isUser = true;
         this.originalTextAnnotation_ = structuredClone(annotation);
         break;
       }
@@ -271,12 +271,7 @@ export class Ink2Manager extends EventTarget {
     this.pageIndex_ = page;
     const annotation: TextAnnotation = existing ? existing : {
       id: this.nextAnnotationId_,
-      isEdited: false,
-      isUser: true,
-      mojoTextInfo: new ArrayBuffer(0),
-      newTypefaces: [],
       pageIndex: page,
-      pdfZoom: this.viewport_.getZoom(),
       text: '',
       textAttributes: structuredClone(this.attributes_),
       textBoxRect: {
@@ -571,13 +566,16 @@ export class Ink2Manager extends EventTarget {
    * Updates the stored annotation and notifies the plugin of the new or
    * modified annotation.
    */
-  commitTextAnnotation(annotation: TextAnnotation) {
+  commitTextAnnotation(
+      annotation: TextAnnotation, isEdited: boolean,
+      textInfo: GetTextInfoResult) {
     annotation.textBoxRect = this.screenToPageCoordinates_(
         annotation.pageIndex, annotation.textBoxRect);
-    if (annotation.isEdited) {
+
+    if (isEdited) {
       this.updateStoredAnnotation_(annotation);
       const before = this.originalTextAnnotation_;
-      const after = annotation.text === '' ? null : annotation;
+      const after = annotation.text === '' ? null : structuredClone(annotation);
       if (before !== null || after !== null) {
         this.stack_.push({
           type: 'text',
@@ -587,7 +585,16 @@ export class Ink2Manager extends EventTarget {
       }
     }
 
-    this.pluginController_.finishTextAnnotation(annotation);
+    assert(this.viewport_);
+    const messageData: TextAnnotationMessageData = {
+      ...annotation,
+      isEdited,
+      isUser: true,
+      mojoTextInfo: textInfo.mojoTextInfo,
+      newTypefaces: textInfo.typefaces,
+      pdfZoom: this.viewport_.getZoom(),
+    };
+    this.pluginController_.finishTextAnnotation(messageData);
     this.existingAnnotationAttributes_ = null;
     this.originalTextAnnotation_ = null;
   }
@@ -687,6 +694,7 @@ export class Ink2Manager extends EventTarget {
     // being deleted. Otherwise, the relevant annotation is the update.
     const annotation = isDeletion ? previous : update;
     assert(annotation);
+    assert(this.viewport_);
 
     // Since this is an undo or redo of a previous change, the map for this page
     // should always have been created already.
@@ -698,15 +706,18 @@ export class Ink2Manager extends EventTarget {
       pageAnnotations.set(annotation.id, annotation);
     }
 
-    // Remove newTypefaces to prevent backend crash from trying to add the
-    // same typeface a second time.
-    const messageToSend = structuredClone(annotation);
-    messageToSend.newTypefaces = [];
-    messageToSend.isUser = false;
+    const messageData: TextAnnotationMessageData = {
+      ...annotation,
+      isEdited: true,
+      isUser: false,
+      mojoTextInfo: new ArrayBuffer(0),
+      newTypefaces: [],
+      pdfZoom: this.viewport_.getZoom(),
+    };
     if (isDeletion) {
-      messageToSend.text = '';
+      messageData.text = '';
     }
-    this.pluginController_.finishTextAnnotation(messageToSend);
+    this.pluginController_.finishTextAnnotation(messageData);
   }
 
   initiateSave() {

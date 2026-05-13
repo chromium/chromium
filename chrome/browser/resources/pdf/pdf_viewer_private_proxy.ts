@@ -10,7 +10,7 @@ type SaveToDriveProgress = chrome.pdfViewerPrivate.SaveToDriveProgress;
 // </if> enable_pdf_save_to_drive
 
 // <if expr="enable_pdf_ink2">
-type GetTextInfoResult = chrome.pdfViewerPrivate.GetTextInfoResult;
+export type GetTextInfoResult = chrome.pdfViewerPrivate.GetTextInfoResult;
 // </if>
 
 // TODO(crbug.com/40825351): Move the other chrome.pdfViewerPrivate calls across

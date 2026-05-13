@@ -7,7 +7,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {TextAttributes, TextBoxRect} from '../constants.js';
+import type {TextAnnotation, TextAttributes, TextBoxRect} from '../constants.js';
 import {TextTypeface} from '../constants.js';
 import {colorsEqual, convertRotatedCoordinates, Ink2Manager, MIN_TEXTBOX_SIZE_PX, stylesEqual} from '../ink2_manager.js';
 import type {TextBoxInit, ViewportParams} from '../ink2_manager.js';
@@ -330,14 +330,9 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
               }
 
               // Notify the backend.
-              Ink2Manager.getInstance().commitTextAnnotation({
+              const annotation: TextAnnotation = {
                 id: this.id_,
-                isEdited: isEdited,
-                isUser: true,
-                mojoTextInfo: result.mojoTextInfo,
-                newTypefaces: result.typefaces,
                 pageIndex: this.pageIndex_,
-                pdfZoom: this.zoom_,
                 text: this.textValue_,
                 textAttributes: this.attributes_,
                 textBoxRect: {
@@ -347,7 +342,9 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
                   width: this.width_,
                 },
                 textOrientation: this.textOrientation_,
-              });
+              };
+              Ink2Manager.getInstance().commitTextAnnotation(
+                  annotation, isEdited, result);
             })
             .catch(e => {
               console.error('Error committing text annotation:', e);
