@@ -49,9 +49,6 @@ cast_source_set("base") {
     "cast_paths.h",
     "cast_resource.cc",
     "cast_resource.h",
-    "device_capabilities.h",
-    "device_capabilities_impl.cc",
-    "device_capabilities_impl.h",
     "error_codes.cc",
     "error_codes.h",
     "hash_util.cc",
@@ -146,7 +143,6 @@ cast_source_set("test_support") {
 test("cast_base_unittests") {
   sources = [
     "cast_features_unittest.cc",
-    "device_capabilities_impl_unittest.cc",
     "error_codes_unittest.cc",
     "hash_util_test.cc",
     "metrics/cast_metrics_helper_unittest.cc",
