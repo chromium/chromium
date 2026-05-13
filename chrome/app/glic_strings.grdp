@@ -330,9 +330,16 @@
   <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_NO_SITES" desc="Message shown when there are no sites in the Gemini web login permissions page.">
     Sites where Gemini can sign you in will appear here
   </message>
-  <message name="IDS_SETTINGS_GLIC_REVOKE_ACTOR_LOGIN_PERMISSION_ARIA_LABEL" desc="Aria label for the button to remove a login permission.">
-    Remove permission for <ph name="URL">$1<ex>google.com</ex></ph>
-  </message>
+  <if expr="not is_android">
+    <message name="IDS_SETTINGS_GLIC_REVOKE_ACTOR_LOGIN_PERMISSION_ARIA_LABEL" desc="Aria label for the button to remove a login permission.">
+      Remove permission for <ph name="URL">$1<ex>google.com</ex></ph>
+    </message>
+  </if>
+  <if expr="is_android">
+    <message name="IDS_SETTINGS_GLIC_REVOKE_ACTOR_LOGIN_PERMISSION_ARIA_LABEL" desc="Aria label for the button to remove a login permission." formatter_data="android_java">
+      Remove permission for <ph name="URL">%1$s<ex>google.com</ex></ph>
+    </message>
+  </if>
   <message name="IDS_SETTINGS_GLIC_REMOVE_ACTOR_LOGIN_DIALOG_TITLE" desc="Title for the dialog to remove a login permission.">
     Remove permission
   </message>

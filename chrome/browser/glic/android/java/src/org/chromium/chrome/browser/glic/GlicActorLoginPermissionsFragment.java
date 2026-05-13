@@ -36,6 +36,7 @@ public class GlicActorLoginPermissionsFragment extends ChromeBaseSettingsFragmen
     private LargeIconBridge mLargeIconBridge;
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
+    private GlicActorLoginBridge mBridge;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -45,13 +46,15 @@ public class GlicActorLoginPermissionsFragment extends ChromeBaseSettingsFragmen
         mDescriptionPref = assertNonNull(mCategory.findPreference(DESCRIPTION_KEY));
         mLargeIconBridge = new LargeIconBridge(getProfile());
 
-        // TODO(https://crbug.com/500353055): fetch permissions and set empty state if necessary
+        mBridge = new GlicActorLoginBridge(getProfile());
+        mBridge.getAllPermissions(this::populatePermissions);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mLargeIconBridge.destroy();
+        mBridge.destroy();
     }
 
     @VisibleForTesting

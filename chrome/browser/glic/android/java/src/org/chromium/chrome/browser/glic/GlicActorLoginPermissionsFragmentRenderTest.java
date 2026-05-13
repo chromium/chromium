@@ -56,10 +56,13 @@ public class GlicActorLoginPermissionsFragmentRenderTest {
     public final @Rule MockitoRule mMocks = MockitoJUnit.rule();
 
     private @Mock Profile mProfile;
+    private @Mock GlicActorLoginBridge.Natives mGlicActorLoginBridgeJniMock;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeNatives;
 
     @Before
     public void setUp() {
+        GlicActorLoginBridgeJni.setInstanceForTesting(mGlicActorLoginBridgeJniMock);
+        when(mGlicActorLoginBridgeJniMock.init(any(), any())).thenReturn(1L);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNatives);
         when(mLargeIconBridgeNatives.init()).thenReturn(1L);
         doAnswer(

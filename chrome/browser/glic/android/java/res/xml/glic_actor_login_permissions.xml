@@ -6,7 +6,6 @@ found in the LICENSE file.
 -->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/settings_glic_actor_login_permissions_section_title">
 
     <PreferenceCategory

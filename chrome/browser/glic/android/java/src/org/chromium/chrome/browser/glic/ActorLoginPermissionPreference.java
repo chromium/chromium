@@ -8,16 +8,14 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.widget.ImageView;
 
-import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 
 /**
@@ -27,7 +25,6 @@ import org.chromium.components.favicon.LargeIconBridge;
 @NullMarked
 public class ActorLoginPermissionPreference extends ChromeBasePreference {
     private final ActorLoginPermission mPermission;
-    private final LargeIconBridge mLargeIconBridge;
     private final Runnable mOnRevokeClicked;
 
     /**
@@ -45,38 +42,31 @@ public class ActorLoginPermissionPreference extends ChromeBasePreference {
             Runnable onRevokeClicked) {
         super(context);
         mPermission = assumeNonNull(permission);
-        mLargeIconBridge = assumeNonNull(largeIconBridge);
         mOnRevokeClicked = assumeNonNull(onRevokeClicked);
 
         setTitle(mPermission.getSiteOrAppName());
         setSummary(mPermission.getUsername());
         setWidgetLayoutResource(R.layout.preference_widget_revoke);
-        setSelectable(false); // Match Desktop's non-clickable behavior for the row.
+        setSelectable(false);
 
-        // Fetch favicon.
-        int iconSize =
-                context.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
-        mLargeIconBridge.getLargeIconForUrl(
-                mPermission.getUrl(), iconSize, this::onFaviconAvailable);
-    }
-
-    private void onFaviconAvailable(
-            @Nullable Bitmap icon,
-            int fallbackColor,
-            boolean isFallbackColorDefault,
-            int iconType) {
-        if (icon != null) {
-            setIcon(new BitmapDrawable(getContext().getResources(), icon));
-        } else {
-            setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_globe_24dp));
-        }
+        // TODO(https://crbug.com/500353055): add a loading screen if this loads in too long.
+        FaviconLoader.loadFavicon(
+                context, largeIconBridge, mPermission.getFaviconUrl(), this::setIcon);
     }
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
+        ImageView iconView = assertNonNull((ImageView) holder.findViewById(android.R.id.icon));
+        FaviconViewUtils.formatIconForFavicon(getContext().getResources(), iconView);
+
         ImageView revokeButton = assertNonNull((ImageView) holder.findViewById(R.id.revoke_icon));
+        revokeButton.setContentDescription(
+                getContext()
+                        .getString(
+                                R.string.settings_glic_revoke_actor_login_permission_aria_label,
+                                mPermission.getSiteOrAppName()));
         revokeButton.setOnClickListener(v -> mOnRevokeClicked.run());
     }
 }
