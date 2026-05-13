@@ -11,11 +11,11 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -70,11 +70,9 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
       : run_loop_(new base::RunLoop()),
         file_thread_("SecurityKeyAuthHandlerPosixTest_FileThread"),
         expected_request_data_(
-            reinterpret_cast<const char*>(UNSAFE_TODO(kRequestData + 4)),
-            sizeof(kRequestData) - 4),
+            base::as_string_view(base::span(kRequestData).subspan<4>())),
         client_response_data_(
-            reinterpret_cast<const char*>(UNSAFE_TODO(kResponseData + 4)),
-            sizeof(kResponseData) - 4) {
+            base::as_string_view(base::span(kResponseData).subspan<4>())) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     socket_path_ = temp_dir_.GetPath().Append(kSocketFilename);
     remoting::SecurityKeyAuthHandlerPosix::SetSecurityKeySocketName(

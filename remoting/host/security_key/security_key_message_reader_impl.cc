@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -65,7 +64,7 @@ void SecurityKeyMessageReaderImpl::ReadMessage() {
     }
 
     uint32_t message_length_bytes = 0;
-    if (!ReadFromStream(reinterpret_cast<char*>(&message_length_bytes), 4)) {
+    if (!ReadFromStream(base::byte_span_from_ref(message_length_bytes))) {
       NotifyError();
       return;
     }
@@ -77,7 +76,7 @@ void SecurityKeyMessageReaderImpl::ReadMessage() {
     }
 
     std::string message_data(message_length_bytes, '\0');
-    if (!ReadFromStream(std::data(message_data), message_data.size())) {
+    if (!ReadFromStream(base::as_writable_byte_span(message_data))) {
       NotifyError();
       return;
     }
@@ -97,15 +96,11 @@ void SecurityKeyMessageReaderImpl::ReadMessage() {
   }
 }
 
-bool SecurityKeyMessageReaderImpl::ReadFromStream(char* buffer,
-                                                  size_t bytes_to_read) {
-  DCHECK(buffer);
-  DCHECK_GT(bytes_to_read, 0u);
-  base::span<uint8_t> buffer_span =
-      base::as_writable_bytes(UNSAFE_TODO(base::span(buffer, bytes_to_read)));
+bool SecurityKeyMessageReaderImpl::ReadFromStream(base::span<uint8_t> buffer) {
+  DCHECK(!buffer.empty());
   do {
     std::optional<size_t> read_result =
-        read_stream_.ReadAtCurrentPosNoBestEffort(buffer_span);
+        read_stream_.ReadAtCurrentPosNoBestEffort(buffer);
     if (!read_result.has_value()) {
       LOG(ERROR) << "Failed to read from stream, ReadAtCurrentPos failed";
       return false;
@@ -114,8 +109,8 @@ bool SecurityKeyMessageReaderImpl::ReadFromStream(char* buffer,
       // 0 means EOF which is normal and should not be logged as an error.
       return false;
     }
-    buffer_span = buffer_span.subspan(*read_result);
-  } while (!buffer_span.empty());
+    buffer = buffer.subspan(*read_result);
+  } while (!buffer.empty());
   return true;
 }
 

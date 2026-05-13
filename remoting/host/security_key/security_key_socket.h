@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -104,7 +105,7 @@ class SecurityKeySocket {
   bool socket_read_error_ = false;
 
   // Request data.
-  std::vector<char> request_data_;
+  std::vector<uint8_t> request_data_;
 
   scoped_refptr<net::DrainableIOBuffer> write_buffer_;
 
