@@ -43,6 +43,8 @@ test("services_unittests") {
     "SerializeAttributionReportingEligibleHeader.IsEligibleValid",
     "TrustTokenKeyCommitmentFuzzer.ParsesOneIssuerCorrectly",
     "TrustTokenKeyCommitmentFuzzer.ParsesMultipleIssuersCorrectly",
+    "StructTraitsTest.AggregatedHitTestRegionFuzz",
+    "StructTraitsTest.HitTestRegionListFuzz",
     "StructTraitsTest.DebugRendererSettingsFuzz",
     "StructTraitsTest.RendererSettingsFuzz",
     "StructTraitsTest.BeginFrameArgsFuzz",

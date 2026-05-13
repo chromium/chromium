@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstring>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
@@ -13,10 +14,99 @@
 #include "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
 
 namespace viz {
+namespace {
+
+auto AnyFrameSinkId() {
+  return fuzztest::ConstructorOf<FrameSinkId>(fuzztest::Arbitrary<uint32_t>(),
+                                              fuzztest::Arbitrary<uint32_t>());
+}
+
+auto AnyRect() {
+  return fuzztest::ConstructorOf<gfx::Rect>(
+      fuzztest::Arbitrary<int>(), fuzztest::Arbitrary<int>(),
+      fuzztest::InRange(0, 10000), fuzztest::InRange(0, 10000));
+}
+
+auto AnyTransform() {
+  return fuzztest::ConstructorOf<gfx::Transform>();
+}
+
+auto AnyAggregatedHitTestRegion() {
+  return fuzztest::Map(
+      [](const FrameSinkId& frame_sink_id, uint32_t flags,
+         uint32_t async_hit_test_reasons, const gfx::Rect& rect,
+         const gfx::Transform& transform, int32_t child_count) {
+        if (flags & HitTestRegionFlags::kHitTestAsk) {
+          if (!async_hit_test_reasons) {
+            async_hit_test_reasons = 1;
+          }
+        } else {
+          async_hit_test_reasons = 0;
+        }
+        return AggregatedHitTestRegion(frame_sink_id, flags, rect, transform,
+                                       child_count, async_hit_test_reasons);
+      },
+      AnyFrameSinkId(), fuzztest::Arbitrary<uint32_t>(),
+      fuzztest::Arbitrary<uint32_t>(), AnyRect(), AnyTransform(),
+      fuzztest::Arbitrary<int32_t>());
+}
+
+auto AnyHitTestRegion() {
+  return fuzztest::Map(
+      [](const FrameSinkId& frame_sink_id, uint32_t flags,
+         uint32_t async_hit_test_reasons, const gfx::Rect& rect,
+         const gfx::Transform& transform) {
+        HitTestRegion region;
+        region.frame_sink_id = frame_sink_id;
+        region.flags = flags;
+        region.async_hit_test_reasons = async_hit_test_reasons;
+        region.rect = rect;
+        region.transform = transform;
+        return region;
+      },
+      AnyFrameSinkId(), fuzztest::Arbitrary<uint32_t>(),
+      fuzztest::Arbitrary<uint32_t>(), AnyRect(), AnyTransform());
+}
+
+auto AnyHitTestRegionList() {
+  return fuzztest::Map(
+      [](uint32_t flags, uint32_t async_hit_test_reasons,
+         const gfx::Rect& bounds, const gfx::Transform& transform,
+         const std::vector<HitTestRegion>& regions) {
+        HitTestRegionList list;
+        list.flags = flags;
+        list.async_hit_test_reasons = async_hit_test_reasons;
+        list.bounds = bounds;
+        list.transform = transform;
+        list.regions = regions;
+        return list;
+      },
+      fuzztest::Arbitrary<uint32_t>(), fuzztest::Arbitrary<uint32_t>(),
+      AnyRect(), AnyTransform(),
+      fuzztest::VectorOf(AnyHitTestRegion()).WithMaxSize(100));
+}
+
+}  // namespace
+
+void AggregatedHitTestRegionFuzz(const AggregatedHitTestRegion& input) {
+  AggregatedHitTestRegion output;
+  mojo::test::SerializeAndDeserialize<mojom::AggregatedHitTestRegion>(input,
+                                                                      output);
+}
+FUZZ_TEST(StructTraitsTest, AggregatedHitTestRegionFuzz)
+    .WithDomains(AnyAggregatedHitTestRegion());
+
+void HitTestRegionListFuzz(const HitTestRegionList& input) {
+  HitTestRegionList output;
+  mojo::test::SerializeAndDeserialize<mojom::HitTestRegionList>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, HitTestRegionListFuzz)
+    .WithDomains(AnyHitTestRegionList());
 
 TEST(StructTraitsTest, AggregatedHitTestRegion) {
   constexpr FrameSinkId frame_sink_id(1337, 1234);
