@@ -2208,6 +2208,9 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   EXPECT_EQ("LOADED", content::EvalJs(active_web_contents(), kScript));
 }
 
+// The following test is executed as Chrome App, which is only supported on
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 class OrbAndCorsAppBrowserTest : public PlatformAppBrowserTest {
  public:
   OrbAndCorsAppBrowserTest() = default;
@@ -2309,6 +2312,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsAppBrowserTest, WebViewContentScript) {
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using OriginHeaderExtensionBrowserTest = OrbAndCorsExtensionBrowserTest;
 

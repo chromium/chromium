@@ -1999,6 +1999,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
       *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
+// The following tests use Chrome Apps, which are only supported on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 class ScriptInjectionTrackerAppBrowserTest : public PlatformAppBrowserTest {
  public:
   ScriptInjectionTrackerAppBrowserTest() = default;
@@ -2279,5 +2281,6 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerAppBrowserTest,
   EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *guest_process, app->id()));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

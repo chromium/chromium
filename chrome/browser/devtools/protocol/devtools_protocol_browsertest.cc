@@ -1488,9 +1488,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
   EXPECT_THAT(*detached.FindString("sessionId"), Eq("sessionId"));
 }
 
-// TODO(https://crbug.com/501442926): The following tests use guest view, which
-// is not yet supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/501442926): The following tests use guest view in a
+// Chrome App, which is only supported on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Accepts a list of URL predicates and allows awaiting for all matching
 // WebContents to load.
@@ -1797,7 +1797,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewMPArch,
       *frame_id,
       guest_view->GetGuestMainFrame()->GetDevToolsFrameToken().ToString());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 

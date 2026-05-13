@@ -32,7 +32,17 @@ class WebrtcLoggingPrivateApiBrowserTest
   }
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
+                       TestNoGetLogsDirectoryPermissionsFromHangoutsExtension) {
+  ASSERT_TRUE(RunExtensionTest(
+      "api_test/webrtc_logging_private/no_get_logs_directory_permissions", {},
+      {.load_as_component = true}))
+      << message_;
+}
+
+// The following tests are executed as Chrome Apps, which are only supported on
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                        TestGetLogsDirectoryCreatesWebRtcLogsDirectory) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -58,15 +68,6 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                         .launch_as_platform_app = true}))
       << message_;
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
-                       TestNoGetLogsDirectoryPermissionsFromHangoutsExtension) {
-  ASSERT_TRUE(RunExtensionTest(
-      "api_test/webrtc_logging_private/no_get_logs_directory_permissions", {},
-      {.load_as_component = true}))
-      << message_;
-}
 
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                        TestStartAudioDebugRecordingsForWebviewFromApp) {
@@ -79,7 +80,6 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
       << message_;
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     WebrtcLoggingPrivateApiBrowserTest,
     TestStartAudioDebugRecordingsForWebviewFromAppWithoutSwitch) {
@@ -89,7 +89,6 @@ IN_PROC_BROWSER_TEST_F(
                        {.launch_as_platform_app = true}))
       << message_;
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest, TestStartStopStart) {
   ASSERT_TRUE(
@@ -97,3 +96,4 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest, TestStartStopStart) {
                        {.launch_as_platform_app = true}))
       << message_;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)

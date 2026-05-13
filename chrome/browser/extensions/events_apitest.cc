@@ -98,6 +98,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
       event_router->ExtensionHasEventListener(id, "webNavigation.onCompleted"));
 }
 
+// The following test is executed as Chrome App, which is only supported on
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that listeners for webview-related events are not stored (even for lazy
 // contexts). See crbug.com/41327043.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
@@ -132,6 +135,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
   EXPECT_TRUE(
       event_router->HasLazyEventListenerForTesting("app.runtime.onLaunched"));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that registering a listener for an event that requires a permission and
 // then removing that permission using the permissions API does not lead to a

@@ -130,6 +130,9 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, SimpleEndToEndTest) {
   ASSERT_TRUE(RunExtensionTest("native_bindings/extension")) << message_;
 }
 
+// The following test is executed as Chrome App, which is only supported on
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 // A simplistic app test for app-specific APIs.
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, SimpleAppTest) {
   ExtensionTestMessageListener ready_listener("ready",
@@ -146,6 +149,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, SimpleAppTest) {
   ASSERT_TRUE(close_listener.WaitUntilSatisfied());
   EXPECT_EQ("success", close_listener.message());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests the declarativeContent API and declarative events.
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, DeclarativeEvents) {

@@ -321,6 +321,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
     return extension;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   const Extension* AddExtensionWithWebViewAndOpen() {
     static constexpr char kManifest[] =
         R"({
@@ -375,6 +376,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
 
     return extension;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   content::WebContents* GetAppWindowContents() {
@@ -1417,8 +1419,9 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   }
 }
 
-// These tests use platform app windows.
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+// The following tests launch a dynamic Chrome App, which is only supported on
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        IsPrivilegedExtensionProcess_WebViews) {
   const Extension* extension = AddExtensionWithWebViewAndOpen();
@@ -1473,7 +1476,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebViews) {
       {mojom::ContextType::kWebPage, mojom::ContextType::kUntrustedWebUi},
       "webview process without extension passed");
 }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        IsPrivilegedExtensionProcess_UserScripts) {

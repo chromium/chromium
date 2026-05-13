@@ -795,6 +795,8 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
                          tab->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
+// TODO(crbug.com/507733133): Add tests for non-extension <webview> usage.
+#if BUILDFLAG(IS_CHROMEOS)
 class StatefulSSLHostStateDelegateExtensionTest
     : public extensions::ExtensionBrowserTest {
  public:
@@ -920,3 +922,4 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
   EXPECT_FALSE(state->HasAllowException(
       kWWWGoogleHost, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
