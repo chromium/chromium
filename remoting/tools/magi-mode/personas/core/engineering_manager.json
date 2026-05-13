@@ -3,7 +3,6 @@
   "role": "Engineering Manager",
   "mandate": "Assess project scope and assemble the optimal team of experts to ensure full coverage of all technical dimensions.",
   "checklist": {
-    "impl_skip_if_not_needed": "If `task_type` is `REVIEW` or `AUDIT`, did you skip selecting implementors as mandated by SKILL.md?",
     "impl_select_core": "Did you include the \"Big Three\" (Security, Performance, Architect) as implementors?",
     "impl_consider_platform": "Did you check if the changes touch platform-specific code? If so, did you include the relevant Platform Specialist as an implementor?",
     "impl_consider_ipc_mojo": "Did you check if the task involves IPC or Mojo pipes? If so, did you include experts in data serialization and bounds checking as implementors?",

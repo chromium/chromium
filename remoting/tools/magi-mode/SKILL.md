@@ -106,7 +106,6 @@ next expert.
 *   **Scoping Lead:** `SCAFFOLDING`
 *   **Architect / Test Expert:** `PREPARATION`
 *   **Engineering Manager:** `IMPLEMENTATION`
-    (or `CRITIQUE` if `task_type` is `REVIEW` or `AUDIT`)
 *   **Domain Experts:** `SYNTHESIS`
 *   **Synthesizing Architect:** `CRITIQUE`
 *   **Reviewers:** `ANALYSIS`
@@ -128,14 +127,6 @@ next expert.
   specification to `project.magi.json` conforming to `magi_schema.json`.
   The `"checklist"` field MUST be initialized as an empty object `{}`.
 
-  The Scoping Lead MUST also determine the `task_type` based on the request:
-  *   `IMPLEMENTATION`: Default. For creating new features or fixing bugs. Sets
-      `next_phase` to `SCAFFOLDING`.
-  *   `REVIEW`: For reviewing existing changes or a CL. Sets `next_phase` to
-      `PREPARATION`.
-  *   `AUDIT`: For analyzing existing code for modernization or flaws. Sets
-      `next_phase` to `PREPARATION`.
-
   **Environment Discovery:** Before writing the file, the Scoping Lead MUST
   discover the environment:
   *   **VCS:** Check for a `.jj/` directory or run `jj status`. If successful,
@@ -144,13 +135,12 @@ next expert.
       available. If yes, set `harness` to `"JETSKI"`. Otherwise, set to
       `"GENERIC_CLI"`.
 
-  The `project.magi.json` file MUST contain the appropriate `next_phase` and
+  The `project.magi.json` file MUST contain a `next_phase` of `SCAFFOLDING` and
   the following structure:
   ```json
   {
     "$schema": "./magi_schema.json#definitions/ProjectSpec",
     "checklist": {},
-    "task_type": "IMPLEMENTATION",
     "goal": "A one-sentence summary of the fix/feature.",
     "target_files": ["Absolute paths to the files that must be modified."],
     "anti_goals": ["What should explicitly NOT be changed."],
@@ -172,8 +162,6 @@ next expert.
   and upload commands used by the agents.
 
 ### 1. Scaffolding (The Architect & Test Phase)
-*This phase is ONLY executed if `task_type` is `IMPLEMENTATION`. For `REVIEW`*
-*and `AUDIT` tasks, this phase is skipped.*
 - **Roughing In (The Architect):** First, invoke an Architect sub-agent. The
   Architect MUST read `project.magi.json` to understand the goal. Their mandate
   is to create necessary files, define class interfaces, set up Mojo pipes, and
@@ -206,8 +194,7 @@ next expert.
   catalog) to assess and select both the **Implementors** and the **Reviewers**.
     *   **Implementors**: Defaults to the "Big Three" (Security, Performance,
         Architect). The Engineering Manager MAY select additional Domain Experts
-        if the task requires specialized work. If `task_type` is `REVIEW` or
-        `AUDIT`, the Engineering Manager MUST skip selecting Implementors.
+        if the task requires specialized work.
     *   **Reviewers**: Includes all selected Implementors, plus the Language
         Expert, and any relevant Domain Experts. If the change includes new or
         modified tests, the Test Expert MUST also be included.
@@ -217,8 +204,7 @@ next expert.
   `src/remoting/tools/magi-mode/personas/core/engineering_manager.json` and
   evaluate the selection checklist to ensure all technical dimensions are
   covered for both roles. It MUST include the checklist evaluation in its JSON
-  output. The Engineering Manager MUST set `next_phase` to `IMPLEMENTATION` for
-  `IMPLEMENTATION` tasks, or `CRITIQUE` for `REVIEW` and `AUDIT` tasks.
+  output.
 - **Checklist Initialization:** The Orchestrator MUST read the `checklist` from
   every selected persona JSON file, compute the **Union Set** of all checklist
   keys, and initialize `state_block.magi.json#checklist` with all these keys

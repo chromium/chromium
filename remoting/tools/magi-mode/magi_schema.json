@@ -78,10 +78,6 @@
       "type": "object",
       "properties": {
         "checklist": { "$ref": "#/definitions/ChecklistObject" },
-        "task_type": {
-          "type": "string",
-          "enum": ["IMPLEMENTATION", "REVIEW", "AUDIT"]
-        },
         "unlisted_issues_found": {
           "type": "array",
           "items": { "type": "string" }
