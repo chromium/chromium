@@ -12,6 +12,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.VerificationStatus;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -133,28 +134,40 @@ public class AttributeInstance {
 
     private final AttributeType mAttributeType;
     private final AttributeValue mAttributeValue;
+    private final @VerificationStatus int mVerificationStatus;
 
     @CalledByNative
     public AttributeInstance(
             AttributeType attributeType,
             @JniType("std::u16string") String day,
             @JniType("std::u16string") String month,
-            @JniType("std::u16string") String year) {
-        this(attributeType, new DateValue(day, month, year));
+            @JniType("std::u16string") String year,
+            @JniType("VerificationStatus") @VerificationStatus int verificationStatus) {
+        this(attributeType, new DateValue(day, month, year), verificationStatus);
     }
 
     @CalledByNative
-    public AttributeInstance(AttributeType attributeType, @JniType("std::u16string") String value) {
-        this(attributeType, new StringValue(value));
+    public AttributeInstance(
+            AttributeType attributeType,
+            @JniType("std::u16string") String value,
+            @JniType("VerificationStatus") @VerificationStatus int verificationStatus) {
+        this(attributeType, new StringValue(value), verificationStatus);
     }
 
-    public AttributeInstance(AttributeType attributeType, @Nullable LocalDate date) {
-        this(attributeType, new DateValue(date));
+    public AttributeInstance(
+            AttributeType attributeType,
+            @Nullable LocalDate date,
+            @VerificationStatus int verificationStatus) {
+        this(attributeType, new DateValue(date), verificationStatus);
     }
 
-    public AttributeInstance(AttributeType attributeType, AttributeValue attributeValue) {
+    public AttributeInstance(
+            AttributeType attributeType,
+            AttributeValue attributeValue,
+            @VerificationStatus int verificationStatus) {
         mAttributeType = attributeType;
         mAttributeValue = attributeValue;
+        mVerificationStatus = verificationStatus;
     }
 
     @CalledByNative
@@ -193,5 +206,10 @@ public class AttributeInstance {
     @CalledByNative
     public boolean isDateType() {
         return mAttributeValue instanceof DateValue;
+    }
+
+    @CalledByNative
+    public @JniType("VerificationStatus") @VerificationStatus int getVerificationStatus() {
+        return mVerificationStatus;
     }
 }

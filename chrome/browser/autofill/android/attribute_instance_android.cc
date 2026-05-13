@@ -24,13 +24,14 @@ base::android::ScopedJavaLocalRef<jobject> AttributeInstanceAndroid::Create(
         std::get<AttributeInstanceAndroidDateType>(attribute_instance.value);
     return Java_AttributeInstance_Constructor(
         env, jni_zero::ToJniType(env, attribute_instance.attribute_type),
-        date_value.day, date_value.month, date_value.year);
+        date_value.day, date_value.month, date_value.year,
+        attribute_instance.verification_status);
   } else {
     const std::u16string& string_value =
         std::get<std::u16string>(attribute_instance.value);
     return Java_AttributeInstance_Constructor(
         env, jni_zero::ToJniType(env, attribute_instance.attribute_type),
-        string_value);
+        string_value, attribute_instance.verification_status);
   }
 }
 
@@ -39,22 +40,29 @@ AttributeInstanceAndroid AttributeInstanceAndroid::FromJavaAttributeInstance(
     const base::android::JavaRef<jobject>& j_attribute_instance) {
   AttributeTypeAndroid type = jni_zero::FromJniType<AttributeTypeAndroid>(
       env, Java_AttributeInstance_getAttributeType(env, j_attribute_instance));
+  VerificationStatus attribute_verification_status =
+      Java_AttributeInstance_getVerificationStatus(env, j_attribute_instance);
 
   if (Java_AttributeInstance_isDateType(env, j_attribute_instance)) {
     return AttributeInstanceAndroid(
-        type,
+        std::move(type),
         {.day = Java_AttributeInstance_getDay(env, j_attribute_instance),
          .month = Java_AttributeInstance_getMonth(env, j_attribute_instance),
-         .year = Java_AttributeInstance_getYear(env, j_attribute_instance)});
+         .year = Java_AttributeInstance_getYear(env, j_attribute_instance)},
+        attribute_verification_status);
   } else {
     return AttributeInstanceAndroid(
-        type, Java_AttributeInstance_getStringValue(env, j_attribute_instance));
+        std::move(type),
+        Java_AttributeInstance_getStringValue(env, j_attribute_instance),
+        attribute_verification_status);
   }
 }
 
 AttributeInstanceAndroid::AttributeInstanceAndroid(
     const AttributeInstance& attribute_instance)
-    : attribute_type(attribute_instance.type()) {
+    : attribute_type(attribute_instance.type()),
+      verification_status(attribute_instance.GetVerificationStatus(
+          attribute_instance.type().field_type())) {
   if (attribute_type.data_type == AttributeType::DataType::kDate) {
     const std::string& app_locale = g_browser_process->GetApplicationLocale();
     std::optional<autofill::FieldType> field_type =
@@ -92,19 +100,18 @@ AttributeInstance AttributeInstanceAndroid::ToAttributeInstance() const {
     instance.SetInfo(
         field_type, date_value.day, app_locale,
         AutofillFormatString(u"D", autofill::FormatString_Type_DATE),
-        VerificationStatus::kUserVerified);
+        verification_status);
     instance.SetInfo(
         field_type, date_value.month, app_locale,
         AutofillFormatString(u"M", autofill::FormatString_Type_DATE),
-        VerificationStatus::kUserVerified);
+        verification_status);
     instance.SetInfo(
         field_type, date_value.year, app_locale,
         AutofillFormatString(u"YYYY", autofill::FormatString_Type_DATE),
-        VerificationStatus::kUserVerified);
+        verification_status);
   } else {
     instance.SetRawInfo(attribute_type.ToAttributeType().field_type(),
-                        std::get<std::u16string>(value),
-                        VerificationStatus::kUserVerified);
+                        std::get<std::u16string>(value), verification_status);
   }
 
   instance.FinalizeInfo();
@@ -113,13 +120,18 @@ AttributeInstance AttributeInstanceAndroid::ToAttributeInstance() const {
 
 AttributeInstanceAndroid::AttributeInstanceAndroid(
     AttributeTypeAndroid attribute_type,
-    std::u16string string_value)
+    std::u16string string_value,
+    VerificationStatus verification_status)
     : attribute_type(std::move(attribute_type)),
-      value(std::move(string_value)) {}
+      value(std::move(string_value)),
+      verification_status(verification_status) {}
 
 AttributeInstanceAndroid::AttributeInstanceAndroid(
     AttributeTypeAndroid attribute_type,
-    AttributeInstanceAndroidDateType date_value)
-    : attribute_type(std::move(attribute_type)), value(std::move(date_value)) {}
+    AttributeInstanceAndroidDateType date_value,
+    VerificationStatus verification_status)
+    : attribute_type(std::move(attribute_type)),
+      value(std::move(date_value)),
+      verification_status(verification_status) {}
 
 }  // namespace autofill

@@ -13,6 +13,7 @@
 #include "chrome/browser/autofill/android/attribute_instance_android.h"
 #include "chrome/browser/autofill/android/attribute_type_android.h"
 #include "chrome/browser/autofill/android/entity_type_android.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -44,7 +45,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
 
   std::u16string passport_name = u"John Doe";
   AttributeInstanceAndroid attribute_instance_android(
-      passport_name_attribute_type_android, passport_name);
+      passport_name_attribute_type_android, passport_name,
+      VerificationStatus::kNoStatus);
   EntityInstanceAndroid entity_instance_android(
       entity_type_android, EntityInstance::RecordType::kLocal,
       {attribute_instance_android}, kNickname,
@@ -94,7 +96,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_ReuseExistingAttribute) {
 
   // Create an Android entity with the same attribute value.
   AttributeInstanceAndroid attribute_instance_android(
-      password_name_attribute_type_android, passport_name);
+      password_name_attribute_type_android, passport_name,
+      VerificationStatus::kNoStatus);
   EntityInstanceAndroid entity_instance_android(
       entity_type_android, EntityInstance::RecordType::kLocal,
       {attribute_instance_android}, kNickname,
@@ -169,9 +172,11 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
   // was really modified).
   std::u16string new_passport_name = u"Jane Doe";
   AttributeInstanceAndroid passport_name_attribute_instance_android(
-      passport_name_attribute_type_android, new_passport_name);
+      passport_name_attribute_type_android, new_passport_name,
+      VerificationStatus::kUserVerified);
   AttributeInstanceAndroid passport_number_attribute_instance_android(
-      passport_number_attribute_type_android, number);
+      passport_number_attribute_type_android, number,
+      VerificationStatus::kUserVerified);
   EntityInstanceAndroid entity_instance_android(
       entity_type_android, EntityInstance::RecordType::kLocal,
       {passport_name_attribute_instance_android,

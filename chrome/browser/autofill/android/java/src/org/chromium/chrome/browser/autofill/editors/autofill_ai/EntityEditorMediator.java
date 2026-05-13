@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsPrope
 import org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldValidator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
 import org.chromium.components.autofill.autofill_ai.AttributeType;
 import org.chromium.components.autofill.autofill_ai.DataType;
@@ -249,7 +250,8 @@ class EntityEditorMediator {
                 // exist before.
                 continue;
             }
-            mEntityInstance.setAttributeValue(entry.getKey(), sanitizedValue);
+            mEntityInstance.setAttributeValue(
+                    entry.getKey(), sanitizedValue, VerificationStatus.USER_VERIFIED);
         }
     }
 

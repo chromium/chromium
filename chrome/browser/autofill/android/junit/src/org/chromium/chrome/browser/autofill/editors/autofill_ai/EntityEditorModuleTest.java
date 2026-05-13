@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.components.autofill.FieldType;
+import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance.DateValue;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance.StringValue;
@@ -232,11 +233,14 @@ public class EntityEditorModuleTest {
                     .setRecordType(RecordType.LOCAL)
                     .addAttribute(
                             new AttributeInstance(
-                                    PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
+                                    PASSPORT_NUMBER_ATTRIBUTE_TYPE,
+                                    /* value= */ "AA123456",
+                                    VerificationStatus.NO_STATUS))
                     .addAttribute(
                             new AttributeInstance(
                                     PASSPORT_ISSUE_DATE_TYPE,
-                                    /* date= */ LocalDate.of(2026, 2, 15)))
+                                    /* date= */ LocalDate.of(2026, 2, 15),
+                                    VerificationStatus.NO_STATUS))
                     .build();
 
     private static final EntityInstance NEW_LOCAL_PASSPORT =
@@ -257,10 +261,14 @@ public class EntityEditorModuleTest {
                     .setRecordType(RecordType.SERVER_WALLET)
                     .addAttribute(
                             new AttributeInstance(
-                                    PASSPORT_NAME_ATTRIBUTE_TYPE, /* value= */ "John Doe"))
+                                    PASSPORT_NAME_ATTRIBUTE_TYPE,
+                                    /* value= */ "John Doe",
+                                    VerificationStatus.NO_STATUS))
                     .addAttribute(
                             new AttributeInstance(
-                                    PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Germany"))
+                                    PASSPORT_COUNTRY_ATTRIBUTE_TYPE,
+                                    /* value= */ "Germany",
+                                    VerificationStatus.NO_STATUS))
                     .build();
 
     private static final EntityInstance PRIVATE_WALLET_PASSPORT =
@@ -569,10 +577,14 @@ public class EntityEditorModuleTest {
                         .setRecordType(RecordType.LOCAL)
                         .addAttribute(
                                 new AttributeInstance(
-                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
+                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE,
+                                        /* value= */ "Cuba",
+                                        VerificationStatus.NO_STATUS))
                         .addAttribute(
                                 new AttributeInstance(
-                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
+                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE,
+                                        /* value= */ "AA123456",
+                                        VerificationStatus.NO_STATUS))
                         .build();
         showEditorDialog(entity);
 
@@ -597,12 +609,15 @@ public class EntityEditorModuleTest {
         AttributeInstance passportName =
                 updatedEntityInstance.getAttribute(PASSPORT_NAME_ATTRIBUTE_TYPE);
         assertEquals(new StringValue("John Doe"), passportName.getAttributeValue());
+        assertEquals(VerificationStatus.USER_VERIFIED, passportName.getVerificationStatus());
         AttributeInstance passportCountry =
                 updatedEntityInstance.getAttribute(PASSPORT_COUNTRY_ATTRIBUTE_TYPE);
         assertEquals(new StringValue("Germany"), passportCountry.getAttributeValue());
+        assertEquals(VerificationStatus.USER_VERIFIED, passportCountry.getVerificationStatus());
         AttributeInstance passportNumber =
                 updatedEntityInstance.getAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE);
         assertEquals(new StringValue("AA123456"), passportNumber.getAttributeValue());
+        assertEquals(VerificationStatus.USER_VERIFIED, passportNumber.getVerificationStatus());
     }
 
     @Test
@@ -614,10 +629,14 @@ public class EntityEditorModuleTest {
                         .setRecordType(RecordType.LOCAL)
                         .addAttribute(
                                 new AttributeInstance(
-                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
+                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE,
+                                        /* value= */ "Cuba",
+                                        VerificationStatus.NO_STATUS))
                         .addAttribute(
                                 new AttributeInstance(
-                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
+                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE,
+                                        /* value= */ "AA123456",
+                                        VerificationStatus.NO_STATUS))
                         .build();
         showEditorDialog(entity);
 
@@ -659,6 +678,7 @@ public class EntityEditorModuleTest {
         assertEquals(
                 LocalDate.of(2026, 6, 20),
                 ((DateValue) passportIssueDate.getAttributeValue()).getDate());
+        assertEquals(VerificationStatus.USER_VERIFIED, passportIssueDate.getVerificationStatus());
         // The source notice error message must be hidden after successful validation.
         assertTrue(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
         assertFalse(sourceNoticeItem.model.get(NOTICE_VISIBLE));
@@ -673,10 +693,14 @@ public class EntityEditorModuleTest {
                         .setRecordType(RecordType.LOCAL)
                         .addAttribute(
                                 new AttributeInstance(
-                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
+                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE,
+                                        /* value= */ "Cuba",
+                                        VerificationStatus.NO_STATUS))
                         .addAttribute(
                                 new AttributeInstance(
-                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
+                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE,
+                                        /* value= */ "AA123456",
+                                        VerificationStatus.NO_STATUS))
                         .build();
         showEditorDialog(entity);
 
@@ -722,11 +746,10 @@ public class EntityEditorModuleTest {
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         // The name attribute should not be added to the entity because it wasn't set before.
         assertFalse(updatedEntityInstance.hasAttribute(PASSPORT_NAME_ATTRIBUTE_TYPE));
-        assertEquals(
-                new StringValue("BB123456"),
-                updatedEntityInstance
-                        .getAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE)
-                        .getAttributeValue());
+        AttributeInstance passportNumber =
+                updatedEntityInstance.getAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE);
+        assertEquals(new StringValue("BB123456"), passportNumber.getAttributeValue());
+        assertEquals(VerificationStatus.USER_VERIFIED, passportNumber.getVerificationStatus());
         // All error messages must be hidden after validation.
         assertTrue(TextUtils.isEmpty(passportNumberItem.model.get(ERROR_MESSAGE)));
         assertTrue(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
@@ -763,10 +786,14 @@ public class EntityEditorModuleTest {
                         .setRecordType(RecordType.LOCAL)
                         .addAttribute(
                                 new AttributeInstance(
-                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
+                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE,
+                                        /* value= */ "Cuba",
+                                        VerificationStatus.NO_STATUS))
                         .addAttribute(
                                 new AttributeInstance(
-                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
+                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE,
+                                        /* value= */ "AA123456",
+                                        VerificationStatus.NO_STATUS))
                         .build();
         showEditorDialog(entity);
 
@@ -805,9 +832,14 @@ public class EntityEditorModuleTest {
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         // The name attribute should not be added to the entity because it wasn't set before.
         assertTrue(updatedEntityInstance.hasAttribute(PASSPORT_ISSUE_DATE_TYPE));
+        AttributeInstance passportIssueDateAttribute =
+                updatedEntityInstance.getAttribute(PASSPORT_ISSUE_DATE_TYPE);
         assertEquals(
                 new DateValue(LocalDate.of(2026, 2, 15).toString()),
-                updatedEntityInstance.getAttribute(PASSPORT_ISSUE_DATE_TYPE).getAttributeValue());
+                passportIssueDateAttribute.getAttributeValue());
+        assertEquals(
+                VerificationStatus.USER_VERIFIED,
+                passportIssueDateAttribute.getVerificationStatus());
     }
 
     @Test
@@ -860,9 +892,10 @@ public class EntityEditorModuleTest {
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         // The name attribute should not be added to the entity because it wasn't set before.
         assertTrue(updatedEntityInstance.hasAttribute(sVehicleLicensePlateType));
-        assertEquals(
-                new StringValue("AA123456BB"),
-                updatedEntityInstance.getAttribute(sVehicleLicensePlateType).getAttributeValue());
+        AttributeInstance licensePlate =
+                updatedEntityInstance.getAttribute(sVehicleLicensePlateType);
+        assertEquals(new StringValue("AA123456BB"), licensePlate.getAttributeValue());
+        assertEquals(VerificationStatus.USER_VERIFIED, licensePlate.getVerificationStatus());
         // Error messages must be hidden after successful validation.
         assertTrue(TextUtils.isEmpty(vehicleLicensePlate.model.get(ERROR_MESSAGE)));
         assertTrue(TextUtils.isEmpty(vehicleIdentificationNumber.model.get(ERROR_MESSAGE)));
@@ -937,11 +970,10 @@ public class EntityEditorModuleTest {
 
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         assertTrue(updatedEntityInstance.hasAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE));
-        assertEquals(
-                new StringValue("AA123456BB"),
-                updatedEntityInstance
-                        .getAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE)
-                        .getAttributeValue());
+        AttributeInstance passportNumber =
+                updatedEntityInstance.getAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE);
+        assertEquals(new StringValue("AA123456BB"), passportNumber.getAttributeValue());
+        assertEquals(VerificationStatus.USER_VERIFIED, passportNumber.getVerificationStatus());
     }
 
     @Test

@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance.DateValue;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance.StringValue;
 
@@ -172,7 +173,8 @@ public class EntityInstance {
         return mAttributes.containsKey(attributeType);
     }
 
-    public void setAttributeValue(AttributeType attributeType, String value) {
+    public void setAttributeValue(
+            AttributeType attributeType, String value, @VerificationStatus int verificationStatus) {
         switch (attributeType.getDataType()) {
             case DataType.NAME:
             case DataType.STATE:
@@ -180,11 +182,14 @@ public class EntityInstance {
             case DataType.COUNTRY:
                 mAttributes.put(
                         attributeType,
-                        new AttributeInstance(attributeType, new StringValue(value)));
+                        new AttributeInstance(
+                                attributeType, new StringValue(value), verificationStatus));
                 break;
             case DataType.DATE:
                 mAttributes.put(
-                        attributeType, new AttributeInstance(attributeType, new DateValue(value)));
+                        attributeType,
+                        new AttributeInstance(
+                                attributeType, new DateValue(value), verificationStatus));
                 break;
             default:
                 assert false : "Unhandled attribute data type: " + attributeType.getDataType();

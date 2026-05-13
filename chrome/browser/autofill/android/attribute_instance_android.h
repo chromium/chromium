@@ -12,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/autofill/android/attribute_type_android.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -37,10 +38,12 @@ struct AttributeInstanceAndroid {
   explicit AttributeInstanceAndroid(
       const AttributeInstance& attribute_instance);
   AttributeInstanceAndroid(AttributeTypeAndroid attribute_type,
-                           AttributeInstanceAndroidDateType date_value);
+                           AttributeInstanceAndroidDateType date_value,
+                           VerificationStatus verification_status);
 
   AttributeInstanceAndroid(AttributeTypeAndroid attribute_type,
-                           std::u16string string_value);
+                           std::u16string string_value,
+                           VerificationStatus verification_status);
 
   AttributeInstanceAndroid(const AttributeInstanceAndroid&);
   AttributeInstanceAndroid& operator=(const AttributeInstanceAndroid&) =
@@ -55,6 +58,7 @@ struct AttributeInstanceAndroid {
   // For non date types `value` holds a raw string that represents an attribute
   // value, otherwise it holds a `AttributeInstanceAndroidDateType`.
   std::variant<std::u16string, AttributeInstanceAndroidDateType> value;
+  VerificationStatus verification_status;
 };
 
 }  // namespace autofill
