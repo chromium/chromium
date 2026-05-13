@@ -28,8 +28,7 @@ namespace apps {
 // The result of a call to WebAppInstaller::InstallApp. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-// TODO(crbug.com/505096781): Fix mismatch with WebAppInstallResultCode in
-// histograms.xml.
+// LINT.IfChange(WebAppInstallResult)
 enum class WebAppInstallResult {
   // Web app was successfully installed.
   kSuccess = 0,
@@ -49,6 +48,7 @@ enum class WebAppInstallResult {
   kInvalidManifestId = 6,
   kMaxValue = kInvalidManifestId
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/apps/enums.xml:AppInstallServiceWebAppInstallResult)
 
 using WebAppInstalledCallback = base::OnceCallback<void(bool success)>;
 

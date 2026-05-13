@@ -54,6 +54,20 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kInstallUrlFallback"/>
 </enum>
 
+<!-- LINT.IfChange(WebAppInstallResult) -->
+
+<enum name="AppInstallServiceWebAppInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="InvalidManifestUrl"/>
+  <int value="2" label="ManifestNetworkError"/>
+  <int value="3" label="ManifestResponseError"/>
+  <int value="4" label="ManifestResponseEmpty"/>
+  <int value="5" label="WebAppInstallError"/>
+  <int value="6" label="InvalidManifestId"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/apps/app_service/app_install/web_app_installer.h:WebAppInstallResult) -->
+
 <enum name="AppListAppCollections">
   <int value="0" label="Unknown"/>
   <int value="1" label="Essentials"/>
