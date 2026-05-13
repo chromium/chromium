@@ -8755,6 +8755,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
           =1 {Sharing 1 tab}
           other {Sharing # tabs}}
       </message>
+      <message name="IDS_COMPOSE_SHARING_TABS_WITH_GOOGLE" desc="Text for the tooltip above the favicons that show a user is sharing tabs as context.">
+        Sharing tabs with Google
+      </message>
+      <message name="IDS_COMPOSE_ADD_TABS" desc="Label for the row in the Composebox context menu that opens a flyout listing all open tabs to share.">
+        Add tabs
+      </message>
+       <message name="IDS_COMPOSE_CURRENT_TAB" desc="Label for the row in the Composebox context menu flyout that shows the current tab the user has open.">
+        Current tab
+      </message>
       <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_1" desc="Heading of the tab action chip on the NTP." >
         Ask about previous tab
       </message>
