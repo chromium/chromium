@@ -139,8 +139,6 @@ class GlicDragAndDropPolicyTest : public InteractiveGlicApiTest {
         glic_host.GetGuestMainFrame()->GetRenderWidgetHost();
     ASSERT_TRUE(rwh);
 
-    guest_contents->Focus();
-
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return !rwh->GetView()->GetViewBounds().IsEmpty() &&
              !glic_host.webui_contents()
