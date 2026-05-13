@@ -28,19 +28,19 @@ void SendTabToSelfClientService::Shutdown() {
   receiving_ui_handler_.reset();
 }
 
-void SendTabToSelfClientService::SendTabToSelfModelLoaded() {
+void SendTabToSelfClientService::OnSendTabToSelfModelLoaded() {
   // TODO(crbug.com/40621767): Push changes that happened before the model was
   // loaded.
 }
 
-void SendTabToSelfClientService::EntriesAddedRemotely(
+void SendTabToSelfClientService::OnEntriesAddedRemotely(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
   if (receiving_ui_handler_) {
     receiving_ui_handler_->DisplayNewEntries(new_entries);
   }
 }
 
-void SendTabToSelfClientService::EntriesRemovedRemotely(
+void SendTabToSelfClientService::OnEntriesRemovedRemotely(
     const std::vector<std::string>& guids) {
   if (receiving_ui_handler_) {
     receiving_ui_handler_->DismissEntries(guids);

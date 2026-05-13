@@ -376,7 +376,7 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
           guid, GURL(destination_url), title, base::Time(), device_name, guid,
           send_tab_to_self::PageContext(),
           send_tab_to_self::NavigationHistory());
-  GetSharingService()->EntryAddedLocally(&entry);
+  GetSharingService()->OnEntryAddedLocally(&entry);
 }
 
 TEST_F(SharingServiceTest, SendTabEntryAddedLocally_NonIOSDevice) {
@@ -401,7 +401,7 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally_NonIOSDevice) {
           "guid", GURL("https://www.example.com"), "title", base::Time(),
           "device name", guid, send_tab_to_self::PageContext(),
           send_tab_to_self::NavigationHistory());
-  GetSharingService()->EntryAddedLocally(&entry);
+  GetSharingService()->OnEntryAddedLocally(&entry);
 }
 
 TEST_F(SharingServiceTest, DeviceRegistration) {

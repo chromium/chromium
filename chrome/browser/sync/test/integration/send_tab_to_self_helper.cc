@@ -88,17 +88,17 @@ bool SendTabToSelfUrlChecker::IsExitConditionSatisfied(std::ostream* os) {
   return false;
 }
 
-void SendTabToSelfUrlChecker::SendTabToSelfModelLoaded() {
+void SendTabToSelfUrlChecker::OnSendTabToSelfModelLoaded() {
   CheckExitCondition();
 }
 
-void SendTabToSelfUrlChecker::EntriesAddedRemotely(
+void SendTabToSelfUrlChecker::OnEntriesAddedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
         new_entries) {
   CheckExitCondition();
 }
 
-void SendTabToSelfUrlChecker::EntriesRemovedRemotely(
+void SendTabToSelfUrlChecker::OnEntriesRemovedRemotely(
     const std::vector<std::string>& guids_removed) {
   CheckExitCondition();
 }
@@ -128,22 +128,22 @@ bool SendTabToSelfUrlOpenedChecker::IsExitConditionSatisfied(std::ostream* os) {
   return false;
 }
 
-void SendTabToSelfUrlOpenedChecker::SendTabToSelfModelLoaded() {
+void SendTabToSelfUrlOpenedChecker::OnSendTabToSelfModelLoaded() {
   CheckExitCondition();
 }
 
-void SendTabToSelfUrlOpenedChecker::EntriesAddedRemotely(
+void SendTabToSelfUrlOpenedChecker::OnEntriesAddedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
         new_entries) {
   CheckExitCondition();
 }
 
-void SendTabToSelfUrlOpenedChecker::EntriesRemovedRemotely(
+void SendTabToSelfUrlOpenedChecker::OnEntriesRemovedRemotely(
     const std::vector<std::string>& guids_removed) {
   CheckExitCondition();
 }
 
-void SendTabToSelfUrlOpenedChecker::EntriesOpenedRemotely(
+void SendTabToSelfUrlOpenedChecker::OnEntriesOpenedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
         opened_entries) {
   CheckExitCondition();
@@ -194,17 +194,17 @@ bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied(
   return true;
 }
 
-void SendTabToSelfModelEqualityChecker::SendTabToSelfModelLoaded() {
+void SendTabToSelfModelEqualityChecker::OnSendTabToSelfModelLoaded() {
   CheckExitCondition();
 }
 
-void SendTabToSelfModelEqualityChecker::EntriesAddedRemotely(
+void SendTabToSelfModelEqualityChecker::OnEntriesAddedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
         new_entries) {
   CheckExitCondition();
 }
 
-void SendTabToSelfModelEqualityChecker::EntriesRemovedRemotely(
+void SendTabToSelfModelEqualityChecker::OnEntriesRemovedRemotely(
     const std::vector<std::string>& guids_removed) {
   CheckExitCondition();
 }
@@ -223,17 +223,17 @@ bool SendTabToSelfActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
   return service_->GetSendTabToSelfModel()->IsReady();
 }
 
-void SendTabToSelfActiveChecker::SendTabToSelfModelLoaded() {
+void SendTabToSelfActiveChecker::OnSendTabToSelfModelLoaded() {
   CheckExitCondition();
 }
 
-void SendTabToSelfActiveChecker::EntriesAddedRemotely(
+void SendTabToSelfActiveChecker::OnEntriesAddedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
         new_entries) {
   CheckExitCondition();
 }
 
-void SendTabToSelfActiveChecker::EntriesRemovedRemotely(
+void SendTabToSelfActiveChecker::OnEntriesRemovedRemotely(
     const std::vector<std::string>& guids_removed) {
   CheckExitCondition();
 }
@@ -310,17 +310,17 @@ bool SendTabToSelfUrlDeletedChecker::IsExitConditionSatisfied(
   return true;
 }
 
-void SendTabToSelfUrlDeletedChecker::SendTabToSelfModelLoaded() {
+void SendTabToSelfUrlDeletedChecker::OnSendTabToSelfModelLoaded() {
   // This ensures that the URL being inspected is present when the model loads.
   std::ostringstream s;
   DCHECK(!IsExitConditionSatisfied(&s));
 }
 
-void SendTabToSelfUrlDeletedChecker::EntriesAddedRemotely(
+void SendTabToSelfUrlDeletedChecker::OnEntriesAddedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
         new_entries) {}
 
-void SendTabToSelfUrlDeletedChecker::EntriesRemovedRemotely(
+void SendTabToSelfUrlDeletedChecker::OnEntriesRemovedRemotely(
     const std::vector<std::string>& guids_removed) {
   CheckExitCondition();
 }

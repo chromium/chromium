@@ -155,12 +155,13 @@ class SharingService : public KeyedService,
       const;
 
   // SendTabToSelfModelObserver implementation.
-  void EntriesAddedRemotely(
+  void OnEntriesAddedRemotely(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
           new_entries) override {}
-  void EntriesRemovedRemotely(const std::vector<std::string>& guids) override {}
-  void SendTabToSelfModelLoaded() override {}
-  void EntryAddedLocally(
+  void OnEntriesRemovedRemotely(
+      const std::vector<std::string>& guids) override {}
+  void OnSendTabToSelfModelLoaded() override {}
+  void OnEntryAddedLocally(
       const send_tab_to_self::SendTabToSelfEntry* entry) override;
 
  private:

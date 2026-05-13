@@ -53,11 +53,11 @@ class SendTabToSelfUrlChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // SendTabToSelfModelObserver implementation.
-  void SendTabToSelfModelLoaded() override;
-  void EntriesAddedRemotely(
+  void OnSendTabToSelfModelLoaded() override;
+  void OnEntriesAddedRemotely(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
           new_entries) override;
-  void EntriesRemovedRemotely(
+  void OnEntriesRemovedRemotely(
       const std::vector<std::string>& guids_removed) override;
 
  private:
@@ -90,13 +90,13 @@ class SendTabToSelfUrlOpenedChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // SendTabToSelfModelObserver implementation.
-  void SendTabToSelfModelLoaded() override;
-  void EntriesAddedRemotely(
+  void OnSendTabToSelfModelLoaded() override;
+  void OnEntriesAddedRemotely(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
           new_entries) override;
-  void EntriesRemovedRemotely(
+  void OnEntriesRemovedRemotely(
       const std::vector<std::string>& guids_removed) override;
-  void EntriesOpenedRemotely(
+  void OnEntriesOpenedRemotely(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
           opened_entries) override;
 
@@ -131,11 +131,11 @@ class SendTabToSelfModelEqualityChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // SendTabToSelfModelObserver implementation.
-  void SendTabToSelfModelLoaded() override;
-  void EntriesAddedRemotely(
+  void OnSendTabToSelfModelLoaded() override;
+  void OnEntriesAddedRemotely(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
           new_entries) override;
-  void EntriesRemovedRemotely(
+  void OnEntriesRemovedRemotely(
       const std::vector<std::string>& guids_removed) override;
 
  private:
@@ -169,11 +169,11 @@ class SendTabToSelfActiveChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // SendTabToSelfModelObserver implementation.
-  void SendTabToSelfModelLoaded() override;
-  void EntriesAddedRemotely(
+  void OnSendTabToSelfModelLoaded() override;
+  void OnEntriesAddedRemotely(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
           new_entries) override;
-  void EntriesRemovedRemotely(
+  void OnEntriesRemovedRemotely(
       const std::vector<std::string>& guids_removed) override;
 
  private:
@@ -255,11 +255,11 @@ class SendTabToSelfUrlDeletedChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // SendTabToSelfModelObserver implementation.
-  void SendTabToSelfModelLoaded() override;
-  void EntriesAddedRemotely(
+  void OnSendTabToSelfModelLoaded() override;
+  void OnEntriesAddedRemotely(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
           new_entries) override;
-  void EntriesRemovedRemotely(
+  void OnEntriesRemovedRemotely(
       const std::vector<std::string>& guids_removed) override;
 
  private:

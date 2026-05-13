@@ -42,14 +42,14 @@ class SendTabToSelfClientService : public KeyedService,
 
   // Keeps track of when the model is loaded so that updates to the
   // model can be pushed afterwards.
-  void SendTabToSelfModelLoaded() override;
+  void OnSendTabToSelfModelLoaded() override;
   // Updates the UI to reflect the new entries. Calls the handlers
   // registered through ReceivingUIRegistry.
-  void EntriesAddedRemotely(
+  void OnEntriesAddedRemotely(
       const std::vector<const SendTabToSelfEntry*>& new_entries) override;
   // Updates the UI to reflect the removal of entries. Calls the handlers
   // registered through ReceivingUIRegistry.
-  void EntriesRemovedRemotely(const std::vector<std::string>& guids) override;
+  void OnEntriesRemovedRemotely(const std::vector<std::string>& guids) override;
 
   // Returns the registered ReceivingUiHandler.
   ReceivingUiHandler* GetReceivingUiHandler() const;

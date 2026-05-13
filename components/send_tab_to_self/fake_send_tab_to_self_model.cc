@@ -69,7 +69,7 @@ const SendTabToSelfEntry* FakeSendTabToSelfModel::SendEntry(
   }
 
   for (auto& observer : observers_) {
-    observer.EntryAddedLocally(result);
+    observer.OnEntryAddedLocally(result);
   }
 
   if (commit_confirmation) {
@@ -95,7 +95,7 @@ void FakeSendTabToSelfModel::MarkEntryOpened(const std::string& guid) {
   if (it != entries_.end()) {
     it->second->MarkOpened(base::Time::Now());
     for (auto& observer : observers_) {
-      observer.EntriesOpenedRemotely({it->second.get()});
+      observer.OnEntriesOpenedRemotely({it->second.get()});
     }
   }
 }
@@ -159,7 +159,7 @@ const SendTabToSelfEntry* FakeSendTabToSelfModel::AddEntryRemotely(
   entries_[guid] = std::move(entry);
 
   for (auto& observer : observers_) {
-    observer.EntriesAddedRemotely({result});
+    observer.OnEntriesAddedRemotely({result});
   }
 
   return result;

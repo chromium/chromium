@@ -165,9 +165,8 @@ SharingMessageHandler* SharingService::GetSharingHandlerForTesting(
   return handler_registry_->GetSharingHandler(payload_case);
 }
 
-void SharingService::EntryAddedLocally(
+void SharingService::OnEntryAddedLocally(
     const send_tab_to_self::SendTabToSelfEntry* entry) {
-
   std::optional<SharingTargetDeviceInfo> target_device_info =
       GetDeviceByGuid(entry->GetTargetDeviceSyncCacheGuid());
 

@@ -64,17 +64,18 @@ class TestSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
   }
   ~TestSendTabToSelfModelObserver() override = default;
 
-  void EntryAddedLocally(const SendTabToSelfEntry* entry) override {
+  void OnEntryAddedLocally(const SendTabToSelfEntry* entry) override {
     last_added_entry_ = std::make_unique<SendTabToSelfEntry>(*entry);
     if (entry_added_callback_) {
       std::move(entry_added_callback_).Run();
     }
   }
 
-  void EntriesAddedRemotely(
+  void OnEntriesAddedRemotely(
       const std::vector<const SendTabToSelfEntry*>& entries) override {}
-  void EntriesRemovedRemotely(const std::vector<std::string>& guids) override {}
-  void SendTabToSelfModelLoaded() override {}
+  void OnEntriesRemovedRemotely(
+      const std::vector<std::string>& guids) override {}
+  void OnSendTabToSelfModelLoaded() override {}
 
   const SendTabToSelfEntry* last_added_entry() const {
     return last_added_entry_.get();

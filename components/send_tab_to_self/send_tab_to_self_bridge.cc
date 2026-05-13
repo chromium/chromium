@@ -458,7 +458,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
   commit_tracker_->TrackCommit(guid, std::move(commit_confirmation));
 
   for (SendTabToSelfModelObserver& observer : observers_) {
-    observer.EntryAddedLocally(entry.get());
+    observer.OnEntryAddedLocally(entry.get());
   }
 
   const SendTabToSelfEntry* result =
@@ -633,7 +633,7 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryAdded(
   }
 
   for (SendTabToSelfModelObserver& observer : observers_) {
-    observer.EntriesAddedRemotely(new_local_entries);
+    observer.OnEntriesAddedRemotely(new_local_entries);
   }
 
 #if BUILDFLAG(IS_IOS)
@@ -651,7 +651,7 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryDeleted(
   }
 
   for (SendTabToSelfModelObserver& observer : observers_) {
-    observer.EntriesRemovedRemotely(guids);
+    observer.OnEntriesRemovedRemotely(guids);
   }
 }
 
@@ -661,13 +661,13 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryOpened(
     return;
   }
   for (SendTabToSelfModelObserver& observer : observers_) {
-    observer.EntriesOpenedRemotely(opened_entries);
+    observer.OnEntriesOpenedRemotely(opened_entries);
   }
 }
 
 void SendTabToSelfBridge::NotifySendTabToSelfModelLoaded() {
   for (SendTabToSelfModelObserver& observer : observers_) {
-    observer.SendTabToSelfModelLoaded();
+    observer.OnSendTabToSelfModelLoaded();
   }
 }
 

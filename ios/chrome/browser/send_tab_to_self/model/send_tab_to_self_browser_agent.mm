@@ -38,12 +38,12 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
 
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
 
-void SendTabToSelfBrowserAgent::SendTabToSelfModelLoaded() {
+void SendTabToSelfBrowserAgent::OnSendTabToSelfModelLoaded() {
   // TODO(crbug.com/40621767): Push changes that happened before the model was
   // loaded.
 }
 
-void SendTabToSelfBrowserAgent::EntriesAddedRemotely(
+void SendTabToSelfBrowserAgent::OnEntriesAddedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
         new_entries) {
   if (new_entries.empty()) {
@@ -80,7 +80,7 @@ void SendTabToSelfBrowserAgent::EntriesAddedRemotely(
   DisplayInfoBar(web_state, new_entries.back());
 }
 
-void SendTabToSelfBrowserAgent::EntriesRemovedRemotely(
+void SendTabToSelfBrowserAgent::OnEntriesRemovedRemotely(
     const std::vector<std::string>& guids) {
   NOTIMPLEMENTED();
 }
