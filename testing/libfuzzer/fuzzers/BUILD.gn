@@ -15,11 +15,16 @@ group("fuzzers") {
 fuzzer_test("empty_fuzzer") {
   sources = [ "empty_fuzzer.cc" ]
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+
+  # TODO(crbug.com/509668952): Remove this when smoke tests support FuzzTest.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("string_compare_fuzzer") {
   sources = [ "string_compare_fuzzer.cc" ]
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+
+  # TODO(crbug.com/509668952): Remove this when smoke tests support FuzzTest.
   is_fuzztest_compatible = false
 }
 
@@ -30,6 +35,9 @@ fuzzer_test("string_compare_proto_fuzzer") {
     "//third_party/libprotobuf-mutator",
   ]
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("snappy_compress_fuzzer") {
@@ -68,6 +76,9 @@ fuzzer_test("url_parse_proto_fuzzer") {
     "//third_party/libprotobuf-mutator",
     "//url",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("libsrtp_fuzzer") {
@@ -411,6 +422,9 @@ fuzzer_test("javascript_parser_proto_fuzzer") {
     "//v8",
     "//v8:v8_libplatform",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("v8_fully_instrumented_fuzzer") {
@@ -444,6 +458,9 @@ fuzzer_test("skia_image_filter_proto_fuzzer") {
     "//testing/libfuzzer/proto:skia_image_filter_proto",
     "//third_party/libprotobuf-mutator",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 # We build the libyuv_scale_fuzzer both for fuzztest

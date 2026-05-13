@@ -2008,6 +2008,9 @@ if (use_fuzzing_engine_with_lpm) {
       "//third_party/libprotobuf-mutator",
     ]
 
+    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+    is_fuzztest_compatible = false
+
     if (use_blink) {
       deps += [ "//content/test:test_support" ]
     }

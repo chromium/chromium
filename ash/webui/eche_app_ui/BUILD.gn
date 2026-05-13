@@ -326,5 +326,8 @@ if (use_libfuzzer) {
       "//base/test:test_support",
       "//third_party/libprotobuf-mutator",
     ]
+
+    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+    is_fuzztest_compatible = false
   }
 }

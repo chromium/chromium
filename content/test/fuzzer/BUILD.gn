@@ -77,6 +77,9 @@ fuzzer_test("renderer_proto_tree_fuzzer") {
     "//third_party/libprotobuf-mutator",
   ]
 
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
+
   # Increase the memory limit, since the fuzzer exceeds it in Debug builds.
   libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
@@ -397,6 +400,9 @@ fuzzer_test("first_party_set_parser_json_fuzzer") {
   if (is_android) {
     deps += [ "//third_party/icu:icu_assets" ]
   }
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 if (use_fuzzing_engine_with_lpm) {
@@ -410,6 +416,9 @@ if (use_fuzzing_engine_with_lpm) {
     if (is_android) {
       deps += [ "//third_party/icu:icu_assets" ]
     }
+
+    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+    is_fuzztest_compatible = false
   }
 
   fuzzable_proto_library("related_website_sets_proto") {

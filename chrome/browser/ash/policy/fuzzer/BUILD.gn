@@ -43,6 +43,9 @@ if (use_fuzzing_engine_with_lpm) {
       "//components:components_tests_pak",
       "//ui/resources:ui_test_pak_data",
     ]
+
+    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+    is_fuzztest_compatible = false
   }
 
   fuzzable_proto_library("policy_fuzzer_proto") {

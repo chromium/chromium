@@ -58,5 +58,8 @@ if (use_fuzzing_engine_with_lpm) {
       ":generation",
       "//third_party/libprotobuf-mutator",
     ]
+
+    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+    is_fuzztest_compatible = false
   }
 }

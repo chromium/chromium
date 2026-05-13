@@ -262,6 +262,9 @@ if (pdf_enable_v8) {
       }
       include_dirs = [ "//third_party/pdfium" ]
 
+      # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+      is_fuzztest_compatible = false
+
       # Don't build the fuzzer while it isn't actually producing XFA.
       # TODO(metzman): Remove this once the fuzzer actually fuzzes XFA.
       additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]

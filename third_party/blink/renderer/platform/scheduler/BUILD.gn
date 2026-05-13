@@ -333,6 +333,9 @@ fuzzer_test("sequence_manager_fuzzer") {
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/libprotobuf-mutator",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 proto_library("sequence_manager_test_description_proto") {

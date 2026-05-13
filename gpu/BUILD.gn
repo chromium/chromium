@@ -205,6 +205,9 @@ if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
+
+    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+    is_fuzztest_compatible = false
   }
 }
 

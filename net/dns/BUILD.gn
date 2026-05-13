@@ -627,6 +627,9 @@ fuzzer_test("net_dns_host_resolver_cache_fuzzer") {
   if (is_android) {
     deps += [ "//third_party/icu:icu_assets" ]
   }
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("net_dns_https_record_rdata_fuzzer") {

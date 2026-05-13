@@ -221,6 +221,9 @@ fuzzer_test("cast_framer_serialize_fuzzer") {
     "//third_party/libprotobuf-mutator",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("cast_message_util_fuzzer") {
@@ -274,4 +277,7 @@ fuzzer_test("openscreen_message_framer_serialize_fuzzer") {
     "//third_party/libprotobuf-mutator",
     "//third_party/openscreen/src/cast/common:channel",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }

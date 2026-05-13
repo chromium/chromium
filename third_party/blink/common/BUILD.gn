@@ -548,6 +548,9 @@ if (use_fuzzing_engine_with_lpm) {
     if (is_android) {
       deps += [ "//third_party/icu:icu_assets" ]
     }
+
+    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+    is_fuzztest_compatible = false
   }
 
   fuzzer_test("storage_key_string_fuzzer") {

@@ -429,6 +429,23 @@ source_set("fuzztest") {
   testonly = true
 }
 
+# Depend on this if you are a LLVM-style fuzz target but want to be
+# wrapped in a FUZZ_TEST.
+source_set("llvm_wrapper") {
+  deps = [
+    ":init_fuzztest",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl_full",
+  ]
+  sources = [
+    "src/fuzztest/llvm_fuzzer_main.cc",
+    "src/fuzztest/llvm_fuzzer_wrapper.cc",
+  ]
+  public_deps = [ ":fuzztest_internal" ]
+  public_configs = [ ":fuzztest_public_config" ]
+  testonly = true
+}
+
 # Depend on this if you're a test runner executable (or similar)
 # with its own main() but you need to call InitFuzzTest.
 source_set("init_fuzztest") {

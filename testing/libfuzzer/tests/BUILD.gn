@@ -155,4 +155,7 @@ fuzzer_test("stacktrace_test_fuzzer") {
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+
+  # TODO(crbug.com/509668952): Remove this when FuzzTest is supported by tests.
+  is_fuzztest_compatible = false
 }

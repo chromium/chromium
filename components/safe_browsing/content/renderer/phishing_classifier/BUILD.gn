@@ -111,6 +111,9 @@ if (safe_browsing_mode != 0) {
         "//third_party/libprotobuf-mutator",
       ]
       deps += [ "//components/safe_browsing/content/browser:client_side_detection_service" ]
+
+      # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+      is_fuzztest_compatible = false
     }
 
     fuzzable_proto_library("client_side_phishing_fuzzer_proto") {

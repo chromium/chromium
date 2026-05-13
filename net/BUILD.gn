@@ -3802,6 +3802,9 @@ fuzzer_test("disk_cache_lpm_fuzzer") {
     "//net",
     "//third_party/libprotobuf-mutator",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 proto_library("backoff_entry_serializer_fuzzer_input") {
@@ -3822,6 +3825,9 @@ fuzzer_test("net_backoff_entry_serializer_fuzzer") {
     "//testing/libfuzzer/proto:json_proto_converter",
     "//third_party/libprotobuf-mutator",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("net_data_url_fuzzer") {
@@ -3834,7 +3840,8 @@ fuzzer_test("net_data_url_fuzzer") {
   ]
   dict = "data/fuzzer_dictionaries/net_data_url_fuzzer.dict"
 
-  # IsTokenChar() and ToLowerASCII() are surprisingly slow in instrumented builds.
+  # IsTokenChar() and ToLowerASCII() are surprisingly slow in instrumented
+  # builds.
   libfuzzer_options = [ "max_len=100000" ]
 }
 
@@ -3928,6 +3935,9 @@ fuzzer_test("net_base_schemeful_site_fuzzer") {
     "//testing/libfuzzer/proto:url_proto_converter",
     "//third_party/libprotobuf-mutator",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("net_cert_ct_decode_signed_certificate_timestamp_fuzzer") {
@@ -3968,6 +3978,9 @@ fuzzer_test("net_canonical_cookie_fuzzer") {
     "//net",
     "//third_party/libprotobuf-mutator",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("net_cookie_partition_key_fuzzer") {
@@ -4371,6 +4384,9 @@ fuzzer_test("net_reporting_header_parser_fuzzer") {
     "//testing/libfuzzer/proto:json_proto_converter",
     "//third_party/libprotobuf-mutator",
   ]
+
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("net_quic_session_pool_fuzzer") {
