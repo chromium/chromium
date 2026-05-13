@@ -279,6 +279,13 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 
 # --- END Skia roll test suppresions
 
+# ====== START Unbounded Element tests ======
+
+# Virtual suite reference tests should fail:
+virtual/unbounded-element-disabled/wpt_internal/html/rendering/unbounded_element/appearance.html [ Failure ]
+
+# ====== END Unbounded Element tests ======
+
 # Expected to crash: Test removes the browsing context during JS execution.
 external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html [ Crash ]
 

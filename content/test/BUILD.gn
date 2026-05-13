@@ -1738,6 +1738,7 @@ test("content_browsertests") {
     "../browser/renderer_host/spare_render_process_host_manager_browsertest.cc",
     "../browser/renderer_host/speculative_render_view_host_browsertest.cc",
     "../browser/renderer_host/unassigned_site_instance_browsertest.cc",
+    "../browser/renderer_host/unbounded_element_browsertest.cc",
     "../browser/renderer_host/view_transition_browsertest.cc",
     "../browser/resource_loading_browsertest.cc",
     "../browser/screen_details/screen_details_browsertest.cc",
