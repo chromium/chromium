@@ -433,7 +433,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
        /* omnibox buttons are never disabled */
        gfx::kPlaceholderColor});
   if (thumbs_up_button_->GetVisible()) {
-    views::FocusRing::Get(thumbs_up_button_)->SchedulePaint();
+    views::FocusRing::Get(thumbs_up_button_)->Refresh();
   }
 
   views::SetImageFromVectorIconWithColor(
@@ -446,7 +446,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
        /* omnibox buttons are never disabled */
        gfx::kPlaceholderColor});
   if (thumbs_down_button_->GetVisible()) {
-    views::FocusRing::Get(thumbs_down_button_)->SchedulePaint();
+    views::FocusRing::Get(thumbs_down_button_)->Refresh();
   }
 
   views::SetImageFromVectorIconWithColor(
@@ -456,7 +456,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
        /* omnibox buttons are never disabled */
        gfx::kPlaceholderColor});
   if (remove_suggestion_button_->GetVisible()) {
-    views::FocusRing::Get(remove_suggestion_button_)->SchedulePaint();
+    views::FocusRing::Get(remove_suggestion_button_)->Refresh();
   }
 
   const OmniboxPartState state = GetThemeState();
@@ -518,7 +518,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   }
 
   if (suggestion_view_->iph_link_view()->GetVisible()) {
-    views::FocusRing::Get(suggestion_view_->iph_link_view())->SchedulePaint();
+    views::FocusRing::Get(suggestion_view_->iph_link_view())->Refresh();
   }
 }
 

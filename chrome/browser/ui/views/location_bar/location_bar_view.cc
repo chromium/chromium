@@ -1983,7 +1983,7 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
 
   // Update the focus ring visibility.
   if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->SchedulePaint();
+    views::FocusRing::Get(this)->Refresh();
   }
 
   // Notify accessibility that the popup controls changed.
@@ -2084,7 +2084,7 @@ const LocationBarModel* LocationBarView::GetLocationBarModel() const {
 
 void LocationBarView::OnOmniboxFocused() {
   if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->SchedulePaint();
+    views::FocusRing::Get(this)->Refresh();
   }
 
   // Only show hover animation in unfocused steady state.  Since focusing
@@ -2099,7 +2099,7 @@ void LocationBarView::OnOmniboxFocused() {
 
 void LocationBarView::OnOmniboxBlurred() {
   if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->SchedulePaint();
+    views::FocusRing::Get(this)->Refresh();
   }
   RefreshBackground();
 
