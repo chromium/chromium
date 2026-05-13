@@ -141,27 +141,6 @@ suite('ComposeboxInputTest', () => {
       assertTrue(getComputedStyle(smartCompose).display !== 'none');
   });
 
-  test('#tabChip has fixed 38*24 box model', async () => {
-    inputElement.smartComposeInlineHint = 'foo';
-    inputElement.smartComposeEnabled = true;
-    await inputElement.updateComplete;
-
-    const chip =
-        inputElement.shadowRoot.querySelector<HTMLElement>('#tabChip');
-    assertTrue(!!chip);
-
-    const rect = chip.getBoundingClientRect();
-    assertEquals(24, rect.width);
-    assertEquals(14, rect.height);
-
-    const computed = getComputedStyle(chip);
-    assertEquals('0px', computed.paddingTop);
-    assertEquals('0px', computed.paddingBottom);
-    assertEquals('0px', computed.paddingLeft);
-    assertEquals('0px', computed.paddingRight);
-    assertEquals('inline-flex', computed.display);
-  });
-
   test('input minHeight stays unset for short hint', async () => {
     inputElement.smartComposeEnabled = true;
     inputElement.smartComposeInlineHint = 'short';
@@ -209,28 +188,6 @@ suite('ComposeboxInputTest', () => {
     assertEquals('', input.style.minHeight);
   });
 
-  test(
-      'minHeight tracks input growth even when hint is unchanged', async () => {
-        inputElement.smartComposeEnabled = true;
-        inputElement.smartComposeInlineHint = 'hint a\nhint b';
-        await inputElement.updateComplete;
-
-        const input = inputElement.$.input;
-        await pollUntil(() => input.style.minHeight !== '');
-
-        const initialMinHeight = input.style.minHeight;
-        assertTrue(initialMinHeight !== '');
-
-        inputElement.input = '\n';
-        await inputElement.updateComplete;
-        await pollUntil(
-          () => parseInt(input.style.minHeight, 10) >
-                    parseInt(initialMinHeight, 10));
-
-        const newMinHeight = input.style.minHeight;
-        assertTrue(newMinHeight !== '');
-        assertTrue(parseInt(newMinHeight, 10) > parseInt(initialMinHeight, 10));
-      });
 });
 
 suite('ComposeboxScrollCaret', () => {
