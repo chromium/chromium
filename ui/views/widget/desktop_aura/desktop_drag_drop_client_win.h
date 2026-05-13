@@ -61,8 +61,6 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   }
 
  private:
-  bool drag_drop_in_progress_;
-
   Microsoft::WRL::ComPtr<ui::DragSourceWin> drag_source_;
 
   scoped_refptr<DesktopDropTargetWin> drop_target_;
