@@ -73,6 +73,12 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
 
     bool tracing_enabled() const { return tracing_enabled_; }
     ConsumerHost* host() const { return host_; }
+    const std::string& unique_session_name() const {
+      return unique_session_name_;
+    }
+    bool privacy_filtering_enabled() const {
+      return privacy_filtering_enabled_;
+    }
 
     // Called by TracingService.
     void OnActiveServicePidAdded(base::ProcessId pid);
@@ -102,6 +108,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
     const raw_ptr<ConsumerHost> host_;
     mojo::Remote<mojom::TracingSessionClient> tracing_session_client_;
     mojo::Receiver<mojom::TracingSessionHost> receiver_;
+    std::string unique_session_name_;
     bool privacy_filtering_enabled_ = false;
     bool convert_to_legacy_json_ = false;
     base::SequenceBound<StreamWriter> read_buffers_stream_writer_;
@@ -155,7 +162,6 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
       mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
       mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
       const base::UnguessableToken& uuid,
-      bool privacy_filtering_enabled,
       CloneSessionCallback callback) override;
 
   // perfetto::Consumer implementation.

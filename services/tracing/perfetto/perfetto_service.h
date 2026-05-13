@@ -52,6 +52,7 @@ class PerfettoService : public mojom::PerfettoService {
       uint64_t shared_memory_buffer_page_size_bytes) override;
 
   perfetto::TracingService* GetService() const;
+  bool GetSessionPrivacyFilteringEnabled(const std::string& session_name) const;
 
   // Called when a ConsumerHost::TracingSession is created/destroyed (i.e. when
   // a consumer starts/finishes tracing.

@@ -95,6 +95,16 @@ perfetto::TracingService* PerfettoService::GetService() const {
   return service_.get();
 }
 
+bool PerfettoService::GetSessionPrivacyFilteringEnabled(
+    const std::string& session_name) const {
+  for (ConsumerHost::TracingSession* session : tracing_sessions_) {
+    if (session->unique_session_name() == session_name) {
+      return session->privacy_filtering_enabled();
+    }
+  }
+  return false;
+}
+
 void PerfettoService::BindReceiver(
     mojo::PendingReceiver<mojom::PerfettoService> receiver,
     uint32_t pid) {

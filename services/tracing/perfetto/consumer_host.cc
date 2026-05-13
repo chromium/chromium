@@ -171,6 +171,7 @@ ConsumerHost::TracingSession::TracingSession(
                      std::move(tracing_session_host),
                      std::move(tracing_session_client),
                      false) {
+  unique_session_name_ = trace_config.unique_session_name();
   privacy_filtering_enabled_ = false;
   for (const auto& data_source : trace_config.data_sources()) {
     if (data_source.config().chrome_config().privacy_filtering_enabled()) {
@@ -606,14 +607,16 @@ void ConsumerHost::CloneSession(
     mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
     mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
     const base::UnguessableToken& uuid,
-    bool privacy_filtering_enabled,
     CloneSessionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!tracing_session_);
 
+  bool host_privacy_filtering_enabled =
+      service_->GetSessionPrivacyFilteringEnabled(uuid.ToString());
+
   tracing_session_ = std::make_unique<TracingSession>(
       this, std::move(tracing_session_host), std::move(tracing_session_client),
-      privacy_filtering_enabled);
+      host_privacy_filtering_enabled);
   tracing_session_->CloneSession(uuid, std::move(callback));
 }
 

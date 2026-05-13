@@ -518,16 +518,9 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
       });
     }
 
-    bool privacy_filtering_enabled = false;
-    for (const auto& data_source : trace_config_.data_sources()) {
-      if (data_source.config().chrome_config().privacy_filtering_enabled()) {
-        privacy_filtering_enabled = true;
-      }
-    }
     consumer_host_->CloneSession(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
         tracing_session_client_.BindNewPipeAndPassRemote(), *uuid,
-        privacy_filtering_enabled,
         base::BindOnce(
             [](ConsumerEndpoint* endpoint, bool success,
                const std::string& error, const base::Token& uuid) {
