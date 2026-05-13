@@ -340,4 +340,9 @@ bool IsAffixFormatStringEnabledForType(FieldType type) {
   NOTREACHED();
 }
 
+bool IsAffixFormatStringEnabledForType(AttributeType type) {
+  std::optional<FieldType> field_type = type.field_type();
+  return field_type && IsAffixFormatStringEnabledForType(*field_type);
+}
+
 }  // namespace autofill

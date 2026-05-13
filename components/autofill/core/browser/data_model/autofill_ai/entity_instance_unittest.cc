@@ -186,26 +186,44 @@ TEST_P(AutofillEntityInstanceTest, Attributes_StructuredName) {
   EXPECT_EQ(GetInfo(passport_name, NAME_LAST), u"Name");
 }
 
-// Tests that AttributeInstance honors the affix formats.
+// Tests that AttributeInstance honors the affix formats (only) for
+// identification numbers.
 TEST_P(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
   auto from_affix = [](std::u16string fs) {
     return AutofillFormatString(std::move(fs), FormatString_Type_AFFIX);
   };
 
-  AttributeInstance passport_number((AttributeType(kPassportNumber)));
-  passport_number.SetInfo(PASSPORT_NUMBER, u"LR0123456",
-                          /*app_locale=*/"", /*format_string=*/std::nullopt,
-                          VerificationStatus::kObserved);
-  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER), u"LR0123456");
-  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
-                    {.format_string = from_affix(u"0")}),
-            u"LR0123456");
-  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
-                    {.format_string = from_affix(u"4")}),
-            u"LR01");
-  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
-                    {.format_string = from_affix(u"-4")}),
-            u"3456");
+  {
+    AttributeInstance passport_number((AttributeType(kPassportNumber)));
+    passport_number.SetInfo(PASSPORT_NUMBER, u"LR0123456",
+                            /*app_locale=*/"", /*format_string=*/std::nullopt,
+                            VerificationStatus::kObserved);
+    EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER), u"LR0123456");
+    EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
+                      {.format_string = from_affix(u"0")}),
+              u"LR0123456");
+    EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
+                      {.format_string = from_affix(u"4")}),
+              u"LR01");
+    EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
+                      {.format_string = from_affix(u"-4")}),
+              u"3456");
+  }
+
+  {
+    // A non-identification-number attribute must ignore the affix format
+    // string.
+    AttributeInstance vehicle_make((AttributeType(kVehicleMake)));
+    vehicle_make.SetInfo(VEHICLE_MAKE, u"Mercedes", /*app_locale=*/"",
+                         /*format_string=*/std::nullopt,
+                         VerificationStatus::kObserved);
+    EXPECT_EQ(GetInfo(vehicle_make, VEHICLE_MAKE,
+                      {.format_string = from_affix(u"-4")}),
+              u"Mercedes");
+    EXPECT_EQ(GetInfo(vehicle_make, PASSPORT_NUMBER,
+                      {.format_string = from_affix(u"-4")}),
+              u"Mercedes");
+  }
 }
 
 // Tests that AttributeInstance appropriately manages dates.
@@ -251,25 +269,14 @@ TEST_P(AutofillEntityInstanceTest, AttributesFlightFormat) {
   }
 
   {
-    // A mal-formed flight number.
-    AttributeInstance flight_number(
-        (AttributeType(kFlightReservationFlightNumber)));
-    flight_number.SetInfo(
-        FLIGHT_RESERVATION_FLIGHT_NUMBER, u"AA", /*app_locale*/ "",
-        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
-    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER), u"AA");
-    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+    // A non-flight attribute must ignore the format string.
+    AttributeInstance vehicle_make((AttributeType(kVehicleMake)));
+    vehicle_make.SetInfo(VEHICLE_MAKE, u"Mercedes", /*app_locale=*/"",
+                         /*format_string=*/std::nullopt,
+                         VerificationStatus::kObserved);
+    EXPECT_EQ(GetInfo(vehicle_make, FLIGHT_RESERVATION_FLIGHT_NUMBER,
                       {.format_string = from_flight_number(u"A")}),
-              u"AA");
-    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
-                      {.format_string = from_flight_number(u"N")}),
-              u"AA");
-    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
-                      {.format_string = from_flight_number(u"F")}),
-              u"AA");
-    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
-                      {.format_string = from_flight_number(u"F")}),
-              u"AA");
+              u"Mercedes");
   }
 }
 

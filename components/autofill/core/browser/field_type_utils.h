@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_
 
 #include "base/notreached.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
@@ -39,8 +40,10 @@ bool IsAlternativeNameType(FieldType type);
 // Indicates whether the FieldType's domain are dates (year, month, day).
 bool IsDateFieldType(FieldType field_type);
 
-// Returns true for FieldTypes like PASSPORT_NUMBER.
+// Returns true for FieldTypes and AttributeTypes for which websites commonly
+// ask for a prefix or suffix only.
 bool IsAffixFormatStringEnabledForType(FieldType type);
+bool IsAffixFormatStringEnabledForType(AttributeType type);
 
 constexpr bool IsAddressType(FieldType type) {
   switch (GroupTypeOfFieldType(type)) {

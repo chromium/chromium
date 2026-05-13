@@ -77,7 +77,7 @@ std::optional<size_t> DetermineSuffixLength(const AttributeInstance& a1,
   return length ? std::make_optional(length) : std::nullopt;
 }
 
-// Returns `s` in the demanded `format`. See `data_util::IsValidDateFormat` for
+// Returns `s` in the demanded `format`. See `data_util::IsValidAffixFormat` for
 // the valid `format` values.
 std::u16string FormatAffix(std::u16string s, std::u16string_view format) {
   // We parse the leading minus here rather than using `base::StringToInt()` to
@@ -124,6 +124,7 @@ std::u16string FormatFlightNumber(std::u16string s,
 
 std::u16string Format(
     std::u16string s,
+    FieldType type,
     base::optional_ref<const AutofillFormatString> format_string) {
   if (!format_string) {
     return s;
@@ -131,8 +132,14 @@ std::u16string Format(
 
   switch (format_string->type) {
     case FormatString_Type_AFFIX:
+      if (!IsAffixFormatStringEnabledForType(type)) {
+        break;
+      }
       return FormatAffix(std::move(s), format_string->value);
     case FormatString_Type_FLIGHT_NUMBER:
+      if (type != FLIGHT_RESERVATION_FLIGHT_NUMBER) {
+        break;
+      }
       return FormatFlightNumber(std::move(s), format_string->value);
     case FormatString_Type_DATE:
     case FormatString_Type_ICU_DATE:
@@ -199,7 +206,8 @@ std::u16string AttributeInstance::GetInfo(
                      [&](const NameInfo&) { return GetRawInfo(field_type); },
                      [&](const StateInfo&) { return GetRawInfo(field_type); },
                      [&](const std::u16string&) {
-                       return Format(GetRawInfo(field_type), format_string);
+                       return Format(GetRawInfo(field_type), field_type,
+                                     format_string);
                      }},
       info_);
 }
