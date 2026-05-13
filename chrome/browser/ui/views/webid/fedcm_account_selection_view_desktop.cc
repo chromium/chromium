@@ -1441,6 +1441,7 @@ void FedCmAccountSelectionView::ResetDialogWidgetStateOnAnyShow() {
   hide_dialog_widget_after_idp_login_popup_ = false;
   chip_impression_recorded_ = false;
   icon_impression_recorded_ = false;
+  chip_requested_for_flow_ = false;
 }
 
 gfx::Rect FedCmAccountSelectionView::GetDialogBounds() {
@@ -1552,6 +1553,7 @@ bool FedCmAccountSelectionView::ShowPageAction(
   // Registers this class as an observer of the page action, so that we can
   // determine the state of the page action when the user clicks on it.
   RegisterAsPageActionObserver(*controller);
+  chip_requested_for_flow_ = true;
   controller->Show(kActionFederation);
   controller->ShowSuggestionChip(kActionFederation);
   return true;
@@ -1574,6 +1576,13 @@ void FedCmAccountSelectionView::OnPageActionIconShown(
   if (icon_impression_recorded_) {
     return;
   }
+  // If we requested the page action to be shown as a chip, we ignore this
+  // initial icon shown notification because the UI is supposed to show a
+  // suggestion chip. We will log the icon impression later if and when the chip
+  // collapses.
+  if (chip_requested_for_flow_) {
+    return;
+  }
   icon_impression_recorded_ = true;
   RecordPageActionImpression(next, AmbientImpression::kSignInIcon,
                              AmbientImpression::kSignUpIcon);
@@ -1587,6 +1596,17 @@ void FedCmAccountSelectionView::OnPageActionChipShown(
   chip_impression_recorded_ = true;
   RecordPageActionImpression(next, AmbientImpression::kSignInChip,
                              AmbientImpression::kSignUpChip);
+}
+
+void FedCmAccountSelectionView::OnPageActionChipHidden(
+    const page_actions::PageActionState& next) {
+  // If the chip is hidden, but the icon is still showing, then it has collapsed
+  // to a static icon. This is when the user actually sees it as an icon.
+  if (next.showing && !icon_impression_recorded_) {
+    icon_impression_recorded_ = true;
+    RecordPageActionImpression(next, AmbientImpression::kSignInIcon,
+                               AmbientImpression::kSignUpIcon);
+  }
 }
 
 void FedCmAccountSelectionView::OnPageActionAnchoredMessageShown(
