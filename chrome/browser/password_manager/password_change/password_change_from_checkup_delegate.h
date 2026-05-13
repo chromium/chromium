@@ -30,6 +30,7 @@ class PasswordManagerClient;
 }  // namespace password_manager
 
 namespace glic {
+class GlicInstance;
 class GlicKeyedService;
 }
 
@@ -80,6 +81,8 @@ class PasswordChangeFromCheckupDelegate {
   base::WeakPtr<content::WebContents> originator_;
   raw_ptr<password_manager::PasswordManagerClient> client_;
   base::WeakPtr<content::WebContents> actuation_web_contents_;
+
+  base::WeakPtr<glic::GlicInstance> glic_instance_;
 
   std::u16string username_;
   std::u16string current_password_;

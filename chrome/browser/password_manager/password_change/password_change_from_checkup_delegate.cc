@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
@@ -266,7 +267,7 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
       glic::mojom::InvocationSource::kPasswordChange);
   options.prompts.push_back(std::move(reach_form_prompt));
   options.target.actuation_target = glic::mojom::ActuationTarget::kCurrentTab;
-  glic_service->InvokeWithAutoSubmit(
+  glic_instance_ = glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
       std::move(options));
 
@@ -559,9 +560,16 @@ void PasswordChangeFromCheckupDelegate::InvokeVerificationFlow(
     return;
   }
 
+  std::string conversation_id;
+  if (glic_instance_ && glic_instance_->conversation_id()) {
+    conversation_id = *glic_instance_->conversation_id();
+  }
+  glic::Target target =
+      conversation_id.empty()
+          ? glic::Target(tab_interface, glic::NewConversation())
+          : glic::Target(tab_interface, glic::ConversationId(conversation_id));
   glic::GlicInvokeOptions options(
-      glic::Target(tab_interface, glic::NewConversation()),
-      glic::mojom::InvocationSource::kPasswordChange);
+      std::move(target), glic::mojom::InvocationSource::kPasswordChange);
   options.prompts.push_back(std::move(post_submission_prompt));
   options.target.actuation_target = glic::mojom::ActuationTarget::kCurrentTab;
   glic_service->InvokeWithAutoSubmit(
