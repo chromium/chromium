@@ -9,8 +9,11 @@ export class AudioProcessorService {
   private mediaStream: MediaStream|null = null;
   private microphoneSource: MediaStreamAudioSourceNode|null = null;
 
-  private lowEndClip = 4;
-  private highEndClip = 4;
+  // Number of buckets to clip useless audio from low end and high end of
+  // frequency spectrum. See comments on `startMonitoringLevels()` for more
+  // details on frequency range cutoffs and bucket calculations.
+  private lowEndClip = 6;
+  private highEndClip = 128;
 
   // Returning a boolean lets the UI know if it actually worked
   async startMonitoringLevels(): Promise<boolean> {
@@ -41,15 +44,18 @@ export class AudioProcessorService {
 
       // Fast Fourier Transform - higher means more detail, but slower
       // calculations.
-      this.analyser.fftSize = 256;
+      this.analyser.fftSize = 1024;
       this.analyser.smoothingTimeConstant = 0.2;
 
-      // FrequencyBinCount is half of fftSize, so 16 in this case. 16000Hz
-      // (human hearing range) is used by browser. Each bucket is 500 Hz. Bucket
-      // [0, 4): low frequencies (just noise, so will be clipped) Bucket [4,
-      // 12): frequencies commonly associated with human voice
-      //   (will be used); 2000Hz to 6000Hz.
-      // Bucket [12, 16): high frequencies (just noise, so will be clipped)
+      // frequencyBinCount is half of fftSize, so 512 in this case.
+      // Assuming a 16000Hz sample rate, the maximum measurable frequency
+      // is 8000Hz.  Each bucket represents 15.625 Hz (8000Hz / 512).
+      //   Bucket [0, 6): low frequencies (0 to ~93Hz; rumble, so will be
+      //   clipped).
+      //   Bucket [6, 384): frequencies containing human voice (up to 6000Hz;
+      //   will be used).
+      //   Bucket [384, 512): high frequencies (6000Hz to 8000Hz; noise,
+      //   so it will be clipped).
       const bucketSize = this.analyser.frequencyBinCount;
       // Speech webkit requires data structure of values from 0-255.
       this.levels = new Uint8Array(bucketSize);
@@ -70,7 +76,8 @@ export class AudioProcessorService {
     }
     this.analyser.getByteFrequencyData(this.levels);
 
-    // Clip unusable low and high frequencies that are often just noise.
+    // Clip unusable low and high frequencies that are often just noise (like HPF/LPF).
+    // See comments on startMonitoringLevels()` for frequency range details.
     const usableLevels = this.levels.slice(
         this.lowEndClip,
         this.levels.length - this.highEndClip,
