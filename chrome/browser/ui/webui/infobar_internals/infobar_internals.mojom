@@ -7,6 +7,9 @@ module infobar_internals.mojom;
 // Types for every infobar that can be triggered from the internals page.
 // Keep these sorted alphabetically.
 enum InfoBarType {
+  // Collected cookies infobar.
+  kCollectedCookies,
+
   // Default browser infobar. Can only be triggered on non-ChromeOS desktop
   // platforms.
   [EnableIf=is_win|is_mac|is_linux]

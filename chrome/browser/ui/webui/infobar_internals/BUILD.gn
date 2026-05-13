@@ -57,6 +57,7 @@ source_set("impl") {
     "//chrome/browser/devtools",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/infobar_internals:resources",
+    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//components/infobars/content",
     "//content/public/browser",
