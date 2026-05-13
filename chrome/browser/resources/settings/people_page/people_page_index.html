@@ -32,11 +32,14 @@
          data-parent-view-id="parent" prefs="{{prefs}}"
          route-path$="[[routes_.ACCOUNT.path]]">
      </settings-account-page>
+   </template>
+</if>
 
+   <template is="dom-if" if="[[replaceSyncPromosWithSignInPromos_]]"
+      restamp>
      <settings-google-services-page slot="view" id="googleServices"
          data-parent-view-id="parent" prefs="{{prefs}}"
          route-path$="[[routes_.GOOGLE_SERVICES.path]]">
      </settings-google-services-page>
    </template>
-</if>
 </cr-view-manager>

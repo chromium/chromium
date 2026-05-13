@@ -106,7 +106,6 @@ suite('PeoplePageIndex', function() {
     assertFalse(result.wasClearSearch);
   });
 
-  // <if expr="not is_chromeos">
   test('RoutingWithReplaceSyncPromosWithSignInPromos', async function() {
     loadTimeData.overrideValues({
       replaceSyncPromosWithSignInPromos: true,
@@ -114,9 +113,11 @@ suite('PeoplePageIndex', function() {
     resetRouterForTesting();
     await createPeoplePageIndex();
 
+    // <if expr="not is_chromeos">
     Router.getInstance().navigateTo(routes.ACCOUNT);
     await microtasksFinished();
     assertActiveView('account');
+    // </if>
 
     Router.getInstance().navigateTo(routes.GOOGLE_SERVICES);
     await microtasksFinished();
@@ -134,7 +135,9 @@ suite('PeoplePageIndex', function() {
         await createPeoplePageIndex();
 
         const childViewsId = [
+          // <if expr="not is_chromeos">
           'account',
+          // </if>
           'googleServices',
         ];
         for (const id of childViewsId) {
@@ -154,7 +157,12 @@ suite('PeoplePageIndex', function() {
     // and `/googleServices`.
     const result = await index.searchContents('google');
     assertFalse(result.canceled);
+    // <if expr="not is_chromeos">
     assertTrue(result.matchCount >= 2);
+    // </if>
+    // <if expr="is_chromeos">
+    assertTrue(result.matchCount >= 1);
+    // </if>
     assertFalse(result.wasClearSearch);
   });
 
@@ -179,5 +187,4 @@ suite('PeoplePageIndex', function() {
         assertFalse(result.canceled);
         assertFalse(result.wasClearSearch);
       });
-  // </if>
 });

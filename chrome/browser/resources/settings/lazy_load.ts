@@ -97,9 +97,9 @@ import './site_settings/zoom_levels.js';
 import './a11y_page/live_caption.js';
 import './people_page/import_data_dialog.js';
 import './people_page/account_page.js';
-import './people_page/google_services_page.js';
 import './people_page/manage_profile.js';
 // </if>
+import './people_page/google_services_page.js';
 import './people_page/signout_dialog.js';
 import './people_page/sync_controls_page.js';
 import './people_page/sync_page.js';
@@ -215,6 +215,7 @@ export {DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_prox
 export type {DownloadsBrowserProxy} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
 export {SettingsGlicLoginPermissionsPageElement} from './glic_page/glic_login_permissions_page.js';
+export {SettingsGoogleServicesPageElement} from './people_page/google_services_page.js';
 // <if expr="not is_chromeos">
 export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_dialog.js';
 // <if expr="not is_macosx">
@@ -230,7 +231,6 @@ export type {LanguageHelper, LanguagesModel} from './languages_page/languages_ty
 export {SettingsSpellCheckPageElement} from './languages_page/spell_check_page.js';
 export {SettingsTranslatePageElement} from './languages_page/translate_page.js';
 export {SettingsAccountPageElement} from './people_page/account_page.js';
-export {SettingsGoogleServicesPageElement} from './people_page/google_services_page.js';
 export {ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export type {BrowserProfile, ImportDataBrowserProxy} from './people_page/import_data_browser_proxy.js';
 export {SettingsImportDataDialogElement} from './people_page/import_data_dialog.js';

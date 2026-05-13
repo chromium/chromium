@@ -503,6 +503,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     if (routes.SYNC) {
       map.set(routes.SYNC.path, '#sync-setup');
     }
+    if (routes.GOOGLE_SERVICES) {
+      map.set(routes.GOOGLE_SERVICES.path, '#google-services');
+    }
     // <if expr="not is_chromeos">
     if (routes.MANAGE_PROFILE) {
       map.set(
@@ -514,9 +517,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     if (routes.ACCOUNT) {
       map.set(routes.ACCOUNT.path, '#account-subpage-row');
     }
-    if (routes.GOOGLE_SERVICES) {
-      map.set(routes.GOOGLE_SERVICES.path, '#google-services');
-    }
     // </if>
     return map;
   }
@@ -524,9 +524,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   // SettingsViewMixin implementation.
   override getAssociatedControlFor(childViewId: string): HTMLElement {
     const ids = [
-      'sync', 'syncControls',
+      'sync', 'syncControls', 'googleServices',
       // <if expr="not is_chromeos">
-      'manageProfile', 'account', 'googleServices',
+      'manageProfile', 'account',
       // </if>
     ];
     assert(ids.includes(childViewId));
@@ -537,6 +537,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       case 'syncControls':
         triggerId = 'sync-setup';
         break;
+      case 'googleServices':
+        assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
+        triggerId = 'google-services';
+        break;
       // <if expr="not is_chromeos">
       case 'manageProfile':
         triggerId = this.signinAllowed_ ? 'edit-profile' : 'profile-row';
@@ -545,11 +549,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
         triggerId = 'account-subpage-row';
         break;
-      case 'googleServices':
-        assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
-        triggerId = 'google-services';
-        break;
-        // </if>
+      // </if>
       default:
         assertNotReached();
     }
