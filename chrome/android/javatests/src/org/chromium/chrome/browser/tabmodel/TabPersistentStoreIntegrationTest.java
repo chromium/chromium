@@ -49,7 +49,6 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID})
 @DisableFeatures({ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY})
 @Batch(Batch.PER_CLASS)
 public class TabPersistentStoreIntegrationTest {

@@ -19,11 +19,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-
 #if BUILDFLAG(IS_ANDROID)
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
@@ -274,9 +271,6 @@ class PageLiveStateDecoratorHelperTabsTest
 };
 
 TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chrome::android::kProcessRankPolicyAndroid);
   auto helper = std::make_unique<PageLiveStateDecoratorHelper>();
   TestTabModel tab_model(profile());
   TabModelList::AddTabModel(&tab_model);
@@ -326,9 +320,6 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
 }
 
 TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabAfterRemoved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chrome::android::kProcessRankPolicyAndroid);
   auto helper = std::make_unique<PageLiveStateDecoratorHelper>();
   TestTabModel tab_model(profile());
   TabModelList::AddTabModel(&tab_model);
@@ -383,9 +374,6 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabAfterRemoved) {
 }
 
 TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabWithMultipleTabModels) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chrome::android::kProcessRankPolicyAndroid);
   auto helper = std::make_unique<PageLiveStateDecoratorHelper>();
   TestTabModel tab_model1(profile());
   TestTabModel tab_model2(profile());
@@ -448,9 +436,6 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabWithMultipleTabModels) {
 
 TEST_F(PageLiveStateDecoratorHelperTabsTest,
        ActiveTabTrackerAfterTabModelRemoved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chrome::android::kProcessRankPolicyAndroid);
   auto helper = std::make_unique<PageLiveStateDecoratorHelper>();
   TestTabModel tab_model(profile());
   TabModelList::AddTabModel(&tab_model);

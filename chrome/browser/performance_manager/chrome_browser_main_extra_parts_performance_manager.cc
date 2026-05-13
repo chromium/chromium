@@ -266,12 +266,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kProcessRankPolicyAndroid)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::ProcessRankPolicyAndroid>());
-  }
+  graph->PassToGraph(
+      std::make_unique<
+          performance_manager::policies::ProcessRankPolicyAndroid>());
 
   if (base::FeatureList::IsEnabled(
           chrome::android::kDiscardPageWithCrashedSubframePolicy)) {

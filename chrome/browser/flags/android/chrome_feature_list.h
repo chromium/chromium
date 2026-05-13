@@ -239,7 +239,6 @@ BASE_DECLARE_FEATURE(kPersistAcrossRebootsDebugLogs);
 BASE_DECLARE_FEATURE(kPowerSavingModeBroadcastReceiverInBackground);
 BASE_DECLARE_FEATURE(kPreconnectOnTabCreation);
 BASE_DECLARE_FEATURE(kPriceChangeModule);
-BASE_DECLARE_FEATURE(kProcessRankPolicyAndroid);
 BASE_DECLARE_FEATURE(kProtectRecentlyVisibleTab);
 BASE_DECLARE_FEATURE(kProtectedTabsAndroid);
 BASE_DECLARE_FEATURE(kPwaRestoreUi);

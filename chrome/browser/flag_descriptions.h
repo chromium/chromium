@@ -5870,18 +5870,12 @@ inline constexpr char kPCCTMinimumHeightDescription[] =
     "When enabled, this sets the minimum "
     "height to 30% or 220dp, whichever is greater, for ephemeral pCCTs.";
 
-inline constexpr char kProcessRankPolicyAndroidName[] =
-    "Enable performance manager rank policy for Android";
-inline constexpr char kProcessRankPolicyAndroidDescription[] =
-    "Enables performance manager ranking policy to update memory priority of "
-    "renderer processes";
 
 inline constexpr char kProtectedTabsAndroidName[] =
     "Enable protected tab for Android";
 inline constexpr char kProtectedTabsAndroidDescription[] =
     "Ensures that renderer processes for protected tabs will be killed after "
-    "other discard-eligible tabs. Requires #process-rank-policy-android to "
-    "also be enabled";
+    "other discard-eligible tabs.";
 inline constexpr char kReaderModeBlurTransitionAnimationName[] =
     "Reader Mode blur transition animation";
 inline constexpr char kReaderModeBlurTransitionAnimationDescription[] =

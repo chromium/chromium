@@ -573,7 +573,6 @@ public abstract class ChromeFeatureList {
     public static final String PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION =
             "PrivacySandboxAdPrivacyUxDeprecation";
     public static final String PRIVACY_SANDBOX_SETTINGS_4 = "PrivacySandboxSettings4";
-    public static final String PROCESS_RANK_POLICY_ANDROID = "ProcessRankPolicyAndroid";
     public static final String PROTECT_RECENTLY_VISIBLE_TAB = "ProtectRecentlyVisibleTab";
     public static final String PUSH_MESSAGING_DISALLOW_SENDER_IDS =
             "PushMessagingDisallowSenderIDs";

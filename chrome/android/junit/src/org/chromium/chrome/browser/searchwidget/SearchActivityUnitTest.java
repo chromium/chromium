@@ -98,7 +98,6 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({
-    ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID,
     ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES
 })
 public class SearchActivityUnitTest {

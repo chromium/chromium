@@ -10085,11 +10085,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"process-rank-policy-android",
-     flag_descriptions::kProcessRankPolicyAndroidName,
-     flag_descriptions::kProcessRankPolicyAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kProcessRankPolicyAndroid)},
-
     {"protected-tabs-android", flag_descriptions::kProtectedTabsAndroidName,
      flag_descriptions::kProtectedTabsAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kProtectedTabsAndroid)},

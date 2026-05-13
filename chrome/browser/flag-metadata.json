@@ -7832,15 +7832,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "process-rank-policy-android",
-    "owners": [
-      "kawasin@google.com",
-      "davidriley@google.com",
-      "baseos-perf@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "profile-creation-decline-signin-cta-experiment",
     "owners": [ "saskekun@google.com", "chrome-signin-desktop-team@google.com" ],
     "expiry_milestone": 150

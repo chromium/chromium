@@ -186,7 +186,6 @@ import org.chromium.chrome.browser.stylus_handwriting.StylusWritingCoordinator;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabImportanceManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -255,7 +254,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webxr.XrDelegateProvider;
-import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.DeviceUtils;
@@ -1780,19 +1778,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        if (mNativeInitialized
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY)) {
-            ChildProcessLauncherHelper.setIgnoreMainFrameVisibilityForImportance();
-            Tab currentTab = getTabModelSelector().getCurrentTab();
-            if (currentTab != null) {
-                if (isTopResumedActivity) {
-                    TabImportanceManager.setImportance(
-                            currentTab, ChildProcessImportance.IMPORTANT);
-                } else {
-                    TabImportanceManager.setImportance(currentTab, ChildProcessImportance.MODERATE);
-                }
-            }
-        }
         super.onTopResumedActivityChanged(isTopResumedActivity);
         WindowAndroid windowAndroid = getWindowAndroid();
         if (windowAndroid != null) {
@@ -2176,9 +2161,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         super.finishNativeInitialization();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID)) {
-            ChildProcessLauncherHelper.setIgnoreMainFrameVisibilityForImportance();
-        }
+        ChildProcessLauncherHelper.setIgnoreMainFrameVisibilityForImportance();
 
         getProfileProviderSupplier().runSyncOrOnAvailable(this::initializeManualFillingComponent);
 

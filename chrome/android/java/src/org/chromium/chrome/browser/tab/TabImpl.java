@@ -101,7 +101,6 @@ import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -264,12 +263,6 @@ class TabImpl implements Tab {
     /** Called when the current window's occlusion changes. */
     private final Callback<Boolean> mOcclusionCallback = (v) -> updateWebContentsVisibility();
 
-    /**
-     * Importance of the WebContents currently attached to this tab. Note the key difference from
-     * |mIsHidden| is that a tab is hidden when the application is hidden, but the importance is not
-     * affected by this signal.
-     */
-    private @ChildProcessImportance int mImportance = ChildProcessImportance.NORMAL;
 
     /** Whether the renderer is currently unresponsive. */
     private boolean mIsRendererUnresponsive;
@@ -1161,7 +1154,6 @@ class TabImpl implements Tab {
                 maybeShowNativePage(nativePage.getUrl(), true, PdfUtils.getPdfInfo(nativePage));
             }
             NativePageAssassin.getInstance().tabShown(this);
-            TabImportanceManager.tabShown(this);
 
             // If the page is still loading, update the progress bar (otherwise it would not show
             // until the renderer notifies of new progress being made).
@@ -1277,7 +1269,6 @@ class TabImpl implements Tab {
             mWebContentsState = null;
         }
 
-        TabImportanceManager.tabDestroyed(this);
 
         if (mWindowAndroid != null) {
             mWindowAndroid.getOcclusionSupplier().removeObserver(mOcclusionCallback);
@@ -1562,22 +1553,6 @@ class TabImpl implements Tab {
         return mObservers.rewindableIterator();
     }
 
-    final void setImportance(@ChildProcessImportance int importance) {
-        if (mImportance == importance) return;
-        mImportance = importance;
-        updateImportance(getWebContents(), mImportance);
-    }
-
-    private static void updateImportance(
-            @Nullable WebContents webContents, @ChildProcessImportance int importance) {
-        if (webContents == null
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID)) {
-            // When ProcessRankPolicyAndroid of performance manager is enabled, the policy updates
-            // the page importance.
-            return;
-        }
-        webContents.setPrimaryPageImportance(importance, ChildProcessImportance.NORMAL);
-    }
 
     /** Hides the current {@link NativePage}, if any, and shows the {@link WebContents}'s view. */
     void showRenderedPage() {
@@ -2194,12 +2169,9 @@ class TabImpl implements Tab {
             hideNativePage(false, null);
 
             if (oldWebContents != null) {
-                updateImportance(oldWebContents, ChildProcessImportance.NORMAL);
                 assumeNonNull(getWebContentsAccessibility(oldWebContents))
                         .setObscuredByAnotherView(false);
             }
-
-            updateImportance(mWebContents, mImportance);
 
             ContentUtils.setUserAgentOverride(
                     mWebContents,
@@ -3038,11 +3010,6 @@ class TabImpl implements Tab {
         ResettersForTesting.register(this::clearNativePtr);
     }
 
-    @VisibleForTesting
-    @ChildProcessImportance
-    int getImportance() {
-        return mImportance;
-    }
 
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

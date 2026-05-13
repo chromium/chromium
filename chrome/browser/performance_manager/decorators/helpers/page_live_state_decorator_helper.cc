@@ -277,14 +277,7 @@ PageLiveStateDecoratorHelper::PageLiveStateDecoratorHelper() {
       ->GetMediaStreamCaptureIndicator()
       ->AddObserver(this);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kProcessRankPolicyAndroid)) {
-    active_tab_observer_ = std::make_unique<ActiveTabObserver>();
-  }
-#else
   active_tab_observer_ = std::make_unique<ActiveTabObserver>();
-#endif  // BUILDFLAG(IS_ANDROID)
 
   content::DevToolsAgentHost::AddObserver(this);
 }
