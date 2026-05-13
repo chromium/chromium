@@ -1,0 +1,13 @@
+Name: wait-timeout
+URL: https://crates.io/crates/wait-timeout
+Version: 0.2.1
+Revision: bda62e3123f7d30362984673b6d8c3330aa4a7d6
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/wait-timeout-v0_2/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: A crate to wait on a child process with a timeout specified across Unix and
+Windows platforms.
+

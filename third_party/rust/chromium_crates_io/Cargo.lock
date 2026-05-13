@@ -287,6 +287,7 @@ dependencies = [
  "temporal_capi",
  "temporal_rs",
  "uds",
+ "wait-timeout",
  "xml",
  "zip",
 ]
@@ -1999,6 +2000,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "virtue"
 version = "0.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "wait-timeout"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc",
+]
 
 [[package]]
 name = "wasip2"
