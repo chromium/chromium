@@ -3701,27 +3701,6 @@
             ]
         }
     ],
-    "AutomatedPasswordChangeRetryPageCapture": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "CapturePageContentDelay": "500ms"
-                    },
-                    "enable_features": [
-                        "RetryCapturePageContent"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutomaticUsbDetach": [
         {
             "platforms": [

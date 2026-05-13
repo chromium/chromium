@@ -53,9 +53,9 @@ const base::FeatureParam<base::TimeDelta> kAwaitPageStabilityTimeout = {
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-BASE_FEATURE(kRetryCapturePageContent, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRetryCapturePageContent, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kCapturePageContentDelay = {
-    &kRetryCapturePageContent, "retry_capture_delay", base::Seconds(0)};
+    &kRetryCapturePageContent, "retry_capture_delay", base::Milliseconds(500)};
 const base::FeatureParam<int> kCapturePageContentRetryCount = {
     &kRetryCapturePageContent, "retry_count", 3};
 
