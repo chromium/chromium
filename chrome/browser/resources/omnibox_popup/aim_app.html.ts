@@ -23,7 +23,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
       ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
       ?disable-composebox-animation="${this.disableComposeboxAnimation_}"
-      ?disable-voice-search-animation="${this.disableVoiceSearchAnimation_}"
+      .disableVoiceSearchAnimation="${this.disableVoiceSearchAnimation_}"
       @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
       @close-composebox="${this.onCloseComposebox_}"
       @composebox-submit="${this.onComposeboxSubmit_}"
