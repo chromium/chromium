@@ -351,6 +351,15 @@ TEST_F(HttpResponseInfoTest, NegativeEncodedBodySize) {
   EXPECT_FALSE(restored_response_info.encoded_body_size.has_value());
 }
 
+// Rollback safety: older cache entries predating bit 1<<4 must deserialize
+// as uncompressed. Persist-true is covered by
+// HttpCacheTest.ZstdDecompressHappyPath.
+TEST_F(HttpResponseInfoTest, ZstdUncompressedBodySizeDefault) {
+  HttpResponseInfo restored_response_info;
+  PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_FALSE(restored_response_info.zstd_uncompressed_body_size.has_value());
+}
+
 }  // namespace
 
 }  // namespace net

@@ -63,6 +63,16 @@ specific_include_rules = {
     "+third_party/zstd",
   ],
 
+  # CDT cache compression: zstd decompression of compressed cache entry bodies.
+  "cache_body_decompressor\.(cc|h)": [
+    "+third_party/zstd",
+  ],
+
+  # Tests call ZSTD_compress() to produce fixtures for zstd read-path coverage.
+  "http_cache_unittest\.cc": [
+    "+third_party/zstd",
+  ],
+
   "cookie_partition_key\.(cc|h)": [
     "+mojo/public/cpp/bindings/default_construct_tag.h",
   ],

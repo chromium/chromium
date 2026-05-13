@@ -223,6 +223,21 @@ class NET_EXPORT HttpResponseInfo {
   // Only set after the full body has been received.
   std::optional<base::ByteSize> encoded_body_size;
 
+  // When present, the response body stored on disk is zstd-compressed
+  // (a cache storage optimization, distinct from any wire Content-Encoding).
+  // The value is the count of bytes the writer streamed into zstd at write
+  // time — i.e., exactly the number of bytes the read path's zstd
+  // decompressor must produce on a successful read.
+  //
+  // This is the only signal: presence ⇒ "decompress on read";
+  // absence ⇒ "stored verbatim". The two facts cannot drift.
+  //
+  // We do not use the wire Content-Length for this purpose. Content-Length
+  // describes the wire body, while the cache may store a different shape
+  // (e.g., for Content-Encoding: dcz the cache stores the dictionary-decoded
+  // plaintext, not the wire bytes).
+  std::optional<int64_t> zstd_uncompressed_body_size;
+
  private:
   // Implements MakePickle(), writing `encoded_body_size` as a signed int for
   // backwards compatibility.

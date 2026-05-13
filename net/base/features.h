@@ -122,6 +122,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kHappyEyeballsV2);
 // results to make connection attempts as soon as possible.
 NET_EXPORT BASE_DECLARE_FEATURE(kHappyEyeballsV3);
 
+// Enables transparent zstd decompression of cached HTTP response bodies
+// written by the CDT (Compression Dictionary Transport) cache compression
+// feature. When disabled, compressed cache entries are doomed and the
+// request falls back to the network.
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheZstdDecompression);
+
 // If the `kUseAlternativePortForGloballyReachableCheck` flag is enabled, the
 // globally reachable check will use the port number specified by
 // `kAlternativePortForGloballyReachableCheck` flag. Otherwise, the globally

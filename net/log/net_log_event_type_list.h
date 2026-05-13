@@ -1306,6 +1306,32 @@ EVENT_TYPE(HTTP_CACHE_CALLER_REQUEST_HEADERS)
 EVENT_TYPE(HTTP_CACHE_RESTART_PARTIAL_REQUEST)
 EVENT_TYPE(HTTP_CACHE_RE_SEND_PARTIAL_REQUEST)
 
+// Brackets a zstd decompression session for a cached body. The BEGIN phase
+// is logged when the decompressor is initialized for a transaction; the END
+// phase is logged when decompression terminates, either by clean EOF or by
+// any error path. (Init failure is logged as a single non-bracketing event
+// because no decompression session ever started.)
+//
+// For the BEGIN phase, the following parameter is attached:
+//   {
+//     "expected_content_length": <int, decompressed Content-Length, or -1
+//                                 if not advertised>,
+//   }
+//
+// For the END phase, exactly one of the following parameter shapes is
+// attached:
+//   - On success:
+//     {
+//       "compressed_bytes":   <int, total compressed bytes consumed>,
+//       "decompressed_bytes": <int, total decompressed bytes delivered>,
+//     }
+//   - On failure (also used for the standalone "init_failed" event):
+//     {
+//       "reason": <"init_failed" | "zstd_error" | "truncated_frame" |
+//                  "size_mismatch">,
+//     }
+EVENT_TYPE(HTTP_CACHE_DECOMPRESS)
+
 // Indicates that an entry from the NoVarySearchCache was used to rewrite the
 // URL for this request.
 // For the BEGIN phase, the following parameters are attached:

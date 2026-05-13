@@ -616,6 +616,8 @@ component("net") {
     "http/bidirectional_stream_request_info.h",
     "http/broken_alternative_services.cc",
     "http/broken_alternative_services.h",
+    "http/cache_body_decompressor.cc",
+    "http/cache_body_decompressor.h",
     "http/http_auth.cc",
     "http/http_auth.h",
     "http/http_auth_cache.cc",
@@ -3540,6 +3542,9 @@ target(_test_target_type, "net_unittests") {
 
   if (!disable_zstd_filter) {
     sources += [ "filter/zstd_source_stream_unittest.cc" ]
+
+    # http_cache_unittest.cc calls ZSTD_compress directly to build fixtures.
+    deps += [ "//third_party/zstd:compress" ]
   }
 
   if (is_android) {

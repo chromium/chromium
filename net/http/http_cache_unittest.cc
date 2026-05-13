@@ -96,6 +96,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+#if !defined(NET_DISABLE_ZSTD)
+#include "third_party/zstd/src/lib/zstd.h"
+#endif
+
 using base::test::RunClosure;
 using net::test::IsError;
 using net::test::IsOk;
@@ -15540,5 +15544,704 @@ TEST_F(HttpCacheTest, InvalidationFilter) {
   RunTransactionTest(cache.http_cache(), transaction);
   EXPECT_GT(cache.network_layer()->transaction_count(), count_after_miss);
 }
+
+// ---------------------------------------------------------------------------
+// CDT cache compression — zstd decompression read-path tests.
+//
+// These tests exercise the transparent zstd decompression in
+// HttpCache::Transaction when zstd_uncompressed_body_size is present. Since
+// the write path sets this field at cache-write time, the tests set it
+// manually by rewriting the persisted HttpResponseInfo and body bytes via the
+// disk cache backend.
+// ---------------------------------------------------------------------------
+
+#if !defined(NET_DISABLE_ZSTD)
+
+// Replaces the cached response's body with |compressed| bytes and sets
+// zstd_uncompressed_body_size to |uncompressed_size|. This tells the read
+// path that the body is zstd-compressed and how many bytes it should produce.
+void InstallZstdCompressedEntry(MockHttpCache* cache,
+                                const std::string& cache_key,
+                                base::span<const uint8_t> compressed,
+                                std::optional<int64_t> uncompressed_size,
+                                bool response_truncated = false) {
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_TRUE(cache->OpenBackendEntry(cache_key, &entry));
+  disk_cache::ScopedEntryPtr closer(entry);
+
+  HttpResponseInfo cached_response;
+  bool truncated = false;
+  ASSERT_TRUE(
+      MockHttpCache::ReadResponseInfo(entry, &cached_response, &truncated));
+
+  cached_response.zstd_uncompressed_body_size = uncompressed_size;
+  ASSERT_TRUE(MockHttpCache::WriteResponseInfo(entry, &cached_response,
+                                               /*skip_transient_headers=*/true,
+                                               response_truncated));
+
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(
+      static_cast<int>(compressed.size()));
+  buf->span().copy_prefix_from(base::span<const uint8_t>(compressed));
+  TestCompletionCallback cb;
+  int rv = entry->WriteData(/*index=*/1, /*offset=*/0, buf.get(),
+                            static_cast<int>(compressed.size()), cb.callback(),
+                            /*truncate=*/true);
+  // ASSERT (not EXPECT): paired with the ASSERT_NO_FATAL_FAILURE() wrappers
+  // at call sites, this propagates a fatal failure to the test body so the
+  // test aborts cleanly if WriteData returns fewer bytes. EXPECT_EQ would
+  // record a non-fatal failure that the wrappers cannot catch.
+  ASSERT_EQ(static_cast<int>(compressed.size()), cb.GetResult(rv));
+}
+
+// Compresses |plaintext| with zstd default settings. On compression failure
+// (which should never happen for well-formed inputs), records ADD_FAILURE
+// and returns an empty vector so the caller's first byte-comparison fails
+// cleanly without taking down other tests in the same process.
+std::vector<uint8_t> ZstdCompress(std::string_view plaintext) {
+  std::vector<uint8_t> compressed(ZSTD_compressBound(plaintext.size()));
+  size_t written =
+      ZSTD_compress(compressed.data(), compressed.size(), plaintext.data(),
+                    plaintext.size(), /*compressionLevel=*/3);
+  if (ZSTD_isError(written)) {
+    ADD_FAILURE() << "ZSTD_compress failed: " << ZSTD_getErrorName(written);
+    return {};
+  }
+  compressed.resize(written);
+  return compressed;
+}
+
+// Reads the entire body from |trans| and returns (body, final_rv).
+// |final_rv| is 0 on a clean EOF, or a negative net::Error on read failure.
+// Callers expecting success should EXPECT_EQ(final_rv, 0). Callers expecting
+// a specific read failure (e.g. truncation, size mismatch) should assert on
+// final_rv directly. This single helper covers both shapes so the loop body
+// is not duplicated across happy-path and error-observing tests.
+std::pair<std::string, int> ReadBodyAndStatus(HttpTransaction* trans) {
+  std::string out;
+  constexpr int kChunk = 256;
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(kChunk);
+  while (true) {
+    TestCompletionCallback cb;
+    int rv = trans->Read(buf.get(), kChunk, cb.callback());
+    rv = cb.GetResult(rv);
+    if (rv <= 0) {
+      return {std::move(out), rv};
+    }
+    out.append(buf->data(), rv);
+  }
+}
+
+// Populates the cache with one entry for |kSimpleGET_Transaction|, then
+// replaces its body with |compressed| and sets zstd_uncompressed_body_size.
+// Callers must wrap with ASSERT_NO_FATAL_FAILURE() so failures inside the
+// nested ASSERT_* macros abort the test instead of just returning here.
+void PrimeCacheWithCompressedBody(
+    MockHttpCache* cache,
+    base::span<const uint8_t> compressed,
+    std::optional<int64_t> uncompressed_size = std::nullopt) {
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  RunTransactionTest(cache->http_cache(), transaction);
+  MockHttpRequest request(transaction);
+  ASSERT_NO_FATAL_FAILURE(InstallZstdCompressedEntry(
+      cache, request.CacheKey(), compressed, uncompressed_size));
+}
+
+// End-to-end success path for zstd-decompressed cache reads. Verifies that
+// a valid zstd-compressed cache entry with a 16 KB plaintext decompresses
+// correctly, exercising the leftover-byte draining path (the compressed
+// representation fits in one disk read but decompresses into more data than
+// the consumer read buffer holds).
+//
+// The over-decompression bound comes from zstd_uncompressed_body_size, not
+// from the wire Content-Length header. kSimpleGET_Transaction has no
+// Content-Length, so the bound is the sole guard. See
+// ZstdDecompressRejectsOverDecompression for the mid-stream guard test and
+// ZstdDecompressSizeMismatch for the EOF size check.
+//
+// Encoding-agnosticism is proven by construction: nothing in
+// HttpCache::Transaction or CacheBodyDecompressor branches on
+// Content-Encoding, and zstd_uncompressed_body_size is the sole signal.
+TEST_F(HttpCacheTest, ZstdDecompressHappyPath) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+
+  // ~16 KB of repeating text: large enough to exercise the leftover-byte
+  // draining path (the compressed payload decompresses into more data than
+  // the consumer's read buffer holds per iteration).
+  std::string plaintext;
+  plaintext.reserve(16 * 1024);
+  for (int i = 0; i < 512; ++i) {
+    plaintext.append("the quick brown fox jumps over the lazy dog\n");
+  }
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_NO_FATAL_FAILURE(
+      PrimeCacheWithCompressedBody(&cache, compressed, plaintext.size()));
+
+  // Bind a recording observer to capture HTTP_CACHE_DECOMPRESS events.
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(
+                  trans->Start(&request, callback.callback(),
+                               NetLogWithSource::Make(NetLogSourceType::NONE))),
+              IsOk());
+  auto [body, rv] = ReadBodyAndStatus(trans.get());
+  EXPECT_EQ(rv, 0);
+  EXPECT_EQ(plaintext, body);
+
+  // Verify a Begin/End pair was emitted with success-shaped end params
+  // (no failure "reason"; "decompressed_bytes" present). The Begin event
+  // carries the expected output size the decompressor was primed with —
+  // which is zstd_uncompressed_body_size, not Content-Length.
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HTTP_CACHE_DECOMPRESS);
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[0].phase, NetLogEventPhase::BEGIN);
+  EXPECT_EQ(entries[1].phase, NetLogEventPhase::END);
+  std::optional<int> begin_expected_len =
+      entries[0].params.FindInt("expected_content_length");
+  ASSERT_TRUE(begin_expected_len.has_value());
+  EXPECT_EQ(*begin_expected_len, static_cast<int>(plaintext.size()));
+  EXPECT_FALSE(entries[1].params.FindString("reason"));
+  std::optional<int> decompressed_bytes =
+      entries[1].params.FindInt("decompressed_bytes");
+  ASSERT_TRUE(decompressed_bytes.has_value());
+  EXPECT_EQ(*decompressed_bytes, static_cast<int>(plaintext.size()));
+}
+
+// Verifies decompression when the decompressed output exceeds the consumer's
+// read buffer, exercising the leftover-byte draining path.
+TEST_F(HttpCacheTest, ZstdDecompressMultiChunkBody) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  // ~32KB of repeating text compresses to a few hundred bytes. The first
+  // disk read decompresses into far more data than the 256-byte consumer
+  // buffer, forcing multiple iterations through the leftover path.
+  std::string plaintext;
+  plaintext.reserve(32 * 1024);
+  for (int i = 0; i < 1024; ++i) {
+    plaintext.append("the quick brown fox jumps over the lazy dog\n");
+  }
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_NO_FATAL_FAILURE(
+      PrimeCacheWithCompressedBody(&cache, compressed, plaintext.size()));
+
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(
+                  trans->Start(&request, callback.callback(),
+                               NetLogWithSource::Make(NetLogSourceType::NONE))),
+              IsOk());
+  auto [body, rv] = ReadBodyAndStatus(trans.get());
+  EXPECT_EQ(rv, 0);
+  EXPECT_EQ(plaintext, body);
+
+  // Leftover/multi-iteration path still emits exactly one Begin/End pair
+  // with success-shaped end params (no failure "reason").
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HTTP_CACHE_DECOMPRESS);
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[0].phase, NetLogEventPhase::BEGIN);
+  EXPECT_EQ(entries[1].phase, NetLogEventPhase::END);
+  std::optional<int> begin_expected_len =
+      entries[0].params.FindInt("expected_content_length");
+  ASSERT_TRUE(begin_expected_len.has_value());
+  EXPECT_EQ(*begin_expected_len, static_cast<int>(plaintext.size()));
+  EXPECT_FALSE(entries[1].params.FindString("reason"));
+}
+
+// EOF size mismatch — the decompressor produces fewer bytes than
+// zstd_uncompressed_body_size advertised — is detected at EOF as
+// ERR_CACHE_READ_FAILURE; HTTP_CACHE_DECOMPRESS End event tags it
+// reason="size_mismatch". (The over-decompression direction is covered by
+// ZstdDecompressRejectsOverDecompression below, which fires the mid-stream
+// guard and never reaches the EOF check.)
+TEST_F(HttpCacheTest, ZstdDecompressSizeMismatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  const std::string plaintext = "<html><body>Google Blah Blah</body></html>";
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  // Install with a lying zstd_uncompressed_body_size (1 byte too large).
+  // Decompressor produces |plaintext.size()| bytes but the read path expects
+  // |plaintext.size() + 1|, surfacing only at the EOF check.
+  ASSERT_NO_FATAL_FAILURE(
+      PrimeCacheWithCompressedBody(&cache, compressed, plaintext.size() + 1));
+
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(
+                  trans->Start(&request, callback.callback(),
+                               NetLogWithSource::Make(NetLogSourceType::NONE))),
+              IsOk());
+
+  // Drain until error or EOF. The body decompresses cleanly but the EOF
+  // size check detects the mismatch.
+  auto [body, rv] = ReadBodyAndStatus(trans.get());
+  EXPECT_THAT(rv, IsError(ERR_CACHE_READ_FAILURE));
+
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HTTP_CACHE_DECOMPRESS);
+  ASSERT_EQ(entries.size(), 2u);
+  const NetLogEntry& end = entries.back();
+  EXPECT_EQ(end.phase, NetLogEventPhase::END);
+  const std::string* reason = end.params.FindString("reason");
+  ASSERT_TRUE(reason);
+  EXPECT_EQ(*reason, "size_mismatch");
+}
+
+// Truncating the trailing bytes of a zstd frame produces a stream whose
+// content blocks decode cleanly but whose checksum/end-marker is missing.
+// The transaction must reject this at EOF via the frame_complete check
+// with End reason="truncated_frame".
+TEST_F(HttpCacheTest, ZstdDecompressTruncatedFrame) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  const std::string plaintext = "<html><body>Google Blah Blah</body></html>";
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_GT(compressed.size(), 4u);
+  // Drop the trailing bytes so the frame ends mid-stream.
+  compressed.resize(compressed.size() - 2);
+
+  // Pass the real plaintext size so decompression activates; the
+  // frame-complete check must catch truncation on its own (the size guard
+  // never fires because zstd fails before producing enough output).
+  ASSERT_NO_FATAL_FAILURE(PrimeCacheWithCompressedBody(
+      &cache, compressed, /*uncompressed_size=*/plaintext.size()));
+
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(
+                  trans->Start(&request, callback.callback(),
+                               NetLogWithSource::Make(NetLogSourceType::NONE))),
+              IsOk());
+
+  auto [body, rv] = ReadBodyAndStatus(trans.get());
+  EXPECT_THAT(rv, IsError(ERR_CACHE_READ_FAILURE));
+
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HTTP_CACHE_DECOMPRESS);
+  ASSERT_EQ(entries.size(), 2u);
+  const NetLogEntry& end = entries.back();
+  EXPECT_EQ(end.phase, NetLogEventPhase::END);
+  const std::string* reason = end.params.FindString("reason");
+  ASSERT_TRUE(reason);
+  EXPECT_EQ(*reason, "truncated_frame");
+}
+
+// Mid-stream byte corruption is rejected by ZSTD_decompressStream as
+// ERR_CACHE_READ_FAILURE with End reason="zstd_error". Exercises the
+// ZSTD_isError branch in CacheBodyDecompressor::Decompress
+// (cache_body_decompressor.cc:98), distinct from the EOF frame_complete
+// check in ZstdDecompressTruncatedFrame.
+TEST_F(HttpCacheTest, ZstdDecompressCorruptedMidStream) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  // Use a moderately-compressible plaintext (16-token alphabet) so zstd
+  // emits entropy-coded blocks where corruption breaks the FSE/Huffman
+  // state. Random bytes get stored as raw blocks (corruption passes through
+  // unchanged); pure-repetitive data compresses too densely.
+  std::string plaintext;
+  plaintext.reserve(8192);
+  uint32_t state = 0xDEADBEEFu;
+  static constexpr std::string_view kTokens[] = {
+      "the ",  "quick ", "brown ", "fox ", "jumps ", "over ", "the ", "lazy ",
+      "dog. ", "Hello",  "World ", "Foo ", "Bar ",   "Baz ",  "Qux ", "Zog ",
+  };
+  while (plaintext.size() < 8192) {
+    state = state * 1103515245u + 12345u;
+    plaintext.append(kTokens[(state >> 16) % std::size(kTokens)]);
+  }
+  plaintext.resize(8192);
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_GT(compressed.size(), 100u);
+
+  // Corrupt the frame header descriptor (byte 4, after the 4-byte magic) to
+  // mis-configure how zstd interprets the frame, plus a chunk in the middle
+  // for defense in depth.
+  ASSERT_GT(compressed.size(), 5u);
+  compressed[4] ^= 0xFFu;
+  const size_t mid_offset = compressed.size() / 2;
+  for (size_t i = 0; i < 32 && mid_offset + i < compressed.size(); ++i) {
+    compressed[mid_offset + i] = 0xFFu;
+  }
+
+  ASSERT_NO_FATAL_FAILURE(PrimeCacheWithCompressedBody(
+      &cache, compressed, /*uncompressed_size=*/plaintext.size()));
+
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(
+                  trans->Start(&request, callback.callback(),
+                               NetLogWithSource::Make(NetLogSourceType::NONE))),
+              IsOk());
+
+  auto [body, rv] = ReadBodyAndStatus(trans.get());
+  EXPECT_THAT(rv, IsError(ERR_CACHE_READ_FAILURE));
+
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HTTP_CACHE_DECOMPRESS);
+  ASSERT_EQ(entries.size(), 2u);
+  const NetLogEntry& end = entries.back();
+  EXPECT_EQ(end.phase, NetLogEventPhase::END);
+  const std::string* reason = end.params.FindString("reason");
+  ASSERT_TRUE(reason);
+  EXPECT_EQ(*reason, "zstd_error");
+}
+
+// Verifies that a range request on a compressed entry dooms the entry and
+// falls back to the network, returning the expected range response.
+TEST_F(HttpCacheTest, ZstdDecompressRangeRequestFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  const std::string plaintext = "<html><body>Google Blah Blah</body></html>";
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_NO_FATAL_FAILURE(
+      PrimeCacheWithCompressedBody(&cache, compressed, plaintext.size()));
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // Issue a range request. The compressed entry should be doomed and the
+  // network fallback should succeed with the mock range-response body.
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.request_headers = "Range: bytes = 0-9\r\n" EXTRA_HEADER;
+  transaction.status = "HTTP/1.1 206 Partial Content";
+  transaction.response_headers =
+      "Content-Range: bytes 0-9/42\nContent-Length: 10\n";
+  transaction.data = "<html><bod";
+
+  // RunTransactionTest verifies the response body matches transaction.data.
+  RunTransactionTest(cache.http_cache(), transaction);
+
+  // Compressed entry must have been doomed and the network hit.
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+}
+
+// A truncated compressed entry (interrupted download) must be doomed and
+// re-fetched from the network. The cache's resumption machinery would
+// construct a range request using compressed byte offsets, but the origin
+// server only understands uncompressed offsets.
+TEST_F(HttpCacheTest, ZstdDecompressTruncatedEntryFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  const std::string plaintext = "<html><body>Google Blah Blah</body></html>";
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+
+  // Prime the cache normally, then reinstall the entry with truncated=true.
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  RunTransactionTest(cache.http_cache(), transaction);
+  MockHttpRequest request(transaction);
+  ASSERT_NO_FATAL_FAILURE(InstallZstdCompressedEntry(
+      &cache, request.CacheKey(), compressed, plaintext.size(),
+      /*response_truncated=*/true));
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // Second request should doom the truncated compressed entry and hit the
+  // network for a full re-fetch.
+  RunTransactionTest(cache.http_cache(), transaction);
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+}
+
+// Verifies that decompressed output exceeding the advertised
+// zstd_uncompressed_body_size is rejected mid-stream by the streaming guard
+// in CacheBodyDecompressor::DoDecompress (cache_body_decompressor.cc:159),
+// not deferred to the EOF size check. Distinct from ZstdDecompressSizeMismatch
+// above which exercises the EOF (under-decompression) direction.
+TEST_F(HttpCacheTest, ZstdDecompressRejectsOverDecompression) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  // Real body is 200 bytes, but we'll advertise
+  // zstd_uncompressed_body_size: 10.
+  const std::string plaintext(200, 'q');
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_NO_FATAL_FAILURE(PrimeCacheWithCompressedBody(
+      &cache, compressed, /*uncompressed_size=*/10));
+
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(
+                  trans->Start(&request, callback.callback(),
+                               NetLogWithSource::Make(NetLogSourceType::NONE))),
+              IsOk());
+
+  // Read until we either error out or EOF. The streaming guard should fire
+  // before all 200 bytes reach the consumer.
+  auto [body, rv] = ReadBodyAndStatus(trans.get());
+  EXPECT_THAT(rv, IsError(ERR_CACHE_READ_FAILURE));
+  EXPECT_LT(body.size(), plaintext.size());
+
+  // Over-decompression is enforced inside DoDecompress and surfaces as
+  // reason="zstd_error" (no separate code is plumbed through).
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HTTP_CACHE_DECOMPRESS);
+  ASSERT_EQ(entries.size(), 2u);
+  const NetLogEntry& end = entries.back();
+  EXPECT_EQ(end.phase, NetLogEventPhase::END);
+  const std::string* reason = end.params.FindString("reason");
+  ASSERT_TRUE(reason);
+  EXPECT_EQ(*reason, "zstd_error");
+}
+
+// Verifies that an empty body (Content-Length: 0) with a compressed entry
+// returns EOF cleanly without errors.
+TEST_F(HttpCacheTest, ZstdDecompressEmptyBody) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  const std::string plaintext;
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_FALSE(compressed.empty())
+      << "zstd should produce a valid empty-frame header";
+  ASSERT_NO_FATAL_FAILURE(PrimeCacheWithCompressedBody(
+      &cache, compressed, /*uncompressed_size=*/0));
+
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(
+                  trans->Start(&request, callback.callback(),
+                               NetLogWithSource::Make(NetLogSourceType::NONE))),
+              IsOk());
+  // Reading an empty body should immediately return 0 (EOF) with no error.
+  auto [body, rv] = ReadBodyAndStatus(trans.get());
+  EXPECT_EQ(rv, 0);
+  EXPECT_EQ(std::string(), body);
+
+  // Empty-body path still emits a Begin/End pair with success-shaped params.
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HTTP_CACHE_DECOMPRESS);
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[0].phase, NetLogEventPhase::BEGIN);
+  EXPECT_EQ(entries[1].phase, NetLogEventPhase::END);
+  std::optional<int> begin_expected_len =
+      entries[0].params.FindInt("expected_content_length");
+  ASSERT_TRUE(begin_expected_len.has_value());
+  EXPECT_EQ(*begin_expected_len, 0);
+  EXPECT_FALSE(entries[1].params.FindString("reason"));
+  std::optional<int> decompressed_bytes =
+      entries[1].params.FindInt("decompressed_bytes");
+  ASSERT_TRUE(decompressed_bytes.has_value());
+  EXPECT_EQ(*decompressed_bytes, 0);
+}
+
+// A zstd stream with one or more skippable metadata frames followed by a
+// real data frame must decompress cleanly to the original plaintext —
+// zstd transparently skips the metadata frames, and the cache transaction's
+// zero-output watchdog (cache_body_decompressor.cc:137) must not trip on
+// the resulting bursts of zero-output decompress calls. Our writer never
+// produces such streams, but a corrupt or malicious entry might.
+TEST_F(HttpCacheTest, ZstdDecompressSkippableFramesPrefix) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  const std::string plaintext = "<html><body>Google Blah Blah</body></html>";
+  ASSERT_EQ(std::string(kSimpleGET_Transaction.data), plaintext);
+  std::vector<uint8_t> data_frame = ZstdCompress(plaintext);
+
+  // Build three skippable frames. Magic variants 0x184D2A50..0x184D2A5F are
+  // all valid; we use distinct ones to avoid special-casing a single magic.
+  // Wire format hand-written (4-byte magic LE + 4-byte length LE + payload)
+  // because ZSTD_writeSkippableFrame is in ZSTDLIB_STATIC_API, not linked
+  // into this target. See RFC 8478 §3.1.2.
+  constexpr std::array<uint8_t, 8> kSkippablePayload = {
+      'M', 'E', 'T', 'A', '0', '0', '0', '0',
+  };
+  std::vector<uint8_t> compressed;
+  for (uint32_t magic : {0x184D2A50u, 0x184D2A51u, 0x184D2A55u}) {
+    const uint32_t payload_len = kSkippablePayload.size();
+    // Magic (LE).
+    compressed.push_back(magic & 0xFF);
+    compressed.push_back((magic >> 8) & 0xFF);
+    compressed.push_back((magic >> 16) & 0xFF);
+    compressed.push_back((magic >> 24) & 0xFF);
+    // Frame size field (LE) = payload length.
+    compressed.push_back(payload_len & 0xFF);
+    compressed.push_back((payload_len >> 8) & 0xFF);
+    compressed.push_back((payload_len >> 16) & 0xFF);
+    compressed.push_back((payload_len >> 24) & 0xFF);
+    // Payload.
+    compressed.insert(compressed.end(), kSkippablePayload.begin(),
+                      kSkippablePayload.end());
+  }
+  // Append the real data frame after the skippable-frame prefix.
+  compressed.insert(compressed.end(), data_frame.begin(), data_frame.end());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrimeCacheWithCompressedBody(&cache, compressed, plaintext.size()));
+
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(
+                  trans->Start(&request, callback.callback(),
+                               NetLogWithSource::Make(NetLogSourceType::NONE))),
+              IsOk());
+  auto [body, rv] = ReadBodyAndStatus(trans.get());
+  EXPECT_EQ(rv, 0);
+  EXPECT_EQ(plaintext, body);
+
+  // Begin/End pair with success-shaped end params (no failure "reason").
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HTTP_CACHE_DECOMPRESS);
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[0].phase, NetLogEventPhase::BEGIN);
+  EXPECT_EQ(entries[1].phase, NetLogEventPhase::END);
+  std::optional<int> begin_expected_len =
+      entries[0].params.FindInt("expected_content_length");
+  ASSERT_TRUE(begin_expected_len.has_value());
+  EXPECT_EQ(*begin_expected_len, static_cast<int>(plaintext.size()));
+  EXPECT_FALSE(entries[1].params.FindString("reason"));
+}
+
+// Verifies that with kHttpCacheZstdDecompression disabled, a compressed cache
+// entry is doomed and the request falls back to the network. No
+// HTTP_CACHE_DECOMPRESS event should fire.
+TEST_F(HttpCacheTest, ZstdDecompressFeatureDisabledFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  const std::string plaintext = "<html><body>Google Blah Blah</body></html>";
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_NO_FATAL_FAILURE(
+      PrimeCacheWithCompressedBody(&cache, compressed, plaintext.size()));
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  RecordingNetLogObserver net_log_observer;
+
+  // Second request should hit the network (compressed entry doomed).
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  RunTransactionTest(cache.http_cache(), transaction);
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+
+  // No decompression event should have fired.
+  EXPECT_TRUE(net_log_observer
+                  .GetEntriesWithType(NetLogEventType::HTTP_CACHE_DECOMPRESS)
+                  .empty());
+}
+
+// Verifies that a zstd-compressed cache entry with the decompression feature
+// disabled returns ERR_CACHE_MISS (not a network request) when the request
+// sets LOAD_ONLY_FROM_CACHE. No HTTP_CACHE_DECOMPRESS event should fire.
+TEST_F(HttpCacheTest, ZstdDecompressFeatureDisabledCacheOnlyReturnsMiss) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  const std::string plaintext = "<html><body>Google Blah Blah</body></html>";
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_NO_FATAL_FAILURE(
+      PrimeCacheWithCompressedBody(&cache, compressed, plaintext.size()));
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.load_flags |= LOAD_ONLY_FROM_CACHE;
+
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  TestCompletionCallback cb;
+  int rv = trans->Start(&request, cb.callback(),
+                        NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(cb.GetResult(rv), IsError(ERR_CACHE_MISS));
+
+  // No network request should have been made.
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // No decompression event should have fired.
+  EXPECT_TRUE(net_log_observer
+                  .GetEntriesWithType(NetLogEventType::HTTP_CACHE_DECOMPRESS)
+                  .empty());
+}
+
+// Verifies that a range request on a zstd-compressed cache entry returns
+// ERR_CACHE_MISS (not a network request) when LOAD_ONLY_FROM_CACHE is set.
+// No HTTP_CACHE_DECOMPRESS event should fire — the entry is doomed before
+// the decompression path runs.
+TEST_F(HttpCacheTest, ZstdDecompressRangeRequestCacheOnlyReturnsMiss) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpCacheZstdDecompression);
+  MockHttpCache cache;
+  const std::string plaintext = "<html><body>Google Blah Blah</body></html>";
+  std::vector<uint8_t> compressed = ZstdCompress(plaintext);
+  ASSERT_NO_FATAL_FAILURE(
+      PrimeCacheWithCompressedBody(&cache, compressed, plaintext.size()));
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  RecordingNetLogObserver net_log_observer;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.request_headers = "Range: bytes = 0-9\r\n" EXTRA_HEADER;
+  transaction.load_flags |= LOAD_ONLY_FROM_CACHE;
+
+  MockHttpRequest request(transaction);
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  TestCompletionCallback cb;
+  int rv = trans->Start(&request, cb.callback(),
+                        NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(cb.GetResult(rv), IsError(ERR_CACHE_MISS));
+
+  // No network request should have been made.
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // No decompression event should have fired.
+  EXPECT_TRUE(net_log_observer
+                  .GetEntriesWithType(NetLogEventType::HTTP_CACHE_DECOMPRESS)
+                  .empty());
+}
+
+#endif  // !defined(NET_DISABLE_ZSTD)
 
 }  // namespace net
