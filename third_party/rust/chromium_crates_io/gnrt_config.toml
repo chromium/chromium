@@ -897,6 +897,13 @@ group = 'test'
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
+[crate.wide]
+group = 'test'
+allow_first_party_usage = false
+license = "Zlib"
+license_files = ["LICENSE-ZLIB.md"]
+extra_kv = { allow_unsafe = true }
+
 [crate.winapi-util.extra_kv]
 allow_unsafe = true
 

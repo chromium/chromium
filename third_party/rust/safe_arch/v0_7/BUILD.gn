@@ -55,7 +55,11 @@ cargo_crate("lib") {
 
   allow_unsafe = true
 
-  features = [ "default" ]
+  deps = [ "//third_party/rust/bytemuck/v1:lib" ]
+  features = [
+    "bytemuck",
+    "default",
+  ]
 
   testonly = true
 

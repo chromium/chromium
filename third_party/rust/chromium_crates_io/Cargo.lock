@@ -288,6 +288,7 @@ dependencies = [
  "temporal_rs",
  "uds",
  "wait-timeout",
+ "wide",
  "xml",
  "zip",
 ]
@@ -2064,6 +2065,15 @@ version = "0.2.120"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "wide"
+version = "0.7.33"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "bytemuck",
+ "safe_arch",
 ]
 
 [[package]]
