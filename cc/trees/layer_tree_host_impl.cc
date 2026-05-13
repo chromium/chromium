@@ -1190,7 +1190,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       }
       // The only place where enable_compositing_based_throttling is set
       // to true is AshWindowTreeHost::Create().
-      // TODO(zmo): Audit if this is necessary for UI in TreesInViz mode.
+      // TODO(b/512804780) - Audit if this is necessary for UI in TreesInViz
+      // mode.
       if (settings_.enable_compositing_based_throttling && target_render_pass) {
         throttle_decider_.ProcessRenderPass(*target_render_pass);
       }
@@ -1245,7 +1246,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       } else {
         // The only place where enable_compositing_based_throttling is set
         // to true is AshWindowTreeHost::Create().
-        // TODO(zmo): Audit if this is necessary for UI in TreesInViz mode.
+        // TODO(b/512804780): Audit if this is necessary for UI in TreesInViz
+        // mode.
         if (settings_.enable_compositing_based_throttling) {
           throttle_decider_.ProcessLayerNotToDraw(layer);
         }
@@ -1270,7 +1272,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
         frame->checkerboarded_needs_record = true;
       }
 
-      // TODO(zmo): Audit if this is necessary when UI is moved to TreesInViz.
+      // TODO(b/512804780): Audit if this is necessary when UI is moved to
+      // TreesInViz.
       if (settings_.is_layer_tree_for_ui) {
         AccumulateInvalidatedArea(layer, total_invalidated_area_.value());
       }
