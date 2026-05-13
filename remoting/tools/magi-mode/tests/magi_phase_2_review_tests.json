@@ -1,0 +1,27 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Review Mode",
+    "description": "Verify review mode flow.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 2,
+            "name": "Review Mode - Skip Implementors",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "task_type": "REVIEW",
+                    "goal": "Review existing code for feature X"
+                }
+            },
+            "expected_outputs": {
+                "valid_json": true,
+                "content_patterns": {
+                    "test_output.json": "\"impl_skip_if_not_needed\": true"
+                }
+            }
+        }
+    ]
+}
