@@ -475,7 +475,7 @@ void BrowserActions::InitializePageActionIconActions() {
           .SetTooltipText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
           .SetImage(ui::ImageModel::FromVectorIcon(
-              kLocalOfferFlippedRefreshIcon, ui::kColorIcon,
+              kLocalOfferFlippedRefreshOldIcon, ui::kColorIcon,
               ui::SimpleMenuModel::kDefaultIconSize))
           .Build());
 

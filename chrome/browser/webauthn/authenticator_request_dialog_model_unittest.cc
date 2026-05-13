@@ -2777,7 +2777,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
           EXPECT_EQ(win_button_it->icon, kLaptopIcon);
           break;
         case kSk:
-          EXPECT_EQ(win_button_it->icon, kUsbSecurityKeyIcon);
+          EXPECT_EQ(win_button_it->icon, kUsbSecurityKeyOldIcon);
           break;
         case kPhoneOrSk:
         case kPhone:
@@ -2840,7 +2840,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
         EXPECT_EQ(win_button_it->icon, kLaptopIcon);
         break;
       case kSk:
-        EXPECT_EQ(win_button_it->icon, kUsbSecurityKeyIcon);
+        EXPECT_EQ(win_button_it->icon, kUsbSecurityKeyOldIcon);
         break;
       default:
         NOTREACHED();

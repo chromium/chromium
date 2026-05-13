@@ -117,7 +117,7 @@ AuthenticatorHybridAndSecurityKeySheetView::BuildStepSpecificContent() {
                 : IDS_WEBAUTHN_USE_YOUR_PHONE_OR_TABLET_SIGN_IN_DESCRIPTION,
       rp_id)};
   container->AddChildView(CreateMechanismDescriptionWithIcon(
-      kCameraIcon,
+      kCameraOldIcon,
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_YOUR_PHONE_OR_TABLET),
       qr_labels));
 
@@ -137,7 +137,7 @@ AuthenticatorHybridAndSecurityKeySheetView::BuildStepSpecificContent() {
       security_key_labels.push_back(attestation_warning.value());
     }
     container->AddChildView(CreateMechanismDescriptionWithIcon(
-        kUsbSecurityKeyIcon,
+        kUsbSecurityKeyOldIcon,
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_YOUR_SECURITY_KEY),
         security_key_labels));
   }

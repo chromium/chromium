@@ -150,7 +150,7 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
     AuthenticatorTransport transport) {
   switch (transport) {
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
-      return kUsbSecurityKeyIcon;
+      return kUsbSecurityKeyOldIcon;
     case AuthenticatorTransport::kInternal:
       return kLaptopIcon;
     case AuthenticatorTransport::kHybrid:

@@ -22,8 +22,8 @@ found in the LICENSE file.
       <include name="IDR_GLIC_PARAMETERIZED_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_SIMPLIFIED_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_SIMPLIFIED_PARAMETERIZED_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
-      <include name="IDR_GLIC_BUTTON_VECTOR_ICON" file="glic_button.icon" type="BINDATA" compress="brotli" />
-      <include name="IDR_GLIC_STATUS_ICON" file="glic_button.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_BUTTON_VECTOR_ICON" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_STATUS_ICON" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_LOGO" file="logo.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_STATUS_ICON_DARK" file="glic_status_icon_dark.png" type="BINDATA" />
       <include name="IDR_GLIC_STATUS_ICON_LIGHT" file="glic_status_icon_light.png" type="BINDATA" />
@@ -36,8 +36,8 @@ found in the LICENSE file.
       <include name="IDR_GLIC_PROFILE_BRANDING_CSS" file="glic_profile_branding.css" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_TAB_MEDIA_GLIC_ACTIVE" file="tab_media_glic_active.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_ACCESSING_ICON" file="../../../app/vector_icons/tv.icon" type="BINDATA" compress="brotli" />
-      <include name="IDR_GLIC_BUTTON_VECTOR_ICON_V2" file="glic_button.icon" type="BINDATA" compress="brotli" />
-      <include name="IDR_GLIC_STATUS_ICON_V2" file="glic_button.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_BUTTON_VECTOR_ICON_V2" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_STATUS_ICON_V2" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_STATUS_ICON_DARK_V2" file="glic_status_icon_dark.png" type="BINDATA" />
       <include name="IDR_GLIC_STATUS_ICON_LIGHT_V2" file="glic_status_icon_light.png" type="BINDATA" />
       <include name="IDR_GLIC_PROFILE_LOGO_V2" file="glic_profile_logo.svg" type="BINDATA" compress="brotli" />
@@ -45,7 +45,7 @@ found in the LICENSE file.
       <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT_V2" file="glic_profile_banner_top_right.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT_LIGHT_V2" file="glic_profile_banner_bottom_left_light.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT_LIGHT_V2" file="glic_profile_banner_top_right_light.svg" type="BINDATA" compress="brotli" />
-      <include name="IDR_GLIC_MAC_ALT_STATUS_ICON" file="glic_button.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_MAC_ALT_STATUS_ICON" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
     </includes>
   </release>
 </grit>

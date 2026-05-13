@@ -151,7 +151,7 @@ TEST_F(WebUILocationBarTest, StateManagement_PermissionChip) {
   WebUIPermissionChip chip(location_bar_);
 
   chip.SetVisible(true);
-  chip.SetChipIcon(kCameraIcon);
+  chip.SetChipIcon(kCameraOldIcon);
   chip.SetMessage(u"Camera in use");
   chip.SetTooltipText(u"Tooltip");
   chip.SetTheme(PermissionChipTheme::kInUseActivityIndicator);
@@ -163,7 +163,7 @@ TEST_F(WebUILocationBarTest, StateManagement_PermissionChip) {
 
   auto state = chip.GetState();
   EXPECT_TRUE(state->is_visible);
-  EXPECT_EQ(state->icon_name, "kCameraIcon");
+  EXPECT_EQ(state->icon_name, "kCameraOldIcon");
   EXPECT_EQ(state->message, u"Camera in use");
   EXPECT_EQ(state->tooltip, u"Tooltip");
   EXPECT_EQ(
