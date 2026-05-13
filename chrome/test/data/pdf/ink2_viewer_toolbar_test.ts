@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, PluginController, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, Ink2Manager, PluginController, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {InkTextBoxElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -304,7 +304,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);
 
-    viewerToolbar.resetStrokesForTesting();
+    Ink2Manager.getInstance().resetStackForTesting();
     chrome.test.succeed();
   },
   // Test that the undo and redo buttons are disabled when a text form field is
@@ -366,7 +366,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertFalse(redoButton.disabled);
 
-    viewerToolbar.resetStrokesForTesting();
+    Ink2Manager.getInstance().resetStackForTesting();
     chrome.test.succeed();
   },
   async function testUndoRedoTextAnnotation() {
@@ -454,7 +454,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(redoButton.disabled);
 
     // Reset state for later tests.
-    viewerToolbar.resetStrokesForTesting();
+    Ink2Manager.getInstance().resetStackForTesting();
     viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
     chrome.test.succeed();
@@ -574,7 +574,7 @@ chrome.test.runTests([
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
     mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
 
-    viewerToolbar.resetStrokesForTesting();
+    Ink2Manager.getInstance().resetStackForTesting();
     chrome.test.succeed();
   },
   // Test the behavior of the undo redo keyboard shortcuts.
@@ -607,7 +607,7 @@ chrome.test.runTests([
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
     mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
 
-    viewerToolbar.resetStrokesForTesting();
+    Ink2Manager.getInstance().resetStackForTesting();
     chrome.test.succeed();
   },
   // Test that the undo and redo keyboard shortcuts are disabled when a text
@@ -685,7 +685,7 @@ chrome.test.runTests([
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 3);
     mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 2);
 
-    viewerToolbar.resetStrokesForTesting();
+    Ink2Manager.getInstance().resetStackForTesting();
     chrome.test.succeed();
   },
   // Test the behavior of the undo redo keyboard shortcuts in text annotation
@@ -757,7 +757,7 @@ chrome.test.runTests([
     mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 2);
     mockPlugin.clearMessages();
 
-    viewerToolbar.resetStrokesForTesting();
+    Ink2Manager.getInstance().resetStackForTesting();
     chrome.test.succeed();
   },
   // Test that the undo and redo keyboard shortcuts do nothing when a stroke is
@@ -847,7 +847,7 @@ chrome.test.runTests([
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
     mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
 
-    viewerToolbar.resetStrokesForTesting();
+    Ink2Manager.getInstance().resetStackForTesting();
     chrome.test.succeed();
   },
 ]);

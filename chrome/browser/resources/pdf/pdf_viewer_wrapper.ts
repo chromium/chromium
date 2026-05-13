@@ -69,6 +69,8 @@ export type {PinchEventDetail} from './gesture_detector.js';
 // <if expr="enable_pdf_ink2">
 export {DEFAULT_TEXTBOX_WIDTH, Ink2Manager, MIN_TEXTBOX_SIZE_PX} from './ink2_manager.js';
 export type {TextBoxInit, ViewportParams} from './ink2_manager.js';
+export {UndoRedoStack} from './undo_redo_stack.js';
+export type {UndoRedoState, UndoRedoStateChangedDetail} from './undo_redo_stack.js';
 // </if>
 export type {PdfPluginElement} from './internal_plugin.js';
 export {record, recordFitTo, resetForTesting, UserAction} from './metrics.js';

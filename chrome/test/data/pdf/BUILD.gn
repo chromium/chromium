@@ -79,6 +79,7 @@ build_webui_tests("build") {
       "ink2_text_styles_selector_test.ts",
       "ink2_viewer_toolbar_test.ts",
       "selectable_icon_button_test.ts",
+      "undo_redo_stack_test.ts",
     ]
 
     if (enable_pdf_save_to_drive) {

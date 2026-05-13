@@ -8,6 +8,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
+import {UndoRedoStack} from './undo_redo_stack.js';
 import type {Viewport, ViewportRect} from './viewport.js';
 
 export interface ViewportParams {
@@ -106,6 +107,15 @@ export function convertRotatedCoordinates(
 
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
+  private stack_ = new UndoRedoStack(this);
+
+  constructor() {
+    super();
+    this.pluginController_.getEventTarget().addEventListener(
+        PluginControllerEventType.FINISH_INK_STROKE,
+        this.handleFinishInkStroke_.bind(this));
+  }
+
   // Map from page numbers to annotations on that page.
   // The annotations on each page are stored in a map from id to TextAnnotation.
   private annotations_: Map<number, Map<number, TextAnnotation>> = new Map();
@@ -143,8 +153,21 @@ export class Ink2Manager extends EventTarget {
     this.viewport_ = viewport;
   }
 
-  resetAnnotationIdForTest() {
+  clearAnnotationsForTesting() {
+    this.annotations_.clear();
     this.nextAnnotationId_ = 0;
+  }
+
+  getAnnotationsForTesting(): Map<number, Map<number, TextAnnotation>> {
+    return this.annotations_;
+  }
+
+  resetTextResolverForTesting() {
+    this.textResolver_ = null;
+  }
+
+  resetStackForTesting() {
+    this.stack_.resetForTesting();
   }
 
   // Initialize a text annotation at `location` in screen coordinates.
@@ -546,13 +569,9 @@ export class Ink2Manager extends EventTarget {
     this.pluginController_.finishTextAnnotation(annotation);
     this.existingAnnotationAttributes_ = null;
 
-    // Using PluginController's event target to dispatch this event, even
-    // though it originates here, because PluginController dispatches this
-    // event for normal Ink strokes and this way clients only need to listen
-    // on one instance.
-    this.pluginController_.getEventTarget().dispatchEvent(new CustomEvent(
-        PluginControllerEventType.FINISH_INK_STROKE,
-        {detail: annotation.isEdited}));
+    if (annotation.isEdited) {
+      this.stack_.push({type: 'text'});
+    }
   }
 
   textBoxFocused(textBoxRect: TextBoxRect) {
@@ -608,6 +627,36 @@ export class Ink2Manager extends EventTarget {
     this.dispatchEvent(new CustomEvent(
         'attributes-changed',
         {detail: structuredClone(this.getCurrentTextAttributes())}));
+  }
+
+  private handleFinishInkStroke_(e: Event) {
+    if ((e as CustomEvent<boolean>).detail) {
+      this.stack_.push({type: 'ink'});
+    }
+  }
+
+  undo() {
+    if (this.stack_.undo()) {
+      this.pluginController_.undo();
+    }
+  }
+
+  redo() {
+    if (this.stack_.redo()) {
+      this.pluginController_.redo();
+    }
+  }
+
+  initiateSave() {
+    this.stack_.initiateSave();
+  }
+
+  cancelSave() {
+    this.stack_.cancelSave();
+  }
+
+  saved() {
+    this.stack_.setSaved();
   }
 
   static getInstance(): Ink2Manager {
