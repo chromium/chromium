@@ -64,7 +64,7 @@ bool LensOverlayControllerAndroid::ShowUI(JNIEnv* env,
 void LensOverlayControllerAndroid::OnScreenshotCaptured(gfx::Image snapshot) {
   if (snapshot.IsEmpty()) {
     // If the capture fails, we log and return. This silently aborts the flow,
-    // which is the intended behavior for the prototype.
+    // which is the intended behavior for the intent-based flow.
     LOG(ERROR) << "Failed to capture window snapshot";
     if (java_obj_) {
       Java_LensOverlayCoordinator_onCaptureError(

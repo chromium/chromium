@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.ui.lens;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.net.Uri;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -15,11 +15,20 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.UUID;
 
 /**
  * Coordinator for the Lens Overlay feature. Stays alive for the lifetime of the {@link Tab} to
@@ -101,7 +110,77 @@ public class LensOverlayCoordinator implements UserData {
     @CalledByNative
     void onScreenshotCaptured(@JniType("SkBitmap") Bitmap bitmap) {
         Log.i(TAG, "onScreenshotCaptured called in Java");
-        showDebugImageView(bitmap);
+
+        WebContents webContents = mTab.getWebContents();
+        if (webContents == null) {
+            setShowing(false);
+            return;
+        }
+        WindowAndroid window = webContents.getTopLevelNativeWindow();
+        if (window == null) {
+            setShowing(false);
+            return;
+        }
+
+        // Collect physical screen metrics on the UI thread before hopping to background.
+        LensOverlayImageHelper.LensOverlayScreenMetrics metrics =
+                LensOverlayImageHelper.getScreenMetrics(window);
+        if (metrics == null) {
+            // Fallback: If metrics can't be determined, use the windowshot as-is.
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT, () -> saveCompositedImageAndLaunch(window, bitmap));
+            return;
+        }
+
+        // Hop to background thread for heavy image processing.
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE, () -> compositeImageInBackground(window, bitmap, metrics));
+    }
+
+    @VisibleForTesting
+    void compositeImageInBackground(
+            WindowAndroid window,
+            Bitmap windowshot,
+            LensOverlayImageHelper.LensOverlayScreenMetrics metrics) {
+        ThreadUtils.assertOnBackgroundThread();
+        Bitmap composited = LensOverlayImageHelper.compositeBitmap(metrics, windowshot);
+
+        // Hop back to UI thread to interact with ShareImageFileUtils.
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT, () -> saveCompositedImageAndLaunch(window, composited));
+    }
+
+    @VisibleForTesting
+    void saveCompositedImageAndLaunch(WindowAndroid window, Bitmap composited) {
+        ThreadUtils.assertOnUiThread();
+        ShareImageFileUtils.generateTemporaryUriFromBitmap(
+                UUID.randomUUID().toString(),
+                composited,
+                (Uri imageUri) -> {
+                    composited.recycle();
+                    if (imageUri != null) {
+                        launchLensIntent(window, imageUri);
+                    } else {
+                        Log.e(TAG, "Failed to process image for Lens Overlay");
+                        setShowing(false);
+                    }
+                });
+    }
+
+    private void launchLensIntent(WindowAndroid window, Uri imageUri) {
+        String pageUrl = mTab.getUrl() != null ? mTab.getUrl().getSpec() : "";
+        LensIntentParams params =
+                new LensIntentParams.Builder(LensEntryPoint.CHROME_LENS_OVERLAY, mTab.isIncognito())
+                        .withImageUri(imageUri)
+                        .withPageUrl(pageUrl)
+                        .withSrcUrl("")
+                        .withImageTitleOrAltText("")
+                        .build();
+        LensController.getInstance().startLens(window, params);
+
+        // For the AGSA intent-based flow, we dismiss the overlay state immediately after
+        // handing off to the external app.
+        setShowing(false);
     }
 
     /** Called by the C++ controller when an asynchronous error occurs during capture. */
@@ -109,58 +188,6 @@ public class LensOverlayCoordinator implements UserData {
     void onCaptureError() {
         Log.e(TAG, "onCaptureError called in Java");
         setShowing(false);
-    }
-
-    /**
-     * Displays the captured screenshot in a full-screen ImageView for debugging. TODO(b/493627069):
-     * Remove this temporary debug UI and replace it with the actual intent handoff or the native
-     * overlay UI.
-     */
-    private void showDebugImageView(Bitmap bitmap) {
-        WebContents webContents = mTab.getWebContents();
-        if (webContents == null) {
-            setShowing(false);
-            return;
-        }
-
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) {
-            setShowing(false);
-            return;
-        }
-
-        Activity activity = window.getActivity().get();
-        if (activity == null) {
-            setShowing(false);
-            return;
-        }
-
-        ViewGroup contentView = activity.findViewById(android.R.id.content);
-        if (contentView == null) {
-            setShowing(false);
-            return;
-        }
-
-        ImageView imageView = new ImageView(activity);
-        imageView.setImageBitmap(bitmap);
-
-        // Note: FIT_XY is used here for rapid prototyping, which might result in slight stretching
-        // depending on the window-to-screen aspect ratio. This will be resolved when we implement
-        // proper screenshot compositing.
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-
-        contentView.addView(
-                imageView,
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        // Temporary debug UI: Clicking anywhere on the screenshot will dismiss this view and
-        // clear the showing state.
-        imageView.setOnClickListener(
-                v -> {
-                    contentView.removeView(imageView);
-                    setShowing(false);
-                });
     }
 
     private void setShowing(boolean showing) {

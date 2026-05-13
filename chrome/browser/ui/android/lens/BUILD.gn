@@ -35,16 +35,44 @@ android_library("java") {
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/lens/LensOverlayCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/lens/LensOverlayImageHelper.java",
     "java/src/org/chromium/chrome/browser/ui/lens/LensOverlayTabHelper.java",
   ]
   deps = [
     "//base:base_java",
     "//base:supplier_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/lens:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/share/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
+    "//url:url_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/lens/LensOverlayCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/lens/LensOverlayImageHelperUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/lens:java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/share/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//url:url_java",
   ]
 }

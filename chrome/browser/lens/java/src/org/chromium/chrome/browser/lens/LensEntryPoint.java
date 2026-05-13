@@ -17,7 +17,8 @@ import org.chromium.build.annotations.NullMarked;
     LensEntryPoint.TASKS_SURFACE,
     LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
     LensEntryPoint.GOOGLE_BOTTOM_BAR,
-    LensEntryPoint.TIPS_NOTIFICATIONS
+    LensEntryPoint.TIPS_NOTIFICATIONS,
+    LensEntryPoint.CHROME_LENS_OVERLAY
 })
 @NullMarked
 public @interface LensEntryPoint {
@@ -30,4 +31,5 @@ public @interface LensEntryPoint {
     int QUICK_ACTION_SEARCH_WIDGET = 6;
     int GOOGLE_BOTTOM_BAR = 7;
     int TIPS_NOTIFICATIONS = 8;
+    int CHROME_LENS_OVERLAY = 9;
 }

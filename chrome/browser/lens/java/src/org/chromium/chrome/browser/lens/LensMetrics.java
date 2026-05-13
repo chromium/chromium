@@ -183,6 +183,7 @@ public class LensMetrics {
                 return "CustomTabs.GoogleBottomBar.LensSupportStatus";
             case LensEntryPoint.CONTEXT_MENU_CHIP:
             case LensEntryPoint.TIPS_NOTIFICATIONS:
+            case LensEntryPoint.CHROME_LENS_OVERLAY:
             default:
                 assert false : "Method not implemented.";
         }
@@ -235,6 +236,7 @@ public class LensMetrics {
             case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_CHIP:
             case LensEntryPoint.GOOGLE_BOTTOM_BAR:
+            case LensEntryPoint.CHROME_LENS_OVERLAY:
             default:
                 assert false : "Method not implemented.";
         }
@@ -255,6 +257,7 @@ public class LensMetrics {
             case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_CHIP:
             case LensEntryPoint.GOOGLE_BOTTOM_BAR:
+            case LensEntryPoint.CHROME_LENS_OVERLAY:
             default:
                 assert false : "Method not implemented.";
         }

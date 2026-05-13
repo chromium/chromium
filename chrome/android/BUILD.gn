@@ -1239,6 +1239,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/hats:junit",
       "//chrome/browser/ui/android/hats/internal:junit",
       "//chrome/browser/ui/android/layouts:junit",
+      "//chrome/browser/ui/android/lens:junit",
       "//chrome/browser/ui/android/logo:junit",
       "//chrome/browser/ui/android/management:junit",
       "//chrome/browser/ui/android/multiwindow:junit",
