@@ -44,6 +44,9 @@ class CommandStorageManagerTestHelper {
 
   scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner();
 
+  // Returns true if the CommandStorageManager should write encrypted files.
+  bool ShouldWriteEncryptedFiles();
+
   // See function of same name in CommandStorageBackend for details.
   void ForceAppendCommandsToFailForTesting();
 

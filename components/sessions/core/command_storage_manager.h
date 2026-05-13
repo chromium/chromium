@@ -16,7 +16,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sessions/core/sessions_export.h"
 
@@ -138,6 +140,17 @@ class SESSIONS_EXPORT CommandStorageManager {
 
   // Called by the backend if writing to the file failed.
   void OnErrorWritingToFile();
+
+  // Returns true if encrypted files should be written.
+  bool ShouldWriteEncryptedFiles() const;
+
+  // Called when an Encryptor is ready to be used.  start_time is the time when
+  // os_crypt_async->GetInstance() was called.
+  void OnEncryptorReady(base::TimeTicks start_time,
+                        os_crypt_async::Encryptor encryptor);
+
+  const base::FilePath file_path_;
+  const SessionType session_type_;
 
   // The backend object which reads and saves commands.
   scoped_refptr<CommandStorageBackend> backend_;

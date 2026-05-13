@@ -101,6 +101,8 @@ source_set("shared") {
     "core/base_session_service_commands.h",
     "core/command_storage_backend.cc",
     "core/command_storage_backend.h",
+    "core/command_storage_features.cc",
+    "core/command_storage_features.h",
     "core/command_storage_manager.cc",
     "core/command_storage_manager.h",
     "core/command_storage_manager_delegate.h",

@@ -11,13 +11,16 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/sessions/core/command_storage_backend.h"
+#include "components/sessions/core/command_storage_features.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/sessions/core/session_command.h"
 
@@ -50,7 +53,9 @@ CommandStorageManager::CommandStorageManager(
     CommandStorageManagerDelegate* delegate,
     os_crypt_async::OSCryptAsync* os_crypt_async,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
-    : backend_(base::MakeRefCounted<CommandStorageBackend>(
+    : file_path_(path),
+      session_type_(type),
+      backend_(base::MakeRefCounted<CommandStorageBackend>(
           backend_task_runner ? backend_task_runner
                               : CreateDefaultBackendTaskRunner(),
           path,
@@ -59,9 +64,11 @@ CommandStorageManager::CommandStorageManager(
       delegate_(delegate),
       backend_task_runner_(backend_->owning_task_runner()) {
   CHECK(os_crypt_async);
-  // TODO(crbug.com/479420496): Use os_crypt_async to encrypt commands.
-  // First, we'll call OSCryptAsync::GetInstance() to get an Encryptor.
-  // Then we'll create a second CommandStorageBackend with the Encryptor.
+  if (ShouldWriteEncryptedFiles()) {
+    os_crypt_async->GetInstance(base::BindOnce(
+        &CommandStorageManager::OnEncryptorReady, weak_factory_.GetWeakPtr(),
+        /*start_time=*/base::TimeTicks::Now()));
+  }
 }
 
 CommandStorageManager::~CommandStorageManager() = default;
@@ -71,6 +78,30 @@ scoped_refptr<base::SequencedTaskRunner>
 CommandStorageManager::CreateDefaultBackendTaskRunner() {
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+}
+
+bool CommandStorageManager::ShouldWriteEncryptedFiles() const {
+  EncryptSessionStorageStage stage = GetEncryptSessionStorageStage();
+  switch (stage) {
+    case EncryptSessionStorageStage::kWriteBothReadOnlyClear:
+    case EncryptSessionStorageStage::kWriteBothReadPreferEncrypted:
+    case EncryptSessionStorageStage::kWriteEncryptedReadPreferEncrypted:
+      // On iOS, SessionRestore and AppRestore do not use CommandStorageBackend.
+      return session_type_ == SessionType::kTabRestore || !BUILDFLAG(IS_IOS);
+    case EncryptSessionStorageStage::kClearOnly:
+      return false;
+  }
+  return false;
+}
+
+void CommandStorageManager::OnEncryptorReady(
+    base::TimeTicks start_time,
+    os_crypt_async::Encryptor encryptor) {
+  DCHECK(ShouldWriteEncryptedFiles());
+  base::UmaHistogramTimes(
+      "Session.CommandStorageManager.OnEncryptorReadyDuration",
+      base::TimeTicks::Now() - start_time);
+  // TODO: crbug.com/b/479420496 - Use encryptor to create encrypted backend.
 }
 
 void CommandStorageManager::ScheduleCommand(

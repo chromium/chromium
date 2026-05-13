@@ -56,6 +56,10 @@ CommandStorageManagerTestHelper::GetBackendTaskRunner() {
   return command_storage_manager_->backend_task_runner_;
 }
 
+bool CommandStorageManagerTestHelper::ShouldWriteEncryptedFiles() {
+  return command_storage_manager_->ShouldWriteEncryptedFiles();
+}
+
 void CommandStorageManagerTestHelper::ForceAppendCommandsToFailForTesting() {
   RunTaskOnBackendThread(
       FROM_HERE,

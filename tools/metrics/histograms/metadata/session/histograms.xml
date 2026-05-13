@@ -156,6 +156,21 @@ chromium-metrics-reviews@google.com.
   <token key="EncryptedStatus" variants="EncryptedStatus"/>
 </histogram>
 
+<histogram name="Session.CommandStorageManager.OnEncryptorReadyDuration"
+    units="ms" expires_after="2026-09-01">
+  <owner>sammon@google.com</owner>
+  <owner>dljames@chromium.org</owner>
+  <summary>
+    The duration from when OSCryptAsync::GetInstance is requested by a
+    CommandStorageManager to when an Encryptor is received via the
+    OnEncryptorReady callback. An Encryptor is only requested if
+    ShouldWriteEncryptedFiles() is true; this metric is not recorded otherwise.
+    Note that there may be multiple CommandStorageManagers (e.g. for different
+    session types and different profiles), so this metric may be recorded
+    multiple times per app startup.
+  </summary>
+</histogram>
+
 <histogram name="Session.ID.RestoredDifference" units="Session IDs"
     expires_after="2026-10-04">
   <owner>gambard@chromium.org</owner>
