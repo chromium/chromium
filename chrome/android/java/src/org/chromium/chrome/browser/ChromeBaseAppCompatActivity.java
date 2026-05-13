@@ -264,10 +264,27 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     R.anim.shared_x_axis_close_exit,
                     SemanticColorUtils.getDefaultBgColor(this));
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
-            mNtpThemeStateObserver = () -> recreate();
-            NtpThemeStateProvider.getInstance().addObserver(mNtpThemeStateObserver);
+            if (mNtpThemeStateObserver == null) {
+                mNtpThemeStateObserver = () -> recreate();
+                NtpThemeStateProvider.getInstance().addObserver(mNtpThemeStateObserver);
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mNtpThemeStateObserver != null) {
+            NtpThemeStateProvider.getInstance().removeObserver(mNtpThemeStateObserver);
+            mNtpThemeStateObserver = null;
         }
     }
 
@@ -349,10 +366,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (mEdgeToEdgeControllerCreator != null) {
             mEdgeToEdgeControllerCreator.destroy();
             mEdgeToEdgeControllerCreator = null;
-        }
-        if (mNtpThemeStateObserver != null) {
-            NtpThemeStateProvider.getInstance().removeObserver(mNtpThemeStateObserver);
-            mNtpThemeStateObserver = null;
         }
         super.onDestroy();
     }
