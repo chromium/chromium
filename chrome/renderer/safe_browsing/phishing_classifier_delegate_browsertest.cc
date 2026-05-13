@@ -175,6 +175,16 @@ class PhishingClassifierDelegateTest
                        base::Unretained(this)));
   }
 
+  void StartPhishingDetectionWithCallback(
+      const GURL& url,
+      PhishingClassifierDelegate::StartPhishingDetectionCallback callback) {
+    EXPECT_CALL(*classifier_, CancelPendingClassification())
+        .Times(testing::AtMost(1));
+    EXPECT_CALL(*classifier_,
+                SetClientSideDetectionType(std::optional(kTriggerModels)));
+    delegate_->StartPhishingDetection(url, kTriggerModels, std::move(callback));
+  }
+
   void SimulateRedirection(const GURL& redir_url) {
     delegate_->last_url_received_from_browser_ = redir_url;
   }
@@ -768,6 +778,56 @@ TEST_P(PhishingClassifierDelegateTest, PhishingDetectionDone) {
   RunAndVerifyClassificationDone(verdict);
 
   // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
+TEST_P(PhishingClassifierDelegateTest, ClassificationDoneWithUrlQueryMismatch) {
+  SetScorer(/*model_version=*/1);
+  ASSERT_TRUE(classifier_->is_ready());
+
+  GURL url("http://host.test/index.html");
+  EXPECT_CALL(*classifier_, CancelPendingClassification())
+      .Times(testing::AnyNumber());
+  LoadHTMLWithUrlOverride("<html><body>phish</body></html>",
+                          url.spec().c_str());
+  Mock::VerifyAndClearExpectations(classifier_);
+
+  bool callback_called = false;
+  StartPhishingDetectionWithCallback(
+      url, base::BindOnce(
+               [](bool* called, mojom::PhishingDetectorResult result,
+                  std::optional<mojo_base::ProtoWrapper> proto) {
+                 *called = true;
+                 EXPECT_EQ(mojom::PhishingDetectorResult::SUCCESS, result);
+                 ASSERT_TRUE(proto.has_value());
+                 auto verdict_out = proto->As<ClientPhishingRequest>();
+                 ASSERT_TRUE(verdict_out.has_value());
+                 EXPECT_EQ("http://host.test/index.html?ws=workspace",
+                           verdict_out->url());
+               },
+               &callback_called));
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    delegate_->PageCaptured(false);
+    run_loop.Run();
+    Mock::VerifyAndClearExpectations(classifier_);
+  }
+
+  // Now run the callback to simulate the classifier finishing.
+  // Set verdict URL to have query parameters.
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://host.test/index.html?ws=workspace");
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+
+  // This should not crash on DCHECK even though URLs differ by query.
+  RunAndVerifyClassificationDone(verdict);
+
+  EXPECT_TRUE(callback_called);
+
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
