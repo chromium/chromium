@@ -597,9 +597,66 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     loadTimeData.overrideValues({searchSettingsUpdate: true});
 
     entry = document.createElement('settings-search-engine-entry');
+    entry.engine = createSampleSearchEngine();
+    entry.prefs = {
+      default_search_provider_data: {
+        template_url_data: {},
+      },
+    };
     document.body.appendChild(entry);
 
     return flushTasks();
+  });
+
+  function setControlledByExtension(extensionId: string) {
+    entry.set('prefs.default_search_provider_data.template_url_data', {
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+      controlledByName: 'fake extension name',
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      extensionId: extensionId,
+      extensionCanBeDisabled: true,
+      value: {},
+    });
+    flush();
+  }
+
+  // Verifies that the action menu (three-dot menu) is visible. Engines managed
+  // by extensions should have the menu disabled.
+  test('ActionMenuBehavior', function() {
+    // Test for regular engine (Action menu should be visible and not disabled).
+    let menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assertTrue(isVisible(menuButton));
+    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+
+    // Simulate installing an extension that controls `engine`.
+    const engine = createSampleOmniboxExtension({isOmniboxExtension: false});
+    assertTrue(!!engine.extension);
+    setControlledByExtension(engine.extension.id);
+
+    // Test for engine set by an omnibox extension (Action menu should be
+    // visible and disabled).
+    entry.engine = engine;
+    menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assertTrue(isVisible(menuButton));
+    assertTrue(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+
+    // Test for the omnibox extension which sets the default engine (Action menu
+    // should be visible and not disabled).
+    entry.engine = createSampleOmniboxExtension({isOmniboxExtension: true});
+    menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assertTrue(isVisible(menuButton));
+    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+
+    // Test for regular engine (Action menu should be still visible and not
+    // disabled).
+    entry.engine = createSampleSearchEngine();
+    menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assertTrue(isVisible(menuButton));
+    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
   });
 
   // Test the edit option availability for different states.
@@ -786,7 +843,7 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
   // Tests that the "Disable" option is visible and functional for extensions
   // that can be disabled.
   test('DisableExtension', async function() {
-    entry.engine = createSampleOmniboxExtension(/*canBeDisabled=*/ true);
+    entry.engine = createSampleOmniboxExtension();
     openActionMenu(entry);
 
     const disableButton = entry.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -803,9 +860,21 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
   // Tests that the "Disable" option is hidden for extensions that cannot be
   // disabled.
   test('DisableExtension_Hidden', function() {
-    entry.engine = createSampleOmniboxExtension();
-    openActionMenu(entry);
-    assertButtonHidden(entry, '#disableExtensionOption');
+    assertButtonHidden(
+        entry, '#disableExtensionOption', createSampleOmniboxExtension({
+          extension: {
+            icon: 'chrome://extension-icon/some-extension-icon',
+            id: 'dummyextensionid',
+            name: 'Omnibox extension',
+            canBeDisabled: false,
+          },
+        }));
+
+    // The option is only available if the shortcuts is not an omnibox
+    // extension.
+    assertButtonHidden(
+        entry, '#disableExtensionOption',
+        createSampleOmniboxExtension({isOmniboxExtension: false}));
   });
 
   // Tests that the "Manage" option is visible and functional for extensions.
@@ -827,6 +896,14 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     const menu = entry.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!menu);
     assertFalse(menu.open);
+  });
+
+  // Tests that the "Manage" option is hidden for engines that are managed by an
+  // extension.
+  test('ManageExtension_Hidden', function() {
+    assertButtonHidden(
+        entry, '#manageExtensionOption',
+        createSampleOmniboxExtension({isOmniboxExtension: false}));
   });
 
   // Tests that the "Delete" option is hidden for extensions.

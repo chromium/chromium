@@ -18,10 +18,12 @@
   </settings-search-page>
 
   <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]" restamp>
-    <settings-site-shortcuts-page slot="view" id="siteShortcuts">
+    <settings-site-shortcuts-page slot="view" id="siteShortcuts"
+        prefs="[[prefs]]">
     </settings-site-shortcuts-page>
 
-    <settings-feature-shortcuts-page slot="view" id="featureShortcuts">
+    <settings-feature-shortcuts-page slot="view" id="featureShortcuts"
+        prefs="[[prefs]]">
     </settings-feature-shortcuts-page>
 
     <settings-keyboard-shortcut-page slot="view" id="keyboardShortcut"

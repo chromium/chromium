@@ -148,32 +148,34 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
       override || {});
 }
 
-export function createSampleOmniboxExtension(canBeDisabled: boolean = false):
+export function createSampleOmniboxExtension(override?: Partial<SearchEngine>):
     SearchEngine {
-  return {
-    canBeDefault: false,
-    canBeEdited: false,
-    canBeRemoved: false,
-    canBeActivated: false,
-    canBeDeactivated: true,
-    default: false,
-    displayName: 'Omnibox extension displayName',
-    iconPath: 'images/foo.png',
-    extension: {
-      icon: 'chrome://extension-icon/some-extension-icon',
-      id: 'dummyextensionid',
-      name: 'Omnibox extension',
-      canBeDisabled: canBeDisabled,
-    },
-    id: 0,
-    isManaged: false,
-    isOmniboxExtension: true,
-    isPrepopulated: false,
-    isStarterPack: false,
-    keyword: 'oe',
-    name: 'Omnibox extension',
-    shouldConfirmRemoval: false,
-    url: 'chrome-extension://dummyextensionid/?q=%s',
-    urlLocked: false,
-  };
+  return Object.assign(
+      {
+        canBeDefault: false,
+        canBeEdited: false,
+        canBeRemoved: false,
+        canBeActivated: false,
+        canBeDeactivated: true,
+        default: false,
+        displayName: 'Omnibox extension displayName',
+        iconPath: 'images/foo.png',
+        extension: {
+          icon: 'chrome://extension-icon/some-extension-icon',
+          id: 'dummyextensionid',
+          name: 'Omnibox extension',
+          canBeDisabled: true,
+        },
+        id: 0,
+        isManaged: false,
+        isOmniboxExtension: true,
+        isPrepopulated: false,
+        isStarterPack: false,
+        keyword: 'oe',
+        name: 'Omnibox extension',
+        shouldConfirmRemoval: false,
+        url: 'chrome-extension://dummyextensionid/?q=%s',
+        urlLocked: false,
+      },
+      override || {});
 }
