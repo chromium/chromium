@@ -40,6 +40,7 @@ android_library("java") {
     "//base:resetters_java",
     "//build/android:build_java",
     "//chrome/browser/ui/android/extensions/windowing:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]

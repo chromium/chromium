@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -79,7 +80,8 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
     }
 
     @Override
-    public void onAddedToTask(long nativeBrowserWindowPtr) {
+    public void onAddedToTask(InitInfo initInfo) {
+        long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
         if (nativeBrowserWindowPtr == 0) return;
         mNativeContextualTasksBridge =
                 ContextualTasksBridgeJni.get().init(this, nativeBrowserWindowPtr, mProfile);

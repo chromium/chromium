@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.ActivityScopedObjects;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.ChromeAndroidTaskWithMockDeps;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
@@ -944,33 +945,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void
-            addFeature_nativeBrowserWindowMatchingFeatureKeyExists_invokesOnAddedToTaskWithBrowserWindowPtr() {
-        // Arrange.
-        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
-        var activityWindowAndroid =
-                chromeAndroidTaskWithMockDeps
-                        .mActivityWindowAndroidMocks
-                        .mMockActivityWindowAndroid;
-        var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
-
-        // Act.
-        chromeAndroidTask.addFeature(
-                new ChromeAndroidTaskFeatureKey(
-                        TestChromeAndroidTaskFeature.class, profile, activityWindowAndroid),
-                () -> testFeature);
-
-        // Assert.
-        assertEquals(1, testFeature.mOnAddedToTaskHistory.size());
-        assertEquals(
-                FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
-                (long) testFeature.mOnAddedToTaskHistory.get(0));
-    }
-
-    @Test
-    public void
-            addFeature_nativeBrowserWindowMatchingFeatureKeyDoesNotExist_invokesOnAddedToTaskWithNullPtr() {
+            addFeature_nativeBrowserWindowMatchingFeatureKeyDoesNotExist_invokesOnAddedToTaskWithNullBrowserWindowPtr() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
@@ -991,8 +966,39 @@ public class ChromeAndroidTaskImplUnitTest {
                 () -> testFeature);
 
         // Assert.
-        assertEquals(1, testFeature.mOnAddedToTaskHistory.size());
-        assertEquals(0, (long) testFeature.mOnAddedToTaskHistory.get(0));
+        assertEquals(1, testFeature.mInitInfoHistory.size());
+        assertEquals(0, testFeature.mInitInfoHistory.get(0).nativeBrowserWindowPtr);
+    }
+
+    @Test
+    public void addFeature_invokesOnAddedToTaskWithCorrectInitInfo() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        var activityWindowAndroid = activityWindowAndroidMocks.mMockActivityWindowAndroid;
+        var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+
+        // Arrange: Set custom display ID and scaling factor on the mock display.
+        int displayId = 3;
+        float dipScale = 2.0f;
+        when(activityWindowAndroidMocks.mMockDisplayAndroid.getDisplayId()).thenReturn(displayId);
+        when(activityWindowAndroidMocks.mMockDisplayAndroid.getDipScale()).thenReturn(dipScale);
+
+        // Act.
+        chromeAndroidTask.addFeature(
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, profile, activityWindowAndroid),
+                () -> testFeature);
+
+        // Assert: Verify InitInfo passed to onAddedToTask.
+        assertEquals(1, testFeature.mInitInfoHistory.size());
+        InitInfo initInfo = testFeature.mInitInfoHistory.get(0);
+        assertEquals(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, initInfo.nativeBrowserWindowPtr);
+        assertTrue(initInfo.isVisible);
+        assertEquals(DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX, initInfo.boundsInPx);
+        assertEquals(displayId, initInfo.displayId);
     }
 
     @Test
@@ -1015,10 +1021,10 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         // Assert: only the first addFeature() should invoke onAddedToTask().
-        assertEquals(1, testFeature.mOnAddedToTaskHistory.size());
+        assertEquals(1, testFeature.mInitInfoHistory.size());
         assertEquals(
                 FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
-                (long) testFeature.mOnAddedToTaskHistory.get(0));
+                testFeature.mInitInfoHistory.get(0).nativeBrowserWindowPtr);
     }
 
     @Test
@@ -3847,8 +3853,8 @@ public class ChromeAndroidTaskImplUnitTest {
 
         final CallbackHelper mOnFeatureRemovedHelper = new CallbackHelper();
 
-        /** Records the {@code nativeBrowserWindowPtr} passed to {@link #onAddedToTask(long)}. */
-        final List<Long> mOnAddedToTaskHistory = new ArrayList<>();
+        /** Records the {@link InitInfo} passed to {@link #onAddedToTask(InitInfo)}. */
+        final List<InitInfo> mInitInfoHistory = new ArrayList<>();
 
         /** Records the bounds passed to {@link #onTaskBoundsChanged}. */
         final List<Rect> mTaskBoundsChangeHistory = new ArrayList<>();
@@ -3875,8 +3881,8 @@ public class ChromeAndroidTaskImplUnitTest {
         }
 
         @Override
-        public void onAddedToTask(long nativeBrowserWindowPtr) {
-            mOnAddedToTaskHistory.add(nativeBrowserWindowPtr);
+        public void onAddedToTask(InitInfo initInfo) {
+            mInitInfoHistory.add(initInfo);
         }
 
         @Override

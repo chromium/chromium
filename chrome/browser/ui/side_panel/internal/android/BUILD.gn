@@ -52,6 +52,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/browser/ui/side_panel/android:java",
     "//chrome/browser/ui/side_panel_container/public:java",
     "//components/cached_flags:java",

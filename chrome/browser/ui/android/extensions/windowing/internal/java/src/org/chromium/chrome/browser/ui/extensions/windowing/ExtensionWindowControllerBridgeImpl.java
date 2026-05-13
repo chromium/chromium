@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,13 +76,13 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
     ExtensionWindowControllerBridgeImpl() {}
 
     @Override
-    public void onAddedToTask(long nativeBrowserWindowPtr) {
+    public void onAddedToTask(InitInfo initInfo) {
         assert mNativeExtensionWindowControllerBridge == 0
                 : "ExtensionWindowControllerBridge is already added to a task.";
 
         mNativeExtensionWindowControllerBridge =
                 ExtensionWindowControllerBridgeImplJni.get()
-                        .create(/* caller= */ this, nativeBrowserWindowPtr);
+                        .create(/* caller= */ this, initInfo.nativeBrowserWindowPtr);
     }
 
     @Override

@@ -11,6 +11,7 @@ android_library("native_unit_test_support_java") {
   deps = [
     "//build/android:build_java",
     "//chrome/browser/ui/android/extensions/windowing/internal:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
     "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [ ":native_unit_test_support_jni" ]

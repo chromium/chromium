@@ -17,6 +17,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContent;
 
@@ -40,7 +41,8 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     }
 
     @Override
-    public void onAddedToTask(long nativeBrowserWindowPtr) {
+    public void onAddedToTask(InitInfo initInfo) {
+        long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
         log(TAG, "onAddedToTask", nativeBrowserWindowPtr);
         createNativePtr(nativeBrowserWindowPtr);
     }

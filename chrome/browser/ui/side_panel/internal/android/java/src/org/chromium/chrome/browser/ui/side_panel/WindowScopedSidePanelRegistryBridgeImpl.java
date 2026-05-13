@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
 /** Implements {@link WindowScopedSidePanelRegistryBridge}. */
 @NullMarked
@@ -25,7 +26,8 @@ final class WindowScopedSidePanelRegistryBridgeImpl implements WindowScopedSideP
     }
 
     @Override
-    public void onAddedToTask(long nativeBrowserWindowPtr) {
+    public void onAddedToTask(InitInfo initInfo) {
+        long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
         log(TAG, "onAddedToTask", nativeBrowserWindowPtr);
         createNativePtr(nativeBrowserWindowPtr);
     }

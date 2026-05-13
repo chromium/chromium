@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.ui.extensions.windowing;
 
 import android.graphics.Rect;
+import android.view.Display;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
 /**
  * Supports {@code extension_window_controller_bridge_unittest.cc}.
@@ -37,7 +39,12 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
 
     @CalledByNative
     private void invokeOnAddedToTask(long nativeBrowserWindowPtr) {
-        mExtensionWindowControllerBridge.onAddedToTask(nativeBrowserWindowPtr);
+        mExtensionWindowControllerBridge.onAddedToTask(
+                new InitInfo(
+                        nativeBrowserWindowPtr,
+                        /* isVisible= */ true,
+                        new Rect(),
+                        Display.DEFAULT_DISPLAY));
     }
 
     @CalledByNative

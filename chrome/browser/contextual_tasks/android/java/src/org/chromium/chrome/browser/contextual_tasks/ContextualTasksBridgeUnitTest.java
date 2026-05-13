@@ -12,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Rect;
+import android.view.Display;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
@@ -72,7 +75,12 @@ public class ContextualTasksBridgeUnitTest {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
 
         mBridge = new ContextualTasksBridge(mProfile, mWindowAndroid);
-        mBridge.onAddedToTask(TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR);
+        mBridge.onAddedToTask(
+                new InitInfo(
+                        TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR,
+                        /* isVisible= */ true,
+                        new Rect(),
+                        Display.DEFAULT_DISPLAY));
 
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockHelpAndFeedbackLauncher);
     }
