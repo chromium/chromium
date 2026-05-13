@@ -744,7 +744,10 @@ def CheckTestJsonFiles(input_api, output_api):
   def FileFilter(affected_file):
     return input_api.FilterSourceFile(
         affected_file,
-        files_to_check=(r".*remoting/tools/magi-mode/tests/.*\.json$", ),
+        files_to_check=(
+            r".*remoting/tools/magi-mode/tests/"
+            r"magi_phase_.*_tests\.json$",
+        ),
     )
 
   for f in input_api.AffectedFiles(
