@@ -2071,6 +2071,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, PersistAndRestoreUserAgentOverride) {
 // was wrong, leading to the wrong tab getting selected, DCHECKs firing, and the
 // pinned tab not getting loaded.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestorePinnedSelectedTab) {
+#if defined(MEMORY_SANITIZER)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+#endif
+
   // Create a pinned tab.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
   browser()->tab_strip_model()->SetTabPinned(0, true);
