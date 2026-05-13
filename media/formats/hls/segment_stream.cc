@@ -211,4 +211,9 @@ void SegmentStream::ResetExpectingFutureManifest(base::TimeDelta time) {
   next_segment_start_ = time;
 }
 
+void SegmentStream::SetSeekable(bool seekable) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  seekable_ = seekable;
+}
+
 }  // namespace media::hls

@@ -402,7 +402,18 @@ void HlsRenditionImpl::Stop() {
 
 void HlsRenditionImpl::UpdatePlaylist(
     scoped_refptr<hls::MediaPlaylist> playlist) {
+  std::optional<base::TimeDelta> new_duration;
+  if (!playlist->HasMediaSequenceTag() ||
+      (playlist->IsEndList() && !playlist->GetSegments().empty())) {
+    new_duration = playlist->GetComputedDuration();
+  }
+
   segments_->SetNewPlaylist(std::move(playlist));
+
+  if (new_duration.has_value()) {
+    duration_ = new_duration;
+    segments_->SetSeekable(true);
+  }
 }
 
 void HlsRenditionImpl::UpdatePlaylistURI(const GURL& playlist_uri) {

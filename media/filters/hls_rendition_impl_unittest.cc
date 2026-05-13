@@ -135,6 +135,74 @@ const std::string kSecondFetchLiveLongPlaylist =
     "#EXTINF:10.00000,\n"
     "playlist_4500Kb_14551358.ts\n";
 
+const std::string kNowAsVodPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-TARGETDURATION:10\n"
+    "#EXT-X-MEDIA-SEQUENCE:14551245\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551245.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551246.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551247.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551248.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551249.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551250.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551251.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551252.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551253.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551254.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551255.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551256.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551257.ts\n"
+    "#EXT-X-ENDLIST\n";
+
+const std::string kNowAsVodPlaylistWithOneMore =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-TARGETDURATION:10\n"
+    "#EXT-X-MEDIA-SEQUENCE:14551245\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551245.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551246.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551247.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551248.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551249.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551250.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551251.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551252.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551253.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551254.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551255.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551256.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551257.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551258.ts\n"
+    "#EXT-X-ENDLIST\n";
+
 const std::string kAESContent =
     "#EXTM3U\n"
     "#EXT-X-VERSION:3\n"
@@ -285,6 +353,18 @@ class HlsRenditionImplUnittest : public testing::Test {
 
   ManifestDemuxer::DelayCallback BindCheckState(base::TimeDelta time) {
     EXPECT_CALL(*this, CheckStateComplete(time));
+    return base::BindOnce(&HlsRenditionImplUnittest::CheckStateComplete,
+                          base::Unretained(this));
+  }
+
+  ManifestDemuxer::DelayCallback BindCheckStateAndUpdateClock(
+      base::TimeDelta& time) {
+    EXPECT_CALL(*this, CheckStateComplete(_))
+        .WillOnce([&time, this](base::TimeDelta delay) {
+          delay += base::Seconds(0.1);
+          time += delay;
+          task_environment_.FastForwardBy(delay);
+        });
     return base::BindOnce(&HlsRenditionImplUnittest::CheckStateComplete,
                           base::Unretained(this));
   }
@@ -1218,6 +1298,146 @@ TEST_F(HlsRenditionImplUnittest, TestManifestUpdateWaitWithEmptyQueue) {
   rendition->CheckState(base::Seconds(0), 1.0,
                         BindCheckState(base::Seconds(0)));
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsRenditionImplUnittest, TestLiveToVodAdaptation) {
+  auto rendition =
+      MakeLiveRendition(GURL("http://example.com"), kInitialFetchLongPlaylist);
+  ASSERT_NE(rendition, nullptr);
+  ASSERT_EQ(rendition->GetDuration(), std::nullopt);
+  base::TimeDelta clock = base::Seconds(0);
+
+  {
+    std::string segment = "tscontent";
+    RespondToUrl("http://example.com/playlist_4500Kb_14551255.ts", segment);
+    RequireAppend(base::as_byte_span(segment));
+    RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                          base::Seconds(10));
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    task_environment_.RunUntilIdle();
+    ASSERT_EQ(clock, base::Seconds(0.1));
+  }
+  {
+    std::string segment = "...56.ts";
+    RespondToUrl("http://example.com/playlist_4500Kb_14551256.ts", segment);
+    RequireAppend(base::as_byte_span(segment));
+    RespondWithRangeTwice(base::Seconds(0), base::Seconds(10), base::Seconds(0),
+                          base::Seconds(20));
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    ASSERT_EQ(clock, base::Seconds(0.2));
+  }
+  {
+    RespondWithRange(base::Seconds(0), base::Seconds(20));
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    ASSERT_EQ(clock, base::Seconds(15.1));
+  }
+  {
+    std::string segment = "...57.ts";
+    RespondToUrl("http://example.com/playlist_4500Kb_14551257.ts", segment);
+    RequireAppend(base::as_byte_span(segment));
+    RespondWithRangeTwice(base::Seconds(0), base::Seconds(20), base::Seconds(0),
+                          base::Seconds(30));
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    ASSERT_EQ(clock, base::Seconds(15.2));
+  }
+  {
+    RespondWithRange(base::Seconds(0), base::Seconds(30));
+    EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
+        .WillOnce([&rendition](std::string role, GURL uri,
+                               HlsDemuxerStatusCallback cb) {
+          auto parsed = hls::MediaPlaylist::Parse(
+              kNowAsVodPlaylist, GURL("http://example.com"), 3, nullptr);
+          CHECK(parsed.has_value());
+          rendition->UpdatePlaylist(std::move(parsed).value());
+          std::move(cb).Run(OkStatus());
+        });
+    // Before update, duration is nullopt.
+    ASSERT_EQ(rendition->GetDuration(), std::nullopt);
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    ASSERT_EQ(clock, base::Seconds(25.1));
+    ASSERT_EQ(rendition->GetDuration(), base::Seconds(130));
+  }
+  {
+    RespondWithRange(base::Seconds(0), base::Seconds(30));
+    EXPECT_CALL(*mock_hrh_, SetEndOfStream(true));
+    rendition->CheckState(clock, 1.0, BindCheckState(kNoTimestamp));
+    ASSERT_EQ(clock, base::Seconds(25.1));
+  }
+}
+
+TEST_F(HlsRenditionImplUnittest, TestLiveToVodAdaptationWithExhaustedQueue) {
+  auto rendition =
+      MakeLiveRendition(GURL("http://example.com"), kInitialFetchLongPlaylist);
+  ASSERT_NE(rendition, nullptr);
+  ASSERT_EQ(rendition->GetDuration(), std::nullopt);
+  base::TimeDelta clock = base::Seconds(0);
+
+  {
+    std::string segment = "tscontent";
+    RespondToUrl("http://example.com/playlist_4500Kb_14551255.ts", segment);
+    RequireAppend(base::as_byte_span(segment));
+    RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                          base::Seconds(10));
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    task_environment_.RunUntilIdle();
+    ASSERT_EQ(clock, base::Seconds(0.1));
+  }
+  {
+    std::string segment = "...56.ts";
+    RespondToUrl("http://example.com/playlist_4500Kb_14551256.ts", segment);
+    RequireAppend(base::as_byte_span(segment));
+    RespondWithRangeTwice(base::Seconds(0), base::Seconds(10), base::Seconds(0),
+                          base::Seconds(20));
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    ASSERT_EQ(clock, base::Seconds(0.2));
+  }
+  {
+    RespondWithRange(base::Seconds(0), base::Seconds(20));
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    ASSERT_EQ(clock, base::Seconds(15.1));
+  }
+  {
+    std::string segment = "...57.ts";
+    RespondToUrl("http://example.com/playlist_4500Kb_14551257.ts", segment);
+    RequireAppend(base::as_byte_span(segment));
+    RespondWithRangeTwice(base::Seconds(0), base::Seconds(20), base::Seconds(0),
+                          base::Seconds(30));
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    ASSERT_EQ(clock, base::Seconds(15.2));
+  }
+  {
+    RespondWithRange(base::Seconds(0), base::Seconds(30));
+    EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
+        .WillOnce([&rendition](std::string role, GURL uri,
+                               HlsDemuxerStatusCallback cb) {
+          auto parsed =
+              hls::MediaPlaylist::Parse(kNowAsVodPlaylistWithOneMore,
+                                        GURL("http://example.com"), 3, nullptr);
+          CHECK(parsed.has_value());
+          rendition->UpdatePlaylist(std::move(parsed).value());
+          std::move(cb).Run(OkStatus());
+        });
+    // Before update, duration is nullopt.
+    ASSERT_EQ(rendition->GetDuration(), std::nullopt);
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    ASSERT_EQ(clock, base::Seconds(25.1));
+    ASSERT_EQ(rendition->GetDuration(), base::Seconds(140));
+  }
+  {
+    std::string segment = "...58.ts";
+    RespondToUrl("http://example.com/playlist_4500Kb_14551258.ts", segment);
+    RequireAppend(base::as_byte_span(segment));
+    RespondWithRangeTwice(base::Seconds(0), base::Seconds(30), base::Seconds(0),
+                          base::Seconds(40));
+    rendition->CheckState(clock, 1.0, BindCheckStateAndUpdateClock(clock));
+    ASSERT_EQ(clock, base::Seconds(25.2));
+  }
+  {
+    RespondWithRange(base::Seconds(0), base::Seconds(40));
+    EXPECT_CALL(*mock_hrh_, SetEndOfStream(true));
+    rendition->CheckState(clock, 1.0, BindCheckState(kNoTimestamp));
+    ASSERT_EQ(clock, base::Seconds(25.2));
+  }
 }
 
 }  // namespace media

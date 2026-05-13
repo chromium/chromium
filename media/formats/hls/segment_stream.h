@@ -67,6 +67,10 @@ class MEDIA_EXPORT SegmentStream {
   // future somewhere.
   void ResetExpectingFutureManifest(base::TimeDelta new_start_time);
 
+  // Sets whether this stream is seekable. Used when transitioning from live to
+  // VOD.
+  void SetSeekable(bool seekable);
+
  private:
   class SegmentIndex {
    public:
@@ -93,7 +97,7 @@ class MEDIA_EXPORT SegmentStream {
   // duration, queuing the last 3 segments achieves RFC compliance.
   void SkipEarlySegmentsForLiveStream();
 
-  const bool seekable_;
+  bool seekable_;
   base::TimeDelta next_segment_start_;
 
   base::queue<scoped_refptr<MediaSegment>> segments_;
