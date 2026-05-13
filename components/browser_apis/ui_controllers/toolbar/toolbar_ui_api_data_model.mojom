@@ -312,6 +312,9 @@ struct PinnedToolbarActionState {
   // Should this button appear enabled?
   bool enabled;
 
+  // Should this button appear activated?
+  bool activated;
+
   // Tooltip text to display on hover.
   mojo_base.mojom.String16 tooltip;
 

@@ -3366,6 +3366,48 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinUnpinnable) {
       [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       ActivatedRendering) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  actions::ActionId action_id = kActionPrint;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
+
+  PinAction(action_id, mojom_action);
+
+  auto verify_activated = [&](bool expected) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return EvalJsOnPinnedButton(
+                 web_contents, mojom_action,
+                 base::StringPrintf(
+                     "const indicator = "
+                     "actionEl.shadowRoot.querySelector('.status-indicator'); "
+                     "return btn.hasAttribute('is-activated') === %s && "
+                     "!!indicator && indicator.checkVisibility() === %s;",
+                     expected ? "true" : "false", expected ? "true" : "false"))
+          .ExtractBool();
+    }));
+  };
+
+  // Initially not activated.
+  verify_activated(false);
+
+  // Set activated.
+  actions::ActionManager::Get()
+      .FindAction(action_id, browser()->GetActions()->root_action_item())
+      ->SetProperty(kActionItemUnderlineIndicatorKey, true);
+  verify_activated(true);
+
+  // Set not activated.
+  actions::ActionManager::Get()
+      .FindAction(action_id, browser()->GetActions()->root_action_item())
+      ->SetProperty(kActionItemUnderlineIndicatorKey, false);
+  verify_activated(false);
+}
+
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, StateAccessors) {
   PinnedToolbarActions* view =
       GetWebUIToolbarWebView(browser())->GetPinnedToolbarActions();

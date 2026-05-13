@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
@@ -102,6 +103,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
         highlighted || (menu_runner_ && menu_runner_->IsRunning() &&
                         active_context_menu_action_ == id);
     state->enabled = item->GetEnabled();
+    state->activated = item->GetProperty(kActionItemUnderlineIndicatorKey);
     state->tooltip = item->GetTooltipText();
     state->accessibility_text = item->GetAccessibleName();
     if (auto element_id = webui_toolbar::ActionIdToElementIdentifier(id)) {

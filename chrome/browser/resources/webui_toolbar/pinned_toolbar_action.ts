@@ -46,6 +46,7 @@ export class PinnedToolbarActionElement extends CrLitElement {
     action: PinnedToolbarAction.kUnspecified,
     highlighted: false,
     enabled: true,
+    activated: false,
     tooltip: '',
     accessibilityText: '',
     elementId: null,

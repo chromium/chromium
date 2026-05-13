@@ -12,10 +12,12 @@ export function getHtml(this: PinnedToolbarActionElement) {
       class="${this.getIcon_().className ?? nothing}"
       ?disabled="${!this.state.enabled}"
       ?is-menu-open="${this.state.highlighted}"
+      ?is-activated="${this.state.activated}"
       title="${this.state.tooltip}"
       aria-label="${this.state.accessibilityText || this.state.tooltip}"
       @click="${this.onActionClick_}"
       @contextmenu="${this.onContextmenu_}">
   </cr-icon-button>
+<div class="status-indicator" ?hidden="${!this.state.activated}"></div>
 <!--_html_template_end_-->`;
 }
