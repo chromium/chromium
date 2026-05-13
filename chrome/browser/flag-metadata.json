@@ -7541,11 +7541,7 @@
     ],
     "expiry_milestone": 160
   },
-  {
-    "name": "pcie-billboard-notification",
-    "owners": [ "jimmyxgong@chromium.org", "cros-device-enablement@google.com"],
-    "expiry_milestone": 150
-  },
+
   {
     "name": "pdf-ink2",
     "owners": [ "andyphan@chromium.org", "thestig@chromium.org" ],

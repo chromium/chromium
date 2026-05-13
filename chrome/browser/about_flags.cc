@@ -7953,11 +7953,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNearbyPresenceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kNearbyPresence)},
 
-    {"pcie-billboard-notification",
-     flag_descriptions::kPcieBillboardNotificationName,
-     flag_descriptions::kPcieBillboardNotificationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPcieBillboardNotification)},
-
     {"use-search-click-for-right-click",
      flag_descriptions::kUseSearchClickForRightClickName,
      flag_descriptions::kUseSearchClickForRightClickDescription, kOsCrOS,

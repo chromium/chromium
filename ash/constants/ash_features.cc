@@ -1532,12 +1532,6 @@ BASE_FEATURE(kOrcaSupportDemoMode, base::FEATURE_ENABLED_BY_DEFAULT);
 // if jelly-colors is also enabled.
 BASE_FEATURE(kParentAccessJelly, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a notification warning users that their Thunderbolt device is not
-// supported on their CrOS device.
-// TODO(crbug.com/40199811): Revisit this flag when there is a way to query
-// billboard devices correctly.
-BASE_FEATURE(kPcieBillboardNotification, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Limits the items on the shelf to the ones associated with windows the
 // currently active desk.
 BASE_FEATURE(kPerDeskShelf, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3046,10 +3040,6 @@ bool IsOobeSplitModifierKeyboardInfoEnabled() {
 
 bool IsParentAccessJellyEnabled() {
   return base::FeatureList::IsEnabled(kParentAccessJelly);
-}
-
-bool IsPcieBillboardNotificationEnabled() {
-  return base::FeatureList::IsEnabled(kPcieBillboardNotification);
 }
 
 bool IsPerDeskShelfEnabled() {

@@ -82,10 +82,6 @@ void PeripheralNotificationManager::NotifyPeripheralBlockedReceived() {
 
 void PeripheralNotificationManager::OnBillboardDeviceConnected(
     bool billboard_is_supported) {
-  if (!features::IsPcieBillboardNotificationEnabled()) {
-    return;
-  }
-
   if (!billboard_is_supported) {
     for (auto& observer : observer_list_)
       observer.OnBillboardDeviceConnected();

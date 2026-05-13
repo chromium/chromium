@@ -7603,11 +7603,6 @@ inline constexpr char kOnDeviceAppControlsName[] =
 inline constexpr char kOnDeviceAppControlsDescription[] =
     "Enables the on-device controls UI for blocking apps.";
 
-inline constexpr char kPcieBillboardNotificationName[] =
-    "PCIe billboard notification";
-inline constexpr char kPcieBillboardNotificationDescription[] =
-    "Enable PCIe peripheral billboard notification.";
-
 inline constexpr char kPhoneHubCallNotificationName[] =
     "Incoming call notification in Phone Hub";
 inline constexpr char kPhoneHubCallNotificationDescription[] =

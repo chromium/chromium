@@ -450,9 +450,6 @@ TEST_F(PeripheralNotificationManagerTest, BlockedDeviceReceived) {
 }
 
 TEST_F(PeripheralNotificationManagerTest, BillboardDevice) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPcieBillboardNotification);
-
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/true);
 
