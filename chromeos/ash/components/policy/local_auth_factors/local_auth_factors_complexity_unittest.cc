@@ -13,9 +13,8 @@ namespace policy::local_auth_factors {
 
 using Complexity = ash::LocalAuthFactorsComplexity;
 
-using Result = PasswordComplexityResult;
-
 TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
+  using Result = PasswordComplexityResult;
   // clang-format off
   const struct TestData {
     std::string test_name;
@@ -124,58 +123,61 @@ TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
 }
 
 TEST(LocalAuthFactorsComplexityCheckerTest, PinComplexity) {
+  using Result = PinComplexityResult;
+  // clang-format off
   const struct TestData {
     std::string test_name;
     std::string_view pin;
     Complexity complexity;
-    bool expected_result;
+    Result expected_result;
   } kTestData[] = {
       // Non-digit tests.
-      {"NonDigitNone", "a123", Complexity::kNone, false},
-      {"NonDigitLow", "12b3", Complexity::kLow, false},
-      {"NonDigitMedium", "123c45", Complexity::kMedium, false},
-      {"NonDigitHigh", "1234d567", Complexity::kHigh, false},
-      {"NonDigitSpace", " 123", Complexity::kNone, false},
-      {"NonDigitSymbol", "44%4", Complexity::kNone, false},
-      {"NonDigitGood", "123", Complexity::kNone, true},
+      {"NonDigitNone", "a123", Complexity::kNone, Result::kContainsNonDigits},
+      {"NonDigitLow", "12b3", Complexity::kLow, Result::kContainsNonDigits},
+      {"NonDigitMedium", "123c45", Complexity::kMedium, Result::kContainsNonDigits},
+      {"NonDigitHigh", "1234d567", Complexity::kHigh, Result::kContainsNonDigits},
+      {"NonDigitSpace", " 123", Complexity::kNone, Result::kContainsNonDigits},
+      {"NonDigitSymbol", "44%4", Complexity::kNone, Result::kContainsNonDigits},
+      {"NonDigitGood", "123", Complexity::kNone, Result::kOk},
 
       // kNone tests (Length >= 1).
-      {"NoneEmpty", "", Complexity::kNone, false},
-      {"NoneShort", "1", Complexity::kNone, true},
-      {"NoneLong", "1234567890", Complexity::kNone, true},
+      {"NoneEmpty", "", Complexity::kNone, Result::kTooShort},
+      {"NoneShort", "1", Complexity::kNone, Result::kOk},
+      {"NoneLong", "1234567890", Complexity::kNone, Result::kOk},
 
       // kLow tests (Length >= 4).
-      {"LowTooShort", "123", Complexity::kLow, false},
-      {"LowJustEnough", "1234", Complexity::kLow, true},
-      {"LowRepeatingAllowed", "1111", Complexity::kLow, true},
-      {"LowIncreasingAllowed", "1234", Complexity::kLow, true},
-      {"LowDecreasingAllowed", "4321", Complexity::kLow, true},
-      {"LowLong", "12345", Complexity::kLow, true},
+      {"LowTooShort", "123", Complexity::kLow, Result::kTooShort},
+      {"LowJustEnough", "1234", Complexity::kLow, Result::kOk},
+      {"LowRepeatingAllowed", "1111", Complexity::kLow, Result::kOk},
+      {"LowIncreasingAllowed", "1234", Complexity::kLow, Result::kOk},
+      {"LowDecreasingAllowed", "4321", Complexity::kLow, Result::kOk},
+      {"LowLong", "12345", Complexity::kLow, Result::kOk},
 
       // kMedium tests (Length >= 6, No ordered/repeating).
-      {"MediumTooShort", "12345", Complexity::kMedium, false},
-      {"MediumJustEnoughGood", "132456", Complexity::kMedium, true},
-      {"MediumJustEnoughRepeating", "111111", Complexity::kMedium, false},
-      {"MediumJustEnoughIncreasing", "123456", Complexity::kMedium, false},
-      {"MediumJustEnoughDecreasing", "654321", Complexity::kMedium, false},
-      {"MediumLongGood", "1324567", Complexity::kMedium, true},
-      {"MediumLongRepeating", "2222222", Complexity::kMedium, false},
-      {"MediumLongIncreasing", "0123456", Complexity::kMedium, false},
-      {"MediumLongDecreasing", "9876543", Complexity::kMedium, false},
-      {"MediumPartialSequence", "123567", Complexity::kMedium, true},
+      {"MediumTooShort", "12345", Complexity::kMedium, Result::kTooShort},
+      {"MediumJustEnoughGood", "132456", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnoughRepeating", "111111", Complexity::kMedium, Result::kContainsRepeatingDigits},
+      {"MediumJustEnoughIncreasing", "123456", Complexity::kMedium, Result::kContainsOrderedSequence},
+      {"MediumJustEnoughDecreasing", "654321", Complexity::kMedium, Result::kContainsOrderedSequence},
+      {"MediumLongGood", "1324567", Complexity::kMedium, Result::kOk},
+      {"MediumLongRepeating", "2222222", Complexity::kMedium, Result::kContainsRepeatingDigits},
+      {"MediumLongIncreasing", "0123456", Complexity::kMedium, Result::kContainsOrderedSequence},
+      {"MediumLongDecreasing", "9876543", Complexity::kMedium, Result::kContainsOrderedSequence},
+      {"MediumPartialSequence", "123567", Complexity::kMedium, Result::kOk},
 
       // kHigh tests (Length >= 8, No ordered/repeating).
-      {"HighTooShort", "1234567", Complexity::kHigh, false},
-      {"HighJustEnoughGood", "13245678", Complexity::kHigh, true},
-      {"HighJustEnoughRepeating", "11111111", Complexity::kHigh, false},
-      {"HighJustEnoughIncreasing", "12345678", Complexity::kHigh, false},
-      {"HighJustEnoughDecreasing", "87654321", Complexity::kHigh, false},
-      {"HighLongGood", "132456789", Complexity::kHigh, true},
-      {"HighLongRepeating", "333333333", Complexity::kHigh, false},
-      {"HighLongIncreasing", "012345678", Complexity::kHigh, false},
-      {"HighLongDecreasing", "987654321", Complexity::kHigh, false},
-      {"HighPartialSequence", "01234578", Complexity::kHigh, true},
+      {"HighTooShort", "1234567", Complexity::kHigh, Result::kTooShort},
+      {"HighJustEnoughGood", "13245678", Complexity::kHigh, Result::kOk},
+      {"HighJustEnoughRepeating", "11111111", Complexity::kHigh, Result::kContainsRepeatingDigits},
+      {"HighJustEnoughIncreasing", "12345678", Complexity::kHigh, Result::kContainsOrderedSequence},
+      {"HighJustEnoughDecreasing", "87654321", Complexity::kHigh, Result::kContainsOrderedSequence},
+      {"HighLongGood", "132456789", Complexity::kHigh, Result::kOk},
+      {"HighLongRepeating", "333333333", Complexity::kHigh, Result::kContainsRepeatingDigits},
+      {"HighLongIncreasing", "012345678", Complexity::kHigh, Result::kContainsOrderedSequence},
+      {"HighLongDecreasing", "987654321", Complexity::kHigh, Result::kContainsOrderedSequence},
+      {"HighPartialSequence", "01234578", Complexity::kHigh, Result::kOk},
   };
+  // clang-format on
 
   for (const auto& t : kTestData) {
     EXPECT_EQ(t.expected_result, CheckPinComplexity(t.pin, t.complexity))

@@ -22,14 +22,19 @@ namespace ash::auth {
 
 namespace {
 
+using policy::local_auth_factors::CheckPinComplexity;
+using policy::local_auth_factors::PinComplexityResult;
+
 mojom::PinComplexity CheckPinComplexityImpl(const AccountId& account_id,
                                             const std::string& pin) {
   std::optional<LocalAuthFactorsComplexity> policy =
       AuthParts::Get()->GetAuthPolicyConnector()->GetLocalAuthFactorsComplexity(
           account_id);
   if (policy.has_value()) {
-    bool ok = policy::local_auth_factors::CheckPinComplexity(pin, *policy);
-    return ok ? mojom::PinComplexity::kOk : mojom::PinComplexity::kTooWeak;
+    const PinComplexityResult result = CheckPinComplexity(pin, *policy);
+    // TODO(crbug.com/445625494): Rename `kTooWeak` to `kTooShort`.
+    return result == PinComplexityResult::kOk ? mojom::PinComplexity::kOk
+                                              : mojom::PinComplexity::kTooWeak;
   }
 
   return mojom::PinComplexity::kOk;

@@ -49,6 +49,34 @@ PasswordValidationRules GetPasswordComplexityValidationRules(
              ? it->second
              : kDefaultPasswordValidationRules;
 }
+
+// The rules used to validate a PIN
+struct PinValidationRules {
+  size_t min_length;
+  bool check_trivial_sequence;
+};
+
+constexpr PinValidationRules kDefaultPinValidationRules = PinValidationRules{
+    /* min_length= */ 1, /* check_trivial_sequence= */ false};
+
+// clang-format off
+// PIN complexity to PIN validation rule map, used to lookup PIN validation
+// rules.
+constexpr auto kPinComplexityValidationMap =
+    base::MakeFixedFlatMap<Complexity, PinValidationRules>({
+        {Complexity::kNone,   kDefaultPinValidationRules},
+        {Complexity::kLow,    {/* min_length= */ 4, /* check_trivial_sequence= */ false}},
+        {Complexity::kMedium, {/* min_length= */ 6, /* check_trivial_sequence= */ true}},
+        {Complexity::kHigh,   {/* min_length= */ 8, /* check_trivial_sequence= */ true}}
+    });
+// clang-format on
+
+PinValidationRules GetPinComplexityValidationRules(Complexity complexity) {
+  auto it = kPinComplexityValidationMap.find(complexity);
+  return it != kPinComplexityValidationMap.end() ? it->second
+                                                 : kDefaultPinValidationRules;
+}
+
 enum class CharClass { kDigit, kLower, kUpper, kSymbol, kOther };
 
 CharClass GetCharClass(base_icu::UChar32 c) {
@@ -98,12 +126,11 @@ bool ContainsTrivialSequence(std::string_view password) {
   return false;
 }
 
-// Returns true for inputs like "6789", or "6543", or "0000" (but not for inputs
+// Returns true for inputs like "6789", or "6543" (but not for inputs
 // like "8901" - wrap around isn't considered).
-bool ContainsOrderedOrRepeatingSequence(std::string_view pin) {
+bool IsOrderedSequence(std::string_view pin) {
   bool is_increasing = true;
   bool is_decreasing = true;
-  bool is_same = true;
 
   for (size_t i = 1; i < pin.length(); i++) {
     const char prev = pin[i - 1];
@@ -111,10 +138,17 @@ bool ContainsOrderedOrRepeatingSequence(std::string_view pin) {
 
     is_increasing = is_increasing && (cur == prev + 1);
     is_decreasing = is_decreasing && (cur == prev - 1);
-    is_same = is_same && (cur == prev);
   }
 
-  return is_increasing || is_decreasing || is_same;
+  return is_increasing || is_decreasing;
+}
+
+// Returns true for inputs like "0000".
+bool IsRepeatingDigits(std::string_view pin) {
+  if (pin.empty()) {
+    return false;
+  }
+  return std::ranges::all_of(pin, [&](char c) { return c == pin[0]; });
 }
 
 }  // namespace
@@ -164,25 +198,29 @@ PasswordComplexityResult CheckPasswordComplexity(std::string_view password,
   return PasswordComplexityResult::kOk;
 }
 
-bool CheckPinComplexity(std::string_view pin, Complexity complexity) {
+PinComplexityResult CheckPinComplexity(std::string_view pin,
+                                       Complexity complexity) {
   // Check that the pin contains only digits.
   if (!std::ranges::all_of(pin, absl::ascii_isdigit)) {
-    return false;
+    return PinComplexityResult::kContainsNonDigits;
   }
 
-  switch (complexity) {
-    case Complexity::kNone:
-      return pin.length() >= 1;
+  const PinValidationRules& rules = GetPinComplexityValidationRules(complexity);
 
-    case Complexity::kLow:
-      return pin.length() >= 4;
-
-    case Complexity::kMedium:
-      return pin.length() >= 6 && !ContainsOrderedOrRepeatingSequence(pin);
-
-    case Complexity::kHigh:
-      return pin.length() >= 8 && !ContainsOrderedOrRepeatingSequence(pin);
+  if (pin.length() < rules.min_length) {
+    return PinComplexityResult::kTooShort;
   }
+
+  if (rules.check_trivial_sequence) {
+    if (IsOrderedSequence(pin)) {
+      return PinComplexityResult::kContainsOrderedSequence;
+    }
+    if (IsRepeatingDigits(pin)) {
+      return PinComplexityResult::kContainsRepeatingDigits;
+    }
+  }
+
+  return PinComplexityResult::kOk;
 }
 
 }  // namespace policy::local_auth_factors

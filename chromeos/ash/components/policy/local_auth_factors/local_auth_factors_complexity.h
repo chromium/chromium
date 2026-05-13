@@ -21,6 +21,14 @@ enum class PasswordComplexityResult {
 };
 // LINT.ThenChange(//chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom:PasswordComplexity)
 
+enum class PinComplexityResult {
+  kOk,
+  kTooShort,
+  kContainsOrderedSequence,
+  kContainsRepeatingDigits,
+  kContainsNonDigits,
+};
+
 // Checks the complexity of the given password according to the
 // `LocalAuthFactorsComplexity` policy and returns the result of the complexity
 // check.
@@ -30,11 +38,12 @@ PasswordComplexityResult CheckPasswordComplexity(
     ash::LocalAuthFactorsComplexity complexity);
 
 // Checks the complexity of the given pin according to the
-// `LocalAuthFactorsComplexity` policy and returns true if the pin passes the
-// complexity check and false otherwise.
+// `LocalAuthFactorsComplexity` policy and returns the result of the complexity
+// check.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
-bool CheckPinComplexity(std::string_view pin,
-                        ash::LocalAuthFactorsComplexity complexity);
+PinComplexityResult CheckPinComplexity(
+    std::string_view pin,
+    ash::LocalAuthFactorsComplexity complexity);
 
 }  // namespace policy::local_auth_factors
 
