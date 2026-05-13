@@ -326,6 +326,20 @@ tabs::TabInterface* TabModelJniBridge::GetActiveTab() {
   return GetTab(GetActiveIndex());
 }
 
+std::vector<tabs::TabHandle> TabModelJniBridge::GetOrderedMultiSelectedTabs()
+    const {
+  JNIEnv* env = AttachCurrentThread();
+  auto selected_android_tabs =
+      Java_TabModelJniBridge_getOrderedMultiSelectedTabs(env,
+                                                         java_object_.get(env));
+
+  std::vector<tabs::TabHandle> selected_handles;
+  for (auto& selected : selected_android_tabs) {
+    selected_handles.push_back(selected->GetHandle());
+  }
+  return selected_handles;
+}
+
 tabs::TabInterface* TabModelJniBridge::CreateTab(
     TabAndroid* parent,
     std::unique_ptr<WebContents> web_contents,

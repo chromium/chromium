@@ -65,6 +65,7 @@ class TestTabModel : public TabModel {
   void SetIsActiveModel(bool is_active);
 
   TabAndroid* GetTabAt(int index) const override;
+  std::vector<tabs::TabHandle> GetOrderedMultiSelectedTabs() const override;
   void SetActiveIndex(int index) override;
   void ForceCloseAllTabs() override;
   void CloseTabAt(int index) override;
@@ -176,6 +177,7 @@ class OwningTestTabModel : public TabModel {
   tabs::TabInterface* GetActiveTab() override;
   content::WebContents* GetWebContentsAt(int index) const override;
   TabAndroid* GetTabAt(int index) const override;
+  std::vector<tabs::TabHandle> GetOrderedMultiSelectedTabs() const override;
   void SetActiveIndex(int index) override;
   void ForceCloseAllTabs() override;
   void CloseTabAt(int index) override;

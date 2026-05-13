@@ -30,7 +30,16 @@ class AndroidTabModelEventBridge : public EventBridge,
   void RemoveObserver(events::EventObserver* observer) override;
 
   // TabModelObserver:
+  // Note that activation and selection are usually intertwined. Since Tab Strip
+  // API expresses activation and selection change within the same event, we'll
+  // want to suppress firing double events from Android. Therefore, the
+  // DidSelectTab and OnTabsSelectionChanged are naturally aware of each other's
+  // implementation.
+  //////////////////////////////////////////////////////////////////////////////
+  // Select in this case means activate.
   void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override;
+  void OnTabsSelectionsChanged() override;
+  /////////////////////////////////////////////////////////////////////////////
   void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override;
   void DidRemoveTabForClosure(TabAndroid* tab) override;
   void TabRemoved(TabAndroid* tab) override;
@@ -43,6 +52,7 @@ class AndroidTabModelEventBridge : public EventBridge,
                     const NodeData& node_data) override;
 
  private:
+  void HandleSelectionAndActivationChange();
   void Notify(events::Event event) const;
 
   base::ObserverList<events::EventObserver> observers_;
@@ -52,7 +62,8 @@ class AndroidTabModelEventBridge : public EventBridge,
 
   // Android tab model does selection change event does not contain the last
   // selected tab, so we will need to keep track of it ourselves.
-  tabs::TabHandle last_selected_tab_;
+  tabs::TabHandle last_active_tab_;
+  std::vector<tabs::TabHandle> last_selection_;
 };
 
 }  // namespace tabs_api

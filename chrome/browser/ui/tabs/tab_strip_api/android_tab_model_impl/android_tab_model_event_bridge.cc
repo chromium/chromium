@@ -20,7 +20,8 @@ AndroidTabModelEventBridge::AndroidTabModelEventBridge(
   auto* active_tab = model_->GetActiveTab();
   CHECK(active_tab)
       << "TabStrip API assumes that there is always at least one selected tab.";
-  last_selected_tab_ = active_tab->GetHandle();
+  last_active_tab_ = active_tab->GetHandle();
+  last_selection_ = model_->GetOrderedMultiSelectedTabs();
   model_->AddObserver(this);
   adapter_->GetRoot()->AddObserver(this);
 }
@@ -48,38 +49,80 @@ void AndroidTabModelEventBridge::Notify(events::Event event) const {
 
 void AndroidTabModelEventBridge::DidSelectTab(TabAndroid* tab,
                                               TabModel::TabSelectionType type) {
-  tabs::TabHandle new_selected_tab = tab->GetHandle();
-  // TODO(crbug.com/509647569): Add additional plumbing to propagate the
-  // previously selected tabs.
-  if (last_selected_tab_ == new_selected_tab) {
+  // Note that the inputs for this event are dropped. The API does not
+  // currently need it, but this may change in the future.
+  HandleSelectionAndActivationChange();
+}
+
+void AndroidTabModelEventBridge::OnTabsSelectionsChanged() {
+  HandleSelectionAndActivationChange();
+}
+
+void AndroidTabModelEventBridge::HandleSelectionAndActivationChange() {
+  tabs::TabHandle new_active_tab = model_->GetActiveTab()->GetHandle();
+  bool active_tab_changed = new_active_tab != last_active_tab_;
+
+  // Note that the API currently doesn't care about ordering, but this may
+  // change in the future.
+  auto new_selection = model_->GetOrderedMultiSelectedTabs();
+  auto new_selection_set = std::set(new_selection.begin(), new_selection.end());
+  auto old_selection_set =
+      std::set(last_selection_.begin(), last_selection_.end());
+  std::vector<tabs::TabHandle> diff;
+  std::set_symmetric_difference(
+      new_selection_set.begin(), new_selection_set.end(),
+      old_selection_set.begin(), old_selection_set.end(),
+      std::back_inserter(diff));
+  bool selection_changed = !diff.empty();
+
+  if (!active_tab_changed && !selection_changed) {
     return;
   }
 
-  // Last selected tab might've been closed.
-  if (last_selected_tab_.Get()) {
-    auto old_tab_or_error = translation_adapter_->ToMojoTab(last_selected_tab_);
-    CHECK(old_tab_or_error.has_value()) << old_tab_or_error.error()->message;
-
-    auto deselection_change = mojom::TabChange::New();
-    deselection_change->data = old_tab_or_error.value().Clone();
-    deselection_change->mask = mojom::TabFieldMask::New();
-    deselection_change->mask->is_active = true;
-    deselection_change->mask->is_selected = true;
-    Notify(mojom::OnDataChangedEvent::NewTab(std::move(deselection_change)));
+  std::vector<tabs::TabHandle> tabs_changed;
+  tabs_changed.reserve(diff.size() + /* activation change */ 2);
+  std::set<tabs::TabHandle> inserted;
+  // Technically, it is probably ok to have the deactivation in the end, because
+  // we only guarantee that the world is in a good state after the list of
+  // events have been applied, but we'll put it in the front anyway.
+  if (active_tab_changed) {
+    tabs_changed.push_back(last_active_tab_);
+    inserted.insert(last_active_tab_);
+    tabs_changed.push_back(new_active_tab);
+    inserted.insert(new_active_tab);
+  }
+  for (auto& tab : diff) {
+    if (!inserted.contains(tab)) {
+      tabs_changed.push_back(tab);
+      inserted.insert(tab);
+    }
   }
 
-  last_selected_tab_ = new_selected_tab;
+  for (auto& tab_changed : tabs_changed) {
+    // Tab might have been changed since the last time we grabbed the handle.
+    if (tab_changed.Get()) {
+      auto tab_or_error = translation_adapter_->ToMojoTab(tab_changed);
+      CHECK(tab_or_error.has_value()) << tab_or_error.error()->message;
 
-  auto tab_or_error = translation_adapter_->ToMojoTab(new_selected_tab);
-  CHECK(tab_or_error.has_value()) << tab_or_error.error()->message;
+      auto change_event = mojom::TabChange::New();
+      change_event->data = tab_or_error.value().Clone();
+      change_event->mask = mojom::TabFieldMask::New();
+      // Technically this might not have changed. The selected state might not
+      // have been changed even if the activation state changed. But the general
+      // semantic of the field mask is that the masked fields are meaningful. If
+      // this is super confusing using git blame to find out the fool that did
+      // this.
+      change_event->mask->is_active = true;
+      change_event->mask->is_selected = true;
+      Notify(mojom::OnDataChangedEvent::NewTab(std::move(change_event)));
+    }
+  }
 
-  auto tab_change = mojom::TabChange::New();
-  tab_change->data = tab_or_error.value().Clone();
-  tab_change->mask = mojom::TabFieldMask::New();
-  tab_change->mask->is_active = true;
-  tab_change->mask->is_selected = true;
-  Notify(mojom::OnDataChangedEvent::NewTab(std::move(tab_change)));
+  // Now we update our internal book keeping.
+  last_active_tab_ = new_active_tab;
+  last_selection_ = new_selection;
 }
+
 void AndroidTabModelEventBridge::DidAddTab(TabAndroid* tab,
                                            TabModel::TabLaunchType type) {
   auto tab_or_error = translation_adapter_->ToMojoTab(tab->GetHandle());
@@ -93,6 +136,7 @@ void AndroidTabModelEventBridge::DidAddTab(TabAndroid* tab,
   event->tabs.push_back(std::move(created_container));
   Notify(std::move(event));
 }
+
 void AndroidTabModelEventBridge::OnChildMoved(
     const tabs::TabCollection::Position& to_position,
     const NodeData& node_data) {

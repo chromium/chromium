@@ -271,6 +271,7 @@ class TabModel : public TabListInterface {
   virtual content::WebContents* GetWebContentsAt(int index) const = 0;
   // This will return NULL if the tab has not yet been initialized.
   virtual TabAndroid* GetTabAt(int index) const = 0;
+  virtual std::vector<tabs::TabHandle> GetOrderedMultiSelectedTabs() const = 0;
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const = 0;
 
   virtual void SetActiveIndex(int index) = 0;

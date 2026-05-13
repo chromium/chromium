@@ -72,6 +72,7 @@ class TabModelJniBridge : public TabModel {
   int GetTabCount() const override;
   int GetActiveIndex() const override;
   tabs::TabInterface* GetActiveTab() override;
+  std::vector<tabs::TabHandle> GetOrderedMultiSelectedTabs() const override;
   content::WebContents* GetWebContentsAt(int index) const override;
   TabAndroid* GetTabAt(int index) const override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
@@ -125,7 +126,7 @@ class TabModelJniBridge : public TabModel {
   void ActivateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* OpenTab(const GURL& url,
                               int index,
-                              bool foreground) override;
+                              bool foregrond) override;
   void SetOpenerForTab(tabs::TabHandle target, tabs::TabHandle opener) override;
   tabs::TabInterface* GetOpenerForTab(tabs::TabHandle target) override;
   tabs::TabInterface* InsertWebContentsAt(

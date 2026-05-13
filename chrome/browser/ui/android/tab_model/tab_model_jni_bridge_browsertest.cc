@@ -11,6 +11,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/range/range.h"
 
 namespace {
@@ -97,6 +98,26 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, DetachWebContents) {
   for (int i = 0; i < tab_list->GetTabCount(); ++i) {
     EXPECT_NE(tab_to_detach, tab_list->GetTab(i));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, ChangeActivationAndSelection) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+  auto* tab_model = static_cast<TabModel*>(tab_list);
+
+  auto* tab_a = tab_list->GetTab(0);
+  auto* tab_b = tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+
+  tab_list->ActivateTab(tab_a->GetHandle());
+  ASSERT_EQ(tab_a, tab_list->GetActiveTab());
+  ASSERT_THAT(tab_model->GetOrderedMultiSelectedTabs(),
+              testing::ElementsAre(tab_a->GetHandle()));
+
+  tab_list->HighlightTabs(tab_b->GetHandle(),
+                          {tab_a->GetHandle(), tab_b->GetHandle()});
+  ASSERT_EQ(tab_b, tab_list->GetActiveTab());
+  ASSERT_THAT(tab_model->GetOrderedMultiSelectedTabs(),
+              testing::ElementsAre(tab_a->GetHandle(), tab_b->GetHandle()));
 }
 
 }  // namespace

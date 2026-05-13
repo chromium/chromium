@@ -115,6 +115,11 @@ TabAndroid* TestTabModel::GetTabAt(int index) const {
   return nullptr;
 }
 
+std::vector<tabs::TabHandle> TestTabModel::GetOrderedMultiSelectedTabs() const {
+  NOTIMPLEMENTED();
+  return {};
+}
+
 void TestTabModel::SetActiveIndex(int index) {}
 
 void TestTabModel::ForceCloseAllTabs() {}
@@ -367,6 +372,12 @@ int OwningTestTabModel::GetActiveIndex() const {
 tabs::TabInterface* OwningTestTabModel::GetActiveTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return active_tab_.get();
+}
+
+std::vector<tabs::TabHandle> OwningTestTabModel::GetOrderedMultiSelectedTabs()
+    const {
+  NOTIMPLEMENTED();
+  return {};
 }
 
 content::WebContents* OwningTestTabModel::GetWebContentsAt(int index) const {

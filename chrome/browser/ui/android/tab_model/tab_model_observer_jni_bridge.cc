@@ -173,6 +173,9 @@ void TabModelObserverJniBridge::OnTabsSelectionChanged(JNIEnv* env) {
   for (auto& observer : interface_observers_) {
     observer.OnHighlightedTabsChanged(*tab_model_, highlighted_tabs);
   }
+  for (auto& observer : model_observers_) {
+    observer.OnTabsSelectionsChanged();
+  }
 }
 
 void TabModelObserverJniBridge::TabClosureCommitted(JNIEnv* env,

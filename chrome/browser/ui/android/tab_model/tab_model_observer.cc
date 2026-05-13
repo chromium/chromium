@@ -41,6 +41,8 @@ void TabModelObserver::OnTabClosePending(const std::vector<TabAndroid*>& tabs,
 
 void TabModelObserver::TabClosureUndone(TabAndroid* tab) {}
 
+void TabModelObserver::OnTabsSelectionsChanged() {}
+
 void TabModelObserver::OnTabCloseUndone(const std::vector<TabAndroid*>& tabs) {}
 
 void TabModelObserver::TabClosureCommitted(TabAndroid* tab) {}

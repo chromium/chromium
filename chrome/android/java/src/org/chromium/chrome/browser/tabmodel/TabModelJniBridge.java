@@ -128,6 +128,10 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     public abstract @JniType("TabAndroid*") @Nullable Tab getTabAt(int index);
 
     @Override
+    @CalledByNative
+    public abstract @JniType("std::vector<TabAndroid*>") List<Tab> getOrderedMultiSelectedTabs();
+
+    @Override
     public Profile getProfile() {
         return mProfile;
     }
