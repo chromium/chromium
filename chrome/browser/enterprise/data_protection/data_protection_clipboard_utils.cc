@@ -1066,6 +1066,9 @@ void ShouldAllowSearchWith(content::WebContents* web_contents,
                      ->GetForBrowserContext(source->browser_context())
                      ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source));
 
+  base::UmaHistogramEnumeration("Enterprise.DataControls.SearchWith.Verdict",
+                                verdict.level());
+
   ui::ClipboardMetadata metadata{
       .size = selection_size,
       .format_type = ui::ClipboardFormatType::PlainTextType()};
