@@ -1355,7 +1355,6 @@ Canvas2DResourceProviderSharedImage::CreateWithClear(
       size, format, alpha_type, color_space, context_provider_wrapper,
       is_accelerated, shared_image_usage_flags, delegate);
   if (provider->IsValid()) {
-    CHECK(provider->IsCanvas2D());
     provider->ClearAtCreationForCanvas2D();
 
     // Check whether an error occurred while flushing the recording.
