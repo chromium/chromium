@@ -4692,6 +4692,7 @@ if (!is_android) {
         sources += [
           "../browser/ui/views/profiles/first_run_default_browser_ui_browsertest.cc",
           "../browser/ui/views/profiles/first_run_intro_browsertest.cc",
+          "../browser/ui/views/profiles/first_run_sign_in_celebration_ui_browsertest.cc",
         ]
       }
       if (!is_chromeos) {

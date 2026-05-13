@@ -65,6 +65,7 @@ FileSystemAccessUsageBubbleViewTest.*
 FirstRunDefaultBrowserPixelTest.*
 FirstRunDialogTest.*
 FirstRunIntroPixelTest.*
+FirstRunSignInCelebrationPixelTest.*
 GlobalErrorBubbleTest.*
 HatsBubbleTest.*
 HistorySyncOptinUIDialogPixelTest.*
