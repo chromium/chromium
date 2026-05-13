@@ -89,7 +89,7 @@ void EntityDataManager::LoadEntitiesFromDatabase() {
           std::vector<EntityInstance> entities = std::move(result).GetValue();
 
           // `self->entities_` may contain entities stored by Autofill AI and
-          // entities from Accessibility Annotator.
+          // entities from Personal Context.
           //
           // LoadEntitiesFromDatabase() replaces all entities stored by Autofill
           // AI.
@@ -100,7 +100,7 @@ void EntityDataManager::LoadEntitiesFromDatabase() {
               case EntityInstance::RecordType::kLocal:
               case EntityInstance::RecordType::kServerWallet:
                 return true;
-              case EntityInstance::RecordType::kAccessibilityAnnotator:
+              case EntityInstance::RecordType::kPersonalContext:
                 return false;
             }
             NOTREACHED();

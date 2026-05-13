@@ -639,7 +639,7 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     case EntityTypeName::kOrder:
     case EntityTypeName::kShipment:
       // Order and Shipment entities are not saved on the sync server
-      // (only on kAccessibilityAnnotator) and therefore this method should not
+      // (only on kPersonalContext) and therefore this method should not
       // be called for them.
       NOTREACHED();
   }

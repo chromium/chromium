@@ -856,9 +856,9 @@ AutofillAiManager::GetMigratePromptCandidates(
       case EntityInstance::RecordType::kServerWallet:
         saved_server_entities.push_back(&entity);
         break;
-      case EntityInstance::RecordType::kAccessibilityAnnotator:
-        // kAccessibilityAnnotator entities are linked to a database in the
-        // Accessibility Annotator component. They must not be saved to the
+      case EntityInstance::RecordType::kPersonalContext:
+        // kPersonalContext entities are linked to a database in the
+        // Personal Context component. They must not be saved to the
         // server to ensure they can be deleted if the source is removed.
         break;
     }

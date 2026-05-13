@@ -436,9 +436,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 #endif
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
-       GetFillingSuggestion_AccessibilityAnnotatorEntity_UseSparkIcon) {
+       GetFillingSuggestion_PersonalContextEntity_UseSparkIcon) {
   SetEntities({GetFlightReservationEntityInstanceWithRandomGuid(
-      {.record_type = EntityInstance::RecordType::kAccessibilityAnnotator})});
+      {.record_type = EntityInstance::RecordType::kPersonalContext})});
   SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER, FLIGHT_RESERVATION_TICKET_NUMBER,
            FLIGHT_RESERVATION_CONFIRMATION_CODE});
 
@@ -590,25 +590,24 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionsAre(HasMainText(GetPassportName(passport4))));
 }
 
-// Test that if a Local entity and an AccessibilityAnnotator entity have the
+// Test that if a Local entity and a PersonalContext entity have the
 // same data, the Local entity is preferred.
-TEST_F(
-    AutofillAiSuggestionGeneratorTest,
-    GetFillingSuggestion_DedupeSuggestions_FavorLocalOverAccessibilityAnnotator) {
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_DedupeSuggestions_FavorLocalOverPersonalContext) {
   EntityInstance passport_local = GetPassportEntityInstanceWithRandomGuid(
       {.name = u"Jon Doe",
        .number = u"12345",
        .record_type = EntityInstance::RecordType::kLocal});
-  EntityInstance passport_aa = GetPassportEntityInstanceWithRandomGuid(
+  EntityInstance passport_pc = GetPassportEntityInstanceWithRandomGuid(
       {.name = u"Jon Doe",
        .number = u"12345",
-       .record_type = EntityInstance::RecordType::kAccessibilityAnnotator});
-  SetEntities({passport_local, passport_aa});
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+  SetEntities({passport_local, passport_pc});
   SetForm({NAME_FULL, PASSPORT_NUMBER});
 
-  // Sets `passport_aa` to have been used so that it is ranked higher by
+  // Sets `passport_pc` to have been used so that it is ranked higher by
   // frecency.
-  edm().RecordEntityUsed(passport_aa.guid(), base::Time::Now());
+  edm().RecordEntityUsed(passport_pc.guid(), base::Time::Now());
   webdata_helper().WaitUntilIdle();
 
   std::vector<Suggestion> suggestions =
@@ -625,12 +624,12 @@ TEST_F(
               SuggestionsAre(HasMainText(GetPassportName(passport_local))));
 }
 
-// Test that if a ServerWallet, Local, and AccessibilityAnnotator entity have
+// Test that if a ServerWallet, Local, and PersonalContext entity have
 // the same data, they are prioritized correctly:
-// ServerWallet > Local > AccessibilityAnnotator.
+// ServerWallet > Local > PersonalContext.
 TEST_F(
     AutofillAiSuggestionGeneratorTest,
-    GetFillingSuggestion_DedupeSuggestions_FavorServerOverLocalAndAccessibilityAnnotator) {
+    GetFillingSuggestion_DedupeSuggestions_FavorServerOverLocalAndPersonalContext) {
   EntityInstance passport_server =
       MaskEntityInstance(GetPassportEntityInstanceWithRandomGuid(
           {.name = u"Jon Doe",
@@ -640,17 +639,17 @@ TEST_F(
       {.name = u"Jon Doe",
        .number = u"12345",
        .record_type = EntityInstance::RecordType::kLocal});
-  EntityInstance passport_aa = GetPassportEntityInstanceWithRandomGuid(
+  EntityInstance passport_pc = GetPassportEntityInstanceWithRandomGuid(
       {.name = u"Jon Doe",
        .number = u"12345",
-       .record_type = EntityInstance::RecordType::kAccessibilityAnnotator});
+       .record_type = EntityInstance::RecordType::kPersonalContext});
 
-  SetEntities({passport_server, passport_local, passport_aa});
+  SetEntities({passport_server, passport_local, passport_pc});
   SetForm({NAME_FULL, PASSPORT_NUMBER});
 
-  // Set frecency: AccessibilityAnnotator > Local > ServerWallet
+  // Set frecency: PersonalContext > Local > ServerWallet
   base::Time now = base::Time::Now();
-  edm().RecordEntityUsed(passport_aa.guid(), now);
+  edm().RecordEntityUsed(passport_pc.guid(), now);
   edm().RecordEntityUsed(passport_local.guid(), now - base::Minutes(1));
   edm().RecordEntityUsed(passport_server.guid(), now - base::Minutes(2));
   webdata_helper().WaitUntilIdle();

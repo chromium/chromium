@@ -270,7 +270,7 @@ std::optional<EntityInstance> FromAccessibilityAnnotator(
                         /*date_modified=*/base::Time::Now(),
                         /*use_count=*/0,
                         /*use_date=*/base::Time::FromTimeT(0),
-                        EntityInstance::RecordType::kAccessibilityAnnotator,
+                        EntityInstance::RecordType::kPersonalContext,
                         EntityInstance::AreAttributesReadOnly(true),
                         /*frecency_override=*/"");
 }

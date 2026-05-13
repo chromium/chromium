@@ -147,7 +147,7 @@ bool IsMaskableRecordType(EntityInstance::RecordType record_type) {
       return false;
     case EntityInstance::RecordType::kServerWallet:
       return true;
-    case EntityInstance::RecordType::kAccessibilityAnnotator:
+    case EntityInstance::RecordType::kPersonalContext:
       return false;
   }
   NOTREACHED();
@@ -393,8 +393,8 @@ std::ostream& operator<<(std::ostream& os,
     case EntityInstance::RecordType::kServerWallet:
       os << "kServerWallet" << std::endl;
       break;
-    case EntityInstance::RecordType::kAccessibilityAnnotator:
-      os << "kAccessibilityAnnotator" << std::endl;
+    case EntityInstance::RecordType::kPersonalContext:
+      os << "kPersonalContext" << std::endl;
       break;
   }
   return os;
@@ -584,7 +584,7 @@ bool EntityInstance::IsServerInstance() const {
       return false;
     case RecordType::kServerWallet:
       return true;
-    case RecordType::kAccessibilityAnnotator:
+    case RecordType::kPersonalContext:
       return false;
   }
   NOTREACHED();
@@ -708,7 +708,7 @@ bool IsMaskedStorageSupported(EntityType type,
                               EntityInstance::RecordType record_type) {
   switch (record_type) {
     case EntityInstance::RecordType::kLocal:
-    case EntityInstance::RecordType::kAccessibilityAnnotator:
+    case EntityInstance::RecordType::kPersonalContext:
       return false;
     case EntityInstance::RecordType::kServerWallet:
       break;

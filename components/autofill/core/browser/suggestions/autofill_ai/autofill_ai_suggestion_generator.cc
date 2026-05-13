@@ -319,7 +319,7 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
         return 2;
       case EntityInstance::RecordType::kLocal:
         return 1;
-      case EntityInstance::RecordType::kAccessibilityAnnotator:
+      case EntityInstance::RecordType::kPersonalContext:
         return 0;
     }
     NOTREACHED();
@@ -370,7 +370,7 @@ Suggestion::Icon GetSuggestionIcon(
   }
 #endif
   if (trigger_entity_record_type ==
-      EntityInstance::RecordType::kAccessibilityAnnotator) {
+      EntityInstance::RecordType::kPersonalContext) {
     return Suggestion::Icon::kSpark;
   }
   switch (trigger_entity_type.name()) {

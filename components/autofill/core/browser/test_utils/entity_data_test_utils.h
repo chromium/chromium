@@ -193,7 +193,7 @@ struct OrderOptionsT {
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   EntityInstance::RecordType record_type =
-      EntityInstance::RecordType::kAccessibilityAnnotator;
+      EntityInstance::RecordType::kPersonalContext;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
@@ -215,7 +215,7 @@ struct ShipmentOptionsT {
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   EntityInstance::RecordType record_type =
-      EntityInstance::RecordType::kAccessibilityAnnotator;
+      EntityInstance::RecordType::kPersonalContext;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
