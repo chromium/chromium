@@ -1027,7 +1027,7 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_KLARNA" desc="Text for the payment option button in the BNPL Pay Later tab, explaining that users can pay monthly or in installments. It is specifically for Klarna options.">
       Pay in 4 or monthly
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the user must clear the form to enable and use the pay later option." translateable="false">
+  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the user must clear the form to enable and use the pay later option.">
       Clear form to use pay later
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_RIGHT_NOW" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the option is not available right now.">
@@ -1084,10 +1084,10 @@
   <message name="IDS_AUTOFILL_PAY_LATER" desc="Label for the tab in the autofill dropdown allowing the user to pay later using a Buy Now, Pay Later (BNPL) provider.">
       Pay later
   </message>
-  <message name="IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessibility announcement when a tab is selected within the Autofill popup tabbed pane." translateable="false">
+  <message name="IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessibility announcement when a tab is selected within the Autofill popup tabbed pane.">
       <ph name="TAB_TITLE">$1<ex>Pay now</ex></ph>, selected tab, <ph name="INDEX">$2<ex>1</ex></ph> of <ph name="TOTAL">$3<ex>2</ex></ph>, use left or right arrow to switch between tabs
   </message>
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCEMENT_CONCATENATE_TWO_STRINGS" desc="Generic template to concatenate two accessibility announcements with a comma." translateable="false">
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCEMENT_CONCATENATE_TWO_STRINGS" desc="Generic template to concatenate two accessibility announcements with a comma.">
       <ph name="STRING_1">$1<ex>Tab announcement</ex></ph>, <ph name="STRING_2">$2<ex>Footnote announcement</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_FALLBACK_LABEL" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Android when the issuer_id is not present in the card. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
