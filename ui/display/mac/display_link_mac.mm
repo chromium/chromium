@@ -60,11 +60,6 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   return CVDisplayLinkMac::GetForDisplay(display_id);
 }
 
-// static
-bool DisplayLinkMac::IsCADisplayLinkValidInGpuProcess(int64_t display_id) {
-  return CADisplayLinkMac::IsValidInGpuProcess(display_id);
-}
-
 void DisplayLinkMac::RecordDisplayLinkCreation(bool success) {
   UMA_HISTOGRAM_BOOLEAN("Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2",
                         success);

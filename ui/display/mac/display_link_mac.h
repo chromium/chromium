@@ -112,8 +112,6 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   // event or refresh rate change.
   virtual bool NotifyEventAndCheckValidity(int64_t display_id);
 
-  static bool IsCADisplayLinkValidInGpuProcess(int64_t display_id);
-
   // Register an observer callback.
   // * The specified callback will be called at every VSync tick, until the
   //   returned VSyncCallbackMac object is destroyed.

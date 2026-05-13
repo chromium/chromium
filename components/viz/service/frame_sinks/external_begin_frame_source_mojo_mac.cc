@@ -66,11 +66,10 @@ void ExternalBeginFrameSourceMojoMac::SetSupportedDisplayLinkId(
   ui::VSyncProviderMac::GetInstance()->SetSupportedDisplayLinkId(display_id,
                                                                  is_supported);
 
-  // If ExternalBeginFrameSourceMac is using DisplayLink in Browser, destroy and
-  // recreate a DisplayLinkMac in every ExternalBeginFrameSourceMac if needed.
-  if (!ui::DisplayLinkMac::IsCADisplayLinkValidInGpuProcess(display_id)) {
-    update_vsync_displays_cb_.Run(display_id);
-  }
+  // When ExternalBeginFrameSourceMac is using DisplayLink in Browser, destroy
+  // and recreate a DisplayLinkMac in every ExternalBeginFrameSourceMac if
+  // needed.
+  update_vsync_displays_cb_.Run(display_id);
 }
 
 void ExternalBeginFrameSourceMojoMac::IssueExternalBeginFrame(
