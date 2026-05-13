@@ -21,6 +21,12 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.SimpleModalDialogController;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
@@ -64,14 +70,70 @@ public class GlicActorLoginPermissionsFragment extends ChromeBaseSettingsFragmen
         for (ActorLoginPermission permission : permissions) {
             ActorLoginPermissionPreference pref =
                     new ActorLoginPermissionPreference(
-                            getContext(), permission, mLargeIconBridge, this::onRevokeClicked);
+                            getContext(),
+                            permission,
+                            mLargeIconBridge,
+                            p -> onRevokeClicked(p, permission));
             mCategory.addPreference(pref);
         }
         notifyPreferencesUpdated();
     }
 
-    // TODO(https://crbug.com/500353055): show warning dialog
-    private void onRevokeClicked() {}
+    @VisibleForTesting
+    void onRevokeClicked(ActorLoginPermissionPreference pref, ActorLoginPermission permission) {
+        showRevokeConfirmationDialog(pref, permission);
+    }
+
+    private void showRevokeConfirmationDialog(
+            ActorLoginPermissionPreference pref, ActorLoginPermission permission) {
+        ModalDialogManagerHolder holder = assertNonNull((ModalDialogManagerHolder) getActivity());
+        ModalDialogManager modalDialogManager = holder.getModalDialogManager();
+        if (modalDialogManager == null) return;
+
+        SimpleModalDialogController dialogController =
+                new SimpleModalDialogController(
+                        modalDialogManager,
+                        dismissalCause -> {
+                            if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                                revokePermission(pref, permission);
+                            }
+                        });
+
+        PropertyModel dialog =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, dialogController)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                getString(R.string.settings_glic_revoke_actor_login_dialog_title))
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                getString(
+                                        R.string
+                                                .settings_glic_revoke_actor_login_dialog_description))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                getString(R.string.remove))
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                getString(R.string.cancel))
+                        .build();
+        modalDialogManager.showDialog(dialog, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    private void revokePermission(
+            ActorLoginPermissionPreference pref, ActorLoginPermission permission) {
+        mBridge.revokePermission(
+                permission.getSignonRealm(),
+                permission.getUsername(),
+                success -> {
+                    if (!success) return;
+                    mCategory.removePreference(pref);
+                    notifyPreferencesUpdated();
+                });
+    }
 
     @Override
     public MonotonicObservableSupplier<String> getPageTitle() {

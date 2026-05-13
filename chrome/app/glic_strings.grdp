@@ -346,6 +346,12 @@
   <message name="IDS_SETTINGS_GLIC_REMOVE_ACTOR_LOGIN_DIALOG_DESCRIPTION" desc="Description for the dialog to remove a login permission.">
     Gemini will no longer be able to sign you in to <ph name="URL">$1<ex>google.com</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_GLIC_REVOKE_ACTOR_LOGIN_DIALOG_TITLE" desc="Title for the dialog to confirm revoking a login permission for a site." formatter_data="android_java">
+    Remove site?
+  </message>
+  <message name="IDS_SETTINGS_GLIC_REVOKE_ACTOR_LOGIN_DIALOG_DESCRIPTION" desc="Description for the dialog to confirm revoking a login permission for a site." formatter_data="android_java">
+    Next time Gemini needs access to this account it will ask you again.
+  </message>
   <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_REMOVE_ERROR" desc="Toast message to show when a login permission was unable to be removed.">
     Couldn't remove permission. Try again later.
   </message>

@@ -18,6 +18,8 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 
+import java.util.function.Consumer;
+
 /**
  * A custom preference for displaying an actor login permission. Displays the site favicon, name,
  * and username with a "Revoke" button.
@@ -25,7 +27,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 @NullMarked
 public class ActorLoginPermissionPreference extends ChromeBasePreference {
     private final ActorLoginPermission mPermission;
-    private final Runnable mOnRevokeClicked;
+    private final Consumer<ActorLoginPermissionPreference> mOnRevokeClicked;
 
     /**
      * Constructs a new ActorLoginPermissionPreference.
@@ -39,7 +41,7 @@ public class ActorLoginPermissionPreference extends ChromeBasePreference {
             Context context,
             ActorLoginPermission permission,
             LargeIconBridge largeIconBridge,
-            Runnable onRevokeClicked) {
+            Consumer<ActorLoginPermissionPreference> onRevokeClicked) {
         super(context);
         mPermission = assumeNonNull(permission);
         mOnRevokeClicked = assumeNonNull(onRevokeClicked);
@@ -67,6 +69,6 @@ public class ActorLoginPermissionPreference extends ChromeBasePreference {
                         .getString(
                                 R.string.settings_glic_revoke_actor_login_permission_aria_label,
                                 mPermission.getSiteOrAppName()));
-        revokeButton.setOnClickListener(v -> mOnRevokeClicked.run());
+        revokeButton.setOnClickListener(v -> mOnRevokeClicked.accept(this));
     }
 }
