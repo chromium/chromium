@@ -1049,7 +1049,6 @@ suite('NewTabPageComposeboxUploadToolModeTest', () => {
   });
 
   test('add file context fails', async () => {
-    loadTimeData.overrideValues({composeboxShowPdfUpload: true});
     testSupport.createComposeboxElement(testProxy);
     // Set the promise to reject to simulate a failure.
     testProxy.searchboxHandler.setResultMapperFor(

@@ -23,7 +23,6 @@ suite('ContextualActionMenu', () => {
       composeboxContextMenuEnableMultiTabSelection: true,
       composeboxFileMaxCount: 10,
       composeboxShowContextMenuTabPreviews: true,
-      composeboxShowPdfUpload: true,
       ShowContextMenuHeaders: true,
       composeboxSmartTabSharingVisible: false,
     });
