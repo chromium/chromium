@@ -1,0 +1,29 @@
+From 3173905aa53dabfda9c086dfa6cc38693e3a8f0c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Dominik=20R=C3=B6ttsches?= <drott@chromium.org>
+Date: Tue, 12 May 2026 14:25:10 +0300
+Subject: [PATCH] Normalize whitespace in attribute values
+
+Fixes #79.
+---
+ .../chromium_crates_io/vendor/xml-v1/src/reader/parser.rs    | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+index 8d7f1395e0829..1f4b89f7f447c 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+@@ -651,7 +651,10 @@ impl PullParser {
+                 if self.buf.len() > self.config.max_attribute_length {
+                     return Some(self.error(SyntaxError::ExceededConfiguredLimit));
+                 }
+-                t.push_to_string(&mut self.buf);
++                match t {
++                    Token::Character(c) if is_whitespace_char(c) => self.buf.push(' '),
++                    _ => t.push_to_string(&mut self.buf),
++                }
+                 None
+             },
+ 
+-- 
+2.54.0.563.g4f69b47b94-goog
+

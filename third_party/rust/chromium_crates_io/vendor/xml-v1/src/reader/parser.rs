@@ -662,7 +662,10 @@ impl PullParser {
                 if self.buf.len() > self.config.max_attribute_length {
                     return Some(self.error(SyntaxError::ExceededConfiguredLimit));
                 }
-                t.push_to_string(&mut self.buf);
+                match t {
+                    Token::Character(c) if is_whitespace_char(c) => self.buf.push(' '),
+                    _ => t.push_to_string(&mut self.buf),
+                }
                 None
             },
 
