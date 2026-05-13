@@ -403,8 +403,8 @@ class InstallerConfig:
         data["channel"] = channel
         data["versionfull"] = f"{data['version']}-{data['package_release']}"
         data["package_orig"] = data["info_vars"]["PACKAGE"]
-        data[
-            "usr_bin_symlink_name"] = f"{data['info_vars']['PACKAGE']}-{channel}"
+        data["usr_bin_symlink_name"] = (
+            f"{data['info_vars']['PACKAGE']}-{channel}")
         if channel != "stable":
             data["info_vars"]["INSTALLDIR"] += f"-{channel}"
             data["info_vars"]["PACKAGE"] += f"-{channel}"
@@ -632,21 +632,20 @@ class InstallerConfig:
                 ))
 
         # Privacy Sandbox Attestation
-        psa_manifest = (
-            self.output_dir /
-            "PrivacySandboxAttestationsPreloaded/manifest.json")
+        psa_dir = "PrivacySandboxAttestationsPreloaded"
+        psa_manifest = self.output_dir / psa_dir / "manifest.json"
         if psa_manifest.exists():
             artifacts.append(
                 Artifact(
-                    "PrivacySandboxAttestationsPreloaded/manifest.json",
-                    "PrivacySandboxAttestationsPreloaded/manifest.json",
+                    f"{psa_dir}/manifest.json",
+                    f"{psa_dir}/manifest.json",
                     ArtifactType.RESOURCE,
                     StandardPermissions.REGULAR,
                 ))
             artifacts.append(
                 Artifact(
-                    "PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat",
-                    "PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat",
+                    f"{psa_dir}/privacy-sandbox-attestations.dat",
+                    f"{psa_dir}/privacy-sandbox-attestations.dat",
                     ArtifactType.RESOURCE,
                     StandardPermissions.REGULAR,
                 ))
