@@ -387,6 +387,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.expanding_ = expanding;
   }
 
+  // TODO(crbug.com/508287630): Branch logic to Omnibox embedder.
   protected async updateState_(state: ComposeboxState) {
     if (!this.inputState) {
       const inputStateResponse = await this.searchboxHandler_.getInputState();

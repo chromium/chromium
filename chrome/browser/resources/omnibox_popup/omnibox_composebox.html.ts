@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {hasAllowedInputs} from '//resources/cr_components/composebox/common.js';
 import {ToolMode} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -48,6 +49,25 @@ export function getHtml(this: OmniboxComposeboxElement) {
                 ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
                 .lastQueriedInput="${this.lastQueriedInput}">
             </cr-composebox-dropdown>
+            ${this.contextMenuEnabled ? html`
+              <div class="context-menu-container" id="contextMenuContainer"
+                  part="context-menu-and-tools"
+                  @mousedown="${this.onContextMenuContainerMousedown}"
+                  @click="${this.onContextMenuContainerClick}">
+                ${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
+                  <cr-composebox-contextual-entrypoint-button
+                      id="contextEntrypoint"
+                      part="composebox-entrypoint"
+                      exportparts="context-menu-entrypoint-icon, entrypoint-button"
+                      class="upload-button no-overlap"
+                      .inputState="${this.inputState}"
+                      ?upload-button-disabled="${this.uploadButtonDisabled}"
+                      ?show-context-menu-description="${this.showContextMenuDescription}">
+                  </cr-composebox-contextual-entrypoint-button>
+                ` : ''}
+                <!-- TODO(crbug.com/508287630): Add tool chips and carousel. -->
+              </div>
+            ` : ''}
           </cr-composebox-file-inputs>
         </div>
       </div>

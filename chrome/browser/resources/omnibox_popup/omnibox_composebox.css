@@ -36,8 +36,10 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding-bottom: var(--input-bottom-spacing);
   overflow: hidden;
   width: 100%;
 }
 
+#contextEntrypoint::part(entrypoint-button) {
+  --cr-icon-button-size: 36px;
+}

@@ -30,6 +30,18 @@ suite('OmniboxComposeboxTest', () => {
     });
 
     testProxy = new TestSearchboxBrowserProxy();
+    testProxy.handler.setPromiseResolveFor('getInputState', {
+      state: {
+        allowedModels: [1],
+        allowedTools: [],
+        allowedInputTypes: [],
+        activeModel: 0,
+        activeTool: 0,
+        disabledModels: [],
+        disabledTools: [],
+        disabledInputTypes: [],
+      },
+    });
     SearchboxBrowserProxy.setInstance(testProxy);
 
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
@@ -168,5 +180,28 @@ suite('OmniboxComposeboxTest', () => {
 
     assertFalse(omniboxComposebox.showDropdown);
     assertTrue(omniboxComposebox.$.matches.hidden);
+  });
+
+  test('Mojo callback router adds file context correctly', async () => {
+    assertEquals(0, omniboxComposebox.files.size);
+    const testToken = '12345678901234567890123456789012';
+    const testFileInfo = {
+      fileName: 'test_file.png',
+      imageDataUrl: 'data:image/png;base64,sometestdata',
+      mimeType: 'image/png',
+      isDeletable: true,
+      selectionTime: new Date(),
+    };
+
+    // Simulate Mojo Callback: Page interface callback router.
+    testProxy.page.addFileContext(testToken, testFileInfo);
+    await testProxy.page.$.flushForTesting();
+    await microtasksFinished();
+
+    // Verify it reached the map.
+    assertEquals(1, omniboxComposebox.files.size);
+    const addedFile = omniboxComposebox.files.get(testToken);
+    assertTrue(!!addedFile);
+    assertEquals('test_file.png', addedFile.name);
   });
 });
