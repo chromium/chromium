@@ -234,6 +234,43 @@ TEST(MessageParsingUtilsTest, InvalidDataLength) {
   EXPECT_FALSE(success);
 }
 
+TEST(MessageParsingUtilsTest, InvalidChannelCount) {
+  // Test where stream_info has more channels than the AudioBus
+  size_t data_size =
+      sizeof(PcmPacketHeader) / sizeof(float) + kFrames * (kChannels + 1);
+  std::vector<float> data(data_size, 1.0f);
+  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()),
+                         data.size() * sizeof(float), kStreamInfo.stream_type,
+                         0);
+
+  auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
+  StreamInfo malicious_stream_info = kStreamInfo;
+  malicious_stream_info.num_channels = kChannels + 1;
+  bool success = ReadDataToAudioBus(
+      malicious_stream_info,
+      UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
+      data_size * sizeof(float) - sizeof(uint16_t), audio_bus.get());
+  EXPECT_FALSE(success);
+}
+
+TEST(MessageParsingUtilsTest, InvalidDataLengthTooLarge) {
+  // Test an oversized payload that is a valid multiple of frame size.
+  // This used to cause a heap buffer overflow when DCHECKs were compiled out.
+  size_t data_size =
+      sizeof(PcmPacketHeader) / sizeof(float) + (kFrames + 1) * kChannels;
+  std::vector<float> data(data_size, 1.0f);
+  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()),
+                         data.size() * sizeof(float), kStreamInfo.stream_type,
+                         0);
+
+  auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
+  bool success = ReadDataToAudioBus(
+      kStreamInfo,
+      UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
+      data_size * sizeof(float) - sizeof(uint16_t), audio_bus.get());
+  EXPECT_FALSE(success);
+}
+
 TEST(MessageParsingUtilsTest, NotAlignedData) {
   size_t data_size =
       sizeof(PcmPacketHeader) / sizeof(float) + kFrames * kChannels + 1;
