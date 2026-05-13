@@ -806,7 +806,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void testIsIncognito() {
+    public void testUpdateVisualsForState_colorScheme() {
         mMediator.updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 BrandedColorScheme.APP_DEFAULT,
@@ -815,6 +815,16 @@ public class FuseboxMediatorUnitTest {
         mMediator.updateVisualsForState(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 BrandedColorScheme.INCOGNITO,
+                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
+
+        mMediator.updateVisualsForState(BrandedColorScheme.LIGHT_BRANDED_THEME);
+        assertEquals(
+                BrandedColorScheme.APP_DEFAULT,
+                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
+
+        mMediator.updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
+        assertEquals(
+                BrandedColorScheme.APP_DEFAULT,
                 mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
     }
 

@@ -365,8 +365,14 @@ import java.util.function.Supplier;
         mAttachmentUploadFailedSnackbar.setTextAppearance(textAppearanceResId);
     }
 
-    /** Apply a variant of the branded color scheme to Fusebox UI elements */
+    /** Apply a variant of the branded color scheme to Fusebox UI elements. */
     /* package */ void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
+        // Collapse LIGHT/DARK_BRANDED_THEME into APP_DEFAULT. There's no difference to fusebox and
+        // switching will cause UI elements to reload the same resources.
+        if (brandedColorScheme != BrandedColorScheme.INCOGNITO) {
+            brandedColorScheme = BrandedColorScheme.APP_DEFAULT;
+        }
+
         mBrandedColorScheme = brandedColorScheme;
         mModel.set(FuseboxProperties.COLOR_SCHEME, brandedColorScheme);
         if (mModelList == null) return;
