@@ -117,7 +117,6 @@ sync_pb::DataTypeState StateWithEncryption(
 
 class MockSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
  public:
-  MOCK_METHOD0(OnSendTabToSelfModelLoaded, void());
   MOCK_METHOD1(OnEntriesAddedRemotely,
                void(const std::vector<const SendTabToSelfEntry*>&));
   MOCK_METHOD1(OnEntriesOpenedRemotely,

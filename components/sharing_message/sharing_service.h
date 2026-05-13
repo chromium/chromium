@@ -160,7 +160,7 @@ class SharingService : public KeyedService,
           new_entries) override {}
   void OnEntriesRemovedRemotely(
       const std::vector<std::string>& guids) override {}
-  void OnSendTabToSelfModelLoaded() override {}
+
   void OnEntryAddedLocally(
       const send_tab_to_self::SendTabToSelfEntry* entry) override;
 

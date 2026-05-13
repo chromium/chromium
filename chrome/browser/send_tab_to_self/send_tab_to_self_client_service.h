@@ -40,9 +40,6 @@ class SendTabToSelfClientService : public KeyedService,
 
   void Shutdown() override;
 
-  // Keeps track of when the model is loaded so that updates to the
-  // model can be pushed afterwards.
-  void OnSendTabToSelfModelLoaded() override;
   // Updates the UI to reflect the new entries. Calls the handlers
   // registered through ReceivingUIRegistry.
   void OnEntriesAddedRemotely(

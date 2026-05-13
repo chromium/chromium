@@ -28,10 +28,6 @@ void SendTabToSelfClientService::Shutdown() {
   receiving_ui_handler_.reset();
 }
 
-void SendTabToSelfClientService::OnSendTabToSelfModelLoaded() {
-  // TODO(crbug.com/40621767): Push changes that happened before the model was
-  // loaded.
-}
 
 void SendTabToSelfClientService::OnEntriesAddedRemotely(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {

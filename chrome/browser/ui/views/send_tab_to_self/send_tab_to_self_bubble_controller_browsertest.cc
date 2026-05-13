@@ -75,7 +75,6 @@ class TestSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
       const std::vector<const SendTabToSelfEntry*>& entries) override {}
   void OnEntriesRemovedRemotely(
       const std::vector<std::string>& guids) override {}
-  void OnSendTabToSelfModelLoaded() override {}
 
   const SendTabToSelfEntry* last_added_entry() const {
     return last_added_entry_.get();

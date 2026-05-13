@@ -26,12 +26,6 @@ class SendTabToSelfModelObserver : public base::CheckedObserver {
 
   ~SendTabToSelfModelObserver() override = default;
 
-  // Invoked when the model has finished loading. Until this method is called it
-  // is unsafe to use the model.
-  // This call has overlaps with SendTabToSelfModel::IsReady but by having this
-  // be a pure virtual function we can ensure that subclasses of this class will
-  // have a way to ensure that the model is active before interacting with it.
-  virtual void OnSendTabToSelfModelLoaded() = 0;
 
   // Invoked when new entries are added to the model by the  sync server.
   // TODO(crbug.com/40619926) move OnEntriesAddedRemotely to use const refs to

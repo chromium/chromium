@@ -88,10 +88,6 @@ bool SendTabToSelfUrlChecker::IsExitConditionSatisfied(std::ostream* os) {
   return false;
 }
 
-void SendTabToSelfUrlChecker::OnSendTabToSelfModelLoaded() {
-  CheckExitCondition();
-}
-
 void SendTabToSelfUrlChecker::OnEntriesAddedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
         new_entries) {
@@ -126,10 +122,6 @@ bool SendTabToSelfUrlOpenedChecker::IsExitConditionSatisfied(std::ostream* os) {
     }
   }
   return false;
-}
-
-void SendTabToSelfUrlOpenedChecker::OnSendTabToSelfModelLoaded() {
-  CheckExitCondition();
 }
 
 void SendTabToSelfUrlOpenedChecker::OnEntriesAddedRemotely(
@@ -194,10 +186,6 @@ bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied(
   return true;
 }
 
-void SendTabToSelfModelEqualityChecker::OnSendTabToSelfModelLoaded() {
-  CheckExitCondition();
-}
-
 void SendTabToSelfModelEqualityChecker::OnEntriesAddedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
         new_entries) {
@@ -221,10 +209,6 @@ SendTabToSelfActiveChecker::~SendTabToSelfActiveChecker() = default;
 bool SendTabToSelfActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for model to be active.";
   return service_->GetSendTabToSelfModel()->IsReady();
-}
-
-void SendTabToSelfActiveChecker::OnSendTabToSelfModelLoaded() {
-  CheckExitCondition();
 }
 
 void SendTabToSelfActiveChecker::OnEntriesAddedRemotely(
@@ -308,12 +292,6 @@ bool SendTabToSelfUrlDeletedChecker::IsExitConditionSatisfied(
     }
   }
   return true;
-}
-
-void SendTabToSelfUrlDeletedChecker::OnSendTabToSelfModelLoaded() {
-  // This ensures that the URL being inspected is present when the model loads.
-  std::ostringstream s;
-  DCHECK(!IsExitConditionSatisfied(&s));
 }
 
 void SendTabToSelfUrlDeletedChecker::OnEntriesAddedRemotely(

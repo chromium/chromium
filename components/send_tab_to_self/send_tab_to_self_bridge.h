@@ -135,8 +135,6 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   void NotifyRemoteSendTabToSelfEntryOpened(
       const std::vector<const SendTabToSelfEntry*>& opened_entries);
 
-  // Notify all observers that the model is loaded;
-  void NotifySendTabToSelfModelLoaded();
 
   // Methods used as callbacks given to DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,

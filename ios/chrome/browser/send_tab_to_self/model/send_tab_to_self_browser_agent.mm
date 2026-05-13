@@ -38,10 +38,6 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
 
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
 
-void SendTabToSelfBrowserAgent::OnSendTabToSelfModelLoaded() {
-  // TODO(crbug.com/40621767): Push changes that happened before the model was
-  // loaded.
-}
 
 void SendTabToSelfBrowserAgent::OnEntriesAddedRemotely(
     const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&

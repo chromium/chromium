@@ -665,11 +665,6 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryOpened(
   }
 }
 
-void SendTabToSelfBridge::NotifySendTabToSelfModelLoaded() {
-  for (SendTabToSelfModelObserver& observer : observers_) {
-    observer.OnSendTabToSelfModelLoaded();
-  }
-}
 
 void SendTabToSelfBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
@@ -716,7 +711,6 @@ void SendTabToSelfBridge::OnReadAllMetadata(
     return;
   }
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
-  NotifySendTabToSelfModelLoaded();
 
   DoGarbageCollection();
 }
