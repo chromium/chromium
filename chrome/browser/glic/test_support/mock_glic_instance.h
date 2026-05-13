@@ -56,7 +56,7 @@ class MockGlicInstance : public GlicInstance {
               (const std::vector<int>&),
               (override));
   MOCK_METHOD(void, CancelTask, (), (override));
-
+  MOCK_METHOD(void, BindTabForTesting, (tabs::TabInterface*), (override));
   MOCK_METHOD(void,
               GetExperimentalTriggeringUpdates,
               (mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler>,

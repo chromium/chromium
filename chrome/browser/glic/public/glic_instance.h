@@ -124,6 +124,8 @@ class GlicInstance {
 
   // Cancels ongoing actuation task if one exists.
   virtual void CancelTask() = 0;
+
+  virtual void BindTabForTesting(tabs::TabInterface* tab) = 0;
 };
 
 }  // namespace glic

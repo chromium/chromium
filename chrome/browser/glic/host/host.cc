@@ -493,7 +493,8 @@ void Host::WebClientInitializeFailed(GlicWebClientAccess* web_client) {
   }
 }
 
-void Host::SetContextAccessIndicator(bool enabled) {
+void Host::SetContextAccessIndicator(GlicPageHandler* page_handler,
+                                     bool enabled) {
   CHECK(handler_info_);
   if (handler_info_->context_access_indicator_enabled == enabled) {
     return;

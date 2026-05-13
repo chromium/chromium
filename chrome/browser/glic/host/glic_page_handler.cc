@@ -1309,7 +1309,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void SetContextAccessIndicator(bool enabled) override {
-    host().SetContextAccessIndicator(enabled);
+    host().SetContextAccessIndicator(page_handler_, enabled);
   }
 
   void GetUserProfileInfo(GetUserProfileInfoCallback callback) override {
