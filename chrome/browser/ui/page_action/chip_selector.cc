@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -36,6 +37,8 @@ DefaultChipSelector::~DefaultChipSelector() = default;
 
 void DefaultChipSelector::RequestChipShow(actions::ActionId page_action_id,
                                           const SuggestionChipConfig& config) {
+  // Manual User Action is only supported for anchored messages
+  CHECK(config.priority != PageActionPriorityCategory::kUserInteraction);
   if (!active_chips_.contains(page_action_id)) {
     active_chips_.insert(page_action_id);
     base::UmaHistogramExactLinear("PageActionController.ActiveSuggestionChips",
@@ -52,6 +55,30 @@ void DefaultChipSelector::RequestChipHide(actions::ActionId page_action_id) {
 void DefaultChipSelector::RequestAnchoredMessageShow(
     actions::ActionId page_action_id,
     const AnchoredMessageConfig& config) {
+  if (config.priority == PageActionPriorityCategory::kUserInteraction) {
+    // If this request comes from an explicit user action, if there is no
+    // anchored message showing, we just show it. If there is another anchored
+    // message showing, we downgrade it to a chip and then show the newly
+    // requested message with no other changes to the queue.
+    if (anchored_message_queue_.empty()) {
+      // If no anchored messages are showing, put this one in the queue
+      anchored_message_queue_.push_back(page_action_id);
+    } else if (anchored_message_queue_[0] == page_action_id) {
+      // This anchored message is already showing. We trigger the callback so
+      // that the message doesn't time out.
+      show_anchored_message_callback_.Run(page_action_id, config);
+      return;
+    } else {
+      // Downgrade anchored message
+      hide_anchored_message_callback_.Run(anchored_message_queue_[0]);
+      show_chip_callback_.Run(anchored_message_queue_[0], {});
+      // Remove this page action from the queue (if it's there).
+      std::erase(anchored_message_queue_, page_action_id);
+      anchored_message_queue_[0] = page_action_id;
+    }
+    show_anchored_message_callback_.Run(page_action_id, config);
+    return;
+  }
   if (std::ranges::contains(anchored_message_queue_, page_action_id)) {
     // This page action's anchored message is already queued. Nothing to do.
     return;
@@ -110,6 +137,8 @@ PriorityChipSelector::~PriorityChipSelector() = default;
 
 void PriorityChipSelector::RequestChipShow(actions::ActionId page_action_id,
                                            const SuggestionChipConfig& config) {
+  // Manual User Action is only supported for anchored messages
+  CHECK(config.priority != PageActionPriorityCategory::kUserInteraction);
   if (active_chips_.contains(page_action_id)) {
     // This chip is already showing, but may have been triggered at a different
     // priority.
@@ -132,9 +161,8 @@ void PriorityChipSelector::RequestChipShow(actions::ActionId page_action_id,
     return;
   }
 
-  if (active_priority_ > config.priority ||
-      (active_priority_ == config.priority &&
-       active_priority_ != PageActionPriorityCategory::kPrivacySecurity)) {
+  if (config.priority <= active_priority_ &&
+      config.priority < PageActionPriorityCategory::kPrivacySecurity) {
     // Active suggestion chip or anchored message is either of higher priority,
     // or of the same priority, which is not Privacy/Security, so we don't show
     // the new one.
@@ -191,26 +219,38 @@ void PriorityChipSelector::RequestAnchoredMessageShow(
     return;
   }
 
-  if (active_priority_ > config.priority ||
-      (active_priority_ == config.priority &&
-       active_priority_ != PageActionPriorityCategory::kPrivacySecurity)) {
-    // Active suggestion chip or anchored message is either of higher priority,
-    // or of the same priority, which is not Privacy/Security, so we don't show
-    // the new one.
+  if (config.priority <= active_priority_ &&
+      config.priority < PageActionPriorityCategory::kPrivacySecurity) {
+    // We always show privacy/security or user interaction requests in a
+    // possibly downgraded state. Otherwise, we only show higher priority ones.
     return;
   }
 
-  if (active_priority_ < config.priority) {
+  if (active_priority_ < config.priority &&
+      active_priority_ < PageActionPriorityCategory::kPrivacySecurity) {
     // Active suggestion chip or anchored message is of lower priority. Hide it
-    // and show the new request.
+    // unless it is a privacy/security one.
     HideAllActive();
+    ShowAnchoredMessage(page_action_id, config);
+    return;
+  } else if (config.priority == PageActionPriorityCategory::kUserInteraction) {
+    // User interaction -> downgrade visible anchored message (if any) to a
+    // suggestion chip, and show the requested one.
+    if (active_anchored_message_) {
+      hide_anchored_message_callback_.Run(active_anchored_message_.value());
+      show_chip_callback_.Run(active_anchored_message_.value(),
+                              {.priority = active_priority_.value()});
+      active_anchored_message_.reset();
+    }
+    active_priority_ = config.priority;
     ShowAnchoredMessage(page_action_id, config);
     return;
   }
 
-  // Final case: active suggestion chip or anchored message, and requested one
-  // are both Privacy/Security. If we are already showing an anchored message,
-  // the new request is downgraded to a suggestion chip, otherwise, we show it.
+  // Final case: active suggestion chip or anchored message is either
+  // Privacy/Security or User Interaction, and requested one is
+  // Privacy/Security. If we are already showing an anchored message, the new
+  // request is downgraded to a suggestion chip, otherwise, we show it.
   if (active_anchored_message_) {
     ShowChip(page_action_id,
              SuggestionChipConfig{
@@ -247,17 +287,27 @@ void PriorityChipSelector::HideAllActive() {
 
 void PriorityChipSelector::ShowChip(actions::ActionId page_action_id,
                                     const SuggestionChipConfig& config) {
-  CHECK(!active_priority_ || active_priority_ == config.priority);
+  // We verify that either there is no active priority, it has already been set
+  // to the same level as requested, or the request is Privacy/Security or
+  // higher, which allows multiple items to show at once.
+  CHECK(!active_priority_ || active_priority_ == config.priority ||
+        config.priority >= PageActionPriorityCategory::kPrivacySecurity);
   active_chips_.insert(page_action_id);
   show_chip_callback_.Run(page_action_id, config);
-  active_priority_ = config.priority;
+  if (!active_priority_ || active_priority_ == config.priority) {
+    active_priority_ = config.priority;
+  }
 }
 
 void PriorityChipSelector::ShowAnchoredMessage(
     actions::ActionId page_action_id,
     const AnchoredMessageConfig& config) {
   CHECK(!active_anchored_message_);
-  CHECK(!active_priority_ || active_priority_ == config.priority);
+  // We verify that either there is no active priority, it has already been set
+  // to the same level as requested, or the request is Privacy/Security or
+  // higher, which allows multiple items to show at once.
+  CHECK(!active_priority_ || active_priority_ == config.priority ||
+        config.priority >= PageActionPriorityCategory::kPrivacySecurity);
   active_anchored_message_ = page_action_id;
   show_anchored_message_callback_.Run(page_action_id, config);
   active_priority_ = config.priority;

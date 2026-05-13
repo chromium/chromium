@@ -68,7 +68,8 @@ enum class PageActionPriorityCategory {
   kCoreSiteUtility,
   kContextualCue,
   kPrivacySecurity,
-  kMaxValue = kPrivacySecurity,
+  kUserInteraction,  // This priority is only used for Anchored Messages.
+  kMaxValue = kUserInteraction,
 };
 
 // Indicates possible anchored message action icons (right side of anchored

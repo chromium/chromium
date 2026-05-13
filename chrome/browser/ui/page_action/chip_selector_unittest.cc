@@ -148,6 +148,40 @@ TEST_F(DefaultChipSelectorTest, HideUnshownAnchoredMessage) {
   EXPECT_THAT(calls, IsEmpty());
 }
 
+TEST_F(DefaultChipSelectorTest,
+       UserInteractionAnchoredMessageDowngradesCurrent) {
+  selector->RequestAnchoredMessageShow(0, AnchoredMessageConfig{});
+
+  selector->RequestAnchoredMessageShow(
+      1, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+  EXPECT_THAT(
+      calls, ElementsAre(Pair("show_anchored_message", 0),
+                         Pair("hide_anchored_message", 0), Pair("show_chip", 0),
+                         Pair("show_anchored_message", 1)));
+}
+
+TEST_F(DefaultChipSelectorTest,
+       UserInteractionAnchoredMessageReplacesFrontOfQueue) {
+  selector->RequestAnchoredMessageShow(0, AnchoredMessageConfig{});
+  selector->RequestAnchoredMessageShow(1, AnchoredMessageConfig{});
+  calls.clear();
+
+  selector->RequestAnchoredMessageShow(
+      2, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+  EXPECT_THAT(
+      calls, ElementsAre(Pair("hide_anchored_message", 0), Pair("show_chip", 0),
+                         Pair("show_anchored_message", 2)));
+
+  // Verify queue state by hiding the current message and checking if the next
+  // one shows.
+  calls.clear();
+  selector->RequestAnchoredMessageHide(2);
+  EXPECT_THAT(calls, ElementsAre(Pair("hide_anchored_message", 2),
+                                 Pair("show_anchored_message", 1)));
+}
+
 class PriorityChipSelectorTest : public testing::Test {
  public:
   void SetUp() override {
@@ -345,6 +379,90 @@ TEST_F(PriorityChipSelectorTest,
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
                                  Pair("show_chip", 1)));
+}
+
+TEST_F(PriorityChipSelectorTest, UserInteractionDowngradesAnchoredMessage) {
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+  selector->RequestAnchoredMessageShow(
+      1, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+
+  EXPECT_THAT(
+      calls, ElementsAre(Pair("show_anchored_message", 0),
+                         Pair("hide_anchored_message", 0), Pair("show_chip", 0),
+                         Pair("show_anchored_message", 1)));
+}
+
+TEST_F(PriorityChipSelectorTest, UserInteractionPreemptsLowerPriority) {
+  selector->RequestChipShow(
+      0, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+  selector->RequestAnchoredMessageShow(
+      1, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+
+  // Lower priority (ContextualCue) should be hidden, not downgraded.
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
+                                 Pair("show_anchored_message", 1)));
+}
+
+TEST_F(PriorityChipSelectorTest, UserInteractionAlongsidePrivacySecurityChips) {
+  selector->RequestChipShow(
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+  selector->RequestAnchoredMessageShow(
+      1, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+
+  // PrivacySecurity chip should remain showing alongside UserInteraction
+  // message.
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0),
+                                 Pair("show_anchored_message", 1)));
+}
+
+TEST_F(PriorityChipSelectorTest,
+       PrivacySecurityChipShownWhileUserInteractionActive) {
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+  selector->RequestChipShow(
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
+                                 Pair("show_chip", 1)));
+}
+
+TEST_F(PriorityChipSelectorTest,
+       PrivacySecurityAnchoredMessageDowngradedWhileUserInteractionActive) {
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+  selector->RequestAnchoredMessageShow(
+      1, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
+                                 Pair("show_chip", 1)));
+}
+
+TEST_F(PriorityChipSelectorTest,
+       PrivacySecurityShowsAfterUserInteractionDismissed) {
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+  selector->RequestAnchoredMessageShow(
+      1, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+  selector->RequestAnchoredMessageHide(0);
+  selector->RequestAnchoredMessageShow(
+      2, {.priority = PageActionPriorityCategory::kPrivacySecurity});
+  EXPECT_THAT(
+      calls, ElementsAre(Pair("show_anchored_message", 0), Pair("show_chip", 1),
+                         Pair("hide_anchored_message", 0),
+                         Pair("show_anchored_message", 2)));
 }
 
 }  // namespace
