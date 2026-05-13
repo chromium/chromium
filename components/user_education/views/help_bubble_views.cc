@@ -17,6 +17,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/view_subregion_anchor.h"
+#include "ui/views/view_tracker.h"
 
 namespace user_education {
 
@@ -199,15 +200,21 @@ void HelpBubbleViews::DestroyWidget() {
   anchor_hidden_subscription_ = base::CallbackListSubscription();
   anchor_bounds_changed_subscription_ = base::CallbackListSubscription();
 
-  // Maybe clean up anchor state.
-  if (auto* anchor_view = GetAnchorView()) {
-    anchor_view->SetProperty(kHasInProductHelpPromoKey, false);
-    MaybeRemoveAttentionStateFromTrackedElement(anchor_view);
-  }
+  // Capture the anchor. If it's still there after cleanup, its state will be
+  // cleaned up later.
+  views::ViewTracker anchor_view_tracker(GetAnchorView());
 
   help_bubble_view_ = nullptr;
   anchor_element_ = nullptr;
   help_bubble_widget_.reset();
+
+  // Clean up anchor state after the bubble is gone. This prevents the anchor
+  // trying to do something silly, like change its contents in a way that could
+  // cause reentrancy into the bubble.
+  if (auto* const anchor_view = anchor_view_tracker.view()) {
+    anchor_view->SetProperty(kHasInProductHelpPromoKey, false);
+    MaybeRemoveAttentionStateFromTrackedElement(anchor_view);
+  }
 }
 
 bool HelpBubbleViews::Close(CloseReason reason) {

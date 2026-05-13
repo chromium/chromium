@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
@@ -19,6 +22,8 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/view_subregion_anchor.h"
@@ -31,9 +36,45 @@
 namespace user_education {
 
 namespace {
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestAnchorId);
-}
+
+// View which can synchronously resize itself when a help bubble is added or
+// removed. This simulates logic that happens in some toolbar icons, like the
+// avatar button. This is not good behavior, but exists due to (among other
+// things) https://crbug.com/40707582.
+class HelpBubbleAwareView : public views::View {
+  METADATA_HEADER(HelpBubbleAwareView, views::View)
+ public:
+  static constexpr gfx::Size kOriginalSize = gfx::Size(100, 100);
+  static constexpr gfx::Size kWithBubbleSize = gfx::Size(150, 150);
+
+  HelpBubbleAwareView() { SetPreferredSize(gfx::Size(100, 100)); }
+  ~HelpBubbleAwareView() override = default;
+
+  void set_respond_to_help_bubble(bool respond_to_help_bubble) {
+    respond_to_help_bubble_ = respond_to_help_bubble;
+  }
+
+  void AfterPropertyChange(const void* key, int64_t old_value) override {
+    if (respond_to_help_bubble_ && key == kHasInProductHelpPromoKey) {
+      // This is the kind of bad behavior some toolbar buttons do.
+      SetPreferredSize(GetProperty(kHasInProductHelpPromoKey) ? kWithBubbleSize
+                                                              : kOriginalSize);
+      SizeToPreferredSize();
+    }
+    View::AfterPropertyChange(key, old_value);
+  }
+
+ private:
+  bool respond_to_help_bubble_ = false;
+};
+
+BEGIN_METADATA(HelpBubbleAwareView)
+END_METADATA
+
+}  // namespace
 
 class HelpBubbleFactoryViewsTest : public views::ViewsTestBase {
  public:
@@ -47,7 +88,7 @@ class HelpBubbleFactoryViewsTest : public views::ViewsTestBase {
     contents_view_ = widget_->SetContentsView(std::make_unique<views::View>());
     contents_view_->SetLayoutManager(std::make_unique<views::FillLayout>());
     anchor_view_ =
-        contents_view_->AddChildView(std::make_unique<views::View>());
+        contents_view_->AddChildView(std::make_unique<HelpBubbleAwareView>());
     anchor_view_->SetProperty(views::kElementIdentifierKey, kTestElementId);
     views::test::WidgetVisibleWaiter waiter(widget_.get());
     widget_->Show();
@@ -56,7 +97,7 @@ class HelpBubbleFactoryViewsTest : public views::ViewsTestBase {
   }
 
   void TearDown() override {
-    widget_.reset();
+    CloseWidget();
     ViewsTestBase::TearDown();
   }
 
@@ -82,16 +123,45 @@ class HelpBubbleFactoryViewsTest : public views::ViewsTestBase {
     return factory_.CreateBubble(element, std::move(params));
   }
 
+  void CloseWidget() {
+    contents_view_ = nullptr;
+    anchor_view_ = nullptr;
+    widget_.reset();
+  }
+
+  void FlushEvents() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   test::TestHelpBubbleDelegate test_delegate_;
   HelpBubbleFactoryViews factory_{&test_delegate_};
-  raw_ptr<views::View, DanglingUntriaged> contents_view_;
-  raw_ptr<views::View, DanglingUntriaged> anchor_view_;
+  raw_ptr<views::View> contents_view_;
+  raw_ptr<HelpBubbleAwareView> anchor_view_;
   std::unique_ptr<views::Widget> widget_;
 };
 
 TEST_F(HelpBubbleFactoryViewsTest, TestShowHelpBubble) {
   auto help_bubble = CreateHelpBubble(anchor_view_.get(), base::DoNothing());
   ASSERT_TRUE(help_bubble);
+}
+
+// Regression test for https://crbug.com/510523784; this crashes without the
+// associated changes. This simulates what happens when a help bubble is
+// attached to the avatar button during browser teardown.
+TEST_F(HelpBubbleFactoryViewsTest,
+       TestCloseWidgetWithHelpBubbleAndBubbleAwareAnchor) {
+  anchor_view_->set_respond_to_help_bubble(true);
+  auto help_bubble = CreateHelpBubble(anchor_view_.get(), base::DoNothing());
+  FlushEvents();
+  help_bubble->AsA<HelpBubbleViews>()
+      ->bubble_view_for_testing()
+      ->GetWidget()
+      ->CloseNow();
+  FlushEvents();
+  EXPECT_FALSE(help_bubble->is_open());
 }
 
 // TODO(https://crbug.com/502638609): In Fuchsia, this test causes an unrelated
@@ -136,13 +206,6 @@ class HelpBubbleFactoryViewsSubregionAnchorTest
   }
 
  protected:
-  void FlushEvents() {
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
   bool AnchorVisible() const {
     return ui::ElementTracker::GetElementTracker()->IsElementVisible(
         kTestAnchorId,
