@@ -88,6 +88,7 @@ message ResponseMessage {
     SmsFetchResponse sms_fetch_response = 1;
     PeerConnectionAnswerMessage peer_connection_answer_message_response = 2;
     DiscoveryResponse discovery_response = 3;
+    GlicExperimentalTriggering glic_experimental_triggering = 4;
   }
 }
 
