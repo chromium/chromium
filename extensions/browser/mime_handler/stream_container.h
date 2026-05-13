@@ -72,6 +72,11 @@ class StreamContainer {
   // been fully drained yet.
   mojo::ScopedDataPipeConsumerHandle GetFallbackDataPipe();
 
+  // Returns the number of cached body bytes currently held by the attached
+  // body cache. Returns 0 if no cache is attached. The cache stores
+  // post-content-decoding bytes, so this is the decoded body length.
+  size_t GetCachedBodySize() const;
+
  private:
   const bool embedded_;
   const int tab_id_;

@@ -9,10 +9,11 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/mime_handler/stream_info.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -165,12 +166,14 @@ class MimeHandlerStreamManager
 
   // Aborts the stream claimed by `embedder_host` and triggers a
   // frame-scoped re-navigation of `embedder_host` to its original URL so
-  // the response can be re-fetched and handed to a native handler. Only
-  // valid when `embedder_host` has an active extension frame and no
-  // content frame. Works for both primary-main-frame and iframe
-  // embedders -- the navigation is scoped to `embedder_host`'s
-  // `FrameTreeNode`, so sibling frames and the main frame (in the
-  // iframe case) are not disturbed.
+  // the response can be handed to a native handler. Only valid when
+  // `embedder_host` has an active extension frame and no content frame.
+  // Works for both primary-main-frame and iframe embedders -- the
+  // navigation is scoped to `embedder_host`'s `FrameTreeNode`, so sibling
+  // frames and the main frame (in the iframe case) are not disturbed.
+  // The stream's buffered response body (if any) is captured against the
+  // embedder's `FrameTreeNodeId` so the throttle can replay it on the
+  // reload instead of refetching from the network.
   void AbortAndFallbackToNativeHandler(content::RenderFrameHost* embedder_host);
 
   // Returns true iff `frame_tree_node_id` was previously marked for
@@ -181,6 +184,26 @@ class MimeHandlerStreamManager
   // whole chain. Cleared in `DidFinishNavigation()` / `FrameDeleted()`.
   bool IsPendingNativeFallback(
       content::FrameTreeNodeId frame_tree_node_id) const;
+
+  // Cached fallback body returned from `TakeCachedFallbackBody`.
+  // `decoded_body_size` is the post-content-decoding byte count of the
+  // bytes flowing through `pipe` -- the value to report as
+  // `URLLoaderCompletionStatus::decoded_body_length` when replaying.
+  struct CachedFallbackBody {
+    mojo::ScopedDataPipeConsumerHandle pipe;
+    size_t decoded_body_size = 0;
+  };
+
+  // Moves out the cached response body associated with the
+  // native-fallback mark for `frame_tree_node_id`, if any. Returns
+  // `std::nullopt` when the mark is absent, no body was buffered, or
+  // the body has already been taken by a previous call. Single-use:
+  // the underlying mojo data pipe consumer handle can only be drained
+  // once, so callers must invoke this only after committing to splicing
+  // the body. The mark itself is left in place; clearing happens in
+  // `DidFinishNavigation()` / `FrameDeleted()`.
+  std::optional<CachedFallbackBody> TakeCachedFallbackBody(
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // Returns whether the handler plugin should handle save events.
   bool PluginCanSave(const content::RenderFrameHost* embedder_host) const;
@@ -317,12 +340,15 @@ class MimeHandlerStreamManager
   StreamInfoMap stream_infos_;
 
   // Embedder frames marked for native-handler fallback whose pending
-  // re-navigation has not yet completed. Keyed by `FrameTreeNodeId`
-  // (not URL) so two concurrent iframes handling the same URL are
-  // distinguished, and so the mark survives cross-process RFH swaps
-  // during the scoped re-navigation (the FTN persists across same-frame
-  // navigation; only RFHs within it are replaced).
-  base::flat_set<content::FrameTreeNodeId> pending_native_fallback_frames_;
+  // re-navigation has not yet completed, mapped to the stream's cached
+  // response body (invalid handle when no body was buffered or the body
+  // has already been taken). Keyed by `FrameTreeNodeId` (not URL) so two
+  // concurrent iframes handling the same URL are distinguished, and so
+  // the mark survives cross-process RFH swaps during the scoped
+  // re-navigation (the FTN persists across same-frame navigation; only
+  // RFHs within it are replaced).
+  base::flat_map<content::FrameTreeNodeId, CachedFallbackBody>
+      pending_native_fallback_frames_;
 };
 
 }  // namespace mime_handler

@@ -38,6 +38,7 @@ class StreamContainerBodyCacheTest : public testing::Test {
 
 TEST_F(StreamContainerBodyCacheTest, InitiallyNoBodyCache) {
   EXPECT_FALSE(stream_container_->GetFallbackDataPipe().is_valid());
+  EXPECT_EQ(0u, stream_container_->GetCachedBodySize());
 }
 
 TEST_F(StreamContainerBodyCacheTest, GetFallbackDataPipeReplaysCachedBytes) {
@@ -54,6 +55,7 @@ TEST_F(StreamContainerBodyCacheTest, GetFallbackDataPipeReplaysCachedBytes) {
   ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
 
   stream_container_->SetBodyCache(cache);
+  EXPECT_EQ(kData.size(), stream_container_->GetCachedBodySize());
   auto fallback_pipe = stream_container_->GetFallbackDataPipe();
   ASSERT_TRUE(fallback_pipe.is_valid());
 

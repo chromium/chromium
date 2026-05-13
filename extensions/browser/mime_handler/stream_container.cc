@@ -50,4 +50,8 @@ mojo::ScopedDataPipeConsumerHandle StreamContainer::GetFallbackDataPipe() {
   return mojo::ScopedDataPipeConsumerHandle();
 }
 
+size_t StreamContainer::GetCachedBodySize() const {
+  return body_cache_ ? body_cache_->cached_size() : 0u;
+}
+
 }  // namespace extensions

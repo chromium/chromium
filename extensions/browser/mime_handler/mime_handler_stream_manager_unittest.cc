@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/run_until.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -15,10 +16,13 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/browser/mime_handler/stream_info.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
@@ -1108,6 +1112,93 @@ TEST_F(MimeHandlerStreamManagerTest,
   finish_handle.set_render_frame_host(embedder_host);
   manager->DidFinishNavigation(&finish_handle);
   EXPECT_FALSE(manager->IsPendingNativeFallback(embedder_ftn));
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
+       AbortAndFallbackToNativeHandler_NoBodyCache_TakeReturnsInvalid) {
+  // Without a body cache attached, the FTN mark still exists but the
+  // captured handle is invalid -- the throttle will fall through to a
+  // network refetch.
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  const content::FrameTreeNodeId embedder_ftn =
+      embedder_host->GetFrameTreeNodeId();
+  auto* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_ftn, "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+  stream_info->SetDidExtensionFinishNavigation();
+
+  manager->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(manager->IsPendingNativeFallback(embedder_ftn));
+  EXPECT_FALSE(manager->TakeCachedFallbackBody(embedder_ftn).has_value());
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
+       AbortAndFallbackToNativeHandler_ReplaysCachedBody) {
+  // Populate a body cache, attach it to the claimed stream, abort.
+  // `TakeCachedFallbackBody` must return a valid pipe whose bytes match
+  // the original body. A second take must return an invalid handle --
+  // the underlying mojo data pipe consumer is single-use.
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(64u, producer, consumer));
+  constexpr char kBody[] = "cached-body-bytes";
+  ASSERT_EQ(MOJO_RESULT_OK,
+            producer->WriteAllData(base::as_byte_span(std::string(kBody))));
+  producer.reset();
+
+  auto cache =
+      extensions::MimeHandlerBodyCache::Create(std::move(consumer), nullptr);
+  ASSERT_TRUE(cache);
+  ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
+
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  const content::FrameTreeNodeId embedder_ftn =
+      embedder_host->GetFrameTreeNodeId();
+  auto* manager = mime_handler_stream_manager();
+  auto stream = extensions::mime_handler::GenerateSampleStreamContainer(1);
+  stream->SetBodyCache(cache);
+  manager->AddStreamContainer(
+      embedder_ftn, "internal_id", std::move(stream),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+  stream_info->SetDidExtensionFinishNavigation();
+
+  manager->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(manager->IsPendingNativeFallback(embedder_ftn));
+
+  std::optional<MimeHandlerStreamManager::CachedFallbackBody> taken =
+      manager->TakeCachedFallbackBody(embedder_ftn);
+  ASSERT_TRUE(taken.has_value());
+  ASSERT_TRUE(taken->pipe.is_valid());
+  EXPECT_EQ(std::string_view(kBody).size(), taken->decoded_body_size);
+  StringDrainerClient client;
+  mojo::DataPipeDrainer drainer(&client, std::move(taken->pipe));
+  ASSERT_TRUE(base::test::RunUntil([&] { return client.complete(); }));
+  EXPECT_EQ(kBody, client.TakeAccumulated());
+
+  // The mark stays in place until `DidFinishNavigation`/`FrameDeleted`,
+  // but the body is single-use.
+  EXPECT_TRUE(manager->IsPendingNativeFallback(embedder_ftn));
+  EXPECT_FALSE(manager->TakeCachedFallbackBody(embedder_ftn).has_value());
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
+       TakeCachedFallbackBody_Unflagged_ReturnsInvalid) {
+  MimeHandlerStreamManager::Create(web_contents());
+  auto* manager = mime_handler_stream_manager();
+  ASSERT_TRUE(manager);
+
+  EXPECT_FALSE(
+      manager->TakeCachedFallbackBody(content::FrameTreeNodeId()).has_value());
 }
 
 }  // namespace extensions::mime_handler

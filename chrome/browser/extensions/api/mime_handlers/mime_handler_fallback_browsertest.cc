@@ -37,6 +37,7 @@ constexpr char kFallbackSubDir[] = "fallback";
 // Served from `chrome/test/data/pdf/test.pdf` via the second source
 // directory mounted in `SetUpOnMainThread()`.
 constexpr char kFallbackPdfPath[] = "/test.pdf";
+constexpr char kEmbedHostPath[] = "/embed_host.html";
 constexpr char kIframeHostPath[] = "/iframe_host.html";
 constexpr char kTwoIframesSameUrlPath[] = "/two_iframes_same_url.html";
 
@@ -162,6 +163,38 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
                 .ExtractString());
   EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents))
       << "Iframe-hosted abort did not swap into built-in PDF viewer.";
+}
+
+// Abort from a generic handler hosted by an <embed> element must hand the
+// cached response body to the built-in PDF viewer as a completed load, not just
+// load the viewer shell. The cached-body routing exists only in the OOPIF PDF
+// stream pipeline; the legacy MimeHandlerView GuestView path drops the cache
+// and re-fetches, so there is nothing to verify there.
+IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+                       AbortAndFallbackRendersPdfViewerForEmbedElement) {
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    GTEST_SKIP() << "Cached-body fallback routing is OOPIF-only.";
+  }
+  ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const GURL host_url = embedded_test_server()->GetURL(kEmbedHostPath);
+
+  auto pdf_extension_observer = MakePdfExtensionObserver();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), host_url));
+  pdf_extension_observer->WaitForNavigationFinished();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  content::RenderFrameHost* embedder_frame =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(embedder_frame);
+
+  pdf_extension_test_util::EnsurePDFHasLoadedOptions options;
+  options.wait_for_hit_test_data = false;
+  EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(
+      embedder_frame, options));
+  EXPECT_EQ(host_url, web_contents->GetLastCommittedURL());
 }
 
 // Two sibling iframes loading the exact same URL: the host page tells
