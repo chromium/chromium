@@ -7,7 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
@@ -81,7 +80,7 @@ enum class InitialWebUIView {
 void EmitHistogramWithTraceEvent(const char* event_name,
                                  base::TimeTicks start_ticks,
                                  base::TimeTicks end_ticks) {
-  TRACE_EVENT_BEGIN("waap", perfetto::StaticString(event_name),
+  TRACE_EVENT_BEGIN("waap", perfetto::DynamicString(event_name),
                     perfetto::Track(reinterpret_cast<uintptr_t>(event_name)),
                     start_ticks);
   TRACE_EVENT_END("waap",
