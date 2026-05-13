@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -156,6 +157,24 @@ TEST_F(AIClassifierTest, Classify) {
   // The FakeBaseModelAsset/FakeService prepends "CPU backend".
   EXPECT_THAT(Classify(*classifier_remote, kInputString, kContextString),
               ElementsAreArray({"CPU backend", "Classified result"}));
+}
+
+TEST_F(AIClassifierTest, ClassifierTelemetry) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(
+                  optimization_guide::mojom::OnDeviceFeature::kClassifier))
+      .WillRepeatedly(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  fake_broker_->InstallClassifierModel(
+      std::make_unique<optimization_guide::FakeBaseModelAsset>());
+  EnsureModelIsReady();
+  GetAIClassifierRemote();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelEligibilityReason.Classifier",
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess, 2);
 }
 
 TEST_F(AIClassifierTest, CanCreateDefaultOptions) {

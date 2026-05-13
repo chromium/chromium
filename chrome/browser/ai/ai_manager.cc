@@ -16,7 +16,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -626,6 +628,20 @@ std::optional<std::string> ResolveSummarizerUseCaseName(
   return std::nullopt;
 }
 
+void CheckAndLogEligibility(
+    content::BrowserContext* browser_context,
+    optimization_guide::mojom::OnDeviceFeature feature) {
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
+  if (service) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.",
+             optimization_guide::GetVariantName(feature)}),
+        service->GetOnDeviceModelEligibility(feature));
+  }
+}
+
 }  // namespace
 
 // Feature flag for enabling foundational models in the AI API, requires the
@@ -736,6 +752,9 @@ void AIManager::CreateLanguageModel(
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
+
+  CheckAndLogEligibility(
+      browser_context_, optimization_guide::mojom::OnDeviceFeature::kPromptApi);
 
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
@@ -977,6 +996,9 @@ void AIManager::CreateSummarizer(
     }
   }
 
+  CheckAndLogEligibility(
+      browser_context_, optimization_guide::mojom::OnDeviceFeature::kSummarize);
+
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
         std::move(client));
@@ -1081,6 +1103,10 @@ void AIManager::CreateProofreader(
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
+
+  CheckAndLogEligibility(
+      browser_context_,
+      optimization_guide::mojom::OnDeviceFeature::kProofreaderApi);
 
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient> client_remote(
@@ -1211,6 +1237,10 @@ void AIManager::CreateWriter(
     return;
   }
 
+  CheckAndLogEligibility(
+      browser_context_,
+      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi);
+
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
         std::move(client));
@@ -1300,6 +1330,10 @@ void AIManager::CreateRewriter(
     return;
   }
 
+  CheckAndLogEligibility(
+      browser_context_,
+      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi);
+
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
         std::move(client));
@@ -1361,6 +1395,11 @@ void AIManager::CreateClassifier(
     receivers_.ReportBadMessage("Policy or user setting disabled");
     return;
   }
+
+  CheckAndLogEligibility(
+      browser_context_,
+      optimization_guide::mojom::OnDeviceFeature::kClassifier);
+
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateClassifierClient> client_remote(
         std::move(client));

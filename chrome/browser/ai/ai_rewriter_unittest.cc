@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -225,6 +226,23 @@ TEST_F(AIRewriterTest, CreateRewriterNoService) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+
+TEST_F(AIRewriterTest, RewriterTelemetry) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
+      GetOnDeviceModelEligibility(
+          optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi))
+      .WillRepeatedly(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  EnsureModelIsReady();
+  GetAIRewriterRemote();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelEligibilityReason.WritingAssistanceApi",
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess, 2);
 }
 
 TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {

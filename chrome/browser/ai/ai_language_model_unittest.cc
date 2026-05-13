@@ -380,8 +380,18 @@ TEST_F(AILanguageModelTest, Prompt) {
 
 TEST_F(AILanguageModelTest, PromptTelemetry) {
   base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(
+                  optimization_guide::mojom::OnDeviceFeature::kPromptApi))
+      .WillOnce(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
   auto session = CreateSession();
   Prompt(*session, MakeInput("foo"));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelEligibilityReason.PromptApi",
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess, 1);
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution."

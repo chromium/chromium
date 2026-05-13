@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -215,6 +216,22 @@ TEST_F(AIProofreaderTest, CreateProofreaderNoService) {
       create_proofreader_client.result().Take(),
       ErrorIs(
           blink::mojom::AIManagerCreateClientError::kUnableToCreateSession));
+}
+
+TEST_F(AIProofreaderTest, ProofreaderTelemetry) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(
+                  optimization_guide::mojom::OnDeviceFeature::kProofreaderApi))
+      .WillRepeatedly(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  EnsureModelIsReady();
+  GetAIProofreaderRemote();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelEligibilityReason.ProofreaderApi",
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess, 2);
 }
 
 TEST_F(AIProofreaderTest, CanCreateDefaultOptions) {
