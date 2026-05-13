@@ -727,11 +727,6 @@ void LayerTreeHostImpl::AnimateInternal() {
   DCHECK(task_runner_provider_->IsImplThread());
   base::TimeTicks monotonic_time = CurrentBeginFrameArgs().frame_time;
 
-  // mithro(TODO): Enable these checks.
-  // DCHECK(!current_begin_frame_tracker_.HasFinished());
-  // DCHECK(monotonic_time == current_begin_frame_tracker_.Current().frame_time)
-  //  << "Called animate with unknown frame time!?";
-
   bool did_animate = false;
 
   // TODO(bokan): This should return did_animate, see TODO in
@@ -1401,8 +1396,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   // would be animating checkerboards, because failing under those conditions
   // triggers a new main frame, which may cause the copy request layer to be
   // destroyed.
-  // TODO(weiliangc): Test copy request w/ LayerTreeFrameSink recreation. Would
-  // trigger this DCHECK.
   DCHECK((!frame->has_copy_requests &&
           !frame->has_view_transition_save_directive) ||
          draw_result == DrawResult::kSuccess);
@@ -2405,7 +2398,6 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
 #endif
 
   if (InnerViewportScrollNode()) {
-    // TODO(miletus) : Change the metadata to hold ScrollOffset.
     metadata.root_scroll_offset = active_tree_->TotalScrollOffset();
   }
 
@@ -2802,8 +2794,6 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
   // The next frame should start by assuming nothing has changed, and changes
   // are noted as they occur.
-  // TODO(boliu): If we did a temporary software renderer frame, propagate the
-  // damage forward to the next frame.
   for (size_t i = 0; i < frame->render_surface_list->size(); i++) {
     auto* surface = (*frame->render_surface_list)[i];
     surface->damage_tracker()->DidDrawDamagedArea();
@@ -4960,10 +4950,6 @@ LayerTreeHostImpl::ProcessCompositorDeltas(
   commit_data->is_scroll_active =
       input_delegate_ && GetInputHandler().IsCurrentlyScrolling();
   // We should never process non-unit page_scale_delta for an OOPIF subframe.
-  // TODO(wjmaclean): Remove this DCHECK as a pre-condition to closing the bug.
-  // https://crbug.com/845097
-  DCHECK(settings().is_for_scalable_page ||
-         commit_data->page_scale_delta == 1.f);
   commit_data->top_controls_delta =
       active_tree()->top_controls_shown_ratio()->PullDeltaForMainThread(
           main_thread_mutator_host);
@@ -5081,9 +5067,6 @@ bool LayerTreeHostImpl::AnimateLayers(base::TimeTicks monotonic_time,
   const bool animated = mutator_host_->TickAnimations(
       monotonic_time, scroll_tree, is_active_tree, mutator_events_.get());
 
-  // TODO(crbug.com/40443202): Only do this if the animations are on the active
-  // tree, or if they are on the pending tree waiting for some future time to
-  // start.
   if (animated) {
     // TODO(crbug.com/40667010): If only scroll animations present, schedule a
     // frame only if scroll changes.
@@ -5243,15 +5226,11 @@ void LayerTreeHostImpl::PostDelayedScrollbarAnimationTask(
   delegate_->PostDelayedAnimationTaskOnImplThread(std::move(task), delay);
 }
 
-// TODO(danakj): Make this a return value from the Animate() call instead of an
-// interface on LTHI. (Also, crbug.com/551138.)
 void LayerTreeHostImpl::SetNeedsAnimateForScrollbarAnimation() {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::SetNeedsAnimateForScrollbarAnimation");
   SetNeedsOneBeginImplFrame();
 }
 
-// TODO(danakj): Make this a return value from the Animate() call instead of an
-// interface on LTHI. (Also, crbug.com/551138.)
 void LayerTreeHostImpl::SetNeedsRedrawForScrollbarAnimation() {
   SetNeedsRedraw(/*animation_only=*/true, /*skip_if_inside_draw=*/false);
 }
@@ -5780,12 +5759,7 @@ void LayerTreeHostImpl::SetTreeLayerScrollOffsetMutated(
                     element_id));
   const ScrollNode* scroll_node =
       property_trees->scroll_tree().FindNodeFromElementId(element_id);
-  // TODO(crbug.com/40828469): We should aim to prevent this condition from
-  // happening and either remove this check or make it fatal.
-  DCHECK(scroll_node);
-  if (!scroll_node) {
-    return;
-  }
+  CHECK(scroll_node);
   property_trees->scroll_tree_mutable().OnScrollOffsetAnimated(
       element_id, scroll_node->id, scroll_offset, tree);
 }
@@ -5886,8 +5860,6 @@ void LayerTreeHostImpl::ElementIsAnimatingChanged(
     const PropertyAnimationState& state) {
   LayerTreeImpl* tree =
       list_type == ElementListType::ACTIVE ? active_tree() : pending_tree();
-  // TODO(wkorman): Explore enabling DCHECK in ElementIsAnimatingChanged()
-  // below. Currently enabling causes batch of unit test failures.
   if (tree && tree->property_trees()->ElementIsAnimatingChanged(
                   element_id_map, mask, state, false)) {
     tree->set_needs_update_draw_properties();
