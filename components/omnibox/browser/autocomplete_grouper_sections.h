@@ -322,7 +322,7 @@ class IOSComposeboxZpsSection : public ZpsSection {
                                    size_t max_contextual_suggestions);
 };
 
-class DesktopComposeboxZpsSection : public ZpsSection {
+class DesktopComposeboxZpsSection : public ZpsSectionWithLocalHistory {
  public:
   explicit DesktopComposeboxZpsSection(
       const omnibox::GroupConfigMap& group_configs,
