@@ -12,7 +12,6 @@
 #import "build/branding_buildflags.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
@@ -595,12 +594,8 @@ NSString* const kDateSeparator = @"/";
 - (UIImage*)aboveTitleImage {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Use the optimized high-resolution iOS symbol for branded builds.
-  return MakeSymbolMulticolor(CustomSymbolWithPointSize(
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableWalletBranding)
-          ? kGoogleWalletSymbol
-          : kGooglePaySymbol,
-      kGoogleWalletLogoHeight));
+  return MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kGoogleWalletSymbol, kGoogleWalletLogoHeight));
 #else
   // Fallback to the generic asset for unbranded builds.
   return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
