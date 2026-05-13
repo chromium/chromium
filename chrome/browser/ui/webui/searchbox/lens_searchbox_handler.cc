@@ -121,10 +121,6 @@ LensSearchboxHandler::LensSearchboxHandler(
       lens_searchbox_client_(lens_searchbox_client) {
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 
-  // The client may have text waiting to be sent to the searchbox that it
-  // couldn't do earlier since the page binding was not set. So now we let the
-  // client know the binding is ready.
-  lens_searchbox_client_->OnPageBound();
 }
 
 LensSearchboxHandler::~LensSearchboxHandler() = default;
