@@ -23,7 +23,7 @@ ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
     download::DownloadItem* download_item,
     const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
         custom_rule_message,
-    bool is_force_save_to_cloud)
+    const std::u16string& base_verdict_text)
     : custom_rule_message_(custom_rule_message),
       filename_(filename),
       custom_message_(custom_message),
@@ -32,7 +32,7 @@ ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
       open_file_callback_(std::move(open_file_callback)),
       discard_file_callback_(std::move(discard_file_callback)),
       download_item_(download_item),
-      is_force_save_to_cloud_(is_force_save_to_cloud) {
+      base_verdict_text_(base_verdict_text) {
   if (download_item_) {
     download_item_->AddObserver(this);
   }
@@ -90,19 +90,15 @@ ContentAnalysisDownloadsDelegate::GetCustomMessage() const {
       GetCustomRuleString(custom_rule_message_);
   if (!custom_rule_message.empty()) {
     return l10n_util::GetStringFUTF16(
-        is_force_save_to_cloud_
-            ? IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_CUSTOM_MESSAGE
-            : IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE,
-        filename_, custom_rule_message);
+        IDS_DEEP_SCANNING_DIALOG_COMBINED_CUSTOM_MESSAGE,
+        base_verdict_text_, custom_rule_message);
   }
 
   if (custom_message_.empty())
     return std::nullopt;
   return l10n_util::GetStringFUTF16(
-      is_force_save_to_cloud_
-          ? IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_CUSTOM_MESSAGE
-          : IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE,
-      filename_, custom_message_);
+      IDS_DEEP_SCANNING_DIALOG_COMBINED_CUSTOM_MESSAGE,
+      base_verdict_text_, custom_message_);
 }
 
 std::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
@@ -121,10 +117,8 @@ ContentAnalysisDownloadsDelegate::GetCustomRuleMessageRanges() const {
   std::vector<size_t> offsets;
 
   l10n_util::GetStringFUTF16(
-      is_force_save_to_cloud_
-          ? IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_CUSTOM_MESSAGE
-          : IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE,
-      {filename_, std::u16string{}}, &offsets);
+      IDS_DEEP_SCANNING_DIALOG_COMBINED_CUSTOM_MESSAGE,
+      {base_verdict_text_, std::u16string{}}, &offsets);
 
   std::vector<std::pair<gfx::Range, GURL>> custom_rule_message_ranges =
       GetCustomRuleStyles(custom_rule_message_, offsets.back());

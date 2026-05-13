@@ -8,6 +8,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -270,7 +272,9 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
           std::move(discard_closure), download_item,
           GetDownloadsCustomRuleMessage(download_item, danger_type)
               .value_or(ContentAnalysisResponse::Result::TriggeredRule::
-                            CustomRuleMessage())),
+                            CustomRuleMessage()),
+          l10n_util::GetStringFUTF16(
+              IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_SENSITIVE_DATA, filename)),
       true,  // Downloads are always cloud-based for now.
       web_contents, DeepScanAccessPoint::DOWNLOAD,
       /* file_count */ 1, state, download_item);

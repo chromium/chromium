@@ -30,7 +30,7 @@ class ContentAnalysisDownloadsDelegate
       download::DownloadItem* download_item,
       const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
           custom_rule_message,
-      bool is_force_save_to_cloud = false);
+      const std::u16string& base_verdict_text);
   ~ContentAnalysisDownloadsDelegate() override;
 
   // Called when the user opts to keep the download and open it. Should not be
@@ -80,7 +80,7 @@ class ContentAnalysisDownloadsDelegate
   base::OnceClosure open_file_callback_;
   base::OnceClosure discard_file_callback_;
   raw_ptr<download::DownloadItem> download_item_;
-  bool is_force_save_to_cloud_;
+  std::u16string base_verdict_text_;
 };
 
 }  // namespace enterprise_connectors

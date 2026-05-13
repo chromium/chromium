@@ -1187,7 +1187,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                              base::Unretained(this)),
               &mock_download_item,
               ContentAnalysisResponse::Result::TriggeredRule::
-                  CustomRuleMessage()),
+                  CustomRuleMessage(), u""),
           FinalContentAnalysisResult::WARNING)
           ->dialog_delegate_for_testing();
 
@@ -1220,7 +1220,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                              base::Unretained(this)),
               nullptr,
               ContentAnalysisResponse::Result::TriggeredRule::
-                  CustomRuleMessage()),
+                  CustomRuleMessage(), u""),
           FinalContentAnalysisResult::WARNING)
           ->dialog_delegate_for_testing();
 
@@ -1244,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                              base::Unretained(this)),
               nullptr,
               ContentAnalysisResponse::Result::TriggeredRule::
-                  CustomRuleMessage()),
+                  CustomRuleMessage(), u""),
           FinalContentAnalysisResult::FAILURE)
           ->dialog_delegate_for_testing();
 
@@ -1345,7 +1345,8 @@ class ContentAnalysisDialogUiTest
         u"File Name", get_custom_message(), get_custom_url(),
         bypass_justification_enabled(), base::DoNothing(), base::DoNothing(),
         nullptr,
-        ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage());
+        ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage(),
+        u"");
 
     // This ctor ends up calling into constrained_window to show itself, in a
     // way that relinquishes its ownership. Because of this, new it here and
@@ -1400,7 +1401,7 @@ class ContentAnalysisDialogCustomRuleMessageUiTest
     auto delegate = std::make_unique<ContentAnalysisDownloadsDelegate>(
         u"File Name", get_custom_message(), get_custom_url(),
         bypass_justification_enabled(), base::DoNothing(), base::DoNothing(),
-        nullptr, custom_rule_message);
+        nullptr, custom_rule_message, u"");
 
     // This ctor ends up calling into constrained_window to show itself, in a
     // way that relinquishes its ownership. Because of this, new it here and
@@ -1483,7 +1484,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogDownloadObserverTest,
           u"", u"", GURL(), true,
           /* open_file_callback */ base::DoNothing(),
           /* discard_callback */ base::DoNothing(), &mock_download_item,
-          ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage()),
+          ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage(),
+          u""),
       true, browser()->tab_strip_model()->GetActiveWebContents(),
       DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
       FinalContentAnalysisResult::WARNING, &mock_download_item);
@@ -1510,7 +1512,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogDownloadObserverTest,
           u"", u"", GURL(), true,
           /* open_file_callback */ base::DoNothing(),
           /* discard_callback */ base::DoNothing(), &mock_download_item,
-          ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage()),
+          ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage(),
+          u""),
       true, browser()->tab_strip_model()->GetActiveWebContents(),
       DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
       FinalContentAnalysisResult::WARNING, &mock_download_item);
@@ -1546,7 +1549,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogDownloadObserverTest,
           u"", u"", GURL(), true,
           /* open_file_callback */ base::DoNothing(),
           /* discard_callback */ base::DoNothing(), mock_download_item.get(),
-          ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage()),
+          ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage(),
+          u""),
       true, browser()->tab_strip_model()->GetActiveWebContents(),
       DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
       FinalContentAnalysisResult::WARNING, mock_download_item.get());

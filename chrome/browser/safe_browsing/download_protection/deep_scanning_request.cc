@@ -20,6 +20,8 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
@@ -991,11 +993,19 @@ void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
             &DeepScanningRequest::FinishRequest, weak_ptr_factory_.GetWeakPtr(),
             DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
 
+        enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
+            CustomRuleMessage custom_message;
+        for (const auto& metadata : file_metadata_) {
+          custom_message = GetForceSaveToCloudCustomRuleMessage(
+              metadata.second.scan_response);
+          if (custom_message.message_segments_size() > 0) {
+            break;
+          }
+        }
+
         ShowForceSaveToCloudDialog(
             std::move(keep_closure), std::move(discard_closure),
-            force_save_web_contents,
-            enterprise_connectors::ContentAnalysisResponse::Result::
-                TriggeredRule::CustomRuleMessage(),
+            force_save_web_contents, custom_message,
             save_package_files_.size());
         return;
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -1150,7 +1160,10 @@ void DeepScanningRequest::ShowForceSaveToCloudDialog(
       std::make_unique<enterprise_connectors::ContentAnalysisDownloadsDelegate>(
           metadata_->GetTargetFilePath().BaseName().AsUTF16Unsafe(), u"",
           GURL(), false, std::move(keep_closure), std::move(discard_closure),
-          nullptr, custom_message),
+          nullptr, custom_message,
+          l10n_util::GetStringFUTF16(
+              IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_MESSAGE,
+              metadata_->GetTargetFilePath().BaseName().AsUTF16Unsafe())),
       true,  // Downloads are always cloud-based for now.
       web_contents, enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
       file_count,
