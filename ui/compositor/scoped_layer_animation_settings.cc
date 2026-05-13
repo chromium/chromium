@@ -25,28 +25,26 @@ template <typename LockType>
 class ScopedLayerAnimationObserver : public ui::ImplicitAnimationObserver,
                                      public ui::LayerObserver {
  public:
-  explicit ScopedLayerAnimationObserver(ui::Layer* layer) : layer_(layer) {
-    layer_->AddObserver(this);
-    lock_.emplace(layer_);
+  explicit ScopedLayerAnimationObserver(ui::Layer* layer) {
+    layer_observation_.Observe(layer);
+    lock_.emplace(layer);
   }
 
   ScopedLayerAnimationObserver(const ScopedLayerAnimationObserver&) = delete;
   ScopedLayerAnimationObserver& operator=(const ScopedLayerAnimationObserver&) =
       delete;
 
-  ~ScopedLayerAnimationObserver() override {
-    if (layer_)
-      layer_->RemoveObserver(this);
-  }
+  ~ScopedLayerAnimationObserver() override = default;
 
   // ui::ImplicitAnimationObserver overrides:
   void OnImplicitAnimationsCompleted() override {
-    // If animation finishes before |layer_| is destoyed, we will remove the
-    // request applied on the layer and remove |this| from the |layer_|
-    // observer list when deleting |this|.
+    // If the animation finishes before the layer is destroyed, we will release
+    // the lock and destroy `this`.
     lock_.reset();
-    if (layer_) {
-      layer_->GetAnimator()->RemoveAndDestroyOwnedObserver(this);
+    if (layer_observation_.IsObserving()) {
+      layer_observation_.GetSource()
+          ->GetAnimator()
+          ->RemoveAndDestroyOwnedObserver(this);
     }
   }
 
@@ -54,14 +52,14 @@ class ScopedLayerAnimationObserver : public ui::ImplicitAnimationObserver,
   void LayerDestroyed(ui::Layer* layer) override {
     // If the animation is still going past layer destruction then we want the
     // layer to keep the request until the animation has finished. We will defer
-    // deleting |this| until the animation finishes.
-    layer_->RemoveObserver(this);
-    layer_ = nullptr;
+    // deleting `this` until the animation finishes.
+    layer_observation_.Reset();
   }
 
  private:
-  raw_ptr<ui::Layer> layer_;
   std::optional<LockType> lock_;
+  base::ScopedObservation<ui::Layer, ui::LayerObserver> layer_observation_{
+      this};
 };
 
 using ScopedRenderSurfaceCaching =
