@@ -384,7 +384,7 @@ void GnomeRemoteDesktopSession::OnDisplayConfigReceived(
         FROM_HERE,
         base::BindOnce(&GnomeDesktopResizer::UnblockAndFlushDisplayChanges,
                        desktop_resizer_.GetWeakPtr()),
-        base::Seconds(6));
+        base::Seconds(0));
     persistent_display_layout_manager_.Start();
   }
   if (is_headless_) {
