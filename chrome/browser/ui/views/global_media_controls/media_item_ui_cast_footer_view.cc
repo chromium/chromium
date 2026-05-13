@@ -36,10 +36,10 @@ class StopCastingButton : public views::LabelButton {
                                        gfx::Font::NORMAL, kFontSize,
                                        gfx::Font::Weight::NORMAL));
     SetTooltipText(text);
-    SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(media_message_center::kMediaCastStopIcon,
-                                       foreground_color_id, kIconSize));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      media_message_center::kMediaCastStopOldIcon,
+                      foreground_color_id, kIconSize));
 
     SetEnabledTextColors(foreground_color_id);
     SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);

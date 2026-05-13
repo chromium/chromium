@@ -223,7 +223,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   if (media_display_page_ == MediaDisplayPage::kQuickSettingsMediaView) {
     chevron_icon_ = title_row->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            media_message_center::kChevronRightIcon,
+            media_message_center::kChevronRightOldIcon,
             theme_.secondary_foreground_color_id, kChevronIconSize)));
     chevron_icon_->SetFlipCanvasOnPaintForRTLUI(true);
   }
@@ -256,7 +256,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   // Create the play/pause button.
   play_pause_button_ = CreateMediaActionButton(
       controls_column, static_cast<int>(MediaSessionAction::kPlay),
-      media_message_center::kPlayArrowIcon,
+      media_message_center::kPlayArrowOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   play_pause_button_->SetBackground(
       views::CreateRoundedRectBackground(theme_.play_button_container_color_id,
@@ -275,7 +275,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   // Create the previous track button.
   CreateMediaActionButton(
       button_container_, static_cast<int>(MediaSessionAction::kPreviousTrack),
-      media_message_center::kMediaPreviousTrackIcon,
+      media_message_center::kMediaPreviousTrackOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK);
 
   // Create the progress view.
@@ -319,11 +319,11 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   // Create the next track button.
   CreateMediaActionButton(
       button_container_, static_cast<int>(MediaSessionAction::kNextTrack),
-      media_message_center::kMediaNextTrackIcon,
+      media_message_center::kMediaNextTrackOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
 
   const gfx::VectorIcon* devices_icon =
-      &media_message_center::kMediaCastStartIcon;
+      &media_message_center::kMediaCastStartOldIcon;
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kBackgroundListening)) {
@@ -358,7 +358,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   picture_in_picture_button_ = CreateMediaActionButton(
       button_container_,
       static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
-      media_message_center::kMediaEnterPipIcon,
+      media_message_center::kMediaEnterPipOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
 
   // Create the stop casting button. It will only show up when this media item
@@ -399,7 +399,7 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
   if (playing) {
     play_pause_button_->Update(
         static_cast<int>(MediaSessionAction::kPause),
-        media_message_center::kPauseIcon,
+        media_message_center::kPauseOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE,
         theme_.pause_button_foreground_color_id);
     play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
@@ -408,7 +408,7 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
   } else {
     play_pause_button_->Update(
         static_cast<int>(MediaSessionAction::kPlay),
-        media_message_center::kPlayArrowIcon,
+        media_message_center::kPlayArrowOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
         theme_.play_button_foreground_color_id);
     play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
@@ -423,13 +423,13 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
   if (in_picture_in_picture_) {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kExitPictureInPicture),
-        media_message_center::kMediaExitPipIcon,
+        media_message_center::kMediaExitPipOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP,
         theme_.primary_foreground_color_id);
   } else {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
-        media_message_center::kMediaEnterPipIcon,
+        media_message_center::kMediaEnterPipOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP,
         theme_.primary_foreground_color_id);
   }
