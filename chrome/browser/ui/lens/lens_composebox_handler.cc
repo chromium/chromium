@@ -190,6 +190,10 @@ void LensComposeboxHandler::GetSmartTabSharingActive(
   std::move(callback).Run(false);
 }
 
+void LensComposeboxHandler::NotifyComposeboxQuerySubmittedWithContext() {
+  // No-op for Lens composebox.
+}
+
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
                                                     const GURL& url) {
   mojo::ReportBadMessage("Delete autocomplete match not implemented in lens");

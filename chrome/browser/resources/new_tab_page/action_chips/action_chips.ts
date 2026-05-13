@@ -233,6 +233,7 @@ export class ActionChipsElement extends CrLitElement {
 
   private onActionChipClick_(chip: ActionChip) {
     recordClick(chip.suggestTemplateInfo.typeIcon);
+    this.handler.notifyActionChipClicked();
     const contextFiles: TabUpload[] = [];
     const tab = chip.tab;
     if (tab) {

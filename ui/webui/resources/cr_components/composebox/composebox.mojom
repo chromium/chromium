@@ -47,6 +47,9 @@ interface PageHandler {
 
   // Called when the context menu is opened in the composebox.
   OnContextMenuOpened();
+
+  // Notifies the feature engagement tracker that a composebox query with tool/context attached was submitted.
+  NotifyComposeboxQuerySubmittedWithContext();
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.

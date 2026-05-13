@@ -15,6 +15,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
@@ -24,6 +25,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/search/ntp_features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -179,6 +181,20 @@ void ActionChipsHandler::ActivateMetricsFunnel(const std::string& funnel_name) {
 
 void ActionChipsHandler::SetActionChipsVisibility(bool is_visible) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, is_visible);
+}
+
+void ActionChipsHandler::NotifyActionChipClicked() {
+  if (web_ui_ && web_ui_->GetWebContents()) {
+    if (auto* browser_window_interface =
+            webui::GetBrowserWindowInterface(web_ui_->GetWebContents())) {
+      if (auto* user_education_interface =
+              BrowserUserEducationInterface::From(browser_window_interface)) {
+        user_education_interface->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHDesktopRealboxContextualSearchFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      }
+    }
+  }
 }
 
 void ActionChipsHandler::SendActionChipsToUi(base::TimeTicks start_time,

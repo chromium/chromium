@@ -752,6 +752,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected onSubmitClick_(e: MouseEvent) {
+    if (this.hasFiles() ||
+        this.inputState?.activeTool !== ToolMode.kUnspecified) {
+      this.pageHandler_.notifyComposeboxQuerySubmittedWithContext();
+    }
     this.submitQuery(e);
   }
 
