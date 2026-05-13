@@ -266,6 +266,49 @@ TEST_F(GlicSelectionObserverTest, TooShortSelectionIgnored) {
   EXPECT_EQ(u"", *observer->last_processed_text());
 }
 
+TEST_F(GlicSelectionObserverTest, WhitespaceIgnoredInLengthCheck) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  // "a b " has 2 non-whitespace characters.
+  std::u16string text = u"a b ";
+  observer->OnTextSelectionChanged(nullptr, text);
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  // Should be treated as clearing (empty text) because it has < 3
+  // non-whitespace chars.
+  EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
+  EXPECT_EQ(u"", *observer->last_processed_text());
+
+  observer->Reset();
+
+  // "a b c" has 3 non-whitespace characters.
+  text = u"a b c";
+  observer->OnTextSelectionChanged(nullptr, text);
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  // Should be accepted.
+  EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
+  EXPECT_EQ(text, *observer->last_processed_text());
+}
+
+TEST_F(GlicSelectionObserverTest, SelectionTrimmed) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  // "  abc  " should be trimmed to "abc".
+  std::u16string text = u"  abc  ";
+  observer->OnTextSelectionChanged(nullptr, text);
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  // Should be accepted and trimmed.
+  EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
+  EXPECT_EQ(u"abc", *observer->last_processed_text());
+}
+
 TEST_F(GlicSelectionObserverTest, DebounceRestarted) {
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
