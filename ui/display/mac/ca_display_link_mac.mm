@@ -8,6 +8,7 @@
 #import <QuartzCore/CADisplayLink.h>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -37,6 +38,8 @@ API_AVAILABLE(macos(14.0))
 @end
 
 namespace ui {
+
+BASE_FEATURE(kCADisplayLinkInGpuThenBrowser, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 struct CADisplayLinkGlobals {
@@ -250,6 +253,10 @@ bool CADisplayLinkMac::NotifyEventAndCheckValidity(int64_t display_id) {
 
 // static
 bool CADisplayLinkMac::IsValidInGpuProcess(int64_t display_id) {
+  if (!base::FeatureList::IsEnabled(kCADisplayLinkInGpuThenBrowser)) {
+    return false;
+  }
+
   base::AutoLock lock(CADisplayLinkGlobals::Get().lock);
   auto& invalidated_displays = CADisplayLinkGlobals::Get().invalidated_displays;
   return invalidated_displays.find(display_id) == invalidated_displays.end();
