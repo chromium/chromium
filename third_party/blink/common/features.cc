@@ -670,6 +670,8 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "deletion_task_delay",
                    base::Milliseconds(1000));
 
+BASE_FEATURE(kDetectJSFrameworksOnWorker, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Improves the signal-to-noise ratio of network error related messages in the
 // DevTools Console.
 // See http://crbug.com/124534.

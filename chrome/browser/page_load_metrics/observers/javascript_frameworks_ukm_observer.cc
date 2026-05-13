@@ -75,12 +75,16 @@ void JavascriptFrameworksUkmObserver::RecordJavascriptFrameworkPageLoad() {
   detect_framework_builder
       .SetAngularPageLoad(is_detected(JavaScriptFramework::kAngular))
       .SetGatsbyPageLoad(is_detected(JavaScriptFramework::kGatsby))
+      .SetMediaPipePageLoad(is_detected(JavaScriptFramework::kMediaPipe))
       .SetNextJSPageLoad(is_detected(JavaScriptFramework::kNext))
       .SetNuxtJSPageLoad(is_detected(JavaScriptFramework::kNuxt))
       .SetPreactPageLoad(is_detected(JavaScriptFramework::kPreact))
       .SetReactPageLoad(is_detected(JavaScriptFramework::kReact))
       .SetSapperPageLoad(is_detected(JavaScriptFramework::kSapper))
       .SetSveltePageLoad(is_detected(JavaScriptFramework::kSvelte))
+      .SetTFJSPageLoad(is_detected(JavaScriptFramework::kTFJS))
+      .SetTransformersJSPageLoad(
+          is_detected(JavaScriptFramework::kTransformersJS))
       .SetVuePageLoad(is_detected(JavaScriptFramework::kVue))
       .SetVuePressPageLoad(is_detected(JavaScriptFramework::kVuePress));
 

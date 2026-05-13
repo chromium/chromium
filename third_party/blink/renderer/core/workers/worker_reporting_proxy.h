@@ -40,6 +40,7 @@
 namespace blink {
 
 class WorkerOrWorkletGlobalScope;
+struct JavaScriptFrameworkDetectionResult;
 
 // APIs used by workers to report console and worker activity. Some functions
 // are called only for classic scripts and some of others are called only for
@@ -92,7 +93,9 @@ class CORE_EXPORT WorkerReportingProxy {
 
   // Invoked when the worker main script is evaluated. |success| is true if the
   // evaluation completed with no uncaught exception.
-  virtual void DidEvaluateTopLevelScript(bool success) {}
+  virtual void DidEvaluateTopLevelScript(
+      bool success,
+      const JavaScriptFrameworkDetectionResult& result) {}
 
   // Invoked when close() is invoked on the worker context.
   virtual void DidCloseWorkerGlobalScope() {}

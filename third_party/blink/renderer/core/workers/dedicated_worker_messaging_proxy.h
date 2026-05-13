@@ -32,6 +32,7 @@ class DedicatedWorkerObjectProxy;
 class FetchClientSettingsObjectSnapshot;
 class WorkerOptions;
 struct WorkerMainScriptLoadParameters;
+struct JavaScriptFrameworkDetectionResult;
 
 // A proxy class to talk to the DedicatedWorkerGlobalScope on a worker thread
 // via the DedicatedWorkerMessagingProxy from the main thread. See class
@@ -84,7 +85,8 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
 
   // These methods come from worker context thread via
   // DedicatedWorkerObjectProxy and are called on the parent context thread.
-  void DidEvaluateScript(bool success);
+  void DidEvaluateScript(bool success,
+                         const JavaScriptFrameworkDetectionResult& result);
   void PostMessageToWorkerObject(BlinkTransferableMessage);
   void DispatchErrorEvent(const String& error_message,
                           const CrossThreadSourceLocation& cross_location,

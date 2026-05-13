@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 
 #include <memory>
+
 #include "base/trace_event/typed_macros.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
@@ -19,9 +21,11 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/worker_resource_timing_notifier_impl.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
@@ -225,7 +229,9 @@ void DedicatedWorkerMessagingProxy::Resume() {
   worker_thread->Resume();
 }
 
-void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
+void DedicatedWorkerMessagingProxy::DidEvaluateScript(
+    bool success,
+    const JavaScriptFrameworkDetectionResult& result) {
   DCHECK(IsParentContextThread());
   was_script_evaluated_ = true;
 
@@ -238,6 +244,22 @@ void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
   if (!GetWorkerThread()) {
     DCHECK(AskedToTerminate());
     return;
+  }
+
+  // Report JS framework loads from the worker thread.
+  if (success) {
+    ExecutionContext* execution_context = GetExecutionContext();
+    if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+      Document* document = window->document();
+      if (document && document->Loader() &&
+          document->Url().ProtocolIsInHttpFamily() &&
+          document->BaseURL().ProtocolIsInHttpFamily()) {
+        LocalFrame* const frame = document->GetFrame();
+        if (frame && frame->IsOutermostMainFrame()) {
+          document->Loader()->DidObserveJavaScriptFrameworks(result);
+        }
+      }
+    }
   }
 
   // Post all queued tasks to the worker.

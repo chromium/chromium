@@ -13,6 +13,12 @@ class Document;
 
 CORE_EXPORT void DetectJavascriptFrameworksOnLoad(Document&);
 
+class WorkerGlobalScope;
+struct JavaScriptFrameworkDetectionResult;
+CORE_EXPORT void DetectJavascriptFrameworksOnWorkerLoad(
+    WorkerGlobalScope&,
+    JavaScriptFrameworkDetectionResult& result);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_DETECT_JAVASCRIPT_FRAMEWORKS_H_

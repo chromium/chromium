@@ -40,6 +40,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "services/network/public/mojom/url_loader.mojom-blink.h"
+#include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
@@ -185,7 +186,9 @@ void ServiceWorkerGlobalScopeProxy::WillEvaluateScript() {
   top_level_script_evaluation_start_time_ = base::TimeTicks::Now();
 }
 
-void ServiceWorkerGlobalScopeProxy::DidEvaluateTopLevelScript(bool success) {
+void ServiceWorkerGlobalScopeProxy::DidEvaluateTopLevelScript(
+    bool success,
+    const JavaScriptFrameworkDetectionResult& result) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   base::UmaHistogramTimes(
       base::StrCat({"ServiceWorker.EvaluateTopLevelScript.",

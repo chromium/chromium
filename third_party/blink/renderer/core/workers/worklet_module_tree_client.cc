@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_module_tree_client.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -144,7 +145,8 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
       To<WorkletGlobalScope>(ExecutionContext::From(script_state_));
 
   global_scope->ReportingProxy().DidEvaluateTopLevelScript(
-      result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess);
+      result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess,
+      JavaScriptFrameworkDetectionResult());
 
   // Step 6: "Queue a task on outsideSettings's responsible event loop to run
   // these steps:"

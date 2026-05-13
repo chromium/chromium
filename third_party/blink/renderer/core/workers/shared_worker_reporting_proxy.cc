@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/workers/shared_worker_reporting_proxy.h"
 
 #include "base/location.h"
+#include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/renderer/core/exported/web_shared_worker_impl.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -87,7 +88,9 @@ void SharedWorkerReportingProxy::DidFailToFetchModuleScript() {
                           CrossThreadUnretained(worker_)));
 }
 
-void SharedWorkerReportingProxy::DidEvaluateTopLevelScript(bool success) {
+void SharedWorkerReportingProxy::DidEvaluateTopLevelScript(
+    bool success,
+    const JavaScriptFrameworkDetectionResult& result) {
   DCHECK(!IsMainThread());
   CHECK(!script_evaluated_);
   script_evaluated_ = true;

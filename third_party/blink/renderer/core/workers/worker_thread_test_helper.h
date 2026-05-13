@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -213,7 +214,9 @@ class MockWorkerReportingProxy final : public WorkerReportingProxy {
 
   MOCK_METHOD1(DidCreateWorkerGlobalScope, void(WorkerOrWorkletGlobalScope*));
   MOCK_METHOD0(WillEvaluateScriptMock, void());
-  MOCK_METHOD1(DidEvaluateTopLevelScript, void(bool success));
+  MOCK_METHOD2(DidEvaluateTopLevelScript,
+               void(bool success,
+                    const JavaScriptFrameworkDetectionResult& result));
   MOCK_METHOD0(DidCloseWorkerGlobalScope, void());
   MOCK_METHOD0(WillDestroyWorkerGlobalScope, void());
   MOCK_METHOD0(DidTerminateWorkerThread, void());

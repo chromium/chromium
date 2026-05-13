@@ -55,6 +55,7 @@ namespace blink {
 class ServiceWorkerGlobalScope;
 class WebEmbeddedWorkerImpl;
 class WebServiceWorkerContextClient;
+struct JavaScriptFrameworkDetectionResult;
 
 // This class is created and destructed on an "initiator thread" (the
 // background ThreadPool thread that WebEmbeddedWorkerImpl run on), but lives
@@ -132,7 +133,9 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   void DidFailToFetchClassicScript() override;
   void DidFailToFetchModuleScript() override;
   void WillEvaluateScript() override;
-  void DidEvaluateTopLevelScript(bool success) override;
+  void DidEvaluateTopLevelScript(
+      bool success,
+      const JavaScriptFrameworkDetectionResult& result) override;
   void DidCloseWorkerGlobalScope() override;
   void WillDestroyWorkerGlobalScope() override;
   void DidTerminateWorkerThread() override;

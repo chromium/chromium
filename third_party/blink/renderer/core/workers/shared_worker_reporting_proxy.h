@@ -12,6 +12,7 @@
 namespace blink {
 
 class WebSharedWorkerImpl;
+struct JavaScriptFrameworkDetectionResult;
 
 // An implementation of WorkerReportingProxy for SharedWorker. This is created
 // and owned by WebSharedWorkerImpl on the main thread, accessed from a worker
@@ -37,7 +38,9 @@ class SharedWorkerReportingProxy final
                             const SourceLocation*) override;
   void DidFailToFetchClassicScript() override;
   void DidFailToFetchModuleScript() override;
-  void DidEvaluateTopLevelScript(bool success) override;
+  void DidEvaluateTopLevelScript(
+      bool success,
+      const JavaScriptFrameworkDetectionResult& result) override;
   void DidCloseWorkerGlobalScope() override;
   void WillDestroyWorkerGlobalScope() override {}
   void DidTerminateWorkerThread() override;

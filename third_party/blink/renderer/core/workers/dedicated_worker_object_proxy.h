@@ -43,6 +43,7 @@
 namespace blink {
 
 struct BlinkTransferableMessage;
+struct JavaScriptFrameworkDetectionResult;
 class DedicatedWorkerMessagingProxy;
 class ParentExecutionContextTaskRunners;
 class ThreadedMessagingProxyBase;
@@ -79,7 +80,9 @@ class CORE_EXPORT DedicatedWorkerObjectProxy : public ThreadedObjectProxyBase {
                        int exception_id) override;
   void DidFailToFetchClassicScript() final;
   void DidFailToFetchModuleScript() final;
-  void DidEvaluateTopLevelScript(bool success) override;
+  void DidEvaluateTopLevelScript(
+      bool success,
+      const JavaScriptFrameworkDetectionResult& result) override;
 
   const DedicatedWorkerToken& token() const { return token_; }
 

@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -126,12 +127,14 @@ void DedicatedWorkerObjectProxy::DidFailToFetchModuleScript() {
                           messaging_proxy_weak_ptr_));
 }
 
-void DedicatedWorkerObjectProxy::DidEvaluateTopLevelScript(bool success) {
+void DedicatedWorkerObjectProxy::DidEvaluateTopLevelScript(
+    bool success,
+    const JavaScriptFrameworkDetectionResult& result) {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalLoading),
       FROM_HERE,
       CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DidEvaluateScript,
-                          messaging_proxy_weak_ptr_, success));
+                          messaging_proxy_weak_ptr_, success, result));
 }
 
 DedicatedWorkerObjectProxy::DedicatedWorkerObjectProxy(

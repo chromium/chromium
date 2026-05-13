@@ -11618,6 +11618,12 @@ be describing additional metrics about the same event.
       framework.
     </summary>
   </metric>
+  <metric name="MediaPipePageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the MediaPipe JavaScript
+      framework.
+    </summary>
+  </metric>
   <metric name="NextJSPageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the Next.js JavaScript
@@ -11651,6 +11657,17 @@ be describing additional metrics about the same event.
   <metric name="SveltePageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the Svelte JavaScript
+      framework.
+    </summary>
+  </metric>
+  <metric name="TFJSPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the TensorflowJS framework.
+    </summary>
+  </metric>
+  <metric name="TransformersJSPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Transformers.js
       framework.
     </summary>
   </metric>
