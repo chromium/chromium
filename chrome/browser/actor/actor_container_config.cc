@@ -39,11 +39,8 @@ base::expected<std::string_view, std::string_view> ConvertProtocol(
     case optimization_guide::proto::Protocol::PROTOCOL_WS:
       return base::ok(url::kWsScheme);
     case optimization_guide::proto::Protocol::PROTOCOL_UNKNOWN:
-      return base::unexpected("Protocol not set");
-    // `default` is used because Protocol C++ proto has min/max sentinel values
-    // as well as unknown.
     default:
-      NOTREACHED();
+      return base::unexpected("Unknown protocol");
   }
 }
 
@@ -135,6 +132,8 @@ ActorContainerConfig::ConvertLocation(
       return ConvertOrigin(location.origin());
     case optimization_guide::proto::Location::IDENTIFIER_ONEOF_NOT_SET:
       return base::unexpected("Location missing value");
+    default:
+      return base::unexpected("Unknown location type");
   }
 }
 
