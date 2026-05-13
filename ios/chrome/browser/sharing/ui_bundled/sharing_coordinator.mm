@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/files/file_util.h"
 #import "base/ios/block_types.h"
@@ -384,15 +386,20 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 
 // Download is successful and should proceed.
 - (void)downloadShouldProceed:(BOOL)shouldProceed {
-  // Always check and clean up the resources because even if download did
-  // finish, user can cancel while waiting for scanning.
-  [self cleanUpAnalysisResources];
+  // Remember to clean up the analysis resources before early return if download
+  // is interrupted. Otherwise, leaving the resources to be alive because we
+  // might need them to report warning bypass.
   if (self.isDownloadCanceled) {
+    [self cleanUpAnalysisResources];
     return;
   }
 
   [self stopDisplayDownloadOverlay];
   if (shouldProceed) {
+    // This will only report when scan result is WARNING and bypassed.
+    _filesRequestHandler->ReportWarningBypass(
+        /*user_justification=*/std::nullopt);
+
     [self startActivityService];
     UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
                               OpenInDownloadResult::kSucceeded);
@@ -401,6 +408,10 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
     UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
                               OpenInDownloadResult::kCanceled);
   }
+
+  // Always clean up the resources at the end when the download and scanning is
+  // complete.
+  [self cleanUpAnalysisResources];
 }
 
 // Removes `self.overlay` from the top view of the application.

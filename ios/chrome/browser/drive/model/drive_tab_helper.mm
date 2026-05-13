@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 
+#import <optional>
+
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
@@ -180,6 +182,10 @@ void DriveTabHelper::MaybeUploadDownloadToDrive(web::DownloadTask* task,
     ResetSaveToDriveData(nullptr, nil);
     return;
   }
+
+  // This will only report when scan result is WARNING and bypassed.
+  files_request_handler_->ReportWarningBypass(
+      /*user_justification=*/std::nullopt);
 
   upload_task_->SetFileToUpload(task->GetResponsePath(),
                                 task->GenerateFileName(), task->GetMimeType(),

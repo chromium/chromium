@@ -185,6 +185,8 @@ source_set("unit_tests") {
     ":metrics",
     ":test_support",
     "//base/test:test_support",
+    "//components/enterprise/connectors/core",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/drive/model:upload_task",
     "//ios/chrome/browser/enterprise/cloud_content_scanning/model",
