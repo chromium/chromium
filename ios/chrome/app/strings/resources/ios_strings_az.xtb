@@ -201,6 +201,7 @@
 <translation id="1657011748321897393">Paylaşım uğursuz oldu, çünki Siz şəbəkəyə qoşulmamısınız.</translation>
 <translation id="1668001730617725852">Yeni tab qrupunda açın</translation>
 <translation id="1670861525135254448">Nəqliyyat vasitəsini yadda saxlayın</translation>
+<translation id="1671568970992212376">Fotoları Google Fotoda yadda saxlayın və onlara istənilən vaxt daxil olun.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilindən <ph name="TARGET_LANGUAGE" /> dilinə</translation>
 <translation id="1678855624321223424">Təşkilatınızın siyasətlərinə əsasən faylda həssas məlumatlar ola bilər</translation>
 <translation id="168389590065701766">İndi ünvan panelindən Google Linzanı aça və gördüyünüz hər şeyi axtara bilərsiniz</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Saxlanılan parolları avtomatik doldurun</translation>
 <translation id="4021447724486050609">Brauzeri güncəlləyin</translation>
 <translation id="4021931095789478915">Oxu siyahısına ${url} əlavə edin</translation>
-<translation id="4026496154402824012">Söndürmək üçün <ph name="BEGIN_LINK" />Parol Seçimləri<ph name="END_LINK" /> bölməsinə keçin</translation>
 <translation id="4028871427853484857">Hesabda yadda saxlayın…</translation>
 <translation id="4038354071007134711">Bu cihazdakı heç bir tətbiq faylı aça bilmir.</translation>
 <translation id="4042870976416480368">Səhifədə tapın</translation>
@@ -1605,7 +1605,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6571070086367343653">Kredit kartına düzəliş edin</translation>
 <translation id="6574092468346088891">Təhlükəsizlik yoxlanışı üçün Bildirişləri aktiv edin</translation>
 <translation id="6579867704846662339">Digər tətbiqlərdən əldə edilən URL-ləri Anonim rejimdə aça bilərsiniz.</translation>
-<translation id="6583087784430677195">Deaktiv etmək üçün <ph name="BEGIN_LINK" />Ayarları<ph name="END_LINK" /> açın və Parolların Avtomatik Doldurulmasına keçin.</translation>
 <translation id="6585618849026997638">Əlfəcin əlavə etməklə vacib səhifəyə qayıda bilərsiniz</translation>
 <translation id="6589001036857939353">Dublikatları birləşdirin</translation>
 <translation id="659407965921887085">Bu kart hazırda izlədiyiniz məhsullarda veb üzrə qiymətin düşməsini göstərir</translation>
@@ -1667,7 +1666,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6746338529702829275">Hesab datasını nəzərdən keçirin</translation>
 <translation id="6750456911389438250">{count,plural, =1{İmport edilmiş {count} tarixçə elementi}other{İmport edilmiş {count} tarixçə elementi}}</translation>
 <translation id="6755200887046212842">Hesabları İdarə edin</translation>
-<translation id="6755733078693946548">İstənilən tətbiqdən parol və giriş açarlarına daxil olun</translation>
 <translation id="6759709389246683070">Daha sonra yenidən daxil olmaq üçün xatırladıcı ayarlamaq məqsədilə bu taba toxunub saxlaya bilərsiniz</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[REZERV EDİLDİ]</translation>
@@ -2010,7 +2008,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="797588153137233716">Menyu → Tarixçə → Baxış datasını silin</translation>
 <translation id="7977451675950311423">Verilənlərin pozulması nəticəsində ifşa olunan parol istifadə etdikdə xəbərdarlıq edir.</translation>
 <translation id="797824194429476746">Tablar bu cihazda açıq qalacaq, lakin qrup həmişəlik silinəcək.</translation>
-<translation id="797874245254030665">İstənilən tətbiqdən parol və giriş açarlarınıza daxil olun</translation>
 <translation id="7982789257301363584">Şəbəkə</translation>
 <translation id="798299424881500862">Narıncı tema</translation>
 <translation id="7987685713885608670">Təhlükəsizliyi artırmaq üçün Google Parol Menecerində saxlanmazdan əvvəl cihazınızda parolları şifrələyin.</translation>

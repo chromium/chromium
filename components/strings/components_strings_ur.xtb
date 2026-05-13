@@ -549,6 +549,7 @@
 <translation id="1832474362231610822">‏تصویر OneDrive میں محفوظ ہو گئی</translation>
 <translation id="1832730227369924598">ڈیسک مطابقت پذیری</translation>
 <translation id="1834452765064623979">تعمیر اور دیکھ بھال</translation>
+<translation id="1837606605602726453">خطرے کے اسکور اور زمروں کو نظر انداز کر دیا گیا ہے کیونکہ منتظم نے اس ایکسٹینشن کو واضح طور پر استعمال کرنے کی اجازت دی ہے یا اسے بلاک کر دیا ہے۔</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
 <translation id="1839331950812095887">چند الفاظ جو آپ کے خیالات کا خلاصہ کرتے ہیں</translation>
 <translation id="1839551713262164453">پالیسی کی اقدار کی تصدیق خرابیوں کی وجہ سے ناکام ہو گئی</translation>
@@ -3448,6 +3449,7 @@
 <translation id="634500758737709758">ڈائریکشنز</translation>
 <translation id="6348220984832452017">فعال تغیرات</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
+<translation id="6350739641326887427">‏‫Pix کوڈ کو کاپی اور پیسٹ کیے بغیر ادائیگی کریں۔ <ph name="BEGIN_LINK1" />اس کے کام کرنے کا طریقہ دیکھیں<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{کوئی نہیں}=1{1 پاس ورڈ (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہے)}=2{2 پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}other{# پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}}</translation>
 <translation id="6354918092619878358">‏SECG elliptic curve secp256r1 (المعروف ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3614,7 +3616,6 @@
 <translation id="6587923378399804057">آپ کا کاپی کردہ لنک</translation>
 <translation id="6591833882275308647">آپ کا <ph name="DEVICE_TYPE" /> زیر انتظام نہیں ہے</translation>
 <translation id="6595495738567740002">‏اس آلہ سے Google کوکیز کو حذف کرنے کے لیے، <ph name="BEGIN_LINK" />Chrome سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
-<translation id="6596325263575161958">مرموزکاری کے اختیارات</translation>
 <translation id="6596573334527383067">گزشتہ کل سے نتائج دکھائیں</translation>
 <translation id="6597665340361269064">90 ڈگریز</translation>
 <translation id="6598976221101665070">ڈرامہ موویز</translation>
@@ -3664,6 +3665,7 @@
 <translation id="668132230070712111">‏ویڈیو کو Google Drive میں محفوظ کر دیا گیا</translation>
 <translation id="6681790815630918386">‏CVC محفوظ ہو گیا</translation>
 <translation id="6683022854667115063">ہیڈ فونز</translation>
+<translation id="6686570026048064255">‏Pix کوڈ کا پتہ لگانے کو بند کرنے کے لیے <ph name="BEGIN_LINK1" />Chrome کی ترتیبات<ph name="END_LINK1" /> پر جائیں۔</translation>
 <translation id="6687230248707087982">لفافہ (پلین)</translation>
 <translation id="6687335167692595844">فونٹ سائز کی درخواست کی گئی</translation>
 <translation id="6688743156324860098">اپ ڈیٹ کریں…</translation>
@@ -3889,7 +3891,6 @@
 <translation id="702275896380648118">‏یہ سائٹ آپ کی پسندیدہ چیزوں کا تعین کرتی ہے اور پھر دیگر سائٹس کو اشتہارات تجویز کرتی ہے۔ آپ کو مزید متعلقہ اشتہارات دکھانے کیلئے، یہ سائٹ Chrome سے آپ کے اشتہار کے موضوعات بھی وصول کرتی ہے۔</translation>
 <translation id="7023162328967545559">منتظم کی وارننگ</translation>
 <translation id="7023765275461720661">اکاؤنٹ لنک کریں اور <ph name="BNPL_ISSUER_NAME" /> کے ساتھ ادائیگی کریں؟</translation>
-<translation id="7029809446516969842">پاس ورڈز</translation>
 <translation id="7030164307377592766">ادائیگی کے طریقوں کو پُر کرنے کے لیے ترتیبات میں ترمیم کریں</translation>
 <translation id="7031110846419387930">‏آپ کے براؤزر، OS، آلے، انسٹال کردہ سافٹ ویئر، فائلز اور IP پتوں کے بارے میں معلومات</translation>
 <translation id="7031646650991750659">‏آپ نے کن Google Play ایپس کو انسٹال کیا ہے</translation>

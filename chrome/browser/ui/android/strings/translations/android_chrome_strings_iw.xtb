@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">קיצורי דרך לא פעילים</translation>
 <translation id="2227179592712503583">הסרת ההצעה</translation>
 <translation id="2227444325776770048">המשך בשם <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">רוצה את כל המידע השמור שלך?</translation>
 <translation id="2230777942707397948">חלון ריק</translation>
 <translation id="223356358902285214">פעילות באינטרנט ובאפליקציות</translation>
 <translation id="2233735624724508540">בוחרים מסגרת זמן ואז לוחצים על "מחיקת הנתונים"</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">כדי להצמיד את האתרים הנצפים ביותר לקבלת גישה נוחה בפעם הבאה, צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימנייה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}one{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
 <translation id="3062802207422175757">‏ב-Chrome מחכים לך מאמרים בנושאים שמעניינים אותך</translation>
+<translation id="3066107845790462226">הורדת הפריים</translation>
 <translation id="3066573403916685335">רד למטה</translation>
 <translation id="3067505415088964188">המחיר נמוך</translation>
 <translation id="3070005020161560471">יש לתרגם אוטומטית</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">חזרה לחוף מבטחים</translation>
 <translation id="6267106249090587268">‏התראות <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה בגלל ספאם או תוכן מטעה</translation>
 <translation id="6276708887952587684">הצגת מקור הדף</translation>
+<translation id="62768169905160414">העתקת הפריים</translation>
 <translation id="6277522088822131679">אירעה בעיה בעת הדפסת הדף. יש לנסות שוב.</translation>
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6291294824436685757">מחיקת נתוני הגלישה, בחירת נתונים למחיקה</translation>

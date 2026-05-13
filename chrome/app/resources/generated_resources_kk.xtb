@@ -664,6 +664,7 @@
 <translation id="1449191289887455076">Тағайындауды растап, <ph name="RESPONSE" /> үшін "<ph name="CURRENTKEY" />" пернесін тағы басыңыз.</translation>
 <translation id="1450484535522155181">Қонақ профилін ашу</translation>
 <translation id="1451375123200651445">Веб-бет, бір файл</translation>
+<translation id="1452651021404174820">Құрылғы таңдаңыз</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />Түзету журналдарын<ph name="END_LINK" /> жіберу (ұсынылады)</translation>
 <translation id="1454223536435069390">Скриншотқа т&amp;үсіру</translation>
 <translation id="145432137617179457">Емлесі тексерілетін тілдер</translation>
@@ -1731,6 +1732,7 @@
 <translation id="2178545675770638239">Құпия сөз таңдау</translation>
 <translation id="2178585470774851578">ChromeOS Flex операциялық жүйесінің ақау түзету функцияларын қосқалы жатырсыз. Олар SSHD демонын орнатып, USB дискілерінен жүктеуге мүмкіндік береді.</translation>
 <translation id="2178614541317717477">CA келісімі</translation>
+<translation id="2180082148774168439">Бұл сайтқа компьютеріңіздегі арнайы терезеден кіріңіз.</translation>
 <translation id="2180620921879609685">Барлық беттегі контентті бөгеу</translation>
 <translation id="2181821976797666341">Саясаттар</translation>
 <translation id="2182058453334755893">Буферге көшірілді</translation>
@@ -4000,6 +4002,7 @@
 <translation id="3735039640698208086">Аудиомазмұн ойнатылғанда…</translation>
 <translation id="3735740477244556633">Сұрыптау шарты</translation>
 <translation id="3735827758948958091"><ph name="FILE_NAMES" /> трафик саналатын байланыста ашылмайды</translation>
+<translation id="3736487688526377259">Осы сілтемені алғыңыз келетін құрылғыны таңдаңыз.</translation>
 <translation id="3737058101969549870">Бұрыннан бар браузерді пайдалану деректерін осы жаңа профильден бөлек сақтау керек пе?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> деректері 24 сағаттан кейін жойылады.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7851,6 +7854,7 @@
 <translation id="6453687572758515877">Барлық қойындыны топтау</translation>
 <translation id="6453921811609336127">Келесі енгізу әдісіне ауысу үшін <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> пернелерін басыңыз.</translation>
 <translation id="645433497989692531">Мұның нәтижесінде осы құрылғыдағы браузерді пайдалану деректеріңіз біржола жойылады. Деректерді қалпына келтіру үшін мына аккаунтқа кіріңіз:</translation>
+<translation id="6454456397828627257">Қатар</translation>
 <translation id="6455264371803474013">Белгілі бір сайттарда</translation>
 <translation id="6455521402703088376">Өшірулі • Бұл кеңейтімді әзірлеушісі жариялаудан бас тартқан</translation>
 <translation id="6455894534188563617">&amp;Жаңа қалта</translation>

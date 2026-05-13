@@ -3613,7 +3613,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6587923378399804057">Link that you copied</translation>
 <translation id="6591833882275308647">Your <ph name="DEVICE_TYPE" /> is not managed</translation>
 <translation id="6595495738567740002">To delete Google cookies from this device, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Encryption options</translation>
 <translation id="6596573334527383067">Show results from yesterday</translation>
 <translation id="6597665340361269064">90 degrees</translation>
 <translation id="6598976221101665070">Drama films</translation>
@@ -3889,7 +3888,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
 <translation id="7023162328967545559">Admin warning</translation>
 <translation id="7023765275461720661">Link account and pay with <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Passwords</translation>
 <translation id="7030164307377592766">modify settings for filling payment methods</translation>
 <translation id="7031110846419387930">Information about your browser, OS, device, installed software, files and IP addresses</translation>
 <translation id="7031646650991750659">Which Google Play apps you have installed</translation>

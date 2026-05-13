@@ -280,6 +280,7 @@
 <translation id="1925706052394657380">Open de instellingen voor <ph name="BEGIN_BOLD" />standaard-apps<ph name="END_BOLD" /> in iOS</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
 <translation id="1943478190258551035">Menu → Instellingen</translation>
+<translation id="1948562571551232853">Gemini ingebouwd</translation>
 <translation id="1952728750904661634">Inloggen met een beheerd account</translation>
 <translation id="1955773397805078763">Betaalmethode toevoegen</translation>
 <translation id="1956138802718275401">Toegang tot wachtwoorden vanaf het startscherm</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Opgeslagen wachtwoorden automatisch invullen</translation>
 <translation id="4021447724486050609">Je browser updaten</translation>
 <translation id="4021931095789478915">${url} toevoegen aan leeslijst</translation>
-<translation id="4026496154402824012">Ga naar <ph name="BEGIN_LINK" />Wachtwoordopties<ph name="END_LINK" /> om dit uit te zetten</translation>
 <translation id="4028871427853484857">Opslaan in account…</translation>
 <translation id="4038354071007134711">Geen app op dit apparaat kan het bestand openen.</translation>
 <translation id="4042870976416480368">Zoeken op pagina</translation>
@@ -1262,6 +1262,7 @@
 <translation id="5457082343331641453">Zoekopdracht aanvullen</translation>
 <translation id="5457226814769348910">Offline versie openen</translation>
 <translation id="5467163657366219870">Previews van Maps uitzetten</translation>
+<translation id="5467596285052510344">Gebruik Gemini voor onder andere samenvatten en uitleggen.</translation>
 <translation id="5474397204728336997">Onder andere gezinswachtwoorden en nieuwe aanpassingsopties. Tik voor meer informatie.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Geen wachtwoord geïmporteerd}=1{{count} wachtwoord geïmporteerd}other{{count} wachtwoorden geïmporteerd}}</translation>
 <translation id="5478327362747197944">Maak rechtstreeks Agenda-afspraken door op een datum op een webpagina te klikken.</translation>
@@ -1605,7 +1606,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6571070086367343653">Creditcard bewerken</translation>
 <translation id="6574092468346088891">Meldingen van Veiligheidscheck aanzetten</translation>
 <translation id="6579867704846662339">Je kunt ervoor kiezen om inkomende URL's van andere apps te openen in de incognitomodus.</translation>
-<translation id="6583087784430677195">Open <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> en ga naar Wachtwoorden automatisch invullen om dit uit te zetten.</translation>
 <translation id="6585618849026997638">Je kunt terugkeren naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
 <translation id="6589001036857939353">Duplicaten samenvoegen</translation>
 <translation id="659407965921887085">Deze kaart toont prijsdalingen op het web voor producten die je op dit moment volgt</translation>
@@ -1667,7 +1667,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6746338529702829275">Check je accountgegevens</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} geschiedenisitem geïmporteerd}other{{count} geschiedenisitems geïmporteerd}}</translation>
 <translation id="6755200887046212842">Accounts beheren</translation>
-<translation id="6755733078693946548">Toegang krijgen tot wachtwoorden en toegangssleutels vanuit elke app</translation>
 <translation id="6759709389246683070">Je kunt je vinger op dit tabblad houden om een herinnering in te stellen om het later opnieuw te bezoeken</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[GEBOEKT]</translation>
@@ -1744,6 +1743,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7015418667643980944">Gesplitste weergave</translation>
 <translation id="7016070607649558507">Je hebt 1 zwak wachtwoord. Los dit nu op om beveiligd te blijven.</translation>
 <translation id="7016958933495968912">Opties voor Discover</translation>
+<translation id="7019477124580742994">Zoeken via <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7035825883570480307">Meldingen aanzetten?</translation>
 <translation id="7039345315346323556">Recent</translation>
@@ -2010,7 +2010,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="797588153137233716">Menu → Geschiedenis → Browsegegevens verwijderen</translation>
 <translation id="7977451675950311423">Waarschuwt je als je een wachtwoord gebruikt dat is gevonden bij een gegevenslek.</translation>
 <translation id="797824194429476746">De tabbladen blijven geopend op dit apparaat, maar de groep wordt definitief verwijderd.</translation>
-<translation id="797874245254030665">Toegang krijgen tot je wachtwoorden en toegangssleutels vanuit elke app</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="798299424881500862">Oranje thema</translation>
 <translation id="7987685713885608670">Voor extra beveiliging versleutel je je wachtwoorden op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager.</translation>

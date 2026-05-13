@@ -201,6 +201,7 @@
 <translation id="1657011748321897393">Kushiriki kulishindwa kwa sababu hujaunganishwa kwenye mtandao.</translation>
 <translation id="1668001730617725852">Fungua kwenye Kikundi Kipya cha Vichupo</translation>
 <translation id="1670861525135254448">Hifadhi maelezo ya gari</translation>
+<translation id="1671568970992212376">Hifadhi picha katika programu yako ya Picha kwenye Google na uzifikie wakati wowote.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> kwenda <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Huenda faili hii ina taarifa nyeti kulingana na sera za shirika lako</translation>
 <translation id="168389590065701766">Sasa unaweza kufungua Lenzi ya Google kutoka kwenye sehemu yako ya anwani na kutafuta chochote unachokiona</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Kujaza Kiotomatiki Manenosiri Uliyohifadhi</translation>
 <translation id="4021447724486050609">Sasisha Kivinjari chako</translation>
 <translation id="4021931095789478915">Weka ${url} kwenye orodha ya kusoma</translation>
-<translation id="4026496154402824012">Ili uzime, nenda kwenye <ph name="BEGIN_LINK" />Chaguo za Manenosiri<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Kuhifadhi kwenye akaunti…</translation>
 <translation id="4038354071007134711">Hakuna programu kwenye kifaa hiki inayoweza kufungua faili.</translation>
 <translation id="4042870976416480368">Pata katika Ukurasa</translation>
@@ -1605,7 +1605,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6571070086367343653">Hariri kadi ya mkopo</translation>
 <translation id="6574092468346088891">Washa arifa za kipengele cha Ukaguzi wa Usalama</translation>
 <translation id="6579867704846662339">Unaweza kuchagua kufungua URL zinazoingia kutoka kwenye programu zingine katika Hali Fiche.</translation>
-<translation id="6583087784430677195">Ili uzime, fungua <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" /> kisha uende kwenye sehemu ya Kujaza Manenosiri Kiotomatiki.</translation>
 <translation id="6585618849026997638">Unaweza kurudi kwenye ukurasa ambao ni muhimu kwako kwa kuuweka alamisho.</translation>
 <translation id="6589001036857939353">Unganisha nakala</translation>
 <translation id="659407965921887085">Kadi hii huonyesha mapunguzo ya bei za bidhaa unazofuatilia kwa sasa kwenye wavuti</translation>
@@ -1667,7 +1666,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6746338529702829275">Kagua data ya akaunti yako</translation>
 <translation id="6750456911389438250">{count,plural, =1{Imepakia kipengee {count} cha historia}other{Imepakia vipengee {count} vya historia}}</translation>
 <translation id="6755200887046212842">Dhibiti Akaunti</translation>
-<translation id="6755733078693946548">Kufikia manenosiri na funguo za siri kwenye programu yoyote</translation>
 <translation id="6759709389246683070">Unaweza kugusa na kushikilia kichupo hiki ili uweke kikumbusho cha kutembelea baadaye</translation>
 <translation id="6761393919622941301">Sauti</translation>
 <translation id="6770452996697898492">[UMEWEKA NAFASI]</translation>
@@ -2010,7 +2008,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="797588153137233716">Menyu → Historia → Futa data ya kuvinjari</translation>
 <translation id="7977451675950311423">Hukutahadharisha iwapo unatumia nenosiri ambalo limeathiriwa na ufichuzi haramu wa data.</translation>
 <translation id="797824194429476746">Vichupo hivi havitafungwa kwenye kifaa hiki lakini kikundi kitafutwa kabisa.</translation>
-<translation id="797874245254030665">Kufikia manenosiri na funguo zako za siri kwenye programu yoyote</translation>
 <translation id="7982789257301363584">Mtandao</translation>
 <translation id="798299424881500862">Mandhari ya rangi ya chungwa</translation>
 <translation id="7987685713885608670">Ili kuimarisha usalama, simba manenosiri kwa njia fiche kwenye kifaa chako kabla hayajahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google.</translation>

@@ -2845,6 +2845,7 @@
 <translation id="2909487040556589351">ទាញយក Chrome នៅលើ​ឧបករណ៍​ចល័ត​របស់អ្នក</translation>
 <translation id="2910318910161511225">សូមភ្ជាប់​បណ្តាញ រួច​ព្យាយាម​ម្តងទៀត</translation>
 <translation id="2910678330803525229">ឥឡូវនេះ អ្នកអាច​ចាប់ផ្ដើម​រុករក​បានហើយ</translation>
+<translation id="2911818155655162983">ចំណូលចិត្ត​សុវត្ថិភាព​របស់អ្នក​មិនអនុញ្ញាតឱ្យ​ដំឡើង​កម្មវិធី​ដាច់តែឯងទេ។ <ph name="CHANGE_PREFERENCE" />។</translation>
 <translation id="2912247081180973411">បិទវិនដូ</translation>
 <translation id="2915102088417824677">មើល​កំណត់ហេតុ​សកម្មភាព</translation>
 <translation id="2915873080513663243">ស្កេនដោយស្វ័យប្រវត្តិ</translation>
@@ -7874,6 +7875,7 @@
 <translation id="6453687572758515877">ដាក់​ផ្ទាំង​ទាំងអស់​ជាក្រុម</translation>
 <translation id="6453921811609336127">ដើម្បីប្ដូរទៅវិធីបញ្ចូលបន្ទាប់ សូមចុច <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">ការធ្វើបែបនេះ​នឹងលុប​ទិន្នន័យរុករក​របស់អ្នក​ចេញពី​ឧបករណ៍នេះ​ជាអចិន្ត្រៃយ៍។ ដើម្បីស្ដារទិន្នន័យឡើងវិញ សូមចូលគណនីជា</translation>
+<translation id="6454456397828627257">ទន្ទឹម​គ្នា</translation>
 <translation id="6455264371803474013">នៅលើគេហទំព័រជាក់លាក់</translation>
 <translation id="6455521402703088376">បិទ • អ្នកអភិវឌ្ឍន៍​កម្មវិធីបន្ថែម​នេះ​បាន​ឈប់បោះផ្សាយ​កម្មវិធី​បន្ថែម​នេះហើយ</translation>
 <translation id="6455894534188563617">&amp;ថតថ្មី</translation>
@@ -8495,6 +8497,7 @@
 <translation id="6871860225073478239">ភាសា...</translation>
 <translation id="6873156759937047811">កូដ PIN ៖</translation>
 <translation id="6873571253135628430">ប្ដូរ​ការអនុញ្ញាត​គេហទំព័រ</translation>
+<translation id="6874986444867497677">មិនអាចបញ្ចប់ការដំឡើងបានទេ។ សូមព្យាយាមម្ដងទៀត ឬបិទវិនដូនេះ។</translation>
 <translation id="6876155724392614295">កង់</translation>
 <translation id="6876469544038980967">គ្មាន​ប្រយោជន៍</translation>
 <translation id="6878422606530379992">បាន​អនុញ្ញាត​ឧបករណ៍​ចាប់សញ្ញា</translation>

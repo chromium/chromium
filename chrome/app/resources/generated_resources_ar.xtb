@@ -667,6 +667,7 @@
 <translation id="1449191289887455076">يمكنك الضغط على مفتاح "<ph name="CURRENTKEY" />" مرة أخرى لتأكيد التخصيص، واختيار <ph name="RESPONSE" /> بعد ذلك.</translation>
 <translation id="1450484535522155181">فتح الملف الشخصي للضيف</translation>
 <translation id="1451375123200651445">صفحة ويب، ملف واحد</translation>
+<translation id="1452651021404174820">اختيار جهاز</translation>
 <translation id="1453561711872398978">إرسال <ph name="BEGIN_LINK" />سجلات تصحيح الأخطاء<ph name="END_LINK" /> (ننصح بذلك)</translation>
 <translation id="1454223536435069390">الت&amp;قاط لقطة شاشة</translation>
 <translation id="145432137617179457">لغات التدقيق الإملائي</translation>
@@ -1739,6 +1740,7 @@
 <translation id="2178545675770638239">اختيار كلمة مرور</translation>
 <translation id="2178585470774851578">‏يتم حاليًا تفعيل ميزات تصحيح الأخطاء لنظام التشغيل ChromeOS Flex التي ستثبِّت البرنامج الخفي لبروتوكول النقل الآمن (SSHD) وتتيح تشغيل النظام من محرّكات أقراص USB.</translation>
 <translation id="2178614541317717477">‏اختراق المرجع المصدق (CA)</translation>
+<translation id="2180082148774168439">بإمكانك فتح هذا الموقع الإلكتروني في نافذة مخصّصة على جهاز الكمبيوتر</translation>
 <translation id="2180620921879609685">حظر المحتوى على أي صفحة</translation>
 <translation id="2181821976797666341">السياسات</translation>
 <translation id="2182058453334755893">تم النسخ إلى الحافظة.</translation>
@@ -4011,6 +4013,7 @@
 <translation id="3735740477244556633">الترتيب حسب
 </translation>
 <translation id="3735827758948958091">تعذُّر فتح "<ph name="FILE_NAMES" />" أثناء الاتصال بشبكة تفرض تكلفة استخدام</translation>
+<translation id="3736487688526377259">يُرجى اختيار الجهاز المطلوب تلقّي هذا الرابط عليه.</translation>
 <translation id="3737058101969549870">هل تريد الاحتفاظ ببيانات التصفُّح الحالية بشكل منفصل عن هذا الملف الشخصي الجديد؟</translation>
 <translation id="3738632186060045350">سيتم حذف بيانات <ph name="DEVICE_TYPE" /> خلال 24 ساعة</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7864,6 +7867,7 @@
 <translation id="6453687572758515877">تجميع كل علامات التبويب</translation>
 <translation id="6453921811609336127">‏للتبديل إلى أسلوب الإدخال التالي، يمكنك الضغط على <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />مفتاح المسافة<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
 <translation id="645433497989692531">سيؤدي ذلك إلى حذف بيانات التصفُّح من هذا الجهاز نهائيًا. ولاسترداد البيانات، يُرجى تسجيل الدخول بالحساب</translation>
+<translation id="6454456397828627257">جنبًا إلى جنب</translation>
 <translation id="6455264371803474013">على مواقع إلكترونية محددة</translation>
 <translation id="6455521402703088376">غير مفعَّلة • ألغى المطوِّر نشر هذه الإضافة.</translation>
 <translation id="6455894534188563617">&amp;مجلد جديد</translation>

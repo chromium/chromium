@@ -666,6 +666,7 @@ Odobrenja koja ste već dali aplikacijama se mogu primjenjivati na ovaj račun. 
 <translation id="1449191289887455076">Ponovo pritisnite tipku "<ph name="CURRENTKEY" />" da potvrdite dodjeljivanje i da <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Otvori profil gosta</translation>
 <translation id="1451375123200651445">Web stranica, jedan fajl</translation>
+<translation id="1452651021404174820">Odaberite uređaj</translation>
 <translation id="1453561711872398978">Pošalji <ph name="BEGIN_LINK" />
     zapisnike o ispravkama pogreški<ph name="END_LINK" /> (preporučeno)</translation>
 <translation id="1454223536435069390">Nap&amp;ravi snimak ekrana</translation>
@@ -1743,6 +1744,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2178545675770638239">Odaberite lozinku</translation>
 <translation id="2178585470774851578">Omogućujete funkcije za otklanjanje grešaka na ChromeOS Flexu kojim će se postaviti sshd daemon i omogućiti pokretanje sistema s USB diskova.</translation>
 <translation id="2178614541317717477">CA je kompromitiran</translation>
+<translation id="2180082148774168439">Pristupite ovoj web lokaciji u namjenskom prozoru na računaru</translation>
 <translation id="2180620921879609685">blokirati sadržaj na bilo kojoj stranici</translation>
 <translation id="2181821976797666341">Pravila</translation>
 <translation id="2182058453334755893">Kopirano u međumemoriju</translation>
@@ -4017,6 +4019,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3735039640698208086">Prilikom reproduciranja zvuka...</translation>
 <translation id="3735740477244556633">Poredaj po</translation>
 <translation id="3735827758948958091">Nije moguće otvoriti fajl <ph name="FILE_NAMES" /> na vezi s naplatom</translation>
+<translation id="3736487688526377259">Odaberite uređaj na kojem želite dobiti ovaj link.</translation>
 <translation id="3737058101969549870">Odvojiti postojeće podatke o pregledanju od ovog novog profila?</translation>
 <translation id="3738632186060045350">Podaci na uređaju <ph name="DEVICE_TYPE" /> će se izbrisati za 24 sata</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7873,6 +7876,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6453687572758515877">Grupiši sve kartice</translation>
 <translation id="6453921811609336127">Da prebacite na sljedeći način unosa, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />tipku za razmak<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Ovo će trajno izbrisati vaše podatke o pregledanju s ovog uređaja. Da oporavite podatke, prijavite se kao</translation>
+<translation id="6454456397828627257">Jedan pored drugog</translation>
 <translation id="6455264371803474013">Na određenim web lokacijama</translation>
 <translation id="6455521402703088376">Isključeno • Programer je opozvao objavu ekstenzije</translation>
 <translation id="6455894534188563617">&amp;Novi folder</translation>

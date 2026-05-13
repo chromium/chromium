@@ -3446,6 +3446,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="634500758737709758">Indicații de orientare</translation>
 <translation id="6348220984832452017">Variante active</translation>
 <translation id="6349101878882523185">Instalează <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Plătește fără a copia și insera codul Pix. <ph name="BEGIN_LINK1" />Află cum funcționează<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Șterge datele de navigare</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Niciuna}=1{O parolă (pentru <ph name="DOMAIN_LIST" />, sincronizată)}=2{2 parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}few{# parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}other{# de parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}}</translation>
 <translation id="6354918092619878358">Curbură eliptică SECG secp256r1 (cunoscută și sub numele de ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3613,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6587923378399804057">Linkul copiat de tine</translation>
 <translation id="6591833882275308647">Dispozitivul <ph name="DEVICE_TYPE" /> nu este gestionat</translation>
 <translation id="6595495738567740002">Pentru a șterge cookie-urile Google de pe acest dispozitiv, <ph name="BEGIN_LINK" />deconectează-te de la Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Opțiuni de criptare</translation>
 <translation id="6596573334527383067">Afișează rezultate de ieri</translation>
 <translation id="6597665340361269064">90 de grade</translation>
 <translation id="6598976221101665070">Filme de dramă</translation>
@@ -3662,6 +3662,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="668132230070712111">Videoclipul a fost salvat în Google Drive</translation>
 <translation id="6681790815630918386">CVC a fost salvat</translation>
 <translation id="6683022854667115063">Căști</translation>
+<translation id="6686570026048064255">Pentru a dezactiva detectarea codului Pix, accesează <ph name="BEGIN_LINK1" />setările Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Plic (simplu)</translation>
 <translation id="6687335167692595844">Dimensiunea fontului solicitată</translation>
 <translation id="6688743156324860098">Actualizează…</translation>
@@ -3887,7 +3888,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="702275896380648118">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri. În plus, site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante.</translation>
 <translation id="7023162328967545559">Avertisment de la administrator</translation>
 <translation id="7023765275461720661">Conectezi contul și plătești cu <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Parole</translation>
 <translation id="7030164307377592766">să modifice setările pentru completarea metodelor de plată</translation>
 <translation id="7031110846419387930">Informații despre browser, SO, dispozitiv, software-ul instalat, fișiere și adresele IP</translation>
 <translation id="7031646650991750659">aplicațiile Google Play instalate.</translation>

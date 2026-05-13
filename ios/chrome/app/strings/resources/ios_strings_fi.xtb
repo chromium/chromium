@@ -280,6 +280,7 @@
 <translation id="1925706052394657380">Avaa <ph name="BEGIN_BOLD" />oletussovellusten<ph name="END_BOLD" /> asetukset iOS:ssä</translation>
 <translation id="1941314575388338491">Kopioi kaksoisnapauttamalla.</translation>
 <translation id="1943478190258551035">Valikko → Asetukset</translation>
+<translation id="1948562571551232853">Gemini sisäänrakennettuna</translation>
 <translation id="1952728750904661634">Kirjaudu sisään hallinnoidulla tilillä</translation>
 <translation id="1955773397805078763">Lisää maksutapa</translation>
 <translation id="1956138802718275401">Salasanoihin suoraan aloitusnäytöltä</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Täytä tallennetut salasanat automaattisesti</translation>
 <translation id="4021447724486050609">Päivitä selain</translation>
 <translation id="4021931095789478915">Lisää ${url} lukulistalle</translation>
-<translation id="4026496154402824012">Jos haluat laittaa asetuksen pois päältä, siirry kohtaan <ph name="BEGIN_LINK" />Salasanavalinnat<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Tallenna tilille…</translation>
 <translation id="4038354071007134711">Mikään laitteen sovellus ei voi avata tiedostoa.</translation>
 <translation id="4042870976416480368">Hae sivulta</translation>
@@ -1262,6 +1262,7 @@
 <translation id="5457082343331641453">Lisää hakuun</translation>
 <translation id="5457226814769348910">Avaa offline-versio</translation>
 <translation id="5467163657366219870">Laita Maps-ennakkojulkaisut pois päältä</translation>
+<translation id="5467596285052510344">Gemini voi esimerkiksi luoda yhteenvetoja ja selittää asioita.</translation>
 <translation id="5474397204728336997">Perheen salasanat, uudet muokkausominaisuudet ja paljon muuta. Lue lisää napauttamalla.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Salasanaa ei tuotu}=1{{count} salasana tuotu}other{{count} salasanaa tuotu}}</translation>
 <translation id="5478327362747197944">Luo kalenteritapahtumia suoraan klikkaamalla päivämäärää verkkosivulla.</translation>
@@ -1605,7 +1606,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6571070086367343653">Luottokortin muokkaus</translation>
 <translation id="6574092468346088891">Laita turvatarkistusilmoitukset päälle</translation>
 <translation id="6579867704846662339">Voit halutessasi avata muista sovelluksista saapuvat URL-osoitteet incognito-tilassa.</translation>
-<translation id="6583087784430677195">Jos haluat laittaa ominaisuuden pois päältä, avaa <ph name="BEGIN_LINK" />Asetukset<ph name="END_LINK" /> ja siirry Täytä salasanat automaattisesti ‑kohtaan.</translation>
 <translation id="6585618849026997638">Voit palata sinulle tärkeälle sivulle lisäämällä sen kirjanmerkiksi</translation>
 <translation id="6589001036857939353">Kopioiden yhdistäminen</translation>
 <translation id="659407965921887085">Tässä kortissa näkyvät verkossa tapahtuneet hinnanalennukset tuotteille, joita seuraat tällä hetkellä</translation>
@@ -1667,7 +1667,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6746338529702829275">Tarkista tilin data</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historiakohta tuotu}other{{count} historiakohtaa tuotu}}</translation>
 <translation id="6755200887046212842">Hallinnoi tilejä</translation>
-<translation id="6755733078693946548">Käytä salasanoja ja avainkoodeja mistä tahansa sovelluksesta</translation>
 <translation id="6759709389246683070">Jos haluat palata tälle välilehdelle myöhemmin, voit asettaa muistutuksen koskettamalla sitä pitkään</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[VARATTU]</translation>
@@ -1744,6 +1743,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7015418667643980944">Jaettu näkymä</translation>
 <translation id="7016070607649558507">Sinulla on 1 heikko salasana. Korjaa se nyt, jotta pysyt turvassa.</translation>
 <translation id="7016958933495968912">Discover-asetukset</translation>
+<translation id="7019477124580742994">Haku: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Salasanat</translation>
 <translation id="7035825883570480307">Otetaanko ilmoitukset käyttöön?</translation>
 <translation id="7039345315346323556">Viimeaikaiset</translation>
@@ -2010,7 +2010,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="797588153137233716">Valikko → Historia → Poista selausdata</translation>
 <translation id="7977451675950311423">Varoittaa, jos käytät salasanaa, joka on vaarantunut tietosuojaloukkauksen yhteydessä.</translation>
 <translation id="797824194429476746">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan pysyvästi.</translation>
-<translation id="797874245254030665">Käytä salasanoja ja avainkoodeja mistä tahansa sovelluksesta</translation>
 <translation id="7982789257301363584">Verkko</translation>
 <translation id="798299424881500862">Oranssi teema</translation>
 <translation id="7987685713885608670">Salasanat kannattaa salata turvallisuussyistä laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon.</translation>

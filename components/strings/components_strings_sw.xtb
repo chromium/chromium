@@ -3446,6 +3446,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="634500758737709758">Maelekezo</translation>
 <translation id="6348220984832452017">Aina Zinazotumika</translation>
 <translation id="6349101878882523185">Sakinisha <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Lipa bila kunakili na kubandika msimbo wa Pix. <ph name="BEGIN_LINK1" />Angalia utaratibu wake<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Futa Data ya Kuvinjari</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Hamna}=1{Nenosiri 1 (la <ph name="DOMAIN_LIST" />, limesawazishwa)}=2{Manenosiri 2 (ya <ph name="DOMAIN_LIST" />, yamesawazishwa)}other{Manenosiri # (ya <ph name="DOMAIN_LIST" />, yamesawazishwa)}}</translation>
 <translation id="6354918092619878358">SECG kizingo cha mviringo secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3613,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="6587923378399804057">Kiungo ulichonakili</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> yako haidhibitiwi</translation>
 <translation id="6595495738567740002">Ili ufute vidakuzi vya Google kwenye kifaa hiki, <ph name="BEGIN_LINK" />ondoka kwenye Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Chaguo za usimbaji fiche</translation>
 <translation id="6596573334527383067">Onyesha matokeo ya kuanzia jana</translation>
 <translation id="6597665340361269064">Nyuzi 90</translation>
 <translation id="6598976221101665070">Filamu za Uigizaji</translation>
@@ -3662,6 +3662,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="668132230070712111">Video imehifadhiwa kwenye Hifadhi ya Google</translation>
 <translation id="6681790815630918386">CVC imehifadhiwa</translation>
 <translation id="6683022854667115063">Vipokea sauti vya kichwani</translation>
+<translation id="6686570026048064255">Ili uzime utambuzi wa msimbo wa Pix, nenda kwenye <ph name="BEGIN_LINK1" />mipangilio ya Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Bahasha (Isiyo na Maandishi)</translation>
 <translation id="6687335167692595844">Imeomba ukubwa wa fonti</translation>
 <translation id="6688743156324860098">Sasisha…</translation>
@@ -3887,7 +3888,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="702275896380648118">Tovuti hii hubainisha mambo unayopendelea na kisha hupendekeza matangazo kwenye tovuti zingine. Tovuti hii pia hupata mada zako za matangazo kutoka kwenye Chrome ili kukuonyesha matangazo yanayokufaa zaidi.</translation>
 <translation id="7023162328967545559">Onyo la msimamizi</translation>
 <translation id="7023765275461720661">Unganisha akaunti na ulipe ukitumia <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Manenosiri</translation>
 <translation id="7030164307377592766">badilisha mipangilio ya kuweka njia za kulipa</translation>
 <translation id="7031110846419387930">Maelezo kuhusu kivinjari, mfumo wa uendeshaji, kifaa, programu ulizoweka kwenye kifaa, faili na anwani zako za IP.</translation>
 <translation id="7031646650991750659">Programu za Google Play ambazo umesakinisha</translation>

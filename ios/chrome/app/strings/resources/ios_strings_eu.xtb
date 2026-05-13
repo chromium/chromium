@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Bete gordetako pasahitzak automatikoki</translation>
 <translation id="4021447724486050609">Eguneratu arakatzailea</translation>
 <translation id="4021931095789478915">Gehitu ${url} irakurketa-zerrendan</translation>
-<translation id="4026496154402824012">Desaktibatzeko, joan <ph name="BEGIN_LINK" />Pasahitzen aukerak<ph name="END_LINK" /> atalera</translation>
 <translation id="4028871427853484857">Gorde kontuan…</translation>
 <translation id="4038354071007134711">Ez dago fitxategia ireki dezakeen aplikaziorik gailu honetan.</translation>
 <translation id="4042870976416480368">Bilatu orrian</translation>
@@ -1605,7 +1604,6 @@
 <translation id="6571070086367343653">Editatu kreditu-txartela</translation>
 <translation id="6574092468346088891">Aktibatu segurtasun-egiaztapenaren jakinarazpenak</translation>
 <translation id="6579867704846662339">Beste aplikazioetatik datozen URLak ezkutuko moduan irekitzea aukera dezakezu.</translation>
-<translation id="6583087784430677195">Aukera hori desaktibatzeko, ireki <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (ezarpenak) eta joan AutoFill Passwords (bete pasahitzak automatikoki) atalera.</translation>
 <translation id="6585618849026997638">Garrantzitsuak iruditzen zaizkizun orriak bizkor atzitu ahal izateko, gehi iezazkiezu laster-markak</translation>
 <translation id="6589001036857939353">Bateratu bikoiztuak</translation>
 <translation id="659407965921887085">Txartel honek sarean jarraipena egiten diezun produktuen prezio-jaitsierak erakusten ditu</translation>
@@ -1667,7 +1665,6 @@
 <translation id="6746338529702829275">Berrikusi kontuko datuak</translation>
 <translation id="6750456911389438250">{count,plural, =1{Historiako {count} elementu inportatu da}other{Historiako {count} elementu inportatu dira}}</translation>
 <translation id="6755200887046212842">Kudeatu kontuak</translation>
-<translation id="6755733078693946548">Erabili pasahitz eta sarbide-gakoak edozein aplikaziotatik</translation>
 <translation id="6759709389246683070">Geroago berriro bisitatzeko gogorarazpen bat ezartzeko, fitxa hau sakatuta eduki dezakezu</translation>
 <translation id="6761393919622941301">Audioak</translation>
 <translation id="6770452996697898492">[ERRESERBATUTA]</translation>
@@ -2010,7 +2007,6 @@
 <translation id="797588153137233716">Menua → Historia → Ezabatu arakatze-datuak</translation>
 <translation id="7977451675950311423">Datuen isilpekotasunaren urratze batean arriskuan jarri den pasahitz bat badarabilzu, horren berri emango dizu.</translation>
 <translation id="797824194429476746">Fitxak irekita mantenduko dira gailu honetan, baina taldea betiko ezabatuko da.</translation>
-<translation id="797874245254030665">Erabili pasahitz eta sarbide-gakoak edozein aplikaziotatik</translation>
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="798299424881500862">Gai laranja</translation>
 <translation id="7987685713885608670">Seguruagoa izan dadin, enkriptatu pasahitzak gailuan bertan Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik.</translation>

@@ -664,6 +664,7 @@
 <translation id="1449191289887455076">ଏହି ଆସାଇନମେଣ୍ଟକୁ ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ପୁଣି “<ph name="CURRENTKEY" />”କୁ ଦବାନ୍ତୁ ଏବଂ <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">ଅତିଥି ପ୍ରୋଫାଇଲ ଖୋଲନ୍ତୁ</translation>
 <translation id="1451375123200651445">ୱେବ୍‍ପୃଷ୍ଠା, ଗୋଟିଏ ଫାଇଲ୍</translation>
+<translation id="1452651021404174820">ଏକ ଡିଭାଇସ ବାଛନ୍ତୁ</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     ଡିବଗ୍ ଲଗ୍<ph name="END_LINK" /> ପଠାନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="1454223536435069390">ସ୍କ୍ରିନ୍‌ସଟ୍ ନି&amp;ଅନ୍ତୁ</translation>
@@ -1732,6 +1733,7 @@
 <translation id="2178545675770638239">ପାସୱାର୍ଡ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2178585470774851578">ଆପଣ ChromeOS Flex ଡିବଗିଂ ଫିଚରଗୁଡ଼ିକୁ ସକ୍ଷମ କରୁଛନ୍ତି, ଯାହା sshd ଡିମୋନକୁ ସେଟ ଅପ କରିବ ଏବଂ USB ଡ୍ରାଇଭଗୁଡ଼ିକରୁ ବୁଟିଂକୁ ସକ୍ଷମ କରିବ।</translation>
 <translation id="2178614541317717477">CA କମ୍ପ୍ରୋମାଇଜ୍</translation>
+<translation id="2180082148774168439">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରରେ ଏକ ସ୍ୱତନ୍ତ୍ର ୱିଣ୍ଡୋରେ ଏହି ସାଇଟକୁ ଆକ୍ସେସ କରନ୍ତୁ</translation>
 <translation id="2180620921879609685">ଯେ କୌଣସି ପୃଷ୍ଠାରେ ବିଷୟବସ୍ତୁକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="2181821976797666341">ନୀତି</translation>
 <translation id="2182058453334755893">ଆପଣଙ୍କର କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
@@ -4004,6 +4006,7 @@
 <translation id="3735039640698208086">ଯେତେବେଳେ ଅଡ଼ିଓ ଚଲାଉଛି...</translation>
 <translation id="3735740477244556633">ଏହି କ୍ରମରେ ସଜାନ୍ତୁ</translation>
 <translation id="3735827758948958091">ଏକ ମିଟରଯୁକ୍ତ କନେକ୍ସନରେ ଥିବା ସମୟରେ <ph name="FILE_NAMES" />କୁ ଖୋଲାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="3736487688526377259">ଆପଣ ଏହି ଲିଙ୍କ ପାଇବାକୁ ଚାହୁଁଥିବା ଡିଭାଇସକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="3737058101969549870">ପୂର୍ବରୁ ଥିବା ବ୍ରାଉଜିଂ ଡାଟାକୁ ଏହି ନୂଆ ପ୍ରୋଫାଇଲରୁ ଅଲଗା ରଖିବେ?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />ର ଡାଟା 24 ଘଣ୍ଟାରେ ଡିଲିଟ୍ କରିଦିଆଯିବ</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5626,6 +5629,7 @@
 <translation id="4865063548323785458">ସାଇଟ ଏବଂ ଆପ୍ସରେ ସହଜରେ ସାଇନ ଇନ କରିବାକୁ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କରି ଅଟୋଫିଲ କରନ୍ତୁ</translation>
 <translation id="486635084936119914">ଡାଉନ୍‌ଲୋଡ୍ ହୋଇସାରିବା ପରେ କିଛି ନିର୍ଦ୍ଦିଷ୍ଟ ପ୍ରକାରର ଫାଇଲ୍, ସ୍ୱଚାଳିତରୂପେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4867272607148176509">ବାପାମା ଆପ୍ସକୁ ଅନୁମୋଦନ ଦେଇପାରିବେ କିମ୍ବା ବ୍ଲକ କରିପାରିବେ, ଏଥିରେ ସମୟ ସୀମା ସେଟ କରିପାରିବେ ଏବଂ ୱେବ ବ୍ରାଉଜିଂ ନିୟନ୍ତ୍ରଣ କରିପାରିବେ। ଅଧିକ ସ୍କୁଲ ରିସୋର୍ସକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ପରେ ଏକ ସ୍କୁଲ ଆକାଉଣ୍ଟକୁ ଯୋଗ କରାଯାଇପାରିବ।</translation>
+<translation id="486796517585164369">· ବର୍ତ୍ତମାନର ଟାବ</translation>
 <translation id="4868284252360267853">ବର୍ତ୍ତମାନ ଏହି ଡାଏଲଗକୁ ଫୋକସ୍ କରାଯାଇନାହିଁ। ଏହି ଡାଏଲଗକୁ ଫୋକସ୍ କରିବା ପାଇଁ Command-Shift-Option A ଦବାନ୍ତୁ।</translation>
 <translation id="4868351661310357223">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Google Playରୁ ଆପ୍ ଏବଂ ଗେମଗୁଡ଼ିକ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ।</translation>
 <translation id="4869170227080975044">ChromeOS ନେଟୱାର୍କ ସୂଚନା ପଢ଼ନ୍ତୁ</translation>
@@ -7855,6 +7859,7 @@
 <translation id="6453687572758515877">ସମସ୍ତ ଟାବକୁ ଗ୍ରୁପ କରନ୍ତୁ</translation>
 <translation id="6453921811609336127">ପରବର୍ତ୍ତୀ ଇନପୁଟ୍ ପଦ୍ଧତିକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ଦବାନ୍ତୁ</translation>
 <translation id="645433497989692531">ଏହି ଡିଭାଇସରୁ ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଡାଟାକୁ ଏହା ସ୍ଥାୟୀରୂପେ ଡିଲିଟ କରିଦେବ। ଡାଟା ରିକଭର କରିବାକୁ ଏପରି ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="6454456397828627257">ପାଖାପାଖି</translation>
 <translation id="6455264371803474013">ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍‌ଗୁଡ଼ିକରେ</translation>
 <translation id="6455521402703088376">ବନ୍ଦ ଅଛି • ଏହି ଏକ୍ସଟେନସନକୁ ଏହାର ଡେଭେଲପରଙ୍କ ଦ୍ୱାରା ଅନପବ୍ଲିସ କରାଯାଇଛି</translation>
 <translation id="6455894534188563617">&amp;ନୂଆ ଫୋଲ୍ଡର୍‌</translation>
@@ -11849,6 +11854,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="918352324374649435">{COUNT,plural, =1{ଆପ୍}other{#ଟି ଆପ୍}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" /> ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ ନାହିଁ।}=2{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" /> ଏବଂ <ph name="APP1_NAME" /> ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ ନାହିଁ।}=3{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ଏବଂ ଅନ୍ୟ 1 ଆପ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ ନାହିଁ।}other{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ଏବଂ ଅନ୍ୟ # ଆପ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ ନାହିଁ।}}</translation>
 <translation id="9186963452600581158">ଗୋଟିଏ ପିଲାର Google ଆକାଉଣ୍ଟ ସହିତ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 ଟାବ ସେୟାର କରାଯାଉଛି}other{# ଟାବ ସେୟାର କରାଯାଉଛି}}</translation>
 <translation id="9187967020623675250">କୀଗୁଡ଼ିକ ମେଳ ହେଉନାହିଁ। <ph name="RESPONSE" /> ପାଇଁ ଯେ କୌଣସି କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="9188142767272053574">ପ୍ରକ୍ରିୟା ଆଇସୋଲେସନକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="9192019773545828776">କଥିତ ମତାମତ ଶୁଣନ୍ତୁ ଯାହା ଫଳରେ ଆପଣ ସ୍କ୍ରିନକୁ ନଦେଖି ଆପଣଙ୍କ ଡିଭାଇସ ବ୍ୟବହାର କରିପାରିବେ। ଏକ କନେକ୍ଟ ହୋଇଥିବା ଡିଭାଇସରେ ବ୍ରେଲି ମତାମତ ଉପଲବ୍ଧ ଅଛି। ChromeVoxକୁ ଚାଲୁ ଏବଂ ବନ୍ଦ କରିବା ପାଇଁ Ctrl + Alt + Z ବ୍ୟବହାର କରନ୍ତୁ। ନାଭିଗେଟ କରିବାକୁ Search + ବାମ ତୀର କିମ୍ବା ଡାହାଣ ତୀର ବ୍ୟବହାର କରନ୍ତୁ। ଚୟନ (ସକ୍ରିୟ) କରିବାକୁ Search + Space ବ୍ୟବହାର କରନ୍ତୁ।</translation>

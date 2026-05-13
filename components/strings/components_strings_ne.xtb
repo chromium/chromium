@@ -3444,6 +3444,7 @@
 <translation id="634500758737709758">जाने बाटो</translation>
 <translation id="6348220984832452017">प्रयोग गर्न मिल्ने संस्करणहरू</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> स्थापना गर्नुहोस्</translation>
+<translation id="6350739641326887427">Pix कोड कपी र पेस्ट नगरिकनै भुक्तानी गर्नुहोस्। <ph name="BEGIN_LINK1" />यसले काम गर्ने तरिका हेर्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="DOMAIN_LIST" /> को १ पासवर्ड (सिंक गरिएको छ)}=2{<ph name="DOMAIN_LIST" /> का २ पासवर्डहरू (सिंक गरिएका छन्)}other{<ph name="DOMAIN_LIST" /> का # पासवर्डहरू (सिंक गरिएका छन्)}}</translation>
 <translation id="6354918092619878358">SECG अण्डाकार कर्भ secp256r1 (ANSI X9.62 prime256v1, NIST P-256 पनि भनिन्छ)</translation>
@@ -3610,7 +3611,6 @@
 <translation id="6587923378399804057">तपाईंले प्रतिलिपि गर्नुभएको लिंक</translation>
 <translation id="6591833882275308647">तपाईंको <ph name="DEVICE_TYPE" /> व्यवस्थित छैन</translation>
 <translation id="6595495738567740002">यो डिभाइसबाट Google का कुकीहरू मेटाउन <ph name="BEGIN_LINK" />Chrome बाट साइन आउट गर्नुहोस्<ph name="END_LINK" />।</translation>
-<translation id="6596325263575161958">गुप्तीकरण विकल्पहरू</translation>
 <translation id="6596573334527383067">हिजोदेखिका परिणामहरू देखाउनुहोस्</translation>
 <translation id="6597665340361269064">९० डिग्री</translation>
 <translation id="6598976221101665070">नाट्य चलचित्रहरू</translation>
@@ -3660,6 +3660,7 @@
 <translation id="668132230070712111">भिडियो Google Drive मा सेभ गरिएको छ</translation>
 <translation id="6681790815630918386">CVC सेभ गरिएको छ</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
+<translation id="6686570026048064255">Pix कोड पत्ता लगाउने सुविधा अफ गर्न <ph name="BEGIN_LINK1" />Chrome का सेटिङ<ph name="END_LINK1" />मा जानुहोस्</translation>
 <translation id="6687230248707087982">इन्भलप (प्लेन)</translation>
 <translation id="6687335167692595844">फन्टको अनुरोध गरिएको आकार</translation>
 <translation id="6688743156324860098">बदल्नुहोस्…</translation>
@@ -3885,7 +3886,6 @@
 <translation id="702275896380648118">यो साइटले तपाईंलाई मन पर्ने कुराहरू निर्धारण गरेर अन्य साइटहरूलाई विज्ञापनहरू सिफारिस गर्छ। यो साइटले तपाईंलाई थप सान्दर्भिक विज्ञापनहरू देखाउने प्रयोजनका लागि तपाईंले Chrome छनौट गर्नुभएका विज्ञापनका विषयसम्बन्धी जानकारी पनि प्राप्त गर्छ।</translation>
 <translation id="7023162328967545559">एड्मिनले दिएका चेतावनी</translation>
 <translation id="7023765275461720661">खाता लिंक गरी <ph name="BNPL_ISSUER_NAME" /> मार्फत भुक्तानी गर्ने हो?</translation>
-<translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="7030164307377592766">भुक्तानी विधिसम्बन्धी जानकारी भर्नका निम्ति सेटिङ मिलाउनुहोस्</translation>
 <translation id="7031110846419387930">तपाईंका ब्राउजर, OS, डिभाइस, इन्स्टल गरिएका सफ्टवेयर, फाइल र IP एड्रेसका बारेमा जानकारी</translation>
 <translation id="7031646650991750659">तपाईंले स्थापना गर्नुभएका Google Play एपहरू</translation>

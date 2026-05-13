@@ -5632,6 +5632,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4865063548323785458">Sayt va ilovalarga oson kirish uchun parollarni saqlang va avtomatik kiriting</translation>
 <translation id="486635084936119914">Ba’zi turdagi fayllar yuklab olinishi bilan avtomatik ochilsin</translation>
 <translation id="4867272607148176509">Ota-onalar ilovalarni tasdiqlashi yoki bloklashi, vaqt chegaralarini belgilashi va brauzerlarni koʻrishni boshqarishi mumkin. Koʻplab maktab resurslariga kirish uchun maktab hisobini keyinroq qoʻshish mumkin.</translation>
+<translation id="486796517585164369">· Oxirgi varaq</translation>
 <translation id="4868284252360267853">Bu suhbat hozir fokuslanmagan. Bu suhbatni fokuslash uchun CMD+Shift+Option tugmalarini bosing.</translation>
 <translation id="4868351661310357223"><ph name="DEVICE_TYPE" /> qurilmasida Google Play Marketdan ilova va oʻyinlarni yuklab oling</translation>
 <translation id="4869170227080975044">ChromeOS tarmoq axborotini oʻqish</translation>
@@ -7864,6 +7865,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6453687572758515877">Barcha varaqlarni guruhlash</translation>
 <translation id="6453921811609336127">Keyingi matn kiritish usuliga almashtirish uchun <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> tugmalarini bosing</translation>
 <translation id="645433497989692531">Bu foydalanuvchining brauzer maʼlumotlari ushbu qurilmadan butunlay tozalanadi. Maʼlumotlarni tiklash uchun quyidagi hisob bilan kiring:</translation>
+<translation id="6454456397828627257">Yonma-yon</translation>
 <translation id="6455264371803474013">Tanlangan saytlarda</translation>
 <translation id="6455521402703088376">Oʻchiq • Bu kengaytma dasturchisi uning nashrini bekor qilgan</translation>
 <translation id="6455894534188563617">&amp;Yangi jild</translation>
@@ -11858,6 +11860,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="918352324374649435">{COUNT,plural, =1{Ilova}other{# ta ilova}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator <ph name="APP0_NAME" /> orqali ekraningizni yozib olishi mumkin. Yozuv boshlanganda sizga xabar berilmaydi.}=2{Administrator <ph name="APP0_NAME" /> va <ph name="APP1_NAME" /> orqali ekraningizni yozib olishi mumkin. Yozuv boshlanganda sizga xabar berilmaydi.}=3{Administrator <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> va yana 1 ta ilova orqali ekraningizni yozib olishi mumkin. Yozuv boshlanganda sizga xabar berilmaydi.}other{Administrator <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> va yana # ta ilova orqali ekraningizni yozib olishi mumkin Yozuv boshlanganda sizga xabar berilmaydi.}}</translation>
 <translation id="9186963452600581158">Farzandingizning Google hisobi bilan kiring</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 ta varaq ulashilmoqda}other{# ta varaq ulashilmoqda}}</translation>
 <translation id="9187967020623675250">Kalitlar mos emas. <ph name="RESPONSE" /> uchun istalgan tugmani bosing.</translation>
 <translation id="9188142767272053574">Jarayonlar izolyatsiyasini yoqish</translation>
 <translation id="9192019773545828776">Oʻqib eshittirish orqali qurilmadan ekranga qaramay foydalanish mumkin. Ulangan qurilmada brayl aloqasi ishlaydi. ChromeVoxni yoqib oʻchirish uchun Ctrl+Alt+Z tugmalarini bosing. Yonga harakatlanish uchun Search+Chap strelka yoki Oʻng strelka tugmalarini bosing. Tanlash uchun Search+Boʻshliq (faollashtirish) tugmalarini bosing.</translation>

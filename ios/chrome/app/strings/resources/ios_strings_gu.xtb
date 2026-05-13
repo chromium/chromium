@@ -281,6 +281,7 @@
 <translation id="1925706052394657380">iOSમાં <ph name="BEGIN_BOLD" />ડિફૉલ્ટ ઍપ<ph name="END_BOLD" />ના સેટિંગ ખોલો</translation>
 <translation id="1941314575388338491">કૉપિ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1943478190258551035">મેનૂ → સેટિંગ</translation>
+<translation id="1948562571551232853">Gemini બિલ્ટ ઇન</translation>
 <translation id="1952728750904661634">મેનેજ એકાઉન્ટ સાથે સાઇન ઇન કરો</translation>
 <translation id="1955773397805078763">ચુકવણી પદ્ધતિ ઉમેરો</translation>
 <translation id="1956138802718275401">હોમ સ્ક્રીન પરથી પાસવર્ડ મેળવો</translation>
@@ -853,7 +854,6 @@
 <translation id="4018440314314549819">સાચવેલા પાસવર્ડ ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="4021447724486050609">તમારું બ્રાઉઝર અપડેટ કરો</translation>
 <translation id="4021931095789478915">વાંચન સૂચિમાં ${url} ઉમેરો</translation>
-<translation id="4026496154402824012">બંધ કરવા માટે, <ph name="BEGIN_LINK" />પાસવર્ડ સંબંધિત વિકલ્પો<ph name="END_LINK" /> પર જાઓ</translation>
 <translation id="4028871427853484857">એકાઉન્ટમાં સાચવો…</translation>
 <translation id="4038354071007134711">આ ઉપકરણ પર કોઈ ઍપ્લિકેશન ફાઇલને ખોલી શકતી નથી.</translation>
 <translation id="4042870976416480368">પેજમાં શોધો</translation>
@@ -1263,6 +1263,7 @@
 <translation id="5457082343331641453">તમારી શોધમાં ઉમેરો</translation>
 <translation id="5457226814769348910">ઑફલાઇન વર્ઝન ખોલો</translation>
 <translation id="5467163657366219870">Mapsના પ્રીવ્યૂ બંધ કરો</translation>
+<translation id="5467596285052510344">સારાંશ આપવા, સમજાવવા અને વધુ માટે Geminiનો ઉપયોગ કરો.</translation>
 <translation id="5474397204728336997">કુટુંબના પાસવર્ડ, નવા કસ્ટમાઇઝેશન અને બીજું ઘણું. વધુ જાણવા માટે ટૅપ કરો.</translation>
 <translation id="5475793109165786685">{count,plural, =0{કોઈ પાસવર્ડની આયાત કરી નથી}=1{{count} પાસવર્ડની આયાત કરી}one{{count} પાસવર્ડની આયાત કરી}other{{count} પાસવર્ડની આયાત કરી}}</translation>
 <translation id="5478327362747197944">કોઈ વેબપેજમાં કોઈ તારીખ પર ક્લિક કરીને સીધા Calendar ઇવેન્ટ બનાવો.</translation>
@@ -1606,7 +1607,6 @@
 <translation id="6571070086367343653">ક્રેડિટ કાર્ડ સંપાદિત કરો </translation>
 <translation id="6574092468346088891">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="6579867704846662339">અન્ય ઍપમાંના ઇનકમિંગ URLs તમે છૂપા મોડમાં ખોલવાનું પસંદ કરી શકો છો.</translation>
-<translation id="6583087784430677195">બંધ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" /> ખોલો અને પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધા પર જાઓ.</translation>
 <translation id="6585618849026997638">તમે બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
 <translation id="6589001036857939353">ડુપ્લિકેટ હોય તેને મર્જ કરો</translation>
 <translation id="659407965921887085">આ કાર્ડ તમે હાલમાં ટ્રૅક કરતા હો તે પ્રોડક્ટ પર સમગ્ર વેબ પર કિંમતમાં ઘટાડો દર્શાવે છે</translation>
@@ -1668,7 +1668,6 @@
 <translation id="6746338529702829275">તમારો એકાઉન્ટ ડેટા રિવ્યૂ કરો</translation>
 <translation id="6750456911389438250">{count,plural, =1{ઇતિહાસની {count} આઇટમની આયાત કરી}one{ઇતિહાસની {count} આઇટમની આયાત કરી}other{ઇતિહાસની {count} આઇટમની આયાત કરી}}</translation>
 <translation id="6755200887046212842">એકાઉન્ટ્સનું સંચાલન કરો</translation>
-<translation id="6755733078693946548">કોઈપણ ઍપમાંથી પાસવર્ડ અને પાસકી ઍક્સેસ કરો</translation>
 <translation id="6759709389246683070">પછીથી ફરી મુલાકાત લેવા માટે રિમાઇન્ડર સેટ કરવા માટે તમે આ ટૅબને ટચ કરીને થોડીવાર દબાવી રાખી શકો છો</translation>
 <translation id="6761393919622941301">ઑડિયો</translation>
 <translation id="6770452996697898492">[બુક કરવામાં આવી]</translation>
@@ -1745,6 +1744,7 @@
 <translation id="7015418667643980944">વિભાજિત વ્યૂ</translation>
 <translation id="7016070607649558507">તમારી પાસે 1 નબળો પાસવર્ડ છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.</translation>
 <translation id="7016958933495968912">Discover માટેના વિકલ્પો</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Search</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
 <translation id="7035825883570480307">નોટિફિકેશન ચાલુ કરીએ?</translation>
 <translation id="7039345315346323556">તાજેતરમાં</translation>
@@ -2011,7 +2011,6 @@
 <translation id="797588153137233716">મેનૂ → ઇતિહાસ → બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="7977451675950311423">તમે ઉપયોગમાં લો છો તે પાસવર્ડ સાથે કોઈ ડેટા ઉલ્લંઘન દરમિયાન ચેડાં કરવામાં આવ્યા હોય તો તમને ચેતવણી આપે છે.</translation>
 <translation id="797824194429476746">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ ગ્રૂપ કાયમ માટે ડિલીટ કરવામાં આવશે.</translation>
-<translation id="797874245254030665">કોઈપણ ઍપમાંથી તમારા પાસવર્ડ અને પાસકી ઍક્સેસ કરો</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="798299424881500862">ઑરેન્જ થીમ</translation>
 <translation id="7987685713885608670">વધારાની સલામતી માટે, તમારા પાસવર્ડ Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં એમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરો.</translation>

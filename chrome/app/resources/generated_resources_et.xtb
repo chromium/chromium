@@ -2834,6 +2834,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2909487040556589351">Hankige Chrome oma mobiilseadmesse</translation>
 <translation id="2910318910161511225">Looge võrguühendus ja proovige uuesti</translation>
 <translation id="2910678330803525229">Nüüd saate sirvimist alustada</translation>
+<translation id="2911818155655162983">Teie turvaeelistused ei luba installida isoleeritud rakendusi. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="2912247081180973411">Sule aknad</translation>
 <translation id="2915102088417824677">Kuva tegevuste logi</translation>
 <translation id="2915873080513663243">Automaatne skannimine</translation>
@@ -7865,6 +7866,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6453687572758515877">Kõigi vahelehtede rühmitamine</translation>
 <translation id="6453921811609336127">Järgmisele sisestusmeetodile lülitamiseks vajutage klahvikombinatsiooni <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Tõstuklahv<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Tühik<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">See kustutab teie sirvimisandmed sellest seadmest jäädavalt. Andmete taastamiseks logige sisse kasutajana</translation>
+<translation id="6454456397828627257">Kõrvuti</translation>
 <translation id="6455264371803474013">Konkreetsetel saitidel</translation>
 <translation id="6455521402703088376">Väljas • Arendaja tühistas selle laienduse avaldamise</translation>
 <translation id="6455894534188563617">&amp;Uus kaust</translation>
@@ -8486,6 +8488,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6871860225073478239">Keeled …</translation>
 <translation id="6873156759937047811">PIN-kood:</translation>
 <translation id="6873571253135628430">Saidi lubade muutmine</translation>
+<translation id="6874986444867497677">Installimist ei saanud lõpule viia. Proovige uuesti või sulgege see aken.</translation>
 <translation id="6876155724392614295">Jalgratas</translation>
 <translation id="6876469544038980967">Ei ole kasulik</translation>
 <translation id="6878422606530379992">Andurid on lubatud</translation>

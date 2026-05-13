@@ -853,7 +853,6 @@
 <translation id="4018440314314549819">Autofyll sparade lösenord</translation>
 <translation id="4021447724486050609">Uppdatera webbläsaren</translation>
 <translation id="4021931095789478915">Lägg till ${url} i läslistan</translation>
-<translation id="4026496154402824012">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Lösenordsalternativ<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Spara i kontot …</translation>
 <translation id="4038354071007134711">Det går inte att öppna filen med någon av apparna på enheten.</translation>
 <translation id="4042870976416480368">Sök på sidan</translation>
@@ -1606,7 +1605,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6571070086367343653">Redigera kreditkort</translation>
 <translation id="6574092468346088891">Aktivera aviseringar från säkerhetskontroll</translation>
 <translation id="6579867704846662339">Du kan välja att öppna inkommande webbadresser från andra appar i inkognitoläget.</translation>
-<translation id="6583087784430677195">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Autofyll lösenord.</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
 <translation id="6589001036857939353">Sammanfoga dubbletter</translation>
 <translation id="659407965921887085">Det här kortet visar prissänkningar på webben för produkter som du för närvarande bevakar</translation>
@@ -1668,7 +1666,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6746338529702829275">Granska din kontodata</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historikobjekt har importerats}other{{count} historikobjekt har importerats}}</translation>
 <translation id="6755200887046212842">Hantera konton</translation>
-<translation id="6755733078693946548">Få åtkomst till lösenord och nycklar från vilken app som helst</translation>
 <translation id="6759709389246683070">Du kan trycka länge på den här fliken för att ställa in en påminnelse om att besöka den senare</translation>
 <translation id="6761393919622941301">Ljud</translation>
 <translation id="6770452996697898492">[BOKAT]</translation>
@@ -2011,7 +2008,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="797588153137233716">Meny → Historik → Radera webbinformation</translation>
 <translation id="7977451675950311423">Varnar dig om du använder ett lösenord som har läckt ut i samband med ett dataintrång.</translation>
 <translation id="797824194429476746">Flikarna förblir öppna på den här enheten men gruppen raderas permanent.</translation>
-<translation id="797874245254030665">Få åtkomst till dina lösenord och nycklar från vilken app som helst</translation>
 <translation id="7982789257301363584">Nätverk</translation>
 <translation id="798299424881500862">Orange tema</translation>
 <translation id="7987685713885608670">Öka säkerheten genom att kryptera lösenord på enheten innan de sparas i Google Lösenordshantering</translation>

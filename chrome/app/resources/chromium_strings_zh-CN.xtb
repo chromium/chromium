@@ -733,6 +733,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8981150672034878610">无法启动 Chromium，因为打开您的个人资料时出了点问题。请尝试重启 Chromium。</translation>
 <translation id="8988036198400390003">管理 Chromium 个人资料</translation>
 <translation id="9019929317751753759">为了提高 Chromium 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
+<translation id="9022552996538154597">登录 Chromium</translation>
 <translation id="904366664621834601">Chromium 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="9053882453960391422">让您的密码、书签和历史记录在所有设备上完美同步。将默认浏览器更新为 Chromium，即可轻松使用您熟悉且喜爱的功能。Chromium 将固定到任务栏，以便您快速访问。</translation>
 <translation id="9062666675513499497">登录其他 Google 服务时登录 Chromium</translation>

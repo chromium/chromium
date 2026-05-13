@@ -667,6 +667,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1449191289887455076">Znova pritisnite »<ph name="CURRENTKEY" />«, če želite potrditi dodelitev in <ph name="RESPONSE" />.</translation>
 <translation id="1450484535522155181">Odpiranje profila gosta</translation>
 <translation id="1451375123200651445">Spletna stran, ena datoteka</translation>
+<translation id="1452651021404174820">Izbira naprave</translation>
 <translation id="1453561711872398978">Pošiljanje <ph name="BEGIN_LINK" />
     dnevnikov o odpravljanju napak<ph name="END_LINK" /> (priporočeno)</translation>
 <translation id="1454223536435069390">N&amp;aredi posnetek zaslona</translation>
@@ -1746,6 +1747,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2178545675770638239">Izbira gesla</translation>
 <translation id="2178585470774851578">Omogočili boste funkcije za odpravljanje napak sistema ChromeOS Flex, tako da boste nastavili sshd daemon in omogočili zagon prek pogonov USB.</translation>
 <translation id="2178614541317717477">Overitelj potrdil ni več varen</translation>
+<translation id="2180082148774168439">Odprite to spletno mesto v namenskem oknu v računalniku</translation>
 <translation id="2180620921879609685">Blokiranje vsebine na kateri koli strani</translation>
 <translation id="2181821976797666341">Pravilniki</translation>
 <translation id="2182058453334755893">Kopirano v odložišče</translation>
@@ -4020,6 +4022,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3735039640698208086">Ko se predvaja zvok …</translation>
 <translation id="3735740477244556633">Razvrsti po</translation>
 <translation id="3735827758948958091">Datotek <ph name="FILE_NAMES" /> ni mogoče odpreti, ko je vzpostavljena povezava z omejenim prenosom podatkov</translation>
+<translation id="3736487688526377259">Izberite napravo, v kateri želite pridobiti to povezavo.</translation>
 <translation id="3737058101969549870">Želite, da so obstoječi podatki brskanja ločeni od tega novega profila?</translation>
 <translation id="3738632186060045350">Podatki v napravi <ph name="DEVICE_TYPE" /> bodo izbrisani v 24 urah</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7877,6 +7880,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6453687572758515877">Združi vse zavihke</translation>
 <translation id="6453921811609336127">Če želite preklopiti na naslednji način vnosa, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />preslednico<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
 <translation id="645433497989692531">S tem boste iz te naprave trajno izbrisali podatke o brskanju. Če želite podatke obnoviti, se prijavite kot</translation>
+<translation id="6454456397828627257">Vzporedno</translation>
 <translation id="6455264371803474013">Na določenih spletnih mestih</translation>
 <translation id="6455521402703088376">Izklopljeno • Razvijalec je preklical objavo te razširitve</translation>
 <translation id="6455894534188563617">&amp;Nova mapa</translation>

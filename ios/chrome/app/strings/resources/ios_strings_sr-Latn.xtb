@@ -853,7 +853,6 @@
 <translation id="4018440314314549819">Automatski popunjavajte sačuvane lozinke</translation>
 <translation id="4021447724486050609">Ažurirajte pregledač</translation>
 <translation id="4021931095789478915">Dodaj ${url} na listu za čitanje</translation>
-<translation id="4026496154402824012">Da biste isključili, idite u <ph name="BEGIN_LINK" />Opcije lozinki<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Sačuvaj na nalogu…</translation>
 <translation id="4038354071007134711">Nijedna aplikacija na ovom uređaju ne može da otvori datoteku.</translation>
 <translation id="4042870976416480368">Nađi na stranici</translation>
@@ -1606,7 +1605,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6571070086367343653">Izmena kreditne kartice</translation>
 <translation id="6574092468346088891">Uključite obaveštenja za Proveru bezbednosti</translation>
 <translation id="6579867704846662339">Možete da odaberete da se dolazni URL-ovi iz drugih aplikacija otvaraju u režimu bez arhiviranja.</translation>
-<translation id="6583087784430677195">Da biste isključili, otvorite <ph name="BEGIN_LINK" />Podešavanja<ph name="END_LINK" /> i idite u Automatski popunjavaj lozinke.</translation>
 <translation id="6585618849026997638">Ako dodate obeleživač, možete da se vratite na stranicu koja vam je važna</translation>
 <translation id="6589001036857939353">Objedinite duplikate</translation>
 <translation id="659407965921887085">Ova kartica prikazuje padove cena na vebu za proizvode koje trenutno pratite</translation>
@@ -1668,7 +1666,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6746338529702829275">Pregledajte podatke o nalogu</translation>
 <translation id="6750456911389438250">{count,plural, =1{Uvezena je {count} stavka istorije}one{Uvezena je {count} stavka istorije}few{Uvezene su {count} stavke istorije}other{Uvezeno je {count} stavki istorije}}</translation>
 <translation id="6755200887046212842">Upravljajte nalozima</translation>
-<translation id="6755733078693946548">Pristupajte lozinkama i pristupnim ključevima iz bilo koje aplikacije</translation>
 <translation id="6759709389246683070">Možete da dodirnete i zadržite ovu karticu da biste podesili podsetnik koji ćete ponovo pogledati kasnije</translation>
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6770452996697898492">[REZERVISANO]</translation>
@@ -2011,7 +2008,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="797588153137233716">Meni → Istorija → Izbriši podatke pregledanja</translation>
 <translation id="7977451675950311423">Upozorava vas ako koristite lozinku koja je ugrožena pri povredi podataka.</translation>
 <translation id="797824194429476746">Kartice će ostati otvorene na ovom uređaju, ali će grupa biti trajno izbrisana.</translation>
-<translation id="797874245254030665">Pristupajte lozinkama i pristupnim ključevima iz bilo koje aplikacije</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="798299424881500862">Narandžasta tema</translation>
 <translation id="7987685713885608670">Radi dodatne zaštite šifrujte lozinke na uređaju pre nego što se sačuvaju u Google menadžeru lozinki.</translation>

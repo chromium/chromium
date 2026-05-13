@@ -664,6 +664,7 @@
 <translation id="1449191289887455076">ກົດ “<ph name="CURRENTKEY" />” ອີກເທື່ອໜຶ່ງເພື່ອຢືນຢັນການມອບໝາຍ ແລະ <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">ເປີດໂປຣໄຟລ໌ແຂກ</translation>
 <translation id="1451375123200651445">ໜ້າເວັບ, ໄຟລ​໌​ດ່ຽວ</translation>
+<translation id="1452651021404174820">ເລືອກອຸປະກອນ</translation>
 <translation id="1453561711872398978">ສົ່ງ <ph name="BEGIN_LINK" />
     ບັນທຶກດີບັກ<ph name="END_LINK" /> (ແນະນຳ)</translation>
 <translation id="1454223536435069390">ຖ່າຍຮູບໜ້າຈໍ</translation>
@@ -1742,6 +1743,7 @@
 <translation id="2178545675770638239">ເລືອກລະຫັດຜ່ານ</translation>
 <translation id="2178585470774851578">ທ່ານກຳລັງເປີດການນຳໃຊ້ຄຸນສົມບັດການດີບັກ ChromeOS Flex ເຊິ່ງຈະຕັ້ງຄ່າ sshd daemon ແລະ ເປີດການນຳໃຊ້ການເປີດຈາກໄດຣຟ໌ USB.</translation>
 <translation id="2178614541317717477">ຜ່ອນຜັນ CA</translation>
+<translation id="2180082148774168439">ເຂົ້າເຖິງເວັບໄຊນີ້ໃນໜ້າຈໍສະເພາະຢູ່ຄອມພິວເຕີຂອງທ່ານ</translation>
 <translation id="2180620921879609685">ບລັອກເນື້ອຫາຢູ່ໜ້າໃດກໍຕາມ</translation>
 <translation id="2181821976797666341">ນະ​ໂຍ​ບາຍ</translation>
 <translation id="2182058453334755893">ອັດສຳເນົາໃສ່ຄລິບບອດຂອງທ່ານແລ້ວ</translation>
@@ -4017,6 +4019,7 @@
 <translation id="3735039640698208086">ໃນເວລາຫຼິ້ນສຽງ...</translation>
 <translation id="3735740477244556633">ຈັດຮຽງຕາມ</translation>
 <translation id="3735827758948958091">ບໍ່ສາມາດເປີດ <ph name="FILE_NAMES" /> ໄດ້ໃນລະຫວ່າງທີ່ໃຊ້ການເຊື່ອມຕໍ່ທີ່ມີການວັດແທກ</translation>
+<translation id="3736487688526377259">ເລືອກອຸປະກອນທີ່ທ່ານຕ້ອງການຮັບລິ້ງນີ້.</translation>
 <translation id="3737058101969549870">ແຍກຂໍ້ມູນການທ່ອງເວັບທີ່ມີຢູ່ອອກຈາກໂປຣໄຟລ໌ໃໝ່ນີ້ບໍ?</translation>
 <translation id="3738632186060045350">ຂໍ້ມູນ <ph name="DEVICE_TYPE" /> ຈະຖືກລຶບໃນ 24 ຊົ່ວໂມງ</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5641,6 +5644,7 @@
 <translation id="4865063548323785458">ບັນທຶກ ແລະ ຕື່ມລະຫັດຜ່ານຂອງທ່ານອັດຕະໂນມັດເພື່ອເຂົ້າສູ່ລະບົບເວັບໄຊ ແລະ ແອັບຕ່າງໆໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="486635084936119914">ເປີດໄຟລ໌ປະເພດສະເພາະໂດຍອັດຕະໂນມັດຫຼັງຈາກດາວໂຫຼດແລ້ວ</translation>
 <translation id="4867272607148176509">ພໍ່ແມ່ສາມາດອະນຸມັດ ຫຼື ບລັອກແອັບ, ຕັ້ງຂີດຈຳກັດເວລາ ແລະ ຄວບຄຸມການທ່ອງເວັບໄດ້. ສາມາດເພີ່ມບັນຊີໂຮງຮຽນໄດ້ພາຍຫຼັງເພື່ອເຂົ້າເຖິງຊັບພະຍາກອນໂຮງຮຽນສ່ວນໃຫຍ່.</translation>
+<translation id="486796517585164369">· ແຖບຫຼ້າສຸດ</translation>
 <translation id="4868284252360267853">ຕອນນີ້ບໍ່ໄດ້ໂຟກັສກ່ອງໂຕ້​ຕອບນີ້. ກົດ Command-Shift-Option ເພື່ອໂຟກັສກ່ອງໂຕ້ຕອບນີ້.</translation>
 <translation id="4868351661310357223">ຕິດຕັ້ງແອັບ ແລະ ເກມຈາກ Google Play ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="4869170227080975044">ອ່ານຂໍ້ມູນເຄືອຂ່າຍ ChromeOS</translation>
@@ -7872,6 +7876,7 @@
 <translation id="6453687572758515877">ຈັດກຸ່ມແຖບທັງໝົດ</translation>
 <translation id="6453921811609336127">ເພື່ອສະຫຼັບໄປຫາວິທີການປ້ອນຂໍ້ມູນຕໍ່ໄປ, ກະລຸນາກົດ <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />ຍະຫວ່າງ<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">ການດຳເນີນການນີ້ຈະລຶບຂໍ້ມູນການທ່ອງເວັບຂອງທ່ານອອກຈາກອຸປະກອນນີ້ຢ່າງຖາວອນ. ເພື່ອກູ້ຄືນຂໍ້ມູນ, ໃຫ້ເຂົ້າສູ່ລະບົບໃນນາມ</translation>
+<translation id="6454456397828627257">ສະແດງຄູ່ກັນ</translation>
 <translation id="6455264371803474013">ໃນເວັບໄຊສະເພາະ</translation>
 <translation id="6455521402703088376">ປິດຢູ່ • ສ່ວນຂະຫຍາຍນີ້ບໍ່ໄດ້ຖືກເຜີຍແຜ່ໂດຍນັກພັດທະນາ</translation>
 <translation id="6455894534188563617">&amp;ໂຟນເດີໃໝ່</translation>
@@ -11864,6 +11869,7 @@
 <translation id="918352324374649435">{COUNT,plural, =1{ແອັບ}other{# ແອັບ}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດບັນທຶກໜ້າຈໍຂອງທ່ານດ້ວຍ <ph name="APP0_NAME" />. ທ່ານຈະບໍ່ໄດ້ຮັບການແຈ້ງເຕືອນເມື່ອເລີ່ມການບັນທຶກ.}=2{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດບັນທຶກໜ້າຈໍຂອງທ່ານດ້ວຍ <ph name="APP0_NAME" /> ແລະ <ph name="APP1_NAME" />. ທ່ານຈະບໍ່ໄດ້ຮັບການແຈ້ງເຕືອນເມື່ອເລີ່ມການບັນທຶກ.}=3{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດບັນທຶກໜ້າຈໍຂອງທ່ານດ້ວຍ <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ແລະ ອີກ 1 ແອັບ. ທ່ານຈະບໍ່ໄດ້ຮັບການແຈ້ງເຕືອນເມື່ອເລີ່ມການບັນທຶກ.}other{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດບັນທຶກໜ້າຈໍຂອງທ່ານດ້ວຍ <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ແລະ ອີກ # ແອັບ. ທ່ານຈະບໍ່ໄດ້ຮັບການແຈ້ງເຕືອນເມື່ອເລີ່ມການບັນທຶກ.}}</translation>
 <translation id="9186963452600581158">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງເດັກ</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{ກຳລັງແບ່ງປັນ 1 ແຖບ}other{ກຳລັງແບ່ງປັນ # ແຖບ}}</translation>
 <translation id="9187967020623675250">ປຸ່ມບໍ່ກົງກັນ. ກົດປຸ່ມໃດກໍໄດ້ເພື່ອ <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">ເປີດການນຳໃຊ້ການແຍກຂະບວນການ</translation>
 <translation id="9192019773545828776">ຟັງການຕອບສະໜອງແບບສຽງເວົ້າເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ອຸປະກອນຂອງທ່ານໂດຍບໍ່ຕ້ອງເບິ່ງໜ້າຈໍ. ສາມາດສະແດງຄໍາຕິຊົມເປັນອັກສອນນູນໄດ້ກັບອຸປະກອນທີ່ເຊື່ອມຕໍ່ແລ້ວ. ໃຊ້ Ctrl + Alt + Z ເພື່ອເປີດ ແລະ ປິດ ChromeVox. ໃຊ້ຊອກຫາ + ລູກສອນຊ້າຍ ຫຼື ລູກສອນຂວາເພື່ອນໍາທາງ. ໃຊ້ຊອກຫາ + ຍະຫວ່າງເພື່ອເລືອກ (ເປີດນຳໃຊ້).</translation>

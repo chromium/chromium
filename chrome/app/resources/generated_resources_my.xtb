@@ -664,6 +664,7 @@
 <translation id="1449191289887455076">သတ်မှတ်မှုကို အတည်ပြုရန် “<ph name="CURRENTKEY" />” ထပ်နှိပ်ပြီး <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">ဧည့်သည်ပရိုဖိုင် ဖွင့်ရန်</translation>
 <translation id="1451375123200651445">ဝဘ်စာမျက်နှာ၊ ဖိုင် တစ်ခုတည်း</translation>
+<translation id="1452651021404174820">စက်ပစ္စည်း ရွေးပါ</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />အမှားရှာပြင်မှု မှတ်တမ်းများ<ph name="END_LINK" /> ပို့ရန် (အကြံပြုထားသည်)</translation>
 <translation id="1454223536435069390">လျှပ်&amp;တပြက် ပုံရိုက်ရန်</translation>
 <translation id="145432137617179457">စာလုံးပေါင်းစစ်ဆေးခြင်း သုံးနိုင်သော ဘာသာစကားများ</translation>
@@ -1742,6 +1743,7 @@
 <translation id="2178545675770638239">စကားဝှက် ရွေးပါ</translation>
 <translation id="2178585470774851578">ChromeOS Flex အမှားရှာပြင်သည့် ဝန်ဆောင်မှုများကို ဖွင့်ခြင်းဖြင့် ၎င်းသည် sshd နောက်ခံပရိုဂရမ်ကို စနစ်ထည့်သွင်းမည်ဖြစ်ပြီး USB ဒရိုက်ဗ်များမှ စနစ်စတင်ခြင်းကို ဖွင့်ပေးပါမည်။</translation>
 <translation id="2178614541317717477">CA သံသယဖြစ်ခံခဲ့ရ</translation>
+<translation id="2180082148774168439">သင့်ကွန်ပျူတာရှိ သီးသန့်ဝင်းဒိုးတွင် ဤဝဘ်ဆိုက်ကို အသုံးပြုပါ</translation>
 <translation id="2180620921879609685">စာမျက်နှာအားလုံးတွင် အကြောင်းအရာကို ပိတ်ထားခြင်း</translation>
 <translation id="2181821976797666341">ပေါ်လစီများ</translation>
 <translation id="2182058453334755893">'သင့်ကလစ်ဘုတ်' သို့ မိတ္တူကူးထားသည်</translation>
@@ -4017,6 +4019,7 @@
 <translation id="3735039640698208086">အသံဖွင့်နေသည့်အခါ...</translation>
 <translation id="3735740477244556633">အောက်ပါအတိုင်းစီရန်</translation>
 <translation id="3735827758948958091">အခပေးဒေတာ ချိတ်ဆက်မှုသုံးနေစဉ် <ph name="FILE_NAMES" /> ဖွင့်၍ မရပါ</translation>
+<translation id="3736487688526377259">ဤလင့်ခ်ကို ရယူလိုသည့် စက်ပစ္စည်းကို ရွေးပါ။</translation>
 <translation id="3737058101969549870">လက်ရှိ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဤပရိုဖိုင်အသစ်နှင့် သီးခြားထားမလား။</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> ဒေတာကို ၂၄ နာရီအတွင်း ဖျက်ပါမည်</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7872,6 +7875,7 @@
 <translation id="6453687572758515877">တဘ်အားလုံးကို အုပ်စုဖွဲ့ရန်</translation>
 <translation id="6453921811609336127">နောက်လက်ကွက်သို့ ပြောင်းရန် <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> နှိပ်ပါ</translation>
 <translation id="645433497989692531">၎င်းသည် ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဤစက်ထဲမှ အပြီးဖျက်လိုက်ပါမည်။ ဒေတာကို ပြန်လည်ရယူရန် အောက်ပါဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="6454456397828627257">ကပ်လျက်</translation>
 <translation id="6455264371803474013">ရွေးထားသည့် ဝဘ်ဆိုက်များတွင်</translation>
 <translation id="6455521402703088376">ပိတ်ထားသည် • ဤနောက်ဆက်တွဲကို ၎င်း၏ဆော့ဖ်ဝဲရေးသူက ထုတ်ဝေမထားပါ</translation>
 <translation id="6455894534188563617">&amp;ဖိုင်တွဲအသစ်</translation>

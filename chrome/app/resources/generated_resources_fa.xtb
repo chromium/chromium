@@ -665,6 +665,7 @@
 <translation id="1449191289887455076">برای تأیید تخصیص و <ph name="RESPONSE" />، «<ph name="CURRENTKEY" />» را دوباره فشار دهید.</translation>
 <translation id="1450484535522155181">باز کردن نمایه مهمان</translation>
 <translation id="1451375123200651445">صفحه وب، فایل واحد</translation>
+<translation id="1452651021404174820">انتخاب دستگاه</translation>
 <translation id="1453561711872398978">ارسال <ph name="BEGIN_LINK" />
     گزارش‌های اشکال‌زدایی<ph name="END_LINK" /> (توصیه می‌شود)</translation>
 <translation id="1454223536435069390">گرفتن نماگرفت</translation>
@@ -1741,6 +1742,7 @@
 <translation id="2178545675770638239">انتخاب گذرواژه</translation>
 <translation id="2178585470774851578">‏درحال فعال کردن ویژگی‌های اشکال‌زدایی ChromeOS Flex هستید که شبح sshd را راه‌اندازی خواهد کرد و راه‌اندازی از درایوهای USB را فعال خواهد کرد.</translation>
 <translation id="2178614541317717477">‏بی اعتبارشدن CA</translation>
+<translation id="2180082148774168439">در پنجره‌ای اختصاصی در رایانه به این سایت دسترسی داشته باشید</translation>
 <translation id="2180620921879609685">محتوای موجود در همه صفحه‌ها را مسدود کند</translation>
 <translation id="2181821976797666341">خط‌ مشی‌ها</translation>
 <translation id="2182058453334755893">در بریده‌دان کپی شد</translation>
@@ -4015,6 +4017,7 @@
 <translation id="3735039640698208086">هنگام پخش صدا...</translation>
 <translation id="3735740477244556633">مرتب کردن براساس</translation>
 <translation id="3735827758948958091">هنگام استفاده از اتصال با حجم محدود، نمی‌توان <ph name="FILE_NAMES" /> را باز کرد</translation>
+<translation id="3736487688526377259">دستگاهی که می‌خواهید این پیوند را در آن دریافت کنید انتخاب کنید.</translation>
 <translation id="3737058101969549870">داده‌های مرور موجود جدا از این نمایه جدید نگه داشته شود؟</translation>
 <translation id="3738632186060045350">داده‌های <ph name="DEVICE_TYPE" /> پس از ۲۴ ساعت حذف خواهد شد</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4345,7 +4348,7 @@
   آیا می‌خواهید <ph name="CONTROL_PANEL_APPLET_NAME" /> را شروع کنید؟</translation>
 <translation id="3942420633017001071">تشخیص خطا</translation>
 <translation id="3943582379552582368">&amp;برگشت</translation>
-<translation id="3943857333388298514">جاگذاری</translation>
+<translation id="3943857333388298514">جای‌گذاری</translation>
 <translation id="3945513714196326460">نام کوتاه‌تری را امتحان کنید</translation>
 <translation id="3948116654032448504">&amp;جستجوی <ph name="SEARCH_ENGINE" /> برای تصویر</translation>
 <translation id="3948334586359655083">این زبانه درحال پخش صدا است</translation>
@@ -7871,6 +7874,7 @@
 <translation id="6453687572758515877">گروه‌بندی همه زبانه‌ها</translation>
 <translation id="6453921811609336127">برای رفتن به روش ورودی بعدی، کلیدهای <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />مهار<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />تبدیل<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />فاصله<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> را فشار دهید</translation>
 <translation id="645433497989692531">این کار داده‌های مرور شما را برای همیشه از این دستگاه حذف می‌کند. برای بازیابی کردن داده‌ها، با این حساب به سیستم وارد شوید:</translation>
+<translation id="6454456397828627257">پهلو به پهلو</translation>
 <translation id="6455264371803474013">در سایت‌هایی خاص</translation>
 <translation id="6455521402703088376">خاموش • این افزونه توسط توسعه‌دهنده‌اش لغو انتشار شده است</translation>
 <translation id="6455894534188563617">پوشه &amp;جدید</translation>

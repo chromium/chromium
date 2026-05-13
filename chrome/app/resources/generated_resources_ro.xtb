@@ -665,6 +665,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1449191289887455076">Apasă din nou pe <ph name="CURRENTKEY" /> pentru confirmarea atribuirii și <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Deschide profilul de invitat</translation>
 <translation id="1451375123200651445">Pagină web, un singur fișier</translation>
+<translation id="1452651021404174820">Alege un dispozitiv</translation>
 <translation id="1453561711872398978">Trimite <ph name="BEGIN_LINK" />jurnale de remediere a erorilor<ph name="END_LINK" /> (recomandat)</translation>
 <translation id="1454223536435069390">F&amp;aceți o captură de ecran</translation>
 <translation id="145432137617179457">Limbi pentru care se verifică ortografia</translation>
@@ -1735,6 +1736,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2178545675770638239">Selectează o parolă</translation>
 <translation id="2178585470774851578">Activezi funcțiile de remediere a erorilor în sistemul de operare Chrome Flex, care vor configura SSH daemon și vor activa pornirea de pe unități USB.</translation>
 <translation id="2178614541317717477">Compromitere CA</translation>
+<translation id="2180082148774168439">Accesează acest site într-o fereastră dedicată pe computer</translation>
 <translation id="2180620921879609685">să blocheze conținutul din toate paginile</translation>
 <translation id="2181821976797666341">Politici</translation>
 <translation id="2182058453334755893">Copiat în clipboard</translation>
@@ -4005,6 +4007,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3735039640698208086">Când se redă conținut audio...</translation>
 <translation id="3735740477244556633">Sortează după</translation>
 <translation id="3735827758948958091">Nu poți deschide <ph name="FILE_NAMES" /> atât timp cât folosești o conexiune contorizată</translation>
+<translation id="3736487688526377259">Selectează dispozitivul pe care vrei să primești acest link.</translation>
 <translation id="3737058101969549870">Păstrezi datele de navigare existente separat de acest profil nou?</translation>
 <translation id="3738632186060045350">Datele de pe <ph name="DEVICE_TYPE" /> vor fi șterse în termen de 24 de ore</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7859,6 +7862,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6453687572758515877">Grupează toate filele</translation>
 <translation id="6453921811609336127">Pentru a trece la următoarea metodă de introducere a textului, apasă pe <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />tasta de spațiu<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Astfel, vor fi șterse definitiv datele de navigare de pe acest dispozitiv. Pentru a recupera datele, conectează-te ca</translation>
+<translation id="6454456397828627257">Alăturat</translation>
 <translation id="6455264371803474013">Pe anumite site-uri</translation>
 <translation id="6455521402703088376">Dezactivată • Publicarea acestei extensii a fost anulată de dezvoltator</translation>
 <translation id="6455894534188563617">Dosar &amp;nou</translation>

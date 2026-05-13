@@ -201,6 +201,7 @@
 <translation id="1657011748321897393">Nu s-a trimis, pentru că nu te-ai conectat la rețea.</translation>
 <translation id="1668001730617725852">Deschide într-un nou grup de file</translation>
 <translation id="1670861525135254448">Salvează vehiculul</translation>
+<translation id="1671568970992212376">Salvează fotografii în Google Foto și accesează-le oricând.</translation>
 <translation id="1674504678466460478">Din <ph name="SOURCE_LANGUAGE" /> în <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Conform politicilor organizației, acest fișier poate conține informații sensibile.</translation>
 <translation id="168389590065701766">Acum poți deschide Google Lens din bara de adrese și poți căuta tot ce vezi</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Completează automat parolele salvate</translation>
 <translation id="4021447724486050609">Actualizează browserul</translation>
 <translation id="4021931095789478915">Adaugă ${url} în lista de lecturi</translation>
-<translation id="4026496154402824012">Pentru a dezactiva, accesează <ph name="BEGIN_LINK" />Opțiuni pentru parolă<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Salvează în cont…</translation>
 <translation id="4038354071007134711">Aplicațiile de pe dispozitiv nu deschid fișierul.</translation>
 <translation id="4042870976416480368">Găsește în pagină</translation>
@@ -1605,7 +1605,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6571070086367343653">Editează cardul de credit</translation>
 <translation id="6574092468346088891">Activează notificările pentru Verificarea de siguranță</translation>
 <translation id="6579867704846662339">Poți alege să deschizi adresele URL de la alte aplicații în modul incognito.</translation>
-<translation id="6583087784430677195">Pentru dezactivare, deschide <ph name="BEGIN_LINK" />Setările<ph name="END_LINK" /> și accesează Completare automată parole.</translation>
 <translation id="6585618849026997638">Poți să revii la o pagină importantă adăugând un marcaj</translation>
 <translation id="6589001036857939353">Îmbină dublurile</translation>
 <translation id="659407965921887085">Cardul afișează scăderile de prețuri de pe web pentru produsele pe care le urmărești în momentul de față</translation>
@@ -1667,7 +1666,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6746338529702829275">Examinează datele din cont</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} element din istoric importat}few{{count} elemente din istoric importate}other{{count} de elemente din istoric importate}}</translation>
 <translation id="6755200887046212842">Gestionați conturile</translation>
-<translation id="6755733078693946548">Accesează parolele și cheile de acces din orice aplicație</translation>
 <translation id="6759709389246683070">Atinge lung această filă pentru a seta un memento ca să o accesezi din nou mai târziu</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[REZERVAT]</translation>
@@ -2010,7 +2008,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="797588153137233716">Meniu → Istoric → Șterge datele de navigare</translation>
 <translation id="7977451675950311423">Te avertizează dacă folosești o parolă care a fost compromisă printr-o încălcare a securității datelor.</translation>
 <translation id="797824194429476746">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters definitiv.</translation>
-<translation id="797874245254030665">Accesează parolele și cheile de acces din orice aplicație</translation>
 <translation id="7982789257301363584">Rețea</translation>
 <translation id="798299424881500862">Temă portocalie</translation>
 <translation id="7987685713885608670">Pentru siguranță suplimentară, criptează parolele pe dispozitiv înainte să se salveze în Managerul de parole Google.</translation>

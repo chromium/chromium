@@ -201,6 +201,7 @@
 <translation id="1657011748321897393">Wedi methu â rhannu oherwydd nad ydych wedi'ch cysylltu â'r rhwydwaith.</translation>
 <translation id="1668001730617725852">Agor mewn Grŵp Tabiau Newydd</translation>
 <translation id="1670861525135254448">Cadw'r cerbyd</translation>
+<translation id="1671568970992212376">Cadw lluniau yn eich Google Photos a chael mynediad atynt unrhyw bryd.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> i <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Yn seiliedig ar bolisïau eich sefydliad, gall y ffeil hon gynnwys gwybodaeth sensitif</translation>
 <translation id="168389590065701766">Gallwch nawr agor Google Lens o'ch bar cyfeiriad a chwilio am unrhyw beth a welwch</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Awtolenwi Cyfrineiriau sydd wedi'u Cadw</translation>
 <translation id="4021447724486050609">Diweddarwch eich porwr</translation>
 <translation id="4021931095789478915">Ychwanegu ${url} at y rhestr ddarllen</translation>
-<translation id="4026496154402824012">I'w ddiffodd, ewch i <ph name="BEGIN_LINK" />Opsiynau Cyfrinair<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Cadw yn y cyfrif…</translation>
 <translation id="4038354071007134711">Ni all unrhyw ap ar y ddyfais hon agor y ffeil.</translation>
 <translation id="4042870976416480368">Chwilio'r Dudalen</translation>
@@ -1605,7 +1605,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6571070086367343653">Golygu cerdyn credyd</translation>
 <translation id="6574092468346088891">Trowch hysbysiadau ar gyfer Gwiriad Diogelwch ymlaen</translation>
 <translation id="6579867704846662339">Gallwch ddewis agor cyfeiriadau URL sy'n dod i mewn o apiau eraill yn Anhysbys.</translation>
-<translation id="6583087784430677195">I'w ddiffodd, agorwch y <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" /> ac ewch i Awtolenwi Cyfrineiriau.</translation>
 <translation id="6585618849026997638">Gallwch fynd yn ôl i dudalen sy'n bwysig i chi drwy ychwanegu nod tudalen</translation>
 <translation id="6589001036857939353">Cyfuno copïau dyblyg</translation>
 <translation id="659407965921887085">Mae'r cerdyn hwn yn dangos gostyngiadau mewn prisiau ar draws y we ar gynhyrchion rydych yn eu holrhain ar hyn o bryd</translation>
@@ -1667,7 +1666,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6746338529702829275">Adolygu data eich cyfrif</translation>
 <translation id="6750456911389438250">{count,plural, =1{Wedi mewnforio {count} eitem hanes}zero{Wedi mewnforio {count} eitemau hanes}two{Wedi mewnforio {count} eitem hanes}few{Wedi mewnforio {count} eitem hanes}many{Wedi mewnforio {count} eitem hanes}other{Wedi mewnforio {count} eitem hanes}}</translation>
 <translation id="6755200887046212842">Rheoli Cyfrifon</translation>
-<translation id="6755733078693946548">Cael mynediad at gyfrineiriau a chodau pas o unrhyw ap</translation>
 <translation id="6759709389246683070">Gallwch gyffwrdd a dal y tab hwn i osod atgoffwr i ddod yn ôl ato yn nes ymlaen</translation>
 <translation id="6761393919622941301">Sain</translation>
 <translation id="6770452996697898492">[ARCHEBWYD]</translation>
@@ -2010,7 +2008,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="797588153137233716">Dewislen → Hanes → Dileu Data Pori</translation>
 <translation id="7977451675950311423">Yn eich rhybuddio os ydych yn defnyddio cyfrinair sydd wedi'i beryglu mewn achos o dor data.</translation>
 <translation id="797824194429476746">Bydd y tabiau yn aros ar agor ar y ddyfais hon ond bydd y grŵp yn cael ei ddileu yn barhaol.</translation>
-<translation id="797874245254030665">Cael mynediad at gyfrineiriau a chodau pas o unrhyw ap</translation>
 <translation id="7982789257301363584">Rhwydwaith</translation>
 <translation id="798299424881500862">Thema oren</translation>
 <translation id="7987685713885608670">Am ddiogelwch ychwanegol, amgryptiwch gyfrineiriau ar eich dyfais cyn iddynt gael eu cadw i Reolwr Cyfrineiriau Google.</translation>

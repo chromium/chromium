@@ -562,6 +562,7 @@
 <translation id="2969979262385602596">לא ניתן היה להיכנס לחשבון. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="2975761176769946178">‏נדרשת כתובת URL</translation>
 <translation id="297667759942911166">שיתוף פעולה בקבוצות של כרטיסיות</translation>
+<translation id="298696743524648170">‏כדי להשתמש ב-Gemini ב-Chrome, צריך להיכנס ל-Chrome באמצעות חשבון Google</translation>
 <translation id="2987670534697681860">כדי לגשת לכל הסיסמאות במכשיר הזה, צריך לאמת את הזהות שלך.</translation>
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
 <translation id="2989805286512600854">פתיחה בכרטיסייה חדשה</translation>
@@ -616,6 +617,7 @@
 <translation id="31652791196570636">סגירה</translation>
 <translation id="3167868116600277716">‏פיד Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">‏‫Gemini לא זמין בדף הזה</translation>
 <translation id="3174662312949010067">יש לך גם אפשרות להשתמש בסיסמאות שמורות במכשירים אחרים.</translation>
 <translation id="3177338796769255211">לאחר הכניסה לחשבון, הסימניות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="3181954750937456830">גלישה בטוחה (מגנה עליך ועל המכשיר מפני אתרים מסוכנים)</translation>
@@ -850,7 +852,6 @@
 <translation id="4018440314314549819">מילוי אוטומטי של סיסמאות שמורות</translation>
 <translation id="4021447724486050609">עדכון הדפדפן</translation>
 <translation id="4021931095789478915">‏הוספת הכתובת ${url} לרשימת הקריאה</translation>
-<translation id="4026496154402824012">כדי להשבית את האפשרות, עוברים אל <ph name="BEGIN_LINK" />אפשרויות של סיסמאות<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">שמירה בחשבון…</translation>
 <translation id="4038354071007134711">אין במכשיר זה אף אפליקציה שניתן לפתוח באמצעותה את הקובץ.</translation>
 <translation id="4042870976416480368">חיפוש בדף</translation>
@@ -991,6 +992,7 @@
 <translation id="4552042254369397518">מתבצעת העתקה…</translation>
 <translation id="4553044860350038560">עוד מפתחות גישה</translation>
 <translation id="4564893319561643483">הסתרה של '<ph name="TITLE" />'</translation>
+<translation id="456502772933839252">שיתוף של <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">הסתרת סיסמה</translation>
 <translation id="4568230126482344545">הסתרת הכרטיסיות האחרונות</translation>
 <translation id="4578835633387306383">הפעלה…</translation>
@@ -1602,7 +1604,6 @@
 <translation id="6571070086367343653">ערוך כרטיס אשראי</translation>
 <translation id="6574092468346088891">הפעלת ההתראות של בדיקת האבטחה</translation>
 <translation id="6579867704846662339">‏אפשר לפתוח כתובות URL נכנסות מאפליקציות אחרות במצב פרטי.</translation>
-<translation id="6583087784430677195">כדי להשבית את המילוי האוטומטי, פותחים את ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /> ועוברים אל 'מילוי אוטומטי של סיסמאות'.</translation>
 <translation id="6585618849026997638">כדי לחזור אל דף שחשוב לך אפשר להוסיף אותו לסימניות</translation>
 <translation id="6589001036857939353">מיזוג כפילויות</translation>
 <translation id="659407965921887085">הכרטיס הזה מציג ירידות במחיר ברחבי האינטרנט של מוצרים שבמעקב שלך כרגע</translation>
@@ -1664,7 +1665,6 @@
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6750456911389438250">{count,plural, =1{יובא פריט אחד ({count}) בהיסטוריה}one{יובאו {count} פריטים בהיסטוריה}two{יובאו {count} פריטים בהיסטוריה}other{יובאו {count} פריטים בהיסטוריה}}</translation>
 <translation id="6755200887046212842">נהל חשבונות</translation>
-<translation id="6755733078693946548">גישה לסיסמאות ולמפתחות הגישה מכל אפליקציה</translation>
 <translation id="6759709389246683070">אפשר ללחוץ לחיצה ארוכה על הכרטיסייה הזו כדי להגדיר תזכורת לחזור אליה מאוחר יותר</translation>
 <translation id="6761393919622941301">אודיו</translation>
 <translation id="6770452996697898492">[בוצעה הזמנה]</translation>
@@ -2007,7 +2007,6 @@
 <translation id="797588153137233716">תפריט ← היסטוריה ← מחיקת נתוני הגלישה</translation>
 <translation id="7977451675950311423">מקבלים אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
 <translation id="797824194429476746">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק לתמיד.</translation>
-<translation id="797874245254030665">רוצה לגשת לסיסמאות ולמפתחות שלך מכל האפליקציות?</translation>
 <translation id="7982789257301363584">רשת</translation>
 <translation id="798299424881500862">עיצוב כתום</translation>
 <translation id="7987685713885608670">‏כדי לשפר את הבטיחות, כדאי להצפין את הסיסמאות במכשיר שלך לפני שהן נשמרות במנהל הסיסמאות של Google.</translation>

@@ -553,6 +553,7 @@
 <translation id="1832474362231610822">Լուսանկարը պահվեց OneDrive-ում</translation>
 <translation id="1832730227369924598">Աշխատասեղանի համաժամացում</translation>
 <translation id="1834452765064623979">Շենքերի կառուցում և վերանորոգում</translation>
+<translation id="1837606605602726453">Ռիսկի գնահատականն ու կատեգորիաներն անտեսվում են, քանի որ ընդլայնումն ուղղակիորեն թույլատրված կամ արգելափակված է ադմինիստրատորի կողմից։</translation>
 <translation id="1838374766361614909">Մաքրել որոնումը</translation>
 <translation id="1839331950812095887">ձեր կարծիքը՝ առնվազն մի քանի բառով</translation>
 <translation id="1839551713262164453">Չհաջողվեց ստուգել կանոնի արժեքները</translation>
@@ -3455,6 +3456,7 @@
 <translation id="634500758737709758">Երթուղիներ</translation>
 <translation id="6348220984832452017">Ընթացիկ տարբերակներ</translation>
 <translation id="6349101878882523185">Տեղադրել <ph name="APP_NAME" /> հավելվածը</translation>
+<translation id="6350739641326887427">Վճարեք առանց Pix կոդը պատճենելու և տեղադրելու։ <ph name="BEGIN_LINK1" />Ինչպես է դա աշխատում<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Ջնջել այցելությունների պատմությունը</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Չկա}=1{1 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված է)}=2{2 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}one{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}other{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}}</translation>
 <translation id="6354918092619878358">SECG օվալաձև կոր secp256r1 (հայտնի է նաև որպես ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3621,7 +3623,6 @@
 <translation id="6587923378399804057">Ձեր պատճենած հղումը</translation>
 <translation id="6591833882275308647">Ձեր <ph name="DEVICE_TYPE" /> սարքը չի կառավարվում</translation>
 <translation id="6595495738567740002">Google-ի քուքիներն այս սարքից հեռացնելու համար <ph name="BEGIN_LINK" />դուրս եկեք Chrome-ից<ph name="END_LINK" />։</translation>
-<translation id="6596325263575161958">Գաղտնագրման ընտրանքներ</translation>
 <translation id="6596573334527383067">Ցույց տալ երեկվա համար արդյունքները</translation>
 <translation id="6597665340361269064">90 աստիճան</translation>
 <translation id="6598976221101665070">Դրամաներ</translation>
@@ -3671,6 +3672,7 @@
 <translation id="668132230070712111">Տեսանյութը պահվեց Google Drive-ում</translation>
 <translation id="6681790815630918386">CVC-ն պահվեց</translation>
 <translation id="6683022854667115063">Ականջակալներ</translation>
+<translation id="6686570026048064255">Pix կոդի հայտնաբերումն անջատելու համար անցեք <ph name="BEGIN_LINK1" />Chrome-ի կարգավորումներ<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Ծրար (սովորական)</translation>
 <translation id="6687335167692595844">Տառաչափի հարցումն ուղարկվել է</translation>
 <translation id="6688743156324860098">Թարմացնել…</translation>
@@ -3896,7 +3898,6 @@
 <translation id="702275896380648118">Այս կայքը որոշում է ձեր նախասիրությունները և դրանց հիման վրա գովազդ է առաջարկում այլ կայքերի։ Այս կայքը Chrome-ից նաև ստանում է գովազդի թեմաների մասին տվյալներ՝ ձեզ ավելի համապատասխան գովազդ ցուցադրելու համար։</translation>
 <translation id="7023162328967545559">Ադմինիստրատորի նախազգուշացում</translation>
 <translation id="7023765275461720661">Կապե՞լ հաշիվը և վճարել <ph name="BNPL_ISSUER_NAME" />-ի միջոցով</translation>
-<translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7030164307377592766">փոխել վճարման եղանակների լրացման կարգավորումները</translation>
 <translation id="7031110846419387930">Տեղեկություններ ձեր դիտարկիչի, օպերացիոն համակարգի, սարքի, տեղադրված ծրագրերի, ֆայլերի և IP հասցեների մասին</translation>
 <translation id="7031646650991750659">Ինչ Google Play հավելվածներ եք դուք տեղադրել</translation>

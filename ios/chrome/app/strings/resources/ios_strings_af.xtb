@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Outovul gestoorde wagwoorde</translation>
 <translation id="4021447724486050609">Dateer jou blaaier op</translation>
 <translation id="4021931095789478915">Voeg ${url} by leeslys</translation>
-<translation id="4026496154402824012">Gaan na <ph name="BEGIN_LINK" />Wagwoordopsies<ph name="END_LINK" /> om dit af te skakel</translation>
 <translation id="4028871427853484857">Stoor in rekening …</translation>
 <translation id="4038354071007134711">Geen app op hierdie toestel kan die lêer oopmaak nie.</translation>
 <translation id="4042870976416480368">Soek in bladsy</translation>
@@ -1605,7 +1604,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6571070086367343653">Wysig kredietkaart</translation>
 <translation id="6574092468346088891">Skakel kennisgewings vir Veiligheidskontrole aan</translation>
 <translation id="6579867704846662339">Jy kan kies om inkomende URL’e van ander apps af in Incognito oop te maak.</translation>
-<translation id="6583087784430677195">Maak <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> oop en gaan na Outovul Wagwoorde toe om dit af te skakel.</translation>
 <translation id="6585618849026997638">Jy kan 'n boekmerk byvoeg om weer uit te kom by 'n bladsy wat vir jou belangrik is</translation>
 <translation id="6589001036857939353">Voeg duplikate saam</translation>
 <translation id="659407965921887085">Hierdie kaart wys prysdalings regoor die web op produkte wat jy tans naspoor</translation>
@@ -1667,7 +1665,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6746338529702829275">Gaan jou rekeningdata na</translation>
 <translation id="6750456911389438250">{count,plural, =1{Het {count} geskiedenisitem ingevoer}other{Het {count} geskiedenisitems ingevoer}}</translation>
 <translation id="6755200887046212842">Bestuur rekeninge</translation>
-<translation id="6755733078693946548">Kry toegang tot wagwoorde en toegangsleutels vanaf enige app</translation>
 <translation id="6759709389246683070">Jy kan hierdie oortjie raak en hou om ’n onthounota te stel om later daarheen terug te keer</translation>
 <translation id="6761393919622941301">Oudio</translation>
 <translation id="6770452996697898492">[BESPREEK]</translation>
@@ -2010,7 +2007,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="797588153137233716">Kieslys → Geskiedenis → Vee blaaierdata uit</translation>
 <translation id="7977451675950311423">Waarsku jou as jy ’n wagwoord gebruik wat in ’n dataskending gekompromitteer is.</translation>
 <translation id="797824194429476746">Die oortjies sal op hierdie toestel oop bly, maar die groep sal permanent uitgevee word.</translation>
-<translation id="797874245254030665">Kry toegang tot jou wagwoorde en toegangsleutels vanaf enige app</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="798299424881500862">Oranje tema</translation>
 <translation id="7987685713885608670">Jy kan vir bykomende veiligheid wagwoorde op jou toestel enkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>

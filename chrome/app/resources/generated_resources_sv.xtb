@@ -2845,6 +2845,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2909487040556589351">Skaffa Chrome på din mobila enhet</translation>
 <translation id="2910318910161511225">Anslut till ett nätverk och försök igen</translation>
 <translation id="2910678330803525229">Nu kan du börja surfa</translation>
+<translation id="2911818155655162983">Dina säkerhetsinställningar förhindrar att isolerade appar installeras. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="2912247081180973411">Stäng fönster</translation>
 <translation id="2915102088417824677">Visa aktivitetslogg</translation>
 <translation id="2915873080513663243">Automatisk genomsökning</translation>
@@ -7877,6 +7878,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6453687572758515877">Gruppera alla flikar</translation>
 <translation id="6453921811609336127">Om du vill byta till nästa inmatningsmetod trycker du på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Skift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />blanksteg<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">All webbinformation raderas permanent från den här enheten. Om du vill återställa informationen loggar du in med</translation>
+<translation id="6454456397828627257">Sida vid sida</translation>
 <translation id="6455264371803474013">På valda webbplatser</translation>
 <translation id="6455521402703088376">Av • Det här tillägget har tagits bort av utvecklaren</translation>
 <translation id="6455894534188563617">&amp;Ny mapp</translation>
@@ -8498,6 +8500,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6871860225073478239">Språk …</translation>
 <translation id="6873156759937047811">Pinkod:</translation>
 <translation id="6873571253135628430">Ändra behörigheter för webbplatser</translation>
+<translation id="6874986444867497677">Det gick inte att slutföra installationen. Försök igen eller stäng det här fönstret</translation>
 <translation id="6876155724392614295">Cykel</translation>
 <translation id="6876469544038980967">Inte användbart</translation>
 <translation id="6878422606530379992">Användning av sensorer har tillåtits</translation>

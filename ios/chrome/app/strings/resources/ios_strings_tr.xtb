@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Kayıtlı Şifreleri Otomatik Olarak Doldurun</translation>
 <translation id="4021447724486050609">Tarayıcınızı güncelleyin</translation>
 <translation id="4021931095789478915">${url} URL'sini okuma listesine ekle</translation>
-<translation id="4026496154402824012">Bu özelliği kapatmak için <ph name="BEGIN_LINK" />Parola Seçenekleri<ph name="END_LINK" /> bölümüne gidin</translation>
 <translation id="4028871427853484857">Hesaba kaydet…</translation>
 <translation id="4038354071007134711">Bu cihazdaki hiçbir uygulama dosyayı açamıyor.</translation>
 <translation id="4042870976416480368">Sayfada Bul</translation>
@@ -1605,7 +1604,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6571070086367343653">Kredi kartını düzenle</translation>
 <translation id="6574092468346088891">Güvenlik Kontrolü bildirimlerini açın</translation>
 <translation id="6579867704846662339">Diğer uygulamalardan gelen URL'leri Gizli modda açmayı seçebilirsiniz.</translation>
-<translation id="6583087784430677195">Özelliği kapatmak için <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'ı açıp Şifreleri Otomatik Doldur'a gidin.</translation>
 <translation id="6585618849026997638">Önemli gördüğünüz sayfalara yer işareti koyarak geri dönebilirsiniz.</translation>
 <translation id="6589001036857939353">Yinelenen kişileri birleştirme</translation>
 <translation id="659407965921887085">Bu kart, şu anda takip ettiğiniz ürünlerin web'deki fiyat düşüşlerini gösterir</translation>
@@ -1667,7 +1665,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6746338529702829275">Hesap verilerinizi inceleyin</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} geçmiş öğesi içe aktarıldı}other{{count} geçmiş öğesi içe aktarıldı}}</translation>
 <translation id="6755200887046212842">Hesapları Yönetme</translation>
-<translation id="6755733078693946548">Şifrelere ve geçiş anahtarlarına tüm uygulamalardan erişin</translation>
 <translation id="6759709389246683070">Bu sekmeye dokunup basılı tutarak daha sonra tekrar göz atacağınız bir hatırlatıcı oluşturabilirsiniz</translation>
 <translation id="6761393919622941301">Ses</translation>
 <translation id="6770452996697898492">[REZERVASYON YAPILDI]</translation>
@@ -2010,7 +2007,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="797588153137233716">Menü → Geçmiş → Tarama verilerini sil</translation>
 <translation id="7977451675950311423">Veri ihlali nedeniyle güvenliği ihlal edilmiş bir şifre kullanırsanız sizi uyarır.</translation>
 <translation id="797824194429476746">Sekmeler bu cihazda açık kalır ancak grup kalıcı olarak silinir.</translation>
-<translation id="797874245254030665">Şifrelerinize ve geçiş anahtarlarınıza tüm uygulamalardan erişin</translation>
 <translation id="7982789257301363584">Ağ</translation>
 <translation id="798299424881500862">Turuncu tema</translation>
 <translation id="7987685713885608670">Ek güvenlik için, Google Şifre Yöneticisi'ne kaydedilmeden önce şifrelerinizi cihazınızda şifreleyin</translation>

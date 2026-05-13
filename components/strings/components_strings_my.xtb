@@ -3446,6 +3446,7 @@
 <translation id="634500758737709758">ခရီးလမ်းညွှန်ချက်များ</translation>
 <translation id="6348220984832452017">မူကွဲများ ဖွင့်ရန်</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ထည့်သွင်းရန်</translation>
+<translation id="6350739641326887427">Pix ကုဒ်ကို မိတ္တူကူးပြီး ထည့်ရန်မလိုဘဲ ငွေပေးချေနိုင်သည်။ <ph name="BEGIN_LINK1" />လုပ်ဆောင်ပုံကို ကြည့်ရန်<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖျက်ရန်</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{မရှိ}=1{စကားဝှက် ၁ ခု (<ph name="DOMAIN_LIST" /> အတွက်၊ စင့်ခ်လုပ်ထားသည်)}=2{စကားဝှက် ၂ ခု (<ph name="DOMAIN_LIST" /> အတွက်၊ စင့်ခ်လုပ်ထားသည်)}other{စကားဝှက် # ခု (<ph name="DOMAIN_LIST" /> အတွက်၊ စင့်ခ်လုပ်ထားသည်)}}</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3613,6 @@
 <translation id="6587923378399804057">သင် မိတ္တူကူးထားသော လင့်ခ်</translation>
 <translation id="6591833882275308647">သင်၏ <ph name="DEVICE_TYPE" /> ကို စီမံခန့်ခွဲမထားပါ</translation>
 <translation id="6595495738567740002">ဤစက်မှ Google ကွတ်ကီးများကို ဖျက်ရန် <ph name="BEGIN_LINK" />Chrome မှ ထွက်ပါ<ph name="END_LINK" />။</translation>
-<translation id="6596325263575161958">လုံခြုံအောင်ပြုလုပ်ခြင်း ရွေးချယ်မှုများ</translation>
 <translation id="6596573334527383067">မနေ့က ရလဒ်များပြပါ</translation>
 <translation id="6597665340361269064">၉၀ ဒီဂရီ</translation>
 <translation id="6598976221101665070">အချစ်အလွမ်းရုပ်ရှင်</translation>
@@ -3662,6 +3662,7 @@
 <translation id="668132230070712111">ဗီဒီယိုကို Google Drive တွင် သိမ်းလိုက်သည်</translation>
 <translation id="6681790815630918386">CVC သိမ်းလိုက်သည်</translation>
 <translation id="6683022854667115063">နားကြပ်</translation>
+<translation id="6686570026048064255">Pix ကုဒ်ဖော်ခြင်းကို ပိတ်ရန်အတွက် <ph name="BEGIN_LINK1" />Chrome ဆက်တင်များ<ph name="END_LINK1" /> သို့ သွားပါ</translation>
 <translation id="6687230248707087982">စာအိတ် (အလွတ်)</translation>
 <translation id="6687335167692595844">ဖောင့်အရွယ်အစား တောင်းဆိုထားသည်</translation>
 <translation id="6688743156324860098">အပ်ဒိတ်လုပ်ရန်…</translation>
@@ -3887,7 +3888,6 @@
 <translation id="702275896380648118">ဤဝဘ်ဆိုက်က သင်နှစ်သက်နိုင်သည့်အရာများအား ဆုံးဖြတ်ပြီး အခြားဝဘ်ဆိုက်များကို ကြော်ငြာများ အကြံပြုသည်။ ပိုမိုသက်ဆိုင်သော ကြော်ငြာများပြရန် ဤဝဘ်ဆိုက်က သင့်ကြော်ငြာအကြောင်းအရာများကိုလည်း Chrome ထံမှ ရယူသည်။</translation>
 <translation id="7023162328967545559">စီမံခန့်ခွဲသူ သတိပေးချက်</translation>
 <translation id="7023765275461720661">အကောင့်လင့်ခ်ချိတ်ပြီး <ph name="BNPL_ISSUER_NAME" /> ဖြင့် ပေးမလား။</translation>
-<translation id="7029809446516969842">စကားဝှက်များ</translation>
 <translation id="7030164307377592766">ငွေပေးချေနည်းလမ်းများ ဖြည့်သည့် ဆက်တင်များကို ပြင်ဆင်ရန်</translation>
 <translation id="7031110846419387930">သင့်ဘရောင်ဇာ၊ OS၊ စက်ပစ္စည်း၊ ထည့်သွင်းထားသော ဆော့ဖ်ဝဲ၊ ဖိုင်များ၊ IP လိပ်စာများအကြောင်း အချက်အလက်</translation>
 <translation id="7031646650991750659">မည်သည့် Google Play အက်ပ်များကို သင်ထည့်သွင်းထားပါသလဲ</translation>

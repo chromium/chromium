@@ -3445,6 +3445,7 @@
 <translation id="634500758737709758">വഴികൾ</translation>
 <translation id="6348220984832452017">സജീവമായ വ്യതിയാനങ്ങൾ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
+<translation id="6350739641326887427">Pix കോഡ് പകർത്തി ഒട്ടിക്കാതെ പേ ചെയ്യൂ. <ph name="BEGIN_LINK1" />എങ്ങനെയാണ് ഇത് പ്രവർത്തിക്കുന്നതെന്ന് കാണൂ<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള ഒരു പാസ്‌വേഡ് (സമന്വയിപ്പിച്ചത്)}=2{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള 2 പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}other{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള# പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}}</translation>
 <translation id="6354918092619878358">SECG എലിപ്‌റ്റിക്‌ കർവ്‌ secp256r1 (ANSI X9.62 prime256v1, NIST P-256 എന്നും അറിയപ്പെടുന്നു)</translation>
@@ -3611,7 +3612,6 @@
 <translation id="6587923378399804057">നിങ്ങൾ പകർത്തിയ ലിങ്ക്</translation>
 <translation id="6591833882275308647">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യപ്പെടുന്നില്ല</translation>
 <translation id="6595495738567740002">ഈ ഉപകരണത്തിൽ നിന്ന് Google കുക്കികൾ ഇല്ലാതാക്കാൻ, <ph name="BEGIN_LINK" />Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">എൻക്രിപ്‌ഷൻ ഓപ്‌ഷനുകൾ</translation>
 <translation id="6596573334527383067">ഇന്നലത്തെ ഫലങ്ങൾ കാണിക്കുക</translation>
 <translation id="6597665340361269064">90 ഡിഗ്രി</translation>
 <translation id="6598976221101665070">ഡ്രാമ സിനിമകൾ</translation>
@@ -3661,6 +3661,7 @@
 <translation id="668132230070712111">Google Drive-ലേക്ക് വീഡിയോ സംരക്ഷിച്ചു</translation>
 <translation id="6681790815630918386">CVC സംരക്ഷിച്ചു</translation>
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
+<translation id="6686570026048064255">Pix കോഡ് കണ്ടെത്തൽ ഓഫാക്കാൻ, <ph name="BEGIN_LINK1" />Chrome ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK1" /> പോകുക</translation>
 <translation id="6687230248707087982">എൻവലപ്പ് (പ്ലെയിൻ)</translation>
 <translation id="6687335167692595844">അഭ്യർത്ഥിച്ച ഫോണ്ട് വലുപ്പം</translation>
 <translation id="6688743156324860098">അപ്ഡേറ്റ് ചെയ്യുക…</translation>
@@ -3886,7 +3887,6 @@
 <translation id="702275896380648118">ഈ സൈറ്റ്, നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള കാര്യങ്ങൾ കണ്ടെത്തി മറ്റ് സൈറ്റുകൾക്ക് പരസ്യങ്ങൾ നിർദ്ദേശിക്കുന്നു. നിങ്ങൾക്ക് കൂടുതൽ പ്രസക്തമായ പരസ്യങ്ങൾ കാണിക്കാൻ ഈ സൈറ്റിന് Chrome-ൽ നിന്ന് നിങ്ങളുടെ പരസ്യ വിഷയങ്ങളും ലഭിക്കുന്നു.</translation>
 <translation id="7023162328967545559">അഡ്‌മിന്റെ മുന്നറിയിപ്പ്</translation>
 <translation id="7023765275461720661">അക്കൗണ്ട് ലിങ്ക് ചെയ്ത് <ph name="BNPL_ISSUER_NAME" /> ഉപയോഗിച്ച് പേ ചെയ്യണോ?</translation>
-<translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="7030164307377592766">പേയ്‌മെന്റ് രീതികൾ പൂരിപ്പിക്കുന്നതിനുള്ള ക്രമീകരണം പരിഷ്‌ക്കരിക്കുക</translation>
 <translation id="7031110846419387930">നിങ്ങളുടെ ബ്രൗസർ, OS ഉപകരണം, ഇൻസ്റ്റാൾ ചെയ്ത് സോഫ്റ്റ്‌വെയർ, ഫയലുകൾ, IP വിലാസങ്ങൾ എന്നിവയെ കുറിച്ചുള്ള വിവരങ്ങൾ</translation>
 <translation id="7031646650991750659">ഏതൊക്കെ Google Play ആപ്പുകൾ നിങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്‍തിട്ടുണ്ട് എന്നത്</translation>

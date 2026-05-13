@@ -549,6 +549,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1832474362231610822">Foto guardada no OneDrive</translation>
 <translation id="1832730227369924598">Sincronização do espaço de trabalho</translation>
 <translation id="1834452765064623979">Construção e manutenção</translation>
+<translation id="1837606605602726453">As categorias e a pontuação de risco são ignoradas porque a extensão é explicitamente permitida ou bloqueada pelo administrador.</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839331950812095887">algumas palavras que resumem as suas ideias</translation>
 <translation id="1839551713262164453">A validação dos valores da política falhou devido a erros.</translation>
@@ -3612,7 +3613,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6587923378399804057">Link copiado por si</translation>
 <translation id="6591833882275308647">O seu <ph name="DEVICE_TYPE" /> não é gerido.</translation>
 <translation id="6595495738567740002">Para eliminar os cookies da Google deste dispositivo, <ph name="BEGIN_LINK" />termine sessão no Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Opções de encriptação</translation>
 <translation id="6596573334527383067">Mostrar resultados de ontem</translation>
 <translation id="6597665340361269064">90 graus</translation>
 <translation id="6598976221101665070">Filmes de drama</translation>
@@ -3887,7 +3887,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="702275896380648118">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites. Este site também obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes.</translation>
 <translation id="7023162328967545559">Aviso para administradores</translation>
 <translation id="7023765275461720661">Associar a conta e fazer pagamentos com a <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7030164307377592766">modificar as definições de preenchimento dos métodos de pagamento</translation>
 <translation id="7031110846419387930">Informações sobre o navegador, o SO, o dispositivo, o software instalado, os ficheiros e os endereços IP</translation>
 <translation id="7031646650991750659">As apps do Google Play que instalou.</translation>

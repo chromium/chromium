@@ -280,6 +280,7 @@
 <translation id="1925706052394657380">Abra as definições de <ph name="BEGIN_BOLD" />Apps predefinidas<ph name="END_BOLD" /> no iOS</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
 <translation id="1943478190258551035">Menu → Definições</translation>
+<translation id="1948562571551232853">Gemini integrado</translation>
 <translation id="1952728750904661634">Iniciar sessão com uma conta gerida</translation>
 <translation id="1955773397805078763">Adicionar método de pagamento</translation>
 <translation id="1956138802718275401">Aceda às palavras-passe a partir do ecrã principal</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Preencha automaticamente as palavras-passe guardadas</translation>
 <translation id="4021447724486050609">Atualize o navegador</translation>
 <translation id="4021931095789478915">Adicione ${url} à Lista de leitura</translation>
-<translation id="4026496154402824012">Para desativar esta funcionalidade, aceda a <ph name="BEGIN_LINK" />Opções de palavra-passe<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Guardar na conta…</translation>
 <translation id="4038354071007134711">Nenhuma app neste disp. pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Localizar na página</translation>
@@ -1262,6 +1262,7 @@
 <translation id="5457082343331641453">Adicione à sua pesquisa</translation>
 <translation id="5457226814769348910">Abrir versão offline</translation>
 <translation id="5467163657366219870">Desativar Pré-visualizações do Maps</translation>
+<translation id="5467596285052510344">Use o Gemini para resumir, explicar e muito mais.</translation>
 <translation id="5474397204728336997">Palavras-passe familiares, novas personalizações e muito mais. Toque para saber mais.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Nenhuma palavra-passe importada}=1{{count} palavra-passe importada}other{{count} palavras-passe importadas}}</translation>
 <translation id="5478327362747197944">Crie eventos do Calendário diretamente ao clicar numa data numa página Web.</translation>
@@ -1605,7 +1606,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6571070086367343653">Editar cartão de crédito</translation>
 <translation id="6574092468346088891">Ative as notificações da verificação de segurança</translation>
 <translation id="6579867704846662339">Pode optar por abrir os URLs recebidos de outras apps na Navegação anónima.</translation>
-<translation id="6583087784430677195">Para desativar, abra as <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /> e aceda a Preenchimento automático de palavras-passe.</translation>
 <translation id="6585618849026997638">Pode regressar a uma página importante para si ao adicionar um marcador.</translation>
 <translation id="6589001036857939353">Unir duplicados</translation>
 <translation id="659407965921887085">Este cartão mostra as descidas de preços na Web dos produtos que está a acompanhar atualmente</translation>
@@ -1667,7 +1667,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6746338529702829275">Reveja os dados da sua conta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item do histórico importado}other{{count} itens do histórico importados}}</translation>
 <translation id="6755200887046212842">Gerir contas</translation>
-<translation id="6755733078693946548">Aceder a palavras-passe e chaves de acesso a partir de qualquer app</translation>
 <translation id="6759709389246683070">Pode tocar sem soltar neste separador para definir um lembrete para consultar mais tarde</translation>
 <translation id="6761393919622941301">Áudio</translation>
 <translation id="6770452996697898492">[RESERVADO]</translation>
@@ -1744,6 +1743,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tem 1 palavra-passe fraca. Corrija-a agora para manter a sua segurança.</translation>
 <translation id="7016958933495968912">Opções para o Discover</translation>
+<translation id="7019477124580742994">Pesquisa <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7035825883570480307">Ativar as notificações?</translation>
 <translation id="7039345315346323556">Recentes</translation>
@@ -2010,7 +2010,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="797588153137233716">Menu → Histórico → Eliminar dados de navegação</translation>
 <translation id="7977451675950311423">Envia-lhe um aviso se usar uma palavra-passe que tenha sido comprometida numa violação de dados.</translation>
 <translation id="797824194429476746">Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado permanentemente.</translation>
-<translation id="797874245254030665">Aceda às suas palavras-passe e chaves de acesso a partir de qualquer app</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="798299424881500862">Tema laranja</translation>
 <translation id="7987685713885608670">Para maior segurança, encripte as palavras-passe no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google.</translation>

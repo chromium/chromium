@@ -549,6 +549,7 @@
 <translation id="1832474362231610822">OneDriveରେ ଫଟୋ ସେଭ କରାଯାଇଛି</translation>
 <translation id="1832730227369924598">ଡେସ୍କ ସିଙ୍କ</translation>
 <translation id="1834452765064623979">ନିର୍ମାଣକାର୍ଯ୍ୟ ଏବଂ ରକ୍ଷଣାବେକ୍ଷଣ</translation>
+<translation id="1837606605602726453">ଏକ୍ସଟେନସନକୁ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ସ୍ପଷ୍ଟ ଭାବରେ ଅନୁମତି ଦିଆଯାଇଥିବା କିମ୍ବା ବ୍ଲକ କରାଯାଇଥିବା ଯୋଗୁଁ ରିସ୍କ ସ୍କୋର ଏବଂ ବର୍ଗଗୁଡ଼ିକୁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
 <translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="1839331950812095887">ଆପଣଙ୍କ ଚିନ୍ତାଧାରକୁ ସଂକ୍ଷପରେ ପ୍ରକାଶ କରୁଥିବା କିଛି ଶବ୍ଦ</translation>
 <translation id="1839551713262164453">ତ୍ରୁଟିଗୁଡ଼ିକ ସହିତ ନୀତିଗତ ମୂଲ୍ୟଗୁଡ଼ିକର ବୈଧକରଣ ବିଫଳ ହୋଇଛି</translation>
@@ -3442,6 +3443,7 @@
 <translation id="634500758737709758">ଦିଗନିର୍ଦ୍ଦେଶ</translation>
 <translation id="6348220984832452017">ସକ୍ରିୟ ଭେରିଏସନଗୁଡ଼ିକ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ଇନଷ୍ଟଲ୍‍ କରନ୍ତୁ</translation>
+<translation id="6350739641326887427">Pix କୋଡକୁ କପି ଓ ପେଷ୍ଟ ନକରି ପେମେଣ୍ଟ କରନ୍ତୁ। <ph name="BEGIN_LINK1" />ଏହା କିପରି କାମ କରେ ତାହା ଦେଖନ୍ତୁ<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{କୌଣସିଟି ନୁହେଁ}=1{1ଟି ପାସ୍‌ୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ, ସିଙ୍କ୍ କରାଯାଇଛି)}=2{2ଟି ପାସ୍‌ୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ, ସିଙ୍କ୍ କରାଯାଇଛି)}other{#ଟି ପାସ୍‌ୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ, ସିଙ୍କ୍ କରାଯାଇଛି)}}</translation>
 <translation id="6354918092619878358">SECG ଅଣ୍ଡାକାର ବକ୍ର secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3608,7 +3610,6 @@
 <translation id="6587923378399804057">ଆପଣ କପି କରିଥିବା ଲିଙ୍କ୍</translation>
 <translation id="6591833882275308647">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ପରିଚାଳିତ ହେଉ ନାହିଁ</translation>
 <translation id="6595495738567740002">ଏହି ଡିଭାଇସରୁ Google କୁକୀଗୁଡ଼ିକୁ ଡିଲିଟ କରିବା ପାଇଁ <ph name="BEGIN_LINK" />Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
-<translation id="6596325263575161958">ଏନ୍‌କ୍ରିପ୍ସନ୍ ବିକଳ୍ପ</translation>
 <translation id="6596573334527383067">ଗତକାଲିର ଫଳାଫଳ ଦେଖାଅ</translation>
 <translation id="6597665340361269064">90 ଡିଗ୍ରୀ</translation>
 <translation id="6598976221101665070">ଡ୍ରାମା ମୁଭିଗୁଡ଼ିକ</translation>
@@ -3658,6 +3659,7 @@
 <translation id="668132230070712111">Google Driveରେ ଭିଡିଓ ସେଭ କରାଯାଇଛି</translation>
 <translation id="6681790815630918386">CVC ସେଭ କରାଯାଇଛି</translation>
 <translation id="6683022854667115063">ହେଡଫୋନଗୁଡ଼ିକ</translation>
+<translation id="6686570026048064255">Pix କୋଡ ଡିଟେକ୍ସନକୁ ବନ୍ଦ କରିବା ପାଇଁ <ph name="BEGIN_LINK1" />Chrome ସେଟିଂସ<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6687230248707087982">ଏନଭେଲପ (ପ୍ଲେନ)</translation>
 <translation id="6687335167692595844">ଅନୁରୋଧ କରାଯାଇଥିବା ଫଣ୍ଟ ଆକାର</translation>
 <translation id="6688743156324860098">ଅପଡେଟ୍ କରନ୍ତୁ…</translation>
@@ -3883,7 +3885,6 @@
 <translation id="702275896380648118">ଆପଣ ପସନ୍ଦ କରୁଥିବା ଜିନିଷଗୁଡ଼ିକୁ ଏହି ସାଇଟ ନିର୍ଦ୍ଧାରଣ କରେ ଏବଂ ତା'ପରେ ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକୁ ବିଜ୍ଞାପନର ପରାମର୍ଶ ଦିଏ। ଆପଣଙ୍କୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନଗୁଡ଼ିକ ଦେଖାଇବା ପାଇଁ ମଧ୍ୟ ଏହି ସାଇଟ Chromeରୁ ଆପଣଙ୍କ ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକ ପାଇଥାଏ।</translation>
 <translation id="7023162328967545559">ଆଡମିନଙ୍କ ଚେତାବନୀ</translation>
 <translation id="7023765275461720661">ଆକାଉଣ୍ଟ ଲିଙ୍କ କରି <ph name="BNPL_ISSUER_NAME" />କୁ ପେମେଣ୍ଟ କରିବେ?</translation>
-<translation id="7029809446516969842">ପାସୱାର୍ଡଗୁଡିକ</translation>
 <translation id="7030164307377592766">ପେମେଣ୍ଟ ପଦ୍ଧତି ପୂରଣ କରିବା ପାଇଁ ସେଟିଂସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="7031110846419387930">ଆପଣଙ୍କର ବ୍ରାଉଜର, OS, ଡିଭାଇସ, ଇନଷ୍ଟଲ କରାଯାଇଥିବା ସଫ୍ଟୱେର, ଫାଇଲ ଏବଂ IP ଠିକଣା ବିଷୟରେ ସୂଚନା</translation>
 <translation id="7031646650991750659">ଆପଣ କେଉଁ Google Play ଆପ୍ସ ଇନଷ୍ଟଲ୍ କରିଛନ୍ତି</translation>

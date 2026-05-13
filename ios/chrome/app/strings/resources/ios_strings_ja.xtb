@@ -280,6 +280,7 @@
 <translation id="1925706052394657380">iOS で [<ph name="BEGIN_BOLD" />デフォルトのアプリ<ph name="END_BOLD" />] の設定を開く</translation>
 <translation id="1941314575388338491">ダブルタップしてコピー。</translation>
 <translation id="1943478190258551035">メニュー → 設定</translation>
+<translation id="1948562571551232853">Gemini（組み込み）</translation>
 <translation id="1952728750904661634">管理対象アカウントでログインする</translation>
 <translation id="1955773397805078763">お支払い方法を追加</translation>
 <translation id="1956138802718275401">ホーム画面からパスワードにアクセス</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">保存したパスワードを自動入力</translation>
 <translation id="4021447724486050609">ブラウザを更新してください</translation>
 <translation id="4021931095789478915">${url} をリーディング リストに追加</translation>
-<translation id="4026496154402824012">オフにするには、[<ph name="BEGIN_LINK" />パスワードのオプション<ph name="END_LINK" />] に移動します</translation>
 <translation id="4028871427853484857">アカウントに保存…</translation>
 <translation id="4038354071007134711">このデバイスのアプリケーションではファイルを開けません。</translation>
 <translation id="4042870976416480368">ページ内を検索</translation>
@@ -1262,6 +1262,7 @@
 <translation id="5457082343331641453">検索に追加</translation>
 <translation id="5457226814769348910">オフライン版を開く</translation>
 <translation id="5467163657366219870">マップ プレビューをオフにする</translation>
+<translation id="5467596285052510344">Gemini が要約や説明などをお手伝いします。</translation>
 <translation id="5474397204728336997">パスワードのファミリー共有、新しいカスタマイズ機能などが追加されました。タップして詳細をご確認ください。</translation>
 <translation id="5475793109165786685">{count,plural, =0{インポートされたパスワードはありません}=1{{count} 件のパスワードをインポートしました}other{{count} 件のパスワードをインポートしました}}</translation>
 <translation id="5478327362747197944">ウェブページ上の日付をクリックして、カレンダーの予定を直接作成できます。</translation>
@@ -1605,7 +1606,6 @@
 <translation id="6571070086367343653">クレジットカードの編集</translation>
 <translation id="6574092468346088891">安全チェックの通知をオンにする</translation>
 <translation id="6579867704846662339">他のアプリで受け取った URL をシークレット モードで開くよう選択できます。</translation>
-<translation id="6583087784430677195">オフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] を開いて [パスワードを自動入力] に移動します。</translation>
 <translation id="6585618849026997638">重要なページは、ブックマークを追加しておくとすぐにアクセスできます</translation>
 <translation id="6589001036857939353">重複を統合</translation>
 <translation id="659407965921887085">このカードには、現在トラッキングしている商品について、ウェブで見つかった値下げ情報が表示されます</translation>
@@ -1667,7 +1667,6 @@
 <translation id="6746338529702829275">アカウントのデータを確認します</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} 件の履歴をインポートしました}other{{count} 件の履歴をインポートしました}}</translation>
 <translation id="6755200887046212842">アカウントを管理</translation>
-<translation id="6755733078693946548">すべてのアプリからパスワードとパスキーにアクセスする</translation>
 <translation id="6759709389246683070">このタブを長押しすると、後で再度アクセスするようリマインダーを設定できます</translation>
 <translation id="6761393919622941301">音声</translation>
 <translation id="6770452996697898492">[予約済み]</translation>
@@ -1744,6 +1743,7 @@
 <translation id="7015418667643980944">分割表示</translation>
 <translation id="7016070607649558507">脆弱なパスワード 1 件: 安全を確保するため、今すぐ修正してください。</translation>
 <translation id="7016958933495968912">Discover のオプション</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> 検索</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7035825883570480307">通知をオンにしますか？</translation>
 <translation id="7039345315346323556">最近使用したアイテム</translation>
@@ -2010,7 +2010,6 @@
 <translation id="797588153137233716">[メニュー] → [履歴] → [閲覧履歴データを削除]</translation>
 <translation id="7977451675950311423">データ侵害で流出したパスワードを使用すると警告します。</translation>
 <translation id="797824194429476746">タブはこのデバイスで引き続き表示されますが、グループは完全に削除されます。</translation>
-<translation id="797874245254030665">すべてのアプリからパスワードとパスキーにアクセス</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="798299424881500862">オレンジのテーマ</translation>
 <translation id="7987685713885608670">セキュリティ強化のため、Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>

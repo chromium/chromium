@@ -3612,7 +3612,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6587923378399804057">Lien copié</translation>
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
 <translation id="6595495738567740002">Pour supprimer les cookies Google de cet appareil, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Options de chiffrement</translation>
 <translation id="6596573334527383067">Afficher les résultats d'hier</translation>
 <translation id="6597665340361269064">90 degrés</translation>
 <translation id="6598976221101665070">Drames</translation>
@@ -3887,7 +3886,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7023162328967545559">Avertissement de l'administrateur</translation>
 <translation id="7023765275461720661">Associer votre compte et payer avec <ph name="BNPL_ISSUER_NAME" /> ?</translation>
-<translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7030164307377592766">modifier les paramètres de saisie des modes de paiement</translation>
 <translation id="7031110846419387930">Informations sur vos navigateur, système d'exploitation, appareil, logiciels installés, fichiers et adresses IP</translation>
 <translation id="7031646650991750659">Les applications Google Play que vous avez installées</translation>

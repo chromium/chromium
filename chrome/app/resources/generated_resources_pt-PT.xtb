@@ -2830,6 +2830,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2909487040556589351">Tenha o Chrome no seu dispositivo móvel</translation>
 <translation id="2910318910161511225">Estabeleça ligação a uma rede e tente novamente.</translation>
 <translation id="2910678330803525229">Já pode começar a navegar</translation>
+<translation id="2911818155655162983">As suas preferências de segurança não permitem a instalação de apps isoladas. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="2912247081180973411">Fechar janelas</translation>
 <translation id="2915102088417824677">Ver o registo de atividade</translation>
 <translation id="2915873080513663243">Análise automática</translation>
@@ -5630,6 +5631,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4865063548323785458">Guarde e preencha automaticamente as suas palavras-passe para iniciar sessão facilmente em sites e apps</translation>
 <translation id="486635084936119914">Abrir determinados tipos de ficheiro automaticamente após a transferência</translation>
 <translation id="4867272607148176509">Os pais podem aprovar ou bloquear apps, definir limites de tempo e controlar a navegação na Web. É possível adicionar uma conta escolar mais tarde para aceder à maioria dos recursos da escola.</translation>
+<translation id="486796517585164369">· Separador recente</translation>
 <translation id="4868284252360267853">Atualmente, esta caixa de diálogo não está focada. Prima Comando + Shift + Opção + A para focar esta caixa de diálogo.</translation>
 <translation id="4868351661310357223">Instale apps e jogos do Google Play no dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Ler informações da rede do ChromeOS</translation>
@@ -7863,6 +7865,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6453687572758515877">Agrupar todos os separadores</translation>
 <translation id="6453921811609336127">Para mudar para o método de introdução seguinte, prima <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espaço<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Esta ação elimina permanentemente os dados de navegação deste dispositivo. Para recuperar os dados, inicie sessão como</translation>
+<translation id="6454456397828627257">Lado a lado</translation>
 <translation id="6455264371803474013">Em sites específicos</translation>
 <translation id="6455521402703088376">Desativada • A publicação desta extensão foi anulada pelo programador</translation>
 <translation id="6455894534188563617">&amp;Nova pasta</translation>
@@ -8484,6 +8487,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6871860225073478239">Idiomas…</translation>
 <translation id="6873156759937047811">PIN:</translation>
 <translation id="6873571253135628430">Altere as autorizações de sites</translation>
+<translation id="6874986444867497677">Não foi possível concluir a instalação. Tente novamente ou feche esta janela.</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6876469544038980967">Inútil</translation>
 <translation id="6878422606530379992">Sensores permitidos</translation>
@@ -11857,6 +11861,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{O seu administrador pode gravar o ecrã com a app <ph name="APP0_NAME" />. Não vai receber uma notificação quando a gravação começar.}=2{O seu administrador pode gravar o ecrã com as apps <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Não vai receber uma notificação quando a gravação começar.}=3{O seu administrador pode gravar o ecrã com a app <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais 1. Não vai receber uma notificação quando a gravação começar.}other{O seu administrador pode gravar o ecrã com a app <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Não vai receber uma notificação quando a gravação começar.}}</translation>
 <translation id="9186963452600581158">Iniciar sessão com uma Conta Google de criança</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{A partilhar 1 separador}other{A partilhar # separadores}}</translation>
 <translation id="9187967020623675250">As teclas não correspondem. Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Ativar isolamento de processos</translation>
 <translation id="9192019773545828776">Obtenha feedback de voz para poder usar o dispositivo sem olhar para o ecrã. O feedback em braille está disponível com um dispositivo ligado. Use Ctrl + Alt + Z para ativar e desativar o ChromeVox. Use Pesquisa + seta para a esquerda ou seta para a direita para navegar. Use Pesquisa + barra de espaço para selecionar (ativar).</translation>

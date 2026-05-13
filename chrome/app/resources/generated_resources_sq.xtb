@@ -664,6 +664,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1449191289887455076">Shtyp përsëri "<ph name="CURRENTKEY" />" për të konfirmuar caktimin dhe <ph name="RESPONSE" />.</translation>
 <translation id="1450484535522155181">Hap profilin e vizitorit</translation>
 <translation id="1451375123200651445">Faqja e uebit, një skedar i vetëm</translation>
+<translation id="1452651021404174820">Zgjidh një pajisje</translation>
 <translation id="1453561711872398978">Dërgo <ph name="BEGIN_LINK" />evidencat e korrigjimit<ph name="END_LINK" /> (rekomandohet)</translation>
 <translation id="1454223536435069390">&amp;Nxirr një pamje të ekranit</translation>
 <translation id="145432137617179457">Gjuhët e kontrollit drejtshkrimor</translation>
@@ -1730,6 +1731,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2178545675770638239">Zgjidh fjalëkalimin</translation>
 <translation id="2178585470774851578">Po aktivizon veçoritë e korrigjimit në pajisjet Chrome OS Flex që do të konfigurojnë sshd daemon dhe do të aktivizojnë ndezjen nga njësitë USB.</translation>
 <translation id="2178614541317717477">Komprometim i autoritetit të certifikimit</translation>
+<translation id="2180082148774168439">Qasu në këtë sajt në një dritare të dedikuar në kompjuterin tënd</translation>
 <translation id="2180620921879609685">Blloko përmbajtjen në çdo faqe</translation>
 <translation id="2181821976797666341">Politikat</translation>
 <translation id="2182058453334755893">Kopjuar te kujtesa e fragmenteve</translation>
@@ -4002,6 +4004,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3735039640698208086">Kur luan audio...</translation>
 <translation id="3735740477244556633">Rendit sipas</translation>
 <translation id="3735827758948958091"><ph name="FILE_NAMES" /> nuk mund të hapet ndërsa ke një lidhje me matje</translation>
+<translation id="3736487688526377259">Zgjidh pajisjen ku dëshiron ta marrësh këtë lidhje.</translation>
 <translation id="3737058101969549870">Të mbahen të dhënat e shfletimit veçmas nga profili yt i ri?</translation>
 <translation id="3738632186060045350">Të dhënat e pajisjes <ph name="DEVICE_TYPE" /> do të fshihen brenda 24 orësh</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7856,6 +7859,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6453687572758515877">Grupo të gjitha skedat</translation>
 <translation id="6453921811609336127">Për të kaluar te metoda tjetër e hyrjes, shtyp <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Hapësirë<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Kjo do të fshijë në mënyrë të përhershme të dhënat e shfletimit nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu si</translation>
+<translation id="6454456397828627257">Përkrah</translation>
 <translation id="6455264371803474013">Në sajte të caktuara</translation>
 <translation id="6455521402703088376">Joaktive • Publikimi i kësaj shtese është anuluar nga zhvilluesi i saj</translation>
 <translation id="6455894534188563617">&amp;Dosje e re</translation>

@@ -7861,6 +7861,7 @@
 <translation id="6453687572758515877">Групиши све картице</translation>
 <translation id="6453921811609336127">Да бисте прешли на следећи метод уноса, притисните <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Тастер за размак<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Ово ће трајно избрисати податке прегледања са овог уређаја. Да бисте вратили податке, пријавите се као</translation>
+<translation id="6454456397828627257">Упоредо</translation>
 <translation id="6455264371803474013">На одређеним сајтовима</translation>
 <translation id="6455521402703088376">Искључено • Програмер је опозвао објављивање додатка</translation>
 <translation id="6455894534188563617">&amp;Нови фолдер</translation>
@@ -9744,7 +9745,7 @@
 <translation id="7762024824096060040">Не можете да користите овај налог</translation>
 <translation id="776324966908034528">Подешавањима за прокси прегледача управља више извора</translation>
 <translation id="7763851799685371158">Апликација: <ph name="APPS" /></translation>
-<translation id="7764225426217299476">Додајте адресу</translation>
+<translation id="7764225426217299476">Додај адресу</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> са <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Отвори групу у новом прозору</translation>
 <translation id="7764909446494215916">Управљајте &amp;Google налогом</translation>

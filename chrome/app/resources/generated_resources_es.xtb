@@ -664,6 +664,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1449191289887455076">Pulsa <ph name="CURRENTKEY" /> otra vez para confirmar la asignación y <ph name="RESPONSE" />.</translation>
 <translation id="1450484535522155181">Abrir perfil de invitado</translation>
 <translation id="1451375123200651445">Página web (un único archivo)</translation>
+<translation id="1452651021404174820">Selecciona un dispositivo</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />registros de depuración<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">H&amp;acer captura de pantalla</translation>
 <translation id="145432137617179457">Idiomas de la revisión ortográfica</translation>
@@ -1734,6 +1735,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2178545675770638239">Selecciona una contraseña</translation>
 <translation id="2178585470774851578">Vas a habilitar las funciones de depuración de ChromeOS Flex, que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
 <translation id="2178614541317717477">Compromiso de entidad emisora de certificados</translation>
+<translation id="2180082148774168439">Accede a este sitio en una ventana específica de tu ordenador</translation>
 <translation id="2180620921879609685">Bloquear contenido en cualquier página</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2182058453334755893">Se ha copiado en tu portapapeles</translation>
@@ -2831,6 +2833,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2909487040556589351">Obtén Chrome en tu dispositivo móvil</translation>
 <translation id="2910318910161511225">Conéctate a una red y vuelve a intentarlo</translation>
 <translation id="2910678330803525229">Ya puedes empezar a navegar</translation>
+<translation id="2911818155655162983">Tus preferencias de seguridad no permiten la instalación de aplicaciones aisladas. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="2912247081180973411">Cerrar ventanas</translation>
 <translation id="2915102088417824677">Ver registro de actividad</translation>
 <translation id="2915873080513663243">Búsqueda automática</translation>
@@ -4006,6 +4009,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3735039640698208086">Al reproducir el audio...</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3735827758948958091">No se puede abrir <ph name="FILE_NAMES" /> si se tiene una conexión medida</translation>
+<translation id="3736487688526377259">Selecciona el dispositivo en el que quieras obtener este enlace.</translation>
 <translation id="3737058101969549870">¿Mantener los datos de navegación actuales separados de este nuevo perfil?</translation>
 <translation id="3738632186060045350">Se eliminarán los datos del <ph name="DEVICE_TYPE" /> dentro de 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7859,6 +7863,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6453687572758515877">Agrupar todas las pestañas</translation>
 <translation id="6453921811609336127">Para cambiar al siguiente método de introducción de texto, pulsa <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Mayús<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espacio<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Se eliminarán de forma permanente los datos de navegación del dispositivo. Para recuperar los datos, inicia sesión como</translation>
+<translation id="6454456397828627257">Visualización en paralelo</translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455521402703088376">Desactivada • El desarrollador ha anulado la publicación de esta extensión</translation>
 <translation id="6455894534188563617">&amp;Nueva carpeta</translation>
@@ -8480,6 +8485,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6871860225073478239">Idiomas...</translation>
 <translation id="6873156759937047811">PIN:</translation>
 <translation id="6873571253135628430">Cambiar permisos de sitios</translation>
+<translation id="6874986444867497677">No se ha podido completar la instalación. Vuelve a intentarlo o cierra esta ventana.</translation>
 <translation id="6876155724392614295">Bici</translation>
 <translation id="6876469544038980967">No es útil</translation>
 <translation id="6878422606530379992">Sensores permitidos</translation>

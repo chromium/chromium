@@ -3446,6 +3446,7 @@
 <translation id="634500758737709758">بدء الاتجاهات</translation>
 <translation id="6348220984832452017">الأنماط المتنوّعة المفعَّلة</translation>
 <translation id="6349101878882523185">تثبيت "<ph name="APP_NAME" />"</translation>
+<translation id="6350739641326887427">‏يمكنك الدفع بدون نسخ رمز Pix ولصقه. <ph name="BEGIN_LINK1" />إليك طريقة العمل<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">حذف بيانات التصفّح</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ما من كلمات مرور}=1{كلمة مرور واحدة (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}=2{كلمتا مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}few{# كلمات مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}many{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}other{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}}</translation>
 <translation id="6354918092619878358">‏منحنى SECG ناقص المقطع secp256r1‏ (aka ANSI X9.62 prime256v1‏، NIST P-256)</translation>
@@ -3612,7 +3613,6 @@
 <translation id="6587923378399804057">الرابط الذي نسخته</translation>
 <translation id="6591833882275308647">لا تتم إدارة <ph name="DEVICE_TYPE" /></translation>
 <translation id="6595495738567740002">‏لحذف ملفات تعريف الارتباط من Google على هذا الجهاز، يُرجى <ph name="BEGIN_LINK" />تسجيل الخروج من Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">خيارات التشفير</translation>
 <translation id="6596573334527383067">عرض النتائج من الأمس</translation>
 <translation id="6597665340361269064">90 درجة</translation>
 <translation id="6598976221101665070">أفلام درامية</translation>
@@ -3662,6 +3662,7 @@
 <translation id="668132230070712111">‏تم حفظ الفيديو في Google Drive</translation>
 <translation id="6681790815630918386">‏تم حفظ رمز CVC للتحقّق من البطاقة</translation>
 <translation id="6683022854667115063">سمّاعات رأس</translation>
+<translation id="6686570026048064255">‏لإيقاف ميزة "رصد رمز Pix"، يُرجى الانتقال إلى <ph name="BEGIN_LINK1" />إعدادات Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">ظرف (عادي)</translation>
 <translation id="6687335167692595844">حجم الخط المطلوب</translation>
 <translation id="6688743156324860098">تعديل…</translation>
@@ -3887,7 +3888,6 @@
 <translation id="702275896380648118">‏يحدّد هذا الموقع الإلكتروني اهتماماتك، ثم يقدّم إلى المواقع الإلكترونية الأخرى اقتراحات عن الإعلانات ذات الصلة باهتماماتك. ويتعرّف أيضًا هذا الموقع الإلكتروني من خلال Chrome على مواضيع الإعلانات التي تهمّك، وذلك بهدف عرض إعلانات وثيقة الصلة باهتماماتك.</translation>
 <translation id="7023162328967545559">تحذير من المشرف</translation>
 <translation id="7023765275461720661">هل تريد ربط الحساب والدفع باستخدام <ph name="BNPL_ISSUER_NAME" />؟</translation>
-<translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7030164307377592766">تعديل الإعدادات لملء بيانات طُرق الدفع.</translation>
 <translation id="7031110846419387930">‏معلومات عن المتصفّح ونظام التشغيل والجهاز والبرامج المُثبَّتة والملفات وعناوين IP</translation>
 <translation id="7031646650991750659">‏تطبيقات Google Play التي ثبّتها</translation>
@@ -4759,7 +4759,7 @@
 </translation>
 <translation id="8366057325711477500">أخبار عالمية</translation>
 <translation id="836616551641291797">مزيد من المعلومات حول كيفية إدارة المتصفِّح</translation>
-<translation id="8367705492654390392">البحث عن أي شيء</translation>
+<translation id="8367705492654390392">يمكنك طرح أي سؤال</translation>
 <translation id="8368001212524806591">تتبُّع السعر</translation>
 <translation id="8368027906805972958">جهاز غير معروف أو غير متوافق (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏خدمات Google Play</translation>

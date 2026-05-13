@@ -668,6 +668,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1449191289887455076">Pwyswch "<ph name="CURRENTKEY" />" eto i gadarnhau'r aseiniad a <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Agor Proffil Gwestai</translation>
 <translation id="1451375123200651445">Tudalen we, Ffeil Sengl</translation>
+<translation id="1452651021404174820">Dewiswch ddyfais</translation>
 <translation id="1453561711872398978">Anfon <ph name="BEGIN_LINK" />
     logiau dadfygio<ph name="END_LINK" /> (argymhellir)</translation>
 <translation id="1454223536435069390">T&amp;ynnu sgrinlun</translation>
@@ -1747,6 +1748,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2178545675770638239">Dewiswch Gyfrinair</translation>
 <translation id="2178585470774851578">Rydych yn galluogi nodweddion dadfygio ChromeOS Flex a fydd yn gosod sshd daemon ac yn galluogi cychwyn o yriannau USB.</translation>
 <translation id="2178614541317717477">Cyfaddawd CA</translation>
+<translation id="2180082148774168439">Cyrchwch y wefan hon mewn ffenestr bwrpasol ar eich cyfrifiadur</translation>
 <translation id="2180620921879609685">Rhwystro cynnwys ar unrhyw dudalen</translation>
 <translation id="2181821976797666341">Polisïau</translation>
 <translation id="2182058453334755893">Wedi'i Gopïo i'ch Clipfwrdd</translation>
@@ -4021,6 +4023,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3735039640698208086">Wrth chwarae sain...</translation>
 <translation id="3735740477244556633">Trefnu yn ôl</translation>
 <translation id="3735827758948958091">Methu ag agor <ph name="FILE_NAMES" /> tra ar gysylltiad mesuredig</translation>
+<translation id="3736487688526377259">Dewiswch y ddyfais lle rydych am gael y ddolen hon.</translation>
 <translation id="3737058101969549870">Cadw data pori presennol ar wahân i'r proffil newydd hwn?</translation>
 <translation id="3738632186060045350">Bydd data <ph name="DEVICE_TYPE" /> yn cael eu dileu mewn 24 awr</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>

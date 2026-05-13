@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Isi Otomatis Sandi Tersimpan</translation>
 <translation id="4021447724486050609">Update Browser Anda</translation>
 <translation id="4021931095789478915">Tambahkan ${url} ke daftar bacaan</translation>
-<translation id="4026496154402824012">Untuk menonaktifkan, buka <ph name="BEGIN_LINK" />Opsi Sandi<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Simpan di akun…</translation>
 <translation id="4038354071007134711">Tidak ada aplikasi di perangkat ini yang dapat membuka file.</translation>
 <translation id="4042870976416480368">Cari di Halaman</translation>
@@ -1605,7 +1604,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6571070086367343653">Edit kartu kredit</translation>
 <translation id="6574092468346088891">Aktifkan notifikasi untuk Pemeriksaan Keamanan</translation>
 <translation id="6579867704846662339">Anda dapat memilih untuk membuka URL masuk dari aplikasi lain dalam mode Samaran.</translation>
-<translation id="6583087784430677195">Untuk menonaktifkan, buka <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> lalu buka AutoFill Passwords.</translation>
 <translation id="6585618849026997638">Anda dapat kembali ke halaman yang penting bagi Anda dengan menambahkan bookmark</translation>
 <translation id="6589001036857939353">Gabungkan duplikat</translation>
 <translation id="659407965921887085">Kartu ini menampilkan penurunan harga di seluruh web untuk produk yang saat ini Anda pantau</translation>
@@ -1667,7 +1665,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6746338529702829275">Tinjau data akun Anda</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item histori diimpor}other{{count} item histori diimpor}}</translation>
 <translation id="6755200887046212842">Kelola Akun</translation>
-<translation id="6755733078693946548">Akses sandi &amp; kunci sandi dari aplikasi apa pun</translation>
 <translation id="6759709389246683070">Anda dapat menyentuh lama tab ini guna menyetel pengingat untuk membukanya kembali nanti</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[DIPESAN]</translation>
@@ -2010,7 +2007,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="797588153137233716">Menu → Histori → Hapus data penjelajahan</translation>
 <translation id="7977451675950311423">Memperingatkan Anda jika Anda menggunakan sandi yang telah dibobol dalam pelanggaran data.</translation>
 <translation id="797824194429476746">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus secara permanen.</translation>
-<translation id="797874245254030665">Akses sandi &amp; kunci sandi Anda dari aplikasi apa pun</translation>
 <translation id="7982789257301363584">Jaringan</translation>
 <translation id="798299424881500862">Tema oranye</translation>
 <translation id="7987685713885608670">Untuk keamanan tambahan, enkripsi sandi di perangkat Anda sebelum disimpan ke Pengelola Sandi Google.</translation>
@@ -2151,7 +2147,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8443986842926457191">URL berisi lebih dari 2048 karakter</translation>
 <translation id="8449869326050867919">Sandi dibagikan</translation>
 <translation id="8473815223723723001">Edit Gambar dengan Gemini</translation>
-<translation id="8473863474539038330">Alamat dan lain-lain</translation>
+<translation id="8473863474539038330">Alamat dan lainnya</translation>
 <translation id="8474378002946546633">Izinkan pemberitahuan</translation>
 <translation id="8477178913400731244">Hapus data</translation>
 <translation id="847939250509903814">Galeri Foto</translation>

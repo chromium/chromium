@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Automatické dopĺňajte uložené heslá</translation>
 <translation id="4021447724486050609">Aktualizujte si prehliadač</translation>
 <translation id="4021931095789478915">Pridanie ${url} do čitateľského zoznamu</translation>
-<translation id="4026496154402824012">Ak chcete túto funkciu vypnúť, prejdite do sekcie <ph name="BEGIN_LINK" />Možnosti hesiel<ph name="END_LINK" />.</translation>
 <translation id="4028871427853484857">Uložiť do účtu…</translation>
 <translation id="4038354071007134711">Tento súbor nedokáže otvoriť žiadna aplikácia na tomto zariadení.</translation>
 <translation id="4042870976416480368">Nájsť na stránke</translation>
@@ -1605,7 +1604,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6571070086367343653">Upraviť kreditnú kartu</translation>
 <translation id="6574092468346088891">Zapnúť upozornenia kontroly bezpečnosti</translation>
 <translation id="6579867704846662339">Môžete nastaviť, aby sa prichádzajúce webové adresy z iných aplikácií otvárali v režime inkognito.</translation>
-<translation id="6583087784430677195">Túto funkciu môžete vypnete v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" /> v sekcii Automatické dopĺňanie hesiel.</translation>
 <translation id="6585618849026997638">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť pridaním záložky</translation>
 <translation id="6589001036857939353">Zlúčenie duplikátov</translation>
 <translation id="659407965921887085">Na tejto karte sa zobrazujú poklesy ceny produktov, ktoré momentálne sledujete na internete</translation>
@@ -1667,7 +1665,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6746338529702829275">Prezrite si údaje účtu</translation>
 <translation id="6750456911389438250">{count,plural, =1{Bola importovaná {count} položka histórie}few{Boli importované {count} položky histórie}many{Imported {count} history items}other{Bolo importovaných {count} položiek histórie}}</translation>
 <translation id="6755200887046212842">Spravovať účty</translation>
-<translation id="6755733078693946548">Prístup k heslám a prístupovým kľúčom z ľubovoľnej aplikácie</translation>
 <translation id="6759709389246683070">Keď pridržíte túto kartu, môžete nastaviť pripomenutie, že ju máte neskôr navštíviť</translation>
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6770452996697898492">[REZERVOVANÉ]</translation>
@@ -2010,7 +2007,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="797588153137233716">Ponuka → História → Odstrániť dáta prehliadania</translation>
 <translation id="7977451675950311423">Upozorní vás, keď použijete heslo, ktoré bolo prezradené v rámci porušenia ochrany údajov.</translation>
 <translation id="797824194429476746">Karty zostanú v tomto zariadení otvorené, ale skupina bude natrvalo odstránená.</translation>
-<translation id="797874245254030665">Majte prístup k svojim heslám a prístupovým kľúčom z ľubovoľnej aplikácie</translation>
 <translation id="7982789257301363584">Sieť</translation>
 <translation id="798299424881500862">Oranžový motív</translation>
 <translation id="7987685713885608670">V záujme zvýšenia zabezpečenia šifrujte heslá v zariadení ešte pred ich uložením do správcu hesiel Google.</translation>

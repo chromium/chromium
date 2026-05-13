@@ -79,7 +79,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1880677175115548835">Sélectionnez du texte</translation>
 <translation id="1881322772814446296">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Chromium. Vos données de Chromium, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. Vous pouvez également créer un nouveau profil pour maintenir vos données Chromium séparées. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium économise l'énergie de la pile en limitant l'activité en arrière-plan et les effets visuels, comme le défilement fluide et les fréquences d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur d'énergie<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Posez une question à propos de cette page</translation>
+<translation id="1898804291554630487">Poser une question à propos de cette page</translation>
 <translation id="1900969832270057921">Service de mise à jour Chromium</translation>
 <translation id="1911763535808217981">En désactivant cette option, vous pouvez vous connecter aux sites Google tels que Gmail sans vous connecter à Chromium</translation>
 <translation id="1929939181775079593">Chromium ne répond pas. Voulez-vous le relancer maintenant?</translation>
@@ -735,6 +735,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8981150672034878610">Impossible de démarrer Chromium parce qu'un problème est survenu lors de l'ouverture de votre profil. Essayez de redémarrer Chromium.</translation>
 <translation id="8988036198400390003">Gérer les profils Chromium</translation>
 <translation id="9019929317751753759">Afin de rendre Chromium plus sûr, nous avons désactivé l'extension suivante qui n'est pas répertoriée dans <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et a pu être ajoutée à votre insu.</translation>
+<translation id="9022552996538154597">Connexion à Chromium</translation>
 <translation id="904366664621834601">Chromium a bloqué ce téléchargement, car le fichier d'archive comprend d'autres fichiers qui pourraient cacher des logiciels malveillants</translation>
 <translation id="9053882453960391422">Gardez vos mots de passe, vos favoris et votre historique parfaitement synchronisés sur tous vos appareils. Accédez facilement aux fonctionnalités que vous connaissez et que vous aimez en mettant à jour votre navigateur par défaut vers Chromium. Chromium sera épinglé à votre barre des tâches pour un accès rapide.</translation>
 <translation id="9062666675513499497">Vous connecter à Chromium lorsque vous vous connectez à d'autres services Google</translation>

@@ -3446,6 +3446,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="634500758737709758">Smjernice</translation>
 <translation id="6348220984832452017">Aktivne varijacije</translation>
 <translation id="6349101878882523185">Instalirajte <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Plaćajte bez kopiranja i lijepljenja Pix koda. <ph name="BEGIN_LINK1" />Pogledajte kako funkcionira<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Izbriši podatke pregledanja</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ništa}=1{1 lozinka (za <ph name="DOMAIN_LIST" />, sinhronizirano)}=2{2 lozinke (za <ph name="DOMAIN_LIST" />, sinhronizirano)}one{# lozinka (za <ph name="DOMAIN_LIST" />, sinhronizirano)}few{# lozinke (za <ph name="DOMAIN_LIST" />, sinhronizirano)}other{# lozinki (za <ph name="DOMAIN_LIST" />, sinhronizirano)}}</translation>
 <translation id="6354918092619878358">SECG eliptična krivulja secp256r1 (poznata i kao ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3613,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6587923378399804057">Link koji ste kopirali</translation>
 <translation id="6591833882275308647">Vašim uređajem <ph name="DEVICE_TYPE" /> se ne upravlja</translation>
 <translation id="6595495738567740002">Da izbrišete Googleove kolačiće s uređaja, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Opcije za šifriranje</translation>
 <translation id="6596573334527383067">Prikazivanje rezultata od jučer</translation>
 <translation id="6597665340361269064">90 stepeni</translation>
 <translation id="6598976221101665070">Dramski filmovi</translation>
@@ -3662,6 +3662,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="668132230070712111">Videozapis je sačuvan na Google Disk</translation>
 <translation id="6681790815630918386">CVC je sačuvan</translation>
 <translation id="6683022854667115063">Slušalice</translation>
+<translation id="6686570026048064255">Da isključite otkrivanje Pix koda, idite u <ph name="BEGIN_LINK1" />postavke Chromea<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Koverta (obična)</translation>
 <translation id="6687335167692595844">Zatražena je veličina fonta</translation>
 <translation id="6688743156324860098">Ažuriranje…</translation>
@@ -3887,7 +3888,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="702275896380648118">Ova web lokacija utvrđuje stvari koje vam se sviđaju, a zatim predlaže oglase drugim web lokacijama. Ova web lokacija prikuplja i vaše teme oglasa iz Chromea da vam prikazuje relevantnije oglase.</translation>
 <translation id="7023162328967545559">Upozorenje administratora</translation>
 <translation id="7023765275461720661">Povezati račun i platiti putem usluge <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Lozinke</translation>
 <translation id="7030164307377592766">izmijeniti postavke za popunjavanje načina plaćanja</translation>
 <translation id="7031110846419387930">Informacije o pregledniku, OS-u, uređaju, instaliranom softveru, fajlovima i IP adresama</translation>
 <translation id="7031646650991750659">Koje Google Play aplikacije ste instalirali</translation>

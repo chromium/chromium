@@ -548,6 +548,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1832474362231610822">Surat OneDrive omboriga saqlandi</translation>
 <translation id="1832730227369924598">Ish stolini sinxronlash</translation>
 <translation id="1834452765064623979">Qurilish va xizmat koʻrsatish</translation>
+<translation id="1837606605602726453">Xavf darajasi va turkumlari inobatga olinmaydi, chunki ushbu kengaytma administrator tomonidan qatʼiy ruxsat etilgan yoki bloklangan.</translation>
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
 <translation id="1839331950812095887">fikringizni bildiruvchi kamida bir nechta soʻz</translation>
 <translation id="1839551713262164453">Parametr qiymatlari tekshiruvida xato yuz berdi</translation>
@@ -3607,7 +3608,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6587923378399804057">Nusxalangan havola</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> qurilmangiz mustaqil</translation>
 <translation id="6595495738567740002">Bu qurilmada Google cookie fayllarini oʻchirish uchun <ph name="BEGIN_LINK" />Chrome hisobidan chiqing<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Shifrlash parametrlari</translation>
 <translation id="6596573334527383067">Kechagi kun natijalarini chiqarish</translation>
 <translation id="6597665340361269064">90 daraja</translation>
 <translation id="6598976221101665070">Dramalar</translation>
@@ -3883,7 +3883,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="702275896380648118">Bu sayt sizga qiziq narsalarni aniqlashi va boshqa saytlarga taklif qilishi mumkin. Bu sayt ham mos reklamalarni chiqarish uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="7023162328967545559">Administrator ogohlantirishi</translation>
 <translation id="7023765275461720661">Hisob ulanib, <ph name="BNPL_ISSUER_NAME" /> bilan toʻlasinmi?</translation>
-<translation id="7029809446516969842">Parollar</translation>
 <translation id="7030164307377592766">toʻlov usuli kiritilishi sozlamalarini oʻzgartirish</translation>
 <translation id="7031110846419387930">Brauzer, OT, qurilma, oʻrnatilgan dasturlar, fayllar va IP manzillar haqidagi axborot</translation>
 <translation id="7031646650991750659">Google Play Marketdan oʻrnatilgan ilovalar</translation>

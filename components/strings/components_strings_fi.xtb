@@ -549,6 +549,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1832474362231610822">Kuva tallennettu OneDriveen</translation>
 <translation id="1832730227369924598">Työpöydän synkronointi</translation>
 <translation id="1834452765064623979">Rakennustyöt ja huolto</translation>
+<translation id="1837606605602726453">Riskipisteet ja ‑kategoriat ohitetaan, koska järjestelmänvalvoja on erikseen sallinut tai estänyt laajennuksen.</translation>
 <translation id="1838374766361614909">Tyhjennä haku</translation>
 <translation id="1839331950812095887">muutama sana, jotka tiivistävät ajatuksesi</translation>
 <translation id="1839551713262164453">Käytäntöarvojen vahvistus epäonnistui sisältäen virheitä</translation>
@@ -3613,7 +3614,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6587923378399804057">Kopioimasi linkki</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> ei ole ylläpidetty</translation>
 <translation id="6595495738567740002">Jos haluat poistaa Google-evästeet tältä laitteelta, <ph name="BEGIN_LINK" />kirjaudu ulos Chromesta<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Salausasetukset</translation>
 <translation id="6596573334527383067">Näytä eilisen tulokset</translation>
 <translation id="6597665340361269064">90 astetta</translation>
 <translation id="6598976221101665070">Draamaelokuvat</translation>
@@ -3888,7 +3888,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
 <translation id="7023162328967545559">Varoitus järjestelmänvalvojalta</translation>
 <translation id="7023765275461720661">Haluatko linkittää tilin ja maksaa palvelussa <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Salasanat</translation>
 <translation id="7030164307377592766">muuta maksutapojen täyttämisen asetuksia</translation>
 <translation id="7031110846419387930">Tietoja selaimesta, käyttöjärjestelmästä, laitteesta, asennetuista ohjelmistoista, tiedostoista ja IP-osoitteista</translation>
 <translation id="7031646650991750659">Asentamasi Google Play ‑sovellukset</translation>

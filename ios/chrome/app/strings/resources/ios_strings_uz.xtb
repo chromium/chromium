@@ -281,6 +281,7 @@
 <translation id="1925706052394657380">iOS qurilmada <ph name="BEGIN_BOLD" />Birlamchi ilovalar<ph name="END_BOLD" /> sozlamalarini oching</translation>
 <translation id="1941314575388338491">Nusxalash uchun ikki marta bosing.</translation>
 <translation id="1943478190258551035">Menyu → Sozlamalar</translation>
+<translation id="1948562571551232853">Gemini xususiyatli</translation>
 <translation id="1952728750904661634">Boshqariladigan hisobga kirish</translation>
 <translation id="1955773397805078763">Toʻlov usuli qoʻshish</translation>
 <translation id="1956138802718275401">Asosiy ekrandan parollarga oʻting</translation>
@@ -853,7 +854,6 @@
 <translation id="4018440314314549819">Avtomatik kiritiladigan parollar</translation>
 <translation id="4021447724486050609">Brauzerni yangilang</translation>
 <translation id="4021931095789478915">${url} manzilini Saqlangan sahifalarga qoʻshish</translation>
-<translation id="4026496154402824012"><ph name="BEGIN_LINK" />Parol sozlamalari<ph name="END_LINK" /> orqali faolsizlantirish mumkin.</translation>
 <translation id="4028871427853484857">Hisobga saqlash…</translation>
 <translation id="4038354071007134711">Bu faylni ochadigan ilova yo‘q.</translation>
 <translation id="4042870976416480368">Sahifa ichidan qidirish</translation>
@@ -1263,6 +1263,7 @@
 <translation id="5457082343331641453">Qidiruvga kiritish</translation>
 <translation id="5457226814769348910">Oflayn versiyasini ochish</translation>
 <translation id="5467163657366219870">Xarita lavhalarini faolsizlantirish</translation>
+<translation id="5467596285052510344">Gemini yordamida matnlarni xulosalash, tushuntirish va boshqa koʻplab amallarni bajaring.</translation>
 <translation id="5474397204728336997">Oilaviy parollar, yangi moslashtirishlar va boshqalar. Batafsil axborot olish uchun bosing.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Hech qanday parol import qilinmadi}=1{{count} ta parol import qilindi}other{{count} ta parol import qilindi}}</translation>
 <translation id="5478327362747197944">Taqvim tadbirlarini bevosita veb-sahifadagi sana ustiga bosish orqali yarating.</translation>
@@ -1606,7 +1607,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6571070086367343653">Kredit kartani tahrirlash</translation>
 <translation id="6574092468346088891">Xavfsizlik tekshiruvi bildirishnomalarini yoqing</translation>
 <translation id="6579867704846662339">Boshqa ilovalardan kelgan URL manzillar Inkognitoda ochilishini tanlash mumkin.</translation>
-<translation id="6583087784430677195">Faolsizlantirish uchun avval <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" />, keyin Parollarni avtomatik kiritish sahifasini oching.</translation>
 <translation id="6585618849026997638">Siz uchun muhim sahifalarga bukmark kiritish orqali qaytish mumkin</translation>
 <translation id="6589001036857939353">Takroriy kontaktlarni birlashtirish</translation>
 <translation id="659407965921887085">Bu kartochkada internetda siz kuzatayotgan mahsulotlarning narx pasayishi chiqadi</translation>
@@ -1668,7 +1668,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ta tarix qaydi import qilindi}other{{count} ta tarix qaydi import qilindi}}</translation>
 <translation id="6755200887046212842">Hisoblarni boshqarish</translation>
-<translation id="6755733078693946548">Parollar va kalitlarni istalgan ilovadan ochish</translation>
 <translation id="6759709389246683070">Sahifaga tashrif haqida eslatma yaratish uchun bu varaqni biroz bosib turing</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[BANDQILINGAN]</translation>
@@ -1745,6 +1744,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7015418667643980944">Ajratilgan ekran</translation>
 <translation id="7016070607649558507">1 ta kuchsiz parol topildi. Xavfsiz qolish uchun uni tuzating.</translation>
 <translation id="7016958933495968912">Discover parametrlari</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> qidiruvi</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7035825883570480307">Bildirishnomalar yoqilsinmi?</translation>
 <translation id="7039345315346323556">Yaqinda</translation>
@@ -2011,7 +2011,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="797588153137233716">Menyu → Tarix → Brauzer maʼlumotlarini oʻchirish</translation>
 <translation id="7977451675950311423">Maʼlumotlar sizishi natijasida oshkor boʻlgan paroldan foydalansangiz, sizni ogohlantiradi.</translation>
 <translation id="797824194429476746">Varaqlar bu qurilmada ochiq qoladi, ammo guruh butunlay oʻchirib tashlanadi.</translation>
-<translation id="797874245254030665">Parollar va kalitlarni istalgan ilovadan oching</translation>
 <translation id="7982789257301363584">Tarmoq</translation>
 <translation id="798299424881500862">Apelsinrang mavzu</translation>
 <translation id="7987685713885608670">Xavfsizlikni yanada oshirish uchun parolingizni Google Parollar menejeriga saqlashdan oldin qurilmangizda shifrlang</translation>

@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Emplena automàticament les contrasenyes desades</translation>
 <translation id="4021447724486050609">Actualitza el navegador</translation>
 <translation id="4021931095789478915">Afegeix ${url} a la llista de lectura</translation>
-<translation id="4026496154402824012">Per desactivar-ho, ves a <ph name="BEGIN_LINK" />Opcions de contrasenya<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Desa al compte…</translation>
 <translation id="4038354071007134711">Cap aplicació del dispos. no pot obrir el fitxer.</translation>
 <translation id="4042870976416480368">Cerca a la pàgina</translation>
@@ -1605,7 +1604,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6571070086367343653">Edita la targeta de crèdit</translation>
 <translation id="6574092468346088891">Activa les notificacions de Comprovació de seguretat</translation>
 <translation id="6579867704846662339">Pots triar si vols obrir els URL entrants d'altres aplicacions en incògnit.</translation>
-<translation id="6583087784430677195">Per desactivar aquesta funció, obre <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" /> i ves a Emplenament automàtic de contrasenyes.</translation>
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
 <translation id="6589001036857939353">Combina contactes duplicats</translation>
 <translation id="659407965921887085">Aquesta targeta mostra les baixades de preu que es produeixen al web en productes que estàs seguint</translation>
@@ -1667,7 +1665,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6746338529702829275">Revisa les dades del compte</translation>
 <translation id="6750456911389438250">{count,plural, =1{S'ha importat {count} element de l'historial}other{S'han importat {count} elements de l'historial}}</translation>
 <translation id="6755200887046212842">Gestiona els comptes</translation>
-<translation id="6755733078693946548">Accedeix a les contrasenyes i les claus d'accés des de qualsevol aplicació</translation>
 <translation id="6759709389246683070">Pots mantenir premuda aquesta pestanya i configurar un recordatori per comprovar-la més tard</translation>
 <translation id="6761393919622941301">Àudio</translation>
 <translation id="6770452996697898492">[RESERVAT]</translation>
@@ -2010,7 +2007,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="797588153137233716">Menú → Historial → Suprimeix les dades de navegació</translation>
 <translation id="7977451675950311423">T'avisa si utilitzes una contrasenya que està en perill a causa d'una violació de les dades.</translation>
 <translation id="797824194429476746">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà permanentment.</translation>
-<translation id="797874245254030665">Accedeix a les teves contrasenyes i claus d'accés des de qualsevol aplicació</translation>
 <translation id="7982789257301363584">Xarxa</translation>
 <translation id="798299424881500862">Tema taronja</translation>
 <translation id="7987685713885608670">Per a una seguretat addicional, encripta les contrasenyes al dispositiu abans de desar-les al gestor de contrasenyes de Google.</translation>

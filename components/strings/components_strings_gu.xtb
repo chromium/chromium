@@ -549,6 +549,7 @@
 <translation id="1832474362231610822">ફોટો OneDriveમાં સાચવ્યો</translation>
 <translation id="1832730227369924598">ડેસ્ક સિંક કરો</translation>
 <translation id="1834452765064623979">બાંધકામ અને જાળવણી</translation>
+<translation id="1837606605602726453">જોખમનો સ્કોર અને કૅટેગરીને અવગણવામાં આવે છે કારણ કે એક્સ્ટેન્શનને ઍડમિનિસ્ટ્રેટર દ્વારા સ્પષ્ટ રીતે મંજૂરી આપવામાં આવી છે અથવા બ્લૉક કરવામાં આવ્યું છે.</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
 <translation id="1839331950812095887">તમારા વિચારોનો સારાંશ આપતા થોડાક શબ્દો</translation>
 <translation id="1839551713262164453">ભૂલના લીધે પૉલિસી મૂલ્યોની માન્યતા નિષ્ફળ થઈ</translation>
@@ -3613,7 +3614,6 @@
 <translation id="6587923378399804057">તમે કૉપિ કરેલી લિંક</translation>
 <translation id="6591833882275308647">તમારું <ph name="DEVICE_TYPE" /> મેનેજ કરવામાં આવતું નથી</translation>
 <translation id="6595495738567740002">આ ડિવાઇસમાંથી Google કુકી ડિલીટ કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાંથી સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">એન્ક્રિપ્શન વિકલ્પો</translation>
 <translation id="6596573334527383067">ગઈકાલના ઇતિહાસમાંથી પરિણામો બતાવો</translation>
 <translation id="6597665340361269064">90 ડિગ્રી</translation>
 <translation id="6598976221101665070">ડ્રામા મૂવી</translation>
@@ -3889,7 +3889,6 @@
 <translation id="702275896380648118">તમને ગમતી બાબતો વિશે આ સાઇટ અનુમાન લગાવે છે અને પછી અન્ય સાઇટને જાહેરાતો સૂચવે છે. તમને વધુ સંબંધિત જાહેરાતો બતાવવા માટે, આ સાઇટ Chromeમાંથી જાહેરાતના તમારા વિષયોની માહિતી પણ મેળવે છે.</translation>
 <translation id="7023162328967545559">ઍડમિન દ્વારા ચેતવણી</translation>
 <translation id="7023765275461720661">એકાઉન્ટને લિંક કરીને <ph name="BNPL_ISSUER_NAME" /> વડે ચુકવણી કરવી છે?</translation>
-<translation id="7029809446516969842">પાસવર્ડ</translation>
 <translation id="7030164307377592766">ચુકવણી પદ્ધતિઓ ભરવા માટે, સેટિંગમાં ફેરફાર કરો</translation>
 <translation id="7031110846419387930">તમારા બ્રાઉઝર, OS, ડિવાઇસ, ઇન્સ્ટૉલ કરેલા સૉફ્ટવેર, ફાઇલો અને IP ઍડ્રેસ વિશેની માહિતી</translation>
 <translation id="7031646650991750659">તમે કઈ Google Play ઍપ ઇન્સ્ટૉલ કરી છે</translation>

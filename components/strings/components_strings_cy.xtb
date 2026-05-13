@@ -3446,6 +3446,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="634500758737709758">Cyfarwyddiadau</translation>
 <translation id="6348220984832452017">Amrywiadau Gweithredol</translation>
 <translation id="6349101878882523185">Gosod <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Talu heb gopïo a gludo cod Pix. <ph name="BEGIN_LINK1" />Gweld sut mae’n gweithio<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Dileu Data Pori</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Dim}=1{1 cyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}=2{2 gyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}few{# chyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}many{# chyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}other{# cyfrinair (ar gyfer <ph name="DOMAIN_LIST" />, cysonwyd)}}</translation>
 <translation id="6354918092619878358">Cromlin eliptig SECG secp256r1 (gelwir heyd ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3613,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6587923378399804057">Dolen y gwnaethoch ei chopïo</translation>
 <translation id="6591833882275308647">Ni rheoli eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="6595495738567740002">I ddileu cwcis Google o'r ddyfais hon, <ph name="BEGIN_LINK" />allgofnodwch o Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Dewisiadau amgryptio</translation>
 <translation id="6596573334527383067">Dangos canlyniadau o ddoe</translation>
 <translation id="6597665340361269064">90 gradd</translation>
 <translation id="6598976221101665070">Ffilmiau Drama</translation>
@@ -3662,6 +3662,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="668132230070712111">Fideo wedi'i gadw i Google Drive</translation>
 <translation id="6681790815630918386">CVC wedi'i gadw</translation>
 <translation id="6683022854667115063">Clustffonau</translation>
+<translation id="6686570026048064255">I ddiffodd canfod cod Pix, ewch i'r <ph name="BEGIN_LINK1" />Gosodiadau Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Amlen (Plaen)</translation>
 <translation id="6687335167692595844">Maint ffont a geisiwyd</translation>
 <translation id="6688743156324860098">Diweddaru…</translation>
@@ -3887,7 +3888,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="702275896380648118">Mae'r wefan hon yn penderfynu pethau rydych yn eu hoffi ac yn cynnig hysbysebion i wefannau eraill. Mae'r wefan hon hefyd yn cael eich pynciau hysbysebion o Chrome i ddangos hysbysebion mwy perthnasol i chi.</translation>
 <translation id="7023162328967545559">Rhybudd gweinyddwr</translation>
 <translation id="7023765275461720661">Cysylltu cyfrif a thalu gyda <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Cyfrineiriau</translation>
 <translation id="7030164307377592766">addasu gosodiadau ar gyfer llenwi dulliau talu</translation>
 <translation id="7031110846419387930">Gwybodaeth am eich porwr, OS, dyfais, meddalwedd gosodedig, ffeiliau, a chyfeiriadau IP</translation>
 <translation id="7031646650991750659">Pa apiau Google Play rydych wedi'u gosod</translation>

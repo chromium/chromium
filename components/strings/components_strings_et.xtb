@@ -3612,7 +3612,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6587923378399804057">Teie kopeeritud link</translation>
 <translation id="6591833882275308647">Teie seadet <ph name="DEVICE_TYPE" /> ei hallata</translation>
 <translation id="6595495738567740002">Sellest seadmest Google'i küpsiste kustutamiseks <ph name="BEGIN_LINK" />logige Chrome'ist välja<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Krüpteerimise valikud</translation>
 <translation id="6596573334527383067">Eilsete tulemuste kuvamine</translation>
 <translation id="6597665340361269064">90 kraadi</translation>
 <translation id="6598976221101665070">Draamad</translation>
@@ -3887,7 +3886,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="702275896380648118">See sait tuvastab asjad, mis teile meeldivad, ja soovitab seejärel teistele saitidele reklaame. Samuti hangib see sait Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame.</translation>
 <translation id="7023162328967545559">Administraatori hoiatus</translation>
 <translation id="7023765275461720661">Kas linkida konto ja maksta teenusega <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Paroolid</translation>
 <translation id="7030164307377592766">muuda makseviiside sisestamise seadeid</translation>
 <translation id="7031110846419387930">Teave teie brauseri, OS-i, seadme, installitud tarkvara, failide ja IP-aadresside kohta</translation>
 <translation id="7031646650991750659">Millised Google Play rakendused olete installinud</translation>

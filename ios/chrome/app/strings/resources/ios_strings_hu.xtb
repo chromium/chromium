@@ -201,6 +201,7 @@
 <translation id="1657011748321897393">A megosztás nem sikerült, mert nem csatlakozik a hálózathoz.</translation>
 <translation id="1668001730617725852">Megnyitás új lapcsoportban</translation>
 <translation id="1670861525135254448">Jármű mentése</translation>
+<translation id="1671568970992212376">Fotókat menthet a Google Fotókba, és bármikor hozzájuk férhet.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> nyelvről <ph name="TARGET_LANGUAGE" /> nyelvre</translation>
 <translation id="1678855624321223424">A szervezeti házirendek alapján ez a fájl bizalmas információkat tartalmazhat</translation>
 <translation id="168389590065701766">Mostantól a címsávból is megnyithatja a Google Lenst, és bármire rákereshet, amit lát</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Mentett jelszavak automatikus kitöltése</translation>
 <translation id="4021447724486050609">A böngésző frissítése</translation>
 <translation id="4021931095789478915">${url} felvétele az olvasólistára</translation>
-<translation id="4026496154402824012">A funkció kikapcsolásához lépjen a <ph name="BEGIN_LINK" />Jelszóbeállítások<ph name="END_LINK" /> ponthoz.</translation>
 <translation id="4028871427853484857">Mentés fiókba…</translation>
 <translation id="4038354071007134711">Nincs alkalmazás, amellyel megnyitható ez a fájl.</translation>
 <translation id="4042870976416480368">Keresés az oldalon</translation>
@@ -1605,7 +1605,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6571070086367343653">Hitelkártya szerkesztése</translation>
 <translation id="6574092468346088891">A biztonsági ellenőrzés értesítéseinek bekapcsolása</translation>
 <translation id="6579867704846662339">Inkognitóban is megnyithatja más alkalmazások URL-jeit.</translation>
-<translation id="6583087784430677195">A kikapcsoláshoz nyissa meg a <ph name="BEGIN_LINK" />Beállítások<ph name="END_LINK" /> menüt, és lépjen a Jelszavak automatikus kitöltése ponthoz.</translation>
 <translation id="6585618849026997638">A fontos oldalakra könyvjelző felvételével térhet vissza a későbbiekben.</translation>
 <translation id="6589001036857939353">Ismétlődő névjegyek egyesítése</translation>
 <translation id="659407965921887085">Ez a kártya az interneten az Ön által jelenleg nyomon követett termékek árcsökkenéseit mutatja</translation>
@@ -1667,7 +1666,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6746338529702829275">A fiókadatok ellenőrzése</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} előzményelem lett importálva}other{{count} előzményelem lett importálva}}</translation>
 <translation id="6755200887046212842">Fiókok kezelése</translation>
-<translation id="6755733078693946548">Hozzáférés a jelszavakhoz és az azonosítókulcsokhoz bármelyik alkalmazásból</translation>
 <translation id="6759709389246683070">Ha emlékeztetőt szeretne beállítani ennek a lapnak a későbbi felkereséséhez, tartsa lenyomva ezt a lapot.</translation>
 <translation id="6761393919622941301">Hang</translation>
 <translation id="6770452996697898492">[LEFOGLALVA]</translation>
@@ -2010,7 +2008,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="797588153137233716">Menü → Előzmények → Böngészési adatok törlése</translation>
 <translation id="7977451675950311423">Figyelmezteti Önt, ha adatvédelmi incidensben érintett jelszót használ.</translation>
 <translation id="797824194429476746">A lapok nyitva maradnak ezen az eszközön, de a csoport véglegesen törlődni fog.</translation>
-<translation id="797874245254030665">Bármelyik alkalmazásból hozzáférhet jelszavaihoz és azonosítókulcsaihoz</translation>
 <translation id="7982789257301363584">Hálózat</translation>
 <translation id="798299424881500862">Narancssárga téma</translation>
 <translation id="7987685713885608670">A fokozott biztonság érdekében titkosíthatja jelszavait eszközén, mielőtt a rendszer elmenti őket a Google Jelszókezelőbe.</translation>

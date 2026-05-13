@@ -549,6 +549,7 @@
 <translation id="1832474362231610822">ບັນທຶກຮູບພາບໃສ່ໃນ OneDrive ແລ້ວ</translation>
 <translation id="1832730227369924598">ການຊິ້ງເດັສ</translation>
 <translation id="1834452765064623979">ການກໍ່ສ້າງ ແລະ ການບໍາລຸງຮັກສາ</translation>
+<translation id="1837606605602726453">ລະບົບຈະບໍ່ພິຈາລະນາຄະແນນຄວາມສ່ຽງ ແລະ ໝວດໝູ່ເນື່ອງຈາກຜູ້ເບິ່ງແຍງລະບົບອະນຸຍາດ ຫຼື ບລັອກສ່ວນຂະຫຍາຍຢ່າງຈະແຈ້ງ.</translation>
 <translation id="1838374766361614909">ລຶບ​ການ​ຊອກ​ຫາ</translation>
 <translation id="1839331950812095887">ສອງສາມຄຳທີ່ສະຫຼຸບຄວາມຄິດຂອງທ່ານ</translation>
 <translation id="1839551713262164453">ການກວດຮັບຮອງຄ່ານະໂຍບາຍບໍ່ສຳເລັດໂດຍມີຂໍ້ຜິດພາດ</translation>
@@ -3446,6 +3447,7 @@
 <translation id="634500758737709758">ເສັ້ນທາງ</translation>
 <translation id="6348220984832452017">ຮູບແບບທີ່ນຳໃຊ້ຢູ່</translation>
 <translation id="6349101878882523185">ຕິດຕັ້ງ <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">ຈ່າຍເງິນໂດຍບໍ່ຕ້ອງສຳເນົາ ແລະ ວາງລະຫັດ Pix. <ph name="BEGIN_LINK1" />ເບິ່ງວິທີການເຮັດວຽກ<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ລະຫັດຜ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />, ຊິ້ງຂໍ້ມູນແລ້ວ)}=2{2 ລະຫັດຜ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />, ຊິ້ງຂໍ້ມູນແລ້ວ)}other{# ລະຫັດຜ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />, ຊິ້ງຂໍ້ມູນແລ້ວ)}}</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3614,6 @@
 <translation id="6587923378399804057">ລິ້ງທີ່ທ່ານສຳເນົາ</translation>
 <translation id="6591833882275308647">ບໍ່ມີການຈັດການ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="6595495738567740002">ເພື່ອລຶບຄຸກກີ້ຂອງ Google ອອກຈາກອຸປະກອນເຄື່ອງນີ້, ໃຫ້ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">ທາງເລືອກການໃສ່ລະຫັດ</translation>
 <translation id="6596573334527383067">ສະແດງຜົນການຊອກຫາຈາກມື້ວານ</translation>
 <translation id="6597665340361269064">90 ອົງສາ</translation>
 <translation id="6598976221101665070">ໜັງດຣາມ່າ</translation>
@@ -3662,6 +3663,7 @@
 <translation id="668132230070712111">ບັນທຶກວິດີໂອໃສ່ໃນ Google Drive ແລ້ວ</translation>
 <translation id="6681790815630918386">ບັນທຶກ CVC ແລ້ວ</translation>
 <translation id="6683022854667115063">ຫູຟັງ</translation>
+<translation id="6686570026048064255">ເພື່ອປິດໃຊ້ການກວດຫາລະຫັດ Pix, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK1" />ການຕັ້ງຄ່າ Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">ຊອງ (ທຳມະດາ)</translation>
 <translation id="6687335167692595844">ຂໍຂະໜາດຟອນແລ້ວ</translation>
 <translation id="6688743156324860098">ອັບເດດ…</translation>
@@ -3887,7 +3889,6 @@
 <translation id="702275896380648118">ເວັບໄຊນີ້ຈະລະບຸສິ່ງທີ່ທ່ານມັກແລ້ວແນະນຳໂຄສະນາໃນເວັບໄຊອື່ນ. ເວັບໄຊນີ້ຍັງຮັບຫົວຂໍ້ໂຄສະນາຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນນຳອີກ.</translation>
 <translation id="7023162328967545559">ຄຳເຕືອນຈາກຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="7023765275461720661">ລິ້ງບັນຊີ ແລະ ຈ່າຍເງິນດ້ວຍ <ph name="BNPL_ISSUER_NAME" /> ບໍ?</translation>
-<translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="7030164307377592766">ແກ້ໄຂການຕັ້ງຄ່າສຳລັບການຕື່ມຂໍ້ມູນວິທີການຈ່າຍເງິນ</translation>
 <translation id="7031110846419387930">ຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບ, OS, ອຸປະກອນ, ຊອບແວທີ່ຕິດຕັ້ງ, ໄຟລ໌ ແລະ ທີ່ຢູ່ IP ຂອງທ່ານ</translation>
 <translation id="7031646650991750659">ແອັບ Google Play ໃດທີ່ທ່ານຕິດຕັ້ງແລ້ວ</translation>

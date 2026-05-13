@@ -549,6 +549,7 @@
 <translation id="1832474362231610822">ফট’খন OneDriveত ছেভ কৰা হৈছে</translation>
 <translation id="1832730227369924598">ডেস্ক ছিংক</translation>
 <translation id="1834452765064623979">নিৰ্মাণ আৰু তত্ত্বাৱধান</translation>
+<translation id="1837606605602726453">প্ৰশাসকে এই এক্সটেনশ্বনটো স্পষ্টভাৱে অনুমতি দিয়া বা অৱৰোধ কৰাৰ বাবে ইয়াৰ বিপদাশংকাৰ স্ক’ৰ আৰু শিতানসমূহ অগ্ৰাহ্য কৰা হৈছে।</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
 <translation id="1839331950812095887">আপোনাৰ মনৰ ভাৱৰ চমু আভাস দিব পৰা কেইটামান শব্দ</translation>
 <translation id="1839551713262164453">নীতিৰ মান মান্যতাকৰণ কৰোঁতে আসোঁৱাহ হৈছে</translation>
@@ -3608,7 +3609,6 @@
 <translation id="6587923378399804057">আপুনি প্ৰতিলিপি কৰা লিংক</translation>
 <translation id="6591833882275308647">আপোনাৰ <ph name="DEVICE_TYPE" /> পৰিচালিত নহয়</translation>
 <translation id="6595495738567740002">এই ডিভাইচৰ পৰা Googleৰ কুকি মচিবলৈ <ph name="BEGIN_LINK" />Chromeৰ পৰা ছাইন আউট কৰক<ph name="END_LINK" />।</translation>
-<translation id="6596325263575161958">এনক্ৰিপশ্বনৰ বিকল্প</translation>
 <translation id="6596573334527383067">কালিৰ ফলাফল দেখুৱাওক</translation>
 <translation id="6597665340361269064">৯০ ডিগ্ৰী</translation>
 <translation id="6598976221101665070">নাটকীয় চলচ্চিত্ৰ</translation>
@@ -3884,7 +3884,6 @@
 <translation id="702275896380648118">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে। আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰাও আপোনাৰ বিজ্ঞাপনৰ বিষয়সমূহ লাভ কৰে।</translation>
 <translation id="7023162328967545559">প্ৰশাসকে দিয়া সকীয়নি</translation>
 <translation id="7023765275461720661">একাউণ্ট লিংক কৰি <ph name="BNPL_ISSUER_NAME" />ৰ জৰিয়তে পৰিশোধ কৰিবনে?</translation>
-<translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
 <translation id="7030164307377592766">পৰিশোধ পদ্ধতি পূৰ কৰিবলৈ ছেটিং সংশোধন কৰক</translation>
 <translation id="7031110846419387930">আপোনাৰ ব্ৰাউজাৰ, OS, ডিভাইচ, ইনষ্টল কৰি থোৱা ছফ্টৱেৰ, ফাইল আৰু IP ঠিকনাৰ বিষয়ে তথ্য</translation>
 <translation id="7031646650991750659">আপুনি কোনবোৰ Google Play এপ্‌ ইনষ্টল কৰিছে</translation>

@@ -3612,7 +3612,6 @@
 <translation id="6587923378399804057">Линк који сте копирали</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" />-ом се не управља</translation>
 <translation id="6595495738567740002">Да бисте избрисали Google колачиће са овог уређаја, <ph name="BEGIN_LINK" />одјавите се из Chrome-а<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Опције шифровања</translation>
 <translation id="6596573334527383067">Прикажите резултате од јуче</translation>
 <translation id="6597665340361269064">90 степени</translation>
 <translation id="6598976221101665070">Драме</translation>
@@ -3888,7 +3887,6 @@
 <translation id="702275896380648118">Овај сајт одређује ствари које вам се свиђају, а затим предлаже огласе за друге сајтове. Овај сајт такође прима податке о вашим темама огласа из Chrome-а да би вам приказивао релевантније огласе.</translation>
 <translation id="7023162328967545559">Упозорење администратора</translation>
 <translation id="7023765275461720661">Желите ли да повежете налог и платите користећи <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Лозинке</translation>
 <translation id="7030164307377592766">да измени подешавања за попуњавање начина плаћања</translation>
 <translation id="7031110846419387930">Информације о прегледачу, ОС-у, уређају, инсталираном софтверу, фајловима и IP адресама</translation>
 <translation id="7031646650991750659">Google Play које апликације сте инсталирали</translation>
@@ -4392,7 +4390,7 @@
 <translation id="776110834126722255">Застарело</translation>
 <translation id="7761159795823346334">Желите ли да дозволите камеру?</translation>
 <translation id="7761701407923456692">Сертификат сервера се не подудара са URL адресом.</translation>
-<translation id="7764225426217299476">Додајте адресу</translation>
+<translation id="7764225426217299476">Додај адресу</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7766518757692125295">Обод</translation>
 <translation id="7767278989746220252">Терасе, травњаци и баште</translation>

@@ -2830,6 +2830,7 @@
 <translation id="2909487040556589351">ดาวน์โหลด Chrome บนมือถือ</translation>
 <translation id="2910318910161511225">เชื่อมต่อกับเครือข่ายแล้วลองอีกครั้ง</translation>
 <translation id="2910678330803525229">ตอนนี้คุณเริ่มเรียกดูข้อมูลต่างๆ ได้แล้ว</translation>
+<translation id="2911818155655162983">ค่ากำหนดการรักษาความปลอดภัยของคุณไม่อนุญาตให้ติดตั้งแอปที่แยกไว้ <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="2912247081180973411">ปิดหน้าต่าง</translation>
 <translation id="2915102088417824677">ดูบันทึกกิจกรรม</translation>
 <translation id="2915873080513663243">สแกนอัตโนมัติ</translation>
@@ -7854,6 +7855,7 @@
 <translation id="6453687572758515877">จัดกลุ่มแท็บทั้งหมด</translation>
 <translation id="6453921811609336127">หากต้องการเปลี่ยนวิธีการป้อนข้อมูลครั้งต่อไป ให้กด <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">การดำเนินการนี้จะลบข้อมูลการท่องเว็บของคุณจากอุปกรณ์นี้อย่างถาวร หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ในชื่อ</translation>
+<translation id="6454456397828627257">แสดงคู่กัน</translation>
 <translation id="6455264371803474013">ในบางเว็บไซต์</translation>
 <translation id="6455521402703088376">ปิด • นักพัฒนาเลิกเผยแพร่ส่วนขยายนี้แล้ว</translation>
 <translation id="6455894534188563617">และโฟลเดอร์ใหม่</translation>
@@ -8475,6 +8477,7 @@
 <translation id="6871860225073478239">ภาษา...</translation>
 <translation id="6873156759937047811">PIN:</translation>
 <translation id="6873571253135628430">เปลี่ยนสิทธิ์ของเว็บไซต์</translation>
+<translation id="6874986444867497677">ติดตั้งไม่สำเร็จ โปรดลองอีกครั้งหรือปิดหน้าต่างนี้</translation>
 <translation id="6876155724392614295">จักรยาน</translation>
 <translation id="6876469544038980967">ไม่มีประโยชน์</translation>
 <translation id="6878422606530379992">อนุญาตให้ใช้เซ็นเซอร์</translation>

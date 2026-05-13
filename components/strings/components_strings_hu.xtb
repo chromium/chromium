@@ -3443,6 +3443,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="634500758737709758">Útvonalterv</translation>
 <translation id="6348220984832452017">Aktív változatok</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> telepítése</translation>
+<translation id="6350739641326887427">Fizethet a Pix-kód másolása és beillesztése nélkül. <ph name="BEGIN_LINK1" />Nézze meg, hogyan működik<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Böngészési adatok törlése</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nincs}=1{1 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}=2{2 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}other{# jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}}</translation>
 <translation id="6354918092619878358">SECG elliptikus görbe secp256r1 (vagyis ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3609,7 +3610,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6587923378399804057">Vágólapra másolt link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> eszköze nem áll felügyelet alatt</translation>
 <translation id="6595495738567740002">Ha törölni szeretné a Google cookie-jait erről az eszközről, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Titkosítási lehetőségek</translation>
 <translation id="6596573334527383067">Tegnapi találatok megjelenítése</translation>
 <translation id="6597665340361269064">90 fok</translation>
 <translation id="6598976221101665070">Filmdrámák</translation>
@@ -3659,6 +3659,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="668132230070712111">A videó mentve a Google Drive-ra</translation>
 <translation id="6681790815630918386">CVC mentve</translation>
 <translation id="6683022854667115063">Fejhallgató</translation>
+<translation id="6686570026048064255">A Pix-kód észlelésének kikapcsolásához nyissa meg a <ph name="BEGIN_LINK1" />Chrome-beállításokat<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Boríték (sima)</translation>
 <translation id="6687335167692595844">Kért betűméret</translation>
 <translation id="6688743156324860098">Frissítés…</translation>
@@ -3884,7 +3885,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="702275896380648118">Ez a webhely kikövetkezteti az Ön által kedvelt dolgokat, majd hirdetéseket ajánl más webhelyeknek. Emellett lekéri az Önre vonatkozó hirdetéstémákat a Chrome-ból, hogy relevánsabb hirdetéseket jelenítsen meg Önnek.</translation>
 <translation id="7023162328967545559">Adminisztrátori figyelmeztetés</translation>
 <translation id="7023765275461720661">Összekapcsolja a fiókot, hogy fizethessen a következővel: <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Jelszavak</translation>
 <translation id="7030164307377592766">módosítani próbálja a fizetési módok kitöltési beállításait</translation>
 <translation id="7031110846419387930">A böngészővel, az operációs rendszerrel, az eszközzel, a telepített szoftverekkel, a fájlokkal és az IP-címekkel kapcsolatos információk</translation>
 <translation id="7031646650991750659">Ön milyen Google Play-alkalmazásokat telepített.</translation>

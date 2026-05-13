@@ -664,6 +664,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1449191289887455076">Bonyeza “<ph name="CURRENTKEY" />” tena ili uthibitishe swichi uliyokabidhi na <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Fungua Wasifu wa Mgeni</translation>
 <translation id="1451375123200651445">Ukurasa wa wavuti, Faili Moja</translation>
+<translation id="1452651021404174820">Chagua kifaa</translation>
 <translation id="1453561711872398978">Tuma <ph name="BEGIN_LINK" />
     kumbukumbu za utatuzi<ph name="END_LINK" /> (inapendekezwa)</translation>
 <translation id="1454223536435069390">Piga picha ya skrini</translation>
@@ -1740,6 +1741,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2178545675770638239">Chagua Nenosiri</translation>
 <translation id="2178585470774851578">Unawasha vipengele vya utatuzi vya ChromeOS Flex ambavyo vitaweka mipangilio ya sshd daemon na kuruhusu uwashe kutoka kwenye Hifadhi za USB.</translation>
 <translation id="2178614541317717477">Kuvurugwa kwa Mamlaka ya Cheti</translation>
+<translation id="2180082148774168439">Fikia tovuti hii katika dirisha mahususi kwenye kompyuta yako</translation>
 <translation id="2180620921879609685">Kuzuia maudhui kwenye ukurasa wowote</translation>
 <translation id="2181821976797666341">Sera</translation>
 <translation id="2182058453334755893">Yamenakiliwa kwenye Ubao wa Kunakili</translation>
@@ -4015,6 +4017,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3735039640698208086">Unapocheza sauti...</translation>
 <translation id="3735740477244556633">Panga kwa</translation>
 <translation id="3735827758948958091">Haiwezi kufungua <ph name="FILE_NAMES" /> ukiwa unatumia muunganisho unaopima data</translation>
+<translation id="3736487688526377259">Chagua kifaa ambako ungependa kupata kiungo hiki.</translation>
 <translation id="3737058101969549870">Ungependa kutenganisha data iliyopo ya kuvinjari na wasifu huu mpya?</translation>
 <translation id="3738632186060045350">Data ya <ph name="DEVICE_TYPE" /> itafutwa baada ya saa 24</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7869,6 +7872,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6453687572758515877">Weka Vichupo Vyote katika Kikundi</translation>
 <translation id="6453921811609336127">Kubadilisha utumie mbinu ya kuingiza data inayofuata, bonyeza <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />kitufe cha Nafasi<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Hatua hii itafuta kabisa data yako ya kuvinjari kwenye kifaa hiki. Ili urejeshe data, ingia katika akaunti ukitumia</translation>
+<translation id="6454456397828627257">Upande kwa upande</translation>
 <translation id="6455264371803474013">Kwenye tovuti mahususi</translation>
 <translation id="6455521402703088376">Kimezimwa • Uchapishaji wa kiendelezi hiki ulibatilishwa na msanidi programu</translation>
 <translation id="6455894534188563617">Na Folda Mpya</translation>

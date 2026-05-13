@@ -549,6 +549,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1832474362231610822">Foto opgeslagen in OneDrive</translation>
 <translation id="1832730227369924598">Bureausynchronisatie</translation>
 <translation id="1834452765064623979">Bouw en onderhoud</translation>
+<translation id="1837606605602726453">De risicoscore en -categorieën worden genegeerd omdat de extensie expliciet is toegestaan of geblokkeerd door de beheerder.</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
 <translation id="1839331950812095887">een paar woorden die je gedachten samenvatten</translation>
 <translation id="1839551713262164453">De validatie van de beleidswaarden is mislukt doordat er fouten zijn opgetreden</translation>
@@ -3605,7 +3606,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6587923378399804057">Link die je hebt gekopieerd</translation>
 <translation id="6591833882275308647">Je <ph name="DEVICE_TYPE" /> wordt niet beheerd</translation>
 <translation id="6595495738567740002">Als je Google-cookies van dit apparaat wilt verwijderen, <ph name="BEGIN_LINK" />log je uit bij Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Opties voor versleuteling</translation>
 <translation id="6596573334527383067">Resultaten van gisteren tonen</translation>
 <translation id="6597665340361269064">90 graden</translation>
 <translation id="6598976221101665070">Dramafilms</translation>
@@ -3880,7 +3880,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="7023162328967545559">Beheerderswaarschuwing</translation>
 <translation id="7023765275461720661">Account koppelen en betalen met <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7030164307377592766">instellingen voor het invullen van betaalmethoden aanpassen</translation>
 <translation id="7031110846419387930">Informatie over je browser, OS, apparaat, geïnstalleerde software, bestanden en IP-adressen</translation>
 <translation id="7031646650991750659">Welke Google Play-apps je hebt geïnstalleerd</translation>

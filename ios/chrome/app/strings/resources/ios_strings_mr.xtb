@@ -281,6 +281,7 @@
 <translation id="1925706052394657380">iOS मध्ये <ph name="BEGIN_BOLD" />डीफॉल्ट अ‍ॅप्स<ph name="END_BOLD" /> सेटिंग्ज उघडा</translation>
 <translation id="1941314575388338491">कॉपी करण्‍यासाठी दोनदा टॅप करा.</translation>
 <translation id="1943478190258551035">मेनू → सेटिंग्ज</translation>
+<translation id="1948562571551232853">Gemini बिल्ट इन</translation>
 <translation id="1952728750904661634">व्यवस्थापित केलेल्या खात्यासह साइन इन करा</translation>
 <translation id="1955773397805078763">पेमेंट पद्धत जोडा</translation>
 <translation id="1956138802718275401">होम स्क्रीनवरून पासवर्ड मिळवा</translation>
@@ -853,7 +854,6 @@
 <translation id="4018440314314549819">सेव्ह केलेले पासवर्ड ऑटोफिल करा</translation>
 <translation id="4021447724486050609">तुमचा ब्राउझर अपडेट करा</translation>
 <translation id="4021931095789478915">वाचन सूचीमध्ये ${url} जोडा</translation>
-<translation id="4026496154402824012">बंद करण्यासाठी, <ph name="BEGIN_LINK" />पासवर्डचे पर्याय<ph name="END_LINK" /> यावर जा</translation>
 <translation id="4028871427853484857">खात्यामध्ये सेव्ह करा…</translation>
 <translation id="4038354071007134711">या डिव्हाइसवरील कोणतीही ॲप्लिकेशन फाइल उघडू शकत नाही.</translation>
 <translation id="4042870976416480368">पेजमध्ये शोधा</translation>
@@ -1263,6 +1263,7 @@
 <translation id="5457082343331641453">तुमच्या शोधामध्ये जोडा</translation>
 <translation id="5457226814769348910">ऑफलाइन आवृत्ती उघडा</translation>
 <translation id="5467163657366219870">Maps पूर्वावलोकने बंद करा</translation>
+<translation id="5467596285052510344">सारांश देण्यासाठी, स्पष्ट करण्यासाठी आणि आणखी बऱ्याच गोष्टींसाठी Gemini वापरा.</translation>
 <translation id="5474397204728336997">कुटुंबाचे पासवर्ड, नवीन कस्टमायझेशन आणि आणखी बरेच काही. अधिक जाणून घेण्यासाठी टॅप करा.</translation>
 <translation id="5475793109165786685">{count,plural, =0{कोणताही पासवर्ड इंपोर्ट केला नाही}=1{{count} पासवर्ड इंपोर्ट केला आहे}other{{count} पासवर्ड इंपोर्ट केले आहेत}}</translation>
 <translation id="5478327362747197944">वेब पेजवरील तारखेवर क्लिक करून थेट कॅलेंडर इव्हेंट तयार करा.</translation>
@@ -1607,7 +1608,6 @@
 <translation id="6571070086367343653">क्रेडिट कार्ड संपादित करा</translation>
 <translation id="6574092468346088891">सुरक्षितता तपासणी साठी नोटिफिकेशन सुरू करा</translation>
 <translation id="6579867704846662339">तुम्ही गुप्त मोड मध्ये इतर ॲप्सवरून येणाऱ्या URLs उघडण्याचा पर्याय निवडू शकता.</translation>
-<translation id="6583087784430677195">बंद करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> उघडा आणि ऑटोफिल पासवर्ड वर जा.</translation>
 <translation id="6585618849026997638">बुकमार्क जोडून तुम्ही तुमच्यासाठी महत्त्वाच्या असलेल्या पेजवर परत जाऊ शकता</translation>
 <translation id="6589001036857939353">डुप्लिकेट मर्ज करा</translation>
 <translation id="659407965921887085">तुम्ही सध्या माग ठेवत असलेल्या उत्पादनांसंबंधित संपूर्ण वेबवरील किमतीतील घट या कार्डवर दाखवली आहे</translation>
@@ -1669,7 +1669,6 @@
 <translation id="6746338529702829275">तुमच्या खाते डेटाचे पुनरावलोकन करा</translation>
 <translation id="6750456911389438250">{count,plural, =1{इतिहासाचा {count} आयटम इंपोर्ट केला आहे}other{इतिहासाचे {count} आयटम इंपोर्ट केले आहेत}}</translation>
 <translation id="6755200887046212842">खाती व्यवस्थापित करा</translation>
-<translation id="6755733078693946548">कोणत्याही अ‍ॅपवरून पासवर्ड आणि पासकी अ‍ॅक्सेस करा</translation>
 <translation id="6759709389246683070">नंतर पुन्हा भेट देण्यासाठी रिमाइंडर सेट करण्याकरिता तुम्ही या टॅबला स्‍पर्श करून धरून ठेवू शकता</translation>
 <translation id="6761393919622941301">ऑडिओ</translation>
 <translation id="6770452996697898492">[बुक केला]</translation>
@@ -1746,6 +1745,7 @@
 <translation id="7015418667643980944">विभाजित दृश्य</translation>
 <translation id="7016070607649558507">तुमच्याकडे १ कमकुवत पासवर्ड आहे. सुरक्षित राहण्यासाठी त्याचे आता निराकरण करा.</translation>
 <translation id="7016958933495968912">Discover फीडसाठी पर्याय</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> शोध</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7035825883570480307">नोटिफिकेशन सुरू करायची आहेत का?</translation>
 <translation id="7039345315346323556">अलीकडील</translation>
@@ -2012,7 +2012,6 @@
 <translation id="797588153137233716">मेनू → इतिहास → ब्राउझिंग डेटा हटवा</translation>
 <translation id="7977451675950311423">तुम्ही डेटा भंगामध्ये धोक्यात असलेला पासवर्ड वापरल्यास, तुम्हाला चेतावणी देते.</translation>
 <translation id="797824194429476746">या डिव्हाइसवर टॅब उघडे राहतील, पण गट कायमचा हटवला जाईल.</translation>
-<translation id="797874245254030665">कोणत्याही ॲपवरून तुमचे पासवर्ड आणि पासकी ॲक्सेस करा</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="798299424881500862">ऑरेंज थीम</translation>
 <translation id="7987685713885608670">अतिरिक्त सुरक्षिततेसाठी, पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी ते तुमच्या डिव्हाइसवर एंक्रिप्ट करा.</translation>

@@ -201,6 +201,7 @@
 <translation id="1657011748321897393">Dijeljenje nije uspjelo jer niste povezani na mrežu.</translation>
 <translation id="1668001730617725852">Otvori u novoj grupi kartica</translation>
 <translation id="1670861525135254448">Sačuvajte vozilo</translation>
+<translation id="1671568970992212376">Pohranjujte fotografije na Google Fotografijama i pristupajte im bilo kada.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Na osnovu pravila vaše organizacije, ovaj fajl možda sadržava osjetljive informacije</translation>
 <translation id="168389590065701766">Sada možete otvoriti Google Objektiv iz trake za adresu i pretražiti bilo šta što vidite</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Automatski popunjavajte sačuvane lozinke</translation>
 <translation id="4021447724486050609">Ažurirajte preglednik</translation>
 <translation id="4021931095789478915">Dodaj ${url} na listu za čitanje</translation>
-<translation id="4026496154402824012">Da isključite ovo, idite u <ph name="BEGIN_LINK" />Opcije lozinki<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Pohranjivanje na račun…</translation>
 <translation id="4038354071007134711">Nijedna aplikacija na ovom uređaju ne može otvoriti ovaj fajl.</translation>
 <translation id="4042870976416480368">Pronađi na ovoj stranici</translation>
@@ -1605,7 +1605,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6571070086367343653">Uređivanje kreditne kartice</translation>
 <translation id="6574092468346088891">Uključite obavještenja za sigurnosnu provjeru</translation>
 <translation id="6579867704846662339">Možete odabrati otvaranje dolaznih URL-ova iz drugih aplikacija u anonimnom načinu rada.</translation>
-<translation id="6583087784430677195">Da isključite, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" /> i idite u Automatsko popunjavanje lozinki.</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
 <translation id="6589001036857939353">Spoji duplikate</translation>
 <translation id="659407965921887085">Ova kartica prikazuje padove cijena proizvoda koje trenutno pratite na webu</translation>
@@ -1667,7 +1666,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6746338529702829275">Pregledajte podatke o računu</translation>
 <translation id="6750456911389438250">{count,plural, =1{Uvezena je {count} stavka historije}one{Uvezena je {count} stavka historije}few{Uvezene su {count} stavke historije}other{Uvezeno je {count} stavki historije}}</translation>
 <translation id="6755200887046212842">Upravljanje računima</translation>
-<translation id="6755733078693946548">Pristupajte lozinkama i pristupnim ključevima iz bilo koje aplikacije</translation>
 <translation id="6759709389246683070">Možete dodirnuti i zadržati ovu karticu da postavite podsjetnik da je ponovo posjetite</translation>
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6770452996697898492">[REZERVIRANO]</translation>
@@ -2010,7 +2008,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="797588153137233716">Meni → Historija → Izbriši podatke pregledanja</translation>
 <translation id="7977451675950311423">Upozorava vas ako koristite lozinku ugroženu narušavanjem podataka.</translation>
 <translation id="797824194429476746">Kartice će ostati otvorene na uređaju, ali će se grupa trajno izbrisati.</translation>
-<translation id="797874245254030665">Pristupajte lozinkama i pristupnim ključevima iz bilo koje aplikacije</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="798299424881500862">Narandžasta tema</translation>
 <translation id="7987685713885608670">Da imate dodatnu sigurnost, šifrirajte lozinke na uređaju prije nego što se pohrane u Googleov Upravitelj lozinki.</translation>

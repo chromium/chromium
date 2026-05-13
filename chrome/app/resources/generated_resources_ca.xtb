@@ -7855,6 +7855,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6453687572758515877">Agrupa totes les pestanyes</translation>
 <translation id="6453921811609336127">Per canviar al mètode d'introducció de text següent, prem <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Maj<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espai<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Amb aquesta acció, les dades de navegació d'aquest dispositiu se suprimiran permanentment. Per recuperar-les, inicia la sessió com a</translation>
+<translation id="6454456397828627257">En paral·lel</translation>
 <translation id="6455264371803474013">En llocs web específics</translation>
 <translation id="6455521402703088376">Desactivada • El desenvolupador de l'extensió ha anul·lat la seva publicació</translation>
 <translation id="6455894534188563617">Carpeta &amp;nova</translation>
@@ -10866,7 +10867,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8536956381488731905">So en prémer tecles</translation>
 <translation id="8537458941885662287">Activitat a l'aplicació Gemini</translation>
 <translation id="8539727552378197395">No (Només HTTP)</translation>
-<translation id="8539766201049804895">Actualitza</translation>
+<translation id="8539766201049804895">Canvia de pla</translation>
 <translation id="8540136935098276800">Introdueix un URL amb el format correcte</translation>
 <translation id="8540503336857689453">Per motius de seguretat, no es recomana utilitzar una xarxa amagada.</translation>
 <translation id="854071720451629801">Marca com a llegit</translation>

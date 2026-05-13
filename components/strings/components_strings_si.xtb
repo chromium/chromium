@@ -3446,6 +3446,7 @@
 <translation id="634500758737709758">දිශාවන්</translation>
 <translation id="6348220984832452017">සක්‍රිය විචලන</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ස්ථාපන කරන්න</translation>
+<translation id="6350739641326887427">Pix කේතය පිටපත් කර ඇලවීමකින් තොරව ගෙවන්න. <ph name="BEGIN_LINK1" />එය ක්‍රියා කරන ආකාරය බලන්න<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{කිසිවක් නැත}=1{1 මුරපදයක් (<ph name="DOMAIN_LIST" /> සඳහා, සමමුහූර්තයි)}=2{මුරපද 2 ක් (<ph name="DOMAIN_LIST" /> සඳහා, සමමුහූර්තයි)}one{මුරපද # ක් (<ph name="DOMAIN_LIST" /> සඳහා, සමමුහූර්තයි)}other{මුරපද # ක් (<ph name="DOMAIN_LIST" /> සඳහා, සමමුහූර්තයි)}}</translation>
 <translation id="6354918092619878358">SECG ඉලිප්සාකාර වක්‍ර secp256r1 (එනම් ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3613,6 @@
 <translation id="6587923378399804057">ඔබ පිටපත් කළ සබැඳිය</translation>
 <translation id="6591833882275308647">ඔබේ <ph name="DEVICE_TYPE" /> කළමනා නොකෙරේ</translation>
 <translation id="6595495738567740002">මෙම උපාංගයෙන් Google කුකීස් මැකීමට, <ph name="BEGIN_LINK" />Chrome වෙතින් වරන්න<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">සංකේතනය කිරීමේ විකල්ප</translation>
 <translation id="6596573334527383067">ඊයේ සිට ප්‍රතිඵල පෙන්වන්න</translation>
 <translation id="6597665340361269064">අංශක 90</translation>
 <translation id="6598976221101665070">නාට්‍ය චිත්‍රපට</translation>
@@ -3662,6 +3662,7 @@
 <translation id="668132230070712111">වීඩියෝව Google Drive වෙත සුරකින ලදි</translation>
 <translation id="6681790815630918386">CVC සුරැකිණි</translation>
 <translation id="6683022854667115063">හෙඩ්ෆෝන්</translation>
+<translation id="6686570026048064255">Pix කේත අනාවරණය ක්‍රියාවිරහිත කිරීමට, <ph name="BEGIN_LINK1" />Chrome සැකසීම්<ph name="END_LINK1" /> වෙත යන්න</translation>
 <translation id="6687230248707087982">ලියුම් කවරය (පැහැදිලි)</translation>
 <translation id="6687335167692595844">අකුරු ප්‍රමාණය ඉල්ලුවා</translation>
 <translation id="6688743156324860098">යාවත්කාලීන කරන්න…</translation>
@@ -3887,7 +3888,6 @@
 <translation id="702275896380648118">මෙම අඩවිය ඔබ කැමති දේවල් තීරණය කර පසුව වෙනත් අඩවිවලට දැන්වීම් යෝජනා කරයි. මෙම අඩවිය ඔබට වඩාත් අදාළ දැන්වීම් පෙන්වීමට Chrome වෙතින් ඔබේ දැන්වීම් මාතෘකා ද ලබා ගනී.</translation>
 <translation id="7023162328967545559">පරිපාලක අනතුරු ඇඟවීම</translation>
 <translation id="7023765275461720661">ගිණුම සම්බන්ධ කර <ph name="BNPL_ISSUER_NAME" /> සමග ගෙවන්න ද?</translation>
-<translation id="7029809446516969842">මුරපද</translation>
 <translation id="7030164307377592766">ගෙවීමේ ක්‍රමය පිරවීම සඳහා සැකසීම් වෙනස් කරන්න.</translation>
 <translation id="7031110846419387930">ඔබේ බ්‍රවුසරය, මෙහෙයුම් පද්ධතිය, උපාංගය, ස්ථාපිත මෘදුකාංග, ගොනු සහ IP ලිපින පිළිබඳ තොරතුරු</translation>
 <translation id="7031646650991750659">ඔබ ස්ථාපන කර ඇති Google Play යෙදුම් මොනවාද</translation>

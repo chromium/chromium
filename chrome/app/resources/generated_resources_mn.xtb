@@ -664,6 +664,7 @@
 <translation id="1449191289887455076">Оноолтыг баталгаажуулахын тулд “<ph name="CURRENTKEY" />” дээр дахин дарж, <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Зочны профайлыг нээх</translation>
 <translation id="1451375123200651445">Веб хуудас, Нэг файл</translation>
+<translation id="1452651021404174820">Төхөөрөмж сонгох</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     Дебаг хийх лог<ph name="END_LINK" /> илгээх (санал болгосон)</translation>
 <translation id="1454223536435069390">Дэлгэцийн зураг авах</translation>
@@ -1740,6 +1741,7 @@
 <translation id="2178545675770638239">Нууц үг сонгоно уу</translation>
 <translation id="2178585470774851578">Та sshd daemon-г тохируулж, USB драйвуудыг ачаалахыг идэвхжүүлэх ChromeOS Flex-н дебагийн онцлогуудыг идэвхжүүлж байна.</translation>
 <translation id="2178614541317717477">CA Compromise</translation>
+<translation id="2180082148774168439">Компьютер дээрээ зориулалтын цонхонд энэ сайтад хандаарай</translation>
 <translation id="2180620921879609685">Аливаа хуудсан дээрх контентыг блоклох</translation>
 <translation id="2181821976797666341">Тохиргоонууд</translation>
 <translation id="2182058453334755893">Түр санах ой руу хуулсан</translation>
@@ -4014,6 +4016,7 @@
 <translation id="3735039640698208086">Аудио тоглуулж байх үед...</translation>
 <translation id="3735740477244556633">Дараахаар эрэмбэлэх</translation>
 <translation id="3735827758948958091">Хязгаартай холболттой байхад <ph name="FILE_NAMES" />-г нээх боломжгүй</translation>
+<translation id="3736487688526377259">Та энэ холбоосыг авахыг хүсэж буй төхөөрөмжөө сонгоно уу.</translation>
 <translation id="3737058101969549870">Одоо байгаа интернэтээр үзсэн өгөгдлийг энэ шинэ профайлаас тусад нь байлгах уу?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-н өгөгдөл 24 цагийн дараа устана</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7869,6 +7872,7 @@
 <translation id="6453687572758515877">Бүх табыг бүлэглэх</translation>
 <translation id="6453921811609336127">Сүүлд ашигласан оруулах арга руу сэлгэхийн тулд <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Зай авах товч<ph name="END_SPACE" /><ph name="END_SHORTCUT" />-ийг дарна уу</translation>
 <translation id="645433497989692531">Ингэснээр таны төхөөрөмжөөс интернэтээр үзсэн өгөгдлийг бүрмөсөн устгана. Өгөгдлийг сэргээхийн тулд дараахаар нэвтэрнэ үү</translation>
+<translation id="6454456397828627257">Зэрэгцсэн</translation>
 <translation id="6455264371803474013">Зөвхөн сонгосон сайтуудад</translation>
 <translation id="6455521402703088376">Унтраалттай • Энэ өргөтгөлийг хөгжүүлэгч нь нийтлэхээ больсон</translation>
 <translation id="6455894534188563617">&amp;Шинэ фолдер</translation>

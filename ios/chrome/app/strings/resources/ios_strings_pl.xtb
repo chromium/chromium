@@ -853,7 +853,6 @@
 <translation id="4018440314314549819">Automatycznie uzupełniaj zapisane hasła</translation>
 <translation id="4021447724486050609">Zaktualizuj przeglądarkę</translation>
 <translation id="4021931095789478915">Dodaj ${url} do listy Do przeczytania</translation>
-<translation id="4026496154402824012">Aby wyłączyć tę funkcję, otwórz <ph name="BEGIN_LINK" />Opcje dotyczące haseł<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Zapisz na koncie…</translation>
 <translation id="4038354071007134711">Nie masz aplikacji, która może otworzyć ten plik.</translation>
 <translation id="4042870976416480368">Znajdź na stronie</translation>
@@ -1606,7 +1605,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6571070086367343653">Edytuj kartę kredytową</translation>
 <translation id="6574092468346088891">Włącz powiadomienia dotyczące kontroli zabezpieczeń</translation>
 <translation id="6579867704846662339">Przychodzące adresy URL z innych aplikacji możesz otwierać w trybie incognito.</translation>
-<translation id="6583087784430677195">Aby wyłączyć funkcję, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" /> i przejdź do sekcji Automatyczne wypełnianie haseł.</translation>
 <translation id="6585618849026997638">Utwórz zakładkę, jeśli chcesz wrócić do interesującej Cię strony</translation>
 <translation id="6589001036857939353">Scal duplikaty</translation>
 <translation id="659407965921887085">Ta karta pokazuje obniżki cen produktów w internecie, które obecnie śledzisz</translation>
@@ -1668,7 +1666,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
 <translation id="6750456911389438250">{count,plural, =1{Zaimportowano {count} element historii}few{Zaimportowano {count} elementy historii}many{Zaimportowano {count} elementów historii}other{Zaimportowano {count} elementu historii}}</translation>
 <translation id="6755200887046212842">Zarządzaj kontami</translation>
-<translation id="6755733078693946548">Uzyskuj dostęp do haseł i kluczy dostępu z dowolnej aplikacji</translation>
 <translation id="6759709389246683070">Możesz nacisnąć i przytrzymać tę kartę, aby ustawić przypomnienie, że chcesz wyświetlić ją później</translation>
 <translation id="6761393919622941301">Dźwięk</translation>
 <translation id="6770452996697898492">[ZAREZERWOWANO]</translation>
@@ -2011,7 +2008,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="797588153137233716">Menu → Historia → Usuń dane przeglądania</translation>
 <translation id="7977451675950311423">Ostrzega, jeśli użyjesz hasła, które zostało przejęte w wyniku naruszenia bezpieczeństwa danych.</translation>
 <translation id="797824194429476746">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie trwale usunięta.</translation>
-<translation id="797874245254030665">Uzyskuj dostęp do haseł i kluczy dostępu z dowolnej aplikacji</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="798299424881500862">Motyw pomarańczowy</translation>
 <translation id="7987685713885608670">Zanim zapiszesz hasła w menedżerze haseł Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo.</translation>

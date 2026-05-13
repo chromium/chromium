@@ -280,6 +280,7 @@
 <translation id="1925706052394657380">Mở phần cài đặt <ph name="BEGIN_BOLD" />Ứng dụng mặc định<ph name="END_BOLD" /> trong iOS</translation>
 <translation id="1941314575388338491">Nhấn đúp để sao chép.</translation>
 <translation id="1943478190258551035">Trình đơn → Cài đặt</translation>
+<translation id="1948562571551232853">Gemini được tích hợp sẵn</translation>
 <translation id="1952728750904661634">Đăng nhập bằng tài khoản được quản lý</translation>
 <translation id="1955773397805078763">Thêm phương thức thanh toán</translation>
 <translation id="1956138802718275401">Truy cập vào mật khẩu từ màn hình chính</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Tự động điền mật khẩu đã lưu</translation>
 <translation id="4021447724486050609">Cập nhật trình duyệt của bạn</translation>
 <translation id="4021931095789478915">Thêm ${url} vào danh sách đọc</translation>
-<translation id="4026496154402824012">Để tắt, hãy chuyển đến phần <ph name="BEGIN_LINK" />Các lựa chọn mật khẩu<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Lưu vào tài khoản…</translation>
 <translation id="4038354071007134711">Không ứng dụng nào trên thiết bị này có thể mở tệp.</translation>
 <translation id="4042870976416480368">Tìm trong trang</translation>
@@ -1262,6 +1262,7 @@
 <translation id="5457082343331641453">Thêm vào nội dung tìm kiếm</translation>
 <translation id="5457226814769348910">Mở phiên bản ngoại tuyến</translation>
 <translation id="5467163657366219870">Tắt tính năng Xem trước bản đồ</translation>
+<translation id="5467596285052510344">Gemini có thể tóm tắt, giải thích và làm nhiều việc khác.</translation>
 <translation id="5474397204728336997">Mật khẩu cho nhóm gia đình, các chế độ tuỳ chỉnh mới và nhiều tính năng khác. Nhấn để tìm hiểu thêm.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Chưa nhập mật khẩu nào}=1{Đã nhập {count} mật khẩu}other{Đã nhập {count} mật khẩu}}</translation>
 <translation id="5478327362747197944">Tạo trực tiếp Sự kiện trên lịch bằng cách nhấp vào một ngày trên trang web.</translation>
@@ -1605,7 +1606,6 @@
 <translation id="6571070086367343653">Chỉnh sửa thẻ tín dụng</translation>
 <translation id="6574092468346088891">Bật thông báo của tính năng Kiểm tra an toàn</translation>
 <translation id="6579867704846662339">Bạn có thể chọn mở URL nhận được từ các ứng dụng khác ở chế độ Ẩn danh.</translation>
-<translation id="6583087784430677195">Để tắt, hãy mở phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" /> rồi chuyển đến phần Tự động điền mật khẩu.</translation>
 <translation id="6585618849026997638">Bạn có thể thêm dấu trang để truy cập lại một trang mà bạn thấy quan trọng</translation>
 <translation id="6589001036857939353">Hợp nhất thông tin trùng lặp</translation>
 <translation id="659407965921887085">Thẻ này cho thấy mức giảm giá trên web của những sản phẩm mà bạn đang theo dõi</translation>
@@ -1667,7 +1667,6 @@
 <translation id="6746338529702829275">Kiểm tra dữ liệu tài khoản của bạn</translation>
 <translation id="6750456911389438250">{count,plural, =1{Đã nhập {count} mục trong nhật ký}other{Đã nhập {count} mục trong nhật ký}}</translation>
 <translation id="6755200887046212842">Quản lý tài khoản</translation>
-<translation id="6755733078693946548">Truy cập mật khẩu và khoá truy cập từ bất kỳ ứng dụng nào</translation>
 <translation id="6759709389246683070">Bạn có thể chạm và giữ thẻ này để đặt lời nhắc xem lại sau</translation>
 <translation id="6761393919622941301">Âm thanh</translation>
 <translation id="6770452996697898492">[ĐÃ ĐẶT CHỖ]</translation>
@@ -1744,6 +1743,7 @@
 <translation id="7015418667643980944">Chế độ xem chia đôi màn hình</translation>
 <translation id="7016070607649558507">Bạn có 1 mật khẩu yếu. Hãy khắc phục ngay để giữ an toàn.</translation>
 <translation id="7016958933495968912">Các lựa chọn cho nguồn cấp dữ liệu khám phá</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Tìm kiếm</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
 <translation id="7035825883570480307">Bạn muốn bật thông báo?</translation>
 <translation id="7039345315346323556">Gần đây</translation>
@@ -2010,7 +2010,6 @@
 <translation id="797588153137233716">Trình đơn → Nhật ký → Xoá dữ liệu duyệt web</translation>
 <translation id="7977451675950311423">Cảnh báo bạn nếu bạn sử dụng mật khẩu đã bị lộ trong một sự cố rò rỉ dữ liệu.</translation>
 <translation id="797824194429476746">Thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá vĩnh viễn.</translation>
-<translation id="797874245254030665">Truy cập mật khẩu và khoá truy cập của bạn từ mọi ứng dụng</translation>
 <translation id="7982789257301363584">Mạng</translation>
 <translation id="798299424881500862">Giao diện màu cam</translation>
 <translation id="7987685713885608670">Để tăng mức độ an toàn, hãy mã hoá mật khẩu trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google.</translation>

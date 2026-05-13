@@ -549,6 +549,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1832474362231610822">Foto salva no OneDrive</translation>
 <translation id="1832730227369924598">Sincronização do espaço de trabalho</translation>
 <translation id="1834452765064623979">Construção e manutenção</translation>
+<translation id="1837606605602726453">A pontuação de risco e as categorias são ignoradas porque a extensão foi explicitamente permitida ou bloqueada pelo admin.</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839331950812095887">algumas palavras que resumem seus pensamentos</translation>
 <translation id="1839551713262164453">Falha com erros na validação dos valores da política</translation>
@@ -1860,6 +1861,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3875783148670536197">Me ajude a fazer isso</translation>
 <translation id="3877603629930976930">Não compartilhar</translation>
 <translation id="3878445208930547646">Não é permitido copiar o conteúdo desse site</translation>
+<translation id="3879674895057686427">Escolha para qual idioma traduzir</translation>
 <translation id="3879748587602334249">Gerenciador de downloads</translation>
 <translation id="3880456882942693779">Artes e entretenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicações</translation>
@@ -3613,7 +3615,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6587923378399804057">Link que você copiou</translation>
 <translation id="6591833882275308647">Seu <ph name="DEVICE_TYPE" /> não é gerenciado</translation>
 <translation id="6595495738567740002">Para excluir os cookies do Google deste dispositivo, <ph name="BEGIN_LINK" />saia do Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Opções de criptografia</translation>
 <translation id="6596573334527383067">Mostrar resultados de ontem</translation>
 <translation id="6597665340361269064">90 graus</translation>
 <translation id="6598976221101665070">Drama</translation>
@@ -3889,7 +3890,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="702275896380648118">Este site determina seus interesses e sugere anúncios para outros sites. Ele também usa seus temas de anúncios do Chrome para mostrar anúncios mais relevantes.</translation>
 <translation id="7023162328967545559">Aviso do administrador</translation>
 <translation id="7023765275461720661">Vincular a conta e pagar com <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Senhas</translation>
 <translation id="7030164307377592766">modificar as configurações para preenchimento de formas de pagamento</translation>
 <translation id="7031110846419387930">Informações sobre seu navegador, SO, dispositivo, softwares instalados, arquivos e endereços IP</translation>
 <translation id="7031646650991750659">quais apps do Google Play estão instalados.</translation>

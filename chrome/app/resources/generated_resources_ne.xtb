@@ -664,6 +664,7 @@
 <translation id="1449191289887455076">की तोक्ने काम पुष्टि गरेर <ph name="RESPONSE" /> "<ph name="CURRENTKEY" />" की फेरि थिच्नुहोस्</translation>
 <translation id="1450484535522155181">अतिथि प्रोफाइल खोल्नुहोस्</translation>
 <translation id="1451375123200651445">वेबपेज, एकल फाइल</translation>
+<translation id="1452651021404174820">कुनै डिभाइस छनौट गर्नुहोस्</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     डिबगसम्बन्धी लगहरू<ph name="END_LINK" /> पठाउनुहोस् (सिफारिस गरिएको)</translation>
 <translation id="1454223536435069390">स्क्रिसट लि&amp;नुहोस्</translation>
@@ -1734,6 +1735,7 @@
 <translation id="2178545675770638239">पासवर्ड चयन गर्नुहोस्</translation>
 <translation id="2178585470774851578">तपाईं ChromeOS Flex का डिबग गर्ने सुविधाहरू अन गर्दै हुनुहुन्छ। ती सुविधा अन भएपछि sshd daemon सेटअप हुने छ र USB ड्राइभबाट बुट गर्ने सुविधा अन हुने छ।</translation>
 <translation id="2178614541317717477">CA सम्झौता</translation>
+<translation id="2180082148774168439">आफ्नो कम्प्युटरको छुट्टै विन्डोमा यो साइट एक्सेस गर्नुहोस्</translation>
 <translation id="2180620921879609685">कुनै पनि पेजमा भएका सामग्री ब्लक गर्न</translation>
 <translation id="2181821976797666341">नीतिहरू</translation>
 <translation id="2182058453334755893">तपाईंको क्लिपबोर्डमा कपी गरियो</translation>
@@ -4004,6 +4006,7 @@
 <translation id="3735039640698208086">अडियो बजाइरहेको बेला...</translation>
 <translation id="3735740477244556633">यसअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3735827758948958091">सीमा तोकिएको इन्टरनेटमा कनेक्ट गरिएका बेला <ph name="FILE_NAMES" /> खोल्न सकिँदैन</translation>
+<translation id="3736487688526377259">तपाईं जुन डिभाइसमा यो लिंक प्राप्त गर्न चाहनुहुन्छ उक्त डिभाइस चयन गर्नुहोस्।</translation>
 <translation id="3737058101969549870">हालको ब्राउजिङ डेटा यो नयाँ प्रोफाइलबाट अलग्गै राख्ने हो?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> मा भएको डेटा २४ घन्टापछि मेटाइने छ</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7858,6 +7861,7 @@
 <translation id="6453687572758515877">सबै ट्याबहरूको समूह बनाउनुहोस्</translation>
 <translation id="6453921811609336127">अर्को इनपुट विधि प्रयोग गर्न <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> थिच्नुहोस्</translation>
 <translation id="645433497989692531">तपाईंले यो प्रोफाइल मेटाउनुभयो भने यो डिभाइसबाट तपाईंको ब्राउजिङ डेटा सदाका लागि मेटाइने छ। उक्त डेटा रिकभर गर्न यो खातामार्फत साइन इन गर्नुहोला:</translation>
+<translation id="6454456397828627257">सँगसँगै</translation>
 <translation id="6455264371803474013">खास साइटहरूमा</translation>
 <translation id="6455521402703088376">अफ • यो एक्स्टेन्सनको विकासकर्ताले यो एक्स्टेन्सनको प्रकाशन रद्द गरेको हो</translation>
 <translation id="6455894534188563617">&amp;नयाँ फोल्डर</translation>

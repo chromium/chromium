@@ -7848,6 +7848,7 @@
 <translation id="6453687572758515877">將所有分頁加入群組</translation>
 <translation id="6453921811609336127">如要切換至下一個輸入法，請按下 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> 鍵</translation>
 <translation id="645433497989692531">這項操作會將你的瀏覽資料從這部裝置中永久刪除。如要還原資料，請以下列身分登入：</translation>
+<translation id="6454456397828627257">並排</translation>
 <translation id="6455264371803474013">特定網站</translation>
 <translation id="6455521402703088376">已關閉 • 開發人員已取消發布這項擴充功能</translation>
 <translation id="6455894534188563617">新增資料夾(&amp;N)</translation>
@@ -10352,7 +10353,7 @@
 <translation id="8186013737729037962">進一步瞭解企業註冊的裝置</translation>
 <translation id="8186047833733689201">重音符號選單已開啟。按向左鍵、向右鍵或數字鍵即可瀏覽，按下 Enter 鍵則可插入重音符號。</translation>
 <translation id="8186609076106987817">伺服器找不到檔案。</translation>
-<translation id="8187447507633277520">使用指紋驗證填入密碼</translation>
+<translation id="8187447507633277520">填入密碼時使用指紋驗證</translation>
 <translation id="8188389033983459049">檢查裝置設定並開啟藍牙功能，以便繼續操作</translation>
 <translation id="8188742492803591566">輸入顯示在 Chromecast 或電視上的存取碼，即可開始投放畫面。</translation>
 <translation id="8189257540098107776">連不上 Google 密碼管理工具</translation>

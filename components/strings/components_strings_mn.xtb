@@ -3446,6 +3446,7 @@
 <translation id="634500758737709758">Чиглэл</translation>
 <translation id="6348220984832452017">Идэвхтэй хувилбарууд</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />-г суулгах</translation>
+<translation id="6350739641326887427">Pix кодыг хуулаад буулгахгүйгээр төлбөр төлөөрэй. <ph name="BEGIN_LINK1" />Хэрхэн ажилладгийг нь харах<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Интернэтээр үзсэн өгөгдлийг устгах</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Байхгүй}=1{(<ph name="DOMAIN_LIST" />-н) 1 нууц үг (синк хийсэн)}=2{(<ph name="DOMAIN_LIST" />-н) 2 нууц үг (синк хийсэн)}other{(<ph name="DOMAIN_LIST" />-н) # нууц үг (синк хийсэн)}}</translation>
 <translation id="6354918092619878358">SECG зууван муруй secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3613,6 @@
 <translation id="6587923378399804057">Таны хуулсан холбоос</translation>
 <translation id="6591833882275308647">Таны <ph name="DEVICE_TYPE" />-г удирдаагүй байна</translation>
 <translation id="6595495738567740002">Энэ төхөөрөмжөөс Google-н күүкиг устгахын тулд <ph name="BEGIN_LINK" />Chrome-с гарна уу<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Шифрлэлтийн сонголтууд</translation>
 <translation id="6596573334527383067">Өчигдрийн илэрцийг харуулах</translation>
 <translation id="6597665340361269064">90 хэм</translation>
 <translation id="6598976221101665070">Драмын кинонууд</translation>
@@ -3662,6 +3662,7 @@
 <translation id="668132230070712111">Видеог Google Драйвт хадгалсан</translation>
 <translation id="6681790815630918386">Карт баталгаажуулалтын кодыг хадгалсан</translation>
 <translation id="6683022854667115063">Чихэвч</translation>
+<translation id="6686570026048064255">Pix код илрүүлэхийг унтраахын тулд <ph name="BEGIN_LINK1" />Chrome-н тохиргоо<ph name="END_LINK1" /> руу очно уу</translation>
 <translation id="6687230248707087982">Дугтуй (энгийн)</translation>
 <translation id="6687335167692595844">Фонтын хэмжээг шаардсан</translation>
 <translation id="6688743156324860098">Шинэчлэх…</translation>
@@ -3887,7 +3888,6 @@
 <translation id="702275896380648118">Энэ сайт таны дуртай зүйлсийг тодорхойлж, дараа нь бусад сайтад зар санал болгодог. Энэ сайт мөн танд илүү хамааралтай зар харуулахын тулд таны зарын сэдвүүдийг Chrome-с авдаг.</translation>
 <translation id="7023162328967545559">Админы сануулга</translation>
 <translation id="7023765275461720661">Бүртгэл холбоод, <ph name="BNPL_ISSUER_NAME" />-р төлбөр төлөх үү?</translation>
-<translation id="7029809446516969842">Нууц үг</translation>
 <translation id="7030164307377592766">төлбөрийн хэрэгсэл бөглөх тохиргоог өөрчлөх</translation>
 <translation id="7031110846419387930">Таны хөтөч, OS, төхөөрөмж, суулгасан программ хангамж, файл, IP хаягийн талаарх мэдээлэл</translation>
 <translation id="7031646650991750659">Таны Google Play-н ямар апп суулгасан болох</translation>

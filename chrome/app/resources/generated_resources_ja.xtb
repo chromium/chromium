@@ -2824,6 +2824,7 @@
 <translation id="2909487040556589351">モバイル デバイスに Chrome をインストール</translation>
 <translation id="2910318910161511225">ネットワークに接続してから、もう一度お試しください</translation>
 <translation id="2910678330803525229">ブラウジングを開始できます</translation>
+<translation id="2911818155655162983">セキュリティ設定により、分離されたアプリのインストールは許可されていません。<ph name="CHANGE_PREFERENCE" />。</translation>
 <translation id="2912247081180973411">ウィンドウを閉じる</translation>
 <translation id="2915102088417824677">アクティビティ ログを表示</translation>
 <translation id="2915873080513663243">自動スキャン</translation>
@@ -5617,6 +5618,7 @@
 <translation id="4865063548323785458">パスワードを保存し、サイトやアプリに自動入力して簡単にログインできます</translation>
 <translation id="486635084936119914">ダウンロード後に特定の種類のファイルを自動的に開きます</translation>
 <translation id="4867272607148176509">保護者はアプリの承認とブロック、利用時間の上限の設定、ウェブ ブラウジングの制御を行えます。学校のリソースのほとんどにアクセスするための学校用アカウントは、後で追加できます。</translation>
+<translation id="486796517585164369">· 最近使用したタブ</translation>
 <translation id="4868284252360267853">このダイアログは現在フォーカスされていません。このダイアログをフォーカスするには command+shift+option+a キーを押してください。</translation>
 <translation id="4868351661310357223">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。</translation>
 <translation id="4869170227080975044">ChromeOS のネットワーク情報を読み取る</translation>
@@ -7845,6 +7847,7 @@
 <translation id="6453687572758515877">すべてのタブをグループ化</translation>
 <translation id="6453921811609336127">次の入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
 <translation id="645433497989692531">このデバイスから閲覧データを完全に削除します。データを復元するには、次のユーザーとしてログインしてください:</translation>
+<translation id="6454456397828627257">横並び</translation>
 <translation id="6455264371803474013">特定のサイト</translation>
 <translation id="6455521402703088376">オフ • この拡張機能はデベロッパーにより非公開にされました</translation>
 <translation id="6455894534188563617">新しいフォルダ(&amp;N)</translation>
@@ -8464,6 +8467,7 @@
 <translation id="6871860225073478239">言語...</translation>
 <translation id="6873156759937047811">PIN:</translation>
 <translation id="6873571253135628430">サイトの権限を変更する</translation>
+<translation id="6874986444867497677">インストールを完了できませんでした。もう一度お試しいただくか、このウィンドウを閉じてください。</translation>
 <translation id="6876155724392614295">自転車</translation>
 <translation id="6876469544038980967">役に立たなかった</translation>
 <translation id="6878422606530379992">センサーが許可されました</translation>
@@ -11836,6 +11840,7 @@
 <translation id="918352324374649435">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理者は <ph name="APP0_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されません。}=2{管理者は <ph name="APP0_NAME" /> と <ph name="APP1_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されません。}=3{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 1 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されません。}other{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 # 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されません。}}</translation>
 <translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 個のタブを共有中}other{# 個のタブを共有中}}</translation>
 <translation id="9187967020623675250">キーが一致しません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
 <translation id="9188142767272053574">プロセスの分離を有効にする</translation>
 <translation id="9192019773545828776">画面を見なくてもデバイスを使用できるように、音声フィードバックを読み上げます。点字によるフィードバックは接続されたデバイスで利用できます。ChromeVox のオンとオフを切り替えるには Ctrl+Alt+Z キーを使用します。移動するには検索+左矢印または右矢印キーを使用します。選択（有効化）するには検索+Space キーを使用します。</translation>

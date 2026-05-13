@@ -5625,6 +5625,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4865063548323785458">Sla je wachtwoorden op en laat ze automatisch invullen om makkelijk in te loggen bij sites en apps</translation>
 <translation id="486635084936119914">Bepaalde bestandstypen na downloaden automatisch openen</translation>
 <translation id="4867272607148176509">Ouders kunnen apps goedkeuren of blokkeren, tijdlimieten instellen en browsen op internet beheren. Je kunt later een schoolaccount toevoegen om toegang te krijgen tot de meeste schoolbronnen.</translation>
+<translation id="486796517585164369">· Tabblad Recent</translation>
 <translation id="4868284252360267853">De focus staat momenteel niet op dit dialoogvenster. Druk op Command-Shift-Option A om de focus op dit dialoogvenster te zetten.</translation>
 <translation id="4868351661310357223">Installeer apps en games van Google Play op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">ChromeOS-netwerkgegevens lezen</translation>
@@ -7853,6 +7854,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6453687572758515877">Alle tabbladen groeperen</translation>
 <translation id="6453921811609336127">Als je wilt overschakelen naar de volgende invoermethode, druk je op <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />spatiebalk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Hiermee worden je browsegegevens op dit apparaat definitief verwijderd. Als je de gegevens wilt herstellen, log je in als</translation>
+<translation id="6454456397828627257">Naast elkaar</translation>
 <translation id="6455264371803474013">Op specifieke sites</translation>
 <translation id="6455521402703088376">Uit • De publicatie van deze extensie is ongedaan gemaakt door de ontwikkelaar</translation>
 <translation id="6455894534188563617">&amp;Nieuwe map</translation>
@@ -11847,6 +11849,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Je beheerder kan je scherm opnemen met <ph name="APP0_NAME" />. Je krijgt geen melding als de opname begint.}=2{Je beheerder kan je scherm opnemen met <ph name="APP0_NAME" /> en <ph name="APP1_NAME" />. Je krijgt geen melding als de opname begint.}=3{Je beheerder kan je scherm opnemen met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en 1 andere app. Je krijgt geen melding als de opname begint.}other{Je beheerder kan je scherm opnemen met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en # andere apps. Je krijgt geen melding als de opname begint.}}</translation>
 <translation id="9186963452600581158">Inloggen met het Google-account van een kind</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 tabblad delen}other{# tabbladen delen}}</translation>
 <translation id="9187967020623675250">Toetsen komen niet overeen. Druk op een willekeurige toets om te <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Procesisolatie aanzetten</translation>
 <translation id="9192019773545828776">Krijg gesproken feedback zodat je je apparaat kunt gebruiken zonder naar het scherm te kijken. Braillefeedback is beschikbaar met een verbonden apparaat. Gebruik Ctrl + Alt + Z om ChromeVox aan en uit te zetten. Gebruik Zoeken + pijl-links of pijl-rechts om te navigeren. Gebruik Zoeken + spatiebalk om te selecteren (activeren).</translation>

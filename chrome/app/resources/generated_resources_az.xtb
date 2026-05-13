@@ -664,6 +664,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1449191289887455076">Təyinatı təsdiq etmək və <ph name="RESPONSE" /> üçün yenidən "<ph name="CURRENTKEY" />" düyməsinə basın</translation>
 <translation id="1450484535522155181">Qonaq profilini açın</translation>
 <translation id="1451375123200651445">Veb səhifə, Tək Fayl</translation>
+<translation id="1452651021404174820">Cihaz seçin</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />Sazlama jurnalları<ph name="END_LINK" /> göndərin (tövsiyə edilir)</translation>
 <translation id="1454223536435069390">Skrinşot çəkin</translation>
 <translation id="145432137617179457">Orfoqrafiya yoxlamasını dəstəkləyən dillər</translation>
@@ -1734,6 +1735,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2178545675770638239">Parol Seçin</translation>
 <translation id="2178585470774851578">ChromeOS Flex debaq funksiyalarını aktivləşdirirsiniz, bu da sshd daemon quraşdırır və USB cihazlarından yüklənməyə imkan verir.</translation>
 <translation id="2178614541317717477">Sertifikat Doğrulaması Kompromisi</translation>
+<translation id="2180082148774168439">Kompüterinizdəki xüsusi pəncərədə bu sayta daxil olun</translation>
 <translation id="2180620921879609685">Məzmunu istənilən səhifədə bloklayın</translation>
 <translation id="2181821976797666341">Siyasətlər</translation>
 <translation id="2182058453334755893">Buferə kopyalandı</translation>
@@ -4008,6 +4010,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3735039640698208086">Audio oxudulan zaman...</translation>
 <translation id="3735740477244556633">Çeşidləyin</translation>
 <translation id="3735827758948958091">Ölçülü əlaqədə <ph name="FILE_NAMES" /> fayllarını açmaq olmur</translation>
+<translation id="3736487688526377259">Bu linki əldə etmək istədiyiniz cihazı seçin.</translation>
 <translation id="3737058101969549870">Mövcud axtarış datası yeni profilinizdən ayrı saxlanılsın?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> datası 24 saat ərzində silinəcək</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7860,6 +7863,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6453687572758515877">Bütün tabları qruplaşdırın</translation>
 <translation id="6453921811609336127">Növbəti giriş metoduna keçmək üçün buna basın: <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Boşluq<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Beləliklə, baxış datanız bu cihazdan həmişəlik siləcək. Datanı bərpa etmək üçün belə daxil olun:</translation>
+<translation id="6454456397828627257">Yan-yana</translation>
 <translation id="6455264371803474013">Xüsusi saytlarda</translation>
 <translation id="6455521402703088376">Deaktiv • Tərtibatçı bu artırmanın yayımını ləğv edib</translation>
 <translation id="6455894534188563617">&amp;Yeni Qovluq</translation>

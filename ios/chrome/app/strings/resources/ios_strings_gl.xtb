@@ -853,7 +853,6 @@
 <translation id="4018440314314549819">Autocompleta os contrasinais gardados</translation>
 <translation id="4021447724486050609">Actualizar o navegador</translation>
 <translation id="4021931095789478915">Engadir ${url} á lista de lectura</translation>
-<translation id="4026496154402824012">Para desactivar esta opción, vai a <ph name="BEGIN_LINK" />Password Options<ph name="END_LINK" /> (Opcións de contrasinais)</translation>
 <translation id="4028871427853484857">Gardar na conta…</translation>
 <translation id="4038354071007134711">Ningunha aplicación do dispositivo pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Buscar na páxina</translation>
@@ -1606,7 +1605,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6571070086367343653">Editar tarxeta de crédito</translation>
 <translation id="6574092468346088891">Activar notificacións de Comprobación de seguranza</translation>
 <translation id="6579867704846662339">Podes decidir abrir os URL entrantes desde outras aplicacións no modo de incógnito.</translation>
-<translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Configuración) e vai a AutoFill Passwords (Autocompletar contrasinais).</translation>
 <translation id="6585618849026997638">Engade un marcador para volver acceder a unha páxina que consideres importante</translation>
 <translation id="6589001036857939353">Combinar contactos duplicados</translation>
 <translation id="659407965921887085">Nesta tarxeta mostraranse as baixadas de prezo na Web dos produtos dos que esteas facendo un seguimento</translation>
@@ -1668,7 +1666,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6746338529702829275">Revisa os datos da túa conta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} elemento do historial importado}other{{count} elementos do historial importados}}</translation>
 <translation id="6755200887046212842">Xestionar contas</translation>
-<translation id="6755733078693946548">Acceder aos contrasinais e claves de acceso desde calquera aplicación</translation>
 <translation id="6759709389246683070">Se queres volver acceder a esta pestana máis tarde, mantena premida para definir un recordatorio</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[RESERVADO]</translation>
@@ -2011,7 +2008,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="797588153137233716">Menú → Historial → Eliminar datos de navegación</translation>
 <translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
 <translation id="797824194429476746">As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de maneira permanente.</translation>
-<translation id="797874245254030665">Accede aos contrasinais e claves de acceso desde calquera aplicación</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="798299424881500862">Tema laranxa</translation>
 <translation id="7987685713885608670">Para dispoñer dunha maior seguranza, os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>

@@ -666,6 +666,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1449191289887455076">Nospiediet “<ph name="CURRENTKEY" />” vēlreiz, lai apstiprinātu piešķiršanu un <ph name="RESPONSE" />.</translation>
 <translation id="1450484535522155181">Atvērt viesa profilu</translation>
 <translation id="1451375123200651445">Tīmekļa lapa, viens fails</translation>
+<translation id="1452651021404174820">Ierīces izvēle</translation>
 <translation id="1453561711872398978">Sūtīt <ph name="BEGIN_LINK" />atkļūdošanas žurnālus<ph name="END_LINK" /> (ieteicams)</translation>
 <translation id="1454223536435069390">I&amp;egūt ekrānuzņēmumu</translation>
 <translation id="145432137617179457">Valodas, kurās var pārbaudīt pareizrakstību</translation>
@@ -1736,6 +1737,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2178545675770638239">Paroles atlase</translation>
 <translation id="2178585470774851578">Jūs iespējojat Chrome OS Flex atkļūdošanas funkcijas, kas iestatīs sshd dēmonu un iespējos palaišanu no USB diskiem.</translation>
 <translation id="2178614541317717477">CA drošības politikas apdraudējums</translation>
+<translation id="2180082148774168439">Piekļūstiet šai vietnei atsevišķā logā savā datorā.</translation>
 <translation id="2180620921879609685">Bloķēt saturu jebkurā lapā</translation>
 <translation id="2181821976797666341">Politikas</translation>
 <translation id="2182058453334755893">Kopēts jūsu starpliktuvē</translation>
@@ -4005,6 +4007,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3735039640698208086">Kad tiek atskaņots audio…</translation>
 <translation id="3735740477244556633">Kārtot pēc</translation>
 <translation id="3735827758948958091">Kamēr ir izveidots uzskaitītais savienojums, <ph name="FILE_NAMES" /> nevar atvērt</translation>
+<translation id="3736487688526377259">Atlasiet ierīci, kurā vēlaties saņemt šo saiti.</translation>
 <translation id="3737058101969549870">Vai glabāt pašreizējos pārlūkošanas datus atsevišķi no mācību iestādes profila datiem?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />: ierīces dati 24 stundu laikā tiks izdzēsti</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7857,6 +7860,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6453687572758515877">Grupēt visas cilnes</translation>
 <translation id="6453921811609336127">Lai pārietu pie nākamās ievades metodes, nospiediet <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />atstarpes taustiņu<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Veicot šo darbību, no šīs ierīces tiks neatgriezeniski izdzēsti jūsu pārlūkošanas dati. Lai atkoptu datus, pierakstieties ar kontu</translation>
+<translation id="6454456397828627257">Līdzās</translation>
 <translation id="6455264371803474013">Konkrētās vietnēs</translation>
 <translation id="6455521402703088376">Izslēgts • Šī paplašinājuma publicēšanu atcēla tā izstrādātājs</translation>
 <translation id="6455894534188563617">&amp;Jauna mape</translation>

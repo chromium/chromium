@@ -603,7 +603,7 @@
 <translation id="1938812296371201896">ویدیو ذخیره نشد.</translation>
 <translation id="1939059826036755332">تصویر در تصویر خودکار</translation>
 <translation id="1939175642807587452">می‌تواند برای ارسال اعلان درخواست دهد</translation>
-<translation id="1940441167050915935">حذف کدهای امنیتی ذخیره‌شده</translation>
+<translation id="1940441167050915935">حذف کردن کدهای امنیتی ذخیره‌شده</translation>
 <translation id="194174710521904357">موقتاْ به این سایت اجازه دادید از کوکی‌های طرف سوم استفاده کند. این کار به معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد عملکرد موردنظر را خواهد داشت.</translation>
 <translation id="1942498996464084801">کتاب و ادبیات</translation>
 <translation id="1943994668912612445">طراحی</translation>
@@ -1890,7 +1890,7 @@
 <translation id="3939773374150895049">‏به‌جای CVC از WebAuthn استفاده شود؟</translation>
 <translation id="3941630233824954464">فعال‌سازی اصالت‌سنجی مجدد اجباری</translation>
 <translation id="3942048175062210325">فایل‌ها را دوباره باز کنید</translation>
-<translation id="3943857333388298514">جاگذاری</translation>
+<translation id="3943857333388298514">جای‌گذاری</translation>
 <translation id="3945937463338223066">دستگاه‌های اصالت‌سنجی نوع <ph name="READERNAME" /> و کارت‌های هوشمند دردسترس آن‌ها را کنترل کند</translation>
 <translation id="3946209740501886391">در این سایت، همیشه سؤال شود</translation>
 <translation id="3948588869002647271">این برنامه وجود ندارد یا آسیب دیده است</translation>
@@ -2697,7 +2697,7 @@
 <translation id="5191315092027169558">نمایه‌تان تحت‌مدیریت <ph name="DOMAIN" /> است</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> می‌خواهد چند فایل را بارگیری کند</translation>
 <translation id="519528950056409240">به «کیف پول» اجازه دهید داده‌ها را هم‌رسانی کند</translation>
-<translation id="5200063972779787617">ذخیره نشانی در حساب</translation>
+<translation id="5200063972779787617">ذخیره کردن نشانی در حساب</translation>
 <translation id="5201306358585911203">صفحه جاسازی‌شده‌ای در این صفحه می‌گوید</translation>
 <translation id="5203716867500274632">‏سرپرست شما امکان همگام‌سازی موارد زیر را بین جلسه‌های قبلی و فعلی شما در هر دستگاه ChromeOS فراهم می‌کند:</translation>
 <translation id="5205114269877707377">‏‫<ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای مرور کنش‌های موجود کلید جهش را فشار دهید، سپس برای اجرای کنش انتخاب‌شده کلید Enter را فشار دهید.</translation>
@@ -3447,6 +3447,7 @@
 <translation id="634500758737709758">مسیرها</translation>
 <translation id="6348220984832452017">گونه‌های فعال</translation>
 <translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">‏بدون کپی کردن و جای‌گذاری کد Pix پرداخت کنید. <ph name="BEGIN_LINK1" />سازوکار عمل را ببینید<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">حذف کردن داده‌های مرور</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{هیچ‌کدام}=1{۱ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}=2{۲ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}one{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}other{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}}</translation>
 <translation id="6354918092619878358">‏منحنی بیضوی SECG مدل secp256r1 (به‌نام ANSI X9.62 prime256v1، ‏NIST P-256)</translation>
@@ -3613,7 +3614,6 @@
 <translation id="6587923378399804057">پیوندی که کپی کرده‌اید</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> شما تحت مدیریت نیست</translation>
 <translation id="6595495738567740002">‏برای حذف کردن کوکی‌های Google از این دستگاه، <ph name="BEGIN_LINK" />از سیستم Chrome خارج شوید<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">گزینه‌های رمزگذاری</translation>
 <translation id="6596573334527383067">نمایش نتایج دیروز</translation>
 <translation id="6597665340361269064">۹۰ درجه</translation>
 <translation id="6598976221101665070">فیلم‌های درام</translation>
@@ -3663,6 +3663,7 @@
 <translation id="668132230070712111">‏ویدیو در Google Drive ذخیره شد.</translation>
 <translation id="6681790815630918386">کد تأیید کارت ذخیره شد</translation>
 <translation id="6683022854667115063">هدفون</translation>
+<translation id="6686570026048064255">‏برای خاموش کردن شناسایی کد Pix، به <ph name="BEGIN_LINK1" />«تنظیمات Chrome»<ph name="END_LINK1" /> بروید</translation>
 <translation id="6687230248707087982">پاکت (ساده)</translation>
 <translation id="6687335167692595844">اندازه قلم درخواست شد</translation>
 <translation id="6688743156324860098">به‌روزرسانی…</translation>
@@ -3888,7 +3889,6 @@
 <translation id="702275896380648118">‏این سایت چیزهایی را که می‌پسندید شناسایی می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد. این سایت همچنین موضوع‌های آگهی شما را از Chrome دریافت می‌کند تا آگهی‌های مرتبط‌تری به شما نشان دهد.</translation>
 <translation id="7023162328967545559">هشدار سرپرست</translation>
 <translation id="7023765275461720661">حساب پیوند داده شود و پرداخت با <ph name="BNPL_ISSUER_NAME" /> انجام شود؟</translation>
-<translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7030164307377592766">تنظیمات مربوط به تکمیل روش‌های پرداخت را تغییر دهد</translation>
 <translation id="7031110846419387930">‏اطلاعات مربوط به مرورگر، سیستم‌عامل، دستگاه، نرم‌افزارهای نصب‌شده، فایل‌ها، و نشانی‌های IP</translation>
 <translation id="7031646650991750659">‏برنامه‌های Google Play که نصب کرده‌اید</translation>

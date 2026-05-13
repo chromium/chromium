@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Automatsko unošenje spremljenih zaporki</translation>
 <translation id="4021447724486050609">Ažurirajte preglednik</translation>
 <translation id="4021931095789478915">Dodaj ${url} na popis za čitanje</translation>
-<translation id="4026496154402824012">Da biste isključili tu opciju, otvorite <ph name="BEGIN_LINK" />Opcije zaporke<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Spremi na račun…</translation>
 <translation id="4038354071007134711">Na ovom uređaju nema aplikacije za tu datoteku.</translation>
 <translation id="4042870976416480368">Traži na stranici</translation>
@@ -1605,7 +1604,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6571070086367343653">Uređivanje kreditne kartice</translation>
 <translation id="6574092468346088891">Uključite obavijesti za sigurnosnu provjeru</translation>
 <translation id="6579867704846662339">U anonimnom načinu možete otvoriti dolazne URL-ove iz drugih aplikacija.</translation>
-<translation id="6583087784430677195">Da biste isključili značajku, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />, a zatim Automatsko popunjavanje zaporki.</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
 <translation id="6589001036857939353">Spajanje duplikata</translation>
 <translation id="659407965921887085">Ova kartica prikazuje sniženja cijena na webu za proizvode koje trenutačno pratite</translation>
@@ -1667,7 +1665,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6746338529702829275">Pregledajte podatke o računu</translation>
 <translation id="6750456911389438250">{count,plural, =1{Uvezena je {count} stavka povijesti}one{Uvezena je {count} stavka povijesti}few{Uvezene su {count} stavke povijesti}other{Uvezeno je {count} stavki povijesti}}</translation>
 <translation id="6755200887046212842">Upravljanje računima</translation>
-<translation id="6755733078693946548">Pristupajte zaporkama i pristupnim ključevima iz bilo koje aplikacije</translation>
 <translation id="6759709389246683070">Možete dodirnuti i zadržati pritisak na ovoj kartici da biste postavili podsjetnik za ponovno posjetu kasnije</translation>
 <translation id="6761393919622941301">Audiozapisi</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
@@ -2010,7 +2007,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="797588153137233716">Izbornik → Povijest → Brisanje podataka o pregledavanju</translation>
 <translation id="7977451675950311423">Upozorava ako upotrebljavate zaporku koja je ugrožena zbog neovlaštenog pristupa podacima.</translation>
 <translation id="797824194429476746">Kartice će ostati otvorene na ovom uređaju, ali će se grupa trajno izbrisati.</translation>
-<translation id="797874245254030665">Pristupajte svojim zaporkama i pristupnim ključevima iz bilo koje aplikacije</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="798299424881500862">Narančasta tema</translation>
 <translation id="7987685713885608670">Radi dodatne sigurnosti šifrirajte zaporke na uređaju prije spremanja na Google upravitelj zaporki.</translation>

@@ -2842,6 +2842,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2909487040556589351">Lataa Chrome mobiililaitteelle</translation>
 <translation id="2910318910161511225">Muodosta yhteys verkkoon ja yritä uudelleen.</translation>
 <translation id="2910678330803525229">Voit nyt aloittaa selaamisen</translation>
+<translation id="2911818155655162983">Suojausasetuksesi eivät salli eristettyjen sovellusten asentamista. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="2912247081180973411">Sulje ikkunat</translation>
 <translation id="2915102088417824677">Näytä tapahtumaloki</translation>
 <translation id="2915873080513663243">Automaattinen skannaus</translation>
@@ -5638,6 +5639,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4865063548323785458">Tallenna ja täytä salasanat automaattisesti, jotta voit kirjautua sivustoille ja sovelluksiin helposti</translation>
 <translation id="486635084936119914">Avaa tietyn tyyppiset tiedostot automaattisesti latauksen jälkeen.</translation>
 <translation id="4867272607148176509">Vanhemmat voivat hyväksyä tai estää sovelluksia, asettaa aikarajoituksia ja hallita selaamista. Oppilaitoksen tili voidaan lisätä myöhemmin, jotta voit käyttää useimpia koulumateriaaleja.</translation>
+<translation id="486796517585164369">· Viimeisimmät-välilehti</translation>
 <translation id="4868284252360267853">Valintaikkuna ei ole tällä hetkellä kohdistettuna. Kohdista valintaikkunaan painamalla Komento Vaihto A.</translation>
 <translation id="4868351661310357223">Asenna sovelluksia ja pelejä Google Playsta (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4869170227080975044">Lukea ChromeOS:n verkkotiedot.</translation>
@@ -7870,6 +7872,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6453687572758515877">Ryhmittele kaikki välilehdet</translation>
 <translation id="6453921811609336127">Vaihda seuraavaan syöttötapaan painamalla <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />sarkain<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />välilyönti<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Tämä poistaa pysyvästi selausdatasi tältä laitteelta. Jos haluat palauttaa datan, kirjaudu sisään tällä tilillä:</translation>
+<translation id="6454456397828627257">Vierekkäin</translation>
 <translation id="6455264371803474013">Tietyillä sivustoilla</translation>
 <translation id="6455521402703088376">Pois päältä • Kehittäjä on perunut laajennuksen julkaisun</translation>
 <translation id="6455894534188563617">Uusi ka&amp;nsio</translation>
@@ -8491,6 +8494,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6871860225073478239">Kielet…</translation>
 <translation id="6873156759937047811">PIN-koodi:</translation>
 <translation id="6873571253135628430">Muuta sivuston lupia</translation>
+<translation id="6874986444867497677">Asennus ei onnistunut. Yritä uudelleen tai sulje tämä ikkuna.</translation>
 <translation id="6876155724392614295">Pyörä</translation>
 <translation id="6876469544038980967">Ei hyödyllinen</translation>
 <translation id="6878422606530379992">Tunnistimet sallittu</translation>
@@ -11864,6 +11868,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="918352324374649435">{COUNT,plural, =1{Sovellus}other{# sovellusta}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Järjestelmänvalvoja voi tallentaa näyttöäsi, kun <ph name="APP0_NAME" /> on käytössä. Et saa ilmoitusta, kun tallennus alkaa.}=2{Järjestelmänvalvoja voi tallentaa näyttöäsi, kun <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> ovat käytössä. Et saa ilmoitusta, kun tallennus alkaa.}=3{Järjestelmänvalvoja voi tallentaa näyttösi milloin tahansa, kun <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ja yksi muu sovellus ovat käytössä. Et saa ilmoitusta, kun tallennus alkaa.}other{Järjestelmänvalvoja voi tallentaa näyttöäsi, kun <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ja # muuta sovellusta ovat käytössä. Et saa ilmoitusta, kun tallennus alkaa.}}</translation>
 <translation id="9186963452600581158">Kirjaudu sisään lapsen Google-tilillä</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Jaetaan 1 välilehteä}other{Jaetaan # välilehteä}}</translation>
 <translation id="9187967020623675250">Näppäimet eivät täsmää. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
 <translation id="9188142767272053574">Ota prosessin eristäminen käyttöön</translation>
 <translation id="9192019773545828776">Kuule äänipalautetta, jonka avulla voit käyttää laitetta näyttöä katsomatta. Pistekirjoituspalaute on käytettävissä verkkoon yhdistettävillä laitteilla. Laita ChromeVox päälle tai pois päältä painamalla Ctrl + Alt + Z. Siirry painamalla Haku + vasen nuoli tai oikea nuoli. Valitse (aktivoi) kohta painamalla Haku + välilyönti.</translation>

@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Sjálfvirk útfylling á vistuðum aðgangsorðum</translation>
 <translation id="4021447724486050609">Uppfærðu vafrann þinn</translation>
 <translation id="4021931095789478915">Bæta ${url} við leslista</translation>
-<translation id="4026496154402824012">Farðu í <ph name="BEGIN_LINK" />Valkostir aðgangsorða<ph name="END_LINK" /> til að slökkva á eiginleikanum</translation>
 <translation id="4028871427853484857">Vista á reikningi…</translation>
 <translation id="4038354071007134711">Ekkert forrit í þessu tæki getur opnað skrána.</translation>
 <translation id="4042870976416480368">Finna á síðu</translation>
@@ -1605,7 +1604,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6571070086367343653">Breyta kortaupplýsingum</translation>
 <translation id="6574092468346088891">Kveiktu á tilkynningum öryggisathugunar</translation>
 <translation id="6579867704846662339">Þú getur valið að opna mótteknar vefslóðir frá öðrum forritum í huliðsstillingu.</translation>
-<translation id="6583087784430677195">Opnaðu <ph name="BEGIN_LINK" />Stillingar<ph name="END_LINK" /> og síðan „Sjálfvirk útfylling aðgangsorða“ til að slökkva.</translation>
 <translation id="6585618849026997638">Þú getur komist aftur á mikilvæga síðu á einfaldan hátt með því að setja inn bókamerki</translation>
 <translation id="6589001036857939353">Sameina endurtekningar</translation>
 <translation id="659407965921887085">Á þessu spjaldi birtast verðlækkanir á vörum sem þú vaktar á vefnum</translation>
@@ -1667,7 +1665,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6746338529702829275">Farðu yfir gögn reikningsins</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ferilatriði flutt inn}one{{count} ferilatriði flutt inn}other{{count} ferilatriði flutt inn}}</translation>
 <translation id="6755200887046212842">Stjórna reikningum</translation>
-<translation id="6755733078693946548">Sjá aðgangsorð og aðgangslykla allra forrita</translation>
 <translation id="6759709389246683070">Þú getur haldið þessum flipa inni til að stilla áminningu um að koma aftur síðar.</translation>
 <translation id="6761393919622941301">Hljóð</translation>
 <translation id="6770452996697898492">[BÓKAÐ]</translation>
@@ -2010,7 +2007,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="797588153137233716">Valmynd → Ferill → Eyða vefskoðunargögnum</translation>
 <translation id="7977451675950311423">Varar þig við ef þú notar aðgangsorð í hættu vegna öryggisbrots.</translation>
 <translation id="797824194429476746">Fliparnir verða opnir í þessu tæki en hópnum verður eytt varanlega.</translation>
-<translation id="797874245254030665">Sjáðu aðgangsorðin þín og aðgangslykla í öllum forritum</translation>
 <translation id="7982789257301363584">Net</translation>
 <translation id="798299424881500862">Appelsínugult þema</translation>
 <translation id="7987685713885608670">Dulkóðaðu aðgangsorðin þín í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google til að auka öryggið.</translation>

@@ -549,6 +549,7 @@
 <translation id="1832474362231610822">写真を OneDrive に保存しました</translation>
 <translation id="1832730227369924598">デスク同期</translation>
 <translation id="1834452765064623979">建設、メンテナンス</translation>
+<translation id="1837606605602726453">拡張機能が管理者によって明示的に許可またはブロックされているため、リスクスコアとカテゴリは無視されます。</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
 <translation id="1839331950812095887">考えをあらわすいくつかの単語</translation>
 <translation id="1839551713262164453">ポリシーの値を検証できませんでした（エラーが発生しました）</translation>
@@ -3612,7 +3613,6 @@
 <translation id="6587923378399804057">コピーしたリンク</translation>
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
 <translation id="6595495738567740002">このデバイスから Google の Cookie を削除するには、<ph name="BEGIN_LINK" />Chrome からログアウト<ph name="END_LINK" />してください。</translation>
-<translation id="6596325263575161958">暗号化オプション</translation>
 <translation id="6596573334527383067">昨日の検索結果を表示</translation>
 <translation id="6597665340361269064">90°</translation>
 <translation id="6598976221101665070">ドラマ映画</translation>
@@ -3887,7 +3887,6 @@
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
 <translation id="7023162328967545559">管理者の警告</translation>
 <translation id="7023765275461720661">アカウントをリンクして <ph name="BNPL_ISSUER_NAME" /> で支払いますか？</translation>
-<translation id="7029809446516969842">パスワード</translation>
 <translation id="7030164307377592766">お支払い方法の入力の設定を変更します</translation>
 <translation id="7031110846419387930">ブラウザ、OS、デバイス、インストール済みソフトウェア、ファイル、IP アドレスに関する情報</translation>
 <translation id="7031646650991750659">インストールした Google Play アプリ</translation>

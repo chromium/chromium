@@ -3446,6 +3446,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="634500758737709758">Navodila za pot</translation>
 <translation id="6348220984832452017">Aktivne različice</translation>
 <translation id="6349101878882523185">Namestite <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Plačujte brez kopiranja in lepljenja kode Pix. <ph name="BEGIN_LINK1" />Prikaz delovanja<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Brisanje podatkov brskanja</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nič}=1{Eno geslo (za <ph name="DOMAIN_LIST" />, sinhronizirano)}=2{Dve gesli (za <ph name="DOMAIN_LIST" />, sinhronizirano)}one{# geslo (za <ph name="DOMAIN_LIST" />, sinhronizirano)}two{# gesli (za <ph name="DOMAIN_LIST" />, sinhronizirano)}few{# gesla (za <ph name="DOMAIN_LIST" />, sinhronizirano)}other{# gesel (za <ph name="DOMAIN_LIST" />, sinhronizirano)}}</translation>
 <translation id="6354918092619878358">Eliptična krivulja SECG secp256r1 (oziroma ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3613,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6587923378399804057">Povezava, ki ste jo kopirali</translation>
 <translation id="6591833882275308647">Naprava <ph name="DEVICE_TYPE" /> ni upravljana</translation>
 <translation id="6595495738567740002">Če želite izbrisati Googlove piškotke iz te naprave, <ph name="BEGIN_LINK" />se odjavite iz Chroma<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Možnosti šifriranja</translation>
 <translation id="6596573334527383067">Prikaz rezultatov od včeraj</translation>
 <translation id="6597665340361269064">90-stopinjsko</translation>
 <translation id="6598976221101665070">Drame</translation>
@@ -3662,6 +3662,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="668132230070712111">Videoposnetek je shranjen v Google Drive</translation>
 <translation id="6681790815630918386">Koda CVC je shranjena</translation>
 <translation id="6683022854667115063">Slušalke</translation>
+<translation id="6686570026048064255">Zaznavanje kode Pix lahko izklopite v <ph name="BEGIN_LINK1" />nastavitvah za Chrome<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Envelope (Plain)</translation>
 <translation id="6687335167692595844">Zahtevana je velikost besedila</translation>
 <translation id="6688743156324860098">Posodobi …</translation>
@@ -3887,7 +3888,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="7023162328967545559">Opozorilo skrbnika</translation>
 <translation id="7023765275461720661">Želite povezati račun in plačevati s ponudnikom <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Gesla</translation>
 <translation id="7030164307377592766">spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih</translation>
 <translation id="7031110846419387930">Podatki o brskalniku, operacijskem sistemu, napravi, nameščeni programski opremi, datotekah in naslovih IP</translation>
 <translation id="7031646650991750659">Katere aplikacije iz Googla Play ste namestili</translation>

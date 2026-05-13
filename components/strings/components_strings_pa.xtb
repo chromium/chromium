@@ -549,6 +549,7 @@
 <translation id="1832474362231610822">ਫ਼ੋਟੋ ਨੂੰ OneDrive ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1832730227369924598">ਡੈਸਕ ਸਿੰਕ</translation>
 <translation id="1834452765064623979">ਉਸਾਰੀ ਅਤੇ ਸਾਂਭ-ਸੰਭਾਲ</translation>
+<translation id="1837606605602726453">ਜੋਖਮ ਸਕੋਰ ਅਤੇ ਸ਼੍ਰੇਣੀਆਂ ਨੂੰ ਅਣਡਿੱਠ ਕੀਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸਪਸ਼ਟ ਤੌਰ 'ਤੇ ਆਗਿਆ ਦਿੱਤੀ ਗਈ ਹੈ ਜਾਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="1838374766361614909">ਖੋਜ ਹਟਾਓ</translation>
 <translation id="1839331950812095887">ਤੁਹਾਡੇ ਵਿਚਾਰਾਂ ਨੂੰ ਦਰਸਾਉਣ ਲਈ ਕੁਝ ਸ਼ਬਦ</translation>
 <translation id="1839551713262164453">ਨੀਤੀ ਮੁੱਲਾਂ ਦਾ ਪ੍ਰਮਾਣੀਕਰਨ ਗੜਬੜਾਂ ਦੇ ਕਾਰਨ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -3442,6 +3443,7 @@
 <translation id="634500758737709758">ਦਿਸ਼ਾਵਾਂ</translation>
 <translation id="6348220984832452017">ਕਿਰਿਆਸ਼ੀਲ ਭਿੰਨਤਾਵਾਂ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="6350739641326887427">Pix ਕੋਡ ਨੂੰ ਕਾਪੀ ਅਤੇ ਪੇਸਟ ਕੀਤੇ ਬਿਨਾਂ ਭੁਗਤਾਨ ਕਰੋ। <ph name="BEGIN_LINK1" />ਦੇਖੋ ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਿੰਕ ਕੀਤਾ ਗਿਆ)}=2{2 ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਿੰਕ ਕੀਤੇ ਗਏ)}other{# ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਿੰਕ ਕੀਤੇ ਗਏ)}}</translation>
 <translation id="6354918092619878358">SECG ਅੰਡਾਕਾਰ ਘੁਮਾਓ secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3608,7 +3610,6 @@
 <translation id="6587923378399804057">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤਾ ਲਿੰਕ</translation>
 <translation id="6591833882275308647">ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਪ੍ਰਬੰਧਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="6595495738567740002">ਇਸ ਡੀਵਾਈਸ ਤੋਂ Google ਕੁਕੀਜ਼ ਮਿਟਾਉਣ ਲਈ, <ph name="BEGIN_LINK" />Chrome ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ<ph name="END_LINK" />।</translation>
-<translation id="6596325263575161958">ਐਨਕ੍ਰਿਪਸ਼ਨ ਚੋਣਾਂ</translation>
 <translation id="6596573334527383067">ਬੀਤੇ ਕੱਲ੍ਹ ਦੇ ਨਤੀਜੇ ਦਿਖਾਓ</translation>
 <translation id="6597665340361269064">90 ਡਿਗਰੀ</translation>
 <translation id="6598976221101665070">ਡਰਾਮਾ ਫ਼ਿਲਮਾਂ</translation>
@@ -3658,6 +3659,7 @@
 <translation id="668132230070712111">ਵੀਡੀਓ ਨੂੰ Google Drive ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6681790815630918386">CVC ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6683022854667115063">ਹੈੱਡਫ਼ੋਨ</translation>
+<translation id="6686570026048064255">Pix ਕੋਡ ਖੋਜ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK1" />Chrome ਸੈਟਿੰਗਾਂ<ph name="END_LINK1" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="6687230248707087982">ਐਨਵਲੋਪ (ਪਲੇਨ)</translation>
 <translation id="6687335167692595844">ਫ਼ੌਂਟ ਆਕਾਰ ਲਈ ਬੇਨਤੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="6688743156324860098">ਅੱਪਡੇਟ ਕਰੋ…</translation>
@@ -3883,7 +3885,6 @@
 <translation id="702275896380648118">ਇਹ ਸਾਈਟ ਤੁਹਾਡੀਆਂ ਮਨਪਸੰਦ ਚੀਜ਼ਾਂ ਨੂੰ ਨਿਰਧਾਰਿਤ ਕਰਦੀ ਹੈ ਅਤੇ ਫਿਰ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਦੇ ਸੁਝਾਅ ਦਿੰਦੀ ਹੈ। ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਵੀ ਤੁਹਾਡੇ ਵਿਗਿਆਪਨ ਦੇ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦੀ ਹੈ।</translation>
 <translation id="7023162328967545559">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਚਿਤਾਵਨੀ</translation>
 <translation id="7023765275461720661">ਕੀ ਖਾਤਾ ਲਿੰਕ ਕਰ ਕੇ <ph name="BNPL_ISSUER_NAME" /> ਨਾਲ ਭੁਗਤਾਨ ਕਰਨਾ ਹੈ?</translation>
-<translation id="7029809446516969842">ਪਾਸਵਰਡ</translation>
 <translation id="7030164307377592766">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਨੂੰ ਭਰਨ ਲਈ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੋਧ ਕਰੋ</translation>
 <translation id="7031110846419387930">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ, OS, ਡੀਵਾਈਸ, ਸਥਾਪਤ ਕੀਤੇ ਸਾਫ਼ਟਵੇਅਰ ਅਤੇ ਫ਼ਾਈਲਾਂ ਅਤੇ IP ਪਤਿਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
 <translation id="7031646650991750659">ਤੁਸੀਂ ਕਿਹੜੀਆਂ Google Play ਐਪਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਹੋਈਆਂ ਹਨ</translation>

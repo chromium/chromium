@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Saisir automatiquement les mots de passe enregistrés</translation>
 <translation id="4021447724486050609">Mettre à jour votre navigateur</translation>
 <translation id="4021931095789478915">Ajouter ${url} à la liste de lecture</translation>
-<translation id="4026496154402824012">Pour désactiver cette option, accédez à <ph name="BEGIN_LINK" />Options des mots de passe<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Enregistrer dans le compte…</translation>
 <translation id="4038354071007134711">Aucune appli sur appareil ne peut ouvrir fichier.</translation>
 <translation id="4042870976416480368">Rechercher sur la page</translation>
@@ -1605,7 +1604,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6571070086367343653">Modifier la carte de crédit</translation>
 <translation id="6574092468346088891">Activer les notifications du contrôle de sécurité</translation>
 <translation id="6579867704846662339">Vous pouvez choisir d'ouvrir les URL entrantes d'autres applis en navigation privée.</translation>
-<translation id="6583087784430677195">Pour désactiver cela, ouvrez les <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" />, puis accédez à "Saisir automatiquement les mots de passe".</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="6589001036857939353">Fusionner les doublons</translation>
 <translation id="659407965921887085">Cette carte présente les baisses de prix sur le Web pour les produits que vous suivez actuellement</translation>
@@ -1667,7 +1665,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6746338529702829275">Examinez les données de votre compte</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} élément d'historique importé}one{{count} élément d'historique importé}other{{count} éléments d'historique importés}}</translation>
 <translation id="6755200887046212842">Gérer les comptes</translation>
-<translation id="6755733078693946548">Accéder aux mots de passe et aux clés d'accès depuis n'importe quelle appli</translation>
 <translation id="6759709389246683070">Appuyez de manière prolongée sur cet onglet pour définir un rappel afin de revenir plus tard</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[RÉSERVÉ]</translation>
@@ -2010,7 +2007,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="797588153137233716">Menu → Historique → Supprimer les données de navigation</translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe compromis par une violation des données.</translation>
 <translation id="797824194429476746">Les onglets resteront ouverts sur cet appareil, mais le groupe sera définitivement supprimé.</translation>
-<translation id="797874245254030665">Accédez à vos mots de passe et clés d'accès depuis n'importe quelle appli</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="798299424881500862">Thème orange</translation>
 <translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe de Google.</translation>

@@ -549,6 +549,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1832474362231610822">Đã lưu ảnh vào OneDrive</translation>
 <translation id="1832730227369924598">Đồng bộ hoá không gian làm việc</translation>
 <translation id="1834452765064623979">Xây dựng và bảo trì</translation>
+<translation id="1837606605602726453">Điểm rủi ro và danh mục bị bỏ qua vì tiện ích này được quản trị viên cho phép hoặc chặn một cách rõ ràng.</translation>
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
 <translation id="1839331950812095887">một vài từ tóm tắt suy nghĩ của bạn</translation>
 <translation id="1839551713262164453">Không xác thực được các giá trị của chính sách do xảy ra lỗi</translation>
@@ -3612,7 +3613,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6587923378399804057">Liên kết bạn đã sao chép</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> của bạn không được quản lý</translation>
 <translation id="6595495738567740002">Để xoá cookie của Google khỏi thiết bị này, hãy <ph name="BEGIN_LINK" />đăng xuất khỏi Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Tùy chọn mã hóa</translation>
 <translation id="6596573334527383067">Hiện kết quả từ hôm qua</translation>
 <translation id="6597665340361269064">90 độ</translation>
 <translation id="6598976221101665070">Phim chính kịch</translation>
@@ -3887,7 +3887,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="702275896380648118">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị. Trang web này cũng thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn.</translation>
 <translation id="7023162328967545559">Cảnh báo của quản trị viên</translation>
 <translation id="7023765275461720661">Liên kết tài khoản và thanh toán bằng <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Mật khẩu</translation>
 <translation id="7030164307377592766">sửa đổi chế độ cài đặt cho việc điền phương thức thanh toán</translation>
 <translation id="7031110846419387930">Thông tin về trình duyệt, hệ điều hành, thiết bị, phần mềm đã cài đặt, tệp và địa chỉ IP</translation>
 <translation id="7031646650991750659">Những ứng dụng bạn đã cài đặt bằng Google Play</translation>

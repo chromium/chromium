@@ -852,7 +852,6 @@
 <translation id="4018440314314549819">Autocompleta contraseñas guardadas</translation>
 <translation id="4021447724486050609">Actualiza tu navegador</translation>
 <translation id="4021931095789478915">Agregar ${url} a la Lista de lectura</translation>
-<translation id="4026496154402824012">Para desactivar esta opción, ve a <ph name="BEGIN_LINK" />Opciones de contraseña<ph name="END_LINK" />.</translation>
 <translation id="4028871427853484857">Guardar en la cuenta…</translation>
 <translation id="4038354071007134711">Ninguna aplicación puede abrir el archivo.</translation>
 <translation id="4042870976416480368">Buscar en la página</translation>
@@ -1605,7 +1604,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6571070086367343653">Editar tarjeta de crédito</translation>
 <translation id="6574092468346088891">Activar las notificaciones de la Verificación de seguridad</translation>
 <translation id="6579867704846662339">Puedes abrir las URLs entrantes de otras apps en el modo Incógnito.</translation>
-<translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Autocompletar contraseñas.</translation>
 <translation id="6585618849026997638">Agrega un favorito para poder regresar a una página que consideres importante</translation>
 <translation id="6589001036857939353">Combinar duplicados</translation>
 <translation id="659407965921887085">En esta tarjeta, se muestran las reducciones de precios en la Web de los productos que sigues actualmente</translation>
@@ -1667,7 +1665,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6746338529702829275">Revisa los datos de tu cuenta</translation>
 <translation id="6750456911389438250">{count,plural, =1{Se importó {count} elemento del historial}other{Se importaron {count} elementos del historial}}</translation>
 <translation id="6755200887046212842">Administrar cuentas</translation>
-<translation id="6755733078693946548">Accede a las contraseñas y llaves de acceso desde cualquier app</translation>
 <translation id="6759709389246683070">Puedes mantener presionada esta pestaña para establecer un recordatorio para volver a verla más tarde</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[PROGRAMADO]</translation>
@@ -2010,7 +2007,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="797588153137233716">Menú → Historial → Borrar datos de navegación</translation>
 <translation id="7977451675950311423">Te advierte si usas una contraseña que fue hackeada en una violación de la seguridad de los datos.</translation>
 <translation id="797824194429476746">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se borrará de forma permanente.</translation>
-<translation id="797874245254030665">Accede a las contraseñas y llaves de acceso desde cualquier app</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="798299424881500862">Tema naranja</translation>
 <translation id="7987685713885608670">Para más seguridad, encripta las contraseñas en tu dispositivo antes de que se guarden en el Administrador de contraseñas de Google</translation>

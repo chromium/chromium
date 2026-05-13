@@ -725,6 +725,7 @@
 <translation id="8981150672034878610">プロファイルを開く際にエラーが発生したため、Chromium を起動できません。Chromium を再起動してみてください。</translation>
 <translation id="8988036198400390003">Chromium プロファイルを管理</translation>
 <translation id="9019929317751753759">Chromium をより安全にご利用いただくために、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない次の拡張機能を無効にしました。これは知らないうちに追加された可能性があります。</translation>
+<translation id="9022552996538154597">Chromium にログイン</translation>
 <translation id="904366664621834601">このダウンロードは Chromium でブロックされました。アーカイブ ファイルに他のファイルが含まれており、マルウェアが隠されている可能性があります</translation>
 <translation id="9053882453960391422">パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。既定のブラウザを Chromium に変更すると、お馴染みの機能を簡単に利用できるようになります。Chromium はタスクバーに固定され、すばやくアクセスできます。</translation>
 <translation id="9062666675513499497">他の Google サービスにログインしたときに Chromium にログインする</translation>

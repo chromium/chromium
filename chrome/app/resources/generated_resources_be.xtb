@@ -667,6 +667,7 @@
 <translation id="1449191289887455076">Каб пацвердзіць прызначэнне і <ph name="RESPONSE" />, яшчэ раз націсніце "<ph name="CURRENTKEY" />"</translation>
 <translation id="1450484535522155181">Адкрыць гасцявы профіль</translation>
 <translation id="1451375123200651445">Вэб-старонка адным файлам</translation>
+<translation id="1452651021404174820">Выберыце прыладу</translation>
 <translation id="1453561711872398978">Адправіць <ph name="BEGIN_LINK" />журналы адладкі<ph name="END_LINK" /> (рэкамендуецца)</translation>
 <translation id="1454223536435069390">З&amp;рабіць здымак экрана</translation>
 <translation id="145432137617179457">Мовы праверкі правапісу</translation>
@@ -1734,6 +1735,7 @@
 <translation id="2178545675770638239">Выберыце пароль</translation>
 <translation id="2178585470774851578">Вы ўключаеце функцыі адладкі Chrome OS Flex. Будзе наладжаны дэман SSHD і дазволена загрузка з USB-дыскаў.</translation>
 <translation id="2178614541317717477">Кампраметацыя ЦС</translation>
+<translation id="2180082148774168439">Адкрыйце гэты сайт у асобным акне на камп’ютары</translation>
 <translation id="2180620921879609685">Блакіраваць змесціва на любой старонцы</translation>
 <translation id="2181821976797666341">Палітыкі</translation>
 <translation id="2182058453334755893">Скапіравана ў буфер абмену</translation>
@@ -4003,6 +4005,7 @@
 <translation id="3735039640698208086">Падчас прайгравання аўдыя...</translation>
 <translation id="3735740477244556633">Парадак сартавання</translation>
 <translation id="3735827758948958091">Нельга адкрыць файл "<ph name="FILE_NAMES" />", калі выкарыстоўваецца падключэнне з падлікам трафіка</translation>
+<translation id="3736487688526377259">Выберыце прыладу, на якую вы хочаце адправіць гэту спасылку.</translation>
 <translation id="3737058101969549870">Захоўваць існуючыя даныя пра работу ў браўзеры асобна ад новага профілю?</translation>
 <translation id="3738632186060045350">Даныя на прыладзе <ph name="DEVICE_TYPE" /> будуць выдалены праз 24 гадзіны</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7858,6 +7861,7 @@
 <translation id="6453687572758515877">Згрупаваць усе ўкладкі</translation>
 <translation id="6453921811609336127">Каб перайсці да наступнага спосабу ўводу, націсніце <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Прабел<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="645433497989692531">Гэта дзеянне незваротна выдаліць з прылады даныя прагляду старонак у інтэрнэце. Каб аднавіць даныя, увайдзіце як</translation>
+<translation id="6454456397828627257">Побач</translation>
 <translation id="6455264371803474013">На канкрэтных сайтах</translation>
 <translation id="6455521402703088376">Выключана • Распрацоўшчык адрабіў публікацыю гэтага пашырэння</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>

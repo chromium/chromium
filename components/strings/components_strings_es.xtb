@@ -3446,6 +3446,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="634500758737709758">Indicaciones</translation>
 <translation id="6348220984832452017">Variaciones activas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Paga sin copiar y pegar el código de Pix. <ph name="BEGIN_LINK1" />Descubre cómo funciona<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Eliminar datos de navegación</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ninguna}=1{1 contraseña de <ph name="DOMAIN_LIST" /> (sincronizada)}=2{2 contraseñas de <ph name="DOMAIN_LIST" /> (sincronizadas)}other{# contraseñas de <ph name="DOMAIN_LIST" /> (sincronizadas)}}</translation>
 <translation id="6354918092619878358">Curva elíptica SECG secp256r1 (también denominada ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3612,7 +3613,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6587923378399804057">Enlace copiado</translation>
 <translation id="6591833882275308647">Tu <ph name="DEVICE_TYPE" /> no está administrado</translation>
 <translation id="6595495738567740002">Para eliminar las cookies de Google de este dispositivo, <ph name="BEGIN_LINK" />cierra sesión en Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Opciones de cifrado</translation>
 <translation id="6596573334527383067">Mostrar resultados desde ayer</translation>
 <translation id="6597665340361269064">90 grados</translation>
 <translation id="6598976221101665070">Películas de drama</translation>
@@ -3662,6 +3662,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="668132230070712111">Vídeo guardado en Google Drive</translation>
 <translation id="6681790815630918386">CVC guardado</translation>
 <translation id="6683022854667115063">Auriculares</translation>
+<translation id="6686570026048064255">Para desactivar la detección de códigos de Pix, ve a <ph name="BEGIN_LINK1" />Configuración de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Sobre (simple)</translation>
 <translation id="6687335167692595844">Tamaño de fuente solicitado</translation>
 <translation id="6688743156324860098">Actualizar…</translation>
@@ -3887,7 +3888,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="702275896380648118">Este sitio determina qué cosas te gustan y, después, ofrece sugerencias de anuncios a otros sitios. Este sitio también consulta tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="7023162328967545559">Advertencia del administrador</translation>
 <translation id="7023765275461720661">¿Vincular cuenta y pagar con <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030164307377592766">modificar la configuración para rellenar los métodos de pago</translation>
 <translation id="7031110846419387930">Información sobre el navegador, el SO, el dispositivo, el software instalado, los archivos y las direcciones IP</translation>
 <translation id="7031646650991750659">Qué aplicaciones de Google Play tienes instaladas</translation>

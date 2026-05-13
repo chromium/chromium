@@ -549,6 +549,7 @@
 <translation id="1832474362231610822">Фото сохранено в OneDrive</translation>
 <translation id="1832730227369924598">Синхронизация рабочего стола</translation>
 <translation id="1834452765064623979">Строительство и ремонт</translation>
+<translation id="1837606605602726453">Оценка и категории риска игнорируются, так как расширение явно разрешено или заблокировано администратором.</translation>
 <translation id="1838374766361614909">Удалить условия поиска</translation>
 <translation id="1839331950812095887">краткое изложение ваших мыслей</translation>
 <translation id="1839551713262164453">При проверке значений политик обнаружены ошибки</translation>
@@ -3445,6 +3446,7 @@
 <translation id="634500758737709758">Маршрут</translation>
 <translation id="6348220984832452017">Текущие изменения</translation>
 <translation id="6349101878882523185">Установите приложение "<ph name="APP_NAME" />"</translation>
+<translation id="6350739641326887427">Платите без копирования и вставки кода Pix. <ph name="BEGIN_LINK1" />Как это работает<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Удалить данные о работе в браузере</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}=2{2 пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}few{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}many{# паролей (для <ph name="DOMAIN_LIST" />, синхронизировано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}}</translation>
 <translation id="6354918092619878358">Эллиптическая кривая SECG secp256r1 (она же ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3611,7 +3613,6 @@
 <translation id="6587923378399804057">Скопированная ссылка</translation>
 <translation id="6591833882275308647">Это устройство <ph name="DEVICE_TYPE" /> не управляется администратором.</translation>
 <translation id="6595495738567740002">Чтобы удалить файлы cookie сервисов Google с устройства, <ph name="BEGIN_LINK" />выйдите из Chrome<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Параметры шифрования</translation>
 <translation id="6596573334527383067">Показать результаты за вчерашний день</translation>
 <translation id="6597665340361269064">90 градусов</translation>
 <translation id="6598976221101665070">Драмы</translation>
@@ -3661,6 +3662,7 @@
 <translation id="668132230070712111">Видео сохранено на Google Диске</translation>
 <translation id="6681790815630918386">CVC-код сохранен</translation>
 <translation id="6683022854667115063">Наушники</translation>
+<translation id="6686570026048064255">Чтобы отключить распознавание кода Pix, перейдите в <ph name="BEGIN_LINK1" />настройки Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Конверт (обычный)</translation>
 <translation id="6687335167692595844">Размер шрифта запрошен</translation>
 <translation id="6688743156324860098">Изменить</translation>
@@ -3886,7 +3888,6 @@
 <translation id="702275896380648118">Этот сайт определяет ваши интересы и затем предлагает другим сайтам рекламу для вас. Кроме того, он использует темы рекламы из Chrome, чтобы показывать вам более подходящие объявления.</translation>
 <translation id="7023162328967545559">Предупреждение от администратора</translation>
 <translation id="7023765275461720661">Связать аккаунты и оплатить через сервис "<ph name="BNPL_ISSUER_NAME" />"?</translation>
-<translation id="7029809446516969842">Пароли</translation>
 <translation id="7030164307377592766">изменить настройки автоматического ввода платежных данных</translation>
 <translation id="7031110846419387930">Информация о вашем браузере, ОС, устройстве, установленном ПО, файлах и IP-адресах.</translation>
 <translation id="7031646650991750659">Приложения, установленные из Google Play.</translation>

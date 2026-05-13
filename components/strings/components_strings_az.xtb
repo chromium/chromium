@@ -3442,6 +3442,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="634500758737709758">İstiqamətlər</translation>
 <translation id="6348220984832452017">Aktiv Variasiyalar</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> tətbiqini quraşdırın</translation>
+<translation id="6350739641326887427">Pix kodu kopiyalayıb yerləşdirmədən ödəyin. <ph name="BEGIN_LINK1" />İş prinsipi haqqında<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Baxış datasını silin</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Heç biri}=1{1 parol (<ph name="DOMAIN_LIST" /> üçün sinxronizasiya edilib)}=2{2 parol (<ph name="DOMAIN_LIST" />üçün sinxronizasiya edilib)}other{# parol (<ph name="DOMAIN_LIST" />üçün sinxronizasiya edilib)}}</translation>
 <translation id="6354918092619878358">SECG oval əyrisi secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3608,7 +3609,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6587923378399804057">Kopyalanmış link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> idarə edilmir</translation>
 <translation id="6595495738567740002">Google kukilərini bu cihazdan silmək üçün <ph name="BEGIN_LINK" />Chrome hesabından çıxın<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Şifrələmə variantları</translation>
 <translation id="6596573334527383067">Dünənə aid nəticələri göstərin</translation>
 <translation id="6597665340361269064">90 dərəcə</translation>
 <translation id="6598976221101665070">Dram filmləri</translation>
@@ -3658,6 +3658,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="668132230070712111">Video Google Diskdə yadda saxlanıldı</translation>
 <translation id="6681790815630918386">CVC yadda saxlandı</translation>
 <translation id="6683022854667115063">Qulaqlıq</translation>
+<translation id="6686570026048064255">Pix kod aşkarlamasını söndürmək üçün <ph name="BEGIN_LINK1" />Chrome ayarlarına<ph name="END_LINK1" /> keçin</translation>
 <translation id="6687230248707087982">Zərf (sadə)</translation>
 <translation id="6687335167692595844">Şrift ölçüsü üzrə sorğu göndərildi</translation>
 <translation id="6688743156324860098">Güncəlləmə…</translation>
@@ -3883,7 +3884,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="702275896380648118">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir.</translation>
 <translation id="7023162328967545559">Admin xəbərdarlığı</translation>
 <translation id="7023765275461720661">Hesab əlaqələndirilsin və <ph name="BNPL_ISSUER_NAME" /> ilə ödənilsin?</translation>
-<translation id="7029809446516969842">Parollar</translation>
 <translation id="7030164307377592766">ödəniş metodlarını doldurmaq üçün ayarları dəyişməyə çalışır</translation>
 <translation id="7031110846419387930">Brauzeriniz, ƏS, cihazınız, quraşdırılmış proqram təminatı, fayllar və IP ünvanlarınız haqqında məlumatlar</translation>
 <translation id="7031646650991750659">Quraşdırdığınız Google Play tətbiqləri</translation>

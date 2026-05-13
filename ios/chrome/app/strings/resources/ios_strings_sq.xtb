@@ -201,6 +201,7 @@
 <translation id="1657011748321897393">Ndarja dështoi për shkak se nuk je i lidhur në rrjet.</translation>
 <translation id="1668001730617725852">Hape në një grup të ri skedash</translation>
 <translation id="1670861525135254448">Ruaj automjetin</translation>
+<translation id="1671568970992212376">Ruaj fotografitë te "Fotografitë e Google" dhe qasu tek ato në çdo kohë.</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Bazuar në politikat e organizatës sate, ky skedar mund të përmbajë informacione delikate</translation>
 <translation id="168389590065701766">Tani mund të hapësh "Lenten e Google" nga shiriti i adresave dhe të kërkosh gjithçka që sheh</translation>
@@ -852,7 +853,6 @@
 <translation id="4018440314314549819">Plotëso automatikisht fjalëkalimet e ruajtura</translation>
 <translation id="4021447724486050609">Përditëso shfletuesin</translation>
 <translation id="4021931095789478915">Shto ${url} te lista e leximit</translation>
-<translation id="4026496154402824012">Për ta çaktivizuar, shko te <ph name="BEGIN_LINK" />Password Options<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Ruaje te llogaria…</translation>
 <translation id="4038354071007134711">Asnjë aplikim në këtë pajisje nuk mund ta hapë skedarin.</translation>
 <translation id="4042870976416480368">Gjej brenda faqes</translation>
@@ -1605,7 +1605,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6571070086367343653">Redakto kartën e kreditit</translation>
 <translation id="6574092468346088891">Aktivizo njoftimet për "Kontrollin e sigurisë"</translation>
 <translation id="6579867704846662339">Mund të zgjedhësh që t'i hapësh URL-të hyrëse nga aplikacionet e tjera në modalitetin "E fshehtë".</translation>
-<translation id="6583087784430677195">Për ta fikur, hap <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /> dhe shko te "Plotësimi automatik i fjalëkalimeve".</translation>
 <translation id="6585618849026997638">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>
 <translation id="6589001036857939353">Shkri dublikatat</translation>
 <translation id="659407965921887085">Kjo kartë shfaq rëniet e çmimeve në ueb për produktet që ti monitoron aktualisht</translation>
@@ -1667,7 +1666,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6746338529702829275">Rishiko të dhënat e llogarisë sate</translation>
 <translation id="6750456911389438250">{count,plural, =1{U importua {count} artikull historiku}other{U importuan {count} artikuj historiku}}</translation>
 <translation id="6755200887046212842">Menaxho llogaritë</translation>
-<translation id="6755733078693946548">Qasu në fjalëkalimet dhe çelësat e kalimit nga çdo aplikacion</translation>
 <translation id="6759709389246683070">Mund të prekësh dhe të mbash shtypur këtë skedë për të caktuar një alarm rikujtues për ta vizituar përsëri më vonë</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[REZERVUAR]</translation>
@@ -2010,7 +2008,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="797588153137233716">Menyja → Historiku → Fshi të dhënat e shfletimit</translation>
 <translation id="7977451675950311423">Të paralajmëron nëse ti përdor një fjalëkalim që është komprometuar në një nxjerrje të paautorizuar të të dhënave.</translation>
 <translation id="797824194429476746">Skedat do të qëndrojnë të hapura në këtë pajisje, por grupi do të fshihet përgjithmonë.</translation>
-<translation id="797874245254030665">Qasu në fjalëkalimet dhe çelësat e tu të kalimit nga çdo aplikacion</translation>
 <translation id="7982789257301363584">Rrjeti</translation>
 <translation id="798299424881500862">Tema portokalli</translation>
 <translation id="7987685713885608670">Për më shumë siguri, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google".</translation>

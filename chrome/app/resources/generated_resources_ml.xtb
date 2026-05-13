@@ -664,6 +664,7 @@
 <translation id="1449191289887455076">അസൈൻമെന്റ് സ്ഥിരീകരിച്ച ശേഷം <ph name="RESPONSE" /> ചെയ്യാൻ “<ph name="CURRENTKEY" />” വീണ്ടും അമർത്തുക</translation>
 <translation id="1450484535522155181">അതിഥി പ്രൊഫൈൽ തുറക്കുക</translation>
 <translation id="1451375123200651445">വെബ്‌പേജ്, ഒരൊറ്റ ഫയൽ</translation>
+<translation id="1452651021404174820">ഉപകരണം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />ഡീബഗ് ലോഗുകൾ<ph name="END_LINK" /> അയയ്‌ക്കുക (ശുപാർശ ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="1454223536435069390">സ്ക്രീൻഷോട്ടെടുക്കുക</translation>
 <translation id="145432137617179457">സ്പെൽ ചെക്ക് പിന്തുണയ്‌ക്കുന്ന ഭാഷകൾ</translation>
@@ -1730,6 +1731,7 @@
 <translation id="2178545675770638239">പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2178585470774851578">sshd daemon സജ്ജീകരിക്കുന്നതും USB ഡ്രൈവുകളിൽ നിന്ന് ബൂട്ടിംഗ് പ്രവർത്തനക്ഷമമാക്കുന്നതുമായ ChromeOS Flex ഡീബഗ് ചെയ്യൽ ഫീച്ചറുകൾ നിങ്ങൾ പ്രവർത്തനക്ഷമമാക്കുകയാണ്.</translation>
 <translation id="2178614541317717477">CA കോംപ്രമൈസ്</translation>
+<translation id="2180082148774168439">നിങ്ങളുടെ കമ്പ്യൂട്ടറിലെ ഒരു പ്രത്യേക വിൻഡോയിൽ ഈ സൈറ്റ് ആക്സസ് ചെയ്യുക</translation>
 <translation id="2180620921879609685">ഏത് പേജിലെയും ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="2181821976797666341">നയങ്ങൾ</translation>
 <translation id="2182058453334755893">നിങ്ങളുടെ ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തി</translation>
@@ -4001,6 +4003,7 @@
 <translation id="3735039640698208086">ഓഡിയോ പ്ലേ ചെയ്യുമ്പോൾ...</translation>
 <translation id="3735740477244556633">ഇപ്രകാരം അടുക്കുക</translation>
 <translation id="3735827758948958091">മീറ്റർ ചെയ്ത കണക്ഷനിലായിരിക്കുമ്പോൾ <ph name="FILE_NAMES" /> തുറക്കാനാകില്ല</translation>
+<translation id="3736487688526377259">നിങ്ങൾക്ക് ഈ ലിങ്ക് ലഭിക്കേണ്ട ഉപകരണം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="3737058101969549870">നിലവിലുള്ള ബ്രൗസിംഗ് ഡാറ്റ ഈ പുതിയ പ്രൊഫൈലിൽ നിന്ന് വേറിട്ട് സൂക്ഷിക്കണമെന്നുണ്ടോ?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> ഡാറ്റ 24 മണിക്കൂറിനുള്ളിൽ ഇല്ലാതാക്കും</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -7856,6 +7859,7 @@
 <translation id="6453687572758515877">എല്ലാ ടാബുകളും ഗ്രൂപ്പ് ചെയ്യൂ</translation>
 <translation id="6453921811609336127">അടുത്ത ഇൻപുട്ട് രീതിയിലേക്ക് മാറാൻ, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> അമർത്തുക</translation>
 <translation id="645433497989692531">ഇത് ഈ ഉപകരണത്തിൽ നിന്ന് നിങ്ങളുടെ ബ്രൗസിംഗ് ഡാറ്റ ശാശ്വതമായി ഇല്ലാതാക്കും. ഡാറ്റ വീണ്ടെടുക്കാൻ, ഇനിപ്പറയുന്ന ഇമെയിൽ ഐഡി ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="6454456397828627257">വശങ്ങളിലായി</translation>
 <translation id="6455264371803474013">നിർദിഷ്‌ട സൈറ്റുകളിൽ</translation>
 <translation id="6455521402703088376">ഓഫാണ് • ഈ വിപുലീകരണം അതിന്റെ ഡെവലപ്പർ പ്രസിദ്ധീകരിച്ചത് റദ്ദാക്കി</translation>
 <translation id="6455894534188563617">&amp;പുതിയ ഫോള്‍ഡര്‍</translation>

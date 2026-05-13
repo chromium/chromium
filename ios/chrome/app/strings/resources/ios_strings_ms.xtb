@@ -853,7 +853,6 @@
 <translation id="4018440314314549819">Autolengkap Kata Laluan yang Disimpan</translation>
 <translation id="4021447724486050609">Kemas kinikan Penyemak Imbas anda</translation>
 <translation id="4021931095789478915">Tambahkan ${url} pada senarai bacaan</translation>
-<translation id="4026496154402824012">Untuk mematikan Autolengkap, akses <ph name="BEGIN_LINK" />Pilihan Kata Laluan<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Simpan dalam akaun…</translation>
 <translation id="4038354071007134711">Tiada aplikasi pada peranti ini yang dapat membuka fail itu.</translation>
 <translation id="4042870976416480368">Cari dalam Halaman</translation>
@@ -1606,7 +1605,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6571070086367343653">Edit kad kredit</translation>
 <translation id="6574092468346088891">Hidupkan pemberitahuan untuk Pemeriksaan Keselamatan</translation>
 <translation id="6579867704846662339">Anda boleh memilih untuk membuka URL masuk daripada apl lain dalam Inkognito.</translation>
-<translation id="6583087784430677195">Untuk mematikan, buka <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /> dan pergi ke Kata Laluan AutoLengkap.</translation>
 <translation id="6585618849026997638">Anda boleh kembali ke halaman yang penting bagi anda dengan menambah penanda halaman</translation>
 <translation id="6589001036857939353">Gabungkan pendua</translation>
 <translation id="659407965921887085">Kad ini menunjukkan penurunan harga merentas web untuk produk yang anda jejaki pada masa ini</translation>
@@ -1668,7 +1666,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6746338529702829275">Semak data akaun anda</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item sejarah diimport}other{{count} item sejarah diimport}}</translation>
 <translation id="6755200887046212842">Urus Akaun</translation>
-<translation id="6755733078693946548">Akses kata laluan &amp; kunci laluan daripada mana-mana apl</translation>
 <translation id="6759709389246683070">Anda boleh menyentuh dan menahan tab ini untuk menetapkan peringatan untuk melawati semula kemudian</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[TELAH DITEMPAH]</translation>
@@ -2011,7 +2008,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="797588153137233716">Menu → Sejarah → Padamkan data semakan imbas</translation>
 <translation id="7977451675950311423">Memberikan amaran kepada anda jika anda menggunakan kata laluan yang telah terjejas dalam pelanggaran data.</translation>
 <translation id="797824194429476746">Tab akan kekal terbuka pada peranti ini tetapi kumpulan tersebut akan dipadamkan secara kekal.</translation>
-<translation id="797874245254030665">Akses kata laluan &amp; kunci laluan anda daripada mana-mana apl</translation>
 <translation id="7982789257301363584">Rangkaian</translation>
 <translation id="798299424881500862">Tema jingga</translation>
 <translation id="7987685713885608670">Untuk keselamatan tambahan, sulitkan kata laluan pada peranti sebelum disimpan ke Pengurus Kata Laluan Google.</translation>

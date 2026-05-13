@@ -3445,6 +3445,7 @@
 <translation id="634500758737709758">Бағыттар</translation>
 <translation id="6348220984832452017">Белсенді нұсқалар</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>
+<translation id="6350739641326887427">Pix кодын көшіріп қоймай-ақ төлеңіз. <ph name="BEGIN_LINK1" />Қалай істейтінін көріңіз.<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Браузерді пайдалану деректерін жою</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Жоқ}=1{1 құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}=2{2 құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}other{# құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}}</translation>
 <translation id="6354918092619878358">SECG эллипстік қисық сызығы secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3611,7 +3612,6 @@
 <translation id="6587923378399804057">Көшірілген сілтеме</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> құрылғыңыз басқарылмайды.</translation>
 <translation id="6595495738567740002">Бұл құрылғыдағы Google-дың cookie файлдарын жою үшін <ph name="BEGIN_LINK" />Chrome-нан шығыңыз<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Шифрлау опциялары</translation>
 <translation id="6596573334527383067">Кешегі нәтижелерді көрсету</translation>
 <translation id="6597665340361269064">90 градус</translation>
 <translation id="6598976221101665070">Драмалық фильмдер</translation>
@@ -3661,6 +3661,7 @@
 <translation id="668132230070712111">Бейне Google Drive-қа сақталды</translation>
 <translation id="6681790815630918386">CVC сақталды</translation>
 <translation id="6683022854667115063">Құлақаспап</translation>
+<translation id="6686570026048064255">Pix кодын анықтау функциясын өшіру үшін <ph name="BEGIN_LINK1" />Chrome параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="6687230248707087982">Хатқалта (қарапайым)</translation>
 <translation id="6687335167692595844">Қаріп өлшемі сұралды</translation>
 <translation id="6688743156324860098">Жаңарту…</translation>
@@ -3886,7 +3887,6 @@
 <translation id="702275896380648118">Бұл сайт сізге ұнайтын нәрселерді анықтайды, одан кейін басқа сайттарға жарнамалар ұсынады. Сонымен қатар бұл сайт сізге көбірек сәйкес жарнамаларды көрсету үшін Chrome браузерінен жарнама тақырыптарын алады.</translation>
 <translation id="7023162328967545559">Әкімші ескертуі</translation>
 <translation id="7023765275461720661">Аккаунтыңызды байланыстырып, <ph name="BNPL_ISSUER_NAME" /> арқылы төлегіңіз келе ме?</translation>
-<translation id="7029809446516969842">Құпия сөздер</translation>
 <translation id="7030164307377592766">төлеу әдістерін толтыру параметрлерін өзгерткісі келеді</translation>
 <translation id="7031110846419387930">Браузер, операциялық жүйе, құрылғы, орнатылған бағдарламалық құрал, файлдар және IP мекенжайлары туралы ақпарат.</translation>
 <translation id="7031646650991750659">Google Play-дің қай қолданбаларын орнатқаныңызды.</translation>

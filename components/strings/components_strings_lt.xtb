@@ -3447,6 +3447,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="634500758737709758">Nuorodos</translation>
 <translation id="6348220984832452017">Aktyvūs variantai</translation>
 <translation id="6349101878882523185">Įdiegti <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Mokėkite nekopijuodami ir neįklijuodami „Pix“ kodo. <ph name="BEGIN_LINK1" />Kaip tai veikia<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Ištrinti naršymo duomenis</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nėra}=1{1 slaptažodis (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}=2{2 slaptažodžiai (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}one{# slaptažodis (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}few{# slaptažodžiai (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}many{# slaptažodžio (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}other{# slaptažodžių (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}}</translation>
 <translation id="6354918092619878358">SECG elipsės formos kreivės secp256r1 (taip pat vadinama ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3613,7 +3614,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6587923378399804057">Nukopijuota nuoroda</translation>
 <translation id="6591833882275308647">Jūsų „<ph name="DEVICE_TYPE" />“ netvarkomas</translation>
 <translation id="6595495738567740002">Jei norite ištrinti „Google“ slapukus iš šio įrenginio, <ph name="BEGIN_LINK" />atsijunkite nuo „Chrome“<ph name="END_LINK" />.</translation>
-<translation id="6596325263575161958">Šifravimo parinktys</translation>
 <translation id="6596573334527383067">Rodyti vakar dienos rezultatus</translation>
 <translation id="6597665340361269064">90 laipsnių</translation>
 <translation id="6598976221101665070">Dramos</translation>
@@ -3663,6 +3663,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="668132230070712111">Vaizdo įrašas išsaugotas „Google“ diske</translation>
 <translation id="6681790815630918386">CVC išsaugotas</translation>
 <translation id="6683022854667115063">Ausinės</translation>
+<translation id="6686570026048064255">Jei norite išjungti „Pix“ kodo aptikimą, eikite į <ph name="BEGIN_LINK1" />„Chrome“ nustatymus<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Vokas (paprastas)</translation>
 <translation id="6687335167692595844">Reikia nurodyti šrifto dydį</translation>
 <translation id="6688743156324860098">Atnaujinti…</translation>
@@ -3888,7 +3889,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="702275896380648118">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines. Ši svetainė taip pat gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus.</translation>
 <translation id="7023162328967545559">Administratoriaus įspėjimas</translation>
 <translation id="7023765275461720661">Susieti paskyrą ir mokėti naudojantis „<ph name="BNPL_ISSUER_NAME" />“ paslaugomis?</translation>
-<translation id="7029809446516969842">Slaptažodžiai</translation>
 <translation id="7030164307377592766">keisti mokėjimo metodų pildymo nustatymus</translation>
 <translation id="7031110846419387930">Informacija apie jūsų naršyklę, OS, įrenginį, įdiegtą programinę įrangą, failus ir IP adresus</translation>
 <translation id="7031646650991750659">Kurias „Google Play“ programas įdiegėte</translation>
