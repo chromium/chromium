@@ -76,10 +76,10 @@ def parse_allowlist():
   allowlist = {}
   last_path = None
   for line in lines:
-    path, *attrs = line.split(", ")
+    path, *attrs = line.split(', ')
     if last_path is not None and path <= last_path:
       raise ValueError(
-          f"Allowlist is not sorted. {path} should be before {last_path}")
+          f'Allowlist is not sorted. {path} should be before {last_path}')
     last_path = path
 
     textual = None
@@ -95,7 +95,7 @@ def parse_allowlist():
         lazy = attr[5:]
       else:
         raise ValueError(
-            f"Unknown attribute {repr(attr)} in allowlist for {path}")
+            f'Unknown attribute {repr(attr)} in allowlist for {path}')
     allowlist[path] = lazy
     if textual is not None:
       force_textual[path] = textual
@@ -242,13 +242,13 @@ def parse_modulemap(
 
 
 def calculate_transitive_headers(clang_args: list[str],
-                                 include_dirs: List[Tuple[pathlib.Path,
+                                 include_dirs: list[Tuple[pathlib.Path,
                                                           List[Header]]],
                                  sysroot: pathlib.Path,
                                  extra_public_headers: list[str],
                                  target_os: str,
                                  target_cpu: str,
-                                 debug: bool = False) -> List[Header]:
+                                 debug: bool = False) -> list[Header]:
   """Runs Clang to discover transitive dependencies from the provided headers.
 
   Returns a list of all headers discovered that are part of the sysroot.
@@ -311,13 +311,13 @@ cd "{os.getcwd()}"
 {shlex.join(debug_cmd)}
 """)
       _DEBUG_SCRIPT.chmod(0o755)
-      print(f"Saved debug script to {_DEBUG_SCRIPT}")
+      print(f'Saved debug script to {_DEBUG_SCRIPT}')
       sys.exit(0)
 
     ps = subprocess.run(cmd, check=False)
     if ps.returncode != 0:
-      print(f"Suggestion: Run `cd {os.getcwd()} && {shlex.join(sys.argv)} "
-            "--debug` to debug")
+      print(f'Suggestion: Run `cd {os.getcwd()} && {sys.argv[0]} --debug',
+            f'{shlex.join(sys.argv[1:])}` to debug')
       sys.exit(ps.returncode)
 
     dep_content = dep_file.read_text().replace('\\\n', '')
@@ -466,8 +466,8 @@ def main(args, extra_args):
   for module in args.module:
     if module not in known_modules:
       available = ', '.join(sorted(known_modules))
-      raise ValueError(f"Module '{module}' not found in partial modulemaps. "
-                       f"Available: {available}")
+      raise ValueError(f'Module \'{module}\' not found in partial modulemaps. '
+                       f'Available: {available}')
 
   out_str = combine_modulemaps(
       out=args.output,
@@ -511,8 +511,8 @@ if __name__ == '__main__':
                       default=[],
                       help=('Name of a top-level module to selectively extract '
                             'from partial modulemaps.'))
-  parser.add_argument('--os', help="GN's $target_os variable")
-  parser.add_argument('--cpu', help="GN's $target_cpu variable")
+  parser.add_argument('--os', help='GN\'s $target_os variable')
+  parser.add_argument('--cpu', help='GN\'s $target_cpu variable')
   parser.add_argument(
       '--debug',
       action='store_true',
