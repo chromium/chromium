@@ -90,19 +90,6 @@ void ContentInfoBarManager::NavigationEntryCommitted(
   }
 }
 
-void ContentInfoBarManager::WebContentsDestroyed() {
-  // The WebContents is going away; be aggressively paranoid and delete
-  // |this| lest other parts of the system attempt to add infobars or use
-  // this object otherwise during the destruction.
-  // TODO(blundell): This operation seems unnecessary as detailed in the
-  // conversation on
-  // https://chromium-review.googlesource.com/c/chromium/src/+/2859170/7 .
-  // Look at removing it.
-  web_contents()->RemoveUserData(UserDataKey());
-  // That was the equivalent of "delete this". This object is now destroyed;
-  // returning from this function is the only safe thing to do.
-}
-
 void ContentInfoBarManager::OpenURL(const GURL& url,
                                     WindowOpenDisposition disposition,
                                     const std::string& text_fragment) {

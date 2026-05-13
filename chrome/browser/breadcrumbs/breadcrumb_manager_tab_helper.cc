@@ -36,8 +36,14 @@ BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
 BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;
 
 void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
+  // web_contents() securely returns nullptr if the WebContents is tearing down.
+  // Events emitted by other UserData objects during destruction are ignored.
+  if (!web_contents()) {
+    return;
+  }
+
   BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-      GetWebContents().GetBrowserContext())
+      web_contents()->GetBrowserContext())
       ->AddEvent(event);
 }
 

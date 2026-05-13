@@ -72,7 +72,6 @@ class ContentInfoBarManager
       content::NavigationHandle* navigation_handle) override;
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
-  void WebContentsDestroyed() override;
 
   // See description in set_ignore_next_reload().
   bool ignore_next_reload_ = false;
