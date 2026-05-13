@@ -54,14 +54,17 @@ suite('AiModeSearchSubpage', function() {
 
     // Click toggle
     toggle.click();
-    assertTrue(subpage.prefs['contextual_tasks']['share_open_tabs_every_thread']
-                   .value);
+    assertTrue(
+        subpage
+            .getPref<boolean>('contextual_tasks.share_open_tabs_every_thread')
+            .value);
     assertTrue(toggle.checked);
 
     // Click again
     toggle.click();
     assertFalse(
-        subpage.prefs['contextual_tasks']['share_open_tabs_every_thread']
+        subpage
+            .getPref<boolean>('contextual_tasks.share_open_tabs_every_thread')
             .value);
     assertFalse(toggle.checked);
   });

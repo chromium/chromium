@@ -20,7 +20,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 function createPage(settingsPrefs: SettingsPrefsElement,
                     safeBrowsingSetting: SafeBrowsingSetting) {
   const page = document.createElement('settings-v8-page');
-  page.prefs = settingsPrefs.prefs;
+  page.prefs = settingsPrefs.prefs!;
 
   document.body.appendChild(page);
 

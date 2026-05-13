@@ -157,7 +157,7 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
     super.connectedCallback();
     CrSettingsPrefs.initialized.then(() => {
       this.processIsolationEnabledAtStartup_ =
-          this.getPref('isolation_state.enabled').value;
+          this.getPref<boolean>('isolation_state.enabled').value;
     });
   }
   // </if>

@@ -48,7 +48,8 @@ suite('KeyboardShortcutPageTest', function() {
   // Test that the keyboard shortcut dropdown menu is shown as expected.
   test('KeyboardShortcutSettingState', function() {
     assertTrue(isVisible(page.$.dropdown));
-    assertTrue(page.getPref('omnibox.keyword_space_triggering_enabled').value);
+    assertTrue(page.getPref<boolean>('omnibox.keyword_space_triggering_enabled')
+                   .value);
   });
 
   // Test that changing the selection updates the pref and records a metric.
@@ -56,7 +57,8 @@ suite('KeyboardShortcutPageTest', function() {
     const selectElement = page.$.dropdown.$.dropdownMenu;
     assertTrue(!!selectElement);
 
-    assertTrue(page.getPref('omnibox.keyword_space_triggering_enabled').value);
+    assertTrue(page.getPref<boolean>('omnibox.keyword_space_triggering_enabled')
+                   .value);
     assertEquals('true', selectElement.value);
 
     // Switch space triggering off.
@@ -64,7 +66,9 @@ suite('KeyboardShortcutPageTest', function() {
     selectElement.dispatchEvent(new Event('change'));
     await microtasksFinished();
 
-    assertFalse(page.getPref('omnibox.keyword_space_triggering_enabled').value);
+    assertFalse(
+        page.getPref<boolean>('omnibox.keyword_space_triggering_enabled')
+            .value);
     assertEquals('false', selectElement.value);
 
     let histogramResult =
@@ -78,7 +82,8 @@ suite('KeyboardShortcutPageTest', function() {
     selectElement.dispatchEvent(new Event('change'));
     await microtasksFinished();
 
-    assertTrue(page.getPref('omnibox.keyword_space_triggering_enabled').value);
+    assertTrue(page.getPref<boolean>('omnibox.keyword_space_triggering_enabled')
+                   .value);
     assertEquals('true', selectElement.value);
 
     histogramResult =

@@ -30,7 +30,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     timePicker =
         document.createElement('settings-clear-browsing-data-time-picker');
-    timePicker.prefs = settingsPrefs.prefs;
+    timePicker.prefs = settingsPrefs.prefs!;
     timePicker.setPrefValue(
         'browser.clear_data.time_period', TimePeriod.LAST_HOUR);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();

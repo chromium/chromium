@@ -133,13 +133,14 @@ suite('SettingsSecureDnsInteractive', function() {
     // Click on the secure dns toggle to disable secure dns.
     secureDnsToggle.click();
     assertEquals(
-        SecureDnsMode.OFF, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.OFF, testElement.getPref('dns_over_https.mode').value);
     assertFalse(getResolverOptions().opened);
 
     // Click on the secure dns toggle to go back to automatic mode.
     secureDnsToggle.click();
     assertEquals(
-        SecureDnsMode.AUTOMATIC, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.AUTOMATIC,
+        testElement.getPref('dns_over_https.mode').value);
 
     assertTrue(getResolverOptions().opened);
     assertFalse(focused(testElement.$.secureDnsInput));
@@ -151,7 +152,8 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.$.resolverSelect.dispatchEvent(new Event('change'));
     assertTrue(testElement.$.secureDnsInput.matches(':focus-within'));
     assertEquals(
-        SecureDnsMode.AUTOMATIC, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.AUTOMATIC,
+        testElement.getPref('dns_over_https.mode').value);
     assertFalse(testElement.$.secureDnsInputContainer.hidden);
     assertTrue(focused(testElement.$.secureDnsInput));
 
@@ -167,12 +169,12 @@ suite('SettingsSecureDnsInteractive', function() {
       testBrowserProxy.whenCalled('probeConfig'),
     ]);
     assertEquals(
-        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
 
     // Click on the secure dns toggle to disable secure dns.
     secureDnsToggle.click();
     assertEquals(
-        SecureDnsMode.OFF, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.OFF, testElement.getPref('dns_over_https.mode').value);
     assertFalse(focused(testElement.$.secureDnsInput));
     assertFalse(getResolverOptions().opened);
 
@@ -186,14 +188,14 @@ suite('SettingsSecureDnsInteractive', function() {
     assertTrue(testElement.$.secureDnsInput.matches(':focus-within'));
     assertEquals(validEntry, testElement.$.secureDnsInput.value);
     assertEquals(
-        SecureDnsMode.OFF, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.OFF, testElement.getPref('dns_over_https.mode').value);
     testElement.$.secureDnsInput.blur();
     await Promise.all([
       testBrowserProxy.whenCalled('isValidConfig'),
       testBrowserProxy.whenCalled('probeConfig'),
     ]);
     assertEquals(
-        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
   });
 
   test('SecureDnsDropdown', function() {
@@ -255,7 +257,7 @@ suite('SettingsSecureDnsInteractive', function() {
         resolverList[2]!.policy, privacyPolicyLine.querySelector('a')!.href);
     assertEquals(
         resolverList[2]!.value,
-        testElement.prefs.dns_over_https.templates.value);
+        testElement.getPref('dns_over_https.templates').value);
 
     // Change to custom.
     testBrowserProxy.reset();
@@ -267,10 +269,10 @@ suite('SettingsSecureDnsInteractive', function() {
     assertTrue(testElement.$.secureDnsInput.matches(':focus-within'));
     assertFalse(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(
-        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
     assertEquals(
         resolverList[2]!.value,
-        testElement.prefs.dns_over_https.templates.value);
+        testElement.getPref('dns_over_https.templates').value);
 
     // Input a custom template and make sure it is still there after
     // manipulating the dropdown.
@@ -281,10 +283,10 @@ suite('SettingsSecureDnsInteractive', function() {
     dropdownMenu.dispatchEvent(new Event('change'));
     assertEquals('1', dropdownMenu.value);
     assertEquals(
-        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
     assertEquals(
         resolverList[1]!.value,
-        testElement.prefs.dns_over_https.templates.value);
+        testElement.getPref('dns_over_https.templates').value);
     testBrowserProxy.reset();
     dropdownMenu.value = SecureDnsResolverType.CUSTOM;
     dropdownMenu.dispatchEvent(new Event('change'));
@@ -295,7 +297,8 @@ suite('SettingsSecureDnsInteractive', function() {
   test('SecureDnsDropdownChangeInAutomaticMode', function() {
     const secureDnsToggle = getSecureDnsToggle();
 
-    testElement.prefs.dns_over_https.templates.value = 'resolver1_template';
+    testElement.getPref('dns_over_https.templates').value =
+        'resolver1_template';
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
       config: resolverList[1]!.value,
@@ -317,14 +320,15 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         resolverList[2]!.policy, privacyPolicyLine.querySelector('a')!.href);
     assertEquals(
-        'resolver3_template', testElement.prefs.dns_over_https.templates.value);
+        'resolver3_template',
+        testElement.getPref('dns_over_https.templates').value);
 
     // Click on the secure dns toggle to disable secure dns.
     secureDnsToggle.click();
     assertFalse(getResolverOptions().opened);
     assertEquals(
-        SecureDnsMode.OFF, testElement.prefs.dns_over_https.mode.value);
-    assertEquals('', testElement.prefs.dns_over_https.templates.value);
+        SecureDnsMode.OFF, testElement.getPref('dns_over_https.mode').value);
+    assertEquals('', testElement.getPref('dns_over_https.templates').value);
 
     // Get another event enabling automatic mode.
     webUIListenerCallback('secure-dns-setting-changed', {
@@ -349,9 +353,10 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         resolverList[1]!.policy, privacyPolicyLine.querySelector('a')!.href);
     assertEquals(
-        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
     assertEquals(
-        'resolver2_template', testElement.prefs.dns_over_https.templates.value);
+        'resolver2_template',
+        testElement.getPref('dns_over_https.templates').value);
   });
 
   test('SecureDnsInputChange', async function() {
@@ -385,8 +390,9 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
     assertEquals(
-        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
-    assertEquals(validEntry, testElement.prefs.dns_over_https.templates.value);
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
+    assertEquals(
+        validEntry, testElement.getPref('dns_over_https.templates').value);
 
     // Receive a pref update and make sure the custom input field is not
     // cleared.
@@ -411,8 +417,9 @@ suite('SettingsSecureDnsInteractive', function() {
     assertTrue(testElement.$.secureDnsInput.matches(':focus-within'));
     assertTrue(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(
-        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
-    assertEquals(validEntry, testElement.prefs.dns_over_https.templates.value);
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
+    assertEquals(
+        validEntry, testElement.getPref('dns_over_https.templates').value);
     testElement.$.secureDnsInput.focus();
     assertTrue(focused(testElement.$.secureDnsInput));
     const doubleValidEntry = `${validEntry} https://dns.ex.another/dns-query`;
@@ -429,9 +436,10 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
     assertEquals(
-        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
     assertEquals(
-        doubleValidEntry, testElement.prefs.dns_over_https.templates.value);
+        doubleValidEntry,
+        testElement.getPref('dns_over_https.templates').value);
 
     // Make sure the input field updates with a change in the underlying
     // config pref in secure mode.
@@ -484,8 +492,9 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
     assertEquals(
-        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
     assertEquals(
-        doubleValidEntry, testElement.prefs.dns_over_https.templates.value);
+        doubleValidEntry,
+        testElement.getPref('dns_over_https.templates').value);
   });
 });

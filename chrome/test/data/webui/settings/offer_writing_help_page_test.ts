@@ -31,7 +31,7 @@ suite('ComposePage', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-offer-writing-help-page');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   }

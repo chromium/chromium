@@ -336,9 +336,9 @@ suite('SettingsSecureDnsV2', function() {
     assertTrue(secureDnsToggle.iconVisible, 'The icon should be visible');
 
     // Switch to OFF by enforcement.
-    testElement.prefs.dns_over_https.mode.enforcement =
+    testElement.getPref('dns_over_https.mode').enforcement =
         chrome.settingsPrivate.Enforcement.ENFORCED;
-    testElement.prefs.dns_over_https.mode.controlledBy =
+    testElement.getPref('dns_over_https.mode').controlledBy =
         chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
@@ -402,9 +402,9 @@ suite('SettingsSecureDnsV2', function() {
     assertFalse(testElement.$.fallbackRadioButton.disabled);
     assertFalse(testElement.$.customRadioButton.disabled);
 
-    testElement.prefs.dns_over_https.mode.enforcement =
+    testElement.getPref('dns_over_https.mode').enforcement =
         chrome.settingsPrivate.Enforcement.ENFORCED;
-    testElement.prefs.dns_over_https.mode.controlledBy =
+    testElement.getPref('dns_over_https.mode').controlledBy =
         chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
@@ -420,8 +420,8 @@ suite('SettingsSecureDnsV2', function() {
     assertTrue(testElement.$.fallbackRadioButton.disabled);
     assertTrue(testElement.$.customRadioButton.disabled);
 
-    testElement.prefs.dns_over_https.mode.enforcement = null;
-    testElement.prefs.dns_over_https.mode.controlledBy = null;
+    testElement.getPref('dns_over_https.mode').enforcement = undefined;
+    testElement.getPref('dns_over_https.mode').controlledBy = undefined;
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',

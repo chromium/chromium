@@ -1284,7 +1284,7 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     adTopicsPage =
         document.createElement('settings-privacy-sandbox-topics-subpage');
-    adTopicsPage.prefs = settingsPrefs.prefs;
+    adTopicsPage.prefs = settingsPrefs.prefs!;
     adTopicsPage.set('prefs.privacy_sandbox.m1.topics_enabled', {value: true});
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
     document.body.appendChild(adTopicsPage);

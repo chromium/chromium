@@ -87,7 +87,8 @@ suite('SettingsSectionTest', function() {
   test('pref value displayed in the UI', async function() {
     const settings = document.createElement('settings-section');
     settings.prefs = makePasswordManagerPrefs();
-    settings.prefs.credentials_enable_service.value = false;
+    const prefObject = settings.getPref<boolean>('credentials_enable_service');
+    prefObject.value = false;
     document.body.appendChild(settings);
     await flushTasks();
 
@@ -101,34 +102,34 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(settings);
     await flushTasks();
 
-    assertTrue(settings.getPref('credentials_enable_service').value);
+    assertTrue(settings.getPref<boolean>('credentials_enable_service').value);
     assertTrue(settings.$.passwordToggle.checked);
 
     settings.$.passwordToggle.click();
-    assertFalse(settings.getPref('credentials_enable_service').value);
+    assertFalse(settings.getPref<boolean>('credentials_enable_service').value);
     assertFalse(settings.$.passwordToggle.checked);
   });
 
   test('enforcement disables toggle', async function() {
     const settings = document.createElement('settings-section');
     settings.prefs = makePasswordManagerPrefs();
-    settings.prefs.credentials_enable_service.enforcement =
-        chrome.settingsPrivate.Enforcement.ENFORCED;
+    const prefObject = settings.getPref<boolean>('credentials_enable_service');
+    prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
     document.body.appendChild(settings);
     await flushTasks();
 
-    assertTrue(settings.getPref('credentials_enable_service').value);
+    assertTrue(settings.getPref<boolean>('credentials_enable_service').value);
     assertTrue(settings.$.passwordToggle.checked);
     settings.$.passwordToggle.click();
-    assertTrue(settings.getPref('credentials_enable_service').value);
+    assertTrue(settings.getPref<boolean>('credentials_enable_service').value);
   });
 
   test('extension control includes icon', async function() {
     const settings = document.createElement('settings-section');
     settings.prefs = makePasswordManagerPrefs();
-    settings.prefs.credentials_enable_service.extensionId = 'test';
-    settings.prefs.credentials_enable_service.controlledByName =
-        'test extension';
+    const prefObject = settings.getPref<boolean>('credentials_enable_service');
+    prefObject.extensionId = 'test';
+    prefObject.controlledByName = 'test extension';
     document.body.appendChild(settings);
     await flushTasks();
 
@@ -170,8 +171,8 @@ suite('SettingsSectionTest', function() {
 
     const settings = document.createElement('settings-section');
     settings.prefs = makePasswordManagerPrefs();
-    settings.prefs.password_manager.biometric_authentication_filling.value =
-        false;
+    settings.getPref('password_manager.biometric_authentication_filling')
+        .value = false;
     document.body.appendChild(settings);
     await flushTasks();
 
@@ -180,18 +181,20 @@ suite('SettingsSectionTest', function() {
             '#biometricAuthenticationToggle');
     assertTrue(!!biometricAuthenticationToggle);
     assertFalse(biometricAuthenticationToggle.checked);
-    assertFalse(
-        settings.getPref('password_manager.biometric_authentication_filling')
-            .value);
+    assertFalse(settings
+                    .getPref<boolean>(
+                        'password_manager.biometric_authentication_filling')
+                    .value);
 
     biometricAuthenticationToggle.click();
 
     // Pref settings should not change until authentication succeeds.
     await passwordManager.whenCalled('switchBiometricAuthBeforeFillingState');
     assertFalse(biometricAuthenticationToggle.checked);
-    assertFalse(
-        settings.getPref('password_manager.biometric_authentication_filling')
-            .value);
+    assertFalse(settings
+                    .getPref<boolean>(
+                        'password_manager.biometric_authentication_filling')
+                    .value);
   });
 
   // Tests that biometric auth pref is not shown, if biometric auth is
@@ -301,11 +304,11 @@ suite('SettingsSectionTest', function() {
       async function() {
         const settings = document.createElement('settings-section');
         settings.prefs = makePasswordManagerPrefs();
-        settings.prefs.credentials_enable_service.value = false;
-        settings.prefs.credentials_enable_service.enforcement =
-            chrome.settingsPrivate.Enforcement.ENFORCED;
-        settings.prefs.credentials_enable_service.controlledBy =
-            chrome.settingsPrivate.ControlledBy.EXTENSION;
+        const prefObject =
+            settings.getPref<boolean>('credentials_enable_service');
+        prefObject.value = false;
+        prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
+        prefObject.controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
         document.body.appendChild(settings);
         await flushTasks();
 
@@ -317,10 +320,11 @@ suite('SettingsSectionTest', function() {
       async function() {
         const settings = document.createElement('settings-section');
         settings.prefs = makePasswordManagerPrefs();
-        settings.prefs.credentials_enable_service.value = false;
-        settings.prefs.credentials_enable_service.enforcement =
-            chrome.settingsPrivate.Enforcement.ENFORCED;
-        settings.prefs.credentials_enable_service.controlledBy =
+        const prefObject =
+            settings.getPref<boolean>('credentials_enable_service');
+        prefObject.value = false;
+        prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
+        prefObject.controlledBy =
             chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
         document.body.appendChild(settings);
         await flushTasks();
@@ -331,7 +335,8 @@ suite('SettingsSectionTest', function() {
   test('import visible when policy enabled', async function() {
     const settings = document.createElement('settings-section');
     settings.prefs = makePasswordManagerPrefs();
-    settings.prefs.credentials_enable_service.value = true;
+    const prefObject = settings.getPref<boolean>('credentials_enable_service');
+    prefObject.value = true;
     document.body.appendChild(settings);
     await flushTasks();
 
@@ -1019,13 +1024,16 @@ suite('SettingsSectionTest', function() {
             '#passkeyUpgradeToggle');
     assertTrue(!!passkeyUpgradeToggle);
 
-    assertTrue(settings.getPref('credentials_enable_automatic_passkey_upgrades')
-                   .value);
+    assertTrue(
+        settings
+            .getPref<boolean>('credentials_enable_automatic_passkey_upgrades')
+            .value);
     assertTrue(passkeyUpgradeToggle.checked);
 
     passkeyUpgradeToggle.click();
     assertFalse(
-        settings.getPref('credentials_enable_automatic_passkey_upgrades')
+        settings
+            .getPref<boolean>('credentials_enable_automatic_passkey_upgrades')
             .value);
     assertFalse(passkeyUpgradeToggle.checked);
   });

@@ -44,7 +44,7 @@ suite('GlicSubpage', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     page = document.createElement('settings-glic-subpage');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
 
     // Wait for the component to initialize and render completely:
@@ -139,14 +139,14 @@ suite('GlicSubpage', function() {
             $<SettingsToggleButtonElement>('launcherToggle')!;
 
         await clickType();
-        assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
+        assertTrue(page.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
         assertTrue(launcherToggle.checked);
         assertEquals(
             1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
         glicBrowserProxy.reset();
 
         await clickType();
-        assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
+        assertFalse(page.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
         assertFalse(launcherToggle.checked);
         assertEquals(
             1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
@@ -168,14 +168,14 @@ suite('GlicSubpage', function() {
 
         // Enable using the launcher toggle, the row should show.
         await clickType();
-        assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
+        assertTrue(page.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
         await flushTasks();
         assertTrue(isVisible($(mainShortcutSettingId)));
         assertTrue(isVisible($(selectionShortcutSettingId)));
 
         // Disable using the launcher toggle, the row should hide.
         await clickType();
-        assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
+        assertFalse(page.getPref<boolean>(PrefName.LAUNCHER_ENABLED).value);
         await flushTasks();
         assertFalse(isVisible($(mainShortcutSettingId)));
         assertFalse(isVisible($(selectionShortcutSettingId)));
@@ -208,11 +208,11 @@ suite('GlicSubpage', function() {
       assertTrue(!!geolocationToggle);
 
       geolocationToggle.click();
-      assertTrue(page.getPref(PrefName.GEOLOCATION_ENABLED).value);
+      assertTrue(page.getPref<boolean>(PrefName.GEOLOCATION_ENABLED).value);
       assertTrue(geolocationToggle.checked);
 
       geolocationToggle.click();
-      assertFalse(page.getPref(PrefName.GEOLOCATION_ENABLED).value);
+      assertFalse(page.getPref<boolean>(PrefName.GEOLOCATION_ENABLED).value);
       assertFalse(geolocationToggle.checked);
     });
 
@@ -236,11 +236,11 @@ suite('GlicSubpage', function() {
       assertTrue(!!microphoneToggle);
 
       microphoneToggle.click();
-      assertTrue(page.getPref(PrefName.MICROPHONE_ENABLED).value);
+      assertTrue(page.getPref<boolean>(PrefName.MICROPHONE_ENABLED).value);
       assertTrue(microphoneToggle.checked);
 
       microphoneToggle.click();
-      assertFalse(page.getPref(PrefName.MICROPHONE_ENABLED).value);
+      assertFalse(page.getPref<boolean>(PrefName.MICROPHONE_ENABLED).value);
       assertFalse(microphoneToggle.checked);
     });
 
@@ -264,12 +264,12 @@ suite('GlicSubpage', function() {
 
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertTrue(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(tabAccessToggle.checked);
 
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(tabAccessToggle.checked);
     });
 
@@ -285,24 +285,24 @@ suite('GlicSubpage', function() {
       tabAccessToggle.click();
       await flushTasks();
       assertTrue(infoCard.opened);
-      assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
 
       // Clicking the host element again collapses the info card.
       tabAccessToggle.click();
       await flushTasks();
       assertFalse(infoCard.opened);
-      assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
 
       // Toggling the setting to on opens the info card.
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertTrue(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting off closes the info card.
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
 
       // Toggling the setting to on while the info card is open leaves it open.
@@ -311,7 +311,7 @@ suite('GlicSubpage', function() {
       assertTrue(infoCard.opened);
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertTrue(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting to off while the info card is closed leaves it
@@ -321,7 +321,7 @@ suite('GlicSubpage', function() {
       assertFalse(infoCard.opened);
       tabAccessToggle.$.control.click();
       await flushTasks();
-      assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+      assertFalse(page.getPref<boolean>(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
     });
 
@@ -398,7 +398,7 @@ suite('GlicSubpage', function() {
       // setup().
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       page = document.createElement('settings-glic-subpage');
-      page.prefs = settingsPrefs.prefs;
+      page.prefs = settingsPrefs.prefs!;
       page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
       document.body.appendChild(page);
 
@@ -412,7 +412,7 @@ suite('GlicSubpage', function() {
     test('InfoCollapseInitializiedClosed', async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       page = document.createElement('settings-glic-subpage');
-      page.prefs = settingsPrefs.prefs;
+      page.prefs = settingsPrefs.prefs!;
       page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
       document.body.appendChild(page);
 
@@ -451,11 +451,12 @@ suite('GlicSubpage', function() {
       assertTrue(!!tabstripButtonToggle);
 
       tabstripButtonToggle.click();
-      assertTrue(page.getPref(PrefName.TABSTRIP_BUTTON_ENABLED).value);
+      assertTrue(page.getPref<boolean>(PrefName.TABSTRIP_BUTTON_ENABLED).value);
       assertTrue(tabstripButtonToggle.checked);
 
       tabstripButtonToggle.click();
-      assertFalse(page.getPref(PrefName.TABSTRIP_BUTTON_ENABLED).value);
+      assertFalse(
+          page.getPref<boolean>(PrefName.TABSTRIP_BUTTON_ENABLED).value);
       assertFalse(tabstripButtonToggle.checked);
     });
 
@@ -499,7 +500,7 @@ suite('GlicSubpage', function() {
       resetRouterForTesting();
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       page = document.createElement('settings-glic-subpage');
-      page.prefs = settingsPrefs.prefs;
+      page.prefs = settingsPrefs.prefs!;
       document.body.appendChild(page);
       await flushTasks();
 
@@ -519,7 +520,7 @@ suite('GlicSubpage', function() {
       resetRouterForTesting();
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       page = document.createElement('settings-glic-subpage');
-      page.prefs = settingsPrefs.prefs;
+      page.prefs = settingsPrefs.prefs!;
       document.body.appendChild(page);
       await flushTasks();
 
@@ -610,12 +611,13 @@ suite('GlicSubpage', function() {
       assertTrue(!!closedCaptionsToggle);
 
       closedCaptionsToggle.click();
-      assertTrue(page.getPref(PrefName.CLOSED_CAPTIONS_ENABLED).value);
+      assertTrue(page.getPref<boolean>(PrefName.CLOSED_CAPTIONS_ENABLED).value);
       assertTrue(closedCaptionsToggle.checked);
       await verifyUserAction('Glic.Settings.ClosedCaptions.Enabled');
 
       closedCaptionsToggle.click();
-      assertFalse(page.getPref(PrefName.CLOSED_CAPTIONS_ENABLED).value);
+      assertFalse(
+          page.getPref<boolean>(PrefName.CLOSED_CAPTIONS_ENABLED).value);
       assertFalse(closedCaptionsToggle.checked);
       await verifyUserAction('Glic.Settings.ClosedCaptions.Disabled');
     });
@@ -654,15 +656,17 @@ suite('GlicSubpage', function() {
       assertTrue(!!keepSidepanelOpenOnNewTabsToggle);
 
       keepSidepanelOpenOnNewTabsToggle.click();
-      assertTrue(
-          page.getPref(PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED).value);
+      assertTrue(page.getPref<boolean>(
+                         PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED)
+                     .value);
       assertTrue(keepSidepanelOpenOnNewTabsToggle.checked);
       await verifyUserAction(
           'Glic.Settings.KeepSidepanelOpenOnNewTabs.Enabled');
 
       keepSidepanelOpenOnNewTabsToggle.click();
-      assertFalse(
-          page.getPref(PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED).value);
+      assertFalse(page.getPref<boolean>(
+                          PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED)
+                      .value);
       assertFalse(keepSidepanelOpenOnNewTabsToggle.checked);
       await verifyUserAction(
           'Glic.Settings.KeepSidepanelOpenOnNewTabs.Disabled');
@@ -709,24 +713,28 @@ suite('GlicSubpage', function() {
       defaultTabAccessToggle.click();
       await flushTasks();
       assertTrue(infoCard.opened);
-      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertFalse(
+          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
 
       // Clicking the host element again collapses the info card.
       defaultTabAccessToggle.click();
       await flushTasks();
       assertFalse(infoCard.opened);
-      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertFalse(
+          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
 
       // Toggling the setting to on opens the info card.
       defaultTabAccessToggle.$.control.click();
       await flushTasks();
-      assertTrue(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertTrue(
+          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting off closes the info card.
       defaultTabAccessToggle.$.control.click();
       await flushTasks();
-      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertFalse(
+          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
 
       // Toggling the setting to on while the info card is open leaves it open.
@@ -735,7 +743,8 @@ suite('GlicSubpage', function() {
       assertTrue(infoCard.opened);
       defaultTabAccessToggle.$.control.click();
       await flushTasks();
-      assertTrue(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertTrue(
+          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting to off while the info card is closed leaves it
@@ -745,7 +754,8 @@ suite('GlicSubpage', function() {
       assertFalse(infoCard.opened);
       defaultTabAccessToggle.$.control.click();
       await flushTasks();
-      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertFalse(
+          page.getPref<boolean>(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
     });
   });

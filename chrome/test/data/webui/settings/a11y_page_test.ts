@@ -78,12 +78,12 @@ suite('A11yPage', () => {
 
     // Set up languages helper.
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs;
+    settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
     a11yPage = document.createElement('settings-a11y-page');
-    a11yPage.prefs = settingsPrefs.prefs;
+    a11yPage.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, a11yPage, 'prefs');
 
     document.body.appendChild(a11yPage);
@@ -103,12 +103,14 @@ suite('A11yPage', () => {
 
     // The AX Tree Fixing pref is off by default, so the button should be
     // toggled off.
-    assertFalse(a11yPage.getPref('settings.a11y.enable_ax_tree_fixing').value);
+    assertFalse(
+        a11yPage.getPref<boolean>('settings.a11y.enable_ax_tree_fixing').value);
     assertFalse(toggle.checked);
 
     toggle.click();
     await flushTasks();
-    assertTrue(a11yPage.getPref('settings.a11y.enable_ax_tree_fixing').value);
+    assertTrue(
+        a11yPage.getPref<boolean>('settings.a11y.enable_ax_tree_fixing').value);
     assertTrue(toggle.checked);
   });
 

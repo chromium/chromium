@@ -82,7 +82,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
     const card: CollapsibleCardElement =
         document.createElement('collapsible-autofill-settings-card');
-    card.prefs = settingsPrefs.prefs;
+    card.prefs = settingsPrefs.prefs!;
     document.body.appendChild(card);
 
     await flushTasks();

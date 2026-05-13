@@ -129,7 +129,8 @@ suite('TabDiscardExceptionsDialog', function() {
 
     assertFalse(dialog.$.dialog.open);
     assertDeepEquals(
-        Object.keys(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value),
+        Object.keys(
+            dialog.getPref<string[]>(TAB_DISCARD_EXCEPTIONS_PREF).value),
         [EXISTING_RULE]);
   }
 
@@ -150,7 +151,8 @@ suite('TabDiscardExceptionsDialog', function() {
 
     assertFalse(dialog.$.dialog.open);
     assertDeepEquals(
-        Object.keys(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value),
+        Object.keys(
+            dialog.getPref<string[]>(TAB_DISCARD_EXCEPTIONS_PREF).value),
         expectedRules);
   }
 
@@ -211,14 +213,16 @@ suite('TabDiscardExceptionsDialog', function() {
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([VALID_RULE]);
 
-    const originalTimestamp =
-        parseInt(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value[VALID_RULE]);
+    const originalTimestamp = parseInt(
+        dialog.getPref<Record<string, string>>(TAB_DISCARD_EXCEPTIONS_PREF)
+            .value[VALID_RULE]!);
 
     dialog = setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([VALID_RULE]);
-    const updatedTimestamp =
-        parseInt(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value[VALID_RULE]);
+    const updatedTimestamp = parseInt(
+        dialog.getPref<Record<string, string>>(TAB_DISCARD_EXCEPTIONS_PREF)
+            .value[VALID_RULE]!);
 
     assertLT(originalTimestamp, updatedTimestamp);
   });

@@ -485,7 +485,9 @@ suite('CheckupDetailsSectionTest', function() {
 
     const section = document.createElement('checkup-details-section');
     section.prefs = makePasswordManagerPrefs();
-    section.prefs.profile.password_dismiss_compromised_alert.value = false;
+    const prefObject =
+        section.getPref<boolean>('profile.password_dismiss_compromised_alert');
+    prefObject.value = false;
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
     await flushTasks();

@@ -393,12 +393,11 @@ suite('PasswordsSectionTest', function() {
         const section: PasswordsSectionElement =
             document.createElement('passwords-section');
         section.prefs = makePasswordManagerPrefs();
-        section.prefs.credentials_enable_service.value = false;
-        section.prefs.credentials_enable_service.enforcement =
-            chrome.settingsPrivate.Enforcement.ENFORCED;
-        section.prefs.credentials_enable_service.controlledBy =
-            chrome.settingsPrivate.ControlledBy.EXTENSION;
-
+        const prefObject =
+            section.getPref<boolean>('credentials_enable_service');
+        prefObject.value = false;
+        prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
+        prefObject.controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
         document.body.appendChild(section);
         await flushTasks();
 
@@ -411,10 +410,11 @@ suite('PasswordsSectionTest', function() {
         const section: PasswordsSectionElement =
             document.createElement('passwords-section');
         section.prefs = makePasswordManagerPrefs();
-        section.prefs.credentials_enable_service.value = false;
-        section.prefs.credentials_enable_service.enforcement =
-            chrome.settingsPrivate.Enforcement.ENFORCED;
-        section.prefs.credentials_enable_service.controlledBy =
+        const prefObject =
+            section.getPref<boolean>('credentials_enable_service');
+        prefObject.value = false;
+        prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
+        prefObject.controlledBy =
             chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
 
         document.body.appendChild(section);
@@ -427,7 +427,8 @@ suite('PasswordsSectionTest', function() {
     const section: PasswordsSectionElement =
         document.createElement('passwords-section');
     section.prefs = makePasswordManagerPrefs();
-    section.prefs.credentials_enable_service.value = true;
+    const prefObject = section.getPref<boolean>('credentials_enable_service');
+    prefObject.value = true;
     document.body.appendChild(section);
     await flushTasks();
 
@@ -440,10 +441,11 @@ suite('PasswordsSectionTest', function() {
         const section: PasswordsSectionElement =
             document.createElement('passwords-section');
         section.prefs = makePasswordManagerPrefs();
-        section.prefs.credentials_enable_service.value = false;
-        section.prefs.credentials_enable_service.enforcement =
-            chrome.settingsPrivate.Enforcement.ENFORCED;
-        section.prefs.credentials_enable_service.controlledBy =
+        const prefObject =
+            section.getPref<boolean>('credentials_enable_service');
+        prefObject.value = false;
+        prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
+        prefObject.controlledBy =
             chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
 
         document.body.appendChild(section);

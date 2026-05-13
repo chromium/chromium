@@ -33,8 +33,7 @@ export const PrefsMixin = dedupingMixin(
         /**
          * Gets the pref at the given prefPath. Throws if the pref is not found.
          */
-        getPref<T = any>(prefPath: string):
-            chrome.settingsPrivate.PrefObject<T> {
+        getPref<T>(prefPath: string): chrome.settingsPrivate.PrefObject<T> {
           const pref = this.get(prefPath, this.prefs);
           assert(typeof pref !== 'undefined', 'Pref is missing: ' + prefPath);
           return pref;
@@ -129,8 +128,17 @@ export const PrefsMixin = dedupingMixin(
     });
 
 export interface PrefsMixinInterface {
+  // <if expr="is_chromeos">
+  // TODO(crbug.com/494464740): Fix errors in CrOS Settings and remove.
   prefs: any;
   getPref<T = any>(prefPath: string): chrome.settingsPrivate.PrefObject<T>;
+  // </if>
+
+  // <if expr="not is_chromeos">
+  prefs: Record<string, unknown>;
+  getPref<T>(prefPath: string): chrome.settingsPrivate.PrefObject<T>;
+  // </if>
+
   setPrefValue(prefPath: string, value: unknown): void;
   appendPrefListItem(key: string, item: unknown): void;
   updatePrefListItem(key: string, item: unknown, newItem: unknown): void;

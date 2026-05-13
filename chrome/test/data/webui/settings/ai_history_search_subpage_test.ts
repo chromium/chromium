@@ -41,7 +41,7 @@ suite('HistorySearchSubpage', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-history-search-page');
-    subpage.prefs = settingsPrefs.prefs;
+    subpage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(subpage);
     return flushTasks();
   }

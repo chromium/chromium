@@ -73,7 +73,7 @@ suite('DownloadsHandler', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
     downloadsPage = document.createElement('settings-downloads-page');
-    downloadsPage.prefs = settingsPrefs.prefs;
+    downloadsPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(downloadsPage);
 
     // Page element must call 'initializeDownloads' upon attachment to the DOM.
@@ -159,7 +159,7 @@ suite('DownloadsHandlerWithBubblePartialView', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
     downloadsPage = document.createElement('settings-downloads-page');
-    downloadsPage.prefs = settingsPrefs.prefs;
+    downloadsPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(downloadsPage);
 
     // Page element must call 'initializeDownloads' upon attachment to the DOM.
@@ -176,7 +176,8 @@ suite('DownloadsHandlerWithBubblePartialView', function() {
     downloadsPage.setPrefValue('download_bubble.partial_view_enabled', false);
     await flushTasks();
     assertFalse(
-        downloadsPage.getPref('download_bubble.partial_view_enabled').value);
+        downloadsPage.getPref<boolean>('download_bubble.partial_view_enabled')
+            .value);
 
     const button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
         '#showDownloadsToggle');
@@ -185,6 +186,7 @@ suite('DownloadsHandlerWithBubblePartialView', function() {
     button.click();
     await flushTasks();
     assertTrue(
-        downloadsPage.getPref('download_bubble.partial_view_enabled').value);
+        downloadsPage.getPref<boolean>('download_bubble.partial_view_enabled')
+            .value);
   });
 });

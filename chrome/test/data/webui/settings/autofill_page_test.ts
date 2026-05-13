@@ -29,7 +29,7 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 function createAutofillElement(prefsElement: SettingsPrefsElement):
     SettingsAutofillPageElement {
   const element = document.createElement('settings-autofill-page');
-  element.prefs = prefsElement.prefs;
+  element.prefs = prefsElement.prefs!;
   document.body.appendChild(element);
   flush();
   return element;

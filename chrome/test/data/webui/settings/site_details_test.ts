@@ -227,9 +227,11 @@ suite('SiteDetails', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function createSiteDetails(origin: string, prefs?: {[key: string]: any}) {
+  function createSiteDetails(origin: string, prefs?: Record<string, unknown>) {
     const siteDetailsElement = document.createElement('site-details');
-    siteDetailsElement.prefs = prefs;
+    if (prefs) {
+      siteDetailsElement.prefs = prefs;
+    }
     document.body.appendChild(siteDetailsElement);
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_SITE_DETAILS,

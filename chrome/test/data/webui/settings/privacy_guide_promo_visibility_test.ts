@@ -97,7 +97,7 @@ suite('PrivacyGuidePromoVisibility', () => {
 
   test('NoThanksButton', async function() {
     assertTrue(isChildVisible(page, '#privacyGuidePromo'));
-    assertFalse(page.getPref('privacy_guide.viewed').value);
+    assertFalse(page.getPref<boolean>('privacy_guide.viewed').value);
 
     // Click the no thanks button.
     const privacyGuidePromo = page.shadowRoot!.querySelector<HTMLElement>(

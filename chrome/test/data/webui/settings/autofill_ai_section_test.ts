@@ -91,7 +91,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
-    section.prefs = settingsPrefs.prefs;
+    section.prefs = settingsPrefs.prefs!;
     document.body.appendChild(section);
 
     await flushTasks();
@@ -324,7 +324,7 @@ suite('AutofillAiSectionUiTest', function() {
       AutofillAddOtherDatatypesPrefIsEnabled: false,
     });
     section = document.createElement('settings-autofill-ai-section');
-    section.prefs = settingsPrefs.prefs;
+    section.prefs = settingsPrefs.prefs!;
     document.body.appendChild(section);
     await flushTasks();
   }

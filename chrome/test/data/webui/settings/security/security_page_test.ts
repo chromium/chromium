@@ -238,7 +238,7 @@ suite('SecurityPageHappinessTrackingSurveys', function() {
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
 
     page = document.createElement('settings-security-page');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     testHatsBrowserProxy.reset();
     Router.getInstance().navigateTo(routes.SECURITY);
@@ -457,7 +457,8 @@ suite('FlagsDisabled', function() {
     page.$.safeBrowsingStandard.click();
     await microtasksFinished();
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
 
     const safeBrowsingReportingToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -470,16 +471,19 @@ suite('FlagsDisabled', function() {
     page.$.safeBrowsingEnhanced.click();
     await microtasksFinished();
     assertEquals(
-        SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.ENHANCED,
+        page.getPref('generated.safe_browsing').value);
     flush();
     assertTrue(safeBrowsingReportingToggle.disabled);
     assertTrue(safeBrowsingReportingToggle.checked);
-    assertTrue(page.prefs.safebrowsing.scout_reporting_enabled.value);
+    assertTrue(
+        page.getPref<boolean>('safebrowsing.scout_reporting_enabled').value);
 
     page.$.safeBrowsingStandard.click();
     await microtasksFinished();
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
     flush();
     assertFalse(safeBrowsingReportingToggle.disabled);
     assertTrue(safeBrowsingReportingToggle.checked);
@@ -628,7 +632,7 @@ suite('SafeBrowsing', function() {
         await microtasksFinished();
         assertEquals(
             SafeBrowsingSetting.STANDARD,
-            page.prefs.generated.safe_browsing.value);
+            page.getPref('generated.safe_browsing').value);
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertFalse(page.$.safeBrowsingEnhanced.expanded);
 
@@ -655,7 +659,7 @@ suite('SafeBrowsing', function() {
         await microtasksFinished();
         assertEquals(
             SafeBrowsingSetting.STANDARD,
-            page.prefs.generated.safe_browsing.value);
+            page.getPref('generated.safe_browsing').value);
 
         page.$.safeBrowsingEnhanced.$.expandButton.click();
         await microtasksFinished();
@@ -679,7 +683,8 @@ suite('SafeBrowsing', function() {
     page.$.safeBrowsingStandard.click();
     await microtasksFinished();
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
 
     page.$.safeBrowsingDisabled.click();
     await microtasksFinished();
@@ -693,14 +698,16 @@ suite('SafeBrowsing', function() {
     assertFalse(page.$.safeBrowsingStandard.checked);
     assertTrue(page.$.safeBrowsingDisabled.checked);
     assertEquals(
-        SafeBrowsingSetting.DISABLED, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.DISABLED,
+        page.getPref('generated.safe_browsing').value);
   });
 
   test('DisableSafebrowsingDialog_CancelFromEnhanced', async function() {
     page.$.safeBrowsingEnhanced.click();
     await microtasksFinished();
     assertEquals(
-        SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.ENHANCED,
+        page.getPref('generated.safe_browsing').value);
 
     page.$.safeBrowsingDisabled.click();
     await microtasksFinished();
@@ -713,14 +720,16 @@ suite('SafeBrowsing', function() {
     assertFalse(page.$.safeBrowsingStandard.checked);
     assertFalse(page.$.safeBrowsingDisabled.checked);
     assertEquals(
-        SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.ENHANCED,
+        page.getPref('generated.safe_browsing').value);
   });
 
   test('DisableSafebrowsingDialog_CancelFromStandard', async function() {
     page.$.safeBrowsingStandard.click();
     await microtasksFinished();
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
 
     page.$.safeBrowsingDisabled.click();
     await microtasksFinished();
@@ -733,23 +742,25 @@ suite('SafeBrowsing', function() {
     assertTrue(page.$.safeBrowsingStandard.checked);
     assertFalse(page.$.safeBrowsingDisabled.checked);
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
   });
 
   test('noValueChangeSafeBrowsingReportingInEnhanced', async () => {
     page.$.safeBrowsingStandard.click();
-    const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
+    const previous = page.getPref('safebrowsing.scout_reporting_enabled').value;
 
     page.$.safeBrowsingEnhanced.click();
     await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     assertTrue(
-        page.prefs.safebrowsing.scout_reporting_enabled.value === previous);
+        page.getPref('safebrowsing.scout_reporting_enabled').value ===
+        previous);
   });
 
   test('noValueChangeSafeBrowsingReportingInDisabled', async function() {
     page.$.safeBrowsingStandard.click();
-    const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
+    const previous = page.getPref('safebrowsing.scout_reporting_enabled').value;
 
     page.$.safeBrowsingDisabled.click();
     await eventToPromise('change', page.$.safeBrowsingRadioGroup);
@@ -760,25 +771,29 @@ suite('SafeBrowsing', function() {
     await clickConfirmOnDisableSafebrowsingDialog(page);
 
     assertTrue(
-        page.prefs.safebrowsing.scout_reporting_enabled.value === previous);
+        page.getPref('safebrowsing.scout_reporting_enabled').value ===
+        previous);
   });
 
   test('noValueChangePasswordLeakSwitchToEnhanced', async () => {
     page.$.safeBrowsingStandard.click();
     await microtasksFinished();
-    const previous = page.prefs.profile.password_manager_leak_detection.value;
+    const previous =
+        page.getPref('profile.password_manager_leak_detection').value;
 
     page.$.safeBrowsingEnhanced.click();
     await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     assertTrue(
-        page.prefs.profile.password_manager_leak_detection.value === previous);
+        page.getPref('profile.password_manager_leak_detection').value ===
+        previous);
   });
 
   test('noValuePasswordLeakSwitchToDisabled', async function() {
     page.$.safeBrowsingStandard.click();
     await microtasksFinished();
-    const previous = page.prefs.profile.password_manager_leak_detection.value;
+    const previous =
+        page.getPref('profile.password_manager_leak_detection').value;
 
     page.$.safeBrowsingDisabled.click();
     await microtasksFinished();
@@ -789,7 +804,8 @@ suite('SafeBrowsing', function() {
     await clickConfirmOnDisableSafebrowsingDialog(page);
 
     assertTrue(
-        page.prefs.profile.password_manager_leak_detection.value === previous);
+        page.getPref('profile.password_manager_leak_detection').value ===
+        previous);
   });
 
   test('safeBrowsingUserActionRecorded', async function() {
@@ -800,7 +816,8 @@ suite('SafeBrowsing', function() {
     // possible incorrect calls.
     await microtasksFinished();
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
     // Not logged because it is already in standard mode.
     assertEquals(
         0,
@@ -936,7 +953,8 @@ suite('SafeBrowsing', function() {
     // Standard protection should be pre-expanded if there is no param.
     Router.getInstance().navigateTo(routes.SECURITY);
     assertEquals(
-        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
+        page.getPref('generated.safe_browsing').value,
+        SafeBrowsingSetting.STANDARD);
     assertFalse(page.$.safeBrowsingEnhanced.expanded);
     assertTrue(page.$.safeBrowsingStandard.expanded);
   });
@@ -948,7 +966,8 @@ suite('SafeBrowsing', function() {
         routes.SECURITY,
         /* dynamicParams= */ new URLSearchParams('q=enhanced'));
     assertEquals(
-        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
+        page.getPref('generated.safe_browsing').value,
+        SafeBrowsingSetting.STANDARD);
     assertFalse(page.$.safeBrowsingEnhanced.expanded);
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });

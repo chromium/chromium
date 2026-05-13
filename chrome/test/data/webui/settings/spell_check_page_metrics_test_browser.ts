@@ -64,7 +64,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
         .setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs;
+    settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
@@ -147,7 +147,8 @@ suite('SpellCheckPageMetricsBrowser', function() {
   // <if expr="not is_macosx">
   suite('MetricsNotMacOS', function() {
     test('records when enabling spellCheck for a language', async () => {
-      assertTrue(spellCheckPage.getPref('browser.enable_spellchecking').value);
+      assertTrue(spellCheckPage.getPref<boolean>('browser.enable_spellchecking')
+                     .value);
 
       // Enable spellcheck only for the 1st entry.
       spellCheckPage.setPrefValue('spellcheck.dictionaries', ['en-US']);
@@ -169,7 +170,8 @@ suite('SpellCheckPageMetricsBrowser', function() {
     });
 
     test('records when disabling spellCheck for a language', async () => {
-      assertTrue(spellCheckPage.getPref('browser.enable_spellchecking').value);
+      assertTrue(spellCheckPage.getPref<boolean>('browser.enable_spellchecking')
+                     .value);
 
       // Enable spellcheck for both language entries.
       spellCheckPage.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);

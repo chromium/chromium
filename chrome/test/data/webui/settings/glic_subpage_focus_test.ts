@@ -54,7 +54,7 @@ suite('GlicPageFocusTest', function() {
     GlicBrowserProxyImpl.setInstance(glicBrowserProxy);
 
     page = document.createElement('settings-glic-subpage');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     await flushTasks();
 

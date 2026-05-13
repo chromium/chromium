@@ -231,7 +231,7 @@ suite('CookiesPageTest', function() {
     await flushTasks();
     assertEquals(
         ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY,
-        page.prefs.generated.third_party_cookie_blocking_setting.value);
+        page.getPref('generated.third_party_cookie_blocking_setting').value);
     assertFalse(
         relatedWebsiteSetsToggle.disabled, 'expect toggle to be enabled');
 
@@ -240,7 +240,7 @@ suite('CookiesPageTest', function() {
     await flushTasks();
     assertEquals(
         ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY,
-        page.prefs.generated.third_party_cookie_blocking_setting.value);
+        page.getPref('generated.third_party_cookie_blocking_setting').value);
     assertTrue(
         relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
   });

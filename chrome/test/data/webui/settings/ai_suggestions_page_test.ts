@@ -45,7 +45,7 @@ suite('SuggestionsPage', function() {
   function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-ai-suggestions-page');
-    subpage.prefs = settingsPrefs.prefs;
+    subpage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(subpage);
     return flushTasks();
   }

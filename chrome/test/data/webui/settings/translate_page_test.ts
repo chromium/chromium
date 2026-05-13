@@ -50,14 +50,14 @@ suite('TranslatePage', function() {
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs;
+    settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
     languageHelper = settingsLanguages;
 
     translatePage = document.createElement('settings-translate-page');
 
-    translatePage.prefs = settingsPrefs.prefs;
+    translatePage.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, translatePage, 'prefs');
 
     translatePage.languages = settingsLanguages.languages;
@@ -144,7 +144,9 @@ suite('TranslatePage', function() {
       // But one should be on the always translate list
       assertDeepEquals(
           ['eo'],
-          Object.keys(translatePage.getPref(alwaysTranslatePref).value));
+          Object.keys(translatePage
+                          .getPref<Record<string, unknown>>(alwaysTranslatePref)
+                          .value));
 
       // Add a language that is in fake_language_settings_private. The
       // language should be shown in the always translate list.
@@ -159,7 +161,9 @@ suite('TranslatePage', function() {
       // But two should be on the always translate list
       assertDeepEquals(
           ['eo', 'nb'],
-          Object.keys(translatePage.getPref(alwaysTranslatePref).value));
+          Object.keys(translatePage
+                          .getPref<Record<string, unknown>>(alwaysTranslatePref)
+                          .value));
     });
 
     test('never translate remove icon enabled state', function() {
@@ -207,12 +211,14 @@ suite('TranslatePage', function() {
 
       // Clicking on the toggle switches it to false.
       settingsToggle.click();
-      let newToggleValue = translatePage.getPref('translate.enabled').value;
+      let newToggleValue =
+          translatePage.getPref<boolean>('translate.enabled').value;
       assertFalse(newToggleValue);
 
       // Clicking on the toggle switches it to true again.
       settingsToggle.click();
-      newToggleValue = translatePage.getPref('translate.enabled').value;
+      newToggleValue =
+          translatePage.getPref<boolean>('translate.enabled').value;
       assertTrue(newToggleValue);
     });
   });
@@ -282,7 +288,9 @@ suite('TranslatePage', function() {
       dialog.$.dialog.close();
       assertDeepEquals(
           ['en', 'no'],
-          Object.keys(translatePage.getPref(alwaysTranslatePref).value));
+          Object.keys(translatePage
+                          .getPref<Record<string, unknown>>(alwaysTranslatePref)
+                          .value));
 
       return dialogClosedResolver.promise;
     });

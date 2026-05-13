@@ -66,14 +66,14 @@ suite('LanguagesPage', function() {
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs;
+    settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
     languageHelper = settingsLanguages;
 
     languagesPage = document.createElement('settings-languages-page');
 
-    languagesPage.prefs = settingsPrefs.prefs;
+    languagesPage.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, languagesPage, 'prefs');
 
     languagesPage.languages = settingsLanguages.languages;

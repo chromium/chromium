@@ -291,7 +291,7 @@ suite('PrivacyGuidePage', function() {
   });
 
   test('welcomeCardForwardNavigation', async function() {
-    assertFalse(page.getPref('privacy_guide.viewed').value);
+    assertFalse(page.getPref<boolean>('privacy_guide.viewed').value);
 
     // Navigating to the privacy guide without a step parameter navigates to
     // the welcome card.
@@ -299,7 +299,7 @@ suite('PrivacyGuidePage', function() {
     await flushTasks();
 
     assertWelcomeCardVisible(page);
-    assertTrue(page.getPref('privacy_guide.viewed').value);
+    assertTrue(page.getPref<boolean>('privacy_guide.viewed').value);
 
     // The welcome fragment fires a |start-button-click| event to navigate
     // forward.

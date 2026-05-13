@@ -31,7 +31,7 @@ suite('LiveCaptionSection', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs;
+    settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
@@ -43,7 +43,7 @@ suite('LiveCaptionSection', function() {
     CaptionsBrowserProxyImpl.setInstance(browserProxy);
 
     liveCaptionSection = document.createElement('settings-live-caption');
-    liveCaptionSection.prefs = settingsPrefs.prefs;
+    liveCaptionSection.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, liveCaptionSection, 'prefs');
 
     // Reset default language before every test to prevent state from leaking
@@ -67,15 +67,16 @@ suite('LiveCaptionSection', function() {
     settingsToggle.click();
     let newToggleValue =
         liveCaptionSection
-            .getPref('accessibility.captions.live_caption_enabled')
+            .getPref<boolean>('accessibility.captions.live_caption_enabled')
             .value;
     assertTrue(newToggleValue);
 
     // Clicking on the toggle switches it to false.
     settingsToggle.click();
-    newToggleValue = liveCaptionSection
-                         .getPref('accessibility.captions.live_caption_enabled')
-                         .value;
+    newToggleValue =
+        liveCaptionSection
+            .getPref<boolean>('accessibility.captions.live_caption_enabled')
+            .value;
     assertFalse(newToggleValue);
   });
 

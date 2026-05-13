@@ -234,15 +234,14 @@ template("build_webui") {
       # ":html_wrapper_files".
       inline_sourcemaps = true
 
-      sources = filter_include(
-              get_target_outputs(":preprocess_ts_files"),
-              [
-                "*.ts",
+      sources = filter_include(get_target_outputs(":preprocess_ts_files"),
+                               [
+                                 "*.ts",
 
-                # TODO(crbug.com/40167175): Remove once we no longer pass JS
-                # files to build_webui.
-                "*.js",
-              ])
+                                 # TODO(crbug.com/40167175): Remove once we no
+                                 # longer pass JS files to build_webui.
+                                 "*.js",
+                               ])
       originals = []
       outputs = []
 
@@ -624,7 +623,6 @@ template("build_webui") {
         # check by default.
         "//chrome/browser/resources/print_preview",
         "//chrome/browser/resources/settings",
-        "//chrome/browser/resources/settings_shared",
         "//chrome/browser/resources/tab_search",
         "//chrome/browser/resources/tab_strip",
         "//ui/webui/resources/cr_components/composebox",
@@ -632,6 +630,11 @@ template("build_webui") {
         "//ui/webui/resources/cr_elements",
         "//ui/webui/resources/js",
       ]
+
+      if (is_chromeos) {
+        no_explicit_any_exceptions +=
+            [ "//chrome/browser/resources/settings_shared" ]
+      }
 
       if (is_android) {
         no_explicit_any_exceptions +=

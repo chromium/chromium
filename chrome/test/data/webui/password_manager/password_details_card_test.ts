@@ -409,9 +409,10 @@ suite('PasswordDetailsCardTest', function() {
     const card = document.createElement('password-details-card');
     card.password = createPasswordEntry();
     card.prefs = makePasswordManagerPrefs();
-    card.prefs.password_manager.password_sharing_enabled.value = false;
-    card.prefs.password_manager.password_sharing_enabled.enforcement =
-        chrome.settingsPrivate.Enforcement.ENFORCED;
+    const prefObject =
+        card.getPref<boolean>('password_manager.password_sharing_enabled');
+    prefObject.value = false;
+    prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
     document.body.appendChild(card);
     await flushTasks();
 

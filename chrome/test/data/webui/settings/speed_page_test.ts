@@ -56,7 +56,7 @@ suite('SpeedPage', function() {
   test('PreloadPagesDefault', function() {
     assertEquals(
         NetworkPredictionOptions.STANDARD,
-        speedPage.prefs.net.network_prediction_options.value);
+        speedPage.getPref('net.network_prediction_options').value);
     assertTrue(speedPage.$.preloadingToggle.checked);
   });
 
@@ -66,7 +66,7 @@ suite('SpeedPage', function() {
 
     assertEquals(
         NetworkPredictionOptions.DISABLED,
-        speedPage.prefs.net.network_prediction_options.value);
+        speedPage.getPref('net.network_prediction_options').value);
     assertFalse(speedPage.$.preloadingToggle.checked);
   });
 
@@ -81,7 +81,7 @@ suite('SpeedPage', function() {
 
     assertEquals(
         NetworkPredictionOptions.STANDARD,
-        speedPage.prefs.net.network_prediction_options.value);
+        speedPage.getPref('net.network_prediction_options').value);
     assertTrue(speedPage.$.preloadingStandard.checked);
     assertTrue(speedPage.$.preloadingStandard.expanded);
   });
@@ -97,7 +97,7 @@ suite('SpeedPage', function() {
 
     assertEquals(
         NetworkPredictionOptions.STANDARD,
-        speedPage.prefs.net.network_prediction_options.value);
+        speedPage.getPref('net.network_prediction_options').value);
     assertTrue(speedPage.$.preloadingStandard.checked);
     assertTrue(speedPage.$.preloadingStandard.expanded);
   });
@@ -108,7 +108,7 @@ suite('SpeedPage', function() {
 
     assertEquals(
         NetworkPredictionOptions.EXTENDED,
-        speedPage.prefs.net.network_prediction_options.value);
+        speedPage.getPref('net.network_prediction_options').value);
     assertTrue(speedPage.$.preloadingExtended.checked);
     assertTrue(speedPage.$.preloadingExtended.expanded);
   });

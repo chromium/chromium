@@ -177,21 +177,24 @@ suite('AllBuilds', function() {
     };
     // Check initial setup.
     assertTrue(toggle.checked);
-    assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
+    assertTrue(
+        testElement.getPref<boolean>('signin.allowed_on_next_startup').value);
     assertFalse(testElement.$.toast.open);
 
     // When the user is signed out, clicking the toggle should work
     // normally and the restart toast should be opened.
     toggle.click();
     assertFalse(toggle.checked);
-    assertFalse(testElement.prefs.signin.allowed_on_next_startup.value);
+    assertFalse(
+        testElement.getPref<boolean>('signin.allowed_on_next_startup').value);
     assertTrue(testElement.$.toast.open);
 
     // Clicking it again, turns the toggle back on. The toast remains
     // open.
     toggle.click();
     assertTrue(toggle.checked);
-    assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
+    assertTrue(
+        testElement.getPref<boolean>('signin.allowed_on_next_startup').value);
     assertTrue(testElement.$.toast.open);
 
     // Reset toast.
@@ -220,7 +223,8 @@ suite('AllBuilds', function() {
     flush();
     // The toggle remains on.
     assertTrue(toggle.checked);
-    assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
+    assertTrue(
+        testElement.getPref<boolean>('signin.allowed_on_next_startup').value);
     assertFalse(testElement.$.toast.open);
 
     let signoutDialog =
@@ -240,7 +244,8 @@ suite('AllBuilds', function() {
 
     // After the dialog is closed, the toggle remains turned on.
     assertTrue(toggle.checked);
-    assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
+    assertTrue(
+        testElement.getPref<boolean>('signin.allowed_on_next_startup').value);
     assertFalse(testElement.$.toast.open);
 
     // The user clicks the toggle again.
@@ -263,7 +268,8 @@ suite('AllBuilds', function() {
     // After the dialog is closed, the toggle is turned off and the
     // toast is shown.
     assertFalse(toggle.checked);
-    assertFalse(testElement.prefs.signin.allowed_on_next_startup.value);
+    assertFalse(
+        testElement.getPref<boolean>('signin.allowed_on_next_startup').value);
     assertTrue(testElement.$.toast.open);
   });
 
@@ -479,7 +485,8 @@ suite('OfficialBuild', function() {
     };
     flush();
     shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.click();
-    assertTrue(testElement.prefs.spellcheck.use_spelling_service.value);
+    assertTrue(
+        testElement.getPref<boolean>('spellcheck.use_spelling_service').value);
   });
   // </if>
 

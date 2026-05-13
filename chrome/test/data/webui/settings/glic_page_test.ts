@@ -35,7 +35,7 @@ suite('GlicPage', function() {
 
     Router.getInstance().navigateTo(routes.AI);
     page = document.createElement('settings-glic-page');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
   });
 

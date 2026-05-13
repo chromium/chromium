@@ -76,7 +76,7 @@ suite('Main', function() {
     SecurityPageBrowserProxyImpl.setInstance(browserProxy);
 
     page = document.createElement('settings-security-page-v2');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     // Set initial pref values for test predictability.
     page.setPrefValue(
@@ -91,21 +91,21 @@ suite('Main', function() {
   test('StandardBundleIsInitiallySelected', function() {
     assertEquals(
         SecuritySettingsBundleSetting.STANDARD,
-        page.prefs.generated.security_settings_bundle.value);
+        page.getPref('generated.security_settings_bundle').value);
   });
 
   test('EnhanceBundleSelected', async function() {
     // Standard bundle is initially selected.
     assertEquals(
         SecuritySettingsBundleSetting.STANDARD,
-        page.prefs.generated.security_settings_bundle.value);
+        page.getPref('generated.security_settings_bundle').value);
 
     // Click on Enhanced bundle.
     page.$.securitySettingsBundleEnhanced.click();
     await flushTasks();
     assertEquals(
         SecuritySettingsBundleSetting.ENHANCED,
-        page.prefs.generated.security_settings_bundle.value);
+        page.getPref('generated.security_settings_bundle').value);
   });
 
   test('SafeBrowsingRowClickExpandsRowAndShowsRadioGroup', async function() {
@@ -395,11 +395,13 @@ suite('Main', function() {
 
     page.$.passwordsLeakToggle.click();
     await flushTasks();
-    assertFalse(page.getPref('generated.password_leak_detection').value);
+    assertFalse(
+        page.getPref<boolean>('generated.password_leak_detection').value);
 
     page.$.passwordsLeakToggle.click();
     await flushTasks();
-    assertTrue(page.getPref('generated.password_leak_detection').value);
+    assertTrue(
+        page.getPref<boolean>('generated.password_leak_detection').value);
   });
 
   test('noValueChangePasswordLeakSwitchBundle', async () => {
@@ -416,7 +418,7 @@ suite('Main', function() {
 
     // Password leak detection value is unchanged.
     assertFalse(
-        page.getPref('generated.password_leak_detection').value,
+        page.getPref<boolean>('generated.password_leak_detection').value,
         `Password leak detection should not be changed by switching to
          Enhanced bundle`);
 
@@ -430,7 +432,7 @@ suite('Main', function() {
 
     // Password leak detection value is unchanged.
     assertFalse(
-        page.getPref('generated.password_leak_detection').value,
+        page.getPref<boolean>('generated.password_leak_detection').value,
         `Password leak detection should not be changed by switching to
          Standard bundle`);
   });
@@ -509,7 +511,7 @@ suite('Main', function() {
   test('JsGuardrailsAllowOnAllSites', async function() {
     assertEquals(
         SecuritySettingsBundleSetting.STANDARD,
-        page.prefs.generated.security_settings_bundle.value);
+        page.getPref('generated.security_settings_bundle').value);
 
     // Expand the row.
     page.$.javascriptGuardrailsRow.$.expandButton.click();
@@ -597,7 +599,8 @@ suite('Main', function() {
     assertFalse(page.$.enhancedProtectionButton.checked);
 
     assertEquals(
-        SafeBrowsingSetting.DISABLED, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.DISABLED,
+        page.getPref('generated.safe_browsing').value);
   });
 
   // TODO(crbug.com/500641616): Investigate why user click action is flaky.
@@ -606,7 +609,8 @@ suite('Main', function() {
     page.$.safeBrowsingRow.$.expandButton.click();
     await flushTasks();
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
 
     // Simulate clicks on safe-browsing-radio-group.
     page.$.enhancedProtectionButton.click();
@@ -615,7 +619,8 @@ suite('Main', function() {
     await flushTasks();
 
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
 
     // Simulate turning off Safe Browsing.
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.DISABLED);
@@ -628,14 +633,16 @@ suite('Main', function() {
 
     assertTrue(page.$.standardProtectionButton.checked);
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
   });
 
   test('DisableSafebrowsingDialog_CancelFromEnhanced', async function() {
     page.$.safeBrowsingRow.$.expandButton.click();
     await flushTasks();
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
 
     // Set SB to Enhanced.
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
@@ -645,7 +652,8 @@ suite('Main', function() {
         new CustomEvent('change', {bubbles: true, composed: true}));
     await flushTasks();
     assertEquals(
-        SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.ENHANCED,
+        page.getPref('generated.safe_browsing').value);
 
     // Simulate turning off Safe Browsing.
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.DISABLED);
@@ -659,7 +667,8 @@ suite('Main', function() {
 
     assertTrue(page.$.enhancedProtectionButton.checked);
     assertEquals(
-        SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
+        SafeBrowsingSetting.ENHANCED,
+        page.getPref('generated.safe_browsing').value);
   });
 });
 
@@ -683,7 +692,7 @@ suite('SecurityKeysSubpageDisabled', function() {
         new TestSecurityPageBrowserProxy());
 
     page = document.createElement('settings-security-page-v2');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     flush();
   });
@@ -716,7 +725,7 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     await CrSettingsPrefs.initialized;
 
     page = document.createElement('settings-security-page-v2');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     // Set initial pref values for test predictability.
     page.setPrefValue(
@@ -1010,7 +1019,7 @@ suite('SecurityPageV2HappinessTrackingSurveys_SecureDnsLegacy', function() {
     await CrSettingsPrefs.initialized;
 
     page = document.createElement('settings-security-page-v2');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     // Set initial pref values for test predictability.
     page.setPrefValue(
@@ -1080,7 +1089,7 @@ suite('ManagedEnvironment', function() {
     await CrSettingsPrefs.initialized;
 
     page = document.createElement('settings-security-page-v2');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     await flushTasks();
 
@@ -1269,7 +1278,7 @@ suite('SecureDnsBundling', function() {
     await CrSettingsPrefs.initialized;
 
     page = document.createElement('settings-security-page-v2');
-    page.prefs = settingsPrefs.prefs;
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
 
     page.setPrefValue(
@@ -1339,7 +1348,8 @@ suite('SecureDnsBundling', function() {
         SecureDnsMode.AUTOMATIC, page.getPref('dns_over_https.mode').value);
     assertEquals('', page.getPref('dns_over_https.templates').value);
     assertFalse(
-        page.getPref('dns_over_https.automatic_mode_fallback_to_doh').value);
+        page.getPref<boolean>('dns_over_https.automatic_mode_fallback_to_doh')
+            .value);
     assertFalse(isVisible(page.$.resetStandardBundleToDefaultsButton));
   });
 
@@ -1356,7 +1366,8 @@ suite('SecureDnsBundling', function() {
         SecureDnsMode.AUTOMATIC, page.getPref('dns_over_https.mode').value);
     assertEquals('', page.getPref('dns_over_https.templates').value);
     assertTrue(
-        page.getPref('dns_over_https.automatic_mode_fallback_to_doh').value);
+        page.getPref<boolean>('dns_over_https.automatic_mode_fallback_to_doh')
+            .value);
     assertFalse(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
   });
 
