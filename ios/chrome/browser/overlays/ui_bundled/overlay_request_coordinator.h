@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_OVERLAY_REQUEST_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_OVERLAY_REQUEST_COORDINATOR_H_
 
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class OverlayRequestSupport;
 class OverlayRequestCoordinatorDelegate;
-class OverlayRequest;
 
 // Coordinator superclass used to present UI for an OverlayRequest.
 @interface OverlayRequestCoordinator : ChromeCoordinator
@@ -42,6 +42,9 @@ class OverlayRequest;
 
 // The request used to configure the overlay UI.
 @property(nonatomic, readonly) OverlayRequest* request;
+
+// The 64-bit identifier of the request.
+@property(nonatomic, readonly) OverlayRequestId requestId;
 
 // The view controller that displays the UI for `request`.
 @property(nonatomic, readonly) UIViewController* viewController;

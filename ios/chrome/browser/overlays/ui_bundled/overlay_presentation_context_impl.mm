@@ -471,9 +471,7 @@ void OverlayPresentationContextImpl::OverlayRequestCoordinatorDelegateImpl::
 }
 
 void OverlayPresentationContextImpl::OverlayRequestCoordinatorDelegateImpl::
-    OverlayUIDidFinishDismissal(OverlayRequest* request) {
-  DCHECK(request);
-  const OverlayRequestId request_id = OverlayRequestIdForRequest(request);
+    OverlayUIDidFinishDismissal(OverlayRequestId request_id) {
   DCHECK_EQ(presentation_context_->request_id_, request_id);
   presentation_context_->OverlayUIWasDismissed();
 }

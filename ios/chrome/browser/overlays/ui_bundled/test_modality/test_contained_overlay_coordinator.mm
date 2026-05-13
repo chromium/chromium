@@ -53,7 +53,7 @@
   [self.viewController removeFromParentViewController];
   self.containedViewController = nil;
   self.started = NO;
-  self.delegate->OverlayUIDidFinishDismissal(self.request);
+  self.delegate->OverlayUIDidFinishDismissal(self.requestId);
 }
 
 @end

@@ -215,7 +215,7 @@
   // is necessary to synchronize OverlayPresenter scheduling logic with the UI
   // layer.
   if (self.delegate) {
-    self.delegate->OverlayUIDidFinishDismissal(self.request);
+    self.delegate->OverlayUIDidFinishDismissal(self.requestId);
   }
   UpdateBannerAccessibilityForDismissal(self.baseViewController);
 }

@@ -12,22 +12,32 @@ FakeOverlayRequestCoordinatorDelegate::
 
 bool FakeOverlayRequestCoordinatorDelegate::HasUIBeenPresented(
     OverlayRequest* request) const {
-  return states_.contains(request) &&
-         states_.at(request) == PresentationState::kPresented;
+  if (!request) {
+    return false;
+  }
+  OverlayRequestId request_id = request->GetRequestId();
+  return states_.contains(request_id) &&
+         states_.at(request_id) == PresentationState::kPresented;
 }
 
 bool FakeOverlayRequestCoordinatorDelegate::HasUIBeenDismissed(
     OverlayRequest* request) const {
-  return states_.contains(request) &&
-         states_.at(request) == PresentationState::kDismissed;
+  if (!request) {
+    return false;
+  }
+  OverlayRequestId request_id = request->GetRequestId();
+  return states_.contains(request_id) &&
+         states_.at(request_id) == PresentationState::kDismissed;
 }
 
 void FakeOverlayRequestCoordinatorDelegate::OverlayUIDidFinishPresentation(
     OverlayRequest* request) {
-  states_[request] = PresentationState::kPresented;
+  if (request) {
+    states_[request->GetRequestId()] = PresentationState::kPresented;
+  }
 }
 
 void FakeOverlayRequestCoordinatorDelegate::OverlayUIDidFinishDismissal(
-    OverlayRequest* request) {
-  states_[request] = PresentationState::kDismissed;
+    OverlayRequestId request_id) {
+  states_[request_id] = PresentationState::kDismissed;
 }

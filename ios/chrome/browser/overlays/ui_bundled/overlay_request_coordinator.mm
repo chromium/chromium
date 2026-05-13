@@ -7,20 +7,27 @@
 #import <ostream>
 
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator.h"
 
-@interface OverlayRequestCoordinator () <OverlayRequestMediatorDelegate> {
+@interface OverlayRequestCoordinator () <OverlayRequestMediatorDelegate>
+@end
+
+@implementation OverlayRequestCoordinator {
   // Subclassing properties.
   BOOL _started;
   OverlayRequestMediator* _mediator;
+  raw_ptr<OverlayRequest> _request;
+  OverlayRequestId _requestId;
 }
-@end
-
-@implementation OverlayRequestCoordinator
 
 - (void)dealloc {
   // ChromeCoordinator's `-dealloc` calls `-stop`, which defaults to an animated
@@ -48,10 +55,32 @@
   if (self) {
     _request = request;
     DCHECK(_request);
+    _requestId = request->GetRequestId();
     _delegate = delegate;
     DCHECK(_delegate);
+
+    // Register a completion callback to synchronously null-out `_request` as
+    // soon as the request is completed or destroyed. This ensures that
+    // `_request` never becomes a dangling raw_ptr.
+    __weak __typeof(self) weakSelf = self;
+    _request->GetCallbackManager()->AddCompletionCallback(
+        base::BindOnce(^(OverlayResponse*) {
+          [weakSelf requestWasCompleted];
+        }));
   }
   return self;
+}
+
+- (OverlayRequest*)request {
+  return _request.get();
+}
+
+- (OverlayRequestId)requestId {
+  return _requestId;
+}
+
+- (void)requestWasCompleted {
+  _request = nullptr;
 }
 
 #pragma mark - Public

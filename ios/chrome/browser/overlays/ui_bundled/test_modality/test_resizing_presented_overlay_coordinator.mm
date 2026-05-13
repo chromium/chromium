@@ -112,7 +112,7 @@
       dismissViewControllerAnimated:animated
                          completion:^{
                            self.delegate->OverlayUIDidFinishDismissal(
-                               self.request);
+                               self.requestId);
                          }];
   self.presentedViewController = nil;
   self.started = NO;

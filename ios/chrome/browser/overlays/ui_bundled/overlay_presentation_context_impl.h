@@ -161,7 +161,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext,
 
     // OverlayUIDismissalDelegate:
     void OverlayUIDidFinishPresentation(OverlayRequest* request) override;
-    void OverlayUIDidFinishDismissal(OverlayRequest* request) override;
+    void OverlayUIDidFinishDismissal(OverlayRequestId request_id) override;
 
    private:
     raw_ptr<OverlayPresentationContextImpl> presentation_context_ = nullptr;

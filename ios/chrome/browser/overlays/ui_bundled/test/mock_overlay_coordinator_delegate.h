@@ -16,7 +16,7 @@ class MockOverlayRequestCoordinatorDelegate
   ~MockOverlayRequestCoordinatorDelegate() override;
 
   MOCK_METHOD1(OverlayUIDidFinishPresentation, void(OverlayRequest* request));
-  MOCK_METHOD1(OverlayUIDidFinishDismissal, void(OverlayRequest* request));
+  MOCK_METHOD1(OverlayUIDidFinishDismissal, void(OverlayRequestId request_id));
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_TEST_MOCK_OVERLAY_COORDINATOR_DELEGATE_H_

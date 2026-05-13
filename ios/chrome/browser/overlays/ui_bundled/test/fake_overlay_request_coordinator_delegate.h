@@ -24,11 +24,11 @@ class FakeOverlayRequestCoordinatorDelegate
 
   // OverlayRequestCoordinatorDelegate:
   void OverlayUIDidFinishPresentation(OverlayRequest* request) override;
-  void OverlayUIDidFinishDismissal(OverlayRequest* request) override;
+  void OverlayUIDidFinishDismissal(OverlayRequestId request_id) override;
 
  private:
   enum class PresentationState { kNotPresented, kPresented, kDismissed };
-  std::map<OverlayRequest*, PresentationState> states_;
+  std::map<OverlayRequestId, PresentationState> states_;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_TEST_FAKE_OVERLAY_REQUEST_COORDINATOR_DELEGATE_H_

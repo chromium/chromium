@@ -80,7 +80,7 @@ using alert_overlays::AlertRequest;
                                                      Alert];
   }
   _geminiHandler = nil;
-  self.delegate->OverlayUIDidFinishDismissal(self.request);
+  self.delegate->OverlayUIDidFinishDismissal(self.requestId);
 }
 
 #pragma mark - OverlayRequestCoordinator

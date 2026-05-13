@@ -136,7 +136,7 @@ TEST_F(InfobarModalOverlayCoordinatorTest, ModalPresentation) {
 
   // Stop the coordinator, expecting OverlayUIDidFinishDismissal() to be
   // executed.
-  EXPECT_CALL(delegate_, OverlayUIDidFinishDismissal(request_.get()));
+  EXPECT_CALL(delegate_, OverlayUIDidFinishDismissal(request_->GetRequestId()));
   [coordinator_ stopAnimated:NO];
 
   // Wait for dismissal to finish.
@@ -162,7 +162,8 @@ TEST_F(InfobarModalOverlayCoordinatorTest, ModalDismiss) {
 
   // Stop the coordinator, expecting OverlayUIDidFinishDismissal() to be
   // executed once.
-  EXPECT_CALL(delegate_, OverlayUIDidFinishDismissal(request_.get())).Times(1);
+  EXPECT_CALL(delegate_, OverlayUIDidFinishDismissal(request_->GetRequestId()))
+      .Times(1);
   [coordinator_ stopAnimated:NO];
 
   // Stop coordinator again. It should be a no-op since stop has been called
