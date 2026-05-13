@@ -25,7 +25,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -34,8 +33,8 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
-#include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -55,10 +54,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
-
-namespace {
-namespace crosapi = crosapi::mojom;
-}
 
 struct ExtensionInfoTestParams {
   ExtensionInfoTestParams(const std::string& extension_id,
@@ -152,17 +147,19 @@ class ApiGuardDelegateTest
 
   // BrowserWithTestWindowTest:
   void SetUp() override {
+    ash::cros_healthd::FakeCrosHealthd::Initialize();
     BrowserWithTestWindowTest::SetUp();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     CreateExtension();
 
-    fake_probe_service_ = std::make_unique<FakeProbeService>();
-    RemoteProbeServiceStrategy::Get()->SetServiceForTesting(
-        fake_probe_service_->BindNewPipeAndPassRemote());
-
     // Make sure device manufacturer is allowlisted.
     SetDeviceManufacturer(manufacturer());
+  }
+
+  void TearDown() override {
+    BrowserWithTestWindowTest::TearDown();
+    ash::cros_healthd::FakeCrosHealthd::Shutdown();
   }
 
   std::optional<std::string> GetDefaultProfileName() override {
@@ -190,11 +187,20 @@ class ApiGuardDelegateTest
 
   void SetDeviceManufacturer(const std::string& manufacturer) {
     HardwareInfoDelegate::Get().ClearCacheForTesting();
-    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
-    telemetry_info->system_result = crosapi::ProbeSystemResult::NewSystemInfo(
-        crosapi::ProbeSystemInfo::New(crosapi::ProbeOsInfo::New(manufacturer)));
-    fake_probe_service_->SetProbeTelemetryInfoResponse(
-        std::move(telemetry_info));
+    auto os_info = ash::cros_healthd::mojom::OsInfo::New();
+    os_info->os_version = ash::cros_healthd::mojom::OsVersion::New();
+    os_info->oem_name = manufacturer;
+
+    auto system_info = ash::cros_healthd::mojom::SystemInfo::New();
+    system_info->os_info = std::move(os_info);
+
+    auto telemetry_info = ash::cros_healthd::mojom::TelemetryInfo::New();
+    telemetry_info->system_result =
+        ash::cros_healthd::mojom::SystemResult::NewSystemInfo(
+            std::move(system_info));
+
+    auto* fake_cros_healthd = ash::cros_healthd::FakeCrosHealthd::Get();
+    fake_cros_healthd->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   }
 
   void OpenAppUIUrlAndSetCertificateWithStatus(net::CertStatus cert_status) {
@@ -229,8 +235,8 @@ class ApiGuardDelegateTest
             .Build();
   }
 
+  ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
   scoped_refptr<const extensions::Extension> extension_;
-  std::unique_ptr<FakeProbeService> fake_probe_service_;
 };
 
 TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {

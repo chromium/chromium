@@ -5,11 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_HARDWARE_INFO_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_HARDWARE_INFO_DELEGATE_H_
 
-#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 
 namespace chromeos {
 

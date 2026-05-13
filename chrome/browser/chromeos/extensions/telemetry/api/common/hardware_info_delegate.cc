@@ -11,8 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
-#include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace chromeos {
 
@@ -20,8 +20,8 @@ namespace {
 
 HardwareInfoDelegate* g_instance = nullptr;
 
-// Callback from ProbeServiceAsh::ProbeTelemetryInfo().
-std::string OnGetSystemInfo(crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
+// Callback from ProbeTelemetryInfo().
+std::string OnGetSystemInfo(ash::cros_healthd::mojom::TelemetryInfoPtr ptr) {
   if (!ptr || !ptr->system_result || !ptr->system_result->is_system_info()) {
     return "";
   }
@@ -55,18 +55,18 @@ void HardwareInfoDelegate::GetManufacturer(ManufacturerCallback done_cb) {
     return;
   }
 
-  auto set_cache_cb =
-      base::BindOnce(&HardwareInfoDelegate::SetCacheAndReturnResult,
-                     base::Unretained(this), std::move(done_cb));
   auto* probe_service =
-      RemoteProbeServiceStrategy::Get()->GetRemoteProbeService();
-  if (probe_service) {
-    auto cb = base::BindOnce(&OnGetSystemInfo).Then(std::move(set_cache_cb));
-    probe_service->ProbeTelemetryInfo(
-        {crosapi::mojom::ProbeCategoryEnum::kSystem}, std::move(cb));
-  } else {
-    std::move(done_cb).Run("");
+      ash::cros_healthd::ServiceConnection::GetInstance()->GetProbeService();
+  if (!probe_service) {
+    std::move(done_cb).Run(std::string());
+    return;
   }
+
+  probe_service->ProbeTelemetryInfo(
+      {ash::cros_healthd::mojom::ProbeCategoryEnum::kSystem},
+      base::BindOnce(&OnGetSystemInfo)
+          .Then(base::BindOnce(&HardwareInfoDelegate::SetCacheAndReturnResult,
+                               base::Unretained(this), std::move(done_cb))));
 }
 
 void HardwareInfoDelegate::ClearCacheForTesting() {

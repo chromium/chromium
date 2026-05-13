@@ -83,7 +83,8 @@ source_set("hardware_info_delegate") {
   deps = [
     ":remote_probe_strategy",
     "//base",
-    "//chromeos/crosapi/mojom",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
   ]
 }
 
@@ -167,7 +168,8 @@ source_set("unit_tests") {
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/crosapi/cpp/telemetry:test_support",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/public/browser",
