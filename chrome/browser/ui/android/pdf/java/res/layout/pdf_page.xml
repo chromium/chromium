@@ -23,15 +23,21 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ViewStub
-        android:id="@+id/pdf_toolbar_stub"
-        android:inflatedId="@+id/pdf_toolbar"
-        android:layout="@layout/pdf_toolbar"
+    <FrameLayout
+        android:id="@+id/pdf_toolbar_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ViewStub
+            android:id="@+id/pdf_toolbar_stub"
+            android:inflatedId="@+id/pdf_toolbar"
+            android:layout="@layout/pdf_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/pdf_fragment_container"
@@ -41,6 +47,6 @@ found in the LICENSE file.
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pdf_toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/pdf_toolbar_container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

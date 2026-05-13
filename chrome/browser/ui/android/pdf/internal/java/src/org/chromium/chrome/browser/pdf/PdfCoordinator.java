@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -199,14 +198,6 @@ public class PdfCoordinator
         }
         mToolbarCoordinator =
                 PdfUtils.isInlinePdfV2Enabled() ? new PdfToolbarCoordinator(mView, this) : null;
-        if (!PdfUtils.isInlinePdfV2Enabled()) {
-            View container = mView.findViewById(R.id.pdf_fragment_container);
-            ConstraintLayout.LayoutParams params =
-                    (ConstraintLayout.LayoutParams) container.getLayoutParams();
-            params.topToBottom = ConstraintLayout.LayoutParams.UNSET;
-            params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-            container.setLayoutParams(params);
-        }
     }
 
     /**
