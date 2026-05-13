@@ -42,3 +42,14 @@ declare_args() {
                     "scope")
   }
 }
+
+if (current_cpu == "x86") {
+  current_win_toolchain_data = win_toolchain_data_x86
+} else if (current_cpu == "x64") {
+  current_win_toolchain_data = win_toolchain_data_x64
+} else if (current_cpu == "arm64") {
+  current_win_toolchain_data = win_toolchain_data_arm64
+} else {
+  assert(false,
+         "Unsupported cpu ${current_cpu}, add it to win_toolchain_data.gni")
+}

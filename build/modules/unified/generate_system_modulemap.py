@@ -21,15 +21,8 @@ from typing import Tuple, List
 _HEADER_RE = re.compile(r'(?:(private)\s+)?(?:(textual)\s+)?header\s+"([^"]+)"')
 _SIMPLE_HEADER_RE = re.compile(r'(\bheader\s+")([^"]+)(")')
 _REQUIRES_RE = re.compile(r'^\s*requires\s+(.*)')
-_STRIP_PREFIX = re.compile(
-    r'^usr/include/(?:(?:x86_64|i386|arm|arm64)-(?:linux|cros)-gnu/)?')
-# Maps GN CPU arg to LLVM CPU arg
-_CPU_ARG = {
-    'x64': 'x86_64',
-    'arm64': 'arm64',
-    'arm': 'arm',
-    'x86': 'i386',
-}
+# This needs to match all triple dirs that exist in /usr/include in the sysroot.
+_TRIPLE = re.compile('^(.*)-(linux|cros)-(gnu|gnueabi|gnueabihf|android)$')
 _DEBUG_SOURCE = '/tmp/debug_generate_system_modulemap.cc'
 _DEBUG_SCRIPT = pathlib.Path('/tmp/debug_generate_system_modulemap.sh')
 
@@ -50,6 +43,15 @@ _MODULEMAP_START = re.compile(
 # Similar to Path.resolve() but doesn't follow symlinks.
 def _absolute(p: pathlib.Path) -> pathlib.Path:
   return pathlib.Path(os.path.abspath(p))
+
+
+def _format_clang_args(args, os):
+  if os != 'win':
+    return args
+  else:
+    # clang-cl takes args such as /I and rewrites them to -I for clang.
+    # If you provide -clang: it prevents the rewrite.
+    return [f'-clang:{arg}' for arg in args]
 
 
 # Usually ../.., but not always.
@@ -241,10 +243,32 @@ def parse_modulemap(
   return include_dir, headers
 
 
+def parse_depfile(content: str) -> list[pathlib.Path]:
+  """Parses the contents of a Clang-generated depfile.
+
+  Returns:
+    A list of dependency file paths as pathlib.Path objects.
+  """
+  # We know there'll only ever be one thing we're trying to build.
+  content = content.replace('\\\n', '').split(': ', 1)[1]
+  deps = []
+  current = []
+  # Spaces in file names occur in the windows sysroot, so we need to handle
+  # them.
+  for part in content.split():
+    if part.endswith('\\'):
+      current.append(part[:-1])
+    else:
+      current.append(part)
+      deps.append(pathlib.Path(' '.join(current)))
+      current = []
+  return deps
+
+
 def calculate_transitive_headers(clang_args: list[str],
                                  include_dirs: list[Tuple[pathlib.Path,
                                                           List[Header]]],
-                                 sysroot: pathlib.Path,
+                                 sysroot_dirs: list[pathlib.Path],
                                  extra_public_headers: list[str],
                                  target_os: str,
                                  target_cpu: str,
@@ -253,7 +277,11 @@ def calculate_transitive_headers(clang_args: list[str],
 
   Returns a list of all headers discovered that are part of the sysroot.
   """
-  sysroot = _absolute(sysroot)
+  # Sort in reverse order to make sure that foo/bar comes before foo, thus
+  # ensuring we try resolving foo/bar/baz => baz instead of bar/baz.
+  sysroot_dirs = sorted([_absolute(d) for d in sysroot_dirs],
+                        key=lambda p: len(p.parts),
+                        reverse=True)
   context = {
       'is_linux': target_os == 'linux',
       'is_android': target_os == 'android',
@@ -284,32 +312,35 @@ def calculate_transitive_headers(clang_args: list[str],
           f.write(f'#include <{h}>\n')
           f.write(f'#endif\n')
 
-    cmd = clang_args + [
-        # We only need to preprocess for performance reasons, and don't even
-        # care about the preprocessed output.
-        '-E',
+    # We only need to preprocess for performance reasons, and don't even
+    # care about the preprocessed output.
+    cmd = [
+        *clang_args,
+        *_format_clang_args(['-E'], target_os),
         str(source_file),
-        '-o',
-        '/dev/null',
-        # This is what we really care about. Just which headers were in the
-        # transitive includes of a given header.
-        '-MD',
-        '-MF',
-        str(dep_file),
+        *_format_clang_args(
+            [
+                '-o',
+                'NUL' if os.name == 'nt' else '/dev/null',
+                # This is what we really care about. Just which headers were in
+                # the transitive includes of a given header.
+                '-MD',
+                '-MF',
+                str(dep_file),
+            ],
+            target_os)
     ]
 
     if debug:
       shutil.copyfile(source_file, _DEBUG_SOURCE)
-      replacements = {
-          str(source_file): _DEBUG_SOURCE,
-          str(dep_file): _DEBUG_SOURCE + ".o.d"
-      }
-      debug_cmd = [replacements.get(arg, arg) for arg in cmd]
 
-      _DEBUG_SCRIPT.write_text(f"""#!/bin/bash
-cd "{os.getcwd()}"
-{shlex.join(debug_cmd)}
-""")
+      content = f"""#!/bin/bash
+      cd "{os.getcwd()}"
+      {shlex.join(cmd)}
+"""
+      content = content.replace(str(source_file), _DEBUG_SOURCE)
+      content = content.replace(str(dep_file), _DEBUG_SOURCE + '.o.d')
+      _DEBUG_SCRIPT.write_text(content)
       _DEBUG_SCRIPT.chmod(0o755)
       print(f'Saved debug script to {_DEBUG_SCRIPT}')
       sys.exit(0)
@@ -320,8 +351,7 @@ cd "{os.getcwd()}"
             f'{shlex.join(sys.argv[1:])}` to debug')
       sys.exit(ps.returncode)
 
-    dep_content = dep_file.read_text().replace('\\\n', '')
-    deps = dep_content.split(': ', 1)[1].split()
+    deps = parse_depfile(dep_file.read_text())
 
     extra_public_headers = set(extra_public_headers)
     headers = []
@@ -331,21 +361,24 @@ cd "{os.getcwd()}"
         # We don't need to add this to the modulemap ourselves.
         continue
 
-      try:
-        rel = str(full.relative_to(sysroot))
-        rel = _STRIP_PREFIX.sub('', rel)
-        short = rel if full.is_relative_to(sysroot) else full.name
-        private = short not in extra_public_headers
-        if short in _FORCE_TEXTUAL:
-          textual = eval(_FORCE_TEXTUAL[rel], context)
-        else:
-          textual = 'bits' in pathlib.Path(rel).parts
-      except ValueError:
-        # relative_to raises ValueError if it's outside the sysroot
-        # It must be incorrectly missing from the modulemap.
+      private = None
+      # This has the same effect as it being missing from the modulemap.
+      textual = True
+      for d in sysroot_dirs:
+        if full.is_relative_to(d):
+          rel = str(full.relative_to(d))
+          private = rel not in extra_public_headers
+          if rel in _FORCE_TEXTUAL:
+            textual = eval(_FORCE_TEXTUAL[rel], context)
+          else:
+            textual = 'bits' in pathlib.Path(rel).parts
+          break
+      if private is None:
+        # It's not relative to any sysroot directory. It must be either from
+        # libc++ or builtins.
+        # In either case it's incorrectly missing from the modulemap, so we mark
+        # it as private & textual by default to match existing behaviour.
         private = full.name not in extra_public_headers
-        # This has the same effect as it being missing from the modulemap.
-        textual = True
       headers.append(Header(path=full, private=private, textual=textual))
 
     return headers
@@ -428,30 +461,55 @@ def combine_modulemaps(out: pathlib.Path,
 def main(args, extra_args):
   """Executes the modulemap generation pipeline."""
   deps = []
-  if args.sysroot:
+  if args.sysroot or args.os == 'win':
+    sysroot_dirs = []
+    if args.sysroot:
+      extra_args.append(f'--sysroot={args.sysroot}')
+      subdir = args.sysroot / 'usr/include'
+      sysroot_dirs.append(subdir)
+      for d in subdir.iterdir():
+        # We append *every* triple, not just the correct one.
+        # This is because with the target x86_64-unknown-linux-gnu, for example,
+        # the directory is really x86_64-linux-gnu, so we can't just do an exact
+        # match.
+        # This isn't an issue because a file from the wrong triple will never
+        # appear in the depfile, which is what this is used for.
+        if d.is_dir() and _TRIPLE.match(d.name) is not None:
+          sysroot_dirs.append(d)
+
+    if args.os == 'win':
+      for arg in extra_args:
+        if arg.startswith('/I'):
+          sysroot_dirs.append(pathlib.Path(arg.removeprefix('/I')))
+    clang_args = [
+        str(args.clang),
+        *_format_clang_args(
+            [
+                # Some files are only read with optimization flags enabled.
+                '-O2',
+                '-D_FORTIFY_SOURCE=3',
+                # Ensure we're using the right libc++
+                '-nostdinc++',
+                f'-I{_SRC_PREFIX}/third_party/libc++/src/include',
+                f'-I{_SRC_PREFIX}/third_party/libc++abi/src/include',
+                f'-I{_SRC_PREFIX}/buildtools/third_party/libc++',
+                # Libc++ feature/hardening macros required by libc++ headers.
+                '-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE',
+                '-D_LIBCPP_BUILDING_LIBRARY',
+                '-std=c++23',
+                # Ensures that paths to compiler builtin headers are kept
+                # relative rather than being resolved to absolute/canonical
+                # symlinked paths.
+                '-no-canonical-prefixes',
+            ],
+            args.os),
+        *extra_args
+    ]
+
     deps = calculate_transitive_headers(
-        clang_args=[
-            str(args.clang),
-            # Some files are only read with optimization flags enabled.
-            '-O2',
-            '-D_FORTIFY_SOURCE=3',
-            f'--sysroot={args.sysroot}',
-            # Ensure we're using the right libc++
-            '-nostdinc++',
-            f'-I{_SRC_PREFIX}/third_party/libc++/src/include',
-            f'-I{_SRC_PREFIX}/third_party/libc++abi/src/include',
-            f'-I{_SRC_PREFIX}/buildtools/third_party/libc++',
-            # Libc++ feature/hardening macros required by libc++ headers.
-            '-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE',
-            '-D_LIBCPP_BUILDING_LIBRARY',
-            '-std=c++23',
-            # Ensures that paths to compiler builtin headers are kept relative
-            # rather than being resolved to absolute/canonical symlinked paths.
-            '-no-canonical-prefixes',
-            *extra_args,
-        ],
+        clang_args=clang_args,
         include_dirs=[parse_modulemap(mm) for mm in args.modulemap],
-        sysroot=args.sysroot,
+        sysroot_dirs=sysroot_dirs,
         extra_public_headers=_HEADERS,
         target_os=args.os,
         target_cpu=args.cpu,

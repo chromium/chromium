@@ -10,6 +10,7 @@ from generate_system_modulemap import (
     Header,
     calculate_transitive_headers,
     combine_modulemaps,
+    parse_depfile,
     parse_modulemap,
     split_modulemap,
 )
@@ -98,10 +99,14 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
     ])
 
     deps = calculate_transitive_headers(
-        clang_args=[_CLANG, '-isystem',
-                    str(_LIBCXX), f'--sysroot={_SYSROOT}'],
+        clang_args=[
+            str(_CLANG), '-isystem',
+            str(_LIBCXX), f'--sysroot={_SYSROOT}', '--target=x86_64-linux-gnu'
+        ],
         include_dirs=[(common_dir, headers)],
-        sysroot=_SYSROOT,
+        sysroot_dirs=[
+            _SYSROOT / 'usr/include', _SYSROOT / 'usr/include/x86_64-linux-gnu'
+        ],
         extra_public_headers={
             'public_root.h': None,
             'bits/public_subdir.h': None
@@ -141,6 +146,20 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
     self.assertCountEqual(modules.keys(), _WANT_SPLIT_MODULEMAP.keys())
     for k, v in _WANT_SPLIT_MODULEMAP.items():
       self.assertEqual(modules[k], v)
+
+  def test_parse_depfile(self):
+    self.assertEqual(
+        parse_depfile(r"""dummy.o: \
+  /path/to/header1.h \
+  /path/to/header2.h \
+  /path/to/header\ with\ spaces.h \
+  /path/to/header3.h
+"""), [
+            pathlib.Path('/path/to/header1.h'),
+            pathlib.Path('/path/to/header2.h'),
+            pathlib.Path('/path/to/header with spaces.h'),
+            pathlib.Path('/path/to/header3.h'),
+        ])
 
 
 if __name__ == '__main__':
