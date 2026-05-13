@@ -92,7 +92,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
       OmniboxPopupState page_type) const;
   bool IsCommandIdVisible(int command_id) const override;
   void AddTabContext(const TabInfo& tab_info);
-  void UpdateSearchboxContext(
+  static void UpdateSearchboxContext(
+      content::WebContents* web_contents,
       std::optional<TabInfo> tab_info,
       std::optional<omnibox::ToolMode> tool_mode,
       std::vector<searchbox::mojom::SearchContextAttachmentPtr> attachments =
@@ -100,6 +101,10 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   static void RecordContextMenuItemSelection(const std::string& prefix,
                                              omnibox::ContextType context_type);
+
+  static OmniboxController* GetOmniboxController(
+      content::WebContents* web_contents);
+  static OmniboxPopupUI* GetOmniboxPopupUI(content::WebContents* web_contents);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
@@ -177,9 +182,6 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   void RecordContextMenuItemSelection(const std::string& prefix,
                                       int command_id);
-
-  // Callback for when drive upload response is available.
-  void OnDriveUploadResponse(searchbox::mojom::DriveUploadResponsePtr response);
 
   /* Helpers for InputType input_state fields. */
   const omnibox::InputTypeConfig* GetInputTypeConfig(

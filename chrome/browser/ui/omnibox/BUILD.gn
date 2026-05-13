@@ -294,6 +294,7 @@ if (!is_android) {
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/test:browser_tests",
       "//chrome/browser/ui/test:test_support",
+      "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/test:test_support",
