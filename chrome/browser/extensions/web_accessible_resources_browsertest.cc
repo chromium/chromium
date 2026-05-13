@@ -583,8 +583,14 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest, DNRRedirect) {
 // Succeed when DNR redirects a script to a WAR where the redirect URL contains
 // both a query and a ref.
 // Regression test for crbug.com/461824106.
+// TODO(crbug.com/512084385): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DNRRedirectWithQueryAndRef DISABLED_DNRRedirectWithQueryAndRef
+#else
+#define MAYBE_DNRRedirectWithQueryAndRef DNRRedirectWithQueryAndRef
+#endif
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
-                       DNRRedirectWithQueryAndRef) {
+                       MAYBE_DNRRedirectWithQueryAndRef) {
   auto file_path = test_data_dir_.AppendASCII(
       "web_accessible_resources/dnr/redirect_query_and_ref");
   const Extension* extension = LoadExtension(file_path);
