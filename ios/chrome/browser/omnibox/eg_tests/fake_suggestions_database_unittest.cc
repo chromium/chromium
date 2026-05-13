@@ -35,8 +35,10 @@ class FakeSuggestionsDatabaseTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    TemplateURLData data = default_search_provider()->data();
+    data.suggestions_url = "https://www.google.com/search?q={searchTerms}";
     TemplateURL* default_provider = template_url_service().Add(
-        std::make_unique<TemplateURL>(default_search_provider()->data()));
+        std::make_unique<TemplateURL>(data));
     template_url_service().SetUserSelectedDefaultSearchProvider(
         default_provider);
   }
