@@ -2,13 +2,13 @@
 <html>
 
 <head>
-  <title>Test app-region CSS property when "window-controls-overlay" in display-override member</title>
-  <link rel="manifest" href="resources/display-override-member-app-region-window-controls-overlay.webmanifest" />
+  <title>Test window-drag CSS property when "window-controls-overlay" in display-override member</title>
+  <link rel="manifest" href="resources/display-override-member-window-drag-window-controls-overlay.webmanifest" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <h1>Test app-region CSS property when "window-controls-overlay" in display-override member</h1>
+  <h1>Test window-drag CSS property when "window-controls-overlay" in display-override member</h1>
   <style>
     #draggableRectangle {
-      app-region: drag;
+      window-drag: move;
       background-color: blue;
       position: absolute;
       top: 25px;
@@ -27,7 +27,7 @@
     }
 
     #innerRectangle {
-      app-region: no-drag;
+      window-drag: none;
       background-color: red;
       position: absolute;
       top: 50px;
@@ -43,7 +43,7 @@
 
   <script>
     setup({ explicit_timeout: true })
-    var manual_test = async_test("app-region element drags window");
+    var manual_test = async_test("window-drag element drags window");
 
     window.addEventListener('DOMContentLoaded', function () {
       document.getElementById('outerRectangle').addEventListener('click', manual_test.unreached_func('click event fired on outer rectangle'));
@@ -59,7 +59,7 @@
   <p>
     <ol>
       <li> Install this app, and toggle into "window-controls-overlay" mode.</li>
-      <li> Click and drag the blue rectangle containing the text "Drag Me". This element has the app-region:drag CSS property set.</li>
+      <li> Click and drag the blue rectangle containing the text "Drag Me". This element has the window-drag: move CSS property set.</li>
       <li> If the app window moves around as you drag the blue rectangle, <button onclick="manual_test.done()">Click Here</button>.</li>
     </ol>
   </p>

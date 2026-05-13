@@ -1,12 +1,12 @@
 {
-    "name": "Window Controls Overlay - app-region",
+    "name": "Window Controls Overlay - window-drag",
     "icons": [
         {
             "src": "icon.png",
             "sizes": "192x192"
         }
     ],
-    "start_url": "../display-override-member-app-region-window-controls-overlay-manual.tentative.html",
+    "start_url": "../display-override-member-window-drag-window-controls-overlay-manual.tentative.html",
     "display": "browser",
     "display_override": [ "window-controls-overlay" ]
 }
