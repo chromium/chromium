@@ -149,6 +149,11 @@ inline StringImpl::~StringImpl() {
 }
 
 void StringImpl::DestroyIfNeeded() {
+  // Pay the acquire cost only on the possible-last-reference path, before
+  // checking kIsAtomic so we're sure flag writes are visible. The value may
+  // be greater than 1 if the string was revived by AtomicStringTable::Add()
+  // after Release() observed 1.
+  const uint32_t ref_count = ref_count_.load(std::memory_order_acquire);
   if (hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic) {
     if (AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(this)) {
       delete this;
@@ -157,11 +162,7 @@ void StringImpl::DestroyIfNeeded() {
       // killing it.
     }
   } else {
-    // This is not necessary but TSAN bots don't like the load in the
-    // caller to have relaxed memory order. Adding this check here instead
-    // of changing the load memory order to minimize perf impact.
-    int ref_count = ref_count_.load(std::memory_order_acquire);
-    DCHECK_EQ(ref_count, 1);
+    DCHECK_EQ(ref_count, 1u);
     delete this;
   }
 }
