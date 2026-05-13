@@ -16,10 +16,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 
-class SystemWebAppFrameViewBrowserBase
+class SystemWebAppFrameViewBrowserTest
     : public ash::SystemWebAppManagerBrowserTest {
  public:
-  SystemWebAppFrameViewBrowserBase() = default;
+  SystemWebAppFrameViewBrowserTest() = default;
 
   void HideFileSystemAccessPageAction() {
     WaitForTestSystemAppInstall();
@@ -32,54 +32,8 @@ class SystemWebAppFrameViewBrowserBase
   }
 };
 
-class SystemWebAppFrameViewBrowserNoMigrationTest
-    : public SystemWebAppFrameViewBrowserBase {
- public:
-  SystemWebAppFrameViewBrowserNoMigrationTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {::features::kPageActionsMigration,
-             {{::features::kPageActionsMigrationFileSystemAccess.name,
-               "false"}}},
-        },
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// The test that have parametrized testing do not support multiple level
-// inheritance. This is the case for
-// SystemWebAppFrameViewBrowserNoMigrationTest as it inherits from
-// ::testing::WithParamInterface<TestProfileParam>.
-//  Therefore for simplicity there are three different test classes that have
-//  been defined :
-// - Class 1: SystemWebAppFrameViewBrowserBase (Base class)
-// - Class 2: SystemWebAppFrameViewBrowserNoMigrationTest (Migration
-// disabled)
-// - Class 3: SystemWebAppFrameViewBrowserMigrationTest (Migration
-// enabled)
-class SystemWebAppFrameViewBrowserMigrationTest
-    : public SystemWebAppFrameViewBrowserBase {
- public:
-  SystemWebAppFrameViewBrowserMigrationTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {::features::kPageActionsMigration,
-             {{::features::kPageActionsMigrationFileSystemAccess.name,
-               "true"}}},
-        },
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // System Web Apps don't get the web app menu button.
-IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserNoMigrationTest,
-                       HideWebAppMenuButton) {
+IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserTest, HideWebAppMenuButton) {
   WaitForTestSystemAppInstall();
   Browser* app_browser;
   LaunchApp(ash::SystemWebAppType::SETTINGS, &app_browser);
@@ -89,18 +43,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserNoMigrationTest,
 }
 
 // Regression test for https://crbug.com/40133634.
-IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserNoMigrationTest,
+IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserTest,
                        HideFileSystemAccessPageAction) {
   HideFileSystemAccessPageAction();
 }
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserMigrationTest,
-                       HideFileSystemAccessPageActionsMigrationEnabled) {
-  HideFileSystemAccessPageAction();
-}
-
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    SystemWebAppFrameViewBrowserNoMigrationTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    SystemWebAppFrameViewBrowserMigrationTest);
+    SystemWebAppFrameViewBrowserTest);

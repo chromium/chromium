@@ -3708,24 +3708,18 @@ void ChromeFileSystemAccessPermissionContext::DoUsageIconUpdate() {
         if (browser_window_interface->GetProfile() != profile()) {
           return true;
         }
-        if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
-          tabs::TabInterface* const tab_interface =
-              browser_window_interface->GetActiveTabInterface();
-          // TODO(crbug.com/411109399): DoUsageIconUpdate() can be run during
-          // browser destruction, and therefore we need to check for null here.
-          // This should be updated to never run during browser destruction.
-          if (!tab_interface) {
-            return true;
-          }
-          auto* const tab_features = tab_interface->GetTabFeatures();
-          CHECK(tab_features);
-          UpdatePageAction(
-              tab_features->file_system_access_page_action_controller());
-        } else {
-          browser_window_interface->GetBrowserForMigrationOnly()
-              ->window()
-              ->UpdatePageActionIcon(PageActionIconType::kFileSystemAccess);
+        tabs::TabInterface* const tab_interface =
+            browser_window_interface->GetActiveTabInterface();
+        // TODO(crbug.com/411109399): DoUsageIconUpdate() can be run during
+        // browser destruction, and therefore we need to check for null here.
+        // This should be updated to never run during browser destruction.
+        if (!tab_interface) {
+          return true;
         }
+        auto* const tab_features = tab_interface->GetTabFeatures();
+        CHECK(tab_features);
+        UpdatePageAction(
+            tab_features->file_system_access_page_action_controller());
         return true;
       });
 #endif

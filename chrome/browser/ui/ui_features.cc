@@ -276,12 +276,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationFileSystemAccess,
-                   &kPageActionsMigration,
-                   "file_system_access",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationCookieControls,
                    &kPageActionsMigration,
                    "cookie_controls",

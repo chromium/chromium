@@ -219,10 +219,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<IntentPickerViewPageActionController>(tab);
     }
 
-    if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
-      file_system_access_page_action_controller_ =
-          std::make_unique<FileSystemAccessPageActionController>(tab);
-    }
+    file_system_access_page_action_controller_ =
+        std::make_unique<FileSystemAccessPageActionController>(tab);
 
     if (IsPageActionMigrated(PageActionIconType::kZoom)) {
       zoom_view_controller_ = std::make_unique<zoom::ZoomViewController>(

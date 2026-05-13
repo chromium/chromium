@@ -19,9 +19,7 @@
 
 FileSystemAccessPageActionController::FileSystemAccessPageActionController(
     tabs::TabInterface& tab_interface)
-    : tab_interface_(tab_interface) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kFileSystemAccess));
-}
+    : tab_interface_(tab_interface) {}
 
 void FileSystemAccessPageActionController::UpdateVisibility() {
   bool has_write_access = false;
