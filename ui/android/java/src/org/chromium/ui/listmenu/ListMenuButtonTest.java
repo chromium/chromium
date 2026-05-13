@@ -123,26 +123,30 @@ public class ListMenuButtonTest {
     }
 
     private ListMenuButton createListMenuButton() {
-        ViewGroup contentView = new FrameLayout(mContext);
-        ListMenuButton button = new ListMenuButton(mContext, null);
-        button.setAttachedToWindowForTesting();
-        button.setDelegate(
-                () ->
-                        new ListMenu() {
-                            @Override
-                            public View getContentView() {
-                                return contentView;
-                            }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup contentView = new FrameLayout(mContext);
+                    ListMenuButton button = new ListMenuButton(mContext, null);
+                    button.setAttachedToWindowForTesting();
+                    button.setDelegate(
+                            () ->
+                                    new ListMenu() {
+                                        @Override
+                                        public View getContentView() {
+                                            return contentView;
+                                        }
 
-                            @Override
-                            public void addContentViewClickRunnable(Runnable runnable) {}
+                                        @Override
+                                        public void addContentViewClickRunnable(
+                                                Runnable runnable) {}
 
-                            @Override
-                            public int getMaxItemWidth() {
-                                return 0;
-                            }
-                        },
-                true);
-        return button;
+                                        @Override
+                                        public int getMaxItemWidth() {
+                                            return 0;
+                                        }
+                                    },
+                            true);
+                    return button;
+                });
     }
 }

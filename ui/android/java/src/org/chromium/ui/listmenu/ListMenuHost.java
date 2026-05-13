@@ -380,7 +380,7 @@ public class ListMenuHost
      * @param shown Whether the popup menu was shown or dismissed.
      */
     private void notifyPopupListeners(boolean shown) {
-        for (var l : mPopupListeners.mObservers) {
+        for (var l : mPopupListeners) {
             if (shown) {
                 l.onPopupMenuShown();
             } else {

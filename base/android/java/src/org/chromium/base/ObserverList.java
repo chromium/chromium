@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class ObserverList<E> implements Iterable<E> {
         void rewind();
     }
 
-    public final List<E> mObservers = new ArrayList<E>();
+    @VisibleForTesting final List<E> mObservers = new ArrayList<E>();
     private final ThreadUtils.ThreadChecker mThreadChecker;
     private int mIterationDepth;
     private int mCount;
