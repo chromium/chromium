@@ -14,7 +14,6 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -38,13 +37,9 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   explicit TestGlicSelectionObserver(content::WebContents* web_contents)
       : GlicSelectionObserver(web_contents) {}
 
-  void UpdateSelectionState(const std::u16string& text,
-                            bool is_pending_selection) override {
+  void UpdateSelectionState(const std::u16string& text) override {
     last_processed_text_ = text;
     update_count_++;
-    if (call_base_update_selection_state_) {
-      GlicSelectionObserver::UpdateSelectionState(text, is_pending_selection);
-    }
   }
 
   void DismissUI(bool keep_nudge) override {
@@ -67,12 +62,6 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     update_count_ = 0;
     dismiss_ui_called_ = false;
     dismiss_ui_kept_nudge_ = false;
-    call_base_update_selection_state_ = false;
-    mock_panel_showing_ = false;
-    send_context_called_ = false;
-    last_sent_context_.reset();
-    show_selection_affordance_called_ = false;
-    last_affordance_text_.reset();
   }
 
   // Expose methods for testing.
@@ -80,57 +69,14 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   using GlicSelectionObserver::RenderFrameCreated;
   using GlicSelectionObserver::RenderFrameDeleted;
 
-  void set_call_base_update_selection_state(bool value) {
-    call_base_update_selection_state_ = value;
-  }
-
-  void set_mock_panel_showing(bool value) { mock_panel_showing_ = value; }
-
-  bool send_context_called() const { return send_context_called_; }
-  const std::optional<std::u16string>& last_sent_context() const {
-    return last_sent_context_;
-  }
-
-  bool show_selection_affordance_called() const {
-    return show_selection_affordance_called_;
-  }
-  const std::optional<std::u16string>& last_affordance_text() const {
-    return last_affordance_text_;
-  }
-
  protected:
   bool IsSelectionPromptEnabled() const override { return true; }
-
-  bool IsPanelShowing(tabs::TabInterface* tab_interface,
-                      BrowserWindowInterface* bwi) override {
-    return mock_panel_showing_;
-  }
-
-  void SendAdditionalContextToPanel(
-      tabs::TabInterface* tab_interface,
-      const std::u16string& selected_text) override {
-    last_sent_context_ = selected_text;
-    send_context_called_ = true;
-  }
-
-  void ShowSelectionAffordance(const std::u16string& selected_text,
-                               BrowserWindowInterface* bwi) override {
-    show_selection_affordance_called_ = true;
-    last_affordance_text_ = selected_text;
-  }
 
  private:
   std::optional<std::u16string> last_processed_text_;
   int update_count_ = 0;
   bool dismiss_ui_called_ = false;
   bool dismiss_ui_kept_nudge_ = false;
-
-  bool call_base_update_selection_state_ = false;
-  bool mock_panel_showing_ = false;
-  bool send_context_called_ = false;
-  std::optional<std::u16string> last_sent_context_;
-  bool show_selection_affordance_called_ = false;
-  std::optional<std::u16string> last_affordance_text_;
 };
 
 }  // namespace
@@ -737,83 +683,6 @@ TEST_F(GlicSelectionObserverTest, WidgetFrequencyCapping) {
   // Reset total dismiss capping.
   prefs->SetInteger(prefs::kGlicSelectionWidgetDismissCount, 0);
   EXPECT_TRUE(ShouldShowSelectionWidget());
-}
-
-TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowingWithWidget) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt, {{"use_widget", "true"}});
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  tabs::MockTabInterface mock_tab;
-  MockBrowserWindowInterface mock_bwi;
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab);
-  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
-
-  observer->set_call_base_update_selection_state(true);
-  observer->set_mock_panel_showing(true);
-
-  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
-  task_environment()->FastForwardBy(base::Milliseconds(300));
-
-  EXPECT_TRUE(observer->show_selection_affordance_called());
-  EXPECT_EQ(u"Selected Text", *observer->last_affordance_text());
-  EXPECT_TRUE(observer->send_context_called());
-  EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
-}
-
-TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowingNoWidget) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt, {{"use_widget", "false"}});
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  tabs::MockTabInterface mock_tab;
-  MockBrowserWindowInterface mock_bwi;
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab);
-  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
-
-  observer->set_call_base_update_selection_state(true);
-  observer->set_mock_panel_showing(true);
-
-  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
-  task_environment()->FastForwardBy(base::Milliseconds(300));
-
-  EXPECT_FALSE(observer->show_selection_affordance_called());
-  EXPECT_TRUE(observer->send_context_called());
-  EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
-}
-
-TEST_F(GlicSelectionObserverTest,
-       UpdateSelectionStatePanelNotShowingGlobalShowHide) {
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  tabs::MockTabInterface mock_tab;
-  MockBrowserWindowInterface mock_bwi;
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab);
-  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
-
-  observer->set_call_base_update_selection_state(true);
-  observer->set_mock_panel_showing(false);
-
-  // Call UpdateSelectionState directly with is_pending_selection = false,
-  // simulating OnGlobalPanelShowHide when the panel is not opened.
-  observer->UpdateSelectionState(u"Selected Text",
-                                 /*is_pending_selection=*/false);
-
-  EXPECT_FALSE(observer->show_selection_affordance_called());
-  EXPECT_FALSE(observer->send_context_called());
 }
 
 }  // namespace glic
