@@ -4,19 +4,21 @@
 
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -24,15 +26,16 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sync_device_info/device_info.h"
-#include "components/sync_device_info/device_info_sync_service.h"
-#include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_local_device_info_provider.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using testing::_;
 
@@ -89,51 +92,6 @@ class MockHistoryService : public history::HistoryService {
                          bool get_unclustered_visits_only,
                          HistoryService::GetAnnotatedVisitsCallback callback,
                          base::CancelableTaskTracker* tracker));
-};
-
-class MockDeviceInfoTracker : public syncer::DeviceInfoTracker {
- public:
-  MOCK_CONST_METHOD0(IsSyncing, bool());
-
-  MOCK_CONST_METHOD1(GetDeviceInfo,
-                     syncer::DeviceInfo*(const std::string& client_id));
-
-  MOCK_CONST_METHOD0(GetAllDeviceInfo,
-                     std::vector<const syncer::DeviceInfo*>());
-
-  MOCK_CONST_METHOD0(GetAllChromeDeviceInfo,
-                     std::vector<const syncer::DeviceInfo*>());
-
-  MOCK_METHOD1(AddObserver, void(Observer* observer));
-
-  MOCK_METHOD1(RemoveObserver, void(Observer* observer));
-
-  MOCK_CONST_METHOD0(
-      CountActiveDevicesByType,
-      absl::flat_hash_map<syncer::DeviceInfo::FormFactor, int>());
-
-  MOCK_METHOD0(ForcePulseForTest, void());
-
-  MOCK_CONST_METHOD1(IsRecentLocalCacheGuid,
-                     bool(const std::string& cache_guid));
-};
-
-class MockDeviceInfoSyncService : public syncer::DeviceInfoSyncService {
- public:
-  MockDeviceInfoSyncService() = default;
-  MockDeviceInfoSyncService(const MockDeviceInfoSyncService&) = delete;
-  MockDeviceInfoSyncService& operator=(const MockDeviceInfoSyncService&) =
-      delete;
-  ~MockDeviceInfoSyncService() override = default;
-
-  MOCK_METHOD0(GetLocalDeviceInfoProvider, syncer::LocalDeviceInfoProvider*());
-
-  MOCK_METHOD0(GetDeviceInfoTracker, syncer::DeviceInfoTracker*());
-
-  MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<syncer::DataTypeControllerDelegate>());
-
-  MOCK_METHOD0(RefreshLocalDeviceInfo, void());
 };
 
 struct HistoryScenario {
@@ -203,31 +161,6 @@ using ResultOption = visited_url_ranking::FetchOptions::ResultOption;
 
 constexpr char kSampleForeignDeviceGUID[] = "foreign_guid";
 constexpr char kSampleForeignDeviceClientName[] = "Windows PC";
-const syncer::DeviceInfo kSampleForeignDeviceInfo{
-    kSampleForeignDeviceGUID,
-    kSampleForeignDeviceClientName,
-    "",
-    "",
-    syncer::DeviceInfo::DeviceType::kWindows,
-    syncer::DeviceInfo::OsType::kWindows,
-    syncer::DeviceInfo::FormFactor::kDesktop,
-    "",
-    "",
-    "",
-    "",
-    base::Time::Now(),
-    base::Seconds(1),
-    false,
-    syncer::DeviceInfo::SendTabReceivingType::kChromeOrUnspecified,
-    std::nullopt,
-    std::nullopt,
-    "",
-    {},
-    std::nullopt,
-    false,
-    {},
-    /*glic_experimental_triggering_state=*/
-    syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable};
 
 class HistoryURLVisitDataFetcherTest : public testing::Test {
  public:
@@ -235,18 +168,13 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
     clock_.SetNow(base::Time::Now());
 
     mock_history_service_ = std::make_unique<MockHistoryService>();
-    mock_device_info_tracker_ = std::make_unique<MockDeviceInfoTracker>();
-    mock_device_info_sync_service_ =
-        std::make_unique<MockDeviceInfoSyncService>();
-    EXPECT_CALL(*mock_device_info_sync_service_, GetDeviceInfoTracker())
-        .WillRepeatedly(testing::Return(mock_device_info_tracker_.get()));
 
     history_url_visit_fetcher_ = std::make_unique<HistoryURLVisitDataFetcher>(
-        mock_history_service_.get(), mock_device_info_sync_service_.get());
+        mock_history_service_.get(), &device_info_sync_service_);
   }
 
-  MockDeviceInfoSyncService* GetMockDeviceInfoSyncService() {
-    return mock_device_info_sync_service_.get();
+  syncer::FakeDeviceInfoSyncService* GetDeviceInfoSyncService() {
+    return &device_info_sync_service_;
   }
 
   FetchOptions GetSampleFetchOptions() {
@@ -282,14 +210,13 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
     return annotated_visits;
   }
 
-  void SetDeviceInfoTrackerExpectations() {
-    std::vector<const syncer::DeviceInfo*> device_infos;
-    device_infos.push_back(&kSampleForeignDeviceInfo);
-    EXPECT_CALL(*mock_device_info_tracker_, GetAllDeviceInfo())
-        .WillOnce(testing::Return(device_infos));
-    EXPECT_CALL(*mock_device_info_tracker_,
-                IsRecentLocalCacheGuid(kSampleForeignDeviceGUID))
-        .WillRepeatedly(testing::Return(false));
+  void PopulateDeviceInfoTracker() {
+    device_info_sync_service_.GetDeviceInfoTracker()->Add(
+        syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kWindows)
+            .WithFormFactor(syncer::DeviceInfo::FormFactor::kDesktop)
+            .WithGuid(kSampleForeignDeviceGUID)
+            .WithClientName(kSampleForeignDeviceClientName)
+            .Build());
   }
 
   void SetHistoryServiceExpectations(
@@ -332,13 +259,12 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_env_;
   std::unique_ptr<MockHistoryService> mock_history_service_;
-  std::unique_ptr<MockDeviceInfoTracker> mock_device_info_tracker_;
-  std::unique_ptr<MockDeviceInfoSyncService> mock_device_info_sync_service_;
+  syncer::FakeDeviceInfoSyncService device_info_sync_service_;
   std::unique_ptr<HistoryURLVisitDataFetcher> history_url_visit_fetcher_;
 };
 
 TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
-  SetDeviceInfoTrackerExpectations();
+  PopulateDeviceInfoTracker();
   SetHistoryServiceExpectations(GetSampleAnnotatedVisits());
 
   FetchOptions options = FetchOptions(
@@ -545,15 +471,10 @@ TEST_P(HistoryURLVisitDataFetcherSourcesTest, FetchURLVisitData_FakeRemote) {
       /*app_id=*/std::string("CCT app id 0"), base::Time::Now(),
       /*visit_duration=*/base::Seconds(10)));
   SetHistoryServiceExpectations(annotated_visits);
-  SetDeviceInfoTrackerExpectations();
+  PopulateDeviceInfoTracker();
 
-  auto fake_local_device_info_provider =
-      std::make_unique<syncer::FakeLocalDeviceInfoProvider>();
-  fake_local_device_info_provider->UpdateClientName(
+  GetDeviceInfoSyncService()->GetLocalDeviceInfoProvider()->UpdateClientName(
       kSampleForeignDeviceClientName);
-
-  EXPECT_CALL(*GetMockDeviceInfoSyncService(), GetLocalDeviceInfoProvider())
-      .WillOnce(testing::Return(fake_local_device_info_provider.get()));
 
   ResultOption result_option{.age_limit = base::Days(1)};
   std::map<URLType, ResultOption> result_sources = {};
