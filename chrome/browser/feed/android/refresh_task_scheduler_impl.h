@@ -25,21 +25,16 @@ class RefreshTaskSchedulerImpl : public RefreshTaskScheduler {
   RefreshTaskSchedulerImpl(const RefreshTaskSchedulerImpl&) = delete;
   RefreshTaskSchedulerImpl& operator=(const RefreshTaskSchedulerImpl&) = delete;
 
-  void Run(RefreshTaskId task_id,
-           FeedService* service,
-           base::OnceClosure task_complete);
+  void Run(FeedService* service, base::OnceClosure task_complete);
 
   // RefreshTaskScheduler.
-  void EnsureScheduled(RefreshTaskId task_id, base::TimeDelta period) override;
-  void Cancel(RefreshTaskId task_id) override;
-  void RefreshTaskComplete(RefreshTaskId task_id) override;
+  void EnsureScheduled(base::TimeDelta period) override;
+  void Cancel() override;
+  void RefreshTaskComplete() override;
 
  private:
-  base::OnceClosure& TaskCallback(RefreshTaskId task_id);
-
+  base::OnceClosure task_complete_callback_;
   raw_ptr<background_task::BackgroundTaskScheduler> scheduler_;
-  base::OnceClosure for_you_task_complete_callback_;
-  base::OnceClosure web_feeds_task_complete_callback_;
 };
 
 }  // namespace feed

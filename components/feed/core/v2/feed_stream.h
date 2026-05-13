@@ -116,7 +116,7 @@ class FeedStream : public FeedApi,
       const GURL& url,
       const std::vector<int64_t>& entity_mids) override;
   bool IsArticlesListVisible() override;
-  void ExecuteRefreshTask(RefreshTaskId task_id) override;
+  void ExecuteRefreshTask() override;
   ImageFetchId FetchImage(
       const GURL& url,
       base::OnceCallback<void(NetworkResponse)> callback) override;
@@ -374,7 +374,7 @@ class FeedStream : public FeedApi,
   void SetRequestSchedule(const StreamType& stream_type,
                           RequestSchedule schedule);
 
-  void SetRequestSchedule(RefreshTaskId task_id, RequestSchedule schedule);
+  void SetRequestSchedule(RequestSchedule schedule);
 
   // A single function task to delete stored feed data and force a refresh.
   // To only be called from within a |Task|.

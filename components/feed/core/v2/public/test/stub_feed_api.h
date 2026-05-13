@@ -40,7 +40,7 @@ class StubFeedApi : public FeedApi {
       const std::vector<int64_t>& entity_mids) override {}
   bool IsArticlesListVisible() override;
   std::string GetSessionId() const override;
-  void ExecuteRefreshTask(RefreshTaskId task_id) override {}
+  void ExecuteRefreshTask() override {}
   void LoadMore(SurfaceId surface_id,
                 base::OnceCallback<void(bool)> callback) override {}
   void ManualRefresh(SurfaceId surface_id,

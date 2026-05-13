@@ -6,25 +6,24 @@
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_REFRESH_TASK_SCHEDULER_H_
 
 #include "base/time/time.h"
-#include "components/feed/core/v2/public/types.h"
 
 namespace feed {
 
 // Schedules a background task for refreshing the Feed.
 // When the scheduled task executes, it calls
-// FeedStream::ExecuteRefreshTask(task_id).
+// FeedStream::ExecuteRefreshTask().
 class RefreshTaskScheduler {
  public:
   RefreshTaskScheduler() = default;
   virtual ~RefreshTaskScheduler() = default;
 
   // Schedules the task to run after |delay|. Overrides any previous schedule.
-  virtual void EnsureScheduled(RefreshTaskId id, base::TimeDelta delay) = 0;
+  virtual void EnsureScheduled(base::TimeDelta delay) = 0;
   // Cancel the task if it was previously scheduled.
-  virtual void Cancel(RefreshTaskId id) = 0;
+  virtual void Cancel() = 0;
   // After FeedStream::ExecuteRefreshTask is called, the callee must call this
   // function to indicate the work is complete.
-  virtual void RefreshTaskComplete(RefreshTaskId id) = 0;
+  virtual void RefreshTaskComplete() = 0;
 };
 
 }  // namespace feed

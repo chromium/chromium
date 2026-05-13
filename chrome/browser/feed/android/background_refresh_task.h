@@ -12,7 +12,7 @@ namespace feed {
 
 class BackgroundRefreshTask : public background_task::BackgroundTask {
  public:
-  explicit BackgroundRefreshTask(RefreshTaskId task_id);
+  BackgroundRefreshTask();
   ~BackgroundRefreshTask() override;
 
   BackgroundRefreshTask(const BackgroundRefreshTask& other) = delete;
@@ -34,7 +34,6 @@ class BackgroundRefreshTask : public background_task::BackgroundTask {
   void Run(background_task::TaskFinishedCallback callback,
            content::BrowserContext* browser_context);
 
-  RefreshTaskId task_id_;
   // Callback saved from |OnStartTaskInReducedMode()|.
   background_task::TaskFinishedCallback callback_;
 };

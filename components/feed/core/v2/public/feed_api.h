@@ -69,7 +69,7 @@ class FeedApi {
   virtual std::string GetSessionId() const = 0;
 
   // Invoked by RefreshTaskScheduler's scheduled task.
-  virtual void ExecuteRefreshTask(RefreshTaskId task_id) = 0;
+  virtual void ExecuteRefreshTask() = 0;
 
   // Request to load additional content at the end of the stream.
   // Calls |callback| when complete. If no content could be added, the parameter

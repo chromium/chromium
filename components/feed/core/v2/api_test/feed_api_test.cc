@@ -837,21 +837,20 @@ bool TestWireResponseTranslator::InjectedResponseConsumed() const {
 
 FakeRefreshTaskScheduler::FakeRefreshTaskScheduler() = default;
 FakeRefreshTaskScheduler::~FakeRefreshTaskScheduler() = default;
-void FakeRefreshTaskScheduler::EnsureScheduled(RefreshTaskId id,
-                                               base::TimeDelta run_time) {
-  scheduled_run_times[id] = run_time;
+void FakeRefreshTaskScheduler::EnsureScheduled(base::TimeDelta run_time) {
+  scheduled_run_time = run_time;
 }
-void FakeRefreshTaskScheduler::Cancel(RefreshTaskId id) {
-  canceled_tasks.insert(id);
+void FakeRefreshTaskScheduler::Cancel() {
+  canceled = true;
 }
-void FakeRefreshTaskScheduler::RefreshTaskComplete(RefreshTaskId id) {
-  completed_tasks.insert(id);
+void FakeRefreshTaskScheduler::RefreshTaskComplete() {
+  completed = true;
 }
 
 void FakeRefreshTaskScheduler::Clear() {
-  scheduled_run_times.clear();
-  canceled_tasks.clear();
-  completed_tasks.clear();
+  scheduled_run_time.reset();
+  canceled = false;
+  completed = false;
 }
 
 TestMetricsReporter::TestMetricsReporter(PrefService* prefs)
@@ -1095,12 +1094,6 @@ void FeedApiTest::UploadActions(std::vector<feedwire::FeedAction> actions) {
     stream_->UploadAction(action, CreateLoggingParameters(),
                           (--actions_remaining) == 0ul, base::DoNothing());
   }
-}
-
-RefreshTaskId FeedStreamTestForAllStreamTypes::GetRefreshTaskId() const {
-  RefreshTaskId id;
-  CHECK(GetStreamType().GetRefreshTaskId(id));
-  return id;
 }
 
 void FeedStreamTestForAllStreamTypes::SetUp() {

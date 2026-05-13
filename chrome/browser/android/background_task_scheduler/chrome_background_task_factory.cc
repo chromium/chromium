@@ -19,15 +19,12 @@ void ChromeBackgroundTaskFactory::SetAsDefault() {
   Java_ChromeBackgroundTaskFactory_setAsDefault(env);
 }
 
-// TODO(crbug.com/407797637): Remove RefreshTaskId enum since kRefreshForYouFeed
-// is the only remaining value.
 std::unique_ptr<background_task::BackgroundTask>
 ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId(int task_id) {
   // Add your tasks here with mappings to the given task_id.
   switch (task_id) {
     case static_cast<int>(background_task::TaskIds::FEEDV2_REFRESH_JOB_ID):
-      return std::make_unique<feed::BackgroundRefreshTask>(
-          feed::RefreshTaskId::kRefreshForYouFeed);
+      return std::make_unique<feed::BackgroundRefreshTask>();
     case static_cast<int>(background_task::TaskIds::UMA_UPLOAD_JOB_ID):
     case static_cast<int>(background_task::TaskIds::UKM_UPLOAD_JOB_ID):
     case static_cast<int>(background_task::TaskIds::DWA_UPLOAD_JOB_ID):

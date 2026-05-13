@@ -54,7 +54,7 @@ TEST_F(FeedApiNoticeCardTest, LoadStreamSendsNoticeCardAcknowledgement) {
 
   response_translator_.InjectResponse(model_generator_.MakeFirstPage());
   stream_->UnloadModel(surface.GetStreamType());
-  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
+  stream_->ExecuteRefreshTask();
   WaitForIdleTaskQueue();
 
   EXPECT_TRUE(network_.query_request_sent->feed_request()
@@ -73,7 +73,7 @@ TEST_F(FeedApiNoticeCardTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
     response_translator_.InjectResponse(std::move(model_state));
 
     refresh_scheduler_.Clear();
-    stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
+    stream_->ExecuteRefreshTask();
     WaitForIdleTaskQueue();
   }
 
@@ -86,7 +86,7 @@ TEST_F(FeedApiNoticeCardTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
     response_translator_.InjectResponse(std::move(model_state));
 
     refresh_scheduler_.Clear();
-    stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
+    stream_->ExecuteRefreshTask();
     WaitForIdleTaskQueue();
   }
 

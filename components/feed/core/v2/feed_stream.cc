@@ -833,20 +833,16 @@ std::string FeedStream::DumpStateForDebugging() {
        << stream.model->privacy_notice_fulfilled();
   }
 
-  auto print_refresh_schedule = [&](RefreshTaskId task_id) {
-    RequestSchedule schedule =
-        prefs::GetRequestSchedule(task_id, *profile_prefs_);
-    if (schedule.refresh_offsets.empty()) {
-      ss << "No request schedule\n";
-    } else {
-      ss << "Request schedule reference " << schedule.anchor_time << '\n';
-      for (base::TimeDelta entry : schedule.refresh_offsets) {
-        ss << " fetch at " << entry << '\n';
-      }
-    }
-  };
   ss << "For You: ";
-  print_refresh_schedule(RefreshTaskId::kRefreshForYouFeed);
+  RequestSchedule schedule = prefs::GetRequestSchedule(*profile_prefs_);
+  if (schedule.refresh_offsets.empty()) {
+    ss << "No request schedule\n";
+  } else {
+    ss << "Request schedule reference " << schedule.anchor_time << '\n';
+    for (base::TimeDelta entry : schedule.refresh_offsets) {
+      ss << " fetch at " << entry << '\n';
+    }
+  }
   return ss.str();
 }
 
@@ -990,11 +986,12 @@ LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
 }
 
 bool FeedStream::MissedLastRefresh(const StreamType& stream_type) {
-  RefreshTaskId task_id;
-  if (!stream_type.GetRefreshTaskId(task_id))
+  // TODO(crbug.com/407797637): Replace stream_type.IsForYou() to
+  // stream_type.isValid() once kFollowing is removed.
+  if (!stream_type.IsForYou()) {
     return false;
-  RequestSchedule schedule =
-      feed::prefs::GetRequestSchedule(task_id, *profile_prefs_);
+  }
+  RequestSchedule schedule = feed::prefs::GetRequestSchedule(*profile_prefs_);
   if (schedule.refresh_offsets.empty())
     return false;
   base::Time scheduled_time =
@@ -1192,14 +1189,14 @@ void FeedStream::OnSignedOut() {
   ClearAll();
 }
 
-void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
-  StreamType stream_type = StreamType::ForTaskId(task_id);
+void FeedStream::ExecuteRefreshTask() {
+  StreamType stream_type(StreamKind::kForYou);
   LoadStreamStatus do_not_attempt_reason =
       ShouldAttemptLoad(stream_type, LoadType::kBackgroundRefresh)
           .load_stream_status;
 
   RequestSchedule request_schedule =
-      feed::prefs::GetRequestSchedule(task_id, *profile_prefs_);
+      feed::prefs::GetRequestSchedule(*profile_prefs_);
   LoadType load_type = RequestScheduleTypeToLoadType(request_schedule.type);
 
   // If `do_not_attempt_reason` indicates the stream shouldn't be loaded, it's
@@ -1208,7 +1205,7 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
       do_not_attempt_reason == LoadStreamStatus::kModelAlreadyLoaded) {
     // Schedule the next refresh attempt. If a new refresh schedule is returned
     // through this refresh, it will be overwritten.
-    SetRequestSchedule(task_id, std::move(request_schedule));
+    SetRequestSchedule(std::move(request_schedule));
   }
 
   if (do_not_attempt_reason != LoadStreamStatus::kNoStatus) {
@@ -1239,9 +1236,8 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
   if (result.stream_type.IsForYou())
     task_queue_.AddTask(FROM_HERE, std::make_unique<PrefetchImagesTask>(this));
 
-  RefreshTaskId task_id;
-  if (result.stream_type.GetRefreshTaskId(task_id)) {
-    refresh_task_scheduler_->RefreshTaskComplete(task_id);
+  if (result.stream_type.IsForYou()) {
+    refresh_task_scheduler_->RefreshTaskComplete();
   }
 }
 
@@ -1356,24 +1352,24 @@ void FeedStream::LoadModel(const StreamType& stream_type,
 
 void FeedStream::SetRequestSchedule(const StreamType& stream_type,
                                     RequestSchedule schedule) {
-  RefreshTaskId task_id;
-  if (!stream_type.GetRefreshTaskId(task_id)) {
+  // TODO(crbug.com/407797637): Replace stream_type.IsForYou() to
+  // stream_type.isValid() once kFollowing is removed.
+  if (!stream_type.IsForYou()) {
     DLOG(ERROR) << "Ignoring request schedule for this stream: " << stream_type;
     return;
   }
-  SetRequestSchedule(task_id, std::move(schedule));
+  SetRequestSchedule(std::move(schedule));
 }
 
-void FeedStream::SetRequestSchedule(RefreshTaskId task_id,
-                                    RequestSchedule schedule) {
+void FeedStream::SetRequestSchedule(RequestSchedule schedule) {
   const base::Time now = base::Time::Now();
   base::Time run_time = NextScheduledRequestTime(now, &schedule);
   if (!run_time.is_null()) {
-    refresh_task_scheduler_->EnsureScheduled(task_id, run_time - now);
+    refresh_task_scheduler_->EnsureScheduled(run_time - now);
   } else {
-    refresh_task_scheduler_->Cancel(task_id);
+    refresh_task_scheduler_->Cancel();
   }
-  feed::prefs::SetRequestSchedule(task_id, schedule, *profile_prefs_);
+  feed::prefs::SetRequestSchedule(schedule, *profile_prefs_);
 }
 
 void FeedStream::UnloadModel(const StreamType& stream_type) {

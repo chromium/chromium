@@ -36,10 +36,6 @@ struct AccountInfo {
 };
 std::ostream& operator<<(std::ostream& os, const AccountInfo& o);
 
-enum class RefreshTaskId {
-  kRefreshForYouFeed,
-};
-
 enum class AccountTokenFetchStatus {
   // Token fetch was not attempted, or status is unknown.
   kUnspecified = 0,

@@ -55,9 +55,9 @@ class NoOpRefreshTaskScheduler : public feed::RefreshTaskScheduler {
   NoOpRefreshTaskScheduler() = default;
   ~NoOpRefreshTaskScheduler() override = default;
 
-  void EnsureScheduled(RefreshTaskId id, base::TimeDelta delay) override {}
-  void Cancel(RefreshTaskId id) override {}
-  void RefreshTaskComplete(RefreshTaskId id) override {}
+  void EnsureScheduled(base::TimeDelta delay) override {}
+  void Cancel() override {}
+  void RefreshTaskComplete() override {}
 };
 #endif
 

@@ -16,8 +16,7 @@
 
 namespace feed {
 
-BackgroundRefreshTask::BackgroundRefreshTask(RefreshTaskId task_id)
-    : task_id_(task_id) {}
+BackgroundRefreshTask::BackgroundRefreshTask() = default;
 BackgroundRefreshTask::~BackgroundRefreshTask() = default;
 
 void BackgroundRefreshTask::OnStartTaskInReducedMode(
@@ -64,8 +63,7 @@ void BackgroundRefreshTask::Run(background_task::TaskFinishedCallback callback,
       static_cast<RefreshTaskSchedulerImpl*>(
           service->GetRefreshTaskScheduler());
 
-  task_scheduler->Run(task_id_, service,
-                      base::BindOnce(std::move(callback), false));
+  task_scheduler->Run(service, base::BindOnce(std::move(callback), false));
 }
 
 }  // namespace feed

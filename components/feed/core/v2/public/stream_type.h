@@ -38,12 +38,6 @@ class StreamType {
   // Returns a human-readable value, for debugging/DCHECK prints.
   std::string ToString() const;
 
-  // Mapping functions between RefreshTaskId and StreamType.
-  // Returns false if there should be no background refreshes associated with
-  // this stream.
-  bool GetRefreshTaskId(RefreshTaskId& out_id) const;
-  static StreamType ForTaskId(RefreshTaskId task_id);
-
  private:
   StreamKind kind_ = StreamKind::kUnknown;
   std::string web_feed_id_;

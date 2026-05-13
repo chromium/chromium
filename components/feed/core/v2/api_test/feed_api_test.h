@@ -424,15 +424,15 @@ class FakeRefreshTaskScheduler : public RefreshTaskScheduler {
   FakeRefreshTaskScheduler();
   ~FakeRefreshTaskScheduler() override;
   // RefreshTaskScheduler implementation.
-  void EnsureScheduled(RefreshTaskId id, base::TimeDelta run_time) override;
-  void Cancel(RefreshTaskId id) override;
-  void RefreshTaskComplete(RefreshTaskId id) override;
+  void EnsureScheduled(base::TimeDelta run_time) override;
+  void Cancel() override;
+  void RefreshTaskComplete() override;
 
   void Clear();
 
-  std::map<RefreshTaskId, base::TimeDelta> scheduled_run_times;
-  std::set<RefreshTaskId> canceled_tasks;
-  std::set<RefreshTaskId> completed_tasks;
+  std::optional<base::TimeDelta> scheduled_run_time;
+  bool canceled = false;
+  bool completed = false;
 
  private:
   std::stringstream activity_log_;
@@ -584,7 +584,6 @@ class FeedStreamTestForAllStreamTypes
                           stream) {}
   };
   void SetUp() override;
-  RefreshTaskId GetRefreshTaskId() const;
 };
 
 class FeedNetworkEndpointTest
