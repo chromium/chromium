@@ -335,6 +335,9 @@ export class AppElement extends AppElementBase {
        */
       enableThreadsRail_: {type: Boolean},
 
+      // Whether to use ntp-composebox instead of cr-composebox.
+      useNtpComposeboxFork_: {type: Boolean},
+
       // =======================================================================
       // Private properties
       // =======================================================================
@@ -448,6 +451,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor enableThreadsRail_: boolean =
       loadTimeData.getBoolean('enableThreadsRail');
+  protected accessor useNtpComposeboxFork_: boolean =
+      loadTimeData.getBoolean('useNtpComposeboxFork');
   protected accessor energyEffectEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectEnabled');
   protected accessor energyEffectAnimationEnabled_: boolean =
