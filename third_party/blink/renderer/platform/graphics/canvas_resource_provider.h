@@ -134,9 +134,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return nullptr;
   }
 
-  // Used to determine if the provider is going to be initialized or not.
-  enum class ShouldInitialize { kNo, kCallClear };
-
   // The ImageOrientationEnum conveys the desired orientation of the image, and
   // should be derived from the source of the bitmap data.
   virtual scoped_refptr<StaticBitmapImage> SnapshotForCanvas2D(
