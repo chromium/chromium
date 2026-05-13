@@ -149,6 +149,9 @@ bool DiscardEligibilityPolicy::WillDiscardBePerceptible(
 
 bool DiscardEligibilityPolicy::IsDiscardAllowed(
     const PageNode* page_node) const {
+  if (page_node->GetType() != PageType::kTab) {
+    return false;
+  }
   const GURL& main_frame_url = page_node->GetMainFrameUrl();
   if (IsPageOptedOutOfDiscarding(page_node->GetBrowserContextID(),
                                  main_frame_url)) {
