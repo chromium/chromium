@@ -109,7 +109,6 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
                                 resources,
                                 R.string.cancel)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .with(ModalDialogProperties.FOCUS_DIALOG, true)
                         .build();
 
         // shouldPostDialog determines if ModalDialogManager#showDialog should be invoked directly

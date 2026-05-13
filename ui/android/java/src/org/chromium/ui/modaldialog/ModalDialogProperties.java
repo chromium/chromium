@@ -325,9 +325,6 @@ public class ModalDialogProperties {
     /** Whether the dialog should follow {@link DialogStyles}. */
     public static final ReadableIntPropertyKey DIALOG_STYLES = new ReadableIntPropertyKey();
 
-    /** Whether the dialog should be focused for accessibility. */
-    public static final WritableBooleanPropertyKey FOCUS_DIALOG = new WritableBooleanPropertyKey();
-
     /**
      * The handler for back presses done on a {@ModalDialogType.APP}. By default, a back press
      * dismisses the dialog.
@@ -413,7 +410,6 @@ public class ModalDialogProperties {
                 TITLE_BACK_BUTTON_VISIBLE,
                 BUTTON_STYLES,
                 DIALOG_STYLES,
-                FOCUS_DIALOG,
                 APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
                 BUTTON_TAP_PROTECTION_PERIOD_MS,
                 TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE,

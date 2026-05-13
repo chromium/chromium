@@ -56,12 +56,6 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     /** Whether the action bar on selected text is temporarily cleared for showing dialogs. */
     private boolean mDidClearTextControls;
 
-    /**
-     * Whether the dialog should gain focus for accessibility when in front, determined by the
-     * dialog {@link ModalDialogProperties} FOCUS_DIALOG property.
-     */
-    private boolean mFocusDialog;
-
     private class ViewBinder extends ModalDialogViewBinder {
         @Override
         public void bind(PropertyModel model, ModalDialogView view, PropertyKey propertyKey) {
@@ -74,10 +68,6 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                             });
                 } else {
                     mDialogContainer.setOnClickListener(null);
-                }
-            } else if (ModalDialogProperties.FOCUS_DIALOG == propertyKey) {
-                if (model.get(ModalDialogProperties.FOCUS_DIALOG)) {
-                    mFocusDialog = true;
                 }
             } else if (ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE == propertyKey) {
                 if (model.get(ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE)) {
@@ -198,9 +188,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         if (toFront) {
             mDialogView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
             mDialogView.requestFocus();
-            if (mFocusDialog) {
-                mDialogView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-            }
+            mDialogView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
         } else {
             mDialogView.clearFocus();
             mDialogView.setImportantForAccessibility(

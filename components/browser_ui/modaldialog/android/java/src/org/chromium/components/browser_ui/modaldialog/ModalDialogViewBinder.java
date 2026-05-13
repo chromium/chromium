@@ -166,8 +166,6 @@ public class ModalDialogViewBinder
         } else if (ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS == propertyKey) {
             view.setButtonTapProtectionDurationMs(
                     model.get(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
-        } else if (ModalDialogProperties.FOCUS_DIALOG == propertyKey) {
-            // Intentionally left empty since this is a property for the dialog container.
         } else if (ModalDialogProperties.HORIZONTAL_MARGIN == propertyKey) {
             view.setHorizontalMargin(model.get(ModalDialogProperties.HORIZONTAL_MARGIN));
         } else if (ModalDialogProperties.VERTICAL_MARGIN == propertyKey) {

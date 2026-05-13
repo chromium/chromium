@@ -80,9 +80,6 @@ public class AdsBlockedDialogTest {
         Assert.assertTrue(
                 "Dialog should be dismissed on touch outside.",
                 mModalDialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
-        Assert.assertTrue(
-                "Dialog should gain focus for accessibility.",
-                mModalDialogModel.get(ModalDialogProperties.FOCUS_DIALOG));
 
         Mockito.verify(mModalDialogManagerMock)
                 .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.TAB);
