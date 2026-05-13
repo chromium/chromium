@@ -13,6 +13,7 @@
 #include "base/features.h"
 #include "base/no_destructor.h"
 #include "build/android_buildflags.h"
+#include "cc/base/features.h"
 #include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/finds/core/finds_features.h"
@@ -177,6 +178,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAbortNavigationsFromTabClosures,
     &features::kAndroidAnimatedProgressBarInBrowser,
     &features::kBackForwardCache,
+    &features::kBrowserControlsScrollSnapAnimation,
     &features::kDisplayEdgeToEdgeFullscreen,
     &features::kElasticOverscroll,
     &features::kEnableExclusiveAccessManager,

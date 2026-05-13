@@ -483,7 +483,9 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
     public void testExitPersistentFullscreenAllowsManualFullscreenLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -519,6 +521,8 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    // TODO(crbug.com/489060623): Update the test for snap animation.
+    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION)
     public void testExitPersistentFullscreenAllowsManualFullscreen() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
@@ -552,7 +556,9 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
     public void testManualHidingShowingBrowserControlsLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -580,8 +586,12 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
+    @DisableFeatures({
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
+    })
     public void testManualHidingShowingBrowserControls() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
@@ -608,7 +618,9 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
     // TODO(crbug.com/486204777): Add test accounting for the E2E bottom chin / browser controls.
     public void testHidingBrowserControlsPreservesScrollOffsetLegacy() throws TimeoutException {
@@ -660,6 +672,8 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     @DisabledTest(message = "Flaky: crbug.com/475145490")
+    // TODO(crbug.com/489060623): Update the test for snap animation.
+    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION)
     // TODO(crbug.com/486204777): Add test accounting for the E2E bottom chin / browser controls.
     public void testHidingBrowserControlsPreservesScrollOffset() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -708,7 +722,9 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
     @DisabledTest(message = "https://crbug.com/373808956")
     public void testManualFullscreenDisabledForChromePagesLegacy() {
@@ -743,6 +759,8 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     @DisabledTest(message = "https://crbug.com/373808956")
+    // TODO(crbug.com/489060623): Update the test for snap animation.
+    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION)
     public void testManualFullscreenDisabledForChromePages() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         // The credits page was chosen as it is a chrome:// page that is long and would support
@@ -774,7 +792,9 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
     public void testControlsShownOnUnresponsiveRendererLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -808,7 +828,12 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
+    @DisableFeatures({
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
+    })
     public void testControlsShownOnUnresponsiveRenderer() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
@@ -840,7 +865,9 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
     public void testControlsShownOnUnresponsiveRendererUponExitingTabSwitcherModeLegacy()
             throws Exception {
@@ -875,7 +902,12 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
+    @DisableFeatures({
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
+    })
     public void testControlsShownOnUnresponsiveRendererUponExitingTabSwitcherMode()
             throws Exception {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -960,7 +992,9 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
     public void testBrowserControlsShownWhenInputIsFocusedLegacy() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -1001,7 +1035,12 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
+    @DisableFeatures({
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
+    })
     @DisabledTest(message = "https://crbug.com/373808956")
     public void testBrowserControlsShownWhenInputIsFocused() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -1041,7 +1080,9 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
-        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+        // TODO(crbug.com/489060623): Update the test for snap animation.
+        ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
     public void testPersistentFullscreenWithOptionsLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -1105,6 +1146,8 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    // TODO(crbug.com/489060623): Update the test for snap animation.
+    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION)
     public void testPersistentFullscreenWithOptions() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page =

@@ -311,6 +311,8 @@ public abstract class ChromeFeatureList {
     public static final String BROWSER_CONTROLS_PERSISTS_ON_CVH = "BrowserControlsPersistsOnCvh";
     public static final String BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT =
             "BrowserControlsRenderDrivenShowConstraint";
+    public static final String BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION =
+            "BrowserControlsScrollSnapAnimation";
     public static final String BROWSER_WINDOW_INTERFACE_MOBILE = "BrowserWindowInterfaceMobile";
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
@@ -1446,6 +1448,8 @@ public abstract class ChromeFeatureList {
     // Default to false. The logic behind the flag is not relevant when native is not initialized.
     public static final MutableFlagWithSafeDefault sBrowserControlsRenderDrivenShowConstraint =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT, false);
+    public static final MutableFlagWithSafeDefault sBrowserControlsScrollSnapAnimation =
+            newMutableFlagWithSafeDefault(BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION, false);
     public static final MutableFlagWithSafeDefault sBrowserWindowInterfaceMobile =
             newMutableFlagWithSafeDefault(BROWSER_WINDOW_INTERFACE_MOBILE, true);
     public static final MutableFlagWithSafeDefault sCompositorViewHolderObscuring =
