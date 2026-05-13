@@ -746,6 +746,7 @@ blink_core_tests_html = [
   "html_element_test.cc",
   "html_embed_element_test.cc",
   "html_frame_element_test.cc",
+  "html_frame_owner_test.cc",
   "html_geolocation_element_test.cc",
   "html_iframe_element_test.cc",
   "html_image_element_test.cc",
