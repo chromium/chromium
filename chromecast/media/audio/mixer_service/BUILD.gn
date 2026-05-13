@@ -93,20 +93,6 @@ cast_source_set("control_connection") {
   ]
 }
 
-cast_source_set("mixer_control") {
-  sources = [
-    "mixer_control.cc",
-    "mixer_control.h",
-  ]
-
-  deps = [
-    ":common",
-    ":control_connection",
-    "//base",
-    "//chromecast/media/audio:audio_io_thread",
-  ]
-}
-
 cast_source_set("loopback_connection") {
   sources = [
     "loopback_connection.cc",
