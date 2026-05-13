@@ -70,7 +70,6 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -146,6 +145,7 @@
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -1374,8 +1374,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       // "focusable" by Glic (e.g. chrome:// pages).
       tab = focus.is_focus() ? focus.focus() : focus.unfocused_tab();
     }
-    glic_service_->CaptureRegion(tab, std::move(observer),
-                                 std::move(tab_context_options));
+    SelectionOverlayController::CaptureRegion(tab, sharing_manager(),
+                                              std::move(observer),
+                                              std::move(tab_context_options));
 #else
     NOTIMPLEMENTED();
 #endif
@@ -1391,7 +1392,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (tab->GetProfile() != profile_) {
       return;
     }
-    glic_service_->DeleteCapturedRegion(tab, id);
+    if (auto* web_contents = tab->GetContents()) {
+      if (auto* selection_overlay_controller =
+              SelectionOverlayController::FromTabWebContents(web_contents)) {
+        selection_overlay_controller->DeleteRegion(id);
+      }
+    }
 #else
     NOTIMPLEMENTED();
 #endif

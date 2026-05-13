@@ -49,7 +49,6 @@
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
-#include "chrome/browser/glic/host/glic_region_capture_controller.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
@@ -267,9 +266,6 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
             features::kGlicWarming,
             kGlicZeroStateSuggestions,
             features::kGlicDaisyChainNewTabs,
-            // Tested in
-            // chrome/browser/glic/selection/selection_overlay_interactive_uitests.cc
-            features::kGlicRegionSelectionNew,
         });
     SetUseElementIdentifiers(false);
   }
@@ -327,11 +323,6 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
 
   std::unique_ptr<GlicHistogramTester> histogram_tester;
   std::unique_ptr<base::UserActionTester> user_action_tester;
-
- protected:
-  GlicRegionCaptureController& region_capture_controller() {
-    return GetService()->region_capture_controller();
-  }
 
   base::test::ScopedFeatureList features_;
   logging::ScopedVmoduleSwitches vmodule_switches_;
@@ -3273,129 +3264,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   // This should continue the test in the first instance, because tab 2 is now
   // bound to that instance.
   ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegion) {
-  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  // Wait for the sharing manager to have a focused tab before running the JS
-  // test to avoid a race condition where CaptureRegion is called before the
-  // focused tab is known.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetService()
-        ->active_instance_sharing_manager()
-        .GetFocusedTabData()
-        .focus();
-  }));
-  base::RunLoop run_loop;
-  region_capture_controller().SetOnCaptureRegionForTesting(
-      run_loop.QuitClosure());
-  ExecuteJsTest();
-  run_loop.Run();
-  region_capture_controller().OnRegionSelected({10, 20, 30, 40});
-  ContinueJsTest();
-  // Allow the unsubscribe message to be processed before tearing down.
-  // TODO(crbug.com/453084265): - Investigate why this is needed.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !region_capture_controller().IsCaptureRegionInProgressForTesting();
-  }));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionMultiple) {
-  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetService()
-        ->active_instance_sharing_manager()
-        .GetFocusedTabData()
-        .focus();
-  }));
-  base::RunLoop run_loop;
-  region_capture_controller().SetOnCaptureRegionForTesting(
-      run_loop.QuitClosure());
-  ExecuteJsTest();
-  run_loop.Run();
-
-  // Send the first region.
-  region_capture_controller().OnRegionSelected({10, 20, 30, 40});
-  // Wait for JS to process the first region and be ready for the second.
-  ContinueJsTest();
-
-  // Send the second region.
-  region_capture_controller().OnRegionSelected({50, 60, 70, 80});
-  // Let JS finish.
-  ContinueJsTest();
-
-  // TODO(crbug.com/453084265): Investigate why this is needed.
-  // Allow the unsubscribe message to be processed before tearing down.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !region_capture_controller().IsCaptureRegionInProgressForTesting();
-  }));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionCancelBrowser) {
-  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetService()
-        ->active_instance_sharing_manager()
-        .GetFocusedTabData()
-        .focus();
-  }));
-  base::RunLoop run_loop;
-  region_capture_controller().SetOnCaptureRegionForTesting(
-      run_loop.QuitClosure());
-  ExecuteJsTest();
-  run_loop.Run();
-  region_capture_controller().CancelCaptureRegion();
-  ContinueJsTest();
-  // Allow the unsubscribe message to be processed before tearing down.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !region_capture_controller().IsCaptureRegionInProgressForTesting();
-  }));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionNoFocus) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  TrackGlicInstanceWithId(GetGlicInstance()->id());
-  ExecuteJsTest();
-
-  // The JS test has now detached the Glic window if in multi-instance mode and
-  // is waiting. Now we can close the browser to create a "no tab" state.
-  // Open a new incognito window so that Chrome doesn't exit.
-  CloseMainBrowserWithIncognitoKeepAlive();
-
-  ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionCalledTwice) {
-  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetService()
-        ->active_instance_sharing_manager()
-        .GetFocusedTabData()
-        .focus();
-  }));
-
-  base::RunLoop run_loop;
-  int capture_region_calls = 0;
-  region_capture_controller().SetOnCaptureRegionForTesting(
-      base::BindLambdaForTesting([&]() {
-        capture_region_calls++;
-        if (capture_region_calls == 2) {
-          run_loop.Quit();
-        }
-      }));
-
-  ExecuteJsTest();
-  run_loop.Run();
-  region_capture_controller().OnRegionSelected({10, 20, 30, 40});
-  ContinueJsTest();
-  // Allow the unsubscribe message to be processed before tearing down.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !region_capture_controller().IsCaptureRegionInProgressForTesting();
-  }));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testRegisterConversationWithEmptyId) {

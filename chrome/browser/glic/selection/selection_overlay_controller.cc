@@ -5,8 +5,11 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 
 #include "base/strings/to_string.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -15,9 +18,11 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -189,6 +194,67 @@ void SelectionOverlayController::BindCaptureRegionObserver(
   capture_region_observer_.Bind(std::move(observer));
   capture_region_observer_.set_disconnect_handler(base::BindOnce(
       &SelectionOverlayController::CloseUI, weak_factory_.GetWeakPtr()));
+}
+
+// static
+void SelectionOverlayController::CaptureRegion(
+    tabs::TabInterface* tab,
+    GlicSharingManager& sharing_manager,
+    mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
+    mojom::GetTabContextOptionsPtr options) {
+  content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
+  if (!web_contents) {
+    mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+    remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                     mojom::CaptureRegionErrorReason::kNoFocusableTab);
+    return;
+  }
+  auto* selection_overlay_controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  if (!selection_overlay_controller) {
+    mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+    remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                     mojom::CaptureRegionErrorReason::kUnknown);
+    LOG(ERROR) << "SelectionOverlayController not found for tab "
+               << web_contents->GetURL();
+    return;
+  }
+  if (selection_overlay_controller->state() !=
+      OverlayBaseController::State::kOff) {
+    mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+    remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                     mojom::CaptureRegionErrorReason::kUnknown);
+    LOG(ERROR) << "Overlay is still showing for " << web_contents->GetURL();
+    return;
+  }
+  if (!sharing_manager.IsTabFocused(tab->GetHandle())) {
+    mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+    remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                     mojom::CaptureRegionErrorReason::kNoFocusableTab);
+    LOG(ERROR) << "Tab " << web_contents->GetURL() << " is not focused";
+    return;
+  }
+  std::optional<GlicGetContextError> eligibility_error =
+      sharing_manager.CheckPreliminaryContextSharingEligibility(
+          tab->GetHandle());
+  if (eligibility_error.has_value()) {
+    mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+    remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                     mojom::CaptureRegionErrorReason::kUnknown);
+    LOG(ERROR) << "Cannot share tab context for " << web_contents->GetURL();
+    return;
+  }
+  auto* actor_service =
+      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
+  if (actor_service && actor_service->IsActiveOnTab(*tab)) {
+    mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+    remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                     mojom::CaptureRegionErrorReason::kUnknown);
+    LOG(ERROR) << "Tab has active actuation task: " << web_contents->GetURL();
+    return;
+  }
+  selection_overlay_controller->BindCaptureRegionObserver(std::move(observer));
+  selection_overlay_controller->Show(std::move(options));
 }
 
 void SelectionOverlayController::Show(mojom::GetTabContextOptionsPtr options) {

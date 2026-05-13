@@ -87,13 +87,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/glic_metrics.h"
-#include "chrome/browser/glic/host/glic_region_capture_controller.h"
 #include "chrome/browser/glic/media/glic_media_integration.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
-
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -170,10 +167,6 @@ GlicKeyedService::GlicKeyedService(
           profile,
           enabling_.get(),
           &instance_coordinator())),
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: CaptureRegion
-      region_capture_controller_(
-          std::make_unique<GlicRegionCaptureController>()),
-#endif
       auth_controller_(
           std::make_unique<AuthController>(profile, identity_manager)),
 
@@ -229,12 +222,6 @@ void GlicKeyedService::InitializeAfterConstruction() {
 GlicKeyedService::~GlicKeyedService() {
   metrics_->ClearControllers();
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-GlicRegionCaptureController& GlicKeyedService::region_capture_controller() {
-  return *region_capture_controller_;
-}
-#endif
 
 // static
 GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
@@ -528,20 +515,7 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
   return user_input_submitted_callback_list_.Add(std::move(callback));
 }
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-void GlicKeyedService::CaptureRegion(
-    tabs::TabInterface* tab,
-    mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
-    mojom::GetTabContextOptionsPtr options) {
-  region_capture_controller_->CaptureRegion(tab, std::move(observer),
-                                            std::move(options));
-}
 
-void GlicKeyedService::DeleteCapturedRegion(tabs::TabInterface* tab,
-                                            const base::UnguessableToken& id) {
-  region_capture_controller_->DeleteRegion(tab, id);
-}
-#endif
 
 void GlicKeyedService::ShareContextImage(tabs::TabInterface* tab,
                                          content::RenderFrameHost* frame,
