@@ -82,8 +82,8 @@
 #include "net/base/network_isolation_partition.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_connection_info.h"
-#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -5236,17 +5236,14 @@ IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest, AllowRenderMessageRfc822PageFromFile) {
 IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest,
                        DisallowRenderMultipartRelatedPageFromHTTP) {
   net::EmbeddedTestServer server;
-  net::test_server::ControllableHttpResponse response(&server, "/");
+  net::test_server::ExpectationHandler handler(&server);
+  handler.OnRequest("/").RespondWith(net::HTTP_OK, "multipart/related");
   EXPECT_TRUE(server.Start());
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
 
   GURL url = server.GetURL(kOrigin, "/");
 
   shell()->LoadURL(url);
-
-  response.WaitForRequest();
-  response.Send(net::HTTP_OK, "multipart/related");
-  response.Done();
 
   observer->WaitForFinished();
   EXPECT_EQ(
@@ -5256,17 +5253,14 @@ IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest,
 IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest,
                        DisallowRenderMessageRfc822PageFromHTTP) {
   net::EmbeddedTestServer server;
-  net::test_server::ControllableHttpResponse response(&server, "/");
+  net::test_server::ExpectationHandler handler(&server);
+  handler.OnRequest("/").RespondWith(net::HTTP_OK, "message/rfc822");
   EXPECT_TRUE(server.Start());
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
 
   GURL url = server.GetURL(kOrigin, "/");
 
   shell()->LoadURL(url);
-
-  response.WaitForRequest();
-  response.Send(net::HTTP_OK, "message/rfc822");
-  response.Done();
 
   observer->WaitForFinished();
   EXPECT_EQ(
@@ -5276,25 +5270,17 @@ IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest,
 // Regression test for https://crbug.com/1171765
 IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest, DisallowRenderMessageRfc822Iframe) {
   net::EmbeddedTestServer server;
-  net::test_server::ControllableHttpResponse main_response(&server, "/main");
-  net::test_server::ControllableHttpResponse sub_response(&server, "/sub");
+  net::test_server::ExpectationHandler handler(&server);
+  handler.OnRequest("/main").RespondWith(net::HTTP_OK, "text/html",
+                                         "<iframe src='./sub'></iframe>");
+  handler.OnRequest("/sub").RespondWith(net::HTTP_OK, "message/rfc822");
   EXPECT_TRUE(server.Start());
 
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
 
   GURL main_url = server.GetURL(kOrigin, "/main");
-  GURL sub_url = server.GetURL(kOrigin, "/sub");
 
   shell()->LoadURL(main_url);
-
-  main_response.WaitForRequest();
-  main_response.Send(net::HTTP_OK, "text/html",
-                     "<iframe src='./sub'></iframe>");
-  main_response.Done();
-
-  sub_response.WaitForRequest();
-  sub_response.Send(net::HTTP_OK, "message/rfc822");
-  sub_response.Done();
 
   observer->WaitForFinished();
   EXPECT_EQ(
@@ -5332,10 +5318,7 @@ IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
   // This test forces loading MHTML over HTTP to trigger the form disabling
   // functionality.
   net::EmbeddedTestServer server;
-  net::test_server::ControllableHttpResponse response(&server, "/");
-  EXPECT_TRUE(server.Start());
-
-  GURL url = server.GetURL(kOrigin, "/");
+  net::test_server::ExpectationHandler handler(&server);
 
   std::string mhtml_content;
   {
@@ -5343,16 +5326,17 @@ IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
     ASSERT_TRUE(base::ReadFileToString(
         GetTestFilePath("download", "forms.mhtml"), &mhtml_content));
   }
+  handler.OnRequest("/").RespondWith(net::HTTP_OK, "multipart/related",
+                                     mhtml_content);
+  EXPECT_TRUE(server.Start());
+
+  GURL url = server.GetURL(kOrigin, "/");
 
   auto observer = std::make_unique<content::TestNavigationObserver>(url);
   observer->WatchExistingWebContents();
   observer->StartWatchingNewWebContents();
 
   shell()->LoadURL(url);
-
-  response.WaitForRequest();
-  response.Send(net::HTTP_OK, "multipart/related", mhtml_content);
-  response.Done();
 
   observer->WaitForNavigationFinished();
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
