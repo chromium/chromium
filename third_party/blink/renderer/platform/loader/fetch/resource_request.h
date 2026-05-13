@@ -226,6 +226,9 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetHTTPOrigin(const SecurityOrigin*);
   void ClearHTTPOrigin();
 
+  // TODO(https://crbug.com/40450316): This helper is only used when the
+  // `UserAgentFollowingSpec` feature is disabled. Remove this code when the
+  // flag is removed.
   void SetHTTPUserAgent(const AtomicString& http_user_agent) {
     SetHttpHeaderField(http_names::kUserAgent, http_user_agent);
   }

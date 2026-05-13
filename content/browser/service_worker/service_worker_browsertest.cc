@@ -134,6 +134,21 @@ using MainResourceLoadCompletedUkmEntry =
     ukm::builders::ServiceWorker_MainResourceLoadCompleted;
 using net::test_server::EmbeddedTestServer;
 
+enum class BackForwardCacheType {
+  kDisabled,
+  kEnabled,
+};
+
+std::string BFCacheTypeToString(
+    const testing::TestParamInfo<BackForwardCacheType>& info) {
+  switch (info.param) {
+    case BackForwardCacheType::kDisabled:
+      return "Disabled";
+    case BackForwardCacheType::kEnabled:
+      return "Enabled";
+  }
+}
+
 // V8ScriptRunner::setCacheTimeStamp() stores 16 byte data (marker + tag +
 // timestamp).
 const int kV8CacheTimeStampDataSize =
@@ -4250,6 +4265,75 @@ IN_PROC_BROWSER_TEST_F(
                        loop.QuitClosure()));
     loop.Run();
   }
+}
+
+class ServiceWorkerOptionalBackForwardCacheBrowserTest
+    : public ServiceWorkerBrowserTest,
+      public testing::WithParamInterface<BackForwardCacheType> {
+ protected:
+  ServiceWorkerOptionalBackForwardCacheBrowserTest() {
+    switch (GetParam()) {
+      case BackForwardCacheType::kDisabled:
+        feature_list_.InitAndDisableFeature(::features::kBackForwardCache);
+        break;
+      case BackForwardCacheType::kEnabled:
+        feature_list_.InitWithFeaturesAndParameters(
+            GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+                /*ignore_outstanding_network_request=*/false),
+            GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+        break;
+    }
+  }
+
+  RenderFrameHostImpl* current_frame_host() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents())
+        ->GetPrimaryFrameTree()
+        .root()
+        ->current_frame_host();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerOptionalBackForwardCacheBrowserTest,
+                         testing::Values(BackForwardCacheType::kDisabled,
+                                         BackForwardCacheType::kEnabled),
+                         BFCacheTypeToString);
+
+// Test that service worker User-Agents are kept on back navigation with
+// BFCache.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerOptionalBackForwardCacheBrowserTest,
+                       BackwardNavigationKeepsInterceptUserAgent) {
+  StartServerAndNavigateToSetup();
+
+  // Create & register a service worker
+  ASSERT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  {
+    WorkerRunningStatusObserver observer(public_context());
+    EXPECT_EQ("DONE", EvalJs(current_frame_host(),
+                             "register('/intercept_add_user_agent.js', '/');"));
+    observer.WaitUntilRunning();
+  }
+
+  // The service worker will override the User-Agent, which we can see.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/echoheader?user-agent")));
+  EXPECT_EQ("foo", EvalJs(current_frame_host(), "document.body.textContent;"));
+
+  // Then go somewhere else.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  // And if we do backwards navigation, we should still use the override
+  // User-Agent.
+  shell()->web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ("foo", EvalJs(current_frame_host(), "document.body.textContent;"));
 }
 
 class ServiceWorkerFencedFrameBrowserTest : public ServiceWorkerBrowserTest {

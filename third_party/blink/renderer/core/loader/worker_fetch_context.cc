@@ -85,6 +85,13 @@ bool WorkerFetchContext::AllowScript() const {
   return true;
 }
 
+String WorkerFetchContext::GetDefaultUserAgent() const {
+  String user_agent = global_scope_->UserAgent();
+  probe::ApplyUserAgentOverride(Probe(), &user_agent);
+  CHECK(!user_agent.IsNull());
+  return user_agent;
+}
+
 bool WorkerFetchContext::ShouldBlockRequestByInspector(const KURL& url) const {
   bool should_block_request = false;
   probe::ShouldBlockRequest(Probe(), url, &should_block_request);
@@ -190,10 +197,10 @@ void WorkerFetchContext::PrepareRequest(
       request.Url());
   request.SetUkmSourceId(GetExecutionContext()->UkmSourceID());
 
-  String user_agent = global_scope_->UserAgent();
-  probe::ApplyUserAgentOverride(Probe(), &user_agent);
-  DCHECK(!user_agent.IsNull());
-  request.SetHTTPUserAgent(AtomicString(user_agent));
+  if (!RuntimeEnabledFeatures::UserAgentFollowingSpecEnabled()) {
+    request.SetHTTPUserAgent(AtomicString(GetDefaultUserAgent()));
+  }
+
   request.SetSharedDictionaryWriterEnabled(
       RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
           GetExecutionContext()));

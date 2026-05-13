@@ -6214,6 +6214,14 @@
       status: "stable",
     },
     {
+      // Changes the behaviour around when User-Agents are added to a request.
+      // This flag should be aligned with the underlying network
+      // implementation, see `net::features::kUserAgentFollowingSpec`.
+      // crbug.com/40450316
+      name: "UserAgentFollowingSpec",
+      base_feature: "none",
+    },
+    {
       name: "UserDefinedEntryPointTiming",
       status: "experimental",
     },

@@ -374,6 +374,7 @@ URLLoader::URLLoader(
                                   TaskRunner(request.priority)),
       per_factory_orb_state_(context.GetMutableOrbState()),
       devtools_request_id_(request.devtools_request_id),
+      content_user_agent_(request.content_user_agent),
       options_(PopulateOptions(options,
                                factory_params_->is_orb_enabled,
                                !!devtools_request_id())),
@@ -841,8 +842,19 @@ void URLLoader::FollowRedirect(
   deferred_redirect_url_.reset();
   new_redirect_url_ = new_url;
 
-  net::HttpRequestHeaders merged_modified_headers = modified_headers;
-  merged_modified_headers.MergeFrom(modified_cors_exempt_headers);
+  // These headers are merged back over the pre-redirect request headers, so
+  // we take care to only add a User-Agent here if the pre-redirect request
+  // doesn't already have one.
+  const bool needs_user_agent =
+      !url_request_->extra_request_headers().HasHeader(
+          net::HttpRequestHeaders::kUserAgent);
+  std::optional<std::string> user_agent =
+      needs_user_agent ? content_user_agent_ : std::nullopt;
+
+  net::HttpRequestHeaders merged_modified_headers =
+      net::HttpUtil::MergeHeadersAndAddUserAgent(
+          modified_headers, modified_cors_exempt_headers, user_agent);
+
   url_request_->FollowDeferredRedirect(removed_headers,
                                        merged_modified_headers);
   new_redirect_url_.reset();

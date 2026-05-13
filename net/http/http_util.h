@@ -30,6 +30,7 @@
 
 namespace net {
 
+class HttpRequestHeaders;
 class HttpResponseHeaders;
 
 class NET_EXPORT HttpUtil {
@@ -120,6 +121,15 @@ class NET_EXPORT HttpUtil {
   // Returns false if |value| contains NUL or CRLF. This method does not perform
   // a fully RFC-2616-compliant header value validation.
   static bool IsValidHeaderValue(std::string_view value);
+
+  // Perform the "final merge" for headers, where |cors_exempt_headers| (or
+  // equivalent) is merged onto |headers| (or equivalent), then the
+  // network::ResourceRequest's content_user_agent (or equivalent) is also
+  // added.
+  static HttpRequestHeaders MergeHeadersAndAddUserAgent(
+      HttpRequestHeaders original,
+      const HttpRequestHeaders& merged,
+      const std::optional<std::string>& user_agent);
 
   // Multiple occurances of some headers cannot be coalesced into a comma-
   // separated list since their values are (or contain) unquoted HTTP-date

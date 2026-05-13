@@ -249,6 +249,11 @@ class WebRequestProxyingURLLoaderFactory
 
     int num_redirects_ = 0;
 
+    // Whether this request had its User-Agent temporarily set based on the
+    // |request_.content_user_agent|. If so, it has to be cleared before the
+    // request passes back to the network stack.
+    bool extension_visible_user_agent_added_ = false;
+
     const bool for_cors_preflight_ = false;
 
     // If |has_any_extra_headers_listeners_| is set to true, the request will be

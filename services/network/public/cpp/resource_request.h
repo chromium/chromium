@@ -219,6 +219,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   net::ReferrerPolicy referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;
   net::HttpRequestHeaders headers;
   net::HttpRequestHeaders cors_exempt_headers;
+
+  // Browser-intrinsic User-Agent string, to be used for values set by
+  // DevTools or coming from FetchContext.
+  std::optional<std::string> content_user_agent = std::nullopt;
+
   int load_flags = 0;
   // Note: kMainFrame is used only for outermost main frames, i.e. fenced
   // frames are considered a kSubframe for ResourceType.

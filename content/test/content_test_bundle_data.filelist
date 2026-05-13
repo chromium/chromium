@@ -8182,6 +8182,7 @@ data/input_box.html
 data/input_in_iframe.html
 data/interaction-mq-dynamic-android.html
 data/interaction-mq-dynamic.html
+data/intercept_add_user_agent.js
 data/interest_group/auction_only.har
 data/interest_group/auction_only.html
 data/interest_group/auction_only.json

@@ -486,7 +486,6 @@ TEST_F(WebAssociatedURLLoaderTest, MAYBE_UntrustedCheckHeaders) {
   CheckHeaderFails("trailer");
   CheckHeaderFails("transfer-encoding");
   CheckHeaderFails("upgrade");
-  CheckHeaderFails("user-agent");
   CheckHeaderFails("via");
 
   CheckHeaderFails("proxy-");

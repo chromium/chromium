@@ -130,6 +130,11 @@ NET_EXPORT extern const base::FeatureParam<int>
     kAlternativePortForGloballyReachableCheck;
 NET_EXPORT BASE_DECLARE_FEATURE(kUseAlternativePortForGloballyReachableCheck);
 
+// If enabled, Blink will modify how it passes around the User-Agent header,
+// in order to enable removing it from the CORS-exempted
+// `net::HttpUtil::kForbiddenHeaderFields` list.
+NET_EXPORT BASE_DECLARE_FEATURE(kUserAgentFollowingSpec);
+
 // If enabled, overrides IPv6 reachability probe results based on the system's
 // IP addresses.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIPv6ReachabilityOverride);

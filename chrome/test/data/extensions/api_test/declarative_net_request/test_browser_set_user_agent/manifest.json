@@ -1,0 +1,19 @@
+{
+  "name": "test_browser_set_user_agent",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "Tests modifying the User-Agent via the DNR API.",
+  "permissions": ["declarativeNetRequest", "scripting", "activeTab", "tabs"],
+  "host_permissions": ["https://*/*", "http://*/*"],
+  "background": {
+    "service_worker": "test_browser_set_user_agent.js",
+    "type": "module"
+  },
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "rules",
+      "path": "rules.json",
+      "enabled": true
+    }]
+  }
+}

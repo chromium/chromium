@@ -2561,6 +2561,47 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UserAgentOverride) {
             EvalJs(shell()->web_contents(), "document.body.textContent;"));
 }
 
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UserAgentOverrideFetch) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const std::string kUserAgentBrowserOverride = "foo";
+  const std::string kUserAgentFetchOverride = "bar";
+
+  const std::string kHeaderEchoPath =
+      std::string("/echoheader?") + net::HttpRequestHeaders::kUserAgent;
+  const std::string kOtherUrlPath =
+      std::string("/echoheader?") + net::HttpRequestHeaders::kCookie;
+
+  const GURL kFetchUrl(embedded_test_server()->GetURL(kHeaderEchoPath));
+  const GURL kNavUrl(embedded_test_server()->GetURL(kOtherUrlPath));
+
+  shell()->web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly(kUserAgentBrowserOverride),
+      false);
+  shell()
+      ->web_contents()
+      ->GetController()
+      .GetLastCommittedEntry()
+      ->SetIsOverridingUserAgent(true);
+
+  EXPECT_TRUE(NavigateToURL(shell(), kNavUrl));
+
+  // Do a fetch with a browser override active.
+  // Should return the overridden value.
+  const std::string kDoStraightFetchJs =
+      JsReplace("fetch($1).then(r => r.text())", kFetchUrl);
+  EXPECT_EQ(kUserAgentBrowserOverride,
+            EvalJs(shell()->web_contents(), kDoStraightFetchJs));
+
+  // Do a fetch with a browser overridden value and a manual fetch override.
+  // Should return the manual fetch override.
+  const std::string kDoOverrideFetchJs =
+      JsReplace("fetch($1, {headers:{'User-Agent': $2}}).then(r => r.text())",
+                kFetchUrl, kUserAgentFetchOverride);
+  EXPECT_EQ(kUserAgentFetchOverride,
+            EvalJs(shell()->web_contents(), kDoOverrideFetchJs));
+}
+
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        UserAgentOverrideDuringDeferredNavigation) {
   // Validates that when a deferred navigation is pending (e.g. in the case of

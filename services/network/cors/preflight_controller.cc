@@ -183,11 +183,15 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
   // emulation override is applied on a higher level (renderer or browser),
   // so copy User-Agent from the original request, if present.
   // TODO(caseq, morlovich): do the same for client hints.
-  std::optional<std::string> user_agent =
-      request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent);
-  if (user_agent) {
+
+  // Ensure we only take the value from content_user_agent, as values from
+  // the |headers| are not trustworthy and shouldn't be used for preflights.
+  if (request.content_user_agent) {
     preflight_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                         *user_agent);
+                                         *(request.content_user_agent));
+  } else {
+    preflight_request->headers.RemoveHeader(
+        net::HttpRequestHeaders::kUserAgent);
   }
 
   // Additional headers that the algorithm in the spec does not require, but

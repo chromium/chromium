@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -26,6 +27,7 @@
 #include "net/base/mime_util.h"
 #include "net/base/parse_number.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
@@ -345,9 +347,6 @@ const char* const kForbiddenHeaderFields[] = {
     "trailer",
     "transfer-encoding",
     "upgrade",
-    // TODO(mmenke): This is no longer banned, but still here due to issues
-    // mentioned in https://crbug.com/571722.
-    "user-agent",
     "via",
 };
 
@@ -392,6 +391,12 @@ bool HttpUtil::IsSafeHeader(std::string_view name, std::string_view value) {
       return false;
   }
 
+  // User-Agent is exempt only if we have not enabled kUserAgentFollowingSpec
+  if (!base::FeatureList::IsEnabled(features::kUserAgentFollowingSpec) &&
+      base::EqualsCaseInsensitiveASCII(name, HttpRequestHeaders::kUserAgent)) {
+    return false;
+  }
+
   bool is_forbidden_header_fields_with_forbidden_method = false;
   for (const char* field : kForbiddenHeaderFieldsWithForbiddenMethod) {
     if (base::EqualsCaseInsensitiveASCII(name, field)) {
@@ -426,6 +431,20 @@ bool HttpUtil::IsValidHeaderValue(std::string_view value) {
       return false;
   }
   return true;
+}
+
+// static
+HttpRequestHeaders HttpUtil::MergeHeadersAndAddUserAgent(
+    HttpRequestHeaders original,
+    const HttpRequestHeaders& merged,
+    const std::optional<std::string>& user_agent) {
+  original.MergeFrom(merged);
+
+  if (user_agent.has_value()) {
+    original.SetHeaderIfMissing(HttpRequestHeaders::kUserAgent, *user_agent);
+  }
+
+  return original;
 }
 
 // static

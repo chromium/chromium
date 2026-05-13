@@ -46,6 +46,8 @@ class MockFetchContext : public FetchContext {
     tagged_urls_ = std::move(tagged_urls);
   }
 
+  String GetDefaultUserAgent() const override { return ""; }
+
   bool AllowImage() const override { return true; }
   std::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,

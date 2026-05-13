@@ -12596,6 +12596,27 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
 }
 
+IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
+                       ServiceWorkerModifiesUserAgent) {
+  const GURL kOtherUrl = GetUrl("/echoheader?user-agent");
+  const GURL kInitialUrl = GetUrl("/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Prerender /echoheader, with no special rules.
+  AddPrerender(kOtherUrl);
+
+  // Add a service worker that intercepts requests and adds 'User-Agent: foo'.
+  RegisterServiceWorker("/intercept_add_user_agent.js");
+
+  // Navigate to /echoheader.
+  ASSERT_TRUE(NavigateToURL(shell(), kOtherUrl));
+
+  // It should discard the prerender and report 'User-Agent: foo'.
+  EXPECT_EQ("foo",
+            EvalJs(shell()->web_contents(), "document.body.textContent;"));
+}
+
 class PrerenderBackForwardCacheRestorationBrowserTest
     : public PrerenderEagernessBrowserTest,
       public BackForwardCacheMetricsTestMatcher,

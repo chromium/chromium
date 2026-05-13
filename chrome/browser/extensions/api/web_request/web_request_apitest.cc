@@ -1590,6 +1590,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("webrequest/test_cors")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       WebRequestBrowserSetUserAgent) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_browser_set_user_agent"))
+      << message_;
+}
+
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_WebRequestRedirects DISABLED_WebRequestRedirects
 #else
@@ -3971,6 +3978,8 @@ class ServiceWorkerWebRequestApiTest
     const char kBackgroundScript[] = R"(
         chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
               details.requestHeaders.push({name: 'foo', value: 'bar'});
+              details.requestHeaders.push({name: 'User-Agent',
+                                           value: 'extension_overridden'});
               details.requestHeaders.push({
                 name: 'frameId',
                 value: details.frameId.toString()
@@ -4097,6 +4106,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 
 // An extension should be able to modify the request header for service worker
 // script by using WebRequest API.
+// It should also specifically be able to modify the User-Agent.
 IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerScript) {
   // The extension to be used in this test adds foo=bar request header.
   const char kScriptPath[] = "/echoheader_service_worker.js";
@@ -4106,6 +4116,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerScript) {
   base::Lock lock;
   int served_service_worker_count = 0;
   std::string foo_header_value;
+  std::string user_agent_value;
 
   // Capture the value of a request header foo, which should be added if
   // extension modifies the request header.
@@ -4122,6 +4133,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerScript) {
         if (request.headers.find("foo") != request.headers.end()) {
           foo_header_value = request.headers.at("foo");
         }
+        user_agent_value = request.headers.at("User-Agent");
 
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
@@ -4148,6 +4160,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerScript) {
     base::AutoLock auto_lock(lock);
     EXPECT_EQ(1, served_service_worker_count);
     EXPECT_EQ("bar", foo_header_value);
+    EXPECT_EQ("extension_overridden", user_agent_value);
   }
 
   // Update the worker. The worker should have "foo: bar" request header in the
@@ -4158,6 +4171,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerScript) {
     base::AutoLock auto_lock(lock);
     EXPECT_EQ(2, served_service_worker_count);
     EXPECT_EQ("bar", foo_header_value);
+    EXPECT_EQ("extension_overridden", user_agent_value);
   }
 }
 

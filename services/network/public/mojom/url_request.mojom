@@ -333,6 +333,19 @@ struct URLRequest {
   // need to add your own headers to the list.
   HttpRequestHeaders cors_exempt_headers;  // See Note above before using.
 
+  // The correct value for the "User-Agent" header from the point-of-view of
+  // the caller, after DevTools and other overrides have been applied. If this
+  // is not set, the "User-Agent" value configured on the NetworkContext will
+  // be used instead.
+  //
+  // This can be overridden by setting a "User-Agent" in `headers`, but that
+  // will require a CORS preflight for an untrusted client.
+  //
+  // The "User-Agent" header cannot be set in `headers` *and* in
+  // `cors_exempt_headers`, as there are no provided guarantees about which
+  // value will be taken when they are merged together.
+  string? content_user_agent;
+
   // net::URLRequest load flags.
   int32 load_flags;
 

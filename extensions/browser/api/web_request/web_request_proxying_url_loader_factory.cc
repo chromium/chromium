@@ -764,6 +764,17 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     // intuitive), |onBeforeSendHeaders| is only dispatched for HTTP and HTTPS
     // and urn: requests.
 
+    // Temporarily add the |request_.content_user_agent| to this request's
+    // headers. Should be removed again in |ContinueToStartRequest()|.
+    if (request_.content_user_agent) {
+      // User-Agent added only if the headers do *not* have a User-Agent
+      // already.
+      extension_visible_user_agent_added_ =
+          !request_.headers.HasHeader(net::HttpRequestHeaders::kUserAgent);
+      request_.headers.SetHeaderIfMissing(net::HttpRequestHeaders::kUserAgent,
+                                          *request_.content_user_agent);
+    }
+
     state_on_error = State::kRejectedByOnBeforeSendHeaders;
     auto continuation =
         base::BindRepeating(&InProgressRequest::ContinueToSendHeaders,
@@ -821,6 +832,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   if (error_code != net::OK) {
     OnRequestError(CreateURLLoaderCompletionStatus(error_code), state_on_error);
     return;
+  }
+
+  // If we supplied the current value that's on the |request_.headers|, then
+  // we need to make sure it gets removed before it triggers a CORS preflight.
+  if (extension_visible_user_agent_added_) {
+    request_.headers.RemoveHeader(net::HttpRequestHeaders::kUserAgent);
   }
 
   if (current_request_uses_header_client_ && !redirect_url_.is_empty()) {

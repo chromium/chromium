@@ -5033,8 +5033,6 @@ crbug.com/826419 external/wpt/html/semantics/embedded-content/media-elements/tra
 crbug.com/825798 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
 
 # These tests (erroneously) see a platform-specific User-Agent header
-crbug.com/595993 external/wpt/service-workers/service-worker/fetch-header-visibility.https.html [ Failure ]
-
 crbug.com/619427 [ Mac ] fast/overflow/overflow-height-float-not-removed-crash3.html [ Failure Pass ]
 
 crbug.com/660384 external/wpt/webmessaging/with-ports/001.html [ Failure ]
@@ -5091,9 +5089,6 @@ crbug.com/1317079 [ Linux ] external/wpt/html/infrastructure/safe-passing-of-str
 # work.
 
 # Fullscreen tests are failed because of consuming user activation on fullscreen
-
-# User-Agent is not able to be set on XHR/fetch
-crbug.com/571722 external/wpt/xhr/preserve-ua-header-on-redirect.htm [ Failure ]
 
 # 1) V8 code cache doesn't support host defined options. When V8 code cache is
 # disabled, the subtest will pass. 2) Module cases always fail.

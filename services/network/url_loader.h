@@ -645,6 +645,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // renderer.
   const std::optional<std::string> devtools_request_id_;
 
+  // User-Agent provided by the renderer process, to be used if there isn't
+  // already a User-Agent on the request.
+  const std::optional<std::string> content_user_agent_;
+
   const int32_t options_;
 
   // This is used to compute the delta since last time received

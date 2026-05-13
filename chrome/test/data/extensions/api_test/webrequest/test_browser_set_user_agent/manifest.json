@@ -1,0 +1,11 @@
+{
+  "name": "test_browser_set_user_agent",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests modifying the User-Agent via the webRequest API.",
+  "permissions": ["webRequest", "webRequestBlocking", "tabs", "<all_urls>"],
+  "background": {
+    "scripts": ["test_browser_set_user_agent.js"],
+    "persistent": true
+  }
+}

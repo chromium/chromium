@@ -253,7 +253,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
               scoped_refptr<const SecurityOrigin> top_frame_origin,
               const ClientHintsPreferences& client_hints_preferences,
               float device_pixel_ratio,
-              const String& user_agent,
+              String user_agent,
               base::optional_ref<const UserAgentMetadata> user_agent_metadata,
               bool is_isolated_svg_chrome_client,
               bool is_prerendering,
@@ -264,7 +264,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
         top_frame_origin(std::move(top_frame_origin)),
         client_hints_preferences(client_hints_preferences),
         device_pixel_ratio(device_pixel_ratio),
-        user_agent(user_agent),
+        user_agent(std::move(user_agent)),
         user_agent_metadata(user_agent_metadata.CopyAsOptional()),
         is_isolated_svg_chrome_client(is_isolated_svg_chrome_client),
         is_prerendering(is_prerendering),
@@ -416,7 +416,9 @@ void FrameFetchContext::PrepareRequest(
   // this is called during redirect.
   const bool for_redirect = request.GetRedirectInfo().has_value();
 
-  request.SetHTTPUserAgent(AtomicString(GetUserAgent()));
+  if (!RuntimeEnabledFeatures::UserAgentFollowingSpecEnabled()) {
+    request.SetHTTPUserAgent(AtomicString(GetDefaultUserAgent()));
+  }
 
   if (GetResourceFetcherProperties().IsDetached()) {
     return;
@@ -1280,7 +1282,7 @@ Settings* FrameFetchContext::GetSettings() const {
   return GetFrame()->GetSettings();
 }
 
-String FrameFetchContext::GetUserAgent() const {
+String FrameFetchContext::GetDefaultUserAgent() const {
   if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->user_agent;
   }
@@ -1378,8 +1380,9 @@ FetchContext* FrameFetchContext::Detach() {
   frozen_state_ = MakeGarbageCollected<FrozenState>(
       Url(), GetContentSecurityPolicy(), GetSiteForCookies(),
       GetTopFrameOrigin(), client_hints_prefs, GetDevicePixelRatio(),
-      GetUserAgent(), GetUserAgentMetadata(), IsIsolatedSVGChromeClient(),
-      IsPrerendering(), GetReducedAcceptLanguage());
+      GetDefaultUserAgent(), GetUserAgentMetadata(),
+      IsIsolatedSVGChromeClient(), IsPrerendering(),
+      GetReducedAcceptLanguage());
   document_loader_ = nullptr;
   document_ = nullptr;
   return this;

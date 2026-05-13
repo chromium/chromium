@@ -287,6 +287,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.cors_exempt_headers;
   }
+  static const std::optional<std::string> content_user_agent(
+      const network::ResourceRequest& request) {
+    return request.content_user_agent;
+  }
   static int32_t load_flags(const network::ResourceRequest& request) {
     return request.load_flags;
   }

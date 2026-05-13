@@ -148,6 +148,12 @@ IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, OnRulesMatchedDebug) {
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, ModifyHeaders) {
   ASSERT_TRUE(RunExtensionTest("modify_headers")) << message_;
 }
+
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
+IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, TestBrowserSetUserAgent) {
+  ASSERT_TRUE(RunExtensionTest("test_browser_set_user_agent")) << message_;
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, GetMatchedRules) {

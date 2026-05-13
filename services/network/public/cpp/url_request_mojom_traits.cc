@@ -148,6 +148,7 @@ bool StructTraits<
   if (!data.ReadReferrerPolicy(&out->referrer_policy) ||
       !data.ReadHeaders(&out->headers) ||
       !data.ReadCorsExemptHeaders(&out->cors_exempt_headers) ||
+      !data.ReadContentUserAgent(&out->content_user_agent) ||
       !data.ReadPriority(&out->priority) ||
       !data.ReadCorsPreflightPolicy(&out->cors_preflight_policy) ||
       !data.ReadMode(&out->mode) ||

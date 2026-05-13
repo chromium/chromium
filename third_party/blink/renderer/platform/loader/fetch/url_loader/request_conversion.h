@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_string.h"
 
 namespace network {
 class ResourceRequestBody;
@@ -26,6 +27,7 @@ scoped_refptr<network::ResourceRequestBody> NetworkResourceRequestBodyFor(
 void BLINK_PLATFORM_EXPORT
 PopulateResourceRequest(const ResourceRequestHead& src,
                         ResourceRequestBody src_body,
+                        const String& context_default_user_agent,
                         network::ResourceRequest* dest);
 }  // namespace blink
 

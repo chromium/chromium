@@ -158,6 +158,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   mojom::blink::ContentSecurityNotifier& GetContentSecurityNotifier() const;
 
   ExecutionContext* GetExecutionContext() const override;
+  String GetDefaultUserAgent() const override;
 
   void UpdateSubresourceLoadMetrics(
       const SubresourceLoadMetrics& subresource_load_metrics) override;
@@ -212,7 +213,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   WebContentSettingsClient* GetContentSettingsClient() const;
   Settings* GetSettings() const;
-  String GetUserAgent() const;
   std::optional<UserAgentMetadata> GetUserAgentMetadata() const;
   const network::PermissionsPolicy* GetPermissionsPolicy() const override;
   const FeatureContext* GetFeatureContext() const override;

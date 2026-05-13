@@ -1,0 +1,31 @@
+[{
+  "id": 1,
+  "action": {
+    "type": "modifyHeaders",
+    "requestHeaders": [
+      {
+        "header": "user-agent",
+        "operation": "remove"
+      }
+    ]
+  },
+  "condition": {
+    "requestDomains": ["remove.cors.com"]
+  }
+},
+{
+  "id": 2,
+  "action": {
+    "type": "modifyHeaders",
+    "requestHeaders": [
+      {
+        "header": "user-agent",
+        "operation": "set",
+        "value": "bar"
+      }
+    ]
+  },
+  "condition": {
+    "requestDomains": ["modify.cors.com"]
+  }
+}]

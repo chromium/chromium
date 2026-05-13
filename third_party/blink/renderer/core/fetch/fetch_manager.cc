@@ -1904,7 +1904,7 @@ FetchLaterManager::PrepareNetworkRequest(
   PopulateResourceRequest(
       params.GetResourceRequest(),
       std::move(params.MutableResourceRequest().MutableBody()),
-      network_resource_request.get());
+      fetcher->Context().GetDefaultUserAgent(), network_resource_request.get());
   fetcher->PopulateResourceRequestPermissionsPolicy(
       network_resource_request.get());
   return network_resource_request;

@@ -393,7 +393,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
                        kExperimentalWebMachineLearningNeuralNetwork),
            kSetOnlyIfOverridden},
           {"LocalNetworkAccessPermissionPolicy",
-           raw_ref(network::features::kLocalNetworkAccessChecks)}};
+           raw_ref(network::features::kLocalNetworkAccessChecks)},
+          {"UserAgentFollowingSpec",
+           raw_ref(net::features::kUserAgentFollowingSpec)}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {

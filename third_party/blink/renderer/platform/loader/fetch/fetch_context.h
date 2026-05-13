@@ -210,6 +210,10 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   virtual bool StartSpeculativeImageDecode(Resource* resource);
 
+  // Accesses the User-Agent taken from DevTools/Extensions/Blink.
+  // i.e. any User-Agent not set by a JavaScript API.
+  virtual String GetDefaultUserAgent() const { NOTREACHED(); }
+
   // Called when the underlying context is detached. Note that some
   // FetchContexts continue working after detached (e.g., for fetch() operations
   // with "keepalive" specified).
