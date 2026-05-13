@@ -837,6 +837,7 @@ void ContextualSearchboxHandler::OnError(
 void ContextualSearchboxHandler::CleanupDrivePicker() {
 #if !BUILDFLAG(IS_ANDROID)
   drive_picker_result_handler_receiver_.reset();
+  drive_picker_controller_.reset();
 #endif
 }
 

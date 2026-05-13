@@ -106,6 +106,15 @@ void DrivePickerHostController::ShowDrivePickerHost(
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       delegate_.get(), native_window);
 
+  widget->widget_delegate()->set_desired_bounds_delegate(base::BindRepeating(
+      [](BrowserWindowInterface* browser_window) {
+        if (browser_window && browser_window->GetWindow()) {
+          return browser_window->GetWindow()->GetBounds();
+        }
+        return gfx::Rect();
+      },
+      base::Unretained(browser_window_interface_)));
+
   widget_.reset(widget);
 
   widget_->SetBounds(window->GetBounds());

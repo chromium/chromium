@@ -36,9 +36,6 @@ export interface GooglePicker {
     MIME_TYPE: string,
     NAME: string,
     TYPE: string,
-    SIZE_BYTES: string,
-    RESOURCE_KEY: string,
-    THUMBNAIL_URL: string,
   };
   Type: {
     DOCUMENT: string,
@@ -192,9 +189,9 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
       MIME_TYPE: google.picker.Document.MIME_TYPE,
       NAME: google.picker.Document.NAME,
       TYPE: google.picker.Document.TYPE,
-      SIZE_BYTES: google.picker.Document.SIZE_BYTES,
-      RESOURCE_KEY: google.picker.Document.RESOURCE_KEY,
-      THUMBNAIL_URL: google.picker.Document.THUMBNAIL_URL,
+      SIZE_BYTES: 'sizeBytes',
+      RESOURCE_KEY: 'resourceKey',
+      THUMBNAIL_URL: 'thumbnailUrl',
     };
     const allowedTypes = new Set([
       google.picker.Type.DOCUMENT,
