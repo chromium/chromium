@@ -5,6 +5,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
@@ -12,18 +13,24 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -76,8 +83,8 @@ class ExtensionApiNewTabTest : public ExtensionApiTabTest {
     ExtensionApiTabTest::SetUpCommandLine(command_line);
     // Override the default which InProcessBrowserTest adds if it doesn't see a
     // homepage.
-    command_line->AppendSwitchASCII(
-        switches::kHomePage, chrome::kChromeUINewTabURL);
+    command_line->AppendSwitchASCII(switches::kHomePage,
+                                    chrome::kChromeUINewTabURL);
   }
 };
 
@@ -761,4 +768,315 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MovingAGroupToANewWindow) {
   extensions::ResultCatcher catcher;
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+class ExtensionApiTabDSERedirectTest : public ExtensionApiTabTest {
+ public:
+  ExtensionApiTabDSERedirectTest() = default;
+  ~ExtensionApiTabDSERedirectTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTabTest::SetUpOnMainThread();
+
+    GURL search_url = embedded_test_server()->GetURL("/search");
+
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile());
+    TemplateURLData data;
+    data.SetShortName(u"Test");
+    data.SetKeyword(u"test");
+    data.SetURL(search_url.spec() + "?q={searchTerms}");
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  void SetupDSEPage() {
+    content::WebContents* web_contents =
+        GetTabListInterface()->GetActiveTab()->GetContents();
+    std::ignore = content::NavigateToURL(
+        web_contents, embedded_test_server()->GetURL("/search?q=foo"));
+
+    web_contents->GetController().GetLastCommittedEntry()->SetTimestamp(
+        base::Time::Now());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,
+                       DSERedirectTabsUpdateAction) {
+  SetupDSEPage();
+
+  base::HistogramTester histogram_tester;
+
+  static constexpr char kManifest[] =
+      R"({
+         "name": "UpdateAction Extension",
+         "version": "0.1",
+         "manifest_version": 3,
+         "permissions": ["tabs"],
+         "background": { "service_worker" : "background.js" }
+       })";
+  static constexpr char kBackground[] =
+      R"(
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          chrome.tabs.update(tabs[0].id, {url: 'http://example.com'}, () => {
+            chrome.test.succeed();
+          });
+        });
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  histogram_tester.ExpectBucketCount("Extensions.Tabs.UpdateAction",
+                                     1 /* kDSERemovalsWithoutUserGesture */, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,
+                       DSERedirectTabsUpdateAction_UserGesture) {
+  SetupDSEPage();
+
+  base::HistogramTester histogram_tester;
+
+  static constexpr char kManifest[] =
+      R"({
+         "name": "UpdateAction Extension",
+         "version": "0.1",
+         "manifest_version": 3,
+         "permissions": ["tabs"],
+         "background": { "service_worker" : "background.js" }
+       })";
+  static constexpr char kBackground[] =
+      R"(
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          chrome.test.runWithUserGesture(() => {
+            chrome.tabs.update(tabs[0].id, {url: 'http://example.com'}, () => {
+              chrome.test.succeed();
+            });
+          });
+        });
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  histogram_tester.ExpectBucketCount("Extensions.Tabs.UpdateAction",
+                                     2 /* kDSERedirectsWithUserGesture */, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,
+                       DSERedirectTabsUpdateAction_UserGesture_Async) {
+  SetupDSEPage();
+
+  base::HistogramTester histogram_tester;
+
+  static constexpr char kManifest[] =
+      R"({
+         "name": "UpdateAction Extension",
+         "version": "0.1",
+         "manifest_version": 3,
+         "permissions": ["tabs"],
+         "background": { "service_worker" : "background.js" }
+       })";
+  static constexpr char kBackground[] =
+      R"(
+        chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
+          chrome.test.runWithUserGesture(() => {
+            chrome.tabs.update(tabs[0].id, {}, () => {
+              chrome.test.succeed();
+            });
+          });
+          await new Promise(resolve => setTimeout(resolve, 0));
+          chrome.tabs.update(tabs[0].id, {url: 'http://example.com'}, () => {
+            chrome.test.succeed();
+          });
+        });
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  histogram_tester.ExpectBucketCount("Extensions.Tabs.UpdateAction",
+                                     2 /* kDSERedirectsWithUserGesture */, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,
+                       DSERedirectTabsUpdateAction_UserGesture_EventRouter) {
+  SetupDSEPage();
+
+  base::HistogramTester histogram_tester;
+
+  static constexpr char kManifest[] =
+      R"({
+         "name": "UpdateAction Extension",
+         "version": "0.1",
+         "manifest_version": 3,
+         "permissions": ["tabs"],
+         "background": { "service_worker" : "background.js" }
+       })";
+  static constexpr char kBackground[] =
+      R"(
+        chrome.test.onMessage.addListener((msg) => {
+          chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+            chrome.tabs.update(tabs[0].id, {url: 'http://example.com'}, () => {
+              chrome.test.succeed();
+            });
+          });
+        });
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  extensions::ResultCatcher result_catcher;
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::FOR_TEST, "test.onMessage", base::ListValue(),
+      profile());
+  event->user_gesture = extensions::EventRouter::UserGestureState::kEnabled;
+  // Dispatch the event which will ultimately trigger RouteDispatchEvent
+  // with `params->is_user_gesture` = true.
+  extensions::EventRouter::Get(profile())->DispatchEventToExtension(
+      extension->id(), std::move(event));
+
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  histogram_tester.ExpectBucketCount("Extensions.Tabs.UpdateAction",
+                                     2 /* kDSERedirectsWithUserGesture */, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest, DSETabsRemoveAction) {
+  tabs::TabInterface* new_tab =
+      GetTabListInterface()->OpenTab(GURL("about:blank"), -1, true);
+  content::WebContents* web_contents = new_tab->GetContents();
+  std::ignore = content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("/search?q=foo"));
+
+  web_contents->GetController().GetLastCommittedEntry()->SetTimestamp(
+      base::Time::Now());
+
+  base::HistogramTester histogram_tester;
+
+  static constexpr char kManifest[] =
+      R"({
+         "name": "RemoveAction Extension",
+         "version": "0.1",
+         "manifest_version": 3,
+         "permissions": ["tabs"],
+         "background": { "service_worker" : "background.js" }
+       })";
+  static constexpr char kBackground[] =
+      R"(
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          chrome.tabs.remove(tabs[0].id, () => {
+            chrome.test.succeed();
+          });
+        });
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  histogram_tester.ExpectBucketCount("Extensions.Tabs.RemoveAction",
+                                     1 /* kDSERemovalsWithoutUserGesture */, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest, NonDSETabsRemoveAction) {
+  std::ignore = GetTabListInterface()->OpenTab(GURL("about:blank"), -1, true);
+
+  base::HistogramTester histogram_tester;
+
+  static constexpr char kManifest[] =
+      R"({
+         "name": "RemoveAction Extension",
+         "version": "0.1",
+         "manifest_version": 3,
+         "permissions": ["tabs"],
+         "background": { "service_worker" : "background.js" }
+       })";
+  static constexpr char kBackground[] =
+      R"(
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          chrome.tabs.remove(tabs[0].id, () => {
+            chrome.test.succeed();
+          });
+        });
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  histogram_tester.ExpectBucketCount("Extensions.Tabs.RemoveAction",
+                                     0 /* kOtherRemovals */, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,
+                       DSETabsRemoveActionAfterLandingOnSERP) {
+  tabs::TabInterface* new_tab =
+      GetTabListInterface()->OpenTab(GURL("about:blank"), -1, true);
+  content::WebContents* web_contents = new_tab->GetContents();
+  std::ignore = content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("/search?q=foo"));
+
+  web_contents->GetController().GetLastCommittedEntry()->SetTimestamp(
+      base::Time::Now() - base::Seconds(6));
+
+  base::HistogramTester histogram_tester;
+
+  static constexpr char kManifest[] =
+      R"({
+         "name": "RemoveAction Extension",
+         "version": "0.1",
+         "manifest_version": 3,
+         "permissions": ["tabs"],
+         "background": { "service_worker" : "background.js" }
+       })";
+  static constexpr char kBackground[] =
+      R"(
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          chrome.tabs.remove(tabs[0].id, () => {
+            chrome.test.succeed();
+          });
+        });
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  histogram_tester.ExpectBucketCount("Extensions.Tabs.RemoveAction",
+                                     3 /* kDSERemovalsAfterLandingOnSERP */, 1);
 }
