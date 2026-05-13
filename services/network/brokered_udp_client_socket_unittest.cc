@@ -291,7 +291,12 @@ TEST_F(BrokeredUdpClientSocketTest, SetOptions) {
   EXPECT_TRUE(socket_->get_use_non_blocking_io_for_testing());
 
   // Set up a new socket to check that options are set correctly when sockets
-  // don't need to be brokered on win.
+  // don't need to be brokered on win. Force the non-brokered path via the
+  // delegate, since `IPv4AllZeros()` is not publicly routable and would
+  // otherwise be brokered by `BrokerHelperWin::ShouldBroker` (see
+  // crbug.com/466139402).
+  client_socket_factory_.SetBrokerHelperDelegateForTesting(
+      std::make_unique<TestBrokerHelperDelegate>(false));
   auto new_socket = client_socket_factory_.CreateBrokeredUdpClientSocket(
       net::DatagramSocket::DEFAULT_BIND, net::NetLog::Get(),
       net::NetLogSource());
@@ -308,6 +313,9 @@ TEST_F(BrokeredUdpClientSocketTest, SetOptions) {
   EXPECT_EQ(rv, net::ERR_ADDRESS_INVALID);
   EXPECT_EQ(new_socket->get_multicast_interface_for_testing(), uint32_t(1));
   EXPECT_TRUE(new_socket->get_use_non_blocking_io_for_testing());
+
+  // Clean up the broker helper for remaining tests.
+  client_socket_factory_.SetBrokerHelperDelegateForTesting(nullptr);
 #endif
 }
 
