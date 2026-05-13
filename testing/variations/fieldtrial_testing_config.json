@@ -26063,7 +26063,8 @@
                         "WebUIReloadButtonDeferBrowserViewShow": "true",
                         "WebUIReloadButtonKeepVisibleUntilPaint": "true",
                         "config": "",
-                        "high_stream_priority": "true"
+                        "high_stream_priority": "true",
+                        "without_spellcheck": "true"
                     },
                     "enable_features": [
                         "InitialWebUI",
