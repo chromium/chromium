@@ -232,6 +232,13 @@ class BrowserView : public BrowserWindow,
   // Container for the tabstrip, toolbar, etc.
   TopContainerView* top_container() { return top_container_; }
 
+  std::optional<int> theme_background_y_offset() const {
+    return theme_background_y_offset_;
+  }
+  void set_theme_background_y_offset(std::optional<int> offset) {
+    theme_background_y_offset_ = offset;
+  }
+
 #if BUILDFLAG(IS_MAC)
   views::Widget* overlay_widget() { return overlay_widget_.get(); }
   const views::Widget* overlay_widget() const { return overlay_widget_.get(); }
@@ -1162,6 +1169,11 @@ class BrowserView : public BrowserWindow,
   // This is used to correctly reparent the top container when exiting
   // fullscreen mode. See BrowserView::ReparentTopContainerForEndOfImmersive.
   std::optional<size_t> top_container_insertion_index_;
+
+  // Optional offset applied to background painted by ThemedBackground w.r.t to
+  // the browswe_view. (See `ThemedBackground::PaintThemeAlignedImage()` for
+  // details)
+  std::optional<int> theme_background_y_offset_;
 
   // Menu button and page status icons. Only used by web-app windows.
   raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;

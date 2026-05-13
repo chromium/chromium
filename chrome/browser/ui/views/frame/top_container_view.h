@@ -24,8 +24,6 @@ class TopContainerView : public views::View {
   TopContainerView& operator=(const TopContainerView&) = delete;
   ~TopContainerView() override;
 
-  void OnImmersiveRevealUpdated();
-
   // When this is the top element in the browser, returns whether `test_point`
   // is in the caption area.
   bool IsPositionInWindowCaption(const gfx::Point& test_point) const;

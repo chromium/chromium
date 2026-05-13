@@ -35,19 +35,6 @@ TopContainerView::TopContainerView(BrowserView* browser_view)
 
 TopContainerView::~TopContainerView() = default;
 
-void TopContainerView::OnImmersiveRevealUpdated() {
-  SchedulePaint();
-
-  // TODO(crbug.com/41489962): Remove this once the View::SchedulePaint() API
-  // has been updated to correctly invalidate layer-backed child views.
-  for (auto& child : children()) {
-    if (child->layer()) {
-      child->layer()->SchedulePaint(
-          ConvertRectToTarget(this, child, GetLocalBounds()));
-    }
-  }
-}
-
 bool TopContainerView::IsPositionInWindowCaption(
     const gfx::Point& test_point) const {
   const ToolbarView* const toolbar = browser_view_->toolbar();

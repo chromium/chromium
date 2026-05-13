@@ -6,9 +6,11 @@
 
 #include <optional>
 
+#include "base/logging.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/theme_provider.h"
@@ -83,6 +85,10 @@ void ThemedBackground::PaintThemeAlignedImage(gfx::Canvas* canvas,
   // Add in the translation to account for positioning of the theme image
   // relative of the origin of BrowserView.
   pos.Offset(0, ThemeProperties::kFrameHeightAboveTabs);
+
+  if (browser_view->theme_background_y_offset()) {
+    pos.set_y(pos.y() + *browser_view->theme_background_y_offset());
+  }
 
   // Make sure the the background will cover the entire clip path region.
   // TODO(crbug.com/41344902): Remove the clip code and just use local bounds

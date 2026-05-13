@@ -278,3 +278,45 @@ TEST_F(ImmersiveModeControllerChromeosTest, CallEnableForWidgetWhenNeeded) {
   controller()->SetEnabled(/*enabled=*/false);
   ASSERT_FALSE(controller()->IsEnabled());
 }
+
+// Test that `theme_background_y_offset` is correctly set during immersive
+// reveal animation.
+TEST_F(ImmersiveModeControllerChromeosTest, ThemeOffsetDuringReveal) {
+  AddTab(browser(), GURL("about:blank"));
+  ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
+
+  ASSERT_TRUE(browser_view()->theme_background_y_offset().has_value());
+  EXPECT_EQ(0, browser_view()->theme_background_y_offset().value());
+
+  auto* delegate =
+      static_cast<chromeos::ImmersiveFullscreenControllerDelegate*>(
+          static_cast<ImmersiveModeControllerChromeos*>(controller()));
+
+  // Initially, visible fraction is 0 in immersive fullscreen (unrevealed).
+  delegate->SetVisibleFraction(0.0);
+  ASSERT_TRUE(browser_view()->theme_background_y_offset().has_value());
+  EXPECT_EQ(0, browser_view()->theme_background_y_offset().value());
+
+  // Start of reveal animation: old fraction = 0.0, new fraction > 0.0.
+  // The theme offset should be set to -GetTopContainerVerticalOffset.
+  delegate->SetVisibleFraction(0.1);
+  int expected_offset = -controller()->GetTopContainerVerticalOffset(
+      browser_view()->top_container()->size());
+  ASSERT_TRUE(browser_view()->theme_background_y_offset().has_value());
+  EXPECT_EQ(expected_offset,
+            browser_view()->theme_background_y_offset().value());
+
+  // Subsequent updates during the animation should reset the offset to 0.
+  delegate->SetVisibleFraction(0.5);
+  ASSERT_TRUE(browser_view()->theme_background_y_offset().has_value());
+  EXPECT_EQ(0, browser_view()->theme_background_y_offset().value());
+
+  // End of reveal animation:
+  delegate->SetVisibleFraction(1.0);
+  ASSERT_TRUE(browser_view()->theme_background_y_offset().has_value());
+  EXPECT_EQ(0, browser_view()->theme_background_y_offset().value());
+
+  // Exiting immersive mode should clear the offset.
+  ChromeOSBrowserUITest::ExitImmersiveFullscreenMode(browser());
+  EXPECT_FALSE(browser_view()->theme_background_y_offset().has_value());
+}
