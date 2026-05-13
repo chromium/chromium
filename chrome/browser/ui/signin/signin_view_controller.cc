@@ -245,35 +245,26 @@ GURL GetSigninUrlForDiceSigninTab(
     signin_metrics::Reason signin_reason,
     const std::string& email_hint,
     const GURL& continue_url) {
-  if (signin_reason != signin_metrics::Reason::kAddSecondaryAccount &&
-      signin_reason != signin_metrics::Reason::kReauthentication) {
-    return signin::GetChromeSyncURLForDice(
-        {.email = email_hint, .continue_url = continue_url});
-  }
-
-  bool use_chrome_sync_url = true;
-  // A reauth is requested, or the account is already signed in (which is
-  // effectively a reauth).
-  if (signin_reason == signin_metrics::Reason::kReauthentication ||
-      identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    use_chrome_sync_url = false;
-  }
-
+  // Use the add account URL if it's a reauthentication, or if we are adding a
+  // secondary account and already have a primary account.
   // TODO(crbug.com/425645725): Investigates simplifying the params such as the
   // signin_reason and its available values.
-  if (use_chrome_sync_url) {
-    // Note: The sync confirmation screen will NOT be displayed after signin,
-    // if the reason is `kAddSecondaryAccount`.
-    signin::ChromeSyncUrlArgs sync_url_args{.email = email_hint,
-                                            .continue_url = continue_url};
-    if (access_point == signin_metrics::AccessPoint::kExtensions &&
-        signin_reason == signin_metrics::Reason::kAddSecondaryAccount) {
-      sync_url_args.flow = signin::Flow::PROMO;
-    }
-    return signin::GetChromeSyncURLForDice(sync_url_args);
+  bool use_add_account_url =
+      signin_reason == signin_metrics::Reason::kReauthentication ||
+      (signin_reason == signin_metrics::Reason::kAddSecondaryAccount &&
+       identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  if (use_add_account_url) {
+    return signin::GetAddAccountURLForDice(email_hint, continue_url);
   }
 
-  return signin::GetAddAccountURLForDice(email_hint, continue_url);
+  signin::ChromeSyncUrlArgs sync_url_args{.email = email_hint,
+                                          .continue_url = continue_url};
+  if (access_point == signin_metrics::AccessPoint::kExtensions &&
+      signin_reason == signin_metrics::Reason::kAddSecondaryAccount) {
+    sync_url_args.flow = signin::Flow::PROMO;
+  }
+  return signin::GetChromeSyncURLForDice(sync_url_args);
 }
 
 ChromeSignoutConfirmationPromptVariant GetSignoutConfirmationPromptVariant(
