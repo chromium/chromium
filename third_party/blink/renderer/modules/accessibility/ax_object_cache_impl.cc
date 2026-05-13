@@ -3205,8 +3205,10 @@ void AXObjectCacheImpl::FinalizeTree() {
         continue;
       }
       obj->UpdateChildrenIfNecessary();
-      if (obj->HasDirtyDescendants()) {
-        obj->SetHasDirtyDescendants(false);
+      if (obj->HasDirtyDescendants() || obj->IsIgnored()) {
+        if (obj->HasDirtyDescendants()) {
+          obj->SetHasDirtyDescendants(false);
+        }
         for (auto& child : obj->ChildrenIncludingIgnored()) {
           objects_to_process.push_back(child);
         }

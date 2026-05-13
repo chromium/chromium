@@ -229,6 +229,41 @@ TEST_F(AccessibilityTest, UpdateAXForAllDocumentsAfterPausedUpdates) {
   CHECK(!root->NeedsToUpdateCachedValues());
 }
 
+TEST_F(AccessibilityTest,
+       FinalizeTreeClearsDirtyDescendantsBelowCleanIgnoredObject) {
+  SetBodyInnerHTML(R"HTML(
+      <p id="before">before</p>
+      <div>
+        <p id="paragraph">paragraph</p>
+      </div>
+      <p id="after">after</p>)HTML");
+
+  auto& cache = GetAXObjectCache();
+  AXObject* body = GetAXBodyObject();
+  ASSERT_NE(nullptr, body);
+  ASSERT_EQ(3, body->ChildCountIncludingIgnored());
+  AXObject* ignored_div = body->ChildAtIncludingIgnored(1);
+  ASSERT_NE(nullptr, ignored_div);
+  ASSERT_TRUE(ignored_div->IsIgnored());
+  AXObject* paragraph = GetAXObjectByElementId("paragraph");
+  ASSERT_NE(nullptr, paragraph);
+  ASSERT_EQ(ignored_div, paragraph->ParentObjectIncludedInTree());
+  AXObject* text = paragraph->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, text->RoleValue());
+
+  text->SetNeedsToUpdateChildren();
+  ASSERT_TRUE(paragraph->HasDirtyDescendants());
+  ASSERT_TRUE(ignored_div->HasDirtyDescendants());
+
+  // Simulate a state that can occur mid-finalization: the ignored ancestor was
+  // already processed and had its dirty-descendant bit cleared, but a
+  // descendant below it was dirtied later in the same tree update.
+  ignored_div->SetHasDirtyDescendants(false);
+  cache.UpdateAXForAllDocuments();
+  EXPECT_FALSE(paragraph->HasDirtyDescendants());
+}
+
 TEST_F(AccessibilityTest, AccessibilityFocus) {
   String test_content =
       "<body>"
