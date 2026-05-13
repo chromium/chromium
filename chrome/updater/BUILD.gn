@@ -926,7 +926,6 @@ if (is_win || is_mac || is_linux) {
       "policy/policy_manager_unittest.cc",
       "policy/service_unittest.cc",
       "prefs_unittest.cc",
-      "tag_fuzztest.cc",
       "tag_unittest.cc",
       "test/dm_policy_builder.cc",
       "test/dm_policy_builder.h",
@@ -1282,11 +1281,23 @@ if (is_win || is_mac || is_linux) {
     }
   }
 
-  updater_fuzztests = [
-    "TagFuzzTest.FuzzParseBroad",
-    "TagFuzzTest.FuzzParseShared",
-    "TagFuzzTest.FuzzReadTag",
-  ]
+  test("updater_fuzztests") {
+    testonly = true
+    sources = [ "tag_fuzztest.cc" ]
+    fuzztests = [
+      "TagFuzzTest.FuzzParseBroad",
+      "TagFuzzTest.FuzzParseShared",
+      "TagFuzzTest.FuzzReadTag",
+    ]
+    deps = [
+      ":base",
+      ":constants_test",
+      ":tagging",
+      "//base",
+      "//base/test:run_all_unittests",
+      "//third_party/fuzztest",
+    ]
+  }
 
   # These tests are run serially since they mutate system state.
   test("updater_tests") {
@@ -1297,8 +1308,6 @@ if (is_win || is_mac || is_linux) {
       "test/run_all_unittests.cc",
       "test/test_scope_user.cc",
     ]
-
-    fuzztests = updater_fuzztests
 
     deps = [
       ":base",
@@ -1339,8 +1348,6 @@ if (is_win || is_mac || is_linux) {
       "test/run_all_unittests.cc",
       "test/test_scope_system.cc",
     ]
-
-    fuzztests = updater_fuzztests
 
     deps = [
       ":base",

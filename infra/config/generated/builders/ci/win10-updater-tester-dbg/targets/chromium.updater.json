@@ -5,6 +5,23 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/updater:updater_fuzztests",
+        "module_scheme": "gtest",
+        "name": "updater_fuzztests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "updater_fuzztests",
+        "test_id_prefix": "ninja://chrome/updater:updater_fuzztests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//chrome/updater:updater_tests",
         "module_scheme": "gtest",
         "name": "updater_tests",

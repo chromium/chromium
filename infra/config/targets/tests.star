@@ -2634,6 +2634,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "updater_fuzztests",
+)
+
+targets.tests.gtest_test(
     name = "updater_tests_system",
 )
 

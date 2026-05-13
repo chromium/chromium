@@ -6808,6 +6808,7 @@ targets.bundle(
     name = "updater_gtests_linux",
     targets = [
         "updater_tests",
+        "updater_fuzztests",
         # 'updater_tests_system' is not yet supported on Linux.
     ],
     per_test_modifications = {
@@ -6822,6 +6823,7 @@ targets.bundle(
     targets = [
         "updater_tests",
         "updater_tests_system",
+        "updater_fuzztests",
     ],
     per_test_modifications = {
         "updater_tests": [
@@ -6838,6 +6840,7 @@ targets.bundle(
     targets = [
         "updater_tests",
         "updater_tests_system",
+        "updater_fuzztests",
     ],
     per_test_modifications = {
         "updater_tests": [

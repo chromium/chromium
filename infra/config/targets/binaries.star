@@ -2433,6 +2433,13 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "updater_fuzztests",
+    label = "//chrome/updater:updater_fuzztests",
+    skip_usage_check = True,
+    module_scheme = "gtest",
+)
+
+targets.binaries.console_test_launcher(
     name = "updater_tests_system",
     label = "//chrome/updater:updater_tests_system",
     # All references have been moved to starlark
