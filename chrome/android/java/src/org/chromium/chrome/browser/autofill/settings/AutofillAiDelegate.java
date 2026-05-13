@@ -201,17 +201,12 @@ public class AutofillAiDelegate {
 
     private void addDisabledSettingsInfoCard(
             PreferenceScreen screen, @AutofillOptionsReferrer int referrer) {
-        boolean isAutofillAiOn =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
         // LINT.IfChange(AddDisabledSettingsInfoCard)
         CardWithButtonPreference disabledSettingsInfoPref =
                 new CardWithButtonPreference(getStyledContext(), null);
         disabledSettingsInfoPref.setKey(DISABLED_SETTINGS_INFO);
         disabledSettingsInfoPref.setTitle(R.string.autofill_disable_settings_explanation_title);
-        disabledSettingsInfoPref.setSummary(
-                isAutofillAiOn
-                        ? R.string.autofill_disable_settings_explanation_v2
-                        : R.string.autofill_disable_settings_explanation);
+        disabledSettingsInfoPref.setSummary(getDisabledSettingsSummaryResId());
         // LINT.ThenChange(:DynamicDisabledSettingsInfoCard)
         disabledSettingsInfoPref.setButtonText(
                 mFragment
@@ -232,6 +227,12 @@ public class AutofillAiDelegate {
         screen.addPreference(disabledSettingsInfoPref);
     }
 
+    private static int getDisabledSettingsSummaryResId() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+                ? R.string.autofill_disable_settings_explanation_v2
+                : R.string.autofill_disable_settings_explanation;
+    }
+
     /** Adds an information card to the search index if Chrome settings are disabled. */
     static void maybeAddDisabledSettingsInfoCard(
             SettingsIndexData indexData, Profile profile, String prefFragmentName) {
@@ -246,16 +247,12 @@ public class AutofillAiDelegate {
 
     private static void addDisabledSettingsInfoCard(
             SettingsIndexData indexData, String prefFragmentName) {
-        boolean isAutofillAiOn =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
         // LINT.IfChange(DynamicDisabledSettingsInfoCard)
         indexData.addEntryForKey(
                 prefFragmentName,
                 DISABLED_SETTINGS_INFO,
                 R.string.autofill_disable_settings_explanation_title,
-                isAutofillAiOn
-                        ? R.string.autofill_disable_settings_explanation_v2
-                        : R.string.autofill_disable_settings_explanation);
+                getDisabledSettingsSummaryResId());
         // LINT.ThenChange(:AddDisabledSettingsInfoCard)
     }
 
