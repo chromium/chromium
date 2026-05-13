@@ -53,7 +53,7 @@ dictionary CpuInfo {
 interface CPU {
   // Queries basic CPU information of the system.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<CpuInfo> getInfo();
+  static Promise<CpuInfo> getInfo();
 };
 
 partial interface System {

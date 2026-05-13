@@ -85,7 +85,7 @@ interface Offscreen {
   // |Returns|: Promise that resolves with the result of whether the
   // extension has an active offscreen document.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<boolean> hasDocument();
+  static Promise<boolean> hasDocument();
 };
 
 partial interface Browser {

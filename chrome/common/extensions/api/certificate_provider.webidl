@@ -267,16 +267,14 @@ interface CertificateProvider {
   // unsuccessfully (e.g. the dialog was canceled by the user or was not
   // allowed to be shown).
   // |PromiseValue|: details
-  [requiredCallback] static Promise<PinResponseDetails?> requestPin(
-      RequestPinDetails details);
+  static Promise<PinResponseDetails?> requestPin(RequestPinDetails details);
 
   // Stops the pin request started by the $(ref:requestPin) function.
   // |details|: Contains the details about the reason for stopping the
   // request flow.
   // |Returns|: Returns a Promise which resolves when the request to close
   //   the PIN dialog is complete.
-  [requiredCallback] static Promise<undefined> stopPinRequest(
-      StopPinRequestDetails details);
+  static Promise<undefined> stopPinRequest(StopPinRequestDetails details);
 
   // Sets a list of certificates to use in the browser.
   // <p>The extension should call this function after initialization and on
@@ -286,16 +284,14 @@ interface CertificateProvider {
   // received.</p>
   // |details|: The certificates to set. Invalid certificates will be ignored.
   // |Returns|: Returns a Promise which resolves upon completion.
-  static Promise<undefined> setCertificates(
-      SetCertificatesDetails details);
+  static Promise<undefined> setCertificates(SetCertificatesDetails details);
 
   // Should be called as a response to $(ref:onSignatureRequested).
   // <p>The extension must eventually call this function for every
   // $(ref:onSignatureRequested) event; the API implementation will stop
   // waiting for this call after some time and respond with a timeout
   // error when this function is called.</p>
-  static Promise<undefined> reportSignature(
-      ReportSignatureDetails details);
+  static Promise<undefined> reportSignature(ReportSignatureDetails details);
 
   // This event fires if the certificates set via $(ref:setCertificates)
   // are insufficient or the browser requests updated information. The

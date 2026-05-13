@@ -497,7 +497,7 @@ interface DocumentScan {
   // |options| : An object containing scan parameters.
   // |Returns| : Returns a Promise which resolves with the scan results.
   // |PromiseValue| : result
-  [requiredCallback] static Promise<ScanResults> scan(ScanOptions options);
+  static Promise<ScanResults> scan(ScanOptions options);
 
   // Gets the list of available scanners and returns a Promise that
   // resolves with a $(ref:GetScannerListResponse) object. If a callback
@@ -507,8 +507,7 @@ interface DocumentScan {
   // |Returns| : Returns a Promise which resolves with the result and list of
   // scanners.
   // |PromiseValue| : response
-  [requiredCallback] static Promise<GetScannerListResponse> getScannerList(
-      DeviceFilter filter);
+  static Promise<GetScannerListResponse> getScannerList(DeviceFilter filter);
 
   // Opens a scanner for exclusive access and returns a Promise that
   // resolves with an $(ref:OpenScannerResponse) object. If a callback
@@ -517,8 +516,7 @@ interface DocumentScan {
   // returned from a previous call to $(ref:getScannerList).
   // |Returns| : Returns a Promise which resolves with the result.
   // |PromiseValue| : response
-  [requiredCallback] static Promise<OpenScannerResponse> openScanner(
-      DOMString scannerId);
+  static Promise<OpenScannerResponse> openScanner(DOMString scannerId);
 
   // Gets the group names and member options from a scanner previously
   // opened by $(ref:openScanner). This method returns a Promise that
@@ -528,7 +526,7 @@ interface DocumentScan {
   // to $(ref:openScanner).
   // |Returns| : Returns a Promise which resolves with the result.
   // |PromiseValue| : response
-  [requiredCallback] static Promise<GetOptionGroupsResponse> getOptionGroups(
+  static Promise<GetOptionGroupsResponse> getOptionGroups(
       DOMString scannerHandle);
 
   // Closes the scanner with the passed in handle and returns a Promise
@@ -540,8 +538,7 @@ interface DocumentScan {
   // previously returned from a call to $(ref:openScanner).
   // |Returns| : Returns a Promise which resolves with the result.
   // |PromiseValue| : response
-  [requiredCallback] static Promise<CloseScannerResponse> closeScanner(
-      DOMString scannerHandle);
+  static Promise<CloseScannerResponse> closeScanner(DOMString scannerHandle);
 
   // Sets options on the specified scanner and returns a Promise that
   // resolves with a $(ref:SetOptionsResponse) object containing the
@@ -554,7 +551,7 @@ interface DocumentScan {
   // the scanner.
   // |Returns| : Returns a Promise which resolves with the result.
   // |PromiseValue| : response
-  [requiredCallback] static Promise<SetOptionsResponse> setOptions(
+  static Promise<SetOptionsResponse> setOptions(
       DOMString scannerHandle, sequence<OptionSetting> options);
 
   // Starts a scan on the specified scanner and returns a Promise that
@@ -570,7 +567,7 @@ interface DocumentScan {
   // <code>ScannerInfo</code>.
   // |Returns| : Returns a Promise which resolves with the result.
   // |PromiseValue| : response
-  [requiredCallback] static Promise<StartScanResponse> startScan(
+  static Promise<StartScanResponse> startScan(
       DOMString scannerHandle, StartScanOptions options);
 
   // Cancels a started scan and returns a Promise that resolves with a
@@ -580,8 +577,7 @@ interface DocumentScan {
   // call to $(ref:startScan).
   // |Returns| : Returns a Promise which resolves with the result.
   // |PromiseValue| : response
-  [requiredCallback] static Promise<CancelScanResponse> cancelScan(
-      DOMString job);
+  static Promise<CancelScanResponse> cancelScan(DOMString job);
 
   // Reads the next chunk of available image data from an active job handle,
   // and returns a Promise that resolves with a $(ref:ReadScanDataResponse)
@@ -600,8 +596,7 @@ interface DocumentScan {
   // $(ref:startScan).
   // |Returns| : Returns a Promise which resolves with the result.
   // |PromiseValue| : response
-  [requiredCallback] static Promise<ReadScanDataResponse> readScanData(
-      DOMString job);
+  static Promise<ReadScanDataResponse> readScanData(DOMString job);
 };
 
 partial interface Browser {

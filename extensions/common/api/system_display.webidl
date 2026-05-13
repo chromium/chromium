@@ -337,14 +337,14 @@ interface Display {
   // |flags|: Options affecting how the information is returned.
   // |Returns|: Promise that resolves with the results.
   // |PromiseValue|: displayInfo
-  [requiredCallback] static Promise<sequence<DisplayUnitInfo>> getInfo(
+  static Promise<sequence<DisplayUnitInfo>> getInfo(
       optional GetInfoFlags flags);
 
   // Requests the layout info for all displays.
   // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
   // |Returns|: Promise that resolves with the results.
   // |PromiseValue|: layouts
-  [requiredCallback] static Promise<sequence<DisplayLayout>> getDisplayLayout();
+  static Promise<sequence<DisplayLayout>> getDisplayLayout();
 
   // Updates the properties for the display specified by |id|, according to
   // the information provided in |info|. On failure, $(ref:runtime.lastError)
@@ -367,8 +367,7 @@ interface Display {
   // |layouts|: The layout information, required for all displays except
   //     the primary display.
   // |Returns|: Promise that resolves when the function finishes.
-  static Promise<undefined> setDisplayLayout(
-      sequence<DisplayLayout> layouts);
+  static Promise<undefined> setDisplayLayout(sequence<DisplayLayout> layouts);
 
   // Enables/disables the unified desktop feature. If enabled while mirroring
   // is active, the desktop mode will not change until mirroring is turned

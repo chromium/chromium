@@ -26,7 +26,6 @@ interface NetworkingAttributes {
   // |Returns|: Returns a Promise which resolves with the device's default
   // network's $(ref:NetworkDetails).
   // |PromiseValue|: networkAddresses
-  [requiredCallback]
   static Promise<NetworkDetails> getNetworkDetails();
 };
 

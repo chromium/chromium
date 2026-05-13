@@ -553,7 +553,7 @@ interface OnMediaPerceptionEvent : ExtensionEvent {
   // Gets the status of the media perception process.
   // |Returns| : The current state of the system.
   // |PromiseValue| : state
-  [requiredCallback] static Promise<State> getState();
+  static Promise<State> getState();
 
   // Sets the desired state of the system.
   // |state| : A dictionary with the desired new state. The only settable
@@ -562,12 +562,12 @@ interface OnMediaPerceptionEvent : ExtensionEvent {
   // |Returns| : Invoked with the State of the system after setting it. Can
   // be used to verify the state was set as desired.
   // |PromiseValue| : state
-  [requiredCallback] static Promise<State> setState(State state);
+  static Promise<State> setState(State state);
 
   // Get a diagnostics buffer out of the video analytics process.
   // |Returns| : Returns a Diagnostics dictionary object.
   // |PromiseValue| : diagnostics
-  [requiredCallback] static Promise<Diagnostics> getDiagnostics();
+  static Promise<Diagnostics> getDiagnostics();
 
   // Attempts to download and load the media analytics component. This
   // function should be called every time a client starts using this API. If
@@ -580,8 +580,7 @@ interface OnMediaPerceptionEvent : ExtensionEvent {
   // |component| : The desired component to install and load.
   // |Returns| : Returns the state of the component.
   // |PromiseValue| : componentState
-  [requiredCallback] static Promise<ComponentState> setAnalyticsComponent(
-      Component component);
+  static Promise<ComponentState> setAnalyticsComponent(Component component);
 
   // Manages the lifetime of the component process. This function should
   // only be used if the component is installed. It will fail if the
@@ -590,7 +589,7 @@ interface OnMediaPerceptionEvent : ExtensionEvent {
   // |Returns| : Reports the new state of the process, which is expected to
   // be the same as the desired state, unless something goes wrong.
   // |PromiseValue| : processState
-  [requiredCallback] static Promise<ProcessState> setComponentProcessState(
+  static Promise<ProcessState> setComponentProcessState(
       ProcessState processState);
 
   // Fired when media perception information is received from the media

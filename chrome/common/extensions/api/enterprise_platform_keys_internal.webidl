@@ -34,7 +34,7 @@ interface PlatformKeysInternal {
   // token IDs instead of token objects.
   // |Returns|: Invoked by <code>getTokens</code>.
   // |PromiseValue|: tokenIds: The list of IDs of the available Tokens.
-  [requiredCallback] static Promise<sequence<DOMString>> getTokens();
+  static Promise<sequence<DOMString>> getTokens();
 
   // Internal version of SubtleCrypto.generateKey, currently supporting only
   // RSASSA-PKCS1-v1_5 and ECDSA.
@@ -46,7 +46,7 @@ interface PlatformKeysInternal {
   // key.
   // |PromiseValue|: publicKey: The Subject Public Key Info (see X.509) of the
   // generated key in DER encoding.
-  [requiredCallback] static Promise<ArrayBuffer> generateKey(
+  static Promise<ArrayBuffer> generateKey(
       DOMString tokenId,
       Algorithm algorithm,
       boolean softwareBacked);

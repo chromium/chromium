@@ -20,7 +20,7 @@ interface Network {
   // |Returns|: Called when local adapter information is available.
   // |PromiseValue|: networkInterfaces: Array of object containing network
   // interfaces information.
-  [requiredCallback] static Promise<sequence<NetworkInterface>> getNetworkInterfaces();
+  static Promise<sequence<NetworkInterface>> getNetworkInterfaces();
 };
 
 partial interface System {

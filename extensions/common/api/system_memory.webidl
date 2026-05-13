@@ -13,7 +13,7 @@ dictionary MemoryInfo {
 interface Memory {
   // Get physical memory information.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<MemoryInfo> getInfo();
+  static Promise<MemoryInfo> getInfo();
 };
 
 partial interface System {

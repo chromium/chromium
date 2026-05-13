@@ -89,7 +89,7 @@ interface EnterprisePlatformKeys {
   // |Returns|: Invoked by <code>getTokens</code> with the list of available
   // Tokens.
   // |PromiseValue|: tokens: The list of available tokens.
-  [nocompile, requiredCallback] static Promise<sequence<Token>> getTokens();
+  [nocompile] static Promise<sequence<Token>> getTokens();
 
   // Returns the list of all client certificates available from the given
   // token. Can be used to check for the existence and expiration of client
@@ -99,7 +99,6 @@ interface EnterprisePlatformKeys {
   // available certificates.
   // |PromiseValue|: certificates: The list of certificates, each in DER
   // encoding of a X.509     certificate.
-  [requiredCallback]
   static Promise<sequence<ArrayBuffer>> getCertificates(DOMString tokenId);
 
   // Imports <code>certificate</code> to the given token if the certified key
@@ -152,7 +151,6 @@ interface EnterprisePlatformKeys {
   //            $(ref:ChallengeKeyOptions).
   // |Returns|: Returns a Promise which resolves with the challenge response.
   // |PromiseValue|: response: The challenge response.
-  [requiredCallback]
   static Promise<ArrayBuffer> challengeKey(ChallengeKeyOptions options);
 
   // Challenges a hardware-backed Enterprise Machine Key and emits the
@@ -185,7 +183,7 @@ interface EnterprisePlatformKeys {
   //                Machine Key.
   // |Returns|: Returns a Promise which resolves with the challenge response.
   // |PromiseValue|: response: The challenge response.
-  [deprecated="Use $(ref:challengeKey) instead.", requiredCallback]
+  [deprecated="Use $(ref:challengeKey) instead."]
   static Promise<ArrayBuffer> challengeMachineKey(ArrayBuffer challenge,
                                                   optional boolean registerKey);
 
@@ -218,7 +216,7 @@ interface EnterprisePlatformKeys {
   //                function will then generate a new Enterprise User Key.
   // |Returns|: Returns a Promise which resolves with the challenge response.
   // |PromiseValue|: response: The challenge response.
-  [deprecated="Use $(ref:challengeKey) instead.", requiredCallback]
+  [deprecated="Use $(ref:challengeKey) instead."]
   static Promise<ArrayBuffer> challengeUserKey(ArrayBuffer challenge,
                                                boolean registerKey);
 };

@@ -521,7 +521,6 @@ interface Downloads {
   // number of items per page, and set <code>startedAfter</code> to the
   // <code>startTime</code> of the last item from the last page.
   // |PromiseValue|: results
-  [requiredCallback]
   static Promise<sequence<DownloadItem>> search(DownloadQuery query);
 
   // Pause the download. If the request was successful the download is in a
@@ -560,7 +559,7 @@ interface Downloads {
   // |Returns|: Returns a Promise which resolves with a URL to an image that
   // represents the download.
   // |PromiseValue|: iconURL
-  [requiredCallback] static Promise<DOMString?> getFileIcon(
+  static Promise<DOMString?> getFileIcon(
       long downloadId,
       optional GetFileIconOptions options);
 

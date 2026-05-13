@@ -185,16 +185,13 @@ interface BluetoothSocket {
   // |properties| : The socket properties (optional).
   // |Returns|: Called when the socket has been created.
   // |PromiseValue|: createInfo: The result of the socket creation.
-  [requiredCallback] static Promise<CreateInfo> create(
-      optional SocketProperties properties);
+  static Promise<CreateInfo> create(optional SocketProperties properties);
 
   // Updates the socket properties.
   // |socketId| : The socket identifier.
   // |properties| : The properties to update.
   // |Returns|: Called when the properties are updated.
-  static Promise<undefined> update(
-      long socketId,
-      SocketProperties properties);
+  static Promise<undefined> update(long socketId, SocketProperties properties);
 
   // Enables or disables a connected socket from receiving messages from its
   // peer, or a listening socket from accepting new connections. The default
@@ -207,16 +204,14 @@ interface BluetoothSocket {
   // connection requests are refused. <code>onAccept</code> events are raised
   // only when the socket is un-paused.
   // |Returns|: Callback from the <code>setPaused</code> method.
-  static Promise<undefined> setPaused(
-      long socketId,
-      boolean paused);
+  static Promise<undefined> setPaused(long socketId, boolean paused);
 
   // Listen for connections using the RFCOMM protocol.
   // |socketId| : The socket identifier.
   // |uuid| : Service UUID to listen on.
   // |options| : Optional additional options for the service.
   // |Returns|: Called when listen operation completes.
-  [requiredCallback] static Promise<undefined> listenUsingRfcomm(
+  static Promise<undefined> listenUsingRfcomm(
       long socketId,
       DOMString uuid,
       optional ListenOptions options);
@@ -226,7 +221,7 @@ interface BluetoothSocket {
   // |uuid| : Service UUID to listen on.
   // |options| : Optional additional options for the service.
   // |Returns|: Called when listen operation completes.
-  [requiredCallback] static Promise<undefined> listenUsingL2cap(
+  static Promise<undefined> listenUsingL2cap(
       long socketId,
       DOMString uuid,
       optional ListenOptions options);
@@ -242,7 +237,7 @@ interface BluetoothSocket {
   // |address| : The address of the Bluetooth device.
   // |uuid| : The UUID of the service to connect to.
   // |Returns|: Called when the connect attempt is complete.
-  [requiredCallback] static Promise<undefined> connect(
+  static Promise<undefined> connect(
       long socketId,
       DOMString address,
       DOMString uuid);
@@ -250,8 +245,7 @@ interface BluetoothSocket {
   // Disconnects the socket. The socket identifier remains valid.
   // |socketId| : The socket identifier.
   // |Returns|: Called when the disconnect attempt is complete.
-  static Promise<undefined> disconnect(
-      long socketId);
+  static Promise<undefined> disconnect(long socketId);
 
   // Disconnects and destroys the socket. Each socket created should be
   // closed after use. The socket id is no longer valid as soon at the
@@ -259,29 +253,25 @@ interface BluetoothSocket {
   // when the callback is invoked.
   // |socketId| : The socket identifier.
   // |Returns|: Called when the <code>close</code> operation completes.
-  static Promise<undefined> close(
-      long socketId);
+  static Promise<undefined> close(long socketId);
 
   // Sends data on the given Bluetooth socket.
   // |socketId| : The socket identifier.
   // |data| : The data to send.
   // |Returns|: Called with the number of bytes sent.
   // |PromiseValue|: bytesSent: The number of bytes sent.
-  static Promise<long> send(
-      long socketId,
-      ArrayBuffer data);
+  static Promise<long> send(long socketId, ArrayBuffer data);
 
   // Retrieves the state of the given socket.
   // |socketId| : The socket identifier.
   // |Returns|: Called when the socket state is available.
   // |PromiseValue|: socketInfo: Object containing the socket information.
-  [requiredCallback] static Promise<SocketInfo> getInfo(
-      long socketId);
+  static Promise<SocketInfo> getInfo(long socketId);
 
   // Retrieves the list of currently opened sockets owned by the application.
   // |Returns|: Called when the list of sockets is available.
   // |PromiseValue|: sockets: Array of object containing socket information.
-  [requiredCallback] static Promise<sequence<SocketInfo>> getSockets();
+  static Promise<sequence<SocketInfo>> getSockets();
 
   // Event raised when a connection has been established for a given socket.
   static attribute OnAcceptEvent onAccept;

@@ -25,7 +25,7 @@ interface KioskInput {
   //            $(ref:SetCurrentInputMethodOptions).
   // |Returns|: Returns a Promise which resolves when the input method is
   // changed, or rejects if there is an error.
-  [requiredCallback] static Promise<undefined> setCurrentInputMethod(
+  static Promise<undefined> setCurrentInputMethod(
       SetCurrentInputMethodOptions options);
 };
 

@@ -228,11 +228,11 @@ interface OnFeedbackRequestedEvent : ExtensionEvent {
 interface FeedbackPrivate {
   // Returns the email of the currently active or logged in user.
   // |PromiseValue|: email
-  [requiredCallback] static Promise<DOMString> getUserEmail();
+  static Promise<DOMString> getUserEmail();
 
   // Returns the system information dictionary.
   // |PromiseValue|: systemInformation
-  [requiredCallback] static Promise<sequence<LogsMapEntry>>
+  static Promise<sequence<LogsMapEntry>>
   getSystemInformation();
 
   // Opens the feedback report window.
@@ -246,7 +246,7 @@ interface FeedbackPrivate {
   // |formOpenTime|: The epoch time when the feedback form was opened. This is
   // used for metrics.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<SendFeedbackResult> sendFeedback(
+  static Promise<SendFeedbackResult> sendFeedback(
       FeedbackInfo feedback, optional boolean loadSystemInfo,
       optional double formOpenTime);
 
@@ -276,8 +276,7 @@ interface FeedbackPrivate {
   //   <li>Returns the same <code>readerId</code> value to the callback.</li>
   // </ul>
   // |PromiseValue|: result
-  [requiredCallback] static Promise<ReadLogSourceResult> readLogSource(
-      ReadLogSourceParams params);
+  static Promise<ReadLogSourceResult> readLogSource(ReadLogSourceParams params);
 
   // Fired when the a user requests the launch of the feedback UI. We're
   // using an event for this versus using the override API since we want

@@ -8,7 +8,7 @@ interface PrecedingExtendedAttributes {
 
   // Description on a function.
   // |Returns|: Promise return description.
-  [requiredCallback]
+  [nodoc]
   static Promise<boolean> functionExample();
 };
 

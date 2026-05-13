@@ -58,7 +58,7 @@ interface PrinterProviderInternal {
   //     needed.
   // |Returns|: Callback called with a blob of print data.
   // |PromiseValue|: blob
-  [requiredCallback] static Promise<Blob> getPrintData(long requestId);
+  static Promise<Blob> getPrintData(long requestId);
 };
 
 partial interface Browser {

@@ -905,8 +905,7 @@ interface ONC {
   // |networkGuid|: The GUID of the network to get properties for.
   // |Returns|: Called with the network properties when received.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<NetworkProperties> getProperties(
-      DOMString networkGuid);
+  static Promise<NetworkProperties> getProperties(DOMString networkGuid);
 
   // Gets the merged properties of the network with id networkGuid from the
   // sources: User settings, shared settings, user policy, device policy and
@@ -914,8 +913,7 @@ interface ONC {
   // |networkGuid|: The GUID of the network to get properties for.
   // |Returns|: Called with the managed network properties when received.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<ManagedProperties> getManagedProperties(
-      DOMString networkGuid);
+  static Promise<ManagedProperties> getManagedProperties(DOMString networkGuid);
 
   // Gets the cached read-only properties of the network with id networkGuid.
   // This is meant to be a higher performance function than
@@ -928,8 +926,7 @@ interface ONC {
   // |networkGuid|: The GUID of the network to get properties for.
   // |Returns|: Called immediately with the network state properties.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<NetworkStateProperties> getState(
-      DOMString networkGuid);
+  static Promise<NetworkStateProperties> getState(DOMString networkGuid);
 
   // Sets the properties of the network with id |networkGuid|. This is only
   // valid for configured networks (Source != None). Unconfigured visible
@@ -985,13 +982,13 @@ interface ONC {
   // |Returns|: Called with a dictionary of networks and their state
   //     properties when received.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<sequence<NetworkStateProperties>>
+  static Promise<sequence<NetworkStateProperties>>
   getNetworks(NetworkFilter filter);
 
   // Returns states of available networking devices.
   // |Returns|: Called with a list of devices and their state.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<sequence<DeviceStateProperties>>
+  static Promise<sequence<DeviceStateProperties>>
   getDeviceStates();
 
   // Enables any devices matching the specified network type. Note, the type
@@ -1032,13 +1029,13 @@ interface ONC {
   // |Returns|: A callback function that returns the results of the query for
   //     network captive portal status.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<CaptivePortalStatus> getCaptivePortalStatus(
+  static Promise<CaptivePortalStatus> getCaptivePortalStatus(
       DOMString networkGuid);
 
   // Gets the global policy properties. These properties are not expected to
   // change during a session.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<GlobalPolicy> getGlobalPolicy();
+  static Promise<GlobalPolicy> getGlobalPolicy();
 
   // Fired when the properties change on any of the networks.  Sends a list of
   // GUIDs for networks whose properties have changed.

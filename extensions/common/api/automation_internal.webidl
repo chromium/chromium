@@ -227,12 +227,12 @@ interface AutomationInternal {
   // |Returns|: Callback called when enableDesktop() returns. Returns the
   // accessibility tree id of the desktop tree.
   // |PromiseValue|: tree_id
-  [requiredCallback] static Promise<DOMString> enableDesktop();
+  static Promise<DOMString> enableDesktop();
 
   // Disables desktop automation.
   // |Returns|: Callback called when disableDesktop() returns. It is safe to
   // clear accessibility api state at that point.
-  [requiredCallback] static Promise<undefined> disableDesktop();
+  static Promise<undefined> disableDesktop();
 
   // Performs an action on an automation node.
   static undefined performAction(PerformActionRequiredParams args,

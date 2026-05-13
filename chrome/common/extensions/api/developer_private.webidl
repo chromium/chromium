@@ -625,19 +625,17 @@ interface DeveloperPrivate {
   // |id|: The id of the extension.
   // |Returns|: Called with the result.
   // |PromiseValue|: result
-  static Promise<ExtensionInfo> getExtensionInfo(
-      DOMString id);
+  static Promise<ExtensionInfo> getExtensionInfo(DOMString id);
 
   // Returns the size of a particular extension on disk (already formatted).
   // |id|: The id of the extension.
   // |Returns|: Called with the result.
   // |PromiseValue|: string
-  [requiredCallback] static Promise<DOMString> getExtensionSize(
-      DOMString id);
+  static Promise<DOMString> getExtensionSize(DOMString id);
 
   // Returns the current profile's configuration.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<ProfileInfo> getProfileConfiguration();
+  static Promise<ProfileInfo> getProfileConfiguration();
 
   // Updates the active profile.
   // |update|: The parameters for updating the profile's configuration.  Any
@@ -662,8 +660,7 @@ interface DeveloperPrivate {
   // Loads a user-selected unpacked item.
   // |options|: Additional configuration parameters.
   // |PromiseValue|: error
-  static Promise<LoadError?> loadUnpacked(
-      optional LoadUnpackedOptions options);
+  static Promise<LoadError?> loadUnpacked(optional LoadUnpackedOptions options);
 
   // Installs the file that was dragged and dropped onto the associated
   // page.
@@ -676,8 +673,7 @@ interface DeveloperPrivate {
   // Loads an extension / app.
   // |directory|: The directory to load the extension from.
   // |PromiseValue|: string
-  [requiredCallback] static Promise<DOMString> loadDirectory(
-      DirectoryEntry directory);
+  static Promise<DOMString> loadDirectory(DirectoryEntry directory);
 
   // Open Dialog to browse to an entry.
   // |selectType|: Select a file or a folder.
@@ -685,7 +681,7 @@ interface DeveloperPrivate {
   // key and load type is for an unpacked item.
   // |Returns|: called with selected item's path.
   // |PromiseValue|: string
-  [requiredCallback] static Promise<DOMString> choosePath(
+  static Promise<DOMString> choosePath(
       SelectType selectType,
       FileType fileType);
 
@@ -703,13 +699,11 @@ interface DeveloperPrivate {
   // Reads and returns the contents of a file related to an extension which
   // caused an error.
   // |PromiseValue|: response
-  [requiredCallback]
   static Promise<RequestFileSourceResponse> requestFileSource(
       RequestFileSourceProperties properties);
 
   // Open the developer tools to focus on a particular error.
-  static Promise<undefined> openDevTools(
-      OpenDevToolsProperties properties);
+  static Promise<undefined> openDevTools(OpenDevToolsProperties properties);
 
   // Delete reported extension errors.
   // |properties|: The properties specifying the errors to remove.
@@ -718,23 +712,19 @@ interface DeveloperPrivate {
 
   // Repairs the extension specified.
   // |extensionId|: The id of the extension to repair.
-  static Promise<undefined> repairExtension(
-      DOMString extensionId);
+  static Promise<undefined> repairExtension(DOMString extensionId);
 
   // Shows the options page for the extension specified.
   // |extensionId|: The id of the extension to show the options page for.
-  static Promise<undefined> showOptions(
-      DOMString extensionId);
+  static Promise<undefined> showOptions(DOMString extensionId);
 
   // Shows the path of the extension specified.
   // |extensionId|: The id of the extension to show the path for.
-  static Promise<undefined> showPath(
-      DOMString extensionId);
+  static Promise<undefined> showPath(DOMString extensionId);
 
   // (Un)suspends global shortcut handling.
   // |isSuspended|: Whether or not shortcut handling should be suspended.
-  static Promise<undefined> setShortcutHandlingSuspended(
-      boolean isSuspended);
+  static Promise<undefined> setShortcutHandlingSuspended(boolean isSuspended);
 
   // Updates an extension command.
   // |update|: The parameters for updating the extension command.
@@ -760,7 +750,7 @@ interface DeveloperPrivate {
   // Returns the user specified site settings (which origins can extensions
   // always/never run on) for the current profile.
   // |PromiseValue|: settings
-  [requiredCallback] static Promise<UserSiteSettings> getUserSiteSettings();
+  static Promise<UserSiteSettings> getUserSiteSettings();
 
   // Adds hosts to the set of user permitted or restricted sites. If any hosts
   // are in the other set than what's specified in `options`, then they are
@@ -776,13 +766,11 @@ interface DeveloperPrivate {
   // Returns all hosts specified by user site settings, grouped by each host's
   // eTLD+1.
   // |PromiseValue|: siteGroups
-  [requiredCallback]
   static Promise<sequence<SiteGroup>> getUserAndExtensionSitesByEtld();
 
   // Returns a list of extensions which have at least one matching site in
   // common between its set of host permissions and `site`.
   // |PromiseValue|: matchingExtensions
-  [requiredCallback]
   static Promise<sequence<MatchingExtensionInfo>> getMatchingExtensionsForSite(
       DOMString site);
 
@@ -809,8 +797,7 @@ interface DeveloperPrivate {
   // the extension is actually uploaded in `callback`. If the extension is not
   // eligible for upload or if there is no signed in user, returns an error.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<boolean> uploadExtensionToAccount(
-      DOMString extensionId);
+  static Promise<boolean> uploadExtensionToAccount(DOMString extensionId);
 
   // Shows the site settings for the extension.
   [platforms=("desktop_android")]

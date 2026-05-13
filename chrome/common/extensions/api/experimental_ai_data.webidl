@@ -7,12 +7,11 @@
 [implemented_in="chrome/browser/extensions/api/experimental_ai_data/experimental_ai_data_api.h"]
 interface ExperimentalAiData {
   // |PromiseValue|: data
-  [requiredCallback] static Promise<ArrayBuffer> getAiData(long domNodeId,
+  static Promise<ArrayBuffer> getAiData(long domNodeId,
                                                            DOMString frameId,
                                                            DOMString userInput,
                                                            long tabId);
   // |PromiseValue|: data
-  [requiredCallback]
   static Promise<ArrayBuffer> getAiDataWithSpecifier(
       long tabId,
       ArrayBuffer aiDataSpecifier);

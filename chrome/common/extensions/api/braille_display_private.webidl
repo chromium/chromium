@@ -80,7 +80,7 @@ interface OnKeyEventEvent : ExtensionEvent {
 interface BrailleDisplayPrivate {
   // Gets the current display state.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<DisplayState> getDisplayState();
+  static Promise<DisplayState> getDisplayState();
 
   // Write the given dot patterns to the display.  The buffer contains one
   // byte for each braille cell on the display, starting from the leftmost

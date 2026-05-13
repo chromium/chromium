@@ -69,17 +69,16 @@ interface Storage {
   // Get the storage information from the system. The argument passed to the
   // callback is an array of StorageUnitInfo objects.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<sequence<StorageUnitInfo>> getInfo();
+  static Promise<sequence<StorageUnitInfo>> getInfo();
 
   // Ejects a removable storage device.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<EjectDeviceResultCode> ejectDevice(
-      DOMString id);
+  static Promise<EjectDeviceResultCode> ejectDevice(DOMString id);
 
   // Get the available capacity of a specified |id| storage device.
   // The |id| is the transient device ID from StorageUnitInfo.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<StorageAvailableCapacityInfo>
+  static Promise<StorageAvailableCapacityInfo>
       getAvailableCapacity(DOMString id);
 
   // Fired when a new removable storage is attached to the system.

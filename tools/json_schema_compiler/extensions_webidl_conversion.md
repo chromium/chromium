@@ -185,7 +185,7 @@ Would become:
 [instanceOf=Blob]
 typedef object Blob;
 
-[requiredCallback] static Promise<Blob> getBlob();
+static Promise<Blob> getBlob();
 ```
 
 ### Functions and Callbacks to Promises
@@ -199,7 +199,6 @@ All functions that used a trailing callback must be converted to return a `Promi
   * A callback with no arguments `void()` becomes `Promise<undefined>`.
   * A nullable argument `void(optional Type arg)` becomes a nullable promise type `Promise<Type?>`.
   * An array argument `void(Type[] arg)` becomes a sequence `Promise<sequence<Type>>`.
-* Callback Optionality: If the original callback was not marked as `optional`, the new definition must have a `[requiredCallback]` extended attribute added before the `static Promise` return type. e.g. `[requiredCallback] Promise<boolean> checkFoo();`
 * void Keyword: The `void` keyword should be replaced with `undefined`.
 
 ### Promise Function Documentation
@@ -243,7 +242,7 @@ callback AlarmCallback = void(optional Alarm alarm);
 // |name|: The name of the alarm to get. Defaults to the empty string.
 // |Returns|: Called with the resulting alarm, if any.
 // |PromiseValue|: alarm: The alarm that was found.
-[requiredCallback] static Promise<Alarm?> get(optional DOMString name);
+static Promise<Alarm?> get(optional DOMString name);
 ```
 
 ### Synchronous Custom Type Function Returns

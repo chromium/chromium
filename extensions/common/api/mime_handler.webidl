@@ -28,7 +28,7 @@ interface MimeHandler {
   // Retrieves stream information for the current MIME handler context.
   // Must be called from within a MIME handler extension page.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<StreamInfo> getStreamInfo();
+  static Promise<StreamInfo> getStreamInfo();
 
   // Aborts current stream handling and hands the content off to the
   // user agent's native handler. After this call the extension frame

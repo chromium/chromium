@@ -61,7 +61,7 @@ dictionary WebcamCurrentConfiguration {
 interface WebcamPrivate {
   // Open a serial port that controls a webcam.
   // |PromiseValue|: webcamId
-  [requiredCallback] static Promise<DOMString> openSerialWebcam(
+  static Promise<DOMString> openSerialWebcam(
       DOMString path,
       ProtocolConfiguration protocol);
 
@@ -72,13 +72,12 @@ interface WebcamPrivate {
   // requested values that are available, or default values for those that
   // aren't. If none of the requests succeed, will respond with an error.
   // |PromiseValue|: configuration
-  [requiredCallback] static Promise<WebcamCurrentConfiguration> get(
-      DOMString webcamId);
+  static Promise<WebcamCurrentConfiguration> get(DOMString webcamId);
 
   // A callback is included here which is invoked when the function responds.
   // No configuration is returned through it.
   // |PromiseValue|: configuration
-  [requiredCallback] static Promise<WebcamCurrentConfiguration> set(
+  static Promise<WebcamCurrentConfiguration> set(
       DOMString webcamId,
       WebcamConfiguration config);
 
@@ -88,20 +87,18 @@ interface WebcamPrivate {
   // A callback is included here which is invoked when the function responds.
   // No configuration is returned through it.
   // |PromiseValue|: configuration
-  [requiredCallback] static Promise<WebcamCurrentConfiguration> reset(
+  static Promise<WebcamCurrentConfiguration> reset(
       DOMString webcamId,
       WebcamConfiguration config);
 
   // Set home preset for a webcam. A callback is included here which is
   // invoked when the function responds.
   // |PromiseValue|: configuration
-  [requiredCallback] static Promise<WebcamCurrentConfiguration> setHome(
-      DOMString webcamId);
+  static Promise<WebcamCurrentConfiguration> setHome(DOMString webcamId);
 
   // Restore the camera's position to that of the specified preset. A callback
   // is included here which is invoked when the function responds.
   // |PromiseValue|: configuration
-  [requiredCallback]
   static Promise<WebcamCurrentConfiguration> restoreCameraPreset(
       DOMString webcamId,
       double presetNumber);
@@ -109,7 +106,7 @@ interface WebcamPrivate {
   // Set the current camera's position to be stored for the specified preset.
   // A callback is included here which is invoked when the function responds.
   // |PromiseValue|: configuration
-  [requiredCallback] static Promise<WebcamCurrentConfiguration> setCameraPreset(
+  static Promise<WebcamCurrentConfiguration> setCameraPreset(
       DOMString webcamId,
       double presetNumber);
 };

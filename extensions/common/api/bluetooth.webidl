@@ -166,13 +166,13 @@ interface Bluetooth {
   // |Returns|: Called with an AdapterState object describing the adapter
   // state.
   // |PromiseValue|: adapterInfo: Object containing the adapter information.
-  [requiredCallback] static Promise<AdapterState> getAdapterState();
+  static Promise<AdapterState> getAdapterState();
 
   // Get information about a Bluetooth device known to the system.
   // |deviceAddress|: Address of device to get.
   // |Returns|: Called with the Device object describing the device.
   // |PromiseValue|: deviceInfo: Object containing the device information.
-  [requiredCallback] static Promise<Device> getDevice(DOMString deviceAddress);
+  static Promise<Device> getDevice(DOMString deviceAddress);
 
   // Get a list of Bluetooth devices known to the system, including paired
   // and recently discovered devices.
@@ -182,8 +182,7 @@ interface Bluetooth {
   // ChromeOS, for other platforms, a full list is returned.
   // |Returns|: Called when the search is completed.
   // |PromiseValue|: deviceInfos: Array of object containing device information.
-  [requiredCallback] static Promise<sequence<Device>> getDevices(
-      optional BluetoothFilter filter);
+  static Promise<sequence<Device>> getDevices(optional BluetoothFilter filter);
 
   // Start discovery. Newly discovered devices will be returned via the
   // onDeviceAdded event. Previously discovered devices already known to

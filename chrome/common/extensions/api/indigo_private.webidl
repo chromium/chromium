@@ -15,12 +15,10 @@ interface IndigoPrivate {
 
   // Returns the original image data.
   // |PromiseValue|: imageData
-  [requiredCallback]
   static Promise<ImageData> getOriginalImage();
 
   // Returns the replacement image data.
   // |PromiseValue|: imageData
-  [requiredCallback]
   static Promise<ImageData> getReplacementImage();
 };
 

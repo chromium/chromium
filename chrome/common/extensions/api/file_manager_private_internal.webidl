@@ -83,114 +83,102 @@ dictionary CrostiniSharedPathResponse {
  implemented_in="chrome/browser/ash/extensions/file_manager/file_manager_private_api_functions.h"]
 interface FileManagerPrivateInternal {
   // |PromiseValue|: entries
-  [requiredCallback]
   static Promise<sequence<EntryDescription>> resolveIsolatedEntries(
       sequence<DOMString> urls);
 
   // |PromiseValue|: entryProperties
-  [requiredCallback]
   static Promise<sequence<FileManagerPrivateEntryProperties>>
   getEntryProperties(sequence<DOMString> urls,
                      sequence<FileManagerPrivateEntryPropertyName> names);
 
   // |PromiseValue|: success
-  [requiredCallback] static Promise<boolean?> addFileWatch(DOMString url);
+  static Promise<boolean?> addFileWatch(DOMString url);
 
   // |PromiseValue|: success
-  [requiredCallback] static Promise<boolean?> removeFileWatch(DOMString url);
+  static Promise<boolean?> removeFileWatch(DOMString url);
 
   // |PromiseValue|: actions
-  [requiredCallback]
   static Promise<sequence<FileSystemProviderAction>> getCustomActions(
       sequence<DOMString> urls);
 
-  [requiredCallback] static Promise<undefined> executeCustomAction(
+  static Promise<undefined> executeCustomAction(
       sequence<DOMString> urls,
       DOMString actionId);
 
   // |PromiseValue|: result
-  [requiredCallback]
   static Promise<DOMString> getContentMimeType(DOMString blobUUID);
 
   // |PromiseValue|: result
-  [requiredCallback]
   static Promise<FileManagerPrivateMediaMetadata> getContentMetadata(
       DOMString blobUUID,
       DOMString mimeType,
       boolean includeImages);
 
-  [requiredCallback] static Promise<undefined> pinDriveFile(
-      DOMString url,
-      boolean pin);
+  static Promise<undefined> pinDriveFile(DOMString url, boolean pin);
 
   // |PromiseValue|: result
-  [requiredCallback] static Promise<FileManagerPrivateTaskResult> executeTask(
+  static Promise<FileManagerPrivateTaskResult> executeTask(
       FileManagerPrivateFileTaskDescriptor descriptor,
       sequence<DOMString> urls);
 
   // |PromiseValue|: entries
-  [requiredCallback] static Promise<sequence<EntryDescription>> searchFiles(
+  static Promise<sequence<EntryDescription>> searchFiles(
       SearchFilesParams searchParams);
 
-  [requiredCallback] static Promise<undefined> setDefaultTask(
+  static Promise<undefined> setDefaultTask(
       FileManagerPrivateFileTaskDescriptor descriptor,
       sequence<DOMString> urls,
       sequence<DOMString> mimeTypes);
 
   // |PromiseValue|: resultingTasks
-  [requiredCallback]
   static Promise<FileManagerPrivateResultingTasks> getFileTasks(
       sequence<DOMString> urls,
       sequence<DOMString> dlpSourceUrls);
 
   // |PromiseValue|: entries
-  [requiredCallback]
   static Promise<sequence<EntryDescription>> getDisallowedTransfers(
       sequence<DOMString> entries,
       DOMString destinationEntry,
       boolean isMove);
 
   // |PromiseValue|: entries
-  [requiredCallback]
   static Promise<sequence<FileManagerPrivateDlpMetadata>> getDlpMetadata(
       sequence<DOMString> entries);
 
   // |PromiseValue|: driveQuotaMetadata
-  [requiredCallback]
   static Promise<FileManagerPrivateDriveQuotaMetadata?> getDriveQuotaMetadata(
       DOMString url);
 
   // |PromiseValue|: result
-  [requiredCallback] static Promise<boolean> validatePathNameLength(
+  static Promise<boolean> validatePathNameLength(
       DOMString parentUrl,
       DOMString name);
 
   // |PromiseValue|: size
-  [requiredCallback] static Promise<double> getDirectorySize(DOMString url);
+  static Promise<double> getDirectorySize(DOMString url);
 
   // |PromiseValue|: rootDir
-  [requiredCallback] static Promise<EntryDescription> getVolumeRoot(
+  static Promise<EntryDescription> getVolumeRoot(
       FileManagerPrivateGetVolumeRootOptions options);
 
   // |PromiseValue|: entries
-  [requiredCallback] static Promise<sequence<EntryDescription>> getRecentFiles(
+  static Promise<sequence<EntryDescription>> getRecentFiles(
       FileManagerPrivateSourceRestriction restriction,
       DOMString query,
       long cutoff_days,
       FileManagerPrivateFileCategory file_category,
       boolean invalidate_cache);
 
-  [requiredCallback] static Promise<undefined> sharePathsWithCrostini(
+  static Promise<undefined> sharePathsWithCrostini(
       DOMString vmName,
       sequence<DOMString> urls,
       boolean persist);
 
-  [requiredCallback] static Promise<undefined> unsharePathWithCrostini(
+  static Promise<undefined> unsharePathWithCrostini(
       DOMString vmName,
       DOMString url);
 
   // |PromiseValue|: response
-  [requiredCallback]
   static Promise<CrostiniSharedPathResponse> getCrostiniSharedPaths(
       boolean observeFirstForSession,
       DOMString vmName);
@@ -208,7 +196,6 @@ interface FileManagerPrivateInternal {
       IOTaskParams params);
 
   // |PromiseValue|: files
-  [requiredCallback]
   static Promise<sequence<ParsedTrashInfoFile>> parseTrashInfoFiles(
       sequence<DOMString> urls);
 };

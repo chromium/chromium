@@ -274,8 +274,7 @@ interface Usb {
   // Enumerates connected USB devices.
   // |options|: The properties to search for on target devices.
   // |PromiseValue|: devices
-  [requiredCallback] static Promise<sequence<Device>> getDevices(
-      EnumerateDevicesOptions options);
+  static Promise<sequence<Device>> getDevices(EnumerateDevicesOptions options);
 
   // Presents a device picker to the user and returns the $(ref:Device)s
   // selected.
@@ -285,15 +284,13 @@ interface Usb {
   // |options|: Configuration of the device picker dialog box.
   // |Returns|: Invoked with a list of chosen $(ref:Device)s.
   // |PromiseValue|: devices
-  [requiredCallback] static Promise<sequence<Device>> getUserSelectedDevices(
+  static Promise<sequence<Device>> getUserSelectedDevices(
       DevicePromptOptions options);
 
   // Returns the full set of device configuration descriptors.
   // |device|: The $(ref:Device) to fetch descriptors from.
   // |PromiseValue|: configs
-  [requiredCallback]
-  static Promise<sequence<ConfigDescriptor>> getConfigurations(
-      Device device);
+  static Promise<sequence<ConfigDescriptor>> getConfigurations(Device device);
 
   // Requests access from the permission broker to a device claimed by
   // Chrome OS if the given interface on the device is not claimed.
@@ -304,15 +301,13 @@ interface Usb {
   [deprecated="This function was Chrome OS specific and calling it on other
     platforms would fail. This operation is now implicitly performed as part of
     $(ref:openDevice) and this function will return <code>true</code> on all
-    platforms.", requiredCallback]
-  static Promise<boolean> requestAccess(Device device,
-                            long interfaceId);
+    platforms."]
+  static Promise<boolean> requestAccess(Device device, long interfaceId);
 
   // Opens a USB device returned by $(ref:getDevices).
   // |device|: The $(ref:Device) to open.
   // |PromiseValue|: handle
-  [requiredCallback] static Promise<ConnectionHandle> openDevice(
-      Device device);
+  static Promise<ConnectionHandle> openDevice(Device device);
 
   // Finds USB devices specified by the vendor, product and (optionally)
   // interface IDs and if permissions allow opens them for use.
@@ -325,14 +320,13 @@ interface Usb {
   //
   // |options|: The properties to search for on target devices.
   // |PromiseValue|: handles
-  [requiredCallback] static Promise<sequence<ConnectionHandle>> findDevices(
+  static Promise<sequence<ConnectionHandle>> findDevices(
       EnumerateDevicesAndRequestAccessOptions options);
 
   // Closes a connection handle. Invoking operations on a handle after it
   // has been closed is a safe operation but causes no action to be taken.
   // |handle|: The $(ref:ConnectionHandle) to close.
-  static Promise<undefined> closeDevice(
-      ConnectionHandle handle);
+  static Promise<undefined> closeDevice(ConnectionHandle handle);
 
   // Select a device configuration.
   //
@@ -341,7 +335,7 @@ interface Usb {
   // than <code>0</code> are valid however some buggy devices have a working
   // configuration <code>0</code> and so this value is allowed.
   // |handle|: An open connection to the device.
-  [requiredCallback] static Promise<undefined> setConfiguration(
+  static Promise<undefined> setConfiguration(
       ConnectionHandle handle,
       long configurationValue);
 
@@ -349,13 +343,11 @@ interface Usb {
   // configuration.
   // |handle|: An open connection to the device.
   // |PromiseValue|: config
-  [requiredCallback] static Promise<ConfigDescriptor> getConfiguration(
-      ConnectionHandle handle);
+  static Promise<ConfigDescriptor> getConfiguration(ConnectionHandle handle);
 
   // Lists all interfaces on a USB device.
   // |handle|: An open connection to the device.
   // |PromiseValue|: descriptors
-  [requiredCallback]
   static Promise<sequence<InterfaceDescriptor>> listInterfaces(
       ConnectionHandle handle);
 
@@ -370,14 +362,14 @@ interface Usb {
   //
   // |handle|: An open connection to the device.
   // |interfaceNumber|: The interface to be claimed.
-  [requiredCallback] static Promise<undefined> claimInterface(
+  static Promise<undefined> claimInterface(
       ConnectionHandle handle,
       long interfaceNumber);
 
   // Releases a claimed interface.
   // |handle|: An open connection to the device.
   // |interfaceNumber|: The interface to be released.
-  [requiredCallback] static Promise<undefined> releaseInterface(
+  static Promise<undefined> releaseInterface(
       ConnectionHandle handle,
       long interfaceNumber);
 
@@ -386,7 +378,7 @@ interface Usb {
   //     claimed.
   // |interfaceNumber|: The interface to configure.
   // |alternateSetting|: The alternate setting to configure.
-  [requiredCallback] static Promise<undefined> setInterfaceAlternateSetting(
+  static Promise<undefined> setInterfaceAlternateSetting(
       ConnectionHandle handle,
       long interfaceNumber,
       long alternateSetting);
@@ -399,7 +391,7 @@ interface Usb {
   //
   // |handle|: An open connection to the device.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<TransferResultInfo> controlTransfer(
+  static Promise<TransferResultInfo> controlTransfer(
       ConnectionHandle handle,
       ControlTransferInfo transferInfo);
 
@@ -407,7 +399,7 @@ interface Usb {
   // |handle|: An open connection to the device.
   // |transferInfo|: The transfer parameters.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<TransferResultInfo> bulkTransfer(
+  static Promise<TransferResultInfo> bulkTransfer(
       ConnectionHandle handle,
       GenericTransferInfo transferInfo);
 
@@ -415,14 +407,14 @@ interface Usb {
   // |handle|: An open connection to the device.
   // |transferInfo|: The transfer parameters.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<TransferResultInfo> interruptTransfer(
+  static Promise<TransferResultInfo> interruptTransfer(
       ConnectionHandle handle,
       GenericTransferInfo transferInfo);
 
   // Performs an isochronous transfer on the specific device.
   // |handle|: An open connection to the device.
   // |PromiseValue|: info
-  [requiredCallback] static Promise<TransferResultInfo> isochronousTransfer(
+  static Promise<TransferResultInfo> isochronousTransfer(
       ConnectionHandle handle,
       IsochronousTransferInfo transferInfo);
 
@@ -434,8 +426,7 @@ interface Usb {
   //
   // |handle|: A connection handle to reset.
   // |PromiseValue|: success
-  [requiredCallback] static Promise<boolean> resetDevice(
-      ConnectionHandle handle);
+  static Promise<boolean> resetDevice(ConnectionHandle handle);
 
   // Event generated when a device is added to the system. Events are only
   // broadcast to apps and extensions that have permission to access the

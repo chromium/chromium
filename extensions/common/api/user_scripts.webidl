@@ -152,8 +152,7 @@ interface UserScripts {
   // |scripts|: Contains a list of user scripts to be registered.
   // |Returns|: Promise that resolves once scripts have been fully
   // registered. The promise will be rejected if an error occurs.
-  static Promise<undefined> register(
-      sequence<RegisteredUserScript> scripts);
+  static Promise<undefined> register(sequence<RegisteredUserScript> scripts);
 
   // Returns all dynamically-registered user scripts for this extension.
   // |filter|: If specified, this method returns only the user scripts that
@@ -161,7 +160,7 @@ interface UserScripts {
   // |Returns|: Promise that resolves with the registered scripts.
   // The promise will be rejected if an error occurs.
   // |PromiseValue|: scripts
-  [requiredCallback] static Promise<sequence<RegisteredUserScript>> getScripts(
+  static Promise<sequence<RegisteredUserScript>> getScripts(
       optional UserScriptFilter filter);
 
   // Unregisters all dynamically-registered user scripts for this extension.
@@ -169,8 +168,7 @@ interface UserScripts {
   // that match it.
   // |Returns|: Promise that resolves once scripts have been fully
   // unregistered. The promise will be rejected if an error occurs.
-  [requiredCallback] static Promise<undefined> unregister(
-      optional UserScriptFilter filter);
+  static Promise<undefined> unregister(optional UserScriptFilter filter);
 
   // Updates one or more user scripts for this extension.
   // |scripts|: Contains a list of user scripts to be updated. A property is
@@ -180,8 +178,7 @@ interface UserScripts {
   // are updated.
   // |Returns|: Promise that resolves once scripts have been fully updated.
   // The promise will be rejected if an error occurs.
-  static Promise<undefined> update(
-      sequence<RegisteredUserScript> scripts);
+  static Promise<undefined> update(sequence<RegisteredUserScript> scripts);
 
   // Injects a script into a target context. By default, the script will be
   // run at <code>document_idle</code>, or immediately if the page has already
@@ -197,14 +194,12 @@ interface UserScripts {
   // |properties|: Contains the user script world configuration.
   // |Returns|: Promise that resolves once the world has been
   // configured.
-  static Promise<undefined> configureWorld(
-      WorldProperties properties);
+  static Promise<undefined> configureWorld(WorldProperties properties);
 
   // Retrieves all registered world configurations.
   // |Returns|: Promise that resolves with the registered world
   // configurations.
   // |PromiseValue|: worlds
-  [requiredCallback]
   static Promise<sequence<WorldProperties>> getWorldConfigurations();
 
   // Resets the configuration for a user script world. Any scripts that inject
@@ -213,8 +208,7 @@ interface UserScripts {
   // |worldId|: The ID of the user script world to reset. If omitted, resets
   // the default world's configuration.
   // |Returns|: Promise that resolves when the configuration is reset.
-  [requiredCallback] static Promise<undefined> resetWorldConfiguration(
-      optional DOMString worldId);
+  static Promise<undefined> resetWorldConfiguration(optional DOMString worldId);
 };
 
 partial interface Browser {

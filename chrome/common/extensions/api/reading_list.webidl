@@ -115,8 +115,7 @@ interface ReadingList {
   // |info|: The properties to search for.
   // |Returns|: Resolves once the entries have been matched.
   // |PromiseValue|: entries
-  [requiredCallback] static Promise<sequence<ReadingListEntry>> query(
-      QueryInfo info);
+  static Promise<sequence<ReadingListEntry>> query(QueryInfo info);
 
   // Triggered when a <code>ReadingListEntry</code> is added to the reading
   // list.

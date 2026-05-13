@@ -753,8 +753,7 @@ interface DeclarativeNetRequest {
   // made to the rule set. This can happen for multiple reasons, such as
   // invalid rule format, duplicate rule ID, rule count limit exceeded,
   // internal errors, and others.
-  static Promise<undefined> updateDynamicRules(
-      UpdateRuleOptions options);
+  static Promise<undefined> updateDynamicRules(UpdateRuleOptions options);
 
   // Returns the current set of dynamic rules for the extension. Callers can
   // optionally filter the list of fetched rules by specifying a
@@ -763,7 +762,7 @@ interface DeclarativeNetRequest {
   // |Returns|: Promise that resolves with the set of dynamic rules. The
   // Promise may be rejected in case of transient internal errors.
   // |PromiseValue|: rules
-  [requiredCallback] static Promise<sequence<Rule>> getDynamicRules(
+  static Promise<sequence<Rule>> getDynamicRules(
       optional GetRulesFilter filter);
 
   // Modifies the current set of session scoped rules for the extension.
@@ -783,8 +782,7 @@ interface DeclarativeNetRequest {
   // made to the rule set. This can happen for multiple reasons, such as
   // invalid rule format, duplicate rule ID, rule count limit exceeded, and
   // others.
-  static Promise<undefined> updateSessionRules(
-      UpdateRuleOptions options);
+  static Promise<undefined> updateSessionRules(UpdateRuleOptions options);
 
   // Returns the current set of session scoped rules for the extension.
   // Callers can optionally filter the list of fetched rules by specifying a
@@ -792,7 +790,7 @@ interface DeclarativeNetRequest {
   // |filter|: An object to filter the list of fetched rules.
   // |Returns|: Promise that resolves with the set of session scoped rules.
   // |PromiseValue|: rules
-  [requiredCallback] static Promise<sequence<Rule>> getSessionRules(
+  static Promise<sequence<Rule>> getSessionRules(
       optional GetRulesFilter filter);
 
   // Updates the set of enabled static rulesets for the extension. The
@@ -807,14 +805,13 @@ interface DeclarativeNetRequest {
   // an error, the promise will be rejected and no change will be made to the
   // set of enabled rulesets. This can happen for multiple reasons, such as
   // invalid ruleset IDs, rule count limit exceeded, or internal errors.
-  static Promise<undefined> updateEnabledRulesets(
-      UpdateRulesetOptions options);
+  static Promise<undefined> updateEnabledRulesets(UpdateRulesetOptions options);
 
   // Returns the ids for the current set of enabled static rulesets.
   // |Returns|: Promise that resolves with a list of ids, where each id
   // corresponds to an enabled static $(ref:Ruleset).
   // |PromiseValue|: rulesetIds
-  [requiredCallback] static Promise<sequence<DOMString>> getEnabledRulesets();
+  static Promise<sequence<DOMString>> getEnabledRulesets();
 
   // Disables and enables individual static rules in a $(ref:Ruleset).
   // Changes to rules belonging to a disabled $(ref:Ruleset) will take
@@ -822,8 +819,7 @@ interface DeclarativeNetRequest {
   // |Returns|: Promise that resolves when the update is complete. In case of
   // an error, the promise will be rejected and no change will be made to the
   // enabled static rules.
-  static Promise<undefined> updateStaticRules(
-      UpdateStaticRulesOptions options);
+  static Promise<undefined> updateStaticRules(UpdateStaticRulesOptions options);
 
   // Returns the list of static rules in the given $(ref:Ruleset) that are
   // currently disabled.
@@ -831,7 +827,7 @@ interface DeclarativeNetRequest {
   // |Returns|: Promise that resolves with a list of ids that correspond to
   //  the disabled rules in that ruleset.
   // |PromiseValue|: disabledRuleIds
-  [requiredCallback] static Promise<sequence<long>> getDisabledRuleIds(
+  static Promise<sequence<long>> getDisabledRuleIds(
       GetDisabledRuleIdsOptions options);
 
   // Returns all rules matched for the extension. Callers can optionally
@@ -848,7 +844,7 @@ interface DeclarativeNetRequest {
   // happen for multiple reasons, such as insufficient permissions, or
   // exceeding the quota.
   // |PromiseValue|: details
-  [requiredCallback] static Promise<RulesMatchedDetails> getMatchedRules(
+  static Promise<RulesMatchedDetails> getMatchedRules(
       optional MatchedRulesFilter filter);
 
   // Configures if the action count for tabs should be displayed as the
@@ -863,14 +859,14 @@ interface DeclarativeNetRequest {
   // |Returns|: Promise that resolves with details consisting of whether the
   // regular expression is supported and the reason if not.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<IsRegexSupportedResult> isRegexSupported(
+  static Promise<IsRegexSupportedResult> isRegexSupported(
       RegexOptions regexOptions);
 
   // Returns the number of static rules an extension can enable before the
   // <a href="#global-static-rule-limit">global static rule limit</a> is
   // reached.
   // |PromiseValue|: count
-  [requiredCallback] static Promise<long> getAvailableStaticRuleCount();
+  static Promise<long> getAvailableStaticRuleCount();
 
   // Checks if any of the extension's declarativeNetRequest rules would match
   // a hypothetical request.
@@ -879,7 +875,7 @@ interface DeclarativeNetRequest {
   // |requestDetails|: The request details to test.
   // |Returns|: Promise that resolves with the details of matched rules.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<TestMatchOutcomeResult> testMatchOutcome(
+  static Promise<TestMatchOutcomeResult> testMatchOutcome(
       TestMatchRequestDetails request);
 
   // The minimum number of static rules guaranteed to an extension across its

@@ -17,7 +17,6 @@ interface HardwarePlatform {
   // |Returns|: Returns a Promise which resolves with the hardware platform
   //   info.
   // |PromiseValue|: info
-  [requiredCallback]
   static Promise<HardwarePlatformInfo> getHardwarePlatformInfo();
 };
 

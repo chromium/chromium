@@ -246,14 +246,14 @@ interface Serial {
   // The list is regenerated each time this method is called.
   // |Returns| : Called with the list of <code>DeviceInfo</code> objects.
   // |PromiseValue| : ports
-  [requiredCallback] static Promise<sequence<DeviceInfo>> getDevices();
+  static Promise<sequence<DeviceInfo>> getDevices();
 
   // Connects to a given serial port.
   // |path| : The system path of the serial port to open.
   // |options| : Port configuration options.
   // |Returns| : Called when the connection has been opened.
   // |PromiseValue| : connectionInfo
-  [requiredCallback] static Promise<ConnectionInfo> connect(
+  static Promise<ConnectionInfo> connect(
       DOMString path, optional ConnectionOptions options);
 
   // Update the option settings on an open serial port connection.
@@ -261,73 +261,69 @@ interface Serial {
   // |options| : Port configuration options.
   // |Returns| : Called when the configuation has completed.
   // |PromiseValue| : result
-  [requiredCallback] static Promise<boolean> update(long connectionId,
-                                                    ConnectionOptions options);
+  static Promise<boolean> update(long connectionId, ConnectionOptions options);
 
   // Disconnects from a serial port.
   // |connectionId| : The id of the opened connection.
   // |Returns| : Called when the connection has been closed.
   // |PromiseValue| : result
-  [requiredCallback] static Promise<boolean> disconnect(long connectionId);
+  static Promise<boolean> disconnect(long connectionId);
 
   // Pauses or unpauses an open connection.
   // |connectionId| : The id of the opened connection.
   // |paused| : Flag to indicate whether to pause or unpause.
   // |Returns| : Called when the connection has been successfully paused or
   //              unpaused.
-  [requiredCallback] static Promise<undefined> setPaused(long connectionId,
-                                                         boolean paused);
+  static Promise<undefined> setPaused(long connectionId, boolean paused);
 
   // Retrieves the state of a given connection.
   // |connectionId| : The id of the opened connection.
   // |Returns| : Called with connection state information when available.
   // |PromiseValue| : connectionInfo
-  [requiredCallback] static Promise<ConnectionInfo> getInfo(long connectionId);
+  static Promise<ConnectionInfo> getInfo(long connectionId);
 
   // Retrieves the list of currently opened serial port connections owned by
   // the application.
   // |Returns| : Called with the list of connections when available.
   // |PromiseValue| : connectionInfos
-  [requiredCallback] static Promise<sequence<ConnectionInfo>> getConnections();
+  static Promise<sequence<ConnectionInfo>> getConnections();
 
   // Writes data to the given connection.
   // |connectionId| : The id of the connection.
   // |data| : The data to send.
   // |Returns| : Called when the operation has completed.
   // |PromiseValue| : sendInfo
-  [requiredCallback] static Promise<SendInfo> send(long connectionId,
-                                                   ArrayBuffer data);
+  static Promise<SendInfo> send(long connectionId, ArrayBuffer data);
 
   // Flushes all bytes in the given connection's input and output buffers.
   // |PromiseValue| : result
-  [requiredCallback] static Promise<boolean> flush(long connectionId);
+  static Promise<boolean> flush(long connectionId);
 
   // Retrieves the state of control signals on a given connection.
   // |connectionId| : The id of the connection.
   // |Returns| : Called when the control signals are available.
   // |PromiseValue| : signals
-  [requiredCallback] static Promise<DeviceControlSignals> getControlSignals(
-      long connectionId);
+  static Promise<DeviceControlSignals> getControlSignals(long connectionId);
 
   // Sets the state of control signals on a given connection.
   // |connectionId| : The id of the connection.
   // |signals| : The set of signal changes to send to the device.
   // |Returns| : Called once the control signals have been set.
   // |PromiseValue| : result
-  [requiredCallback] static Promise<boolean> setControlSignals(
+  static Promise<boolean> setControlSignals(
       long connectionId, HostControlSignals signals);
 
   // Suspends character transmission on a given connection and places the
   // transmission line in a break state until the clearBreak is called.
   // |connectionId| : The id of the connection.
   // |PromiseValue| : result
-  [requiredCallback] static Promise<boolean> setBreak(long connectionId);
+  static Promise<boolean> setBreak(long connectionId);
 
   // Restore character transmission on a given connection and place the
   // transmission line in a nonbreak state.
   // |connectionId| : The id of the connection.
   // |PromiseValue| : result
-  [requiredCallback] static Promise<boolean> clearBreak(long connectionId);
+  static Promise<boolean> clearBreak(long connectionId);
 
   // Event raised when data has been read from the connection.
   static attribute OnReceiveEvent onReceive;

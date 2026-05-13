@@ -130,21 +130,20 @@ interface WebAuthenticationProxy {
   // <code>onCreateRequest</code> event it has received, unless the request
   // was canceled (in which case, an <code>onRequestCanceled</code> event is
   // fired).
-  [requiredCallback] static Promise<undefined> completeCreateRequest(
+  static Promise<undefined> completeCreateRequest(
       CreateResponseDetails details);
 
   // Reports the result of a <code>navigator.credentials.get()</code> call.
   // The extension must call this for every <code>onGetRequest</code> event
   // it has received, unless the request was canceled (in which case, an
   // <code>onRequestCanceled</code> event is fired).
-  [requiredCallback] static Promise<undefined> completeGetRequest(
-      GetResponseDetails details);
+  static Promise<undefined> completeGetRequest(GetResponseDetails details);
 
   // Reports the result of a
   // <code>PublicKeyCredential.isUserVerifyingPlatformAuthenticator()</code>
   // call. The extension must call this for every
   // <code>onIsUvpaaRequest</code> event it has received.
-  [requiredCallback] static Promise<undefined> completeIsUvpaaRequest(
+  static Promise<undefined> completeIsUvpaaRequest(
       IsUvpaaResponseDetails details);
 
   // Makes this extension the active Web Authentication API request proxy.
@@ -166,7 +165,7 @@ interface WebAuthenticationProxy {
   // a change of remote session attachment from a native application to to
   // the (possibly suspended) extension.
   // |PromiseValue|: error
-  [requiredCallback] static Promise<DOMString?> attach();
+  static Promise<DOMString?> attach();
 
   // Removes this extension from being the active Web Authentication API
   // request proxy.
@@ -179,7 +178,7 @@ interface WebAuthenticationProxy {
   // a change of remote session attachment from a native application to to
   // the (possibly suspended) extension.
   // |PromiseValue|: error
-  [requiredCallback] static Promise<DOMString?> detach();
+  static Promise<DOMString?> detach();
 
   // A native application associated with this extension can cause this
   // event to be fired by writing to a file with a name equal to the

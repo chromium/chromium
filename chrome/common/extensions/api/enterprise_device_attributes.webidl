@@ -15,7 +15,6 @@ interface DeviceAttributes {
   // |Returns|: Returns a Promise which resolves with the device identifier
   // of the directory API.
   // |PromiseValue|: deviceId
-  [requiredCallback]
   static Promise<DOMString> getDirectoryDeviceId();
 
   // Fetches the device's serial number. Please note the purpose of this API
@@ -26,7 +25,6 @@ interface DeviceAttributes {
   // |Returns|: Returns a Promise which resolves with the serial number of
   // the device.
   // |PromiseValue|: serialNumber
-  [requiredCallback]
   static Promise<DOMString> getDeviceSerialNumber();
 
   // Fetches the administrator-annotated Asset Id.
@@ -35,7 +33,6 @@ interface DeviceAttributes {
   // |Returns|: Returns a Promise which resolves with the Asset ID of the
   // device.
   // |PromiseValue|: assetId
-  [requiredCallback]
   static Promise<DOMString> getDeviceAssetId();
 
   // Fetches the administrator-annotated Location.
@@ -44,7 +41,6 @@ interface DeviceAttributes {
   // |Returns|: Returns a Promise which resolves with the Annotated
   // Location of the device.
   // |PromiseValue|: annotatedLocation
-  [requiredCallback]
   static Promise<DOMString> getDeviceAnnotatedLocation();
 
   // Fetches the device's hostname as set by DeviceHostnameTemplate policy.
@@ -53,7 +49,6 @@ interface DeviceAttributes {
   // |Returns|: Returns a Promise which resolves with the hostname of the
   // device.
   // |PromiseValue|: hostname
-  [requiredCallback]
   static Promise<DOMString> getDeviceHostname();
 };
 

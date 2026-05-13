@@ -317,7 +317,7 @@ interface BluetoothLowEnergy {
   // GATT connection should be opened.
   // |properties|: Connection properties (optional).
   // |Returns|: Called when the connect request has completed.
-  [requiredCallback] static Promise<undefined> connect(
+  static Promise<undefined> connect(
       DOMString deviceAddress,
       optional ConnectProperties properties);
 
@@ -332,7 +332,7 @@ interface BluetoothLowEnergy {
   // |serviceId|: The instance ID of the requested GATT service.
   // |Returns|: Called with the requested Service object.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<Service> getService(DOMString serviceId);
+  static Promise<Service> getService(DOMString serviceId);
 
   // Create a locally hosted GATT service. This service can be registered
   // to be available on a local GATT server.
@@ -342,7 +342,7 @@ interface BluetoothLowEnergy {
   // |service|: The service to create.
   // |Returns|: Called with the created services's unique ID.
   // |PromiseValue|: serviceId
-  [requiredCallback] static Promise<DOMString> createService(Service service);
+  static Promise<DOMString> createService(Service service);
 
   // Get all the GATT services that were discovered on the remote device with
   // the given device address.
@@ -356,8 +356,7 @@ interface BluetoothLowEnergy {
   // services should be returned.
   // |Returns|: Called with the list of requested Service objects.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<sequence<Service>> getServices(
-      DOMString deviceAddress);
+  static Promise<sequence<Service>> getServices(DOMString deviceAddress);
 
   // Get the GATT characteristic with the given instance ID that belongs to
   // the given GATT service, if the characteristic exists.
@@ -365,8 +364,7 @@ interface BluetoothLowEnergy {
   // characteristic.
   // |Returns|: Called with the requested Characteristic object.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<Characteristic> getCharacteristic(
-      DOMString characteristicId);
+  static Promise<Characteristic> getCharacteristic(DOMString characteristicId);
 
   // Create a locally hosted GATT characteristic. This characteristic must
   // be hosted under a valid service. If the service ID is not valid, the
@@ -378,7 +376,7 @@ interface BluetoothLowEnergy {
   // |serviceId|: ID of the service to create this characteristic for.
   // |Returns|: Called with the created characteristic's unique ID.
   // |PromiseValue|: characteristicId
-  [requiredCallback] static Promise<DOMString> createCharacteristic(
+  static Promise<DOMString> createCharacteristic(
       Characteristic characteristic,
       DOMString serviceId);
 
@@ -389,7 +387,6 @@ interface BluetoothLowEnergy {
   // |Returns|: Called with the list of characteristics that belong to the
   // given service.
   // |PromiseValue|: result
-  [requiredCallback]
   static Promise<sequence<Characteristic>> getCharacteristics(
       DOMString serviceId);
 
@@ -399,16 +396,14 @@ interface BluetoothLowEnergy {
   // |Returns|: Called with the list of GATT services included from the
   // given service.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<sequence<Service>> getIncludedServices(
-      DOMString serviceId);
+  static Promise<sequence<Service>> getIncludedServices(DOMString serviceId);
 
   // Get the GATT characteristic descriptor with the given instance ID.
   // |descriptorId|: The instance ID of the requested GATT characteristic
   // descriptor.
   // |Returns|: Called with the requested Descriptor object.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<Descriptor> getDescriptor(
-      DOMString descriptorId);
+  static Promise<Descriptor> getDescriptor(DOMString descriptorId);
 
   // Create a locally hosted GATT descriptor. This descriptor must
   // be hosted under a valid characteristic. If the characteristic ID is not
@@ -421,7 +416,7 @@ interface BluetoothLowEnergy {
   // for.
   // |Returns|: Called with the created descriptor's unique ID.
   // |PromiseValue|: descriptorId
-  [requiredCallback] static Promise<DOMString> createDescriptor(
+  static Promise<DOMString> createDescriptor(
       Descriptor descriptor,
       DOMString characteristicId);
 
@@ -432,7 +427,7 @@ interface BluetoothLowEnergy {
   // |Returns|: Called with the list of descriptors that belong to the given
   // characteristic.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<sequence<Descriptor>> getDescriptors(
+  static Promise<sequence<Descriptor>> getDescriptors(
       DOMString characteristicId);
 
   // Retrieve the value of a specified characteristic from a remote
@@ -443,7 +438,7 @@ interface BluetoothLowEnergy {
   // requested. The <code>value</code> field of the returned Characteristic
   // object contains the result of the read request.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<Characteristic> readCharacteristicValue(
+  static Promise<Characteristic> readCharacteristicValue(
       DOMString characteristicId);
 
   // Write the value of a specified characteristic from a remote peripheral.
@@ -452,7 +447,7 @@ interface BluetoothLowEnergy {
   // |value|: The value that should be sent to the remote characteristic as
   // part of the write request.
   // |Returns|: Called when the write request has completed.
-  [requiredCallback] static Promise<undefined> writeCharacteristicValue(
+  static Promise<undefined> writeCharacteristicValue(
       DOMString characteristicId,
       ArrayBuffer value);
 
@@ -463,7 +458,7 @@ interface BluetoothLowEnergy {
   // notifications should be enabled on.
   // |properties|: Notification session properties (optional).
   // |Returns|: Called when the request has completed.
-  [requiredCallback] static Promise<undefined> startCharacteristicNotifications(
+  static Promise<undefined> startCharacteristicNotifications(
       DOMString characteristicId,
       optional NotificationProperties properties);
 
@@ -488,7 +483,7 @@ interface BluetoothLowEnergy {
   // |notifcation|: The notification to send.
   // |Returns|: Callback called once the notification or indication has
   // been sent successfully.
-  [requiredCallback] static Promise<undefined> notifyCharacteristicValueChanged(
+  static Promise<undefined> notifyCharacteristicValueChanged(
       DOMString characteristicId,
       Notification notification);
 
@@ -500,8 +495,7 @@ interface BluetoothLowEnergy {
   // The <code>value</code> field of the returned Descriptor object contains
   // the result of the read request.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<Descriptor> readDescriptorValue(
-      DOMString descriptorId);
+  static Promise<Descriptor> readDescriptorValue(DOMString descriptorId);
 
   // Write the value of a specified characteristic descriptor from a remote
   // peripheral.
@@ -510,7 +504,7 @@ interface BluetoothLowEnergy {
   // |value|: The value that should be sent to the remote descriptor as part
   // of the write request.
   // |Returns|: Called when the write request has completed.
-  [requiredCallback] static Promise<undefined> writeDescriptorValue(
+  static Promise<undefined> writeDescriptorValue(
       DOMString descriptorId,
       ArrayBuffer value);
 
@@ -521,8 +515,7 @@ interface BluetoothLowEnergy {
   // true. The peripheral permission may not be available to all apps.
   // |serviceId|: Unique ID of a created service.
   // |Returns|: Callback with the result of the register operation.
-  [requiredCallback] static Promise<undefined> registerService(
-      DOMString serviceId);
+  static Promise<undefined> registerService(DOMString serviceId);
 
   // Unregister the given service with the local GATT server. If the service
   // ID is invalid, the lastError will be set.
@@ -531,8 +524,7 @@ interface BluetoothLowEnergy {
   // true. The peripheral permission may not be available to all apps.
   // |serviceId|: Unique ID of a current registered service.
   // |Returns|: Callback with the result of the register operation.
-  [requiredCallback] static Promise<undefined> unregisterService(
-      DOMString serviceId);
+  static Promise<undefined> unregisterService(DOMString serviceId);
 
   // Remove the specified service, unregistering it if it was registered.
   // If the service ID is invalid, the lastError will be set.
@@ -560,8 +552,7 @@ interface BluetoothLowEnergy {
   // |Returns|: Called once the registeration is done and we've started
   // advertising. Returns the id of the created advertisement.
   // |PromiseValue|: advertisementId
-  [requiredCallback] static Promise<long> registerAdvertisement(
-      Advertisement advertisement);
+  static Promise<long> registerAdvertisement(Advertisement advertisement);
 
   // Unregisters an advertisement and stops its advertising. If the
   // advertisement fails to unregister the only way to stop advertising
@@ -569,13 +560,12 @@ interface BluetoothLowEnergy {
   // |advertisementId|: Id of the advertisement to unregister.
   // |Returns|: Called once the advertisement is unregistered and is no
   // longer being advertised.
-  [requiredCallback] static Promise<undefined> unregisterAdvertisement(
-      long advertisementId);
+  static Promise<undefined> unregisterAdvertisement(long advertisementId);
 
   // Resets advertising on the current device. It will unregister and
   // stop all existing advertisements.
   // |Returns|: Called once the advertisements are reset.
-  [requiredCallback] static Promise<undefined> resetAdvertising();
+  static Promise<undefined> resetAdvertising();
 
   // Set's the interval betweeen two consecutive advertisements. Note:
   // This is a best effort. The actual interval may vary non-trivially
@@ -587,7 +577,7 @@ interface BluetoothLowEnergy {
   // |maxInterval|: Maximum interval between advertisments (in
   // milliseconds). This cannot be more than 10240ms (as per the spec).
   // |Returns|: Called once the interval has been set.
-  [requiredCallback] static Promise<undefined> setAdvertisingInterval(
+  static Promise<undefined> setAdvertisingInterval(
       long minInterval,
       long maxInterval);
 

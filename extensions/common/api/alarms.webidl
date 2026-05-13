@@ -91,11 +91,11 @@ interface Alarms {
   // Retrieves details about the specified alarm.
   // |name|: The name of the alarm to get. Defaults to the empty string.
   // |PromiseValue|: alarm
-  [requiredCallback] static Promise<Alarm?> get(optional DOMString name);
+  static Promise<Alarm?> get(optional DOMString name);
 
   // Gets an array of all the alarms.
   // |PromiseValue|: alarms
-  [requiredCallback] static Promise<sequence<Alarm>> getAll();
+  static Promise<sequence<Alarm>> getAll();
 
   // Clears the alarm with the given name.
   // |name|: The name of the alarm to clear. Defaults to the empty string.

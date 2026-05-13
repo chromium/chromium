@@ -1694,14 +1694,14 @@ interface Automation {
   // |Returns|: Called when the <code>AutomationNode</code> for the page is
   // available.
   // |PromiseValue|: rootNode
-  [nocompile, requiredCallback] static Promise<AutomationNode> getDesktop();
+  [nocompile] static Promise<AutomationNode> getDesktop();
 
   // Get the automation node that currently has focus, globally. Will return
   // null if none of the nodes in any loaded trees have focus.
   // |Returns|: Called with the <code>AutomationNode</code> that currently has
   // focus.
   // |PromiseValue|: focusedNode
-  [nocompile, requiredCallback] static Promise<AutomationNode> getFocus();
+  [nocompile] static Promise<AutomationNode> getFocus();
 
   // Get the automation node that currently has accessibility focus, globally.
   // Will return null if none of the nodes in any loaded trees have
@@ -1709,7 +1709,7 @@ interface Automation {
   // |Returns|: Called with the <code>AutomationNode</code> that currently has
   // accessibility focus.
   // |PromiseValue|: focusedNode
-  [nocompile, requiredCallback]
+  [nocompile]
   static Promise<AutomationNode> getAccessibilityFocus();
 
   // Add a tree change observer. Tree change observers are static/global, they

@@ -51,7 +51,7 @@ interface CecPrivate {
 
   // Queries all HDMI CEC capable displays for their current power state.
   // |PromiseValue|: powerStates
-  [requiredCallback] static Promise<sequence<DisplayCecPowerState>>
+  static Promise<sequence<DisplayCecPowerState>>
       queryDisplayCecPowerState();
 };
 

@@ -17,8 +17,7 @@ interface Dns {
   // |hostname| : The hostname to resolve.
   // |Returns|: Promise that resolves when the resolution operation completes.
   // |PromiseValue|: resolveInfo
-  [requiredCallback] static Promise<ResolveCallbackResolveInfo> resolve(
-      DOMString hostname);
+  static Promise<ResolveCallbackResolveInfo> resolve(DOMString hostname);
 };
 
 partial interface Browser {

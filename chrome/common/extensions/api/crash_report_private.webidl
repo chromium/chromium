@@ -43,7 +43,7 @@ interface CrashReportPrivate {
   // Report and upload an error to Crash.
   // |info|: Information about the error.
   // |Returns|: Called when the error has been uploaded.
-  [requiredCallback] static Promise<undefined> reportError(ErrorInfo info);
+  static Promise<undefined> reportError(ErrorInfo info);
 };
 
 partial interface Browser {

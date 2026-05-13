@@ -8,25 +8,23 @@ interface ExperimentalActor {
   // Stops a task.
   // |taskId|: id of the task to stop.
   // |Returns|: a closure that is called when the task is stopped.
-  [requiredCallback] static Promise<undefined> stopTask(long taskId);
+  static Promise<undefined> stopTask(long taskId);
 
   // Creates a new task. The callback will contain the task ID for the newly
   // created task.
   // |PromiseValue|: taskId
-  [requiredCallback] static Promise<long> createTask();
+  static Promise<long> createTask();
 
   // Executes one or more actions according to request.
   // |actionsProto|: encoded optimization_guide.proto.Actions
   // |Returns|: encoded optimization_guide.proto.ActionsResult
   // |PromiseValue|: data
-  [requiredCallback]
   static Promise<ArrayBuffer> performActions(ArrayBuffer actionsProto);
 
   // Requests a TabObservation for a given tab.
   // |tabId|: The session tabId to observe.
   // |Returns|: encoded optimization_guide.proto.TabObservation
   // |PromiseValue|: data
-  [requiredCallback]
   static Promise<ArrayBuffer> requestTabObservation(long tabId);
 };
 

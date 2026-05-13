@@ -29,8 +29,7 @@ dictionary SendPacketResult {
 interface Diagnostics {
   // Send a packet of the given type with the given parameters.
   // |PromiseValue|: result
-  [requiredCallback] static Promise<SendPacketResult> sendPacket(
-      SendPacketOptions options);
+  static Promise<SendPacketResult> sendPacket(SendPacketOptions options);
 };
 
 partial interface Browser {
