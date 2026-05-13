@@ -1449,8 +1449,6 @@ class AutocompleteMediator
                                 finalTransition);
                     };
 
-            String rawQuery = mAutocompleteInput.getUserText();
-
             if (OmniboxFeatures.sShowModelPicker.getValue()) {
                 @AutocompleteRequestType int requestType = mAutocompleteInput.getRequestType();
                 if (ToolModeUtils.isConventionalRequest(requestType)) {
@@ -1459,16 +1457,16 @@ class AutocompleteMediator
                     assert ToolModeUtils.isAimRequest(requestType);
                     ComposeboxQueryControllerBridge bridge =
                             assumeNonNull(mSessionState.getComposeboxQueryControllerBridge());
-                    bridge.getAimUrlFromInputState(url, rawQuery, onUrlReady);
+                    bridge.getAimUrlFromInputState(url, onUrlReady);
                 }
             } else {
                 switch (mAutocompleteInput.getRequestType()) {
                     case AutocompleteRequestType.AI_MODE ->
                             assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
-                                    .getAimUrl(url, rawQuery, onUrlReady);
+                                    .getAimUrl(url, onUrlReady);
                     case AutocompleteRequestType.IMAGE_GENERATION ->
                             assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
-                                    .getImageGenerationUrl(url, rawQuery, onUrlReady);
+                                    .getImageGenerationUrl(url, onUrlReady);
                     default -> onUrlReady.onResult(url);
                 }
             }

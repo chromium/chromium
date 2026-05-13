@@ -91,8 +91,6 @@ class QueryContextualizer {
         base::OnceCallback<void(std::vector<TabId>)> callback) = 0;
   };
 
-  // `service` can be nullptr if task-scoped context decoration is not needed
-  // (e.g. standard Omnibox unimodal search).
   QueryContextualizer(ContextualTasksService* service, Delegate* delegate);
   virtual ~QueryContextualizer();
 

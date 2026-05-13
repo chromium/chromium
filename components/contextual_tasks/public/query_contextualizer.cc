@@ -133,6 +133,7 @@ class UploadTracker
 QueryContextualizer::QueryContextualizer(ContextualTasksService* service,
                                          Delegate* delegate)
     : service_(service), delegate_(delegate) {
+  DCHECK(service_);
   DCHECK(delegate_);
 }
 
@@ -225,7 +226,7 @@ void QueryContextualizer::Contextualize(
     return;
   }
 
-  if (!task_id.has_value() || !service_) {
+  if (!task_id.has_value()) {
     OnContextRetrieved(/*task_id=*/std::nullopt, query_text,
                        tabs_to_recontextualize, tabs_to_force_contextualize,
                        /*smart_tabs_to_contextualize=*/{}, session_handle,
@@ -264,7 +265,7 @@ void QueryContextualizer::OnRelevantTabsFetched(
         session_handle;
   }
 
-  if (!task_id.has_value() || !service_) {
+  if (!task_id.has_value()) {
     OnContextRetrieved(/*task_id=*/std::nullopt, query_text,
                        tabs_to_recontextualize, tabs_to_force_contextualize,
                        smart_tabs, session_handle, on_ineligible_callback,
