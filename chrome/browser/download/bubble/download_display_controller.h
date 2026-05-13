@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/offline_item_model.h"
 #include "chrome/browser/ui/download/download_display.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -35,8 +35,7 @@ struct ContentId;
 // future OfflineItems include regular Download on Desktop platforms,
 // we can remove AllDownloadItemNotifier::Observer.
 // TODO(chlily): Consolidate this with DownloadBubbleUIController.
-class DownloadDisplayController : public FullscreenObserver,
-                                  public base::PowerSuspendObserver {
+class DownloadDisplayController : public base::PowerSuspendObserver {
  public:
   DownloadDisplayController(DownloadDisplay* display,
                             Browser* browser,
@@ -79,8 +78,9 @@ class DownloadDisplayController : public FullscreenObserver,
   // BrowserWindow.
   void ListenToFullScreenChanges();
 
-  // FullScreenObserver
-  void OnFullscreenStateChanged() override;
+  // Called by FullscreenObservationHelper when the browser's fullscreen
+  // state changes. Also invoked directly from tests.
+  void OnFullscreenStateChanged();
 
   // PowerSuspendObserver
   void OnResume() override;
@@ -94,6 +94,9 @@ class DownloadDisplayController : public FullscreenObserver,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
+  // Observes FullscreenController and forwards events to the parent.
+  class FullscreenObservationHelper;
+
   friend class DownloadDisplayControllerTest;
 
   // Gets info about all models to display and progress ring info from the
@@ -129,8 +132,7 @@ class DownloadDisplayController : public FullscreenObserver,
   // The pointer is created in ToolbarView and owned by ToolbarView.
   raw_ptr<DownloadDisplay> const display_;
   raw_ptr<Browser> browser_;
-  base::ScopedObservation<FullscreenController, FullscreenObserver>
-      observation_{this};
+  std::unique_ptr<FullscreenObservationHelper> fullscreen_observation_helper_;
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
   bool fullscreen_notification_shown_ = false;

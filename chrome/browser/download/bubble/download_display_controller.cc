@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -92,12 +95,39 @@ BrowserWindowInterface* FindMostRecentBrowserForProfileMatchingWebApp(
 
 }  // namespace
 
+class DownloadDisplayController::FullscreenObservationHelper
+    : public FullscreenObserver {
+ public:
+  explicit FullscreenObservationHelper(DownloadDisplayController* parent)
+      : parent_(parent) {}
+
+  FullscreenObservationHelper(const FullscreenObservationHelper&) = delete;
+  FullscreenObservationHelper& operator=(const FullscreenObservationHelper&) =
+      delete;
+
+  void Observe(FullscreenController* controller) {
+    observation_.Observe(controller);
+  }
+
+  // FullscreenObserver:
+  void OnFullscreenStateChanged() override {
+    parent_->OnFullscreenStateChanged();
+  }
+
+ private:
+  raw_ptr<DownloadDisplayController> parent_;
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      observation_{this};
+};
+
 DownloadDisplayController::DownloadDisplayController(
     DownloadDisplay* display,
     Browser* browser,
     DownloadBubbleUIController* bubble_controller)
     : display_(display),
       browser_(browser),
+      fullscreen_observation_helper_(
+          std::make_unique<FullscreenObservationHelper>(this)),
       bubble_controller_(bubble_controller) {
   bubble_controller_->SetDownloadDisplayController(this);
   // |display| can be null in tests.
@@ -225,9 +255,9 @@ void DownloadDisplayController::HideBubble() {
 }
 
 void DownloadDisplayController::ListenToFullScreenChanges() {
-  observation_.Observe(browser_->GetFeatures()
-                           .exclusive_access_manager()
-                           ->fullscreen_controller());
+  fullscreen_observation_helper_->Observe(browser_->GetFeatures()
+                                              .exclusive_access_manager()
+                                              ->fullscreen_controller());
 }
 
 void DownloadDisplayController::OnFullscreenStateChanged() {
