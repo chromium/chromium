@@ -22,16 +22,14 @@ import type {SearchAnimatedGlowElement} from '//resources/cr_components/search/a
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
-import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import {ComposeboxFile, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
-import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
+import type {TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
@@ -190,7 +188,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
-  private eventTracker_: EventTracker = new EventTracker();
   private resizeObservers_: ResizeObserver[] = [];
   override shouldShowDivider(): boolean {
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
@@ -232,6 +229,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return this.searchboxHandler_;
   }
 
+  override getContextEntrypointElement(): HTMLElement|null {
+    return this.shadowRoot?.querySelector('#contextEntrypoint') || null;
+  }
+
   constructor() {
     super();
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
@@ -258,10 +259,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.getSearchboxCallbackRouter()
             .updateAutoSuggestedTabContext.addListener(
                 this.updateAutoSuggestedTabContext_.bind(this)));
-
-    this.eventTracker_.add(this.getInputElement().inputElement, 'input', () => {
-      this.submitEnabled = this.computeSubmitEnabled();
-    });
 
     this.focusInput();
 
@@ -311,7 +308,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    this.eventTracker_.removeAll();
     this.tearDownResizeObservers_();
   }
 
@@ -346,10 +342,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     super.updated(changedProperties);
     if (changedProperties.has('observeResize')) {
       this.syncResizeObservers_();
-    }
-
-    if (changedProperties.has('state') && this.state) {
-      this.updateState_(this.state);
     }
   }
 
@@ -401,79 +393,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   setExpandingForTesting(expanding: boolean) {
     this.expanding_ = expanding;
-  }
-
-  // TODO(crbug.com/508287630): Branch logic to Omnibox embedder.
-  protected async updateState_(state: ComposeboxState) {
-    if (!this.inputState) {
-      const inputStateResponse = await this.searchboxHandler_.getInputState();
-      // Check if a newer updateState_ is running and we can quit.
-      if (state !== this.state) {
-        return;
-      }
-      if (inputStateResponse) {
-        this.inputState = inputStateResponse.state;
-      }
-    }
-
-    const text = state.text || '';
-    const files = state.files || [];
-    const mode = state.mode ?? ToolMode.kUnspecified;
-    let model = state.model ?? ModelMode.kUnspecified;
-
-    if (text) {
-      this.input = text;
-      this.lastQueriedInput = text;
-    }
-    if (this.showZps && files.length === 0) {
-      this.queryAutocomplete(/* clearMatches= */ false);
-    }
-    if (files.length > 0 || state.error !== undefined) {
-      const dataTransfer = new DataTransfer();
-      const driveUploads: DriveUpload[] = [];
-      for (const file of files) {
-        if ('tabId' in file) {
-          // If the composebox is being initialized with tab context from the
-          // context menu, we want to keep the context menu open to allow for
-          // multi-tab selection.
-          const entrypointAndMenu =
-              this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
-                  '#contextEntrypoint');
-          if (entrypointAndMenu &&
-              file.origin === TabUploadOrigin.CONTEXT_MENU) {
-            entrypointAndMenu.openMenuForMultiSelection();
-          }
-          this.addTabContextHandleCallback({
-            tabId: file.tabId,
-            title: file.title,
-            url: file.url,
-            delayUpload: file.delayUpload,
-            replaceAutoActiveTabToken: false,
-            origin: file.origin,
-          } as TabUpload);
-        } else if ('mimeType' in file) {
-          driveUploads.push(file);
-        } else {
-          dataTransfer.items.add(file.file);
-        }
-      }
-      this.processFiles(dataTransfer.files);
-      if (driveUploads.length > 0 || state.error !== undefined) {
-        this.addDriveUploads(driveUploads, state.error);
-      }
-    }
-    if (mode !== ToolMode.kUnspecified) {
-      this.handleToolClick(mode);
-    }
-
-    if (!!this.inputState && model === ModelMode.kUnspecified &&
-        this.inputState.allowedModels.length > 0) {
-      model = this.inputState.allowedModels[0]!;
-    }
-    this.searchboxHandler_.setActiveModelMode(model);
-    this.updateInputPlaceholder();
-
-    await this.updateComplete;
   }
 
   protected computeCancelButtonTitle_() {

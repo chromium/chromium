@@ -204,4 +204,52 @@ suite('OmniboxComposeboxTest', () => {
     assertTrue(!!addedFile);
     assertEquals('test_file.png', addedFile.name);
   });
+
+  test('Tool chip renders when context menu is enabled', async () => {
+    omniboxComposebox.contextMenuEnabled = true;
+    omniboxComposebox.inToolMode = true;
+    omniboxComposebox.searchboxLayoutMode = '';
+    await microtasksFinished();
+
+    const toolChip =
+        omniboxComposebox.shadowRoot.querySelector('cr-composebox-tool-chip');
+
+    assertTrue(!!toolChip);
+  });
+
+  test('Tool chip does not render when context menu is disabled', async () => {
+    omniboxComposebox.contextMenuEnabled = false;
+    omniboxComposebox.inToolMode = true;
+    omniboxComposebox.searchboxLayoutMode = '';
+    await microtasksFinished();
+
+    const toolChip =
+        omniboxComposebox.shadowRoot.querySelector('cr-composebox-tool-chip');
+
+    assertFalse(!!toolChip);
+  });
+
+  test('Tool chip does not render when not in tool mode', async () => {
+    omniboxComposebox.contextMenuEnabled = true;
+    omniboxComposebox.inToolMode = false;
+    omniboxComposebox.searchboxLayoutMode = '';
+    await microtasksFinished();
+
+    const toolChip =
+        omniboxComposebox.shadowRoot.querySelector('cr-composebox-tool-chip');
+
+    assertFalse(!!toolChip);
+  });
+
+  test('Tool chip does not render when in compact layout', async () => {
+    omniboxComposebox.contextMenuEnabled = true;
+    omniboxComposebox.inToolMode = true;
+    omniboxComposebox.searchboxLayoutMode = 'Compact';
+    await microtasksFinished();
+
+    const toolChip =
+        omniboxComposebox.shadowRoot.querySelector('cr-composebox-tool-chip');
+
+    assertFalse(!!toolChip);
+  });
 });

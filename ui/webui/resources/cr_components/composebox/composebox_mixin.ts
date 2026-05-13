@@ -9,6 +9,7 @@ import type {I18nMixinLitInterface} from '//resources/cr_elements/i18n_mixin_lit
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {DriveUploadError} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -16,14 +17,15 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction} from './common.js';
-import type {ComposeboxState, DriveUpload, TabUpload, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabUploadOrigin} from './common.js';
+import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
+import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import {WindowProxy} from './window_proxy.js';
 
 export enum VoiceSearchAction {
@@ -186,6 +188,7 @@ export const ComposeboxEmbedderMixin =
         queryZpsOnLoad: boolean =
             getLoadTimeBoolean('queryZpsOnLoad', /*defaultValue=*/ true);
         contextMenuOpened: boolean = false;
+        eventTracker: EventTracker = new EventTracker();
 
         accessor canSubmitFilesAndInput: boolean = true;
         accessor clearAllInputsWhenSubmittingQuery: boolean = false;
@@ -271,6 +274,10 @@ export const ComposeboxEmbedderMixin =
 
           this.initializeInitialState_();
 
+          if (this.hasUpdated) {
+            this.setupInputListener_();
+          }
+
           // For "next" searchboxes (Realbox Next, Omnibox Next, etc.), the zps
           // autocomplete query is triggered after the state has been initialized.
           if (this.queryZpsOnLoad && !this.searchboxNextEnabled) {
@@ -295,6 +302,21 @@ export const ComposeboxEmbedderMixin =
               id =>
                   assert(this.getSearchboxCallbackRouter().removeListener(id)));
           this.searchboxListenerIds = [];
+          this.eventTracker.removeAll();
+        }
+
+        override firstUpdated(changedProperties: PropertyValues<this>) {
+          super.firstUpdated(changedProperties);
+          this.setupInputListener_();
+        }
+
+        private setupInputListener_() {
+          const inputElem = this.getInputElement()?.inputElement;
+          if (inputElem) {
+            this.eventTracker.add(inputElem, 'input', () => {
+              this.submitEnabled = this.computeSubmitEnabled();
+            });
+          }
         }
 
         override willUpdate(changedProperties: PropertyValues<this>) {
@@ -401,6 +423,10 @@ export const ComposeboxEmbedderMixin =
                   this.i18n('composeboxSmartComposeTitle'));
             }
           }
+
+          if (changedPrivateProperties.has('state') && this.state) {
+            this.updateState(this.state);
+          }
         }
 
         // =====================================================================
@@ -428,6 +454,10 @@ export const ComposeboxEmbedderMixin =
         }
 
         getSearchboxHandler(): SearchboxPageHandlerRemote {
+          assertNotReached();
+        }
+
+        getContextEntrypointElement(): HTMLElement|null {
           assertNotReached();
         }
 
@@ -959,6 +989,81 @@ export const ComposeboxEmbedderMixin =
             _tabUpload: TabUpload,
             _replaceAutoActiveTabToken: boolean = false): Promise<void> {
           assertNotReached();
+        }
+
+        keepMenuOpenForMultiSelection() {
+          const entrypointAndMenu = this.getContextEntrypointElement();
+          if (entrypointAndMenu) {
+            (entrypointAndMenu as ContextualEntrypointAndMenuElement)
+                .openMenuForMultiSelection();
+          }
+        }
+
+        async updateState(state: ComposeboxState) {
+          if (!this.inputState) {
+            const inputStateResponse =
+                await this.getSearchboxHandler().getInputState();
+            // Check if a newer updateState is running and we can quit.
+            if (state !== this.state) {
+              return;
+            }
+            if (inputStateResponse) {
+              this.inputState = inputStateResponse.state;
+            }
+          }
+
+          const text = state.text || '';
+          const files = state.files || [];
+          const mode = state.mode ?? ToolMode.kUnspecified;
+          let model = state.model ?? ModelMode.kUnspecified;
+
+          if (text) {
+            this.input = text;
+            this.lastQueriedInput = text;
+          }
+          if (this.showZps && files.length === 0) {
+            this.queryAutocomplete(/* clearMatches= */ false);
+          }
+          if (files.length > 0 || state.error !== undefined) {
+            const dataTransfer = new DataTransfer();
+            const driveUploads: DriveUpload[] = [];
+            for (const file of files) {
+              if ('tabId' in file) {
+                if (file.origin === TabUploadOrigin.CONTEXT_MENU) {
+                  this.keepMenuOpenForMultiSelection();
+                }
+                this.addTabContextHandleCallback(
+                    {
+                      tabId: file.tabId,
+                      title: file.title,
+                      url: file.url,
+                      delayUpload: file.delayUpload,
+                      origin: file.origin,
+                    },
+                    /*replaceAutoActiveTabToken=*/ false);
+              } else if ('mimeType' in file) {
+                driveUploads.push(file);
+              } else {
+                dataTransfer.items.add(file.file);
+              }
+            }
+            this.processFiles(dataTransfer.files);
+            if (driveUploads.length > 0 || state.error !== undefined) {
+              this.addDriveUploads(driveUploads, state.error);
+            }
+          }
+          if (mode !== ToolMode.kUnspecified) {
+            this.handleToolClick(mode);
+          }
+
+          if (!!this.inputState && model === ModelMode.kUnspecified &&
+              this.inputState.allowedModels.length > 0) {
+            model = this.inputState.allowedModels[0]!;
+          }
+          this.getSearchboxHandler().setActiveModelMode(model);
+          this.updateInputPlaceholder();
+
+          await this.updateComplete;
         }
 
         async onContextMenuClosed() {
@@ -1911,6 +2016,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   closeOnEscape: boolean;
   clearAllInputsWhenSubmittingQuery: boolean;
   contextMenuOpened: boolean;
+  eventTracker: EventTracker;
   errorMessage: string;
   files: Map<UnguessableToken, ComposeboxFile>;
   input: string;
@@ -1964,6 +2070,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   getPageHandler(): PageHandlerRemote;
   getSearchboxCallbackRouter(): SearchboxPageCallbackRouter;
   getSearchboxHandler(): SearchboxPageHandlerRemote;
+  getContextEntrypointElement(): HTMLElement|null;
   addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean): Promise<void>;
 
