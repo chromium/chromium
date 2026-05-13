@@ -2283,4 +2283,92 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerAppBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Tests that error pages, such as those shown when a frame is blocked via CSP,
+// do not get counted as having scripts injected into them.
+// Regression test for https://crbug.com/511249430.
+IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
+                       CSPBlockedFrameDoesNotGrantPrivilege) {
+  // Set up ControllableHttpResponse to control the attacker page response.
+  std::string attacker_path = "/attacker.html";
+  net::test_server::ControllableHttpResponse attacker_response(
+      embedded_test_server(), attacker_path);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install a test extension that has content scripts matching victim.com.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ScriptInjectionTrackerBrowserTest - CSP Blocked",
+        "version": "1.0",
+        "manifest_version": 3,
+        "content_scripts": [{
+          "all_frames": true,
+          "run_at": "document_start",
+          "matches": ["*://victim.com/*"],
+          "js": ["content_script.js"]
+        }]
+      } )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
+                "self.didInject = 'injected';");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to attacker.com/attacker.html.
+  GURL attacker_url =
+      embedded_test_server()->GetURL("attacker.com", attacker_path);
+  content::TestNavigationObserver nav_observer(attacker_url);
+  nav_observer.StartWatchingNewWebContents();
+  // Don't wait for the load to finish; we need to respond with the custom
+  // response.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), attacker_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+  attacker_response.WaitForRequest();
+
+  // Respond with a CSP that will block an iframe loading victim.com.
+  static constexpr char kHtmlTemplate[] =
+      R"(<html>
+           <body>
+             <iframe src="%s"></iframe>
+           </body>
+         </html>)";
+  GURL victim_url("http://victim.com/title1.html");
+  std::string response_body =
+      base::StringPrintf(kHtmlTemplate, victim_url.spec().c_str());
+  std::vector<std::string> headers = {
+      "Content-Security-Policy: frame-src 'none'"};
+  attacker_response.Send(net::HTTP_OK, "text/html", response_body, {}, headers);
+  attacker_response.Done();
+  nav_observer.WaitForNavigationFinished();
+
+  content::WebContents* tab = GetActiveWebContents();
+  content::WaitForLoadStop(tab);
+  content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
+
+  // Find the child frame.
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  // The child frame should have failed to navigate to victim.com and committed
+  // an error page instead.
+  EXPECT_TRUE(child_frame->IsErrorDocument());
+  EXPECT_EQ(victim_url, child_frame->GetLastCommittedURL());
+
+  // The child frame is hosted in the same process as the main frame, since it's
+  // an error page.
+  EXPECT_EQ(main_frame->GetProcess(), child_frame->GetProcess());
+
+  // The tracker should NOT think that the attacker process (which hosts the
+  // main frame and the error page) has run content scripts from the extension,
+  // even though the iframe was targeted to victim.com.
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *main_frame->GetProcess(), extension->id()));
+
+  // Double-check that the script didn't run in the frame.
+  EXPECT_EQ(
+      "did not inject",
+      content::EvalJs(child_frame, "self.didInject || 'did not inject';"));
+}
+
 }  // namespace extensions
