@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -19,9 +20,11 @@
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/data_types.h"
 #include "components/private_ai/phosphor/token_fetcher_helper.h"
+#include "components/private_ai/phosphor/token_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/google_api_keys.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,6 +33,24 @@
 namespace private_ai {
 
 namespace {
+
+quiche::BlindSignToken CreateBlindSignTokenForTesting(std::string token_value,
+                                                      base::Time expiration) {
+  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
+  std::string encoded_token_value = base::Base64Encode(token_value);
+  std::string encoded_extension_value =
+      base::Base64Encode("mock-extension-value");
+
+  privacy_pass_token_data.set_token(std::move(encoded_token_value));
+  privacy_pass_token_data.set_encoded_extensions(
+      std::move(encoded_extension_value));
+
+  quiche::BlindSignToken blind_sign_token;
+  blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
+  blind_sign_token.expiration = absl::FromTimeT(expiration.ToTimeT());
+
+  return blind_sign_token;
+}
 
 constexpr char kTestEmail[] = "test@example.com";
 
@@ -167,6 +188,69 @@ TEST_F(PrivateAiServiceUtilTest, CanPrivateAiBeEnabled) {
     } else {
       EXPECT_FALSE(PrivateAiService::CanPrivateAiBeEnabled());
     }
+  }
+}
+
+TEST_F(PrivateAiServiceTest,
+       OnErrorStateOfRefreshTokenUpdatedForAccount_ResetsBackoff) {
+  // Set some mock BSA tokens. They will only be returned after oauth tokens
+  // have been fetched.
+  private_ai_service_->mock_bsa()->set_tokens({CreateBlindSignTokenForTesting(
+      "mock-token-value", base::Time::Now() + base::Hours(1))});
+
+  // Set up primary account.
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+
+  // Trigger a persistent OAuth token fetch failure, and update the persistent
+  // error of the refresh token in the IdentityManager to a persistent error
+  // state.
+  {
+    base::test::TestFuture<phosphor::GetAuthnTokensResult,
+                           std::optional<std::string>>
+        future;
+    private_ai_service_->RequestOAuthToken(future.GetCallback());
+    identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
+    identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+        account_info.account_id,
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
+    EXPECT_EQ(future.Get<0>(),
+              phosphor::GetAuthnTokensResult::kFailedOAuthTokenPersistent);
+  }
+
+  // Calling GetAuthToken on the token manager should immediately fail with
+  // nullopt due to the Max backoff.
+  {
+    base::test::TestFuture<std::optional<phosphor::BlindSignedAuthToken>>
+        future;
+    private_ai_service_->GetTokenManager()->GetAuthToken(future.GetCallback());
+    EXPECT_EQ(future.Get(), std::nullopt);
+  }
+
+  // Fix the sign-in state of the account (the refresh token error transitions
+  // to NONE).
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id, GoogleServiceAuthError::AuthErrorNone());
+
+  // The backoff should be reset. Calling GetAuthToken should now trigger
+  // a new OAuth token request instead of failing immediately.
+  {
+    base::test::TestFuture<std::optional<phosphor::BlindSignedAuthToken>>
+        future;
+    private_ai_service_->GetTokenManager()->GetAuthToken(future.GetCallback());
+
+    // A new OAuth token request should be triggered.
+    identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+        "access_token", base::Time::Now() + base::Hours(1));
+
+    // Wait for GetAuthToken to complete. It should successfully return the
+    // valid mock token.
+    std::optional<phosphor::BlindSignedAuthToken> result = future.Get();
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result->token, "bW9jay10b2tlbi12YWx1ZQ==");
   }
 }
 

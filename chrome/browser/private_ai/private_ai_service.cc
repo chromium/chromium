@@ -163,4 +163,19 @@ void PrivateAiService::OnPrimaryAccountChanged(
   }
 }
 
+void PrivateAiService::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (token_fetcher_ &&
+      account_info.account_id == identity_manager_->GetPrimaryAccountId(
+                                     signin::ConsentLevel::kSignin)) {
+    bool account_available = (error.state() == GoogleServiceAuthError::NONE);
+    token_fetcher_->OnAccountStatusChanged(account_available);
+    token_manager_->OnAccountStatusChanged(account_available);
+  }
+}
+
 }  // namespace private_ai

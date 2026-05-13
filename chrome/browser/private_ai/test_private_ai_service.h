@@ -40,6 +40,8 @@ class TestBlindSignAuthFactory : public phosphor::BlindSignAuthFactory {
 
   phosphor::MockBlindSignAuth* mock_bsa() { return bsa_; }
 
+  void ResetBsa() { bsa_ = nullptr; }
+
  private:
   raw_ptr<phosphor::MockBlindSignAuth> bsa_ = nullptr;
 };
@@ -56,6 +58,9 @@ class TestPrivateAiService : public PrivateAiService {
       std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory);
 
   ~TestPrivateAiService() override = default;
+
+  // PrivateAiService override:
+  void Shutdown() override;
 
   phosphor::MockBlindSignAuth* mock_bsa() {
     return test_bsa_factory_->mock_bsa();

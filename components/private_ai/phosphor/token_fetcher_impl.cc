@@ -197,9 +197,7 @@ void TokenFetcherImpl::GetAuthnTokensComplete(
   base::UmaHistogramEnumeration(
       "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result", result);
 
-  std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
   if (bsa_tokens.has_value()) {
-    DCHECK(!backoff.has_value());
     logger_->LogInfo(FROM_HERE,
                      "Successfully fetched " +
                          base::NumberToString(bsa_tokens->size()) +
@@ -213,7 +211,9 @@ void TokenFetcherImpl::GetAuthnTokensComplete(
   logger_->LogError(FROM_HERE,
                     "Failed to fetch tokens. Result: " +
                         base::NumberToString(static_cast<int>(result)));
-  DCHECK(backoff.has_value());
+
+  std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
+  CHECK(backoff.has_value());
   const base::Time try_again_after = (*backoff == base::TimeDelta::Max())
                                          ? base::Time::Max()
                                          : base::Time::Now() + *backoff;

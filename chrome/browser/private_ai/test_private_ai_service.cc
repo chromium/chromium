@@ -33,4 +33,9 @@ TestPrivateAiService::TestPrivateAiService(
                        std::move(bsa_factory)),
       test_bsa_factory_(test_bsa_factory) {}
 
+void TestPrivateAiService::Shutdown() {
+  test_bsa_factory_->ResetBsa();
+  PrivateAiService::Shutdown();
+}
+
 }  // namespace private_ai

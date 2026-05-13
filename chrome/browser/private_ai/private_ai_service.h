@@ -84,6 +84,11 @@ class PrivateAiService : public KeyedService,
   // signin::IdentityManager::Observer override:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
