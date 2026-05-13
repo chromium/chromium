@@ -93,7 +93,7 @@ class RTCEncodedAudioFrameDelegate
 class MODULES_EXPORT RTCEncodedAudioFramesAttachment
     : public SerializedScriptValue::Attachment {
  public:
-  static const void* kAttachmentKey;
+  static const void* const kAttachmentKey;
   RTCEncodedAudioFramesAttachment() = default;
   ~RTCEncodedAudioFramesAttachment() override = default;
 

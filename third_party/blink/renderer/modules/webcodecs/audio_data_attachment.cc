@@ -6,6 +6,7 @@
 
 namespace blink {
 
-const void* const AudioDataAttachment::kAttachmentKey = nullptr;
+const void* const AudioDataAttachment::kAttachmentKey =
+    &AudioDataAttachment::kAttachmentKey;
 
 }  // namespace blink

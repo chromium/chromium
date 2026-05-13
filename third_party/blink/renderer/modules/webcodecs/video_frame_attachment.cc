@@ -6,6 +6,7 @@
 
 namespace blink {
 
-const void* const VideoFrameAttachment::kAttachmentKey = nullptr;
+const void* const VideoFrameAttachment::kAttachmentKey =
+    &VideoFrameAttachment::kAttachmentKey;
 
 }  // namespace blink
