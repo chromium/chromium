@@ -9,7 +9,7 @@ import type {CrInputElement} from './cr_input.js';
 export function getHtml(this: CrInputElement) {
   return html`
 <div id="label" class="cr-form-field-label" ?hidden="${!this.label}"
-    aria-hidden="true">
+    aria-hidden="${this.getLabelAriaHidden_() || nothing}">
   ${this.label}
 </div>
 <div id="row-container" part="row-container">
@@ -27,6 +27,7 @@ export function getHtml(this: CrInputElement) {
             minlength="${this.minlength}" inputmode="${this.inputmode}"
             aria-description="${this.ariaDescription || nothing}"
             aria-errormessage="${this.getAriaErrorMessage_() || nothing}"
+            aria-labelledby="${this.getAriaLabelledBy_() || nothing}"
             aria-label="${this.getAriaLabel_()}"
             aria-invalid="${this.getAriaInvalid_()}"
             .max="${this.max || nothing}" .min="${this.min || nothing}"

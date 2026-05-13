@@ -283,6 +283,26 @@ export class CrInputElement extends CrLitElement {
     return this.ariaLabel || this.label || this.placeholder;
   }
 
+  // Returns the id of the visible label element when aria-labelledby
+  // should reference it, or null otherwise. Some accessibility frameworks
+  // (notably ATK/AT-SPI used by Orca on Linux) do not reliably surface
+  // the input's accessible name from aria-label alone in this layout.
+  // Skipped when the host sets its own aria-label, so that takes
+  // precedence as before.
+  protected getAriaLabelledBy_(): string|null {
+    if (this.label && !this.ariaLabel) {
+      return 'label';
+    }
+    return null;
+  }
+
+  // The visible label is exposed to a11y only when referenced via
+  // aria-labelledby; otherwise it stays aria-hidden to avoid duplicating
+  // the inner input's aria-label.
+  protected getLabelAriaHidden_(): string|null {
+    return this.getAriaLabelledBy_() ? null : 'true';
+  }
+
   protected getAriaInvalid_() {
     return this.invalid ? 'true' : 'false';
   }
