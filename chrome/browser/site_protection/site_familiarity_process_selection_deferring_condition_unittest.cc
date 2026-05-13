@@ -7,10 +7,12 @@
 #include <memory>
 #include <queue>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -598,84 +600,185 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest,
   CheckSiteUnfamiliar(navigation_handle);
 }
 
-TEST_F(SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest,
-       HistogramLoggedOnDefaultSearchEngine) {
-  TemplateURLServiceFactoryTestUtil factory_util{profile()};
-  factory_util.VerifyLoad();
+namespace {
+// Test subclass for Default Search Engine (DSE) specific tests.
+class SiteFamiliarityDefaultSearchEngineTestBase
+    : public SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest {
+ public:
+  void SetUp() override {
+    SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest::SetUp();
+    factory_util_ =
+        std::make_unique<TemplateURLServiceFactoryTestUtil>(profile());
+    factory_util_->VerifyLoad();
 
-  TemplateURLData data;
-  data.SetShortName(u"example.com");
-  data.SetKeyword(u"example.com");
-  data.SetURL("https://www.example.com/search?q={searchTerms}");
-  TemplateURL* template_url =
-      factory_util.model()->Add(std::make_unique<TemplateURL>(data));
-  factory_util.model()->SetUserSelectedDefaultSearchProvider(template_url);
-
-  // Search URL without deferral.
-  {
-    GURL kSearchUrl("https://www.example.com/search?q=test2");
-    safe_browsing_database_manager_->SetUrlOnHighConfidenceAllowlist(
-        GURL("https://www.example.com"));
-    content::MockNavigationHandle navigation_handle(kSearchUrl, main_rfh());
-    base::HistogramTester histogram_tester;
-    SiteFamiliarityProcessSelectionDeferringCondition condition(
-        navigation_handle);
-
-    // Complete the history fetch.
-    raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
-        static_cast<ManualCallbackEmptyHistoryService*>(history_service());
-    mock_history_service->RunNextCallback();
-
-    base::MockCallback<base::OnceClosure> mock_callback;
-    EXPECT_CALL(mock_callback, Run()).Times(0);
-
-    // Proceed with process selection without deferral.
-    EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kProceed,
-              condition.OnWillSelectFinalProcess(mock_callback.Get()));
-
-    histogram_tester.ExpectUniqueSample(
-        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, false,
-        1);
+    TemplateURLData data;
+    data.SetShortName(u"example.com");
+    data.SetKeyword(u"example.com");
+    data.SetURL("https://www.example.com/search?q={searchTerms}");
+    TemplateURL* template_url =
+        factory_util_->model()->Add(std::make_unique<TemplateURL>(data));
+    factory_util_->model()->SetUserSelectedDefaultSearchProvider(template_url);
   }
 
-  // Search URL with deferral.
-  {
-    GURL kSearchUrl("https://www.example.com/search?q=test");
-    content::MockNavigationHandle navigation_handle(kSearchUrl, main_rfh());
-    base::HistogramTester histogram_tester;
-    SiteFamiliarityProcessSelectionDeferringCondition condition(
-        navigation_handle);
-
-    EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
-              condition.OnWillSelectFinalProcess(base::OnceClosure()));
-    histogram_tester.ExpectUniqueSample(
-        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, true,
-        1);
+  void TearDown() override {
+    factory_util_.reset();
+    SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest::
+        TearDown();
   }
 
-  // Non-search page on DSE's origin.
-  {
-    GURL kHomepageUrl("https://www.example.com/");
-    content::MockNavigationHandle navigation_handle(kHomepageUrl, main_rfh());
-    base::HistogramTester histogram_tester;
-    SiteFamiliarityProcessSelectionDeferringCondition condition(
-        navigation_handle);
-    condition.OnWillSelectFinalProcess(base::OnceClosure());
-    histogram_tester.ExpectTotalCount(
-        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, 0);
+ protected:
+  std::unique_ptr<TemplateURLServiceFactoryTestUtil> factory_util_;
+};
+
+// SiteFamiliarityDefaultSearchEngineTestBase subclass for tests that skip
+// site familiarity calculations for DSE navigations.
+class SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest
+    : public SiteFamiliarityDefaultSearchEngineTestBase {
+ public:
+  void SetUp() override {
+    SiteFamiliarityDefaultSearchEngineTestBase::SetUp();
+    feature_list_.InitAndEnableFeature(
+        site_protection::kSkipSiteFamiliarityDeferralForDefaultSearchEngine);
   }
 
-  // Site unrelated to DSE.
-  {
-    GURL kUnrelatedUrl("https://www.unrelated.com/");
-    content::MockNavigationHandle navigation_handle(kUnrelatedUrl, main_rfh());
-    base::HistogramTester histogram_tester;
-    SiteFamiliarityProcessSelectionDeferringCondition condition(
-        navigation_handle);
-    condition.OnWillSelectFinalProcess(base::OnceClosure());
-    histogram_tester.ExpectTotalCount(
-        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, 0);
-  }
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that a navigation to the DSE search page does not defer and is familiar.
+TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest, SearchUrl) {
+  GURL kSearchUrl("https://www.example.com/search?q=test2");
+  content::MockNavigationHandle navigation_handle(kSearchUrl, main_rfh());
+  base::HistogramTester histogram_tester;
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  base::MockCallback<base::OnceClosure> mock_callback;
+  EXPECT_CALL(mock_callback, Run()).Times(0);
+
+  // Proceed with process selection without deferral.
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kProceed,
+            condition.OnWillSelectFinalProcess(mock_callback.Get()));
+
+  histogram_tester.ExpectUniqueSample(
+      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, false, 1);
+  CheckSiteFamiliar(navigation_handle);
 }
+
+// Test that a navigation to a non-search page on the DSE's origin is deferred
+// and is unfamiliar.
+TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest,
+       NonSearchUrl_DseOrigin) {
+  GURL kHomepageUrl("https://www.example.com/");
+  content::MockNavigationHandle navigation_handle(kHomepageUrl, main_rfh());
+  base::HistogramTester histogram_tester;
+  MockConditionCallback callback;
+
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
+            condition.OnWillSelectFinalProcess(callback.Get()));
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, 0);
+
+  // Complete history fetch.
+  raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
+      static_cast<ManualCallbackEmptyHistoryService*>(history_service());
+  mock_history_service->RunNextCallback();
+  CheckSiteUnfamiliar(navigation_handle);
+}
+
+// Test that a navigation to a site unrelated to the DSE can be deferred and is
+// unfamiliar.
+TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest,
+       NonSearchUrl_NonDseOrigin) {
+  GURL kUnrelatedUrl("https://www.unrelated.com/");
+  content::MockNavigationHandle navigation_handle(kUnrelatedUrl, main_rfh());
+  base::HistogramTester histogram_tester;
+  MockConditionCallback callback;
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
+            condition.OnWillSelectFinalProcess(callback.Get()));
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, 0);
+
+  // Complete history fetch.
+  raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
+      static_cast<ManualCallbackEmptyHistoryService*>(history_service());
+  mock_history_service->RunNextCallback();
+  CheckSiteUnfamiliar(navigation_handle);
+}
+
+// SiteFamiliarityDefaultSearchEngineTestBase subclass for tests that run site
+// familiarity calculations for DSE navigations.
+class SiteFamiliarityDefaultSearchEngineRunFamiliarityCheckTest
+    : public SiteFamiliarityDefaultSearchEngineTestBase {
+ public:
+  void SetUp() override {
+    SiteFamiliarityDefaultSearchEngineTestBase::SetUp();
+    feature_list_.InitAndDisableFeature(
+        site_protection::kSkipSiteFamiliarityDeferralForDefaultSearchEngine);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that a DSE search URL navigation with no history query is deferred,
+// histogram is logged, and site is unfamiliar.
+TEST_F(SiteFamiliarityDefaultSearchEngineRunFamiliarityCheckTest,
+       SearchUrl_NoHistoryQuery) {
+  GURL kSearchUrl("https://www.example.com/search?q=test");
+  content::MockNavigationHandle navigation_handle(kSearchUrl, main_rfh());
+  base::HistogramTester histogram_tester;
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  MockConditionCallback callback;
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
+            condition.OnWillSelectFinalProcess(callback.Get()));
+
+  histogram_tester.ExpectUniqueSample(
+      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, true, 1);
+
+  // Complete history fetch.
+  raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
+      static_cast<ManualCallbackEmptyHistoryService*>(history_service());
+  mock_history_service->RunNextCallback();
+
+  CheckSiteUnfamiliar(navigation_handle);
+}
+
+// Test that a DSE search URL with history query is not deferred,
+// histogram is not logged, and site is marked unfamiliar.
+TEST_F(SiteFamiliarityDefaultSearchEngineRunFamiliarityCheckTest,
+       SearchUrl_HistoryQuery) {
+  GURL kSearchUrl("https://www.example.com/search?q=test2");
+
+  content::MockNavigationHandle navigation_handle(kSearchUrl, main_rfh());
+  base::HistogramTester histogram_tester;
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  // Complete history fetch so it proceeds immediately.
+  raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
+      static_cast<ManualCallbackEmptyHistoryService*>(history_service());
+  mock_history_service->RunNextCallback();
+
+  base::MockCallback<base::OnceClosure> mock_callback;
+  EXPECT_CALL(mock_callback, Run()).Times(0);
+
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kProceed,
+            condition.OnWillSelectFinalProcess(mock_callback.Get()));
+
+  histogram_tester.ExpectUniqueSample(
+      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, false, 1);
+
+  CheckSiteUnfamiliar(navigation_handle);
+}
+
+}  // anonymous namespace
 
 }  // namespace site_protection

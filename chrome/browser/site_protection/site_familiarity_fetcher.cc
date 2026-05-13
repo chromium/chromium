@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
+#include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -17,6 +18,12 @@
 #include "url/origin.h"
 
 namespace site_protection {
+
+// Enables skipping site familiarity calculations on navigations to DSE search
+// result pages.
+BASE_FEATURE(kSkipSiteFamiliarityDeferralForDefaultSearchEngine,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // The minimum amount of time ago that a site must have been visited in order to
@@ -86,6 +93,14 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
     // Visits to most web-safe non-http, non-https schemes are not recorded in
     // chrome://history. See CanAddURLToHistory().
     OnComputedVerdictWithoutFetches(/*is_site_familiar=*/false);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kSkipSiteFamiliarityDeferralForDefaultSearchEngine) &&
+      IsDefaultSearchEngineUrl(fetch_url_, profile_)) {
+    // Assume the default search engine search results are familiar to the user.
+    OnComputedVerdictWithoutFetches(/*is_site_familiar=*/true);
     return;
   }
 
