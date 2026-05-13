@@ -23,6 +23,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -299,6 +300,7 @@ public class PermissionUpdateMessageTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // No camera device on auto.
+    @DisabledTest(message = "https://crbug.com/378557957")
     public void testMessageForMediaStreamCamera()
             throws IllegalArgumentException, TimeoutException, ExecutionException {
         runTest(
