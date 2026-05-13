@@ -476,16 +476,16 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
   // suggest for them).
   if (input_type != metrics::OmniboxInputType::EMPTY &&
       !(page_url.is_valid() &&
-        ((page_url.GetScheme() == url::kHttpScheme) ||
-         (page_url.GetScheme() == url::kHttpsScheme) ||
-         (page_url.GetScheme() == url::kAboutScheme) ||
-         (page_url.GetScheme() ==
+        ((page_url.scheme() == url::kHttpScheme) ||
+         (page_url.scheme() == url::kHttpsScheme) ||
+         (page_url.scheme() == url::kAboutScheme) ||
+         (page_url.scheme() ==
           client->GetEmbedderRepresentationOfAboutScheme())))) {
     return false;
   }
 
   if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled &&
-      page_url.GetScheme() == content::kChromeUIScheme) {
+      page_url.scheme() == content::kChromeUIScheme) {
     return false;
   }
 
