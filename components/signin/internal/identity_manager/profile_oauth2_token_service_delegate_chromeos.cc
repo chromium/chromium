@@ -497,8 +497,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(
                                                      fire_auth_error_changed);
   if (!RefreshTokenIsAvailable(account_id)) {
     // Account has been removed.
-    DCHECK_EQ(error, GoogleServiceAuthError(
-                         GoogleServiceAuthError::ACCOUNT_NOT_FOUND));
+    DCHECK_EQ(error, GoogleServiceAuthError::CreateAccountNotFound());
     return;
   }
 

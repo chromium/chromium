@@ -323,8 +323,8 @@ class AccountTrackerServiceTest : public testing::Test {
   void SimulateIssueAccessTokenPersistentError(AccountKey account_key) {
     fake_oauth2_token_service_.IssueErrorForAllPendingRequestsForAccount(
         AccountKeyToAccountId(account_key),
-        GoogleServiceAuthError(
-            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   }
 
   std::string GenerateValidTokenInfoResponse(AccountKey account_key) {

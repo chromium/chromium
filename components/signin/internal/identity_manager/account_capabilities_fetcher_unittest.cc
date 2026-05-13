@@ -224,8 +224,8 @@ class TestSupportGaia {
       const CoreAccountInfo& account_info) {
     fake_oauth2_token_service_.IssueErrorForAllPendingRequestsForAccount(
         account_info.account_id,
-        GoogleServiceAuthError(
-            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   }
 
  private:

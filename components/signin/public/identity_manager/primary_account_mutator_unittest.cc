@@ -158,8 +158,8 @@ void RunRevokeConsentTest(
     SetRefreshTokenForPrimaryAccount(identity_manager);
     signin::UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_manager, account_info.account_id,
-        GoogleServiceAuthError(
-            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   }
 
   // Additionally, ClearPrimaryAccount_* tests also need a secondary account.
