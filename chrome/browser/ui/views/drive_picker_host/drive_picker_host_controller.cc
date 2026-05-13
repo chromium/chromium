@@ -16,9 +16,12 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/base_window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -106,6 +109,69 @@ void DrivePickerHostController::ShowDrivePickerHost(
   widget_.reset(widget);
 
   widget_->SetBounds(window->GetBounds());
+
+  // Ensure the hosted WebContents is transparent. This allows the WebUI to
+  // render its own semi-transparent scrim or floating dialog while the
+  // browser window remains partially visible underneath.
+  if (view_ptr->GetWebContents()) {
+    view_ptr->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
+  }
+
+  // The following settings ensure that the widget's views (root view,
+  // non-client view, frame view, and client view) are transparent. This is
+  // necessary for the browser scrim to be transparent and correctly show the
+  // WebUI host for the Drive Picker. By setting the layers to non-opaque and
+  // removing backgrounds/borders, we allow the underlying browser contents to
+  // be visible through the semi-transparent scrim.
+  views::View* root_view = widget_->GetRootView();
+  if (root_view) {
+    root_view->SetPaintToLayer();
+    root_view->layer()->SetFillsBoundsOpaquely(false);
+    root_view->SetBackground(nullptr);
+    root_view->SetBorder(nullptr);
+  }
+  views::NonClientView* non_client_view = widget_->non_client_view();
+  if (non_client_view) {
+    non_client_view->SetPaintToLayer();
+    non_client_view->layer()->SetFillsBoundsOpaquely(false);
+    non_client_view->SetBackground(nullptr);
+    non_client_view->SetBorder(nullptr);
+    if (non_client_view->frame_view()) {
+      non_client_view->frame_view()->SetPaintToLayer();
+      non_client_view->frame_view()->layer()->SetFillsBoundsOpaquely(false);
+      non_client_view->frame_view()->SetBackground(nullptr);
+
+      // BubbleFrameView maintains an internal raw pointer (bubble_border_) to
+      // its Border object. Calling SetBorder(nullptr) would leave this pointer
+      // dangling, causing crashes during layout.
+      //
+      // To achieve a transparent frame safely, we provide a "flat"
+      // BubbleBorder with zero insets and a transparent color. We then
+      // immediately remove the background that SetBubbleBorder automatically
+      // adds, as BubbleBackground fills the bubble with a solid color.
+      if (auto* bubble_frame_view = views::AsViewClass<views::BubbleFrameView>(
+              non_client_view->frame_view())) {
+        auto border = std::make_unique<views::BubbleBorder>(
+            views::BubbleBorder::FLOAT, views::BubbleBorder::NO_SHADOW);
+        border->set_insets(gfx::Insets());
+        border->SetColor(SK_ColorTRANSPARENT);
+        bubble_frame_view->SetBubbleBorder(std::move(border));
+        bubble_frame_view->SetBackground(nullptr);
+      } else {
+        non_client_view->frame_view()->SetBorder(nullptr);
+      }
+    }
+    if (non_client_view->client_view()) {
+      non_client_view->client_view()->SetPaintToLayer();
+      non_client_view->client_view()->layer()->SetFillsBoundsOpaquely(false);
+      non_client_view->client_view()->SetBackground(nullptr);
+      non_client_view->client_view()->SetBorder(nullptr);
+    }
+  }
+
+  // Ensure the window appears above most other browser-level UI elements
+  // (like the omnibox dropdown or status bubble) by using a floating Z-order.
+  widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 
   widget_->MakeCloseSynchronous(
       base::BindOnce(&DrivePickerHostController::ResetControllerState,
