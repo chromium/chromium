@@ -49,7 +49,7 @@ class PaintOpPerfTest : public testing::Test {
     timer_.Reset();
     do {
       SimpleBufferSerializer serializer(
-          serialized_data_.data(), kMaxSerializedBufferBytes,
+          serialized_data_.as_span(),
           test_options_provider.serialize_options());
       serializer.Serialize(buffer, nullptr, preamble);
       bytes_written = serializer.written();

@@ -162,13 +162,12 @@ class CC_PAINT_EXPORT PaintOp {
   };
 
   // Subclasses should provide a Serialize() method called from here.
-  // If the op can be serialized to |memory| in no more than |size| bytes,
-  // then return the number of bytes written.  If it won't fit, return 0.
-  // If |flags_to_serialize| is non-null, it overrides any flags within the op.
-  // |current_ctm| is the transform that will affect the op when rasterized.
-  // |original_ctm| is the transform that SetMatrixOps must be made relative to.
-  size_t Serialize(void* memory,
-                   size_t size,
+  // If the op can be serialized to `memory`, then return the number of bytes
+  // written.  If it won't fit, return 0.
+  // If `flags_to_serialize` is non-null, it overrides any flags within the op.
+  // `current_ctm` is the transform that will affect the op when rasterized.
+  // `original_ctm` is the transform that SetMatrixOps must be made relative to.
+  size_t Serialize(base::span<uint8_t> memory,
                    const SerializeOptions& options,
                    const PaintFlags* flags_to_serialize,
                    const SkM44& current_ctm,

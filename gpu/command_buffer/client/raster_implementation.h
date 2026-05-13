@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/paint/paint_cache.h"
@@ -260,9 +261,9 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                              GLenum value,
                              const char* label);
 
-  // Try to map a transfer buffer of |size|.  Will return a pointer to a
-  // buffer of |size_allocated|, which will be equal to or lesser than |size|.
-  void* MapRasterCHROMIUM(uint32_t size, uint32_t* size_allocated);
+  // Try to map a transfer buffer of `size`. Will return a span of up to `size`
+  // bytes. Returns an empty span on failure.
+  base::span<uint8_t> MapRasterCHROMIUM(uint32_t size);
 
   // |raster_written_size| is the size of buffer used by raster commands.
   // |total_written_size| is the total size of the buffer written to, including

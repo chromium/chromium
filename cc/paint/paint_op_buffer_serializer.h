@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -135,8 +136,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
 // Serializes the ops in the memory available, fails on overflow.
 class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
  public:
-  SimpleBufferSerializer(void* memory,
-                         size_t size,
+  SimpleBufferSerializer(base::span<uint8_t> memory,
                          const PaintOp::SerializeOptions& options);
   ~SimpleBufferSerializer() override;
 
@@ -160,8 +160,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
                                 original_ctm);
   }
 
-  void* memory_;
-  const size_t total_;
+  const base::span<uint8_t> memory_;
   size_t written_ = 0u;
 };
 

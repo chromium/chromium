@@ -1315,9 +1315,9 @@ class SimpleSerializer {
 
     size_t op_idx = 0;
     for (const PaintOp& op : buffer) {
-      size_t bytes_written = op.Serialize(
-          remaining_span_.data(), remaining_span_.size(),
-          options_provider_.serialize_options(), nullptr, SkM44(), SkM44());
+      size_t bytes_written =
+          op.Serialize(remaining_span_, options_provider_.serialize_options(),
+                       nullptr, SkM44(), SkM44());
       if (!bytes_written)
         return;
 
@@ -2049,7 +2049,7 @@ sk_sp<PaintOpBuffer> SerializeAndDeserialize(
     const PaintOpBufferSerializer::Preamble* preamble = nullptr) {
   auto memory = AllocateSerializedBuffer();
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+  SimpleBufferSerializer serializer(memory.as_span(),
                                     options_provider.serialize_options());
   if (preamble) {
     serializer.Serialize(buffer, nullptr, *preamble);
@@ -2159,7 +2159,7 @@ TEST_P(PaintOpSerializationTest, SerializationFailures) {
       options_provider.ClearPaintCache();
       options_provider.ForcePurgeSkottieSerializationHistory();
       size_t written_bytes =
-          op.Serialize(output_.data(), i, options_provider.serialize_options(),
+          op.Serialize(output_.first(i), options_provider.serialize_options(),
                        nullptr, SkM44(), SkM44());
       if (i >= expected_bytes) {
         EXPECT_EQ(expected_bytes, written_bytes) << "i: " << i;
@@ -2295,9 +2295,9 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
   alignas(PaintOpBuffer::kPaintOpAlign) char
       deserialized[kLargestPaintOpAlignedSize];
   for (const PaintOp& op : buffer_) {
-    size_t bytes_written = op.Serialize(output_.data(), output_.size(),
-                                        options_provider.serialize_options(),
-                                        nullptr, SkM44(), SkM44());
+    size_t bytes_written =
+        op.Serialize(output_, options_provider.serialize_options(), nullptr,
+                     SkM44(), SkM44());
     size_t bytes_read = 0u;
     PaintOp* written = PaintOp::Deserialize(
         output_.first(bytes_written), deserialized, std::size(deserialized),
@@ -2312,8 +2312,7 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
 
     PaintFlags override_flags = static_cast<const PaintOpWithFlags&>(op).flags;
     override_flags.setAlphaf(override_flags.getAlphaf() * 0.5f);
-    bytes_written = op.Serialize(output_.data(), output_.size(),
-                                 options_provider.serialize_options(),
+    bytes_written = op.Serialize(output_, options_provider.serialize_options(),
                                  &override_flags, SkM44(), SkM44());
     written = PaintOp::Deserialize(output_.first(bytes_written), deserialized,
                                    std::size(deserialized), &bytes_read,
@@ -2535,7 +2534,7 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
   ASSERT_TRUE(op);
 
   TestOptionsProvider options_provider;
-  size_t bytes_written = op->Serialize(input.data(), kSerializedBytesPerOp,
+  size_t bytes_written = op->Serialize(input.first(kSerializedBytesPerOp),
                                        options_provider.serialize_options(),
                                        nullptr, SkM44(), SkM44());
   ASSERT_GT(bytes_written, 0u);
@@ -2617,9 +2616,9 @@ TEST(PaintOpBufferTest, ValidateRects) {
   // Every op should serialize but fail to deserialize due to the bad rect.
   int op_idx = 0;
   for (const PaintOp& op : buffer) {
-    size_t bytes_written = op.Serialize(
-        serialized.data(), kSerializedBytesPerOp,
-        options_provider.serialize_options(), nullptr, SkM44(), SkM44());
+    size_t bytes_written = op.Serialize(serialized.first(kSerializedBytesPerOp),
+                                        options_provider.serialize_options(),
+                                        nullptr, SkM44(), SkM44());
     ASSERT_GT(bytes_written, sizeof(float));
 
     size_t bytes_read = 0;
@@ -3618,7 +3617,7 @@ TEST(PaintOpBufferTest,
 
   // Serialize
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+  SimpleBufferSerializer serializer(memory.as_span(),
                                     options_provider.serialize_options());
   serializer.Serialize(buffer);
   ASSERT_TRUE(serializer.valid());
@@ -3865,7 +3864,7 @@ TEST(PaintOpBufferTest, DrawImageRectSerializeScaledImages) {
                                src, dst, SkCanvas::kStrict_SrcRectConstraint);
   auto memory = AllocateSerializedBuffer();
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+  SimpleBufferSerializer serializer(memory.as_span(),
                                     options_provider.serialize_options());
   serializer.Serialize(buffer);
 
@@ -3892,7 +3891,7 @@ TEST(PaintOpBufferTest, RecordShadersSerializeScaledImages) {
 
   auto memory = AllocateSerializedBuffer();
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+  SimpleBufferSerializer serializer(memory.as_span(),
                                     options_provider.serialize_options());
   serializer.Serialize(buffer);
 
@@ -3923,8 +3922,7 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
     flags.setShader(shader);
     buffer.push<DrawRectOp>(SkRect::MakeWH(10.f, 10.f), flags);
 
-    SimpleBufferSerializer serializer(memory.data(),
-                                      kDefaultSerializedBufferSize,
+    SimpleBufferSerializer serializer(memory.as_span(),
                                       options_provider.serialize_options());
     serializer.Serialize(buffer);
     memory_written = serializer.written();
@@ -3942,8 +3940,7 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
     buffer.push<ScaleOp>(2.0f, 3.7f);
     buffer.push<DrawRectOp>(SkRect::MakeWH(10.f, 10.f), flags);
 
-    SimpleBufferSerializer serializer(memory_scaled.data(),
-                                      kDefaultSerializedBufferSize,
+    SimpleBufferSerializer serializer(memory_scaled.as_span(),
                                       options_provider.serialize_options());
     serializer.Serialize(buffer);
     memory_scaled_written = serializer.written();
@@ -4032,7 +4029,7 @@ TEST(PaintOpBufferTest, RecordShadersCachedSize) {
   flags.setShader(shader);
   buffer.push<DrawRectOp>(SkRect::MakeWH(10.f, 10.f), flags);
 
-  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+  SimpleBufferSerializer serializer(memory.as_span(),
                                     options_provider.serialize_options());
   options_provider.context_supports_distance_field_text();
   serializer.Serialize(buffer);
@@ -4072,7 +4069,7 @@ TEST(PaintOpBufferTest, RecordFilterSerializeScaledImages) {
 
   auto memory = AllocateSerializedBuffer();
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+  SimpleBufferSerializer serializer(memory.as_span(),
                                     options_provider.serialize_options());
   serializer.Serialize(buffer);
 
@@ -4445,7 +4442,7 @@ TEST(PaintOpBufferTest, PathCaching) {
   auto memory = AllocateSerializedBuffer();
   PaintOpBuffer buffer;
   buffer.push<DrawPathOp>(path, flags, UsePaintCache::kEnabled);
-  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+  SimpleBufferSerializer serializer(memory.as_span(),
                                     options_provider.serialize_options());
   serializer.Serialize(buffer);
 
@@ -4771,7 +4768,7 @@ TEST(PaintOpBufferTest, SkSLShaderPrivilegeEnforcement) {
 
   auto memory = AllocateSerializedBuffer();
   TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+  SimpleBufferSerializer serializer(memory.as_span(),
                                     options_provider.serialize_options());
   serializer.Serialize(buffer);
   ASSERT_TRUE(serializer.valid());

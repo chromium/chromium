@@ -1240,8 +1240,7 @@ void PaintOpWriter::Write(const PaintRecord& record,
   // does not support lcd text, so reflect that in the serialization options.
   PaintOp::SerializeOptions lcd_disabled_options = options_;
   lcd_disabled_options.can_use_lcd_text = false;
-  SimpleBufferSerializer serializer(remaining_.data(), remaining_bytes(),
-                                    lcd_disabled_options);
+  SimpleBufferSerializer serializer(remaining_, lcd_disabled_options);
   serializer.Serialize(record.buffer(), playback_rect, post_scale);
 
   if (!serializer.valid()) {

@@ -457,14 +457,12 @@ void PaintOpBufferSerializer::RestoreToCount(SkCanvas* canvas,
 }
 
 SimpleBufferSerializer::SimpleBufferSerializer(
-    void* memory,
-    size_t size,
+    base::span<uint8_t> memory,
     const PaintOp::SerializeOptions& options)
     : PaintOpBufferSerializer(&SimpleBufferSerializer::SerializeToMemory,
                               this,
                               options),
-      memory_(memory),
-      total_(size) {}
+      memory_(memory) {}
 
 SimpleBufferSerializer::~SimpleBufferSerializer() = default;
 
@@ -474,17 +472,17 @@ size_t SimpleBufferSerializer::SerializeToMemoryImpl(
     const PaintFlags* flags_to_serialize,
     const SkM44& current_ctm,
     const SkM44& original_ctm) {
-  if (written_ == total_)
+  if (written_ == memory_.size()) {
     return 0u;
+  }
 
-  size_t bytes = op.Serialize(
-      UNSAFE_TODO(static_cast<char*>(memory_) + written_), total_ - written_,
-      options, flags_to_serialize, current_ctm, original_ctm);
+  size_t bytes = op.Serialize(memory_.subspan(written_), options,
+                              flags_to_serialize, current_ctm, original_ctm);
   if (!bytes)
     return 0u;
 
   written_ += bytes;
-  DCHECK_GE(total_, written_);
+  DCHECK_GE(memory_.size(), written_);
   return bytes;
 }
 
