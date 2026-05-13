@@ -1249,41 +1249,6 @@ Canvas2DResourceProviderBitmap::CreateWithClear(
 }
 
 std::unique_ptr<Canvas2DResourceProviderSharedImage>
-CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositorBase(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    ShouldInitialize should_initialize,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    Delegate* delegate) {
-  // CanvasResourceProviderSoftwareSharedImage works only with the software
-  // compositor.
-  if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    return nullptr;
-  }
-
-  CHECK(format == viz::SharedImageFormat::N32Format() ||
-        format == viz::SinglePlaneFormat::kRGBA_F16);
-
-  auto provider = std::make_unique<Canvas2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, shared_image_interface_provider,
-      delegate);
-  if (provider->IsValid()) {
-    if (should_initialize ==
-        CanvasResourceProvider::ShouldInitialize::kCallClear) {
-      CHECK(provider->IsCanvas2D());
-      provider->ClearAtCreationForCanvas2D();
-    }
-    // The ClearAtCreationForCanvas2D() call cannot turn a SW CRPSI invalid.
-    CHECK(provider->IsValid());
-    return provider;
-  }
-
-  return nullptr;
-}
-
-std::unique_ptr<Canvas2DResourceProviderSharedImage>
 Canvas2DResourceProviderSharedImage::CreateWithClear(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -1320,9 +1285,24 @@ Canvas2DResourceProviderSharedImage::CreateWithClearForSoftwareCompositor(
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate) {
-  return CreateSharedImageProviderForSoftwareCompositorBase(
-      size, format, alpha_type, color_space, ShouldInitialize::kCallClear,
-      shared_image_interface_provider, delegate);
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    return nullptr;
+  }
+
+  CHECK(format == viz::SharedImageFormat::N32Format() ||
+        format == viz::SinglePlaneFormat::kRGBA_F16);
+
+  auto provider = std::make_unique<Canvas2DResourceProviderSharedImage>(
+      size, format, alpha_type, color_space, shared_image_interface_provider,
+      delegate);
+  if (provider->IsValid()) {
+    provider->ClearAtCreationForCanvas2D();
+    // The ClearAtCreationForCanvas2D() call cannot turn a SW CRPSI invalid.
+    CHECK(provider->IsValid());
+    return provider;
+  }
+
+  return nullptr;
 }
 
 std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
