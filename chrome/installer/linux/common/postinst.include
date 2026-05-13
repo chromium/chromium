@@ -102,3 +102,19 @@ chrome_management_service_setup() {
 }
 
 chrome_management_service_setup
+
+# Reload AppArmor profile
+if [ -f "@@INSTALLDIR/apparmor.d/@@usr_bin_symlink_name" ]; then
+  if [ -f "/etc/apparmor.d/abi/4.0" ] && [ -x /sbin/apparmor_parser ]; then
+    # Check for exact attachment collision with Ubuntu's native chrome profile.
+    if [ "@@usr_bin_symlink_name" = "google-chrome-stable" ] && \
+       [ -f "/etc/apparmor.d/chrome" ]; then
+      # Skip installation if a conflicting profile exists.
+      true
+    else
+      cp "@@INSTALLDIR/apparmor.d/@@usr_bin_symlink_name" \
+        "/etc/apparmor.d/@@usr_bin_symlink_name"
+      /sbin/apparmor_parser -r "/etc/apparmor.d/@@usr_bin_symlink_name" || true
+    fi
+  fi
+fi

@@ -1,0 +1,14 @@
+# This profile allows Chromium to create user namespaces, which is required
+# for the sandbox to work on newer Ubuntu releases.
+# See:
+# https://ubuntu.com/blog/ubuntu-23-10-restricted-unprivileged-user-namespaces
+
+abi <abi/4.0>,
+include <tunables/global>
+
+profile @@usr_bin_symlink_name @@INSTALLDIR/@@PROGNAME flags=(unconfined) {
+  userns,
+
+  # Site-specific additions and overrides. See local/README for details.
+  include if exists <local/@@usr_bin_symlink_name>
+}
