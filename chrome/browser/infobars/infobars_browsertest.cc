@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
+#include "chrome/browser/ui/startup/oscryptasync_availability_infobar_delegate.h"
 #include "chrome/browser/ui/tab_sharing/mock_tab_sharing_ui.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -194,6 +195,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           {"default_browser", IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE},
           {"google_api_keys", IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE},
           {"obsolete_system", IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE},
+          {"oscryptasync_availability",
+           IBD::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE},
           {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
           {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
           {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
@@ -300,6 +303,11 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE:
       ObsoleteSystemInfoBarDelegate::Create(GetInfoBarManager());
+      break;
+
+    case IBD::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE:
+      OSCryptAsyncAvailabilityInfoBarDelegate::CreateForTest(
+          GetInfoBarManager());
       break;
 
     case IBD::PAGE_INFO_INFOBAR_DELEGATE:
@@ -430,6 +438,10 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_google_api_keys) {
 }
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_obsolete_system) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_oscryptasync_availability) {
   ShowAndVerifyUi();
 }
 

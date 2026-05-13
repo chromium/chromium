@@ -20254,6 +20254,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_CHROME_FINDS_NOTIFICATIONS_UNHELPFUL_BUTTON_TEXT" desc="Text for the unhelpful button found on Chrome finds notifications.">
       Not interested
     </message>
+
+    <!-- OSCryptAsync Availability InfoBar -->
+    <message name="IDS_OSCRYPTASYNC_AVAILABILITY_INFOBAR_MESSAGE" desc="Label displayed in an infobar when a keychain issue prevents some profile data from being read/written and a browser relaunch is required to resolve.">
+      Relaunch the browser to load your profile data and keep it encrypted
+    </message>
+    <message name="IDS_OSCRYPTASYNC_AVAILABILITY_INFOBAR_BUTTON" desc="The text of the button to proceed with relaunching the entire browser to resolve keychain permission issues.">
+      Relaunch
+    </message>
   </messages>
 </release>
 </grit>

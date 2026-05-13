@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/startup/bidding_and_auction_consented_debugging_infobar_delegate.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
+#include "chrome/browser/ui/startup/oscryptasync_availability_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -195,6 +196,8 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
       ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
     }
   }
+
+  OSCryptAsyncAvailabilityInfoBarDelegate::MaybeCreate(browser);
 
 #if BUILDFLAG(IS_WIN)
   if (auto* startup_launch_manager =
