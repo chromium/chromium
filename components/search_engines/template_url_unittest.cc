@@ -2587,6 +2587,35 @@ TEST_F(TemplateURLTest, GenerateURL_WithSuggestPath) {
   }
 }
 
+// Regression test for crbug.com/509932193.
+// Verifies that structural placeholders can be parsed even when FeatureList is
+// not yet initialized.
+TEST_F(TemplateURLTest, SupportsReplacement_NoFeatureList) {
+  // Use ScopedFeatureList to ensure we restore the original state.
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  // Clear the global FeatureList and FieldTrialList.
+  scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
+
+  // Reset the early feature access tracker to ensure a clean state.
+  base::FeatureList::ResetEarlyFeatureAccessTrackerForTesting();
+
+  // This is what happens in the browser process to prevent early access.
+  base::FeatureList::FailOnFeatureAccessWithoutFeatureList();
+
+  TemplateURLData data;
+  data.suggestions_url = "https://foo/{google:suggestPath}?q={searchTerms}";
+  TemplateURL turl(data);
+
+  // This should NOT crash.
+  EXPECT_TRUE(
+      turl.suggestions_url_ref().SupportsReplacement(search_terms_data_));
+
+  // Cleanup: Reset EarlyFeatureAccessTracker. ScopedFeatureList will restore
+  // the previous FeatureList instance in its destructor.
+  base::FeatureList::ResetEarlyFeatureAccessTrackerForTesting();
+}
+
 TEST_F(TemplateURLTest, GenerateURL_NoRegulatoryExtensions) {
   TemplateURLData data;
   data.SetURL("https://search?q={searchTerms}");

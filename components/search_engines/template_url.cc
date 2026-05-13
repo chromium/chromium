@@ -1027,6 +1027,15 @@ void TemplateURLRef::ParseHostAndSearchTermKey(
   base::ReplaceSubstringsAfterOffset(
       &url_string, 0, "{google:baseSuggestURL}",
       search_terms_data.GoogleBaseSuggestURLValue());
+  // TODO(crbug.com/509448052): ParseHostAndSearchTermKey manually replaces a
+  // subset of structural placeholders. This logic should ideally be unified
+  // with HandleReplacements to avoid duplication.
+  base::ReplaceSubstringsAfterOffset(
+      &url_string, 0, "{google:suggestPath}",
+      (base::FeatureList::GetInstance() &&
+       base::FeatureList::IsEnabled(omnibox::kUseShortSuggestPathV1))
+          ? "s"
+          : "search");
   base::ReplaceSubstringsAfterOffset(&url_string, 0, "{yandex:searchPath}",
                                      YandexSearchPathFromDeviceFormFactor());
 
@@ -1499,6 +1508,7 @@ std::string TemplateURLRef::HandleReplacements(
 
       case GOOGLE_SUGGEST_PATH: {
         bool use_short_path =
+            base::FeatureList::GetInstance() &&
             base::FeatureList::IsEnabled(omnibox::kUseShortSuggestPathV1);
         const std::string path = use_short_path ? "s" : "search";
         HandleReplacement(std::string(), path, replacement, &url);
