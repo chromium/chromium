@@ -4293,6 +4293,25 @@
             ]
         }
     ],
+    "BocaGeminiIntegration": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "BocaGeminiGuidedLearningUrl": "https://gemini.google.com/guided-learning",
+                        "BocaGeminiUrl": "https://gemini.google.com"
+                    },
+                    "enable_features": [
+                        "BocaGeminiIntegration"
+                    ]
+                }
+            ]
+        }
+    ],
     "BocaMigrateSpeechRecongnizerClient": [
         {
             "platforms": [
