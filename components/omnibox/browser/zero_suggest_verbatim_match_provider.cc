@@ -181,6 +181,7 @@ void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(
         dse->ExtractSearchTermsFromURL(match.destination_url,
                                        url_service->search_terms_data(),
                                        &match.contents);
+        match.contents = AutocompleteInput::SanitizeString(match.contents);
         // Upgrade Verbatim Match to a SEARCH_WHAT_YOU_TYPED.
         match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
         match.keyword = dse->keyword();

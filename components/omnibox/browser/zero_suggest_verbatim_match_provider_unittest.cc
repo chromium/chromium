@@ -283,6 +283,33 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
 }
 
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
+       UpdateFillIntoEditWhenUrlMatchesSearchResultsPageWithTrailingSpace) {
+  base::test::ScopedFeatureList features;
+
+  // Default TemplateURL to parse the URL.
+  std::unique_ptr<TemplateURLData> engine =
+      GenerateSimpleTemplateURLData("www.search.com");
+  mock_client_.GetTemplateURLService()->ApplyDefaultSearchChangeForTesting(
+      engine.get(), DefaultSearchManager::FROM_USER);
+
+  // Ensure URLs with trailing escaped whitespace (%20) are correctly sanitized
+  // upon search term extraction to avoid AutocompleteResult DCHECK crashes.
+  std::string url("https://www.search.com/q=abc%20");
+  AutocompleteInput input(std::u16string(),  // Note: empty input.
+                          GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
+  input.set_current_url(GURL(url));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  provider_->Start(input, false);
+  if (IsVerbatimMatchEligible()) {
+    ASSERT_FALSE(provider_->matches().empty());
+    ASSERT_EQ(u"abc", provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"abc", provider_->matches()[0].contents);
+    ASSERT_EQ(u"title", provider_->matches()[0].description);
+  }
+}
+
+TEST_P(ZeroSuggestVerbatimMatchProviderTest,
        DontUpdateFillIntoEditWhenUrlMatchesNonDefaultSearchEngine) {
   base::test::ScopedFeatureList features;
 
