@@ -235,10 +235,16 @@ bool ValuablesTable::SetLoyaltyCards(
   response &= sql::DeleteAllRows(*db(), kLoyaltyCardMerchantDomainTable);
 
   sql::Statement insert_cards;
-  sql::InsertBuilder(
-      *db(), insert_cards, kLoyaltyCardsTable,
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, *db(), insert_cards, kLoyaltyCardsTable,
       {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
        kLoyaltyCardProgramLogo, kLoyaltyCardNumber});
+
+  sql::Statement insert_card_merchant_domains;
+  sql::CachedInsertBuilder(SQL_FROM_HERE, *db(), insert_card_merchant_domains,
+                           kLoyaltyCardMerchantDomainTable,
+                           {kLoyaltyCardId, kMerchantDomain},
+                           /*or_replace=*/true);
 
   for (const LoyaltyCard& loyalty_card : loyalty_cards) {
     if (!loyalty_card.IsValid()) {
@@ -259,13 +265,10 @@ bool ValuablesTable::SetLoyaltyCards(
 
     for (const GURL& merchant_domain : loyalty_card.merchant_domains()) {
       // Insert new loyalty_card_merchant_domain values.
-      sql::Statement insert_card_merchant_domains;
-      sql::InsertBuilder(
-          *db(), insert_card_merchant_domains, kLoyaltyCardMerchantDomainTable,
-          {kLoyaltyCardId, kMerchantDomain}, /*or_replace=*/true);
       insert_card_merchant_domains.BindString(0, loyalty_card.id().value());
       insert_card_merchant_domains.BindString(1, merchant_domain.spec());
       response &= insert_card_merchant_domains.Run();
+      insert_card_merchant_domains.Reset(/*clear_bound_vars=*/true);
     }
 
     // Add the loyalty card's metadata. This is not a critical operation, so
@@ -303,8 +306,8 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(const LoyaltyCard& card) {
   }
 
   sql::Statement s;
-  sql::InsertBuilder(
-      *db(), s, kLoyaltyCardsTable,
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, *db(), s, kLoyaltyCardsTable,
       {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
        kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
       /*or_replace=*/true);
@@ -327,15 +330,18 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(const LoyaltyCard& card) {
   }
 
   // Insert new merchant domains.
+  sql::Statement insert_domain;
+  sql::CachedInsertBuilder(SQL_FROM_HERE, *db(), insert_domain,
+                           kLoyaltyCardMerchantDomainTable,
+                           {kLoyaltyCardId, kMerchantDomain});
+
   for (const GURL& merchant_domain : card.merchant_domains()) {
-    sql::Statement insert_domain;
-    sql::InsertBuilder(*db(), insert_domain, kLoyaltyCardMerchantDomainTable,
-                       {kLoyaltyCardId, kMerchantDomain});
     insert_domain.BindString(0, card.id().value());
     insert_domain.BindString(1, merchant_domain.spec());
     if (!insert_domain.Run()) {
       return false;
     }
+    insert_domain.Reset(/*clear_bound_vars=*/true);
   }
 
   // Add the loyalty card's metadata. This is not a critical operation, so
@@ -393,9 +399,9 @@ ValuablesTable::GetAllValuableMetadata() const {
 bool ValuablesTable::AddValuableMetadata(
     const ValuableMetadata& metadata) const {
   sql::Statement s;
-  sql::InsertBuilder(*db(), s, kValuablesMetadataTable,
-                     {kValuableId, kUseCount, kUseDate},
-                     /*or_replace=*/true);
+  sql::CachedInsertBuilder(SQL_FROM_HERE, *db(), s, kValuablesMetadataTable,
+                           {kValuableId, kUseCount, kUseDate},
+                           /*or_replace=*/true);
   int index = 0;
   s.BindString(index++, metadata.valuable_id.value());
   s.BindInt64(index++, metadata.use_count);

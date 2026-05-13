@@ -254,13 +254,14 @@ bool EntityTable::MigrateToVersion147AddEntitiesMetadataTable() {
 
 bool EntityTable::AddAttribute(const EntityInstance& entity,
                                const AttributeInstance& attribute) {
+  sql::Statement s;
+  sql::CachedInsertBuilder(SQL_FROM_HERE, *db(), s, attributes::kTableName,
+                           {attributes::kEntityGuid, attributes::kAttributeType,
+                            attributes::kFieldType, attributes::kValueEncrypted,
+                            attributes::kVerificationStatus});
+
   for (FieldType type :
        attribute.type().storable_field_types(/*pass_key=*/{})) {
-    sql::Statement s;
-    sql::InsertBuilder(*db(), s, attributes::kTableName,
-                       {attributes::kEntityGuid, attributes::kAttributeType,
-                        attributes::kFieldType, attributes::kValueEncrypted,
-                        attributes::kVerificationStatus});
     s.BindString(0, *entity.guid());
     s.BindString(1, attribute.type().name_as_string());
     s.BindInt(2, type);
@@ -276,6 +277,7 @@ bool EntityTable::AddAttribute(const EntityInstance& entity,
     if (!s.Run()) {
       return false;
     }
+    s.Reset(/*clear_bound_vars=*/true);
   }
   return true;
 }
@@ -283,8 +285,8 @@ bool EntityTable::AddAttribute(const EntityInstance& entity,
 bool EntityTable::AddEntityMetadata(
     const EntityInstance::EntityMetadata& metadata) {
   sql::Statement s;
-  sql::InsertBuilder(
-      *db(), s, entities_metadata::kTableName,
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, *db(), s, entities_metadata::kTableName,
       {entities_metadata::kEntityGuid, entities_metadata::kUseCount,
        entities_metadata::kUseDate, entities_metadata::kDateModified});
   s.BindString(0, *metadata.guid);
@@ -325,8 +327,8 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
 
   // Add the entity.
   sql::Statement s;
-  sql::InsertBuilder(
-      *db(), s, entities::kTableName,
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, *db(), s, entities::kTableName,
       {entities::kGuid, entities::kEntityType, entities::kNickname,
        entities::kRecordType, entities::kAttributesReadOnly,
        entities::kFrecencyOverride});

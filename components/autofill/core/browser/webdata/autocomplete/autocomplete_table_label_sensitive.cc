@@ -479,10 +479,11 @@ bool AutocompleteTableLabelSensitive::AddFormFieldValueTime(
                                           element.value())
            .has_value()) {
     sql::Statement create_statement;
-    sql::InsertBuilder(*db(), create_statement,
-                       kAutocompleteTableLabelSensitive,
-                       {kName, kLabel, kLabelNormalized, kValue, kValueLower,
-                        kDateCreated, kDateLastUsed, kCount});
+    sql::CachedInsertBuilder(
+        SQL_FROM_HERE, *db(), create_statement,
+        kAutocompleteTableLabelSensitive,
+        {kName, kLabel, kLabelNormalized, kValue, kValueLower, kDateCreated,
+         kDateLastUsed, kCount});
     create_statement.BindString16(0, element.name());
     create_statement.BindString16(1, element.label());
     create_statement.BindString16(2, NormalizeLabel(element.label()));

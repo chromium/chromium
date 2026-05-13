@@ -14,6 +14,7 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/table_management_helpers.h"
 
 namespace autofill {
@@ -117,9 +118,9 @@ bool AutofillSyncMetadataTable::UpdateEntityMetadata(
       << "Data type " << data_type << " not supported for metadata";
 
   sql::Statement s;
-  sql::InsertBuilder(*db(), s, kAutofillSyncMetadataTable,
-                     {kModelType, kStorageKey, kValue},
-                     /*or_replace=*/true);
+  sql::CachedInsertBuilder(SQL_FROM_HERE, *db(), s, kAutofillSyncMetadataTable,
+                           {kModelType, kStorageKey, kValue},
+                           /*or_replace=*/true);
   s.BindInt(0, GetKeyValueForDataType(data_type));
   s.BindString(1, storage_key);
   s.BindString(2, metadata.SerializeAsString());
@@ -151,9 +152,9 @@ bool AutofillSyncMetadataTable::UpdateDataTypeState(
   // Hardcode the id to force a collision, ensuring that there remains only a
   // single entry.
   sql::Statement s;
-  sql::InsertBuilder(*db(), s, kAutofillDataTypeStateTable,
-                     {kModelType, kValue},
-                     /*or_replace=*/true);
+  sql::CachedInsertBuilder(SQL_FROM_HERE, *db(), s, kAutofillDataTypeStateTable,
+                           {kModelType, kValue},
+                           /*or_replace=*/true);
   s.BindInt(0, GetKeyValueForDataType(data_type));
   s.BindString(1, data_type_state.SerializeAsString());
 

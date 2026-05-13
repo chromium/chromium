@@ -28,6 +28,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/table_management_helpers.h"
 #include "sql/transaction.h"
 
@@ -367,9 +368,10 @@ std::string_view GetLegacyProfileTypeTokensTable(
 bool AddProfileMetadataToTable(sql::Database* db,
                                const AutofillProfile& profile) {
   sql::Statement s;
-  sql::InsertBuilder(*db, s, kAddressesTable,
-                     {kGuid, kRecordType, kUseCount, kUseDate, kDateModified,
-                      kLanguageCode, kLabel, kInitialCreatorId});
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, *db, s, kAddressesTable,
+      {kGuid, kRecordType, kUseCount, kUseDate, kDateModified, kLanguageCode,
+       kLabel, kInitialCreatorId});
   int index = 0;
   s.BindString(index++, profile.guid());
   s.BindInt(index++, static_cast<int>(profile.record_type()));
@@ -386,6 +388,10 @@ bool AddProfileMetadataToTable(sql::Database* db,
 // if the write succeeded.
 bool AddProfileTypeTokensToTable(sql::Database* db,
                                  const AutofillProfile& profile) {
+  sql::Statement s;
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, *db, s, kAddressTypeTokensTable,
+      {kGuid, kType, kValue, kVerificationStatus, kObservations});
   for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
     std::u16string value = profile.GetRawInfo(type);
     if (!base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel) &&
@@ -412,10 +418,6 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
       }
     }
 
-    sql::Statement s;
-    sql::InsertBuilder(
-        *db, s, kAddressTypeTokensTable,
-        {kGuid, kType, kValue, kVerificationStatus, kObservations});
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
     s.BindString16(2, Truncate(value));
@@ -425,6 +427,7 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
     if (!s.Run()) {
       return false;
     }
+    s.Reset(/*clear_bound_vars=*/true);
   }
   return true;
 }

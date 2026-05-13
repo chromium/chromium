@@ -426,8 +426,8 @@ bool AutocompleteTable::AddFormFieldValueTime(
 bool AutocompleteTable::InsertAutocompleteEntry(
     const AutocompleteEntry& entry) {
   sql::Statement s;
-  sql::InsertBuilder(
-      *db(), s, kAutocompleteTable,
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, *db(), s, kAutocompleteTable,
       {kName, kValue, kValueLower, kDateCreated, kDateLastUsed, kCount});
   s.BindString16(0, entry.key().name());
   s.BindString16(1, entry.key().value());
