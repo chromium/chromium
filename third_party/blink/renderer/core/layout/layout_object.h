@@ -699,12 +699,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // This is an inlined version of the following:
     // `IsStackingContextWithoutContainment() ||
     //  ShouldApplyLayoutContainment() ||
-    //  ShouldApplyPaintContainment()`
+    //  ShouldApplyPaintContainment() ||
+    //  IsOverscrollAreaParent()`
     // The reason it is inlined is that the containment checks share
     // common logic, which is extracted here to avoid repeated computation.
     return style.IsStackingContextWithoutContainment() ||
            ((style.ContainsLayout() || style.ContainsPaint()) &&
-            IsEligibleForPaintOrLayoutContainment());
+            IsEligibleForPaintOrLayoutContainment()) ||
+           IsOverscrollAreaParent();
   }
 
   virtual bool IsReplacedNormalFlowStackingContext(const ComputedStyle&) const {

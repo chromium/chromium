@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/adapters.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -287,14 +288,25 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
 
   layer_->SetNeedsReorderOverlayOverflowControls(false);
 
+  PaintLayers overscroll_area_parents;
   ForAllChildrenSortedByOrder(
-      *layer_, [this](PaintLayer& child) { CollectLayers(child, nullptr); });
+      *layer_, [this, &overscroll_area_parents](PaintLayer& child) {
+        CollectLayers(child, nullptr, overscroll_area_parents);
+      });
 
   // Sort the two lists.
   std::stable_sort(pos_z_order_list_.begin(), pos_z_order_list_.end(),
                    ZIndexLessThan);
   std::stable_sort(neg_z_order_list_.begin(), neg_z_order_list_.end(),
                    ZIndexLessThan);
+
+  // Append overscroll area parent layers after all normal layers in this
+  // stacking context. Note that these are appended in reverse order to match
+  // the overscroll chaining order (last one is one overscrolls first and is on
+  // the bottom of a stack).
+  for (auto& overscroll_area_parent : base::Reversed(overscroll_area_parents)) {
+    pos_z_order_list_.push_back(overscroll_area_parent);
+  }
 
   // Append layers for top layer elements after normal layer collection, to
   // ensure they are on top regardless of z-indexes.  The layoutObjects of top
@@ -309,14 +321,23 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
       }
     }
   }
+
   z_order_lists_dirty_ = false;
 }
 
-void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
-                                           HighestLayers* highest_layers) {
+void PaintLayerStackingNode::CollectLayers(
+    PaintLayer& paint_layer,
+    HighestLayers* highest_layers,
+    PaintLayers& overscroll_area_parents) {
   paint_layer.SetNeedsReorderOverlayOverflowControls(false);
 
   if (paint_layer.IsInTopOrViewTransitionLayer()) {
+    return;
+  }
+
+  if (paint_layer.GetLayoutObject().IsOverscrollAreaParent()) {
+    CHECK(paint_layer.GetLayoutObject().IsStacked());
+    overscroll_area_parents.push_back(&paint_layer);
     return;
   }
 
@@ -345,8 +366,10 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
     subtree_highest_layers.emplace();
 
   ForAllChildrenSortedByOrder(
-      paint_layer, [this, &subtree_highest_layers](PaintLayer& child) {
-        CollectLayers(child, base::OptionalToPtr(subtree_highest_layers));
+      paint_layer, [this, &subtree_highest_layers,
+                    &overscroll_area_parents](PaintLayer& child) {
+        CollectLayers(child, base::OptionalToPtr(subtree_highest_layers),
+                      overscroll_area_parents);
       });
 
   if (has_overlay_overflow_controls) {

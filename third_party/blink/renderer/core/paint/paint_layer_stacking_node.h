@@ -131,7 +131,9 @@ class CORE_EXPORT PaintLayerStackingNode
   void RebuildZOrderLists();
 
   struct HighestLayers;
-  void CollectLayers(PaintLayer&, HighestLayers*);
+  void CollectLayers(PaintLayer&,
+                     HighestLayers*,
+                     PaintLayers& overscroll_area_parents);
 
   // Holds a sorted list of all the descendant nodes within that have z-indices
   // of 0 (or is treated as 0 for positioned objects) or greater.

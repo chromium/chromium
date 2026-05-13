@@ -40,9 +40,6 @@
 function hitIds(x, y) {
   return Array.prototype.slice.apply(document.elementsFromPoint(x, y)).map(el => el.id).filter(id => !!id);
 }
-function hitIds(x, y) {
-  return Array.prototype.slice.apply(document.elementsFromPoint(x, y)).map(el => el.id).filter(id => !!id);
-}
 
 test(() => {
   // Bring the menu into view.
