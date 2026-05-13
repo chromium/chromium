@@ -35,6 +35,7 @@ export interface AnnotationBrush {
 export interface TextAnnotation {
   id: number;
   isEdited: boolean;
+  isUser: boolean;
   mojoTextInfo: ArrayBuffer;
   // Serialized SkTypeface font data that the backend needs. Only contains
   // fonts that the backend has never seen before.

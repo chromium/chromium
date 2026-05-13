@@ -333,6 +333,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
               Ink2Manager.getInstance().commitTextAnnotation({
                 id: this.id_,
                 isEdited: isEdited,
+                isUser: true,
                 mojoTextInfo: result.mojoTextInfo,
                 newTypefaces: result.typefaces,
                 pageIndex: this.pageIndex_,

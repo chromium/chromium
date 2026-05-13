@@ -4,11 +4,17 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {TextAnnotation} from './constants.js';
+
+export interface TextUndoRedoState {
+  type: 'text';
+  before: TextAnnotation|null;
+  after: TextAnnotation|null;
+}
+
 export type UndoRedoState = {
   type: 'ink',
-}|{
-  type: 'text',
-};
+}|TextUndoRedoState;
 
 export interface UndoRedoStateChangedDetail {
   canUndo: boolean;

@@ -3,10 +3,16 @@
 // found in the LICENSE file.
 
 import {UndoRedoStack} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {UndoRedoStateChangedDetail} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {UndoRedoState, UndoRedoStateChangedDetail} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {assertDeepEquals} from './test_util.js';
+
+const textState: UndoRedoState = {
+  type: 'text',
+  before: null,
+  after: null,
+};
 
 let lastEventDetail: UndoRedoStateChangedDetail|null = null;
 
@@ -50,11 +56,11 @@ chrome.test.runTests([
     assertEvent(true, false, true);
 
     // Push text annotation
-    stack.push({type: 'text'});
+    stack.push(textState);
     assertEvent(true, false, true);
 
     // Undo (pops the text annotation)
-    assertDeepEquals({type: 'text'}, stack.undo());
+    assertDeepEquals(textState, stack.undo());
     assertEvent(true, true, true);
 
     // Undo again pops the ink annotation, and resets to original clean state.
@@ -70,7 +76,7 @@ chrome.test.runTests([
     assertEvent(true, true, true);
 
     // Redo again pushes the text annotation
-    assertDeepEquals({type: 'text'}, stack.redo());
+    assertDeepEquals(textState, stack.redo());
     assertEvent(true, false, true);
 
     // Calling redo with nothing to redo does not fire an event and is a no-op.
@@ -103,7 +109,7 @@ chrome.test.runTests([
     assertNoEvent();
 
     // New text annotation -> dirty
-    stack.push({type: 'text'});
+    stack.push(textState);
     assertEvent(true, false, true);
 
     // Undo to saved state -> clean
@@ -126,7 +132,7 @@ chrome.test.runTests([
 
     stack.push({type: 'ink'});
     assertEvent(true, false, true);
-    stack.push({type: 'text'});
+    stack.push(textState);
     assertEvent(true, false, true);
 
     // Pointer is now pointing to the ink change, and text can be redone.

@@ -23,6 +23,7 @@ function getTestAnnotation(textBoxRect: TextBoxRect): TextAnnotation {
   return {
     id: 0,
     isEdited: false,
+    isUser: true,
     mojoTextInfo: new ArrayBuffer(0),
     newTypefaces: [],
     pageIndex: 0,

@@ -108,6 +108,7 @@ export function convertRotatedCoordinates(
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
   private stack_ = new UndoRedoStack(this);
+  private originalTextAnnotation_: TextAnnotation|null = null;
 
   constructor() {
     super();
@@ -212,6 +213,7 @@ export class Ink2Manager extends EventTarget {
 
     // Is the click in an existing box?
     let existing = null;
+    this.originalTextAnnotation_ = null;
     // Get the annotations for the current page.
     const annotationsMap = this.annotations_.get(page);
     const annotations =
@@ -225,9 +227,12 @@ export class Ink2Manager extends EventTarget {
           location.y >= screenBox.locationY &&
           location.y <= (screenBox.locationY + screenBox.height)) {
         // Don't update the original. Create a new object and update its
-        // rectangle to use the computed screen coordinates.
+        // rectangle to use the computed screen coordinates. Set isUser since
+        // this is triggered by a user action, and isn't undo/redo.
         existing = structuredClone(annotation);
         existing.textBoxRect = screenBox;
+        existing.isUser = true;
+        this.originalTextAnnotation_ = structuredClone(annotation);
         break;
       }
     }
@@ -267,6 +272,7 @@ export class Ink2Manager extends EventTarget {
     const annotation: TextAnnotation = existing ? existing : {
       id: this.nextAnnotationId_,
       isEdited: false,
+      isUser: true,
       mojoTextInfo: new ArrayBuffer(0),
       newTypefaces: [],
       pageIndex: page,
@@ -544,14 +550,7 @@ export class Ink2Manager extends EventTarget {
     };
   }
 
-  /**
-   * Updates the stored annotation and notifies the plugin of the new or
-   * modified annotation.
-   */
-  commitTextAnnotation(annotation: TextAnnotation) {
-    annotation.textBoxRect = this.screenToPageCoordinates_(
-        annotation.pageIndex, annotation.textBoxRect);
-
+  private updateStoredAnnotation_(annotation: TextAnnotation) {
     let pageAnnotations = this.annotations_.get(annotation.pageIndex);
     if (!pageAnnotations) {
       // Adding a new annotation, on a page that doesn't have any existing ones.
@@ -566,12 +565,31 @@ export class Ink2Manager extends EventTarget {
     } else {
       pageAnnotations.set(annotation.id, annotation);
     }
+  }
+
+  /**
+   * Updates the stored annotation and notifies the plugin of the new or
+   * modified annotation.
+   */
+  commitTextAnnotation(annotation: TextAnnotation) {
+    annotation.textBoxRect = this.screenToPageCoordinates_(
+        annotation.pageIndex, annotation.textBoxRect);
+    if (annotation.isEdited) {
+      this.updateStoredAnnotation_(annotation);
+      const before = this.originalTextAnnotation_;
+      const after = annotation.text === '' ? null : annotation;
+      if (before !== null || after !== null) {
+        this.stack_.push({
+          type: 'text',
+          before,
+          after,
+        });
+      }
+    }
+
     this.pluginController_.finishTextAnnotation(annotation);
     this.existingAnnotationAttributes_ = null;
-
-    if (annotation.isEdited) {
-      this.stack_.push({type: 'text'});
-    }
+    this.originalTextAnnotation_ = null;
   }
 
   textBoxFocused(textBoxRect: TextBoxRect) {
@@ -635,16 +653,60 @@ export class Ink2Manager extends EventTarget {
     }
   }
 
+  // Note: Undo/Redo state is tracked for all annotations, but changes are only
+  // applied by the frontend for text annotations. Undo/redo of ink strokes are
+  // handled exclusively by the backend.
   undo() {
-    if (this.stack_.undo()) {
-      this.pluginController_.undo();
+    const state = this.stack_.undo();
+    if (!state) {
+      return;
     }
+
+    if (state.type === 'text') {
+      this.applyTextUndoRedo_(state.before, state.after);
+    }
+    this.pluginController_.undo();
   }
 
   redo() {
-    if (this.stack_.redo()) {
-      this.pluginController_.redo();
+    const state = this.stack_.redo();
+    if (!state) {
+      return;
     }
+
+    if (state.type === 'text') {
+      this.applyTextUndoRedo_(state.after, state.before);
+    }
+    this.pluginController_.redo();
+  }
+
+  private applyTextUndoRedo_(
+      update: TextAnnotation|null, previous: TextAnnotation|null) {
+    const isDeletion = update === null;
+    // If deleting, the relevant annotation is the "previous" one, which is
+    // being deleted. Otherwise, the relevant annotation is the update.
+    const annotation = isDeletion ? previous : update;
+    assert(annotation);
+
+    // Since this is an undo or redo of a previous change, the map for this page
+    // should always have been created already.
+    const pageAnnotations = this.annotations_.get(annotation.pageIndex);
+    assert(pageAnnotations);
+    if (isDeletion) {
+      pageAnnotations.delete(annotation.id);
+    } else {
+      pageAnnotations.set(annotation.id, annotation);
+    }
+
+    // Remove newTypefaces to prevent backend crash from trying to add the
+    // same typeface a second time.
+    const messageToSend = structuredClone(annotation);
+    messageToSend.newTypefaces = [];
+    messageToSend.isUser = false;
+    if (isDeletion) {
+      messageToSend.text = '';
+    }
+    this.pluginController_.finishTextAnnotation(messageToSend);
   }
 
   initiateSave() {
