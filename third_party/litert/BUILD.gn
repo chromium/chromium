@@ -22,7 +22,8 @@ buildflag_header("buildflags") {
 
 config("warnings_config") {
   cflags = [
-    # TODO(crbug.com/463723474): Try to clean/remove these suppressions if possible.
+    # TODO(crbug.com/463723474): Try to clean/remove these suppressions if
+    # possible.
     "-Wno-mismatched-tags",
     "-Wno-implicit-const-int-float-conversion",
     "-Wno-deprecated-declarations",
@@ -88,6 +89,7 @@ config("litert_config") {
 
 config("tflite_config") {
   include_dirs = [
+    "//third_party/tflite/shims/third_party/tflite/src",
     "$root_gen_dir/third_party/litert/src",
     "$root_gen_dir/third_party/tflite/src",
     "//third_party/tflite/shims",
@@ -678,6 +680,8 @@ if (use_litert_tflite) {
       "//third_party/tflite:tflite_op_resolver_proto",
     ]
 
+    conditional_public_deps = [ ":tflite" ]
+
     configs_to_remove = [ "//build/config/compiler:chromium_code" ]
     configs_to_add = [
       "//build/config/compiler:no_chromium_code",
@@ -703,6 +707,8 @@ if (use_litert_tflite) {
   source_set("tflite_public_headers") {
     public = [
       "//third_party/tflite/shims/tensorflow/lite/types/fp16.h",
+      "src/tflite/acceleration/configuration/flatbuffer_to_proto.h",
+      "src/tflite/acceleration/configuration/proto_to_flatbuffer.h",
       "src/tflite/allocation.h",
       "src/tflite/arena_planner.h",
       "src/tflite/array.h",
@@ -710,8 +716,11 @@ if (use_litert_tflite) {
       "src/tflite/c/builtin_op_data.h",
       "src/tflite/context.h",
       "src/tflite/context_util.h",
+      "src/tflite/converter/allocation.h",
+      "src/tflite/converter/core/model_builder_base.h",
       "src/tflite/converter/schema/schema_generated.h",
       "src/tflite/converter/schema/schema_utils.h",
+      "src/tflite/core/api/profiler.h",
       "src/tflite/core/c/c_api_types.h",
       "src/tflite/core/c/common.h",
       "src/tflite/core/interpreter.h",
@@ -719,6 +728,7 @@ if (use_litert_tflite) {
       "src/tflite/core/macros.h",
       "src/tflite/core/model_builder.h",
       "src/tflite/core/subgraph.h",
+      "src/tflite/delegates/xnnpack/xnnpack_delegate.h",
       "src/tflite/error_reporter.h",
       "src/tflite/graph_info.h",
       "src/tflite/logger.h",
@@ -727,6 +737,7 @@ if (use_litert_tflite) {
       "src/tflite/mutable_op_resolver.h",
       "src/tflite/op_resolver.h",
       "src/tflite/optional_debug_tools.h",
+      "src/tflite/profiling/profile_buffer.h",
       "src/tflite/signature_runner.h",
       "src/tflite/stderr_reporter.h",
       "src/tflite/string_type.h",

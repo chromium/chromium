@@ -16,7 +16,10 @@ import("//third_party/tflite/tf_version.gni")
 import("//third_party/tflite/tflite_target.gni")
 
 config("tflite_shim_config") {
-  include_dirs = [ "shims" ]
+  include_dirs = [
+    "shims",
+    "shims/third_party/tflite/src",
+  ]
 }
 
 # The config `tflite_config_no_undef` is used when compiling WebRTC outside the
@@ -90,6 +93,18 @@ if (use_litert_tflite) {
 
   group("weight_cache_schema_generated") {
     public_deps = [ "//third_party/litert:weight_cache_schema_litert" ]
+  }
+
+  group("tflite_proto") {
+    public_deps = [ "//third_party/litert:tflite_proto" ]
+  }
+
+  group("tflite_proto_gen") {
+    public_deps = [ "//third_party/litert:tflite_proto_gen" ]
+  }
+
+  config("tflite_config") {
+    configs = [ "//third_party/litert:tflite_config" ]
   }
 }
 
@@ -192,16 +207,17 @@ if (!use_litert_tflite) {
       "-Wno-unused-function",
       "-Wno-unreachable-code-return",
 
-      # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
+      # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if
+      # possible.
       "-Wno-sign-compare",
 
       "-Wno-unused-but-set-variable",
 
-      # This flag is needed to enable the strip error strings flag since a handful
-      # of variables are only used in error logs, which are no-op'd in a macro
-      # when the strings are stripped. Overall, removing the error strings saves
-      # 90kb of binary size so having a few dangling variables is well worth it,
-      # in addition to keeping the updating process simple.
+      # This flag is needed to enable the strip error strings flag since a
+      # handful of variables are only used in error logs, which are no-op'd in a
+      # macro when the strings are stripped. Overall, removing the error strings
+      # saves 90kb of binary size so having a few dangling variables is well
+      # worth it, in addition to keeping the updating process simple.
       "-Wno-unused-variable",
     ]
 
@@ -361,8 +377,8 @@ if (!use_litert_tflite) {
     mutable = true
   }
 
-  # TFLite's model_serialize.cc expects the mutable schema to be in two different
-  # places in the source tree. :/
+  # TFLite's model_serialize.cc expects the mutable schema to be in two
+  # different places in the source tree. :/
   copy("mutable_schema_compiler_path") {
     sources = [
       "$target_gen_dir/src/tensorflow/lite/schema/mutable/schema_generated.h",
@@ -875,9 +891,10 @@ if (!use_litert_tflite) {
     visibility = [ ":*" ]
   }
 
-  # TODO(crbug.com/1147996): Update to a component build. Will require updating the
-  # tflite version.
-  # TODO(crbug.com/372526657): Use tflite registration directly and not the C API.
+  # TODO(crbug.com/1147996): Update to a component build. Will require updating
+  # the tflite version.
+  # TODO(crbug.com/372526657): Use tflite registration directly and not the C
+  # API.
   tflite_static_library("tflite") {
     sources = [
       "src/tensorflow/compiler/mlir/lite/allocation.cc",
