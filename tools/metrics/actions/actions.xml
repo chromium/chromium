@@ -33048,6 +33048,9 @@ should be able to be added at any place in this file.
     <variant name=".NewGroup.MultiTab"
         summary="User created a new tab group with multiple tabs via the tab
                  context menu on tab strip on Android."/>
+    <variant name=".NewTabToTheRight"
+        summary="User created a new tab to the right via the tab context menu
+                 on tab strip on Android."/>
     <variant name=".PinTab"
         summary="User pinned a tab via the tab context menu on tab strip on
                  Android."/>

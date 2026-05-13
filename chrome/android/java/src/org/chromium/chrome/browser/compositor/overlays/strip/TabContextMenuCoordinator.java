@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -69,6 +70,8 @@ import org.chromium.chrome.browser.tasks.tab_management.GroupWindowState;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabStripReorderingHelper;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
@@ -76,6 +79,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -391,6 +395,26 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                         .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                                         .build(),
                                 /* allowDialog= */ true);
+            } else if (menuId == R.id.new_tab_to_the_right_menu_id) {
+                List<Tab> anchorTabs =
+                        TabModelUtils.getTabsById(
+                                Collections.singletonList(anchorInfo.getAnchorTabId()),
+                                tabModel,
+                                /* allowClosing= */ false);
+                if (anchorTabs.isEmpty()) return;
+                Tab anchorTab = anchorTabs.get(0);
+                if (anchorTab != null) {
+                    int position = tabModel.indexOf(anchorTab) + 1;
+                    UrlConstantResolver urlConstantResolver =
+                            UrlConstantResolverFactory.getForProfile(
+                                    assumeNonNull(tabModel.getProfile()));
+                    tabModel.getTabCreator()
+                            .createNewTab(
+                                    new LoadUrlParams(urlConstantResolver.getNtpUrl()),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    anchorTab,
+                                    position);
+                }
             }
         };
     }
@@ -480,6 +504,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private void buildMenuActionItemsForSingleTab(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+            itemList.add(createNewTabToTheRightItem(isIncognito));
+        }
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
@@ -516,6 +543,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private void buildMenuActionItemsForMultipleTabs(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+            itemList.add(createNewTabToTheRightItem(isIncognito));
+        }
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
@@ -549,6 +579,16 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         return new ListItemBuilder()
                 .withTitleRes(titleRes)
                 .withMenuId(menuId)
+                .withIsIncognito(isIncognito)
+                .build();
+    }
+
+    private ListItem createNewTabToTheRightItem(boolean isIncognito) {
+        String title = mActivity.getResources().getString(R.string.new_tab_to_the_right_menu_item);
+
+        return new ListItemBuilder()
+                .withTitle(title)
+                .withMenuId(R.id.new_tab_to_the_right_menu_id)
                 .withIsIncognito(isIncognito)
                 .build();
     }
@@ -778,6 +818,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             recordUserAction("CloseOtherTabs", isMultipleTabs);
         } else if (menuId == R.id.close_tabs_to_the_right_menu_id) {
             recordUserAction("CloseTabsToTheRight", isMultipleTabs);
+        } else if (menuId == R.id.new_tab_to_the_right_menu_id) {
+            recordUserAction("NewTabToTheRight", /* isMultipleTabs= */ false);
         } else {
             assert false : "Unknown menu id: " + menuId;
         }
