@@ -472,6 +472,11 @@ void ExtensionActionViewModel::ExecuteUserAction(InvocationSource source) {
 
   content::WebContents* const web_contents = GetCurrentWebContents();
   if (!IsEnabled(web_contents)) {
+    // Close the extensions menu async, because closing the menu causes teardown
+    // that destroys `this`.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ExtensionActionViewModel::CloseMenuTask,
+                                  weak_ptr_factory_.GetWeakPtr()));
     delegate_->ShowContextMenuAsFallback();
     return;
   }
