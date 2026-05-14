@@ -344,6 +344,25 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_car_app_app_java") {
+    aar_path = "../androidx/cipd/libs/androidx_car_app_app/app.aar"
+    info_path = "../androidx/committed/libs/androidx_car_app_app/androidx_car_app_app.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_activity_activity_java",
+      ":androidx_annotation_annotation_experimental_java",
+      ":androidx_annotation_annotation_java",
+      ":androidx_core_core_java",
+      ":androidx_lifecycle_lifecycle_common_java8_java",
+      ":androidx_lifecycle_lifecycle_viewmodel_java",
+      ":androidx_media_media_java",
+      "//third_party/android_deps:guava_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_cardview_cardview_java") {
     aar_path = "../androidx/cipd/libs/androidx_cardview_cardview/cardview.aar"
     info_path = "../androidx/committed/libs/androidx_cardview_cardview/androidx_cardview_cardview.info"

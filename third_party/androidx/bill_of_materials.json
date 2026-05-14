@@ -120,6 +120,11 @@
         "version": "1.10.0"
     },
     {
+        "name": "app",
+        "group": "androidx.car.app",
+        "version": "1.9.0-SNAPSHOT"
+    },
+    {
         "name": "cardview",
         "group": "androidx.cardview",
         "version": "1.1.0-SNAPSHOT"
