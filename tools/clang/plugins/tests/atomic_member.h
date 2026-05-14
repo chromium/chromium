@@ -9,12 +9,15 @@
 #include <memory>
 
 // The standard says that std::atomic<Integral> (where Integral is a built-in
-// integral type, including raw pointers) is a standard-layout struct, and has a
-// trivial destructor:
+// integral type, including raw pointers) is a standard-layout  class, and has a
+// trivial de classor:
 // https://eel.is/c++draft/atomics.types.generic#atomics.types.int-2 Because of
 // that, we classify std::atomic<Integral> as a trivial template.
+//
+// These types are all defined with `class` rather than `struct` since the clang
+// plugin skips the complex constructor check for aggregates.
 
-struct NineAtomicIntAliasesOk {
+class NineAtomicIntAliasesOk {
   std::atomic_int one;
   std::atomic_int two;
   std::atomic_int three;
@@ -26,7 +29,7 @@ struct NineAtomicIntAliasesOk {
   std::atomic_int nine;
 };
 
-struct TenAtomicIntAliasesWarns {
+class TenAtomicIntAliasesWarns {
   std::atomic_int one;
   std::atomic_int two;
   std::atomic_int three;
@@ -39,7 +42,7 @@ struct TenAtomicIntAliasesWarns {
   std::atomic_int ten;
 };
 
-struct NineAtomicIntTemplatesOk {
+class NineAtomicIntTemplatesOk {
   std::atomic<int> one;
   std::atomic<int> two;
   std::atomic<int> three;
@@ -51,7 +54,7 @@ struct NineAtomicIntTemplatesOk {
   std::atomic<int> nine;
 };
 
-struct TenAtomicIntTemplatesWarns {
+class TenAtomicIntTemplatesWarns {
   std::atomic<int> one;
   std::atomic<int> two;
   std::atomic<int> three;
@@ -64,7 +67,7 @@ struct TenAtomicIntTemplatesWarns {
   std::atomic<int> ten;
 };
 
-struct NineAtomicPtrsOk {
+class NineAtomicPtrsOk {
   std::atomic<int*> one;
   std::atomic<int*> two;
   std::atomic<int*> three;
@@ -76,7 +79,7 @@ struct NineAtomicPtrsOk {
   std::atomic<int*> nine;
 };
 
-struct TenAtomicPtrsWarns {
+class TenAtomicPtrsWarns {
   std::atomic<int*> one;
   std::atomic<int*> two;
   std::atomic<int*> three;
@@ -89,7 +92,7 @@ struct TenAtomicPtrsWarns {
   std::atomic<int*> ten;
 };
 
-struct OneAtomicSharedPtrWarns {
+class OneAtomicSharedPtrWarns {
   std::atomic<std::shared_ptr<int>> one;
 };
 

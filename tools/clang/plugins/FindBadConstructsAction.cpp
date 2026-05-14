@@ -92,7 +92,8 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     } else if (arg == "enable-match-profiling") {
       options_.enable_match_profiling = true;
     } else if (arg == "relax-ctor-checks-for-aggregates") {
-      options_.relax_ctor_checks_for_aggregates = true;
+      // TODO(crbug.com/355003174): Remove this always-enabled option after the
+      // next plugin roll.
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;

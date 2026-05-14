@@ -490,8 +490,7 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
 
   // Aggregate types are exempt from the complex ctor/dtor checks despite the
   // potential for binary bloat to allow the use of designated initializers.
-  if (options_.relax_ctor_checks_for_aggregates &&
-      IsRecursivelyAggregate(record)) {
+  if (IsRecursivelyAggregate(record)) {
     return;
   }
 
