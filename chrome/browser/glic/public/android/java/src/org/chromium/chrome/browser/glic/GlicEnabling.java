@@ -64,10 +64,36 @@ public class GlicEnabling {
     /**
      * Sets the global Glic feature to the given value for testing. This value will override the
      * value returned by all eligible checks in this file.
+     *
+     * <p>Note: This only sets up the current state for java testing. To forward the value to native
+     * side during browser test, use {@link #setEnabledForTesting(boolean, boolean)}
+     *
+     * @see #setEnabledForTesting(boolean, boolean)
      */
     public static void setEnabledForTesting(boolean isEnabled) {
+        setEnabledForTesting(isEnabled, /* forwardToNative= */ false);
+    }
+
+    /**
+     * Sets the global Glic feature to the given value for testing. This value will override the
+     * value returned by all eligible checks in this file.
+     *
+     * <p>Note: When calling this method in unit tests, ensure that native JNI mocks are properly
+     * set up (e.g. via {@link GlicEnablingJni#setInstanceForTesting}) to avoid native resolution
+     * errors.
+     */
+    public static void setEnabledForTesting(boolean isEnabled, boolean forwardToNative) {
         sIsEnabledForTesting = isEnabled;
-        ResettersForTesting.register(() -> sIsEnabledForTesting = null);
+        if (forwardToNative && isEnabled) {
+            GlicEnablingJni.get().setBypassEnablementChecksForTesting(true);
+        }
+        ResettersForTesting.register(
+                () -> {
+                    sIsEnabledForTesting = null;
+                    if (forwardToNative) {
+                        GlicEnablingJni.get().setBypassEnablementChecksForTesting(false);
+                    }
+                });
     }
 
     @NativeMethods
@@ -81,5 +107,7 @@ public class GlicEnabling {
         boolean shouldShowSettingsPage(@JniType("Profile*") Profile profile);
 
         boolean isReadyForProfile(@JniType("Profile*") Profile profile);
+
+        void setBypassEnablementChecksForTesting(boolean bypass);
     }
 }

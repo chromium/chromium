@@ -21,5 +21,9 @@ bool JNI_GlicEnabling_ShouldShowSettingsPage(JNIEnv* env, Profile* profile) {
 bool JNI_GlicEnabling_IsReadyForProfile(JNIEnv* env, Profile* profile) {
   return GlicEnabling::IsReadyForProfile(profile);
 }
+void JNI_GlicEnabling_SetBypassEnablementChecksForTesting(JNIEnv* env,
+                                                          bool bypass) {
+  GlicEnabling::SetBypassEnablementChecksForTesting(bypass);
+}
 }  // namespace glic
 DEFINE_JNI(GlicEnabling)
