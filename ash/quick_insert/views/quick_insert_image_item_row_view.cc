@@ -84,11 +84,12 @@ QuickInsertImageItemRowView::QuickInsertImageItemRowView(
                               std::make_unique<IconButton>(
                                   std::move(more_items_callback),
                                   IconButton::Type::kMediumFloating,
-                                  &vector_icons::kSubmenuArrowChromeRefreshIcon,
+                                  &vector_icons::
+                                      kSubmenuArrowChromeRefreshOldIcon,
                                   std::move(more_items_accessible_name),
                                   /*is_togglable=*/false,
                                   /*has_border=*/false))
-                              // The kSubmenuArrowChromeRefreshIcon flips
+                              // The kSubmenuArrowChromeRefreshOldIcon flips
                               // itself, so don't flip it again.
                               .SetFlipCanvasOnPaintForRTLUI(false)
                               .CopyAddressTo(&more_items_button_))))

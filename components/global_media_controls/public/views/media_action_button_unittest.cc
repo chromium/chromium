@@ -31,8 +31,8 @@ constexpr ui::ColorId kIconColorId = ui::kColorSysSurface;
 std::unique_ptr<MediaActionButton> CreateMediaActionButton(int button_id) {
   return std::make_unique<MediaActionButton>(
       views::Button::PressedCallback(), button_id, kTooltipTextId, kIconSize,
-      vector_icons::kPauseIcon, /*button_size=*/gfx::Size(20, 20), kIconColorId,
-      ui::kColorSysSurface1, ui::kColorSysSurface2);
+      vector_icons::kPauseOldIcon, /*button_size=*/gfx::Size(20, 20),
+      kIconColorId, ui::kColorSysSurface1, ui::kColorSysSurface2);
 }
 
 }  // namespace
@@ -61,7 +61,7 @@ TEST_F(MediaActionButtonTest, UpdateButton) {
             l10n_util::GetStringUTF16(kTooltipTextId));
 
   button->Update(static_cast<int>(MediaSessionAction::kPlay),
-                 vector_icons::kPlayArrowIcon, kUpdatedTooltipTextId,
+                 vector_icons::kPlayArrowOldIcon, kUpdatedTooltipTextId,
                  kIconColorId);
   EXPECT_EQ(button->GetID(), static_cast<int>(MediaSessionAction::kPlay));
   EXPECT_EQ(button->GetTooltipText(),
@@ -82,9 +82,9 @@ TEST_F(MediaActionButtonTest, UpdateButtonIcon) {
       CreateMediaActionButton(static_cast<int>(MediaSessionAction::kPause)));
   widget->Show();
 
-  button->UpdateIcon(vector_icons::kCastIcon);
+  button->UpdateIcon(vector_icons::kCastOldIcon);
   SkBitmap expected =
-      *gfx::CreateVectorIcon(vector_icons::kCastIcon, kIconSize,
+      *gfx::CreateVectorIcon(vector_icons::kCastOldIcon, kIconSize,
                              widget->GetColorProvider()->GetColor(kIconColorId))
            .bitmap();
   SkBitmap actual = *button->GetImage(views::Button::STATE_NORMAL).bitmap();

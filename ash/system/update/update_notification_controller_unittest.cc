@@ -463,7 +463,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRecommended) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessIcon.name,
+  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessOldIcon.name,
                                  GetNotificationIcon().name) == 0));
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
@@ -489,7 +489,7 @@ TEST_F(UpdateNotificationControllerTest,
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessIcon.name,
+  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessOldIcon.name,
                                  GetNotificationIcon().name) == 0));
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
@@ -518,7 +518,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredDays) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessIcon.name,
+  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessOldIcon.name,
                                  GetNotificationIcon().name) == 0));
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, GetNotificationPriority());
   EXPECT_EQ(true, GetNotificationNeverTimeout());
@@ -589,7 +589,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredHours) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessIcon.name,
+  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessOldIcon.name,
                                  GetNotificationIcon().name) == 0));
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, GetNotificationPriority());
   EXPECT_EQ(true, GetNotificationNeverTimeout());
@@ -620,7 +620,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredMinutes) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessIcon.name,
+  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessOldIcon.name,
                                  GetNotificationIcon().name) == 0));
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, GetNotificationPriority());
   EXPECT_EQ(true, GetNotificationNeverTimeout());
@@ -651,7 +651,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredSeconds) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessIcon.name,
+  UNSAFE_TODO(EXPECT_TRUE(strcmp(vector_icons::kBusinessOldIcon.name,
                                  GetNotificationIcon().name) == 0));
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, GetNotificationPriority());
   EXPECT_EQ(true, GetNotificationNeverTimeout());

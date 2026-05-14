@@ -367,7 +367,7 @@ void ShowDisabledNotification(CaptureAllowance allowance) {
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
       allowance == CaptureAllowance::kDisallowedByHdcp
           ? kCaptureModeIcon
-          : vector_icons::kBusinessIcon);
+          : vector_icons::kBusinessOldIcon);
 }
 
 // Shows a notification informing the user that video recording was stopped due
@@ -2180,7 +2180,7 @@ void CaptureModeController::AddCopyTextButton(std::string_view detected_text) {
                      weak_ptr_factory_.GetWeakPtr(),
                      base::UTF8ToUTF16(detected_text)),
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_COPY_TEXT_BUTTON_LABEL),
-      &vector_icons::kContentCopyIcon,
+      &vector_icons::kContentCopyOldIcon,
       ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0},
       ActionButtonViewID::kCopyTextButton);
 }

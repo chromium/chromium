@@ -79,16 +79,16 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
 
     const ui::ColorProvider* color_provider = button_->GetColorProvider();
     idle_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterIdleChromeRefreshIcon,
+        vector_icons::kMediaRouterIdleChromeRefreshOldIcon,
         color_provider->GetColor(kColorToolbarButtonIcon)));
     warning_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterWarningChromeRefreshIcon,
+        vector_icons::kMediaRouterWarningChromeRefreshOldIcon,
         color_provider->GetColor(kColorToolbarButtonIcon)));
     active_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterActiveChromeRefreshIcon,
+        vector_icons::kMediaRouterActiveChromeRefreshOldIcon,
         color_provider->GetColor(kColorMediaRouterIconActive)));
     paused_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterPausedIcon,
+        vector_icons::kMediaRouterPausedOldIcon,
         color_provider->GetColor(kColorToolbarButtonIcon)));
   }
 

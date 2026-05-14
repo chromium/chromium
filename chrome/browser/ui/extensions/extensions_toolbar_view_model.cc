@@ -142,11 +142,11 @@ const gfx::VectorIcon& ExtensionsToolbarViewModel::GetToolbarButtonIcon(
     ExtensionsToolbarButtonState state) {
   switch (state) {
     case ExtensionsToolbarButtonState::kDefault:
-      return vector_icons::kExtensionChromeRefreshIcon;
+      return vector_icons::kExtensionChromeRefreshOldIcon;
     case ExtensionsToolbarButtonState::kAllExtensionsBlocked:
-      return vector_icons::kExtensionOffIcon;
+      return vector_icons::kExtensionOffOldIcon;
     case ExtensionsToolbarButtonState::kAnyExtensionHasAccess:
-      return vector_icons::kExtensionOnIcon;
+      return vector_icons::kExtensionOnOldIcon;
   }
 }
 

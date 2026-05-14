@@ -42,7 +42,7 @@ SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
 
 void SharesheetExpandButton::SetToDefaultState() {
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kCaretDownIcon, cros_tokens::kIconColorProminent,
+      vector_icons::kCaretDownOldIcon, cros_tokens::kIconColorProminent,
       kExpandButtonCaretIconSize));
   auto display_name = l10n_util::GetStringUTF16(IDS_SHARESHEET_MORE_APPS_LABEL);
   label_->SetText(display_name);
@@ -51,7 +51,7 @@ void SharesheetExpandButton::SetToDefaultState() {
 
 void SharesheetExpandButton::SetToExpandedState() {
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kCaretUpIcon, cros_tokens::kIconColorProminent,
+      vector_icons::kCaretUpOldIcon, cros_tokens::kIconColorProminent,
       kExpandButtonCaretIconSize));
   auto display_name =
       l10n_util::GetStringUTF16(IDS_SHARESHEET_FEWER_APPS_LABEL);

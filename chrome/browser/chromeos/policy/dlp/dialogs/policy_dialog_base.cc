@@ -77,7 +77,7 @@ void PolicyDialogBase::SetupUpperPanel() {
   views::ImageView* managed_icon =
       upper_panel_->AddChildView(std::make_unique<views::ImageView>());
   managed_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, cros_tokens::kIconColorPrimary,
+      vector_icons::kBusinessOldIcon, cros_tokens::kIconColorPrimary,
       kManagedIconSize));
 }
 

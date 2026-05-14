@@ -121,7 +121,7 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
     CHECK(split_tab_index.has_value());
     AddItemWithStringIdAndIcon(
         GetCommandIdInt(CommandId::kCloseSpecifiedTab), IDS_SPLIT_TAB_CLOSE,
-        ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshOldIcon,
                                        ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize));
     SetElementIdentifierAt(

@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                 base::BindOnce([](ui::TrackedElement* element) {
                   auto* element_view = AsView<ContentSettingImageView>(element);
                   EXPECT_EQ(element_view->get_icon_for_testing(),
-                            &vector_icons::kMidiOffChromeRefreshIcon);
+                            &vector_icons::kMidiOffChromeRefreshOldIcon);
                   EXPECT_EQ(element_view->get_icon_badge_for_testing(),
                             &gfx::VectorIcon::EmptyIcon());
                   EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                 base::BindOnce([](ui::TrackedElement* element) {
                   auto* element_view = AsView<ContentSettingImageView>(element);
                   EXPECT_EQ(element_view->get_icon_for_testing(),
-                            &vector_icons::kMidiChromeRefreshIcon);
+                            &vector_icons::kMidiChromeRefreshOldIcon);
                   EXPECT_EQ(element_view->get_icon_badge_for_testing(),
                             &gfx::VectorIcon::EmptyIcon());
                   EXPECT_EQ(element_view->get_tooltip_text_for_testing(),

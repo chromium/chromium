@@ -2610,7 +2610,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   EXPECT_EQ(mech1.name, base::UTF8ToUTF16(*kUser1.name));
   EXPECT_EQ(mech1.description,
             l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY));
-  EXPECT_EQ(mech1.icon, vector_icons::kPasskeyIcon);
+  EXPECT_EQ(mech1.icon, vector_icons::kPasskeyOldIcon);
   mech1.callback.Run();
   device::DiscoverableCredentialMetadata result =
       account_preselected_callback.WaitForResult();
@@ -2630,7 +2630,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   EXPECT_EQ(mech2.name, base::UTF8ToUTF16(*kUser2.name));
   EXPECT_EQ(mech2.description,
             l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY));
-  EXPECT_EQ(mech2.icon, vector_icons::kPasskeyIcon);
+  EXPECT_EQ(mech2.icon, vector_icons::kPasskeyOldIcon);
   mech2.callback.Run();
   result = account_preselected_callback.WaitForResult();
   EXPECT_EQ(result.cred_id, kCred2.cred_id);

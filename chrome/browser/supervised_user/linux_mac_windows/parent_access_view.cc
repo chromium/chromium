@@ -306,8 +306,8 @@ void ParentAccessView::DisplayErrorMessage() {
   // Add error icon.
   auto error_icon_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorOutlineIcon, ui::kColorAlertHighSeverity,
-          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorOutlineIcon)));
+          vector_icons::kErrorOutlineOldIcon, ui::kColorAlertHighSeverity,
+          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorOutlineOldIcon)));
   // Spec required the margin to be 60 px from the the top, from which we
   // subtract the additional space taken by the dialog border displaying the "X"
   // button.

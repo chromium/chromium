@@ -52,7 +52,7 @@ MerchantTrustChipButtonController::MerchantTrustChipButtonController(
       location_icon_view_(location_icon_view),
       service_(service) {
   // TODO(crbug.com/378854462): Revisit icons, strings and theme.
-  chip_button_->SetIcon(vector_icons::kStorefrontIcon);
+  chip_button_->SetIcon(vector_icons::kStorefrontOldIcon);
   chip_button_->SetText(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER));
   chip_button_->SetTheme(OmniboxChipTheme::kLowVisibility);

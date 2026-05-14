@@ -1164,7 +1164,7 @@ void VideoOverlayWindowViews::SetUpViews() {
                 overlay->Replay10Seconds();
               },
               base::Unretained(this)),
-          vector_icons::kReplay10Icon,
+          vector_icons::kReplay10OldIcon,
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_REPLAY_10_TEXT));
   replay_10_seconds_button->SetSize(kActionButtonSize);
 
@@ -1175,7 +1175,7 @@ void VideoOverlayWindowViews::SetUpViews() {
                 overlay->Forward10Seconds();
               },
               base::Unretained(this)),
-          vector_icons::kForward10Icon,
+          vector_icons::kForward10OldIcon,
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_FORWARD_10_TEXT));
   forward_10_seconds_button->SetSize(kActionButtonSize);
 
@@ -1190,7 +1190,7 @@ void VideoOverlayWindowViews::SetUpViews() {
                 }
               },
               base::Unretained(this)),
-          vector_icons::kSkipPreviousIcon,
+          vector_icons::kSkipPreviousOldIcon,
           l10n_util::GetStringUTF16(
               IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
   previous_track_controls_view->SetSize(kActionButtonSize);
@@ -1206,7 +1206,7 @@ void VideoOverlayWindowViews::SetUpViews() {
                 }
               },
               base::Unretained(this)),
-          vector_icons::kSkipNextIcon,
+          vector_icons::kSkipNextOldIcon,
           l10n_util::GetStringUTF16(
               IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
   next_track_controls_view->SetSize(kActionButtonSize);
@@ -2475,7 +2475,7 @@ void VideoOverlayWindowViews::OnFaviconReceived(const SkBitmap& image) {
 void VideoOverlayWindowViews::UpdateFavicon(const gfx::ImageSkia& favicon) {
   if (favicon.isNull()) {
     favicon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kGlobeIcon, ui::kColorSysOnSurface,
+        vector_icons::kGlobeOldIcon, ui::kColorSysOnSurface,
         kFaviconIconSize.width()));
   } else {
     favicon_view_->SetImageSize(

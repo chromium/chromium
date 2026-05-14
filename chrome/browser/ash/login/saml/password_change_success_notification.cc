@@ -46,7 +46,7 @@ const NotificationHandler::Type kNotificationHandlerType =
     NotificationHandler::Type::TRANSIENT;
 
 // The icon to use for this notification - looks like an office building.
-const gfx::VectorIcon& kIcon = vector_icons::kBusinessIcon;
+const gfx::VectorIcon& kIcon = vector_icons::kBusinessOldIcon;
 
 // Warning level of WARNING makes the title orange.
 constexpr SystemNotificationWarningLevel kWarningLevel =

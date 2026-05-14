@@ -64,7 +64,7 @@ class SeeAllButton : public views::LabelButton {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
     SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kLaunchOldIcon,
                                        cros_tokens::kCrosSysOnSurface));
     SetImageLabelSpacing(kSeeAllIconLabelSpacing);
     SetTextColor(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);

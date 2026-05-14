@@ -40,7 +40,7 @@ FooterContextMenu::FooterContextMenu(BrowserWindowInterface* browser)
   // Add item: close footer.
   AddItemWithIcon(
       COMMAND_CLOSE_FOOTER, l10n_util::GetStringUTF16(IDS_HIDE_NEW_TAB_FOOTER),
-      ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffOldIcon,
                                      ui::kColorIcon, icon_size));
   SetElementIdentifierAt(GetIndexOfCommandId(COMMAND_CLOSE_FOOTER).value(),
                          kHideFooterIdForTesting);
@@ -50,7 +50,7 @@ FooterContextMenu::FooterContextMenu(BrowserWindowInterface* browser)
   // Add item: customize chrome.
   AddItemWithStringIdAndIcon(
       COMMAND_SHOW_CUSTOMIZE_CHROME, IDS_NTP_CUSTOMIZE_BUTTON_LABEL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshOldIcon,
                                      ui::kColorIcon, icon_size));
   SetElementIdentifierAt(
       GetIndexOfCommandId(COMMAND_SHOW_CUSTOMIZE_CHROME).value(),

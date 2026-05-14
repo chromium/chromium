@@ -225,7 +225,7 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
             base::Unretained(tutorial_service));
 
         if (is_last_step) {
-          params.body_icon = &vector_icons::kCelebrationIcon;
+          params.body_icon = &vector_icons::kCelebrationOldIcon;
           params.body_icon_alt_text =
               tutorial_service->GetBodyIconAltText(true);
           params.dismiss_callback = base::BindOnce(

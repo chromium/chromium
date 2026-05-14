@@ -1251,7 +1251,7 @@ LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
   menu_model->AddItemWithIcon(
       COMMAND_LEARN_MORE,
       l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_LEARN_MORE),
-      ui::ImageModel::FromVectorIcon(vector_icons::kInfoOutlineIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kInfoOutlineOldIcon,
                                      ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize));
 
@@ -1259,7 +1259,7 @@ LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
     menu_model->AddItemWithIcon(
         COMMAND_SEND_FEEDBACK,
         l10n_util::GetStringUTF16(IDS_LENS_SEND_FEEDBACK),
-        ui::ImageModel::FromVectorIcon(vector_icons::kFeedbackIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kFeedbackOldIcon,
                                        ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize));
   }

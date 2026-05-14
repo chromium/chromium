@@ -42,7 +42,7 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
 
   auto search_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kSearchChromeRefreshIcon, ui::kColorIcon,
+          vector_icons::kSearchChromeRefreshOldIcon, ui::kColorIcon,
           layout_provider->GetDistanceMetric(
               DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE)));
   search_icon->SetProperty(views::kMarginsKey, margins);
@@ -66,7 +66,7 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
           views::CreateVectorImageButtonWithNativeTheme(
               base::BindRepeating(&TaskManagerSearchBarView::OnClearPressed,
                                   base::Unretained(this)),
-              vector_icons::kCloseChromeRefreshIcon))
+              vector_icons::kCloseChromeRefreshOldIcon))
           // Reset the border set by
           // `CreateVectorImageButtonWithNativeTheme()` as it sets
           // an unnecessary padding to the highlighting circle.

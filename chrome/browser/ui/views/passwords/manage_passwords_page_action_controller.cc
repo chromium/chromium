@@ -29,9 +29,9 @@ const gfx::VectorIcon& GetVectorIconForState(password_manager::ui::State state,
                                              bool is_blocklisted) {
   if (is_blocklisted &&
       base::FeatureList::IsEnabled(features::kSavePasswordsContextualUi)) {
-    return vector_icons::kPasswordManagerOffIcon;
+    return vector_icons::kPasswordManagerOffOldIcon;
   }
-  return vector_icons::kPasswordManagerIcon;
+  return vector_icons::kPasswordManagerOldIcon;
 }
 
 }  // namespace

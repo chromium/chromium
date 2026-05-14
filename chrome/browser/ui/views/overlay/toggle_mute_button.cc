@@ -36,8 +36,8 @@ void ToggleMuteButton::UpdateImageAndTooltipText() {
     return;
   }
 
-  const auto& icon = is_muted_ ? vector_icons::kVolumeOffChromeRefreshIcon
-                               : vector_icons::kVolumeUpChromeRefreshIcon;
+  const auto& icon = is_muted_ ? vector_icons::kVolumeOffChromeRefreshOldIcon
+                               : vector_icons::kVolumeUpChromeRefreshOldIcon;
 
   auto text = is_muted_ ? IDS_PICTURE_IN_PICTURE_UNMUTE_TEXT
                         : IDS_PICTURE_IN_PICTURE_MUTE_TEXT;

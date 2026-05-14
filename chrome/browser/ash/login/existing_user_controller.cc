@@ -990,7 +990,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kAutoLaunchNotifierId,
                                  NotificationCatalogName::kAutoLaunch),
-      data, std::move(delegate), vector_icons::kBusinessIcon,
+      data, std::move(delegate), vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification.SetSystemPriority();
   notification.set_pinned(true);

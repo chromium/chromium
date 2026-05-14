@@ -209,7 +209,7 @@ void DownloadBubbleSecurityView::AddHeader() {
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::BackButtonPressed,
                               base::Unretained(this)),
-          vector_icons::kArrowBackChromeRefreshIcon,
+          vector_icons::kArrowBackChromeRefreshOldIcon,
           GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
   views::InstallCircleHighlightPathGenerator(back_button_);
   back_button_->SetTooltipText(
@@ -236,7 +236,7 @@ void DownloadBubbleSecurityView::AddHeader() {
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::CloseBubble,
                               base::Unretained(this)),
-          vector_icons::kCloseChromeRefreshIcon,
+          vector_icons::kCloseChromeRefreshOldIcon,
           GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   InstallCircleHighlightPathGenerator(close_button);

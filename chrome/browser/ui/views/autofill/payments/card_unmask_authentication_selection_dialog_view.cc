@@ -37,9 +37,9 @@ ui::ImageModel GetAuthenticationModeIcon(
     const CardUnmaskChallengeOption& challenge_option) {
   switch (challenge_option.type) {
     case CardUnmaskChallengeOptionType::kSmsOtp:
-      return ui::ImageModel::FromVectorIcon(vector_icons::kSmsIcon);
+      return ui::ImageModel::FromVectorIcon(vector_icons::kSmsOldIcon);
     case CardUnmaskChallengeOptionType::kEmailOtp:
-      return ui::ImageModel::FromVectorIcon(vector_icons::kEmailOutlineIcon);
+      return ui::ImageModel::FromVectorIcon(vector_icons::kEmailOutlineOldIcon);
     case CardUnmaskChallengeOptionType::kCvc:
       // CVC auth has its own authentication dialog in the single challenge
       // option case.

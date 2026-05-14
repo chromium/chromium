@@ -285,7 +285,7 @@ TEST_F(QuickInsertSectionViewTest,
           .GetVectorIcon()
           .vector_icon();
   ASSERT_NE(vector_icon, nullptr);
-  EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kLinkIcon.name));
+  EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kLinkOldIcon.name));
 }
 
 TEST_F(QuickInsertSectionViewTest,
@@ -351,7 +351,7 @@ TEST_F(QuickInsertSectionViewTest,
           .GetVectorIcon()
           .vector_icon();
   ASSERT_NE(vector_icon, nullptr);
-  EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kContentCopyIcon.name));
+  EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kContentCopyOldIcon.name));
 }
 
 TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {

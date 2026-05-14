@@ -219,8 +219,8 @@ ConversationNotificationView::CreateRightControlsContainer() {
       std::make_unique<message_center::NotificationControlButtonsView>(this);
   view->SetID(ViewId::kControlButtonsView);
   view->SetBetweenButtonSpacing(kNotificationControlButtonsHorizontalSpacing);
-  view->SetCloseButtonIcon(vector_icons::kCloseChromeRefreshIcon);
-  view->SetSettingsButtonIcon(vector_icons::kSettingsOutlineIcon);
+  view->SetCloseButtonIcon(vector_icons::kCloseChromeRefreshOldIcon);
+  view->SetSettingsButtonIcon(vector_icons::kSettingsOutlineOldIcon);
   view->SetButtonIconColors(cros_tokens::kIconColorPrimary);
   view->SetNotificationControlButtonFactory(
       std::make_unique<AshNotificationControlButtonFactory>());

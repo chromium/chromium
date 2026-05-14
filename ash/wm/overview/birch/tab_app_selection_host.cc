@@ -199,8 +199,8 @@ void TabAppSelectionHost::RemoveItem(std::string_view identifier) {
 void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
   views::Widget::OnNativeWidgetVisibilityChanged(visible);
   views::AsViewClass<IconButton>(owner_->addon_view())
-      ->SetVectorIcon(visible ? vector_icons::kCaretDownIcon
-                              : vector_icons::kCaretUpIcon);
+      ->SetVectorIcon(visible ? vector_icons::kCaretDownOldIcon
+                              : vector_icons::kCaretUpOldIcon);
   owner_->OnSelectionWidgetVisibilityChanged();
   scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
       visible ? GetNativeWindow() : nullptr);

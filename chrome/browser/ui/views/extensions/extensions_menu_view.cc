@@ -186,7 +186,7 @@ void ExtensionsMenuView::Populate() {
   footer->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
-          vector_icons::kSettingsChromeRefreshIcon, ui::kColorIcon,
+          vector_icons::kSettingsChromeRefreshOldIcon, ui::kColorIcon,
           provider->GetDistanceMetric(
               DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)));
 

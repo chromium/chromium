@@ -186,8 +186,9 @@ void RequestSystemProxyCredentialsView::Init() {
   auto* error_icon =
       error_container->AddChildView(std::make_unique<views::ImageView>());
   constexpr int kIconSize = 18;
-  error_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kInfoOutlineIcon, ui::kColorAlertHighSeverity, kIconSize));
+  error_icon->SetImage(
+      ui::ImageModel::FromVectorIcon(vector_icons::kInfoOutlineOldIcon,
+                                     ui::kColorAlertHighSeverity, kIconSize));
   error_icon->SetImageSize(gfx::Size(kIconSize, kIconSize));
   error_icon->SetVisible(show_error_label_);
 

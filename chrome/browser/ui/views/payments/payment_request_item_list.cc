@@ -101,8 +101,8 @@ void PaymentRequestItemList::Item::Init() {
     edit_button->SetBorder(nullptr);
     edit_button->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon, ui::kColorIcon,
-                                       kEditIconSize));
+        ui::ImageModel::FromVectorIcon(vector_icons::kEditOldIcon,
+                                       ui::kColorIcon, kEditIconSize));
     views::InkDrop::Get(edit_button.get())->SetBaseColor(ui::kColorIcon);
     edit_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     edit_button->SetID(static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));

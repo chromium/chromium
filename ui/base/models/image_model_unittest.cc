@@ -226,7 +226,7 @@ TEST(ImageModelTest, ShouldRasterizeEmptyModel) {
 TEST(ImageModelTest, ShouldRasterizeVectorIcon) {
   ui::ColorProvider color_provider;
   gfx::ImageSkia image_skia =
-      ui::ImageModel::FromVectorIcon(vector_icons::kSyncIcon)
+      ui::ImageModel::FromVectorIcon(vector_icons::kSyncOldIcon)
           .Rasterize(&color_provider);
   EXPECT_FALSE(image_skia.isNull());
 }

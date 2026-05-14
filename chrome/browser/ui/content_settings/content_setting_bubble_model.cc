@@ -1319,24 +1319,24 @@ void ContentSettingMediaStreamBubbleModel::
            system_permission_settings::SystemPermission::kDenied)) {
     title_id = IDS_CAMERA_MIC_TURNED_OFF_IN_MACOS;
     AddListItem(ContentSettingBubbleModel::ListItem(
-        &vector_icons::kVideocamIcon, l10n_util::GetStringUTF16(IDS_CAMERA),
+        &vector_icons::kVideocamOldIcon, l10n_util::GetStringUTF16(IDS_CAMERA),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
     AddListItem(ContentSettingBubbleModel::ListItem(
-        &vector_icons::kMicIcon, l10n_util::GetStringUTF16(IDS_MIC),
+        &vector_icons::kMicOldIcon, l10n_util::GetStringUTF16(IDS_MIC),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 1));
   } else if (CameraAccessed() &&
              system_permission_settings::CheckSystemVideoCapturePermission() ==
                  system_permission_settings::SystemPermission::kDenied) {
     title_id = IDS_CAMERA_TURNED_OFF_IN_MACOS;
     AddListItem(ContentSettingBubbleModel::ListItem(
-        &vector_icons::kVideocamIcon, l10n_util::GetStringUTF16(IDS_CAMERA),
+        &vector_icons::kVideocamOldIcon, l10n_util::GetStringUTF16(IDS_CAMERA),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
   } else if (MicrophoneAccessed() &&
              system_permission_settings::CheckSystemAudioCapturePermission() ==
                  system_permission_settings::SystemPermission::kDenied) {
     title_id = IDS_MIC_TURNED_OFF_IN_MACOS;
     AddListItem(ContentSettingBubbleModel::ListItem(
-        &vector_icons::kMicIcon, l10n_util::GetStringUTF16(IDS_MIC),
+        &vector_icons::kMicOldIcon, l10n_util::GetStringUTF16(IDS_MIC),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 1));
   }
 
@@ -1446,7 +1446,7 @@ void ContentSettingGeolocationBubbleModel::
 
   clear_message();
   AddListItem(ContentSettingBubbleModel::ListItem(
-      &vector_icons::kLocationOnIcon,
+      &vector_icons::kLocationOnOldIcon,
       l10n_util::GetStringUTF16(IDS_GEOLOCATION),
       l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
   set_manage_text_style(ContentSettingBubbleModel::ManageTextStyle::kNone);
@@ -1479,7 +1479,7 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
                                       ContentSettingsType::NOTIFICATIONS) {
   set_title(l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
   AddListItem(ContentSettingBubbleModel::ListItem(
-      &vector_icons::kNotificationsOffChromeRefreshIcon,
+      &vector_icons::kNotificationsOffChromeRefreshOldIcon,
       l10n_util::GetStringUTF16(IDS_NOTIFICATIONS),
       l10n_util::GetStringUTF16(IDS_TURNED_OFF), /*has_link=*/false,
       /*has_blocked_badge=*/false, 0));

@@ -47,7 +47,7 @@ CastDeviceFooterView::CastDeviceFooterView(
   // Add the device icon.
   device_icon_ = AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kCastIcon,
+          vector_icons::kCastOldIcon,
           media_color_theme.device_selector_foreground_color_id,
           kDeviceIconSize)));
 
@@ -73,7 +73,7 @@ CastDeviceFooterView::CastDeviceFooterView(
   stop_casting_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
-          vector_icons::kStopCircleIcon,
+          vector_icons::kStopCircleOldIcon,
           media_color_theme.error_foreground_color_id,
           kStopCastingButtonIconSize));
   stop_casting_button_->SetBorder(

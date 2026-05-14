@@ -74,7 +74,7 @@ AuthenticatorTouchIdView::BuildStepSpecificContent() {
   } else {
     container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kLockIcon, ui::kColorMenuIcon, kLockIconSize)));
+            vector_icons::kLockOldIcon, ui::kColorMenuIcon, kLockIconSize)));
     container->AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_TOUCH_ID_LOCKED)));
   }

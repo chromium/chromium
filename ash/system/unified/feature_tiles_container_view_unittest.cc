@@ -39,7 +39,7 @@ class MockFeaturePodController : public FeaturePodControllerBase {
         /*togglable=*/true,
         compact ? FeatureTile::TileType::kCompact
                 : FeatureTile::TileType::kPrimary);
-    tile->SetVectorIcon(vector_icons::kDogfoodIcon);
+    tile->SetVectorIcon(vector_icons::kDogfoodOldIcon);
     return tile;
   }
 

@@ -191,7 +191,7 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           parameters.click_action),
-      vector_icons::kNotificationWarningIcon,
+      vector_icons::kNotificationWarningOldIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
 
   display_service->Display(NotificationHandler::Type::TRANSIENT, notification,

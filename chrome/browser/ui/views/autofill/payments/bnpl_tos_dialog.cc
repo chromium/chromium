@@ -74,18 +74,18 @@ BnplTosDialog::BnplTosDialog(
 
   content_view_->AddChildView(CreateTextWithIconView(
       controller_->GetReviewText(), /*text_link_info=*/std::nullopt,
-      vector_icons::kChecklistIcon));
+      vector_icons::kChecklistOldIcon));
 
   content_view_->AddChildView(CreateTextWithIconView(
       controller_->GetApproveText(), /*text_link_info=*/std::nullopt,
-      vector_icons::kReceiptLongIcon));
+      vector_icons::kReceiptLongOldIcon));
 
   payments::TextWithLink link_text = controller_->GetLinkText();
   TextLinkInfo link_info;
   link_info.offset = link_text.offset;
   link_info.callback = base::BindRepeating(link_opener_, link_text.url);
   content_view_->AddChildView(CreateTextWithIconView(
-      link_text.text, std::move(link_info), vector_icons::kAddLinkIcon));
+      link_text.text, std::move(link_info), vector_icons::kAddLinkOldIcon));
 
   content_view_->AddChildView(std::make_unique<views::Separator>())
       ->SetProperty(

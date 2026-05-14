@@ -447,7 +447,7 @@ void DownloadUiContextMenu::AddAutoOpenToMenu(ui::SimpleMenuModel* menu) {
     menu->AddItemWithIcon(
         DownloadCommands::ALWAYS_OPEN_TYPE,
         GetLabelForCommandId(DownloadCommands::ALWAYS_OPEN_TYPE),
-        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
                                        ui::kColorIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize));
   } else {

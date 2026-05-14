@@ -150,7 +150,7 @@ void DisplaySuccessfulImageDownloadNotification(
                     }
                   },
                   image_bytes)),
-          /*small_image=*/vector_icons::kFileDownloadIcon,
+          /*small_image=*/vector_icons::kFileDownloadOldIcon,
           /*warning_level=*/
           message_center::SystemNotificationWarningLevel::NORMAL);
 
@@ -176,7 +176,7 @@ void DisplayFailedImageDownloadNotification(const base::FilePath& image_path) {
               NotificationCatalogName::kDownloadImageFromLobster),
           message_center::RichNotificationData(),
           /*delegate=*/nullptr,
-          /*small_image=*/vector_icons::kFileDownloadIcon,
+          /*small_image=*/vector_icons::kFileDownloadOldIcon,
           /*warning_level=*/
           message_center::SystemNotificationWarningLevel::NORMAL);
 

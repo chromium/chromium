@@ -124,7 +124,7 @@ void RebootNotificationController::ShowNotification(
   message_center::Notification notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
       std::u16string(), GURL(), message_center::NotifierId(), data, delegate,
-      vector_icons::kBusinessIcon,
+      vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   NotificationDisplayService* notification_display_service =

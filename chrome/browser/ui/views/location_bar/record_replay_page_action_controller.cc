@@ -151,29 +151,29 @@ void RecordReplayPageActionController::OnRetrieveRecordingsComplete(
   }
 
   std::u16string tooltip_text;
-  const gfx::VectorIcon* icon = &vector_icons::kScreenRecordIcon;
+  const gfx::VectorIcon* icon = &vector_icons::kScreenRecordOldIcon;
   SkColor color = {};
 
   switch (client->GetManager().state()) {
     case State::kIdle:
       if (!recent_recordings_.empty()) {
         tooltip_text = u"Replay (UT)";
-        icon = &vector_icons::kPlayArrowIcon;
+        icon = &vector_icons::kPlayArrowOldIcon;
         color = gfx::kGoogleGreen600;
       } else {
         tooltip_text = u"Record (UT)";
-        icon = &vector_icons::kScreenRecordIcon;
+        icon = &vector_icons::kScreenRecordOldIcon;
         color = gfx::kGoogleRed600;
       }
       break;
     case State::kRecording:
       tooltip_text = u"Stop recording (UT)";
-      icon = &vector_icons::kStopCircleIcon;
+      icon = &vector_icons::kStopCircleOldIcon;
       color = gfx::kGoogleRed600;
       break;
     case State::kReplaying:
       tooltip_text = u"Stop replay (UT)";
-      icon = &vector_icons::kStopCircleIcon;
+      icon = &vector_icons::kStopCircleOldIcon;
       color = gfx::kGoogleGreen600;
       break;
   }

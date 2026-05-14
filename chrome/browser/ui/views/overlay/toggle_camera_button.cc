@@ -37,8 +37,8 @@ void ToggleCameraButton::UpdateImageAndTooltipText() {
   }
 
   const auto& icon = is_turned_on_
-                         ? vector_icons::kVideocamChromeRefreshIcon
-                         : vector_icons::kVideocamOffChromeRefreshIcon;
+                         ? vector_icons::kVideocamChromeRefreshOldIcon
+                         : vector_icons::kVideocamOffChromeRefreshOldIcon;
 
   auto text = is_turned_on_ ? IDS_PICTURE_IN_PICTURE_TURN_OFF_CAMERA_TEXT
                             : IDS_PICTURE_IN_PICTURE_TURN_ON_CAMERA_TEXT;

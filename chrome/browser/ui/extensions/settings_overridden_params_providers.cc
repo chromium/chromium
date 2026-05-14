@@ -259,7 +259,7 @@ ui::ImageModel CreateFallbackSearchIcon(const std::string& extension_name) {
   }
 
   // This icon doesn't pertain to an extension. Fall back to a fixed icon.
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeIcon,
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeOldIcon,
                                         ui::kColorIcon, kDialogIconSize);
 }
 

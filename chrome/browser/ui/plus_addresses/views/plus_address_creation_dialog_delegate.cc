@@ -416,7 +416,8 @@ void PlusAddressCreationDialogDelegate::PlusAddressContainerView::ShowIcon(
       return;
     case Icon::kError:
       icon_->SetImage(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorIcon, ui::kColorSysError, kPlusAddressIconWidth));
+          vector_icons::kErrorOldIcon, ui::kColorSysError,
+          kPlusAddressIconWidth));
       return;
   }
   NOTREACHED();
@@ -602,7 +603,7 @@ PlusAddressCreationDialogDelegate::CreateRefreshButton() {
   auto button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PlusAddressCreationDialogDelegate::OnRefreshClicked,
                           base::Unretained(this)),
-      vector_icons::kReloadIcon, kRefreshButtonIconWidth);
+      vector_icons::kReloadOldIcon, kRefreshButtonIconWidth);
   views::InstallCircleHighlightPathGenerator(button.get());
   button->SetProperty(views::kElementIdentifierKey,
                       kPlusAddressRefreshButtonElementId);

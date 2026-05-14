@@ -56,7 +56,7 @@ class MockFeaturePodController : public FeaturePodControllerBase {
         togglable_,
         compact ? FeatureTile::TileType::kCompact
                 : FeatureTile::TileType::kPrimary);
-    tile->SetVectorIcon(vector_icons::kDogfoodIcon);
+    tile->SetVectorIcon(vector_icons::kDogfoodOldIcon);
     tile->SetIconClickCallback(
         base::BindRepeating(&MockFeaturePodController::OnIconPressed,
                             weak_ptr_factory_.GetWeakPtr()));

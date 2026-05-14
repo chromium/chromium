@@ -35,12 +35,12 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
   views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
 
   play_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kPlayArrowIcon, ui::kColorSysOnSecondaryContainer,
+      vector_icons::kPlayArrowOldIcon, ui::kColorSysOnSecondaryContainer,
       kPlaybackButtonIconSize);
-  pause_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kPauseIcon,
+  pause_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kPauseOldIcon,
                                                 kColorPipWindowForeground,
                                                 kPlaybackButtonIconSize);
-  replay_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kReplayIcon,
+  replay_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kReplayOldIcon,
                                                  kColorPipWindowForeground,
                                                  kPlaybackButtonIconSize);
 

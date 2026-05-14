@@ -180,7 +180,7 @@ void SuggestionWindowView::OnThemeChanged() {
   // TODO(crbug.com/1099044): Update and use cros colors.
   learn_more_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineOldIcon,
                                      ui::kColorIconSecondary));
 }
 

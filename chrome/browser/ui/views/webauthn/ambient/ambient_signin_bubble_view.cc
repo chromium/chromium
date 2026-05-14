@@ -52,7 +52,7 @@ std::unique_ptr<views::ImageView> GetSecondaryIconForRow(
              ? nullptr
              : std::make_unique<views::ImageView>(
                    ui::ImageModel::FromVectorIcon(
-                       vector_icons::kSubmenuArrowChromeRefreshIcon,
+                       vector_icons::kSubmenuArrowChromeRefreshOldIcon,
                        ui::kColorIcon, kIconSize));
 }
 

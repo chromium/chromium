@@ -239,7 +239,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kForwardArrowChromeRefreshIcon, icon_color_id)
+              vector_icons::kForwardArrowChromeRefreshOldIcon, icon_color_id)
               .Rasterize(&provider),
           scale_factor)));
 

@@ -17,7 +17,7 @@
 
 // static
 const gfx::VectorIcon& HidSystemTrayIcon::GetIcon() {
-  return vector_icons::kVideogameAssetIcon;
+  return vector_icons::kVideogameAssetOldIcon;
 }
 
 // static

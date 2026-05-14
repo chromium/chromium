@@ -653,11 +653,11 @@ bool ProfileSubMenuModel::BuildSyncSection() {
           if (identity_manager->HasPrimaryAccount(
                   signin::ConsentLevel::kSync)) {
             button_string_id = IDS_SYNC_RELOGIN_BUTTON_MAYBE_TITLE_CASE;
-            icon = &vector_icons::kSyncOffChromeRefreshIcon;
+            icon = &vector_icons::kSyncOffChromeRefreshOldIcon;
           } else {
             // Merge this case with the others below once ConsentLevel::kSync is
             // gone.
-            icon = &vector_icons::kAccountCircleOffChromeRefreshIcon;
+            icon = &vector_icons::kAccountCircleOffChromeRefreshOldIcon;
           }
           break;
         case syncer::SyncService::UserActionableError::
@@ -669,22 +669,22 @@ bool ProfileSubMenuModel::BuildSyncSection() {
         case syncer::SyncService::UserActionableError::
             kNeedsTrustedVaultKeyForEverything:
           command_id = IDC_SHOW_SIGNIN_WHEN_PAUSED;
-          icon = &vector_icons::kAccountCircleOffChromeRefreshIcon;
+          icon = &vector_icons::kAccountCircleOffChromeRefreshOldIcon;
           break;
         case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
           command_id = IDC_UPGRADE_DIALOG;
-          icon = &vector_icons::kErrorOutlineIcon;
+          icon = &vector_icons::kErrorOutlineOldIcon;
           break;
         case syncer::SyncService::UserActionableError::kNeedsPassphrase:
           command_id = IDC_SHOW_SYNC_PASSPHRASE_DIALOG;
-          icon = &vector_icons::kErrorOutlineIcon;
+          icon = &vector_icons::kErrorOutlineOldIcon;
           break;
         case syncer::SyncService::UserActionableError::
             kNeedsSettingsConfirmation:
         case syncer::SyncService::UserActionableError::kUnrecoverableError:
           // Only shown for "Sync-the-feature".
           command_id = IDC_SHOW_SYNC_SETTINGS;
-          icon = &vector_icons::kErrorOutlineIcon;
+          icon = &vector_icons::kErrorOutlineOldIcon;
           break;
         case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
           // For this specific error (as opposed to all others), there is no
@@ -701,18 +701,18 @@ bool ProfileSubMenuModel::BuildSyncSection() {
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SYNC_SETTINGS,
                                      IDS_PROFILE_ROW_SYNC_IS_ON,
-                                     vector_icons::kSyncChromeRefreshIcon);
+                                     vector_icons::kSyncChromeRefreshOldIcon);
   } else {
     if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
         AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SIGNIN,
                                          IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON,
-                                         vector_icons::kAccountCircleIcon);
+                                         vector_icons::kAccountCircleOldIcon);
       }
     } else {
-      AddItemWithStringIdAndVectorIcon(this, IDC_TURN_ON_SYNC,
-                                       IDS_PROFILE_ROW_TURN_ON_SYNC,
-                                       vector_icons::kSyncOffChromeRefreshIcon);
+      AddItemWithStringIdAndVectorIcon(
+          this, IDC_TURN_ON_SYNC, IDS_PROFILE_ROW_TURN_ON_SYNC,
+          vector_icons::kSyncOffChromeRefreshOldIcon);
     }
   }
   return true;
@@ -729,7 +729,7 @@ void ProfileSubMenuModel::BuildCustomizeProfileRow(Profile* profile) {
   if (!profile->IsIncognitoProfile() && !profile->IsGuestSession()) {
     AddItemWithStringIdAndVectorIcon(this, IDC_CUSTOMIZE_CHROME,
                                      IDS_CUSTOMIZE_CHROME,
-                                     vector_icons::kEditChromeRefreshIcon);
+                                     vector_icons::kEditChromeRefreshOldIcon);
   }
 }
 
@@ -738,7 +738,7 @@ void ProfileSubMenuModel::BuildCloseProfileRow(Profile* profile) {
       IDC_CLOSE_PROFILE,
       l10n_util::GetPluralStringFUTF16(IDS_CLOSE_PROFILE,
                                        CountBrowsersFor(profile)),
-      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshOldIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize));
 }
 
@@ -774,7 +774,7 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
     : SimpleMenuModel(delegate) {
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_PASSWORD_MANAGER,
                                    IDS_VIEW_PASSWORDS,
-                                   vector_icons::kPasswordManagerIcon);
+                                   vector_icons::kPasswordManagerOldIcon);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_PASSWORD_MANAGER).value(),
                          AppMenuModel::kPasswordManagerMenuItem);
 
@@ -790,22 +790,22 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
           autofill::features::kYourSavedInfoSettingsPage)) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-        vector_icons::kLocationOnChromeRefreshIcon);
+        vector_icons::kLocationOnChromeRefreshOldIcon);
   } else {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_SHOW_CONTACT_INFO,
         IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION,
-        vector_icons::kLocationOnChromeRefreshIcon);
+        vector_icons::kLocationOnChromeRefreshOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO).value(),
                            AppMenuModel::kContactInfoMenuItem);
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_IDENTITY_DOCS,
                                      IDS_IDENTITY_DOCS_SUBMENU_OPTION,
-                                     vector_icons::kIdCardIcon);
+                                     vector_icons::kIdCardOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS).value(),
                            AppMenuModel::kIdentityDocsMenuItem);
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRAVEL,
                                      IDS_TRAVEL_SUBMENU_OPTION,
-                                     vector_icons::kTripIcon);
+                                     vector_icons::kTripOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_TRAVEL).value(),
                            AppMenuModel::kTravelMenuItem);
   }
@@ -940,7 +940,7 @@ void HelpMenuModel::Build(Browser* browser) {
     int help_string_id = IDS_HELP_PAGE;
 #endif
     AddItemWithStringIdAndVectorIcon(this, IDC_ABOUT, IDS_ABOUT,
-                                     vector_icons::kInfoRefreshIcon);
+                                     vector_icons::kInfoRefreshOldIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (whats_new::IsEnabled()) {
       AddItemWithStringIdAndVectorIcon(this, IDC_CHROME_WHATS_NEW,
@@ -965,7 +965,7 @@ void HelpMenuModel::Build(Browser* browser) {
       if (feedback::ReportUnsafeSiteDialog::IsEnabled(*browser->profile())) {
         AddItemWithStringIdAndVectorIcon(this, IDC_REPORT_UNSAFE_SITE,
                                          IDS_REPORT_UNSAFE_SITE,
-                                         vector_icons::kWarningIcon);
+                                         vector_icons::kWarningOldIcon);
         SetElementIdentifierAt(
             GetIndexOfCommandId(IDC_REPORT_UNSAFE_SITE).value(),
             HelpMenuModel::kReportUnsafeSiteMenuItem);
@@ -1120,7 +1120,7 @@ void ExtensionsMenuModel::Build(Browser* browser) {
   AddItemWithStringIdAndVectorIcon(
       this, IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
       IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM,
-      vector_icons::kExtensionChromeRefreshIcon);
+      vector_icons::kExtensionChromeRefreshOldIcon);
   SetElementIdentifierAt(
       GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS).value(),
       kManageExtensionsMenuItem);
@@ -2004,9 +2004,9 @@ void AppMenuModel::Build() {
   if (!browser_->profile()->IsGuestSession()) {
     sub_menus_.push_back(
         std::make_unique<PasswordsAndAutofillSubMenuModel>(this));
-    AddSubMenuWithStringIdAndVectorIcon(this, IDC_PASSWORDS_AND_AUTOFILL_MENU,
-                                        IDS_PASSWORDS_AND_AUTOFILL_MENU, sub_menus_.back().get(),
-                                        vector_icons::kPasswordManagerIcon);
+    AddSubMenuWithStringIdAndVectorIcon(
+        this, IDC_PASSWORDS_AND_AUTOFILL_MENU, IDS_PASSWORDS_AND_AUTOFILL_MENU,
+        sub_menus_.back().get(), vector_icons::kPasswordManagerOldIcon);
     SetElementIdentifierAt(
         GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value(),
         kPasswordAndAutofillMenuItem);
@@ -2054,16 +2054,16 @@ void AppMenuModel::Build() {
   if (ArePromotionsEnabled() &&
       base::FeatureList::IsEnabled(features::kExtensionsCollapseMainMenu) &&
       !extensions::ui_util::HasManageableExtensions(browser_->profile())) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_FIND_EXTENSIONS,
-                                     IDS_FIND_EXTENSIONS,
-                                     vector_icons::kExtensionChromeRefreshIcon);
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_FIND_EXTENSIONS, IDS_FIND_EXTENSIONS,
+        vector_icons::kExtensionChromeRefreshOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_FIND_EXTENSIONS).value(),
                            ExtensionsMenuModel::kVisitChromeWebStoreMenuItem);
   } else {
     sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
     AddSubMenuWithStringIdAndVectorIcon(
         this, IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
-        sub_menus_.back().get(), vector_icons::kExtensionChromeRefreshIcon);
+        sub_menus_.back().get(), vector_icons::kExtensionChromeRefreshOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
                            kExtensionsMenuItem);
   }
@@ -2098,7 +2098,7 @@ void AppMenuModel::Build() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-        vector_icons::kSearchChromeRefreshIcon;
+        vector_icons::kSearchChromeRefreshOldIcon;
 #endif
     AddItemWithStringIdAndVectorIcon(
         this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
@@ -2162,7 +2162,7 @@ void AppMenuModel::Build() {
   AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #else
   AddItemWithStringIdAndVectorIcon(this, IDC_ABOUT, IDS_ABOUT,
-                                   vector_icons::kInfoRefreshIcon);
+                                   vector_icons::kInfoRefreshOldIcon);
 #endif
 #endif
 

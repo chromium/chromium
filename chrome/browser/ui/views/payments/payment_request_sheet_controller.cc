@@ -245,7 +245,7 @@ class PaymentRequestBackArrowButton : public views::ImageButton {
       : views::ImageButton(std::move(back_arrow_callback)) {
     ConfigureVectorImageButton(this);
     views::SetImageFromVectorIconWithColor(
-        this, vector_icons::kBackArrowIcon,
+        this, vector_icons::kBackArrowOldIcon,
         {kColorPaymentsRequestBackArrowButtonIcon,
          kColorPaymentsRequestBackArrowButtonIconDisabled});
     constexpr int kBackArrowSize = 16;

@@ -96,7 +96,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           base::BindRepeating(
               &AdbSideloadingPolicyChangeNotification::HandleNotificationClick,
               weak_ptr_factory_.GetWeakPtr())),
-      vector_icons::kBusinessIcon,
+      vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
   notification->set_priority(message_center::SYSTEM_PRIORITY);
   notification->set_pinned(pinned);

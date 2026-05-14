@@ -70,7 +70,7 @@ TEST_F(ToastControllerUnitTest, ShowToast) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
           .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
@@ -90,7 +90,7 @@ TEST_F(ToastControllerUnitTest, ShowToastWithBodyStringOverride) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon).Build());
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon).Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -113,7 +113,7 @@ TEST_F(ToastControllerUnitTest, ShowToastWithImage) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
           .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
@@ -138,7 +138,7 @@ TEST_F(ToastControllerUnitTest, ToastAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
           .Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -156,7 +156,7 @@ TEST_F(ToastControllerUnitTest, ToastCloseCallbackTriggered) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
           .Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -181,7 +181,7 @@ TEST_F(ToastControllerUnitTest, ToastWithActionButtonAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
           .Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -199,11 +199,11 @@ TEST_F(ToastControllerUnitTest, CloseTimerResetsWhenToastShown) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
           .Build());
   registry->RegisterToast(
       ToastId::kImageCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
           .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);

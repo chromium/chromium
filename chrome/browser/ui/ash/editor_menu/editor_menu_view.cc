@@ -368,7 +368,8 @@ void EditorMenuView::AddTitleContainer() {
       title_container_->AddChildView(views::ImageButton::CreateIconButton(
           base::BindRepeating(&EditorMenuView::OnSettingsButtonPressed,
                               weak_factory_.GetWeakPtr()),
-          vector_icons::kSettingsOutlineIcon, GetEditorMenuSettingsTooltip()));
+          vector_icons::kSettingsOutlineOldIcon,
+          GetEditorMenuSettingsTooltip()));
   settings_button_->SetProperty(views::kMarginsKey, kSettingsButtonPadding);
 
   title_container_->SetProperty(views::kMarginsKey, GetTitleContainerInsets());

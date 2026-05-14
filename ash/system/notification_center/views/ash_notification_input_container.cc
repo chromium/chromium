@@ -95,12 +95,12 @@ void AshNotificationInputContainer::UpdateButtonImage() {
   UpdateButtonState();
   button()->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSendOldIcon,
                                      cros_tokens::kColorProminent,
                                      kInputReplyButtonSize));
   button()->SetImageModel(
       views::Button::STATE_DISABLED,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSendOldIcon,
                                      cros_tokens::kColorDisabled,
                                      kInputReplyButtonSize));
 }

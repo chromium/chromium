@@ -114,7 +114,7 @@ PageInfoMerchantTrustContentView::CreateReviewsSummarySection() {
   auto* icon =
       container->AddChildView(std::make_unique<NonAccessibleImageView>());
   icon->SetImage(
-      PageInfoViewFactory::GetImageModel(vector_icons::kChatSparkIcon));
+      PageInfoViewFactory::GetImageModel(vector_icons::kChatSparkOldIcon));
 
   auto* labels_wrapper =
       container->AddChildView(PageInfoViewFactory::CreateLabelWrapper());
@@ -141,7 +141,7 @@ PageInfoMerchantTrustContentView::CreateViewReviewsButton() {
       base::BindRepeating(
           &PageInfoMerchantTrustContentView::NotifyViewReviewsPressed,
           base::Unretained(this)),
-      PageInfoViewFactory::GetImageModel(vector_icons::kChatIcon),
+      PageInfoViewFactory::GetImageModel(vector_icons::kChatOldIcon),
       std::u16string(), std::u16string(), PageInfoViewFactory::GetLaunchIcon());
   merchant_trust_button->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);

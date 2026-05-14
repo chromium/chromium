@@ -223,11 +223,11 @@ Affordance::Affordance(GestureNavSimple* owner,
   DCHECK(mode_ == OVERSCROLL_EAST || mode_ == OVERSCROLL_WEST ||
          mode_ == OVERSCROLL_SOUTH);
   if (mode_ == OVERSCROLL_EAST) {
-    arrow_icon_ = &vector_icons::kBackArrowIcon;
+    arrow_icon_ = &vector_icons::kBackArrowOldIcon;
   } else if (mode_ == OVERSCROLL_WEST) {
-    arrow_icon_ = &vector_icons::kForwardArrowIcon;
+    arrow_icon_ = &vector_icons::kForwardArrowOldIcon;
   } else if (mode_ == OVERSCROLL_SOUTH) {
-    arrow_icon_ = &vector_icons::kReloadIcon;
+    arrow_icon_ = &vector_icons::kReloadOldIcon;
   }
 
   DCHECK(arrow_icon_);

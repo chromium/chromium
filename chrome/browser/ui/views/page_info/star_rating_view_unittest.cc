@@ -29,7 +29,7 @@ class StarRatingViewTest : public views::ViewsTestBase {
   bool IsFullStarIconAt(int index) {
     const ui::VectorIconModel& model =
         view()->GetVectorIconModelForIndexForTesting(index);
-    return model.vector_icon()->name == vector_icons::kStarIcon.name &&
+    return model.vector_icon()->name == vector_icons::kStarOldIcon.name &&
            model.color() == kColorStarRatingFullIcon;
   }
 
@@ -43,7 +43,7 @@ class StarRatingViewTest : public views::ViewsTestBase {
   bool IsEmptyStarIconAt(int index) {
     const ui::VectorIconModel& model =
         view()->GetVectorIconModelForIndexForTesting(index);
-    return model.vector_icon()->name == vector_icons::kStarIcon.name &&
+    return model.vector_icon()->name == vector_icons::kStarOldIcon.name &&
            model.color() == kColorStarRatingEmptyIcon;
   }
 

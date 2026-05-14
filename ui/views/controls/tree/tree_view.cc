@@ -109,7 +109,7 @@ TreeView::TreeView()
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   folder_icon_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kFolderChromeRefreshIcon, ui::kColorIcon);
+      vector_icons::kFolderChromeRefreshOldIcon, ui::kColorIcon);
 
   text_offset_ = folder_icon_.Size().width() + kImagePadding + kImagePadding +
                  kArrowRegionSize;
@@ -1248,7 +1248,7 @@ void TreeView::PaintExpandControl(gfx::Canvas* canvas,
                                   const gfx::Rect& node_bounds,
                                   bool expanded) {
   gfx::ImageSkia arrow = gfx::CreateVectorIcon(
-      vector_icons::kSubmenuArrowIcon,
+      vector_icons::kSubmenuArrowOldIcon,
       color_utils::DeriveDefaultIconColor(
           drawing_provider()->GetTextColorForNode(this, nullptr)));
   if (expanded) {

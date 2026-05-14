@@ -789,7 +789,7 @@ gfx::Image GetPlaceholderAvatarIconVisibleAgainstBackground(
     int size,
     AvatarVisibilityAgainstBackground visibility) {
   const gfx::VectorIcon& person_icon =
-      vector_icons::kAccountCircleChromeRefreshIcon;
+      vector_icons::kAccountCircleChromeRefreshOldIcon;
 
   // The palette is generated using the user color, which is independent of the
   // profile's light or dark theme.
@@ -817,7 +817,7 @@ gfx::Image GetPlaceholderAvatarIconWithColors(
   CHECK(!icon_params.visibility_against_background.has_value());
 
   const gfx::VectorIcon& person_icon =
-      vector_icons::kAccountCircleChromeRefreshIcon;
+      vector_icons::kAccountCircleChromeRefreshOldIcon;
 
   const gfx::ImageSkia avatar_icon_without_background =
       icon_params.has_padding

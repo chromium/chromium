@@ -35,7 +35,7 @@ void BiddingAndAuctionConsentedDebuggingDelegate::Create(
 
 const gfx::VectorIcon&
 BiddingAndAuctionConsentedDebuggingDelegate::GetVectorIcon() const {
-  return vector_icons::kErrorOutlineIcon;
+  return vector_icons::kErrorOutlineOldIcon;
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

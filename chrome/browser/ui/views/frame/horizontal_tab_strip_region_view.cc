@@ -256,8 +256,8 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
     unfocus_button_ = AddChildView(std::make_unique<TabStripControlButton>(
-        browser, views::Button::PressedCallback(), vector_icons::kArrowBackIcon,
-        Edge::kNone, Edge::kNone));
+        browser, views::Button::PressedCallback(),
+        vector_icons::kArrowBackOldIcon, Edge::kNone, Edge::kNone));
 
     actions::ActionItem* const unfocus_action =
         actions::ActionManager::Get().FindAction(
@@ -317,7 +317,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
         std::make_unique<NewTabButton>(
             base::BindRepeating(&TabStrip::NewTabButtonPressed,
                                 base::Unretained(tab_strip_)),
-            vector_icons::kAddIcon, Edge::kNone, Edge::kNone, browser);
+            vector_icons::kAddOldIcon, Edge::kNone, Edge::kNone, browser);
 
     new_tab_button_ = AddChildView(std::move(tab_strip_control_button));
 

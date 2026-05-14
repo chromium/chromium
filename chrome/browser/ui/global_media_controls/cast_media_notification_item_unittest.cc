@@ -105,7 +105,7 @@ class CastMediaNotificationItemTest : public testing::Test {
   void SetView() {
     EXPECT_CALL(view_, UpdateWithVectorIcon(_))
         .WillOnce([](const gfx::VectorIcon* vector_icon) {
-          EXPECT_EQ(vector_icons::kMediaRouterIdleIcon.reps.data(),
+          EXPECT_EQ(vector_icons::kMediaRouterIdleOldIcon.reps.data(),
                     vector_icon->reps.data());
         });
     EXPECT_CALL(view_, UpdateWithMediaSessionInfo(_))

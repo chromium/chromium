@@ -143,7 +143,7 @@ MagicBoostUserConsentView::MagicBoostUserConsentView(
                   .SetImageModel(
                       views::Button::ButtonState::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(
-                          vector_icons::kSettingsOutlineIcon,
+                          vector_icons::kSettingsOutlineOldIcon,
                           ui::kColorSysSecondary, kSettingsButtonSizeDip))
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets(kSettingsButtonBorderDip)))

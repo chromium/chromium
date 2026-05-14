@@ -41,7 +41,7 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&EchoDialogListener::OnMoreInfoLinkClicked,
                               base::Unretained(listener)),
-          vector_icons::kHelpOutlineIcon));
+          vector_icons::kHelpOutlineOldIcon));
   learn_more_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
 

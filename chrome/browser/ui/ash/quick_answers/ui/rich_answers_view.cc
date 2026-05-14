@@ -260,7 +260,7 @@ views::View* RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
           &QuickAnswersUiController::OnSettingsButtonPressed, controller_)));
   settings_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineOldIcon,
                                      ui::kColorSysOnSurface,
                                      /*icon_size=*/kSettingsButtonSizeDip));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(

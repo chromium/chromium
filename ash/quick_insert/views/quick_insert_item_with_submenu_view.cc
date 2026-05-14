@@ -92,7 +92,7 @@ QuickInsertItemWithSubmenuView::QuickInsertItemWithSubmenuView()
                   views::Builder<views::ImageView>()
                       .SetImageSize(kIconSizeDip)
                       .SetImage(ui::ImageModel::FromVectorIcon(
-                          vector_icons::kSubmenuArrowChromeRefreshIcon,
+                          vector_icons::kSubmenuArrowChromeRefreshOldIcon,
                           cros_tokens::kCrosSysOnSurface))))
       .BuildChildren();
 

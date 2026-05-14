@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIIcon) {
             const ui::ImageModel& model = image_view->GetImageModel();
             if (model.IsVectorIcon()) {
               return model.GetVectorIcon().vector_icon() ==
-                     &vector_icons::kCropFreeIcon;
+                     &vector_icons::kCropFreeOldIcon;
             }
           }
         }

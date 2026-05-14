@@ -650,9 +650,9 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
     return kTabIconResourceName;
   } else if (icon.name == omnibox::kTrendingUpChromeRefreshOldIcon.name) {
     return kTrendingUpIconResourceName;
-  } else if (icon.name == vector_icons::kHistoryChromeRefreshIcon.name) {
+  } else if (icon.name == vector_icons::kHistoryChromeRefreshOldIcon.name) {
     return kHistoryIconResourceName;
-  } else if (icon.name == vector_icons::kSearchChromeRefreshIcon.name) {
+  } else if (icon.name == vector_icons::kSearchChromeRefreshOldIcon.name) {
     return kSearchIconResourceName;
   }
 

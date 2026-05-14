@@ -22,7 +22,7 @@ const gfx::VectorIcon& GetIconForPresetQueryCategory(
     PresetQueryCategory category) {
   switch (category) {
     case PresetQueryCategory::kUnknown:
-      return vector_icons::kKeyboardIcon;
+      return vector_icons::kKeyboardOldIcon;
     case PresetQueryCategory::kProofread:
       return kEditorMenuProofreadIcon;
     case PresetQueryCategory::kShorten:
@@ -39,7 +39,7 @@ const gfx::VectorIcon& GetIconForPresetQueryCategory(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return kLobsterIcon;
 #else
-      return vector_icons::kKeyboardIcon;
+      return vector_icons::kKeyboardOldIcon;
 #endif
   }
 }

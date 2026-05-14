@@ -112,7 +112,7 @@ int GetSiteAccessButtonIndex(PermissionsManager::UserSiteAccess site_access) {
 // Returns the icon for the setting button.
 std::unique_ptr<views::ImageView> GetSettingsButtonIcon(int icon_size) {
   return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowChromeRefreshIcon, ui::kColorIconSecondary,
+      vector_icons::kSubmenuArrowChromeRefreshOldIcon, ui::kColorIconSecondary,
       icon_size));
 }
 
@@ -234,7 +234,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                           base::BindRepeating(
                               &ExtensionsMenuHandler::OpenMainPage,
                               base::Unretained(menu_handler)),
-                          vector_icons::kArrowBackIcon, icon_size))
+                          vector_icons::kArrowBackOldIcon, icon_size))
                       .SetTooltipText(
                           l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
                       .SetAccessibleName(

@@ -465,7 +465,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
       } else {
         warning_summary_ = l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING);
-        warning_secondary_icon_ = &vector_icons::kDocumentScannerIcon;
+        warning_secondary_icon_ = &vector_icons::kDocumentScannerOldIcon;
         warning_secondary_text_ =
             download::DoesDownloadConnectorBlock(model.profile(),
                                                  model.GetURL())

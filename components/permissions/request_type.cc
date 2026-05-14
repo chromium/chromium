@@ -86,69 +86,69 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
   switch (type) {
     case RequestType::kArSession:
     case RequestType::kVrSession:
-      return vector_icons::kVrHeadsetChromeRefreshIcon;
+      return vector_icons::kVrHeadsetChromeRefreshOldIcon;
     case RequestType::kCameraPanTiltZoom:
     case RequestType::kCameraStream:
-      return vector_icons::kVideocamChromeRefreshIcon;
+      return vector_icons::kVideocamChromeRefreshOldIcon;
     case RequestType::kCapturedSurfaceControl:
-      return vector_icons::kTouchpadMouseIcon;
+      return vector_icons::kTouchpadMouseOldIcon;
     case RequestType::kClipboard:
-      return vector_icons::kContentPasteIcon;
+      return vector_icons::kContentPasteOldIcon;
     case RequestType::kDiskQuota:
-      return vector_icons::kFolderChromeRefreshIcon;
+      return vector_icons::kFolderChromeRefreshOldIcon;
     case RequestType::kGeolocation:
-      return vector_icons::kLocationOnChromeRefreshIcon;
+      return vector_icons::kLocationOnChromeRefreshOldIcon;
     case RequestType::kHandTracking:
-      return vector_icons::kHandGestureIcon;
+      return vector_icons::kHandGestureOldIcon;
     case RequestType::kIdleDetection:
-      return vector_icons::kDevicesIcon;
+      return vector_icons::kDevicesOldIcon;
     case RequestType::kKeyboardLock:
-      return vector_icons::kKeyboardLockIcon;
+      return vector_icons::kKeyboardLockOldIcon;
     case RequestType::kLocalFonts:
-      return vector_icons::kFontDownloadChromeRefreshIcon;
+      return vector_icons::kFontDownloadChromeRefreshOldIcon;
     case RequestType::kLocalNetwork:
-      return vector_icons::kRouterIcon;
+      return vector_icons::kRouterOldIcon;
     case RequestType::kLoopbackNetwork:
-      return vector_icons::kDesktopWindowsIcon;
+      return vector_icons::kDesktopWindowsOldIcon;
     case RequestType::kMicStream:
-      return vector_icons::kMicChromeRefreshIcon;
+      return vector_icons::kMicChromeRefreshOldIcon;
     case RequestType::kMidiSysex:
-      return vector_icons::kMidiChromeRefreshIcon;
+      return vector_icons::kMidiChromeRefreshOldIcon;
     case RequestType::kMultipleDownloads:
-      return vector_icons::kFileDownloadChromeRefreshIcon;
+      return vector_icons::kFileDownloadChromeRefreshOldIcon;
     case RequestType::kNotifications:
-      return vector_icons::kNotificationsChromeRefreshIcon;
+      return vector_icons::kNotificationsChromeRefreshOldIcon;
     case RequestType::kPointerLock:
-      return vector_icons::kPointerLockIcon;
+      return vector_icons::kPointerLockOldIcon;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case RequestType::kProtectedMediaIdentifier:
       // This icon is provided by ChromePermissionsClient::GetOverrideIconId.
       NOTREACHED();
 #endif
     case RequestType::kRegisterProtocolHandler:
-      return vector_icons::kProtocolHandlerIcon;
+      return vector_icons::kProtocolHandlerOldIcon;
     case RequestType::kSensors:
-      return vector_icons::kSensorsChromeRefreshIcon;
+      return vector_icons::kSensorsChromeRefreshOldIcon;
 #if BUILDFLAG(IS_CHROMEOS)
     case RequestType::kSmartCard:
-      return vector_icons::kSmartCardReaderIcon;
+      return vector_icons::kSmartCardReaderOldIcon;
 #endif
     case RequestType::kWebAppInstallation:
-      return vector_icons::kInstallDesktopIcon;
+      return vector_icons::kInstallDesktopOldIcon;
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     case RequestType::kWebPrinting:
-      return vector_icons::kPrinterIcon;
+      return vector_icons::kPrinterOldIcon;
 #endif
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
-      return vector_icons::kStorageAccessIcon;
+      return vector_icons::kStorageAccessOldIcon;
     case RequestType::kWindowManagement:
-      return vector_icons::kSelectWindowChromeRefreshIcon;
+      return vector_icons::kSelectWindowChromeRefreshOldIcon;
     case RequestType::kFileSystemAccess:
-      return vector_icons::kFolderIcon;
+      return vector_icons::kFolderOldIcon;
     case RequestType::kIdentityProvider:
       // TODO(crbug.com/40252825): provide a dedicated icon.
-      return vector_icons::kFolderIcon;
+      return vector_icons::kFolderOldIcon;
   }
   NOTREACHED();
 }
@@ -156,41 +156,41 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
 const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
   switch (type) {
     case RequestType::kGeolocation:
-      return vector_icons::kLocationOffChromeRefreshIcon;
+      return vector_icons::kLocationOffChromeRefreshOldIcon;
     case RequestType::kNotifications:
-      return vector_icons::kNotificationsOffChromeRefreshIcon;
+      return vector_icons::kNotificationsOffChromeRefreshOldIcon;
     case RequestType::kArSession:
     case RequestType::kVrSession:
-      return vector_icons::kVrHeadsetOffChromeRefreshIcon;
+      return vector_icons::kVrHeadsetOffChromeRefreshOldIcon;
     case RequestType::kCameraStream:
-      return vector_icons::kVideocamOffChromeRefreshIcon;
+      return vector_icons::kVideocamOffChromeRefreshOldIcon;
     case RequestType::kCapturedSurfaceControl:
-      return vector_icons::kTouchpadMouseOffIcon;
+      return vector_icons::kTouchpadMouseOffOldIcon;
     case RequestType::kClipboard:
-      return vector_icons::kContentPasteOffIcon;
+      return vector_icons::kContentPasteOffOldIcon;
     case RequestType::kHandTracking:
-      return vector_icons::kHandGestureOffIcon;
+      return vector_icons::kHandGestureOffOldIcon;
     case RequestType::kIdleDetection:
-      return vector_icons::kDevicesOffIcon;
+      return vector_icons::kDevicesOffOldIcon;
     case RequestType::kLocalNetwork:
-      return vector_icons::kRouterOffIcon;
+      return vector_icons::kRouterOffOldIcon;
     case RequestType::kLoopbackNetwork:
-      return vector_icons::kDesktopAccessDisabledIcon;
+      return vector_icons::kDesktopAccessDisabledOldIcon;
     case RequestType::kMicStream:
-      return vector_icons::kMicOffChromeRefreshIcon;
+      return vector_icons::kMicOffChromeRefreshOldIcon;
     case RequestType::kMidiSysex:
-      return vector_icons::kMidiOffChromeRefreshIcon;
+      return vector_icons::kMidiOffChromeRefreshOldIcon;
     case RequestType::kSensors:
-      return vector_icons::kSensorsOffChromeRefreshIcon;
+      return vector_icons::kSensorsOffChromeRefreshOldIcon;
     case RequestType::kStorageAccess:
-      return vector_icons::kStorageAccessOffIcon;
+      return vector_icons::kStorageAccessOffOldIcon;
     case RequestType::kIdentityProvider:
       // TODO(crbug.com/40252825): use a dedicated icon
       return gfx::VectorIcon::EmptyIcon();
     case RequestType::kKeyboardLock:
-      return vector_icons::kKeyboardLockOffIcon;
+      return vector_icons::kKeyboardLockOffOldIcon;
     case RequestType::kPointerLock:
-      return vector_icons::kPointerLockOffIcon;
+      return vector_icons::kPointerLockOffOldIcon;
     case RequestType::kWebAppInstallation:
       return vector_icons::kInstallDesktopOffIcon;
     default:

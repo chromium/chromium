@@ -1050,7 +1050,7 @@ TEST_F(VideoOverlayWindowViewsTest, DisplaysFavicon) {
     ui::ImageModel image_model = favicon_view->GetImageModel();
     EXPECT_TRUE(image_model.IsVectorIcon());
     EXPECT_EQ(image_model.GetVectorIcon().vector_icon(),
-              &vector_icons::kGlobeIcon);
+              &vector_icons::kGlobeOldIcon);
   }
 
   // Setting the favicon should use that instead.
@@ -1079,7 +1079,7 @@ TEST_F(VideoOverlayWindowViewsTest, DisplaysFavicon) {
     ui::ImageModel image_model = favicon_view->GetImageModel();
     EXPECT_TRUE(image_model.IsVectorIcon());
     EXPECT_EQ(image_model.GetVectorIcon().vector_icon(),
-              &vector_icons::kGlobeIcon);
+              &vector_icons::kGlobeOldIcon);
   }
 }
 

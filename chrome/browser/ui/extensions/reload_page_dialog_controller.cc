@@ -176,7 +176,7 @@ void ReloadPageDialogController::Show() {
       // For multiple extensions, set the icon to the extensions puzzle icon.
       message_->SetIcon(
           gfx::Image(
-              ui::ImageModel::FromVectorIcon(vector_icons::kExtensionIcon,
+              ui::ImageModel::FromVectorIcon(vector_icons::kExtensionOldIcon,
                                              ui::kColorIcon, kIconSize)
                   .Rasterize(&web_contents_->GetColorProvider()))
               .AsBitmap());

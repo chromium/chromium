@@ -318,7 +318,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByPolicy) {
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
-               vector_icons::kBusinessChromeRefreshIcon.name);
+               vector_icons::kBusinessChromeRefreshOldIcon.name);
   EXPECT_EQ(
       third_party_cookies_enforced_icon()->GetTooltipText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY));
@@ -355,7 +355,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByPolicy) {
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
-               vector_icons::kBusinessChromeRefreshIcon.name);
+               vector_icons::kBusinessChromeRefreshOldIcon.name);
   EXPECT_EQ(
       third_party_cookies_enforced_icon()->GetTooltipText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY));
@@ -391,7 +391,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByExtension) {
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
-               vector_icons::kExtensionChromeRefreshIcon.name);
+               vector_icons::kExtensionChromeRefreshOldIcon.name);
   EXPECT_EQ(
       third_party_cookies_enforced_icon()->GetTooltipText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION));
@@ -428,7 +428,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByExtension) {
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
-               vector_icons::kExtensionChromeRefreshIcon.name);
+               vector_icons::kExtensionChromeRefreshOldIcon.name);
   EXPECT_EQ(
       third_party_cookies_enforced_icon()->GetTooltipText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION));
@@ -466,7 +466,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedBySetting) {
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
-               vector_icons::kSettingsChromeRefreshIcon.name);
+               vector_icons::kSettingsChromeRefreshOldIcon.name);
   EXPECT_EQ(
       third_party_cookies_enforced_icon()->GetTooltipText(),
       l10n_util::GetStringUTF16(
@@ -504,7 +504,7 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedBySetting) {
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
-               vector_icons::kSettingsChromeRefreshIcon.name);
+               vector_icons::kSettingsChromeRefreshOldIcon.name);
   EXPECT_EQ(
       third_party_cookies_enforced_icon()->GetTooltipText(),
       l10n_util::GetStringUTF16(

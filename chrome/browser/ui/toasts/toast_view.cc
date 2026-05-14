@@ -226,7 +226,7 @@ void ToastView::Init() {
         close_button_callback_.Then(
             base::BindRepeating(&ToastView::Close, base::Unretained(this),
                                 ToastCloseReason::kCloseButton)),
-        vector_icons::kCloseChromeRefreshIcon,
+        vector_icons::kCloseChromeRefreshOldIcon,
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
         ui::kColorToastForeground, ui::kColorIconDisabled,
         ui::kColorToastForeground));

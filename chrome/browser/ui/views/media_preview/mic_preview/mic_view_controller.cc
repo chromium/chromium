@@ -22,7 +22,7 @@ namespace {
 
 const ui::ImageModel GetMicImageModel() {
   const int icon_size = 20;
-  const auto& icon = vector_icons::kMicChromeRefreshIcon;
+  const auto& icon = vector_icons::kMicChromeRefreshOldIcon;
   return ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, icon_size);
 }
 

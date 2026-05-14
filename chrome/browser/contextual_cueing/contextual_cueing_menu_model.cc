@@ -46,7 +46,7 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
   // Add menu items.
   AddItemWithStringIdAndIcon(
       kContextualCueingDismissCommand, IDS_CONTEXTUAL_CUEING_MENU_DISMISS,
-      ui::ImageModel::FromVectorIcon(vector_icons::kCloseIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseOldIcon,
                                      ui::kColorMenuIcon, 16));
   AddItemWithStringIdAndIcon(
       kContextualCueingEditPromptCommand,
@@ -57,7 +57,7 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
   AddItemWithStringIdAndIcon(
       kContextualCueingOpenSettingsCommand,
       IDS_CONTEXTUAL_CUEING_MENU_SUGGESTION_SETTINGS,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
                                      ui::kColorMenuIcon, 16));
 }
 

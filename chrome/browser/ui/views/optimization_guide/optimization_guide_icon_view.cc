@@ -55,7 +55,7 @@ void OptimizationGuideIconView::OnExecuting(
 }
 
 const gfx::VectorIcon& OptimizationGuideIconView::GetVectorIcon() const {
-  return vector_icons::kGlobeIcon;
+  return vector_icons::kGlobeOldIcon;
 }
 
 void OptimizationGuideIconView::UpdateImpl() {

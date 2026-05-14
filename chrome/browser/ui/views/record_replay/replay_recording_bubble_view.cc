@@ -143,7 +143,7 @@ void ReplayRecordingBubbleView::AddRecentTasks() {
     auto* icon =
         task_container->AddChildView(std::make_unique<views::ImageView>());
     icon->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kScreenRecordIcon, ui::kColorIcon, /*icon_size=*/32));
+        vector_icons::kScreenRecordOldIcon, ui::kColorIcon, /*icon_size=*/32));
 
     auto* task_text_container =
         task_container->AddChildView(std::make_unique<views::View>());

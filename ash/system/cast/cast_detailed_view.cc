@@ -218,13 +218,13 @@ void CastDetailedView::RemoveAllViews() {
 void CastDetailedView::AddAccessCodeCastButton(
     views::View* receiver_list_view) {
   add_access_code_device_ =
-      AddScrollListItem(receiver_list_view, vector_icons::kKeyboardIcon,
+      AddScrollListItem(receiver_list_view, vector_icons::kKeyboardOldIcon,
                         l10n_util::GetStringUTF16(
                             IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT));
   // `views::ImageView` does not support changing the color, so set the
   // image with an updated `ui::ImageModel`.
   add_access_code_device_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kKeyboardIcon, cros_tokens::kCrosSysPrimary));
+      vector_icons::kKeyboardOldIcon, cros_tokens::kCrosSysPrimary));
   add_access_code_device_->text_label()->SetEnabledColor(
       cros_tokens::kCrosSysPrimary);
 }

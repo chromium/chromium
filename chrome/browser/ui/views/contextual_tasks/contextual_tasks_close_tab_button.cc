@@ -37,7 +37,7 @@ ContextualTasksCloseTabButton::ContextualTasksCloseTabButton(
       IDS_CONTEXTUAL_TASKS_TOOLBAR_CLOSE_TAB_TOOL_TIP);
   GetViewAccessibility().SetName(button_tooltip);
   SetTooltipText(button_tooltip);
-  SetVectorIcon(vector_icons::kCloseIcon);
+  SetVectorIcon(vector_icons::kCloseOldIcon);
   SetDefaultBackgroundColorId(kColorToolbarCloseButtonBackgroundDefault);
 
   ContextualTasksCloseButtonController* const controller =

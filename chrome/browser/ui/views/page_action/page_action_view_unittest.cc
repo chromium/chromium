@@ -99,8 +99,9 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     // Use any arbitrary vector icon.
-    auto image = ui::ImageModel::FromVectorIcon(
-        vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
+    auto image =
+        ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowOldIcon,
+                                       ui::kColorSysPrimary, kDefaultIconSize);
     action_item_ = actions::ActionManager::Get().AddAction(
         actions::ActionItem::Builder()
             .SetActionId(kTestPageActionId)
@@ -222,7 +223,7 @@ class PageActionViewTest : public ChromeViewsTestBase {
   // Mock model and associated placeholder data.
   testing::NiceMock<MockPageActionModel> mock_model_;
   const ui::ImageModel mock_image_ =
-      ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowOldIcon,
                                      ui::kColorSysPrimary,
                                      kDefaultIconSize);
   std::u16string mock_string_ = kTestText;
@@ -418,7 +419,7 @@ TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
   // If the default size is the intended icon size, this test is useless.
   const int kOriginalIconSize = view_icon_size() + 1;
   auto icon_image = ui::ImageModel::FromVectorIcon(
-      vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kOriginalIconSize);
+      vector_icons::kBackArrowOldIcon, ui::kColorSysPrimary, kOriginalIconSize);
   EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(icon_image));
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
@@ -471,7 +472,7 @@ TEST_F(PageActionViewTest, ChipCornerRadiiConsistentForVectorAndBitmapIcons) {
       ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
 
   const ui::ImageModel vector_image = ui::ImageModel::FromVectorIcon(
-      vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
+      vector_icons::kBackArrowOldIcon, ui::kColorSysPrimary, kDefaultIconSize);
 
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(true));

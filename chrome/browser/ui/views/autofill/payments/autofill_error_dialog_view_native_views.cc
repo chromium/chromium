@@ -72,8 +72,8 @@ views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
 
   auto* icon = AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
-          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon))));
+          vector_icons::kErrorOldIcon, ui::kColorAlertHighSeverity,
+          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorOldIcon))));
 
   if (controller_) {
     auto* label = AddChildView(std::make_unique<views::Label>(

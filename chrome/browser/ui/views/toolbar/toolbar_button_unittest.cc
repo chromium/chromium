@@ -281,7 +281,7 @@ TEST_F(ToolbarButtonActionViewInterfaceTest, TestActionChanged) {
       actions::ActionItem::Builder()
           .SetActionId(0)
           .SetEnabled(false)
-          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kErrorIcon))
+          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kErrorOldIcon))
           .Build();
   toolbar_button->GetActionViewInterface()->ActionItemChangedImpl(
       action_item.get());

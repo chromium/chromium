@@ -252,7 +252,7 @@ const gfx::VectorIcon& UpdateNotificationController::GetIcon() const {
   if (model_->relaunch_notification_state().requirement_type ==
       RelaunchNotificationState::kNone)
     return kSystemMenuUpdateIcon;
-  return vector_icons::kBusinessIcon;
+  return vector_icons::kBusinessOldIcon;
 }
 
 message_center::SystemNotificationWarningLevel

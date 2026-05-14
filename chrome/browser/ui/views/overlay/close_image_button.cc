@@ -27,7 +27,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
 
-  auto* icon = &vector_icons::kCloseChromeRefreshIcon;
+  auto* icon = &vector_icons::kCloseChromeRefreshOldIcon;
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(*icon, kColorPipWindowForeground,
                                                kCloseButtonIconSize));

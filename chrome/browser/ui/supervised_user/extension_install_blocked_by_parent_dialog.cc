@@ -55,8 +55,8 @@ void ShowExtensionInstallBlockedByParentDialog(
   auto dialog_model =
       ui::DialogModel::Builder()
           .SetTitle(GetTitle(action, extension_type))
-          .SetIcon(ui::ImageModel::FromVectorIcon(vector_icons::kFamilyLinkIcon,
-                                                  ui::kColorIcon))
+          .SetIcon(ui::ImageModel::FromVectorIcon(
+              vector_icons::kFamilyLinkOldIcon, ui::kColorIcon))
           .AddParagraph(
               ui::DialogModelLabel(l10n_util::GetStringUTF16(
                   IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE)),

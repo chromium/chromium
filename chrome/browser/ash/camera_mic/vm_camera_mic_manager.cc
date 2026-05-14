@@ -308,7 +308,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     const gfx::VectorIcon* source_icon = nullptr;
     int message_id;
     if (type[static_cast<size_t>(DeviceType::kCamera)]) {
-      source_icon = &::vector_icons::kVideocamIcon;
+      source_icon = &::vector_icons::kVideocamOldIcon;
       if (type[static_cast<size_t>(DeviceType::kMic)]) {
         message_id = IDS_APP_USING_CAMERA_MIC_NOTIFICATION_MESSAGE;
       } else {
@@ -316,7 +316,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
       }
     } else {
       DCHECK_EQ(type, kMicNotification);
-      source_icon = &::vector_icons::kMicIcon;
+      source_icon = &::vector_icons::kMicOldIcon;
       message_id = IDS_APP_USING_MIC_NOTIFICATION_MESSAGE;
     }
 

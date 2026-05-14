@@ -116,7 +116,7 @@ void ShowSignInNotification(
       rich_notification_data.should_make_spoken_feedback_for_popup_updates =
           false;
       rich_notification_data.vector_small_image =
-          &vector_icons::kNotificationDownloadIcon;
+          &vector_icons::kNotificationDownloadOldIcon;
       // TODO(b/356326503): Fix the strings.
       auto notification_id = base::StrCat(
           {kDownloadSignInNotificationPrefix, base::NumberToString(id)});
@@ -252,7 +252,7 @@ void ShowSignInNotification(
           base::MakeRefCounted<SignInNotificationDelegate>(
               profile, kMigrationSignInNotification,
               std::move(signin_callback)),
-          vector_icons::kBusinessIcon,
+          vector_icons::kBusinessOldIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
       notification->set_fullscreen_visibility(

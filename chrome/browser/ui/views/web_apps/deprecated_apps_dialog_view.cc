@@ -59,8 +59,9 @@ class DeprecatedAppsDialogView::DeprecatedAppsTableModel
           extensions::ExtensionRegistry::Get(browser_context)
               ->GetInstalledExtension(app_id);
       DCHECK(extension);
-      const gfx::ImageSkia default_icon = gfx::CreateVectorIcon(
-          vector_icons::kExtensionIcon, gfx::kFaviconSize, gfx::kGoogleGrey700);
+      const gfx::ImageSkia default_icon =
+          gfx::CreateVectorIcon(vector_icons::kExtensionOldIcon,
+                                gfx::kFaviconSize, gfx::kGoogleGrey700);
 
       auto app_icon = std::make_unique<extensions::IconImage>(
           browser_context, extension,

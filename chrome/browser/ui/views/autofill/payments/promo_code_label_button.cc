@@ -33,16 +33,16 @@ PromoCodeLabelButton::PromoCodeLabelButton(PressedCallback callback,
                kColorPaymentsPromoCodeForegroundPressed);
   SetImageModel(ButtonState::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
-                    vector_icons::kContentCopyIcon,
+                    vector_icons::kContentCopyOldIcon,
                     kColorPaymentsPromoCodeForeground, kContentCopyIconSizePx));
   SetImageModel(
       ButtonState::STATE_HOVERED,
-      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyOldIcon,
                                      kColorPaymentsPromoCodeForegroundHovered,
                                      kContentCopyIconSizePx));
   SetImageModel(
       ButtonState::STATE_PRESSED,
-      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyOldIcon,
                                      kColorPaymentsPromoCodeForegroundPressed,
                                      kContentCopyIconSizePx));
   SetBackground(views::CreateRoundedRectBackground(

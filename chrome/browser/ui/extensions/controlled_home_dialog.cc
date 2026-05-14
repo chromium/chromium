@@ -130,7 +130,7 @@ void ShowControlledHomeDialog(
 
   if (dialog_controller->IsPolicyIndicationNeeded()) {
     dialog_builder.AddMenuItem(
-        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
                                        ui::kColorIcon, 16),
         l10n_util::GetStringUTF16(IDS_EXTENSIONS_INSTALLED_BY_ADMIN),
         base::DoNothing(),

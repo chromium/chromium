@@ -34,7 +34,7 @@ PageInfoInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& PageInfoInfoBarDelegate::GetVectorIcon() const {
-  return vector_icons::kSettingsChromeRefreshIcon;
+  return vector_icons::kSettingsChromeRefreshOldIcon;
 }
 
 std::u16string PageInfoInfoBarDelegate::GetMessageText() const {

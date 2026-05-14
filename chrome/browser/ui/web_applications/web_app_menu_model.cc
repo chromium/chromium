@@ -186,9 +186,9 @@ void WebAppMenuModel::Build() {
       container && container->HasAnyExtensions() &&
       // Extensions are not supported inside Isolated Web Apps.
       !is_isolated_web_app) {
-    AddItemWithStringIdAndVectorIcon(this, kExtensionsMenuCommandId,
-                                     IDS_SHOW_EXTENSIONS,
-                                     vector_icons::kExtensionChromeRefreshIcon);
+    AddItemWithStringIdAndVectorIcon(
+        this, kExtensionsMenuCommandId, IDS_SHOW_EXTENSIONS,
+        vector_icons::kExtensionChromeRefreshOldIcon);
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
 

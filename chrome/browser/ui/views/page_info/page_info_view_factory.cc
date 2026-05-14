@@ -242,7 +242,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
                               &PageInfoNavigationHandler::OpenMainPage,
                               base::Unretained(navigation_handler_),
                               base::DoNothing()),
-                          vector_icons::kArrowBackChromeRefreshIcon,
+                          vector_icons::kArrowBackChromeRefreshOldIcon,
                           GetIconSize()))
                       .SetID(VIEW_ID_PAGE_INFO_BACK_BUTTON)
                       .SetProperty(views::kElementIdentifierKey,
@@ -308,158 +308,164 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   const gfx::VectorIcon* icon = nullptr;
   switch (permission.type) {
     case ContentSettingsType::COOKIES:
-      icon = show_blocked_badge ? &vector_icons::kDatabaseOffIcon
-                                : &vector_icons::kDatabaseIcon;
+      icon = show_blocked_badge ? &vector_icons::kDatabaseOffOldIcon
+                                : &vector_icons::kDatabaseOldIcon;
       break;
     case ContentSettingsType::FEDERATED_IDENTITY_API:
       icon = show_blocked_badge
-                 ? &vector_icons::kAccountCircleOffChromeRefreshIcon
-                 : &vector_icons::kAccountCircleChromeRefreshIcon;
+                 ? &vector_icons::kAccountCircleOffChromeRefreshOldIcon
+                 : &vector_icons::kAccountCircleChromeRefreshOldIcon;
       break;
     case ContentSettingsType::IMAGES:
-      icon = show_blocked_badge ? &vector_icons::kPhotoOffChromeRefreshIcon
-                                : &vector_icons::kPhotoChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kPhotoOffChromeRefreshOldIcon
+                                : &vector_icons::kPhotoChromeRefreshOldIcon;
       break;
     case ContentSettingsType::JAVASCRIPT:
-      icon = show_blocked_badge ? &vector_icons::kCodeOffChromeRefreshIcon
-                                : &vector_icons::kCodeChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kCodeOffChromeRefreshOldIcon
+                                : &vector_icons::kCodeChromeRefreshOldIcon;
       break;
     case ContentSettingsType::POPUPS:
-      icon = show_blocked_badge ? &vector_icons::kLaunchOffChromeRefreshIcon
-                                : &vector_icons::kLaunchChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kLaunchOffChromeRefreshOldIcon
+                                : &vector_icons::kLaunchChromeRefreshOldIcon;
       break;
     case ContentSettingsType::GEOLOCATION:
-      icon = show_blocked_badge ? &vector_icons::kLocationOffChromeRefreshIcon
-                                : &vector_icons::kLocationOnChromeRefreshIcon;
+      icon = show_blocked_badge
+                 ? &vector_icons::kLocationOffChromeRefreshOldIcon
+                 : &vector_icons::kLocationOnChromeRefreshOldIcon;
       break;
     case ContentSettingsType::NOTIFICATIONS:
       icon = show_blocked_badge
-                 ? &vector_icons::kNotificationsOffChromeRefreshIcon
-                 : &vector_icons::kNotificationsChromeRefreshIcon;
+                 ? &vector_icons::kNotificationsOffChromeRefreshOldIcon
+                 : &vector_icons::kNotificationsChromeRefreshOldIcon;
       break;
     case ContentSettingsType::MEDIASTREAM_MIC:
-      icon = show_blocked_badge ? &vector_icons::kMicOffChromeRefreshIcon
-                                : &vector_icons::kMicChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kMicOffChromeRefreshOldIcon
+                                : &vector_icons::kMicChromeRefreshOldIcon;
       break;
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      icon = show_blocked_badge ? &vector_icons::kVideocamOffChromeRefreshIcon
-                                : &vector_icons::kVideocamChromeRefreshIcon;
+      icon = show_blocked_badge
+                 ? &vector_icons::kVideocamOffChromeRefreshOldIcon
+                 : &vector_icons::kVideocamChromeRefreshOldIcon;
       break;
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
       icon = show_blocked_badge
-                 ? &vector_icons::kFileDownloadOffChromeRefreshIcon
-                 : &vector_icons::kFileDownloadChromeRefreshIcon;
+                 ? &vector_icons::kFileDownloadOffChromeRefreshOldIcon
+                 : &vector_icons::kFileDownloadChromeRefreshOldIcon;
       break;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      icon = show_blocked_badge ? &vector_icons::kSyncSavedLocallyOffIcon
-                                : &vector_icons::kSyncSavedLocallyIcon;
+      icon = show_blocked_badge ? &vector_icons::kSyncSavedLocallyOffOldIcon
+                                : &vector_icons::kSyncSavedLocallyOldIcon;
       break;
 #endif
     case ContentSettingsType::MIDI_SYSEX:
-      icon = show_blocked_badge ? &vector_icons::kMidiOffChromeRefreshIcon
-                                : &vector_icons::kMidiChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kMidiOffChromeRefreshOldIcon
+                                : &vector_icons::kMidiChromeRefreshOldIcon;
       break;
     case ContentSettingsType::BACKGROUND_SYNC:
-      icon = show_blocked_badge ? &vector_icons::kSyncOffChromeRefreshIcon
-                                : &vector_icons::kSyncChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kSyncOffChromeRefreshOldIcon
+                                : &vector_icons::kSyncChromeRefreshOldIcon;
       break;
     case ContentSettingsType::ADS:
-      icon = show_blocked_badge ? &vector_icons::kAdsOffChromeRefreshIcon
-                                : &vector_icons::kAdsChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kAdsOffChromeRefreshOldIcon
+                                : &vector_icons::kAdsChromeRefreshOldIcon;
       break;
     case ContentSettingsType::SOUND:
-      icon = show_blocked_badge ? &vector_icons::kVolumeOffChromeRefreshIcon
-                                : &vector_icons::kVolumeUpChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kVolumeOffChromeRefreshOldIcon
+                                : &vector_icons::kVolumeUpChromeRefreshOldIcon;
       break;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      icon = show_blocked_badge ? &vector_icons::kContentPasteOffIcon
-                                : &vector_icons::kContentPasteIcon;
+      icon = show_blocked_badge ? &vector_icons::kContentPasteOffOldIcon
+                                : &vector_icons::kContentPasteOldIcon;
       break;
     case ContentSettingsType::SENSORS:
-      icon = show_blocked_badge ? &vector_icons::kSensorsOffChromeRefreshIcon
-                                : &vector_icons::kSensorsChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kSensorsOffChromeRefreshOldIcon
+                                : &vector_icons::kSensorsChromeRefreshOldIcon;
       break;
     case ContentSettingsType::USB_GUARD:
-      icon = show_blocked_badge ? &vector_icons::kUsbOffChromeRefreshIcon
-                                : &vector_icons::kUsbChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kUsbOffChromeRefreshOldIcon
+                                : &vector_icons::kUsbChromeRefreshOldIcon;
       break;
     case ContentSettingsType::SERIAL_GUARD:
-      icon = show_blocked_badge ? &vector_icons::kSerialPortOffChromeRefreshIcon
-                                : &vector_icons::kSerialPortChromeRefreshIcon;
+      icon = show_blocked_badge
+                 ? &vector_icons::kSerialPortOffChromeRefreshOldIcon
+                 : &vector_icons::kSerialPortChromeRefreshOldIcon;
       break;
     case ContentSettingsType::BLUETOOTH_GUARD:
-      icon = show_blocked_badge ? &vector_icons::kBluetoothOffChromeRefreshIcon
-                                : &vector_icons::kBluetoothChromeRefreshIcon;
+      icon = show_blocked_badge
+                 ? &vector_icons::kBluetoothOffChromeRefreshOldIcon
+                 : &vector_icons::kBluetoothChromeRefreshOldIcon;
       break;
     case ContentSettingsType::BLUETOOTH_SCANNING:
       icon = show_blocked_badge
-                 ? &vector_icons::kBluetoothOffChromeRefreshIcon
-                 : &vector_icons::kBluetoothScanningChromeRefreshIcon;
+                 ? &vector_icons::kBluetoothOffChromeRefreshOldIcon
+                 : &vector_icons::kBluetoothScanningChromeRefreshOldIcon;
       break;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       icon = show_blocked_badge ? &kFileSaveOffChromeRefreshOldIcon
                                 : &kFileSaveChromeRefreshOldIcon;
       break;
     case ContentSettingsType::VR:
-      icon = show_blocked_badge ? &vector_icons::kVrHeadsetOffChromeRefreshIcon
-                                : &vector_icons::kVrHeadsetChromeRefreshIcon;
+      icon = show_blocked_badge
+                 ? &vector_icons::kVrHeadsetOffChromeRefreshOldIcon
+                 : &vector_icons::kVrHeadsetChromeRefreshOldIcon;
       break;
     case ContentSettingsType::HAND_TRACKING:
-      icon = show_blocked_badge ? &vector_icons::kHandGestureOffIcon
-                                : &vector_icons::kHandGestureIcon;
+      icon = show_blocked_badge ? &vector_icons::kHandGestureOffOldIcon
+                                : &vector_icons::kHandGestureOldIcon;
       break;
     case ContentSettingsType::AR:
-      icon = show_blocked_badge ? &vector_icons::kViewInArOffChromeRefreshIcon
-                                : &vector_icons::kViewInArChromeRefreshIcon;
+      icon = show_blocked_badge
+                 ? &vector_icons::kViewInArOffChromeRefreshOldIcon
+                 : &vector_icons::kViewInArChromeRefreshOldIcon;
       break;
     case ContentSettingsType::WINDOW_MANAGEMENT:
       icon = show_blocked_badge
-                 ? &vector_icons::kSelectWindowOffChromeRefreshIcon
-                 : &vector_icons::kSelectWindowChromeRefreshIcon;
+                 ? &vector_icons::kSelectWindowOffChromeRefreshOldIcon
+                 : &vector_icons::kSelectWindowChromeRefreshOldIcon;
       break;
     case ContentSettingsType::LOCAL_FONTS:
       icon = show_blocked_badge
-                 ? &vector_icons::kFontDownloadOffChromeRefreshIcon
-                 : &vector_icons::kFontDownloadChromeRefreshIcon;
+                 ? &vector_icons::kFontDownloadOffChromeRefreshOldIcon
+                 : &vector_icons::kFontDownloadChromeRefreshOldIcon;
       break;
     case ContentSettingsType::HID_GUARD:
       icon = show_blocked_badge
-                 ? &vector_icons::kVideogameAssetOffChromeRefreshIcon
-                 : &vector_icons::kVideogameAssetChromeRefreshIcon;
+                 ? &vector_icons::kVideogameAssetOffChromeRefreshOldIcon
+                 : &vector_icons::kVideogameAssetChromeRefreshOldIcon;
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon = show_blocked_badge ? &vector_icons::kDevicesOffIcon
-                                : &vector_icons::kDevicesIcon;
+      icon = show_blocked_badge ? &vector_icons::kDevicesOffOldIcon
+                                : &vector_icons::kDevicesOldIcon;
       break;
     case ContentSettingsType::STORAGE_ACCESS:
-      icon = show_blocked_badge ? &vector_icons::kStorageAccessOffIcon
-                                : &vector_icons::kStorageAccessIcon;
+      icon = show_blocked_badge ? &vector_icons::kStorageAccessOffOldIcon
+                                : &vector_icons::kStorageAccessOldIcon;
       break;
     case ContentSettingsType::KEYBOARD_LOCK:
-      icon = show_blocked_badge ? &vector_icons::kKeyboardLockOffIcon
-                                : &vector_icons::kKeyboardLockIcon;
+      icon = show_blocked_badge ? &vector_icons::kKeyboardLockOffOldIcon
+                                : &vector_icons::kKeyboardLockOldIcon;
       break;
     case ContentSettingsType::POINTER_LOCK:
-      icon = show_blocked_badge ? &vector_icons::kPointerLockOffIcon
-                                : &vector_icons::kPointerLockIcon;
+      icon = show_blocked_badge ? &vector_icons::kPointerLockOffOldIcon
+                                : &vector_icons::kPointerLockOldIcon;
       break;
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
-      icon = show_blocked_badge ? &vector_icons::kTouchpadMouseOffIcon
-                                : &vector_icons::kTouchpadMouseIcon;
+      icon = show_blocked_badge ? &vector_icons::kTouchpadMouseOffOldIcon
+                                : &vector_icons::kTouchpadMouseOldIcon;
       break;
     case ContentSettingsType::WEB_APP_INSTALLATION:
       icon = show_blocked_badge ? &vector_icons::kInstallDesktopOffIcon
-                                : &vector_icons::kInstallDesktopIcon;
+                                : &vector_icons::kInstallDesktopOldIcon;
       break;
     case ContentSettingsType::LOCAL_NETWORK:
-      icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
-                                : &vector_icons::kRouterIcon;
+      icon = show_blocked_badge ? &vector_icons::kRouterOffOldIcon
+                                : &vector_icons::kRouterOldIcon;
       break;
     case ContentSettingsType::LOOPBACK_NETWORK:
-      icon = show_blocked_badge ? &vector_icons::kDesktopAccessDisabledIcon
-                                : &vector_icons::kDesktopWindowsIcon;
+      icon = show_blocked_badge ? &vector_icons::kDesktopAccessDisabledOldIcon
+                                : &vector_icons::kDesktopWindowsOldIcon;
       break;
     default:
       break;
@@ -484,35 +490,35 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   icon = &gfx::VectorIcon::EmptyIcon();
   switch (permission.type) {
     case ContentSettingsType::COOKIES:
-      icon = &vector_icons::kDatabaseIcon;
+      icon = &vector_icons::kDatabaseOldIcon;
       break;
     case ContentSettingsType::FEDERATED_IDENTITY_API:
-      icon = &vector_icons::kAccountCircleIcon;
+      icon = &vector_icons::kAccountCircleOldIcon;
       break;
     case ContentSettingsType::IMAGES:
-      icon = &vector_icons::kPhotoIcon;
+      icon = &vector_icons::kPhotoOldIcon;
       break;
     case ContentSettingsType::JAVASCRIPT:
-      icon = &vector_icons::kCodeIcon;
+      icon = &vector_icons::kCodeOldIcon;
       break;
     case ContentSettingsType::POPUPS:
-      icon = &vector_icons::kLaunchIcon;
+      icon = &vector_icons::kLaunchOldIcon;
       break;
     case ContentSettingsType::GEOLOCATION:
-      icon = &vector_icons::kLocationOnIcon;
+      icon = &vector_icons::kLocationOnOldIcon;
       break;
     case ContentSettingsType::NOTIFICATIONS:
-      icon = &vector_icons::kNotificationsIcon;
+      icon = &vector_icons::kNotificationsOldIcon;
       break;
     case ContentSettingsType::MEDIASTREAM_MIC:
-      icon = &vector_icons::kMicIcon;
+      icon = &vector_icons::kMicOldIcon;
       break;
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      icon = &vector_icons::kVideocamIcon;
+      icon = &vector_icons::kVideocamOldIcon;
       break;
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
-      icon = &vector_icons::kFileDownloadIcon;
+      icon = &vector_icons::kFileDownloadOldIcon;
       break;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
@@ -520,77 +526,77 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
 #endif
     case ContentSettingsType::MIDI_SYSEX:
-      icon = &vector_icons::kMidiIcon;
+      icon = &vector_icons::kMidiOldIcon;
       break;
     case ContentSettingsType::BACKGROUND_SYNC:
-      icon = &vector_icons::kSyncIcon;
+      icon = &vector_icons::kSyncOldIcon;
       break;
     case ContentSettingsType::ADS:
-      icon = &vector_icons::kAdsIcon;
+      icon = &vector_icons::kAdsOldIcon;
       break;
     case ContentSettingsType::SOUND:
-      icon = &vector_icons::kVolumeUpIcon;
+      icon = &vector_icons::kVolumeUpOldIcon;
       break;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      icon = &vector_icons::kPageInfoContentPasteIcon;
+      icon = &vector_icons::kPageInfoContentPasteOldIcon;
       break;
     case ContentSettingsType::SENSORS:
-      icon = &vector_icons::kSensorsIcon;
+      icon = &vector_icons::kSensorsOldIcon;
       break;
     case ContentSettingsType::USB_GUARD:
-      icon = &vector_icons::kUsbIcon;
+      icon = &vector_icons::kUsbOldIcon;
       break;
     case ContentSettingsType::SERIAL_GUARD:
-      icon = &vector_icons::kSerialPortIcon;
+      icon = &vector_icons::kSerialPortOldIcon;
       break;
     case ContentSettingsType::BLUETOOTH_GUARD:
-      icon = &vector_icons::kBluetoothIcon;
+      icon = &vector_icons::kBluetoothOldIcon;
       break;
     case ContentSettingsType::BLUETOOTH_SCANNING:
-      icon = &vector_icons::kBluetoothScanningIcon;
+      icon = &vector_icons::kBluetoothScanningOldIcon;
       break;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       icon = &kFileSaveOldIcon;
       break;
     case ContentSettingsType::VR:
     case ContentSettingsType::AR:
-      icon = &vector_icons::kVrHeadsetIcon;
+      icon = &vector_icons::kVrHeadsetOldIcon;
       break;
     case ContentSettingsType::HAND_TRACKING:
-      icon = &vector_icons::kHandGestureIcon;
+      icon = &vector_icons::kHandGestureOldIcon;
       break;
     case ContentSettingsType::WINDOW_MANAGEMENT:
-      icon = &vector_icons::kSelectWindowIcon;
+      icon = &vector_icons::kSelectWindowOldIcon;
       break;
     case ContentSettingsType::LOCAL_FONTS:
-      icon = &vector_icons::kFontDownloadIcon;
+      icon = &vector_icons::kFontDownloadOldIcon;
       break;
     case ContentSettingsType::HID_GUARD:
-      icon = &vector_icons::kVideogameAssetIcon;
+      icon = &vector_icons::kVideogameAssetOldIcon;
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon = &vector_icons::kDevicesIcon;
+      icon = &vector_icons::kDevicesOldIcon;
       break;
     case ContentSettingsType::STORAGE_ACCESS:
-      icon = &vector_icons::kStorageAccessIcon;
+      icon = &vector_icons::kStorageAccessOldIcon;
       break;
     case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
-      icon = &vector_icons::kPictureInPictureIcon;
+      icon = &vector_icons::kPictureInPictureOldIcon;
       break;
     case ContentSettingsType::AUTOMATIC_FULLSCREEN:
       icon = &kFullscreenOldIcon;
       break;
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
-      icon = &vector_icons::kTouchpadMouseIcon;
+      icon = &vector_icons::kTouchpadMouseOldIcon;
       break;
     case ContentSettingsType::KEYBOARD_LOCK:
-      icon = &vector_icons::kKeyboardLockIcon;
+      icon = &vector_icons::kKeyboardLockOldIcon;
       break;
     case ContentSettingsType::POINTER_LOCK:
-      icon = &vector_icons::kPointerLockIcon;
+      icon = &vector_icons::kPointerLockOldIcon;
       break;
     case ContentSettingsType::WEB_PRINTING:
-      icon = &vector_icons::kPrinterIcon;
+      icon = &vector_icons::kPrinterOldIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
@@ -614,19 +620,19 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
   const gfx::VectorIcon* icon = &gfx::VectorIcon::EmptyIcon();
   switch (object.ui_info->content_settings_type) {
     case ContentSettingsType::USB_CHOOSER_DATA:
-      icon = &vector_icons::kUsbIcon;
+      icon = &vector_icons::kUsbOldIcon;
       break;
     case ContentSettingsType::SERIAL_CHOOSER_DATA:
-      icon = &vector_icons::kSerialPortIcon;
+      icon = &vector_icons::kSerialPortOldIcon;
       break;
     case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-      icon = &vector_icons::kBluetoothIcon;
+      icon = &vector_icons::kBluetoothOldIcon;
       break;
     case ContentSettingsType::HID_CHOOSER_DATA:
-      icon = &vector_icons::kVideogameAssetIcon;
+      icon = &vector_icons::kVideogameAssetOldIcon;
       break;
     case ContentSettingsType::SMART_CARD_DATA:
-      icon = &vector_icons::kSmartCardReaderIcon;
+      icon = &vector_icons::kSmartCardReaderOldIcon;
       break;
     default:
       // All other content settings types do not represent chosen object
@@ -641,27 +647,28 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetSiteSettingsIcon() {
-  return GetImageModel(vector_icons::kSettingsChromeRefreshIcon);
+  return GetImageModel(vector_icons::kSettingsChromeRefreshOldIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kLaunchChromeRefreshIcon,
-                                        ui::kColorIcon, GetIconSize());
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kLaunchChromeRefreshOldIcon, ui::kColorIcon, GetIconSize());
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
-  return GetImageModel(vector_icons::kHttpsValidIcon);
+  return GetImageModel(vector_icons::kHttpsValidOldIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
   // GetIconSize() does not work for subpage icons because the default size of
-  // kSubmenuArrowIcon is 8 rather than 16.
+  // kSubmenuArrowOldIcon is 8 rather than 16.
   constexpr int kIconSize = 20;
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowChromeRefreshIcon, ui::kColorIcon, kIconSize);
+      vector_icons::kSubmenuArrowChromeRefreshOldIcon, ui::kColorIcon,
+      kIconSize);
 }
 
 // static

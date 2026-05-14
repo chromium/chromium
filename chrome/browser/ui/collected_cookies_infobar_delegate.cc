@@ -33,7 +33,7 @@ CollectedCookiesInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& CollectedCookiesInfoBarDelegate::GetVectorIcon() const {
-  return vector_icons::kSettingsChromeRefreshIcon;
+  return vector_icons::kSettingsChromeRefreshOldIcon;
 }
 
 std::u16string CollectedCookiesInfoBarDelegate::GetMessageText() const {

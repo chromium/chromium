@@ -38,7 +38,7 @@ ManagePasswordsListView::ManagePasswordsListView(
     ui::ImageModel store_icon;
     if (is_account_storage_available && !password_form->IsUsingAccountStore()) {
       store_icon = ui::ImageModel::FromVectorIcon(
-          vector_icons::kNotUploadedIcon, ui::kColorIcon, gfx::kFaviconSize);
+          vector_icons::kNotUploadedOldIcon, ui::kColorIcon, gfx::kFaviconSize);
     }
 
     std::unique_ptr<RichHoverButton> list_item =
@@ -63,7 +63,7 @@ ManagePasswordsListView::ManagePasswordsListView(
             /*title_text=*/GetDisplayUsername(*password_form),
             /*subtitle_text=*/std::u16string(),
             /*action_image_icon=*/
-            ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
+            ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowOldIcon,
                                            ui::kColorIcon),
             /*state_icon=*/store_icon);
 
@@ -87,7 +87,7 @@ ManagePasswordsListView::ManagePasswordsListView(
       AddChildView(std::make_unique<RichHoverButton>(
           std::move(on_navigate_to_settings_clicked_callback),
           /*main_image_icon=*/
-          ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+          ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
                                          ui::kColorIcon),
           /*title_text=*/
           l10n_util::GetStringUTF16(
@@ -95,7 +95,7 @@ ManagePasswordsListView::ManagePasswordsListView(
           /*subtitle_text=*/std::u16string(),
           /*action_image_icon=*/
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kLaunchIcon, ui::kColorIconSecondary,
+              vector_icons::kLaunchOldIcon, ui::kColorIconSecondary,
               GetLayoutConstant(LayoutConstant::kPageInfoIconSize))));
   manage_passwords_button->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordsButton));

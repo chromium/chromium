@@ -136,7 +136,7 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   managed_icon_->SetBounds(kBubblePadding, kBubblePadding, kManagedIconSize,
                            kManagedIconSize);
   managed_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, cros_tokens::kIconColorPrimary,
+      vector_icons::kBusinessOldIcon, cros_tokens::kIconColorPrimary,
       kManagedIconSize));
 
   // Add the bubble text.

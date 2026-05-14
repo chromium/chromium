@@ -49,11 +49,11 @@ const gfx::VectorIcon& CookieControlsUtil::GetEnforcedIcon(
     CookieControlsEnforcement enforcement) {
   switch (enforcement) {
     case CookieControlsEnforcement::kEnforcedByExtension:
-      return vector_icons::kExtensionChromeRefreshIcon;
+      return vector_icons::kExtensionChromeRefreshOldIcon;
     case CookieControlsEnforcement::kEnforcedByPolicy:
-      return vector_icons::kBusinessChromeRefreshIcon;
+      return vector_icons::kBusinessChromeRefreshOldIcon;
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
-      return vector_icons::kSettingsChromeRefreshIcon;
+      return vector_icons::kSettingsChromeRefreshOldIcon;
     case CookieControlsEnforcement::kNoEnforcement:
       NOTREACHED();
   }

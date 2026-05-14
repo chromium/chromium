@@ -220,7 +220,7 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
     case ash::UNINSTALL:
       return views::kUninstallOldIcon;
     case ash::SETTINGS:
-      return vector_icons::kSettingsIcon;
+      return vector_icons::kSettingsOldIcon;
     case ash::TOGGLE_PIN:
       return controller_->IsPinned(item_.id) ? views::kUnpinOldIcon
                                              : views::kPinOldIcon;

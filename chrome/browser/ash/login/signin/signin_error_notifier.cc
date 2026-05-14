@@ -122,7 +122,7 @@ CreateDeviceAccountErrorNotification(
           GURL(device_account_notification_id), notifier_id, data,
           new message_center::HandleNotificationClickDelegate(
               base::BindRepeating(&HandleDeviceAccountReauthNotificationClick)),
-          vector_icons::kNotificationWarningIcon,
+          vector_icons::kNotificationWarningOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
   notification->SetSystemPriority();
 
@@ -369,7 +369,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
       new message_center::HandleNotificationClickDelegate(base::BindRepeating(
           &SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick,
           weak_factory_.GetWeakPtr())),
-      vector_icons::kSettingsIcon,
+      vector_icons::kSettingsOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification.SetSystemPriority();
 

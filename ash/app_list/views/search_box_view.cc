@@ -769,7 +769,7 @@ void SearchBoxView::OnThemeChanged() {
   if (filter_button()) {
     filter_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kFilterIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kFilterOldIcon,
                                        button_icon_color,
                                        GetSearchBoxIconSize()));
   }

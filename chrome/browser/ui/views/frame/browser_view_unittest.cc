@@ -158,8 +158,8 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_EQ(customize_chrome_action->GetText(),
             l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE));
   EXPECT_EQ(customize_chrome_action->GetImage(),
-            ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshIcon,
-                                           ui::kColorIcon));
+            ui::ImageModel::FromVectorIcon(
+                vector_icons::kEditChromeRefreshOldIcon, ui::kColorIcon));
   EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
 }
 

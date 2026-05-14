@@ -42,7 +42,7 @@ void HangUpButton::UpdateImage() {
 
   SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kCallEndIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kCallEndOldIcon,
                                      ui::kColorSysOnError, icon_size));
 }
 

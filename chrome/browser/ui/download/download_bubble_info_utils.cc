@@ -25,7 +25,7 @@ using TailoredWarningType = DownloadUIModel::TailoredWarningType;
 namespace {
 
 IconAndColor IconAndColorForDangerousUiPattern() {
-  return IconAndColor{&vector_icons::kDangerousChromeRefreshIcon,
+  return IconAndColor{&vector_icons::kDangerousChromeRefreshOldIcon,
                       kColorDownloadItemIconDangerous};
 }
 
@@ -34,7 +34,7 @@ IconAndColor IconAndColorForSuspiciousUiPattern() {
 }
 
 IconAndColor IconAndColorForDownloadOff() {
-  return IconAndColor{&vector_icons::kFileDownloadOffChromeRefreshIcon,
+  return IconAndColor{&vector_icons::kFileDownloadOffChromeRefreshOldIcon,
                       ui::kColorSecondaryForeground};
 }
 
@@ -90,7 +90,7 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
                         kColorDownloadItemIconDangerous};
   }
 
-  return IconAndColor{&vector_icons::kFileDownloadOffChromeRefreshIcon,
+  return IconAndColor{&vector_icons::kFileDownloadOffChromeRefreshOldIcon,
                       kColorDownloadItemIconDangerous};
 }
 
@@ -126,7 +126,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
           model.profile(), model.GetDownloadItem())) {
     switch (model.GetDangerType()) {
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-        return IconAndColor{&vector_icons::kDangerousChromeRefreshIcon,
+        return IconAndColor{&vector_icons::kDangerousChromeRefreshOldIcon,
                             kColorDownloadItemIconDangerous};
       case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
         return IconAndColor{&kDownloadWarningOldIcon,
@@ -311,28 +311,28 @@ std::vector<DownloadBubbleQuickAction> QuickActionsForDownload(
       actions.emplace_back(
           DownloadCommands::Command::RESUME,
           l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION),
-          &vector_icons::kPlayArrowChromeRefreshIcon);
+          &vector_icons::kPlayArrowChromeRefreshOldIcon);
     } else {
       actions.emplace_back(
           DownloadCommands::Command::PAUSE,
           l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION),
-          &vector_icons::kPauseChromeRefreshIcon);
+          &vector_icons::kPauseChromeRefreshOldIcon);
     }
 
     actions.emplace_back(
         DownloadCommands::Command::CANCEL,
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
-        &vector_icons::kCancelChromeRefreshIcon);
+        &vector_icons::kCancelChromeRefreshOldIcon);
 
   } else {
     actions.emplace_back(DownloadCommands::Command::SHOW_IN_FOLDER,
                          l10n_util::GetStringUTF16(
                              IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
-                         &vector_icons::kFolderChromeRefreshIcon);
+                         &vector_icons::kFolderChromeRefreshOldIcon);
     actions.emplace_back(
         DownloadCommands::Command::OPEN_WHEN_COMPLETE,
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
-        &vector_icons::kLaunchChromeRefreshIcon);
+        &vector_icons::kLaunchChromeRefreshOldIcon);
   }
 
   return actions;

@@ -132,7 +132,7 @@ TEST_P(HoldingSpaceItemScreenCaptureViewTest, OverlayIcon) {
       *ui::ImageModel::FromVectorIcon(
            item()->type() == HoldingSpaceItem::Type::kScreenRecordingGif
                ? kGifIcon
-               : vector_icons::kPlayArrowIcon,
+               : vector_icons::kPlayArrowOldIcon,
            kColorAshButtonIconColor, kHoldingSpaceIconSize)
            .Rasterize(color_provider)
            .bitmap()));

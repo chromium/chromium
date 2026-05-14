@@ -191,7 +191,7 @@ const FeatureData kFeatures[] = {
     {FeatureType::kLargeCursor, prefs::kAccessibilityLargeCursorEnabled,
      nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_LARGE_CURSOR},
     {FeatureType::kLiveCaption, ::prefs::kLiveCaptionEnabled,
-     &vector_icons::kLiveCaptionOnIcon, IDS_ASH_STATUS_TRAY_LIVE_CAPTION},
+     &vector_icons::kLiveCaptionOnOldIcon, IDS_ASH_STATUS_TRAY_LIVE_CAPTION},
     {FeatureType::kMonoAudio, prefs::kAccessibilityMonoAudioEnabled, nullptr,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MONO_AUDIO},
     {FeatureType::kMouseKeys, prefs::kAccessibilityMouseKeysEnabled, nullptr, 0,

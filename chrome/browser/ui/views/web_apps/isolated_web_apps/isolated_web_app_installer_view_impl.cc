@@ -497,7 +497,7 @@ class DisabledView : public InstallerDialogView {
  public:
   explicit DisabledView(IsolatedWebAppInstallerView::Delegate* delegate)
       : InstallerDialogView(
-            CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+            CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
                                        ui::kColorAlertMediumSeverityIcon),
             IDS_IWA_INSTALLER_DISABLED_TITLE,
             IDS_IWA_INSTALLER_DISABLED_SUBTITLE,
@@ -827,7 +827,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
                 ui::DialogModelLabel(
                     IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE),
-                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
                                            ui::kColorAlertMediumSeverityIcon),
                 /*ok_label=*/std::nullopt);
           },
@@ -850,7 +850,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 });
             return ShowChildDialog(
                 title, subtitle,
-                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
                                            ui::kColorAlertMediumSeverityIcon),
                 /*ok_label=*/std::nullopt);
           },
@@ -870,7 +870,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
             return ShowChildDialog(
                 IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
                 ui::DialogModelLabel(IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE),
-                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
                                            ui::kColorAlertMediumSeverityIcon),
                 IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY);
           },
@@ -880,7 +880,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKED_USER_INSTALL_ALLOWLIST_BLOCKLIST_TITLE,
                 ui::DialogModelLabel(
                     IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_NOT_ON_USER_INSTALL_ALLOWLIST_MESSAGE),
-                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
                                            ui::kColorAlertMediumSeverityIcon),
                 std::nullopt);
           },
@@ -890,7 +890,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKED_USER_INSTALL_ALLOWLIST_BLOCKLIST_TITLE,
                 ui::DialogModelLabel(
                     IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKLISTED_MESSAGE),
-                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
                                            ui::kColorAlertMediumSeverityIcon),
                 std::nullopt);
           }},

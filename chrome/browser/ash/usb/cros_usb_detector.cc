@@ -285,8 +285,8 @@ void ShowNotificationForDevice(const std::string& guid,
   std::u16string vm_name;
   std::u16string vm_name_button_text;
   std::vector<std::u16string> vm_names_in_notification;
-  rich_notification_data.small_image = gfx::Image(
-      gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64, gfx::kGoogleBlue800));
+  rich_notification_data.small_image = gfx::Image(gfx::CreateVectorIcon(
+      vector_icons::kUsbOldIcon, 64, gfx::kGoogleBlue800));
 
   rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
 

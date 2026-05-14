@@ -42,7 +42,7 @@ views::Widget* SaveRecordingBubbleView::Show(
       new SaveRecordingBubbleView(anchor, web_contents, std::move(controller));
   bubble->SetMainImage(
       ui::ImageModel::FromImage(gfx::Image(gfx::CreateVectorIcon(
-          vector_icons::kPhotoIcon, 100,
+          vector_icons::kPhotoOldIcon, 100,
           web_contents->GetColorProvider().GetColor(ui::kColorIcon)))));
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);

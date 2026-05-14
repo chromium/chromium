@@ -228,7 +228,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
           ToolbarController::ElementIdInfo{
               kToolbarForwardButtonElementId,
               IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
-              &vector_icons::kForwardArrowChromeRefreshIcon,
+              &vector_icons::kForwardArrowChromeRefreshOldIcon,
               kToolbarForwardButtonElementId},
           /*is_section_end=*/false),
       ToolbarController::ResponsiveElementInfo(

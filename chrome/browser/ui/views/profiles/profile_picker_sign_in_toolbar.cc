@@ -47,7 +47,7 @@ class SimpleBackButton : public ToolbarButton {
       : ToolbarButton(std::move(callback)) {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
-    SetVectorIcons(vector_icons::kBackArrowIcon, kBackArrowTouchOldIcon);
+    SetVectorIcons(vector_icons::kBackArrowOldIcon, kBackArrowTouchOldIcon);
     SetTooltipText(l10n_util::GetStringUTF16(
         IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL));
     // Unlike toolbar buttons, this one should be focusable to make it

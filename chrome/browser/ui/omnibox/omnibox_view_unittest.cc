@@ -147,7 +147,7 @@ class OmniboxViewPopupTest : public testing::Test {
 // query.
 TEST_F(OmniboxViewTest, DISABLED_GetIcon_Default) {
   ui::ImageModel expected_icon =
-      ui::ImageModel::FromVectorIcon(vector_icons::kSearchChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSearchChromeRefreshOldIcon,
                                      gfx::kPlaceholderColor, gfx::kFaviconSize);
 
   ui::ImageModel icon = view()->GetIcon(

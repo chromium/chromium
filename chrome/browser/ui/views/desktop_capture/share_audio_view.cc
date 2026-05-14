@@ -26,7 +26,7 @@ ShareAudioView::ShareAudioView(
   views::ImageView* audio_icon_view =
       AddChildView(std::make_unique<views::ImageView>());
   audio_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kVolumeUpIcon,
+      vector_icons::kVolumeUpOldIcon,
       audio_offered ? ui::kColorIcon : ui::kColorIconDisabled,
       GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
 

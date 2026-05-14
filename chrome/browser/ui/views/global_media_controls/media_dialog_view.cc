@@ -512,7 +512,7 @@ void MediaDialogView::InitializeLiveCaptionSection() {
 
   auto live_caption_image = std::make_unique<views::ImageView>();
   live_caption_image->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kLiveCaptionOnIcon, ui::kColorIcon, kImageWidthDip));
+      vector_icons::kLiveCaptionOnOldIcon, ui::kColorIcon, kImageWidthDip));
   live_caption_container->AddChildView(std::move(live_caption_image));
 
   auto live_caption_title =
@@ -528,7 +528,7 @@ void MediaDialogView::InitializeLiveCaptionSection() {
   if (is_managed) {
     auto* enterprise_icon = live_caption_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kBusinessIcon, ui::kColorIconSecondary,
+            vector_icons::kBusinessOldIcon, ui::kColorIconSecondary,
             kImageWidthDip)));
     enterprise_icon->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_CONTROLLED_SETTING_POLICY));
@@ -587,7 +587,7 @@ void MediaDialogView::InitializeLiveTranslateSection() {
   if (is_managed) {
     auto* enterprise_icon = live_translate_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kBusinessIcon, ui::kColorIconSecondary,
+            vector_icons::kBusinessOldIcon, ui::kColorIconSecondary,
             kImageWidthDip)));
     enterprise_icon->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_CONTROLLED_SETTING_POLICY));
@@ -652,12 +652,13 @@ void MediaDialogView::InitializeCaptionSettingsSection() {
   auto caption_settings_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&MediaDialogView::OnSettingsButtonPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsChromeRefreshIcon,
-                                     ui::kColorIcon, kImageWidthDip),
+      ui::ImageModel::FromVectorIcon(
+          vector_icons::kSettingsChromeRefreshOldIcon, ui::kColorIcon,
+          kImageWidthDip),
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAPTION_SETTINGS),
       std::u16string(),
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon, ui::kColorIcon,
-                                     kImageWidthDip));
+      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchOldIcon,
+                                     ui::kColorIcon, kImageWidthDip));
   caption_settings_button_ = caption_settings_container->AddChildView(
       std::move(caption_settings_button));
   caption_settings_container_ =

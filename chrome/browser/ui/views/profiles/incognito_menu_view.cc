@@ -62,7 +62,7 @@ void IncognitoMenuView::BuildMenu() {
   AddFeatureButton(close_button_title,
                    base::BindRepeating(&IncognitoMenuView::OnExitButtonClicked,
                                        base::Unretained(this)),
-                   vector_icons::kCloseIcon);
+                   vector_icons::kCloseOldIcon);
 }
 
 std::u16string IncognitoMenuView::GetAccessibleWindowTitle() const {

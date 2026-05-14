@@ -97,7 +97,7 @@ void DeviceCommandQueryGeolocationJob::
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
       notification_data,
       base::MakeRefCounted<LocationSavedNotificationDelegate>(),
-      vector_icons::kBusinessIcon,
+      vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   SystemNotificationHelper::GetInstance()->Display(notification);

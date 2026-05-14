@@ -263,8 +263,9 @@ class PaymentSheetRowBuilder {
       std::unique_ptr<views::View> extra_content_view) {
     auto chevron =
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kSubmenuArrowIcon, ui::kColorIcon,
-            gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon)));
+            vector_icons::kSubmenuArrowOldIcon, ui::kColorIcon,
+            gfx::GetDefaultSizeOfVectorIcon(
+                vector_icons::kSubmenuArrowOldIcon)));
     chevron->SetCanProcessEventsWithinSubtree(false);
     std::unique_ptr<PaymentRequestRowView> section = CreatePaymentSheetRow(
         GetPressedCallback(), section_name_, accessible_content_,

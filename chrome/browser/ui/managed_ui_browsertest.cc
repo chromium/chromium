@@ -226,11 +226,11 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconEnterprise) {
   std::unique_ptr<TestingProfile> profile_supervised =
       builder_supervised.Build();
 
-  EXPECT_EQ(vector_icons::kBusinessChromeRefreshIcon.name,
+  EXPECT_EQ(vector_icons::kBusinessChromeRefreshOldIcon.name,
             GetManagedUiIcon(profile.get()).name);
   // Enterprise management takes precedence over supervision in the management
   // UI.
-  EXPECT_EQ(vector_icons::kBusinessChromeRefreshIcon.name,
+  EXPECT_EQ(vector_icons::kBusinessChromeRefreshOldIcon.name,
             GetManagedUiIcon(profile_supervised.get()).name);
 }
 
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconSupervised) {
   builder.SetIsSupervisedProfile();
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
-  EXPECT_EQ(vector_icons::kFamilyLinkIcon.name,
+  EXPECT_EQ(vector_icons::kFamilyLinkOldIcon.name,
             GetManagedUiIcon(profile.get()).name);
 }
 

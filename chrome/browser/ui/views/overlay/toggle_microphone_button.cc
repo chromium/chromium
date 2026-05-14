@@ -36,8 +36,8 @@ void ToggleMicrophoneButton::UpdateImageAndTooltipText() {
     return;
   }
 
-  const auto& icon = is_muted_ ? vector_icons::kMicOffChromeRefreshIcon
-                               : vector_icons::kMicChromeRefreshIcon;
+  const auto& icon = is_muted_ ? vector_icons::kMicOffChromeRefreshOldIcon
+                               : vector_icons::kMicChromeRefreshOldIcon;
 
   auto text = is_muted_ ? IDS_PICTURE_IN_PICTURE_UNMUTE_MICROPHONE_TEXT
                         : IDS_PICTURE_IN_PICTURE_MUTE_MICROPHONE_TEXT;

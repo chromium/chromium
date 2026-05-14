@@ -109,7 +109,7 @@ void BluetoothDeviceCredentialsView::InitControls(
   constexpr int kIconSize = 48;  // width and height.
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBluetoothIcon, ui::kColorIcon, kIconSize));
+      vector_icons::kBluetoothOldIcon, ui::kColorIcon, kIconSize));
   icon_view_ = AddChildView(std::move(icon_view));
 
   auto contents_wrapper = std::make_unique<views::View>();

@@ -187,14 +187,14 @@ PasskeyUpgradeBubbleView::PasskeyUpgradeBubbleView(
               },
               base::Unretained(this)),
           /*main_image_icon=*/
-          ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+          ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
                                          ui::kColorIcon),
           /*title_text=*/
           l10n_util::GetStringUTF16(IDS_PASSKEY_UPGRADE_BUBBLE_MANAGE_BUTTON),
           /*subtitle_text=*/std::u16string(),
           /*action_image_icon=*/
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kLaunchIcon, ui::kColorIconSecondary,
+              vector_icons::kLaunchOldIcon, ui::kColorIconSecondary,
               GetLayoutConstant(LayoutConstant::kPageInfoIconSize))));
 
   // The base class sets a fixed dialog width, but that might not fit the

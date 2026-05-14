@@ -96,7 +96,7 @@ DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
   // The new pinned notification view uses a settings icon button.
   if (ash::features::AreOngoingProcessesEnabled()) {
     data.buttons.emplace_back(message_center::ButtonInfo(
-        /*vector_icon=*/&vector_icons::kSettingsIcon,
+        /*vector_icon=*/&vector_icons::kSettingsOldIcon,
         /*accessible_name=*/device_system_tray_icon_
             ->GetContentSettingsLabel()));
   } else {

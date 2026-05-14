@@ -80,7 +80,7 @@ void Show(Profile* profile,
   const std::u16string kEmptyDisplaySource;
 
   // Office building.
-  const gfx::VectorIcon& kIcon = vector_icons::kBusinessIcon;
+  const gfx::VectorIcon& kIcon = vector_icons::kBusinessOldIcon;
 
   // Show button with proper text.
   RichNotificationData notification_data;

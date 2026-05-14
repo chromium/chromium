@@ -69,13 +69,13 @@ std::u16string GetCancelButtonText(
 
 ui::ImageModel GetSiteSettingsIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSettingsChromeRefreshIcon, ui::kColorIcon,
+      vector_icons::kSettingsChromeRefreshOldIcon, ui::kColorIcon,
       GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
 }
 
 ui::ImageModel GetLaunchIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchChromeRefreshIcon, ui::kColorIcon,
+      vector_icons::kLaunchChromeRefreshOldIcon, ui::kColorIcon,
       GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
 }
 
@@ -549,7 +549,7 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
               bubble->content_setting_bubble_model_->OnLearnMoreClicked();
             },
             base::Unretained(this)),
-        vector_icons::kHelpOutlineIcon);
+        vector_icons::kHelpOutlineOldIcon);
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
     extra_views.push_back(std::move(learn_more_button));

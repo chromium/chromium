@@ -137,7 +137,7 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
       // Deprecated.
       return gfx::VectorIcon::EmptyIcon();
     case ash::SETTINGS:
-      return vector_icons::kSettingsIcon;
+      return vector_icons::kSettingsOldIcon;
     case ash::USE_LAUNCH_TYPE_REGULAR:
     case ash::USE_LAUNCH_TYPE_WINDOW:
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:

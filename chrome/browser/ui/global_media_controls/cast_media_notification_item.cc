@@ -181,7 +181,7 @@ void CastMediaNotificationItem::SetView(
     media_message_center::MediaNotificationView* view) {
   view_ = view;
   if (view_) {
-    view_->UpdateWithVectorIcon(&vector_icons::kMediaRouterIdleIcon);
+    view_->UpdateWithVectorIcon(&vector_icons::kMediaRouterIdleOldIcon);
   }
 
   UpdateView();

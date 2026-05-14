@@ -77,7 +77,7 @@ std::unique_ptr<views::View> CreateIconView(
 }
 
 std::unique_ptr<views::ImageView> GetAudioDeviceIcon() {
-  return CreateIconView(vector_icons::kHeadsetIcon);
+  return CreateIconView(vector_icons::kHeadsetOldIcon);
 }
 
 }  // namespace
@@ -96,7 +96,7 @@ AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
                                            SkColor background_color,
                                            const std::string& raw_device_id,
                                            const std::string& device_name)
-    : DeviceEntryUI(raw_device_id, device_name, vector_icons::kHeadsetIcon),
+    : DeviceEntryUI(raw_device_id, device_name, vector_icons::kHeadsetOldIcon),
       HoverButton(std::move(callback),
                   GetAudioDeviceIcon(),
                   base::UTF8ToUTF16(device_name)) {

@@ -308,7 +308,7 @@ class MonitoringWarningView : public NonAccessibleView {
                 .CopyAddressTo(&image_)
                 .SetVisible(false)
                 .SetImage(ui::ImageModel::FromVectorIcon(
-                    vector_icons::kWarningIcon,
+                    vector_icons::kWarningOldIcon,
                     static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
                     kMonitoringWarningIconSizeDp)),
             views::Builder<views::View>()

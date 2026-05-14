@@ -66,7 +66,7 @@ HelpBubbleViewAshTestBase::CreateHelpBubbleView(HelpBubbleArrow arrow,
   }
 
   if (with_body_icon) {
-    params.body_icon = &vector_icons::kCelebrationIcon;
+    params.body_icon = &vector_icons::kCelebrationOldIcon;
   }
 
   if (with_buttons) {

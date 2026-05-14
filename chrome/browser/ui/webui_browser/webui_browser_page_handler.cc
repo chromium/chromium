@@ -125,18 +125,18 @@ class WebUIBrowserGuestHandler
     } else if (icon == &omnibox::kSecurePageInfoChromeRefreshOldIcon) {
       icon_type =
           webui_browser::mojom::SecurityIcon::SecurePageInfoChromeRefresh;
-    } else if (icon == &vector_icons::kNoEncryptionIcon) {
+    } else if (icon == &vector_icons::kNoEncryptionOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::NoEncryption;
-    } else if (icon == &vector_icons::kNotSecureWarningChromeRefreshIcon) {
+    } else if (icon == &vector_icons::kNotSecureWarningChromeRefreshOldIcon) {
       icon_type =
           webui_browser::mojom::SecurityIcon::NotSecureWarningChromeRefresh;
-    } else if (icon == &vector_icons::kBusinessChromeRefreshIcon) {
+    } else if (icon == &vector_icons::kBusinessChromeRefreshOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::BusinessChromeRefresh;
-    } else if (icon == &vector_icons::kDangerousChromeRefreshIcon) {
+    } else if (icon == &vector_icons::kDangerousChromeRefreshOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::DangerousChromeRefresh;
     } else if (icon == &omnibox::kProductChromeRefreshOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::ProductChromeRefresh;
-    } else if (icon == &vector_icons::kExtensionChromeRefreshIcon) {
+    } else if (icon == &vector_icons::kExtensionChromeRefreshOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::ExtensionChromeRefresh;
     } else if (icon == &omnibox::kOfflinePinOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::OfflinePin;

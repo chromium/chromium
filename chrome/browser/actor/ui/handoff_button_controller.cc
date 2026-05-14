@@ -260,7 +260,7 @@ void HandoffButtonController::UpdateState(HandoffButtonState state,
       text = l10n_util::GetStringUTF16(IDS_HANDOFF_TAKE_OVER_TASK_LABEL);
       a11y_text =
           l10n_util::GetStringUTF16(IDS_HANDOFF_TAKE_OVER_TASK_A11Y_LABEL);
-      icon = ImageModel::FromVectorIcon(vector_icons::kPauseIcon,
+      icon = ImageModel::FromVectorIcon(vector_icons::kPauseOldIcon,
                                         ::ui::kColorLabelForeground,
                                         kHandoffButtonIconSize);
       break;
@@ -268,7 +268,7 @@ void HandoffButtonController::UpdateState(HandoffButtonState state,
       text = l10n_util::GetStringUTF16(IDS_HANDOFF_GIVE_TASK_BACK_LABEL);
       a11y_text =
           l10n_util::GetStringUTF16(IDS_HANDOFF_GIVE_TASK_BACK_A11Y_LABEL);
-      icon = ImageModel::FromVectorIcon(vector_icons::kPlayArrowIcon,
+      icon = ImageModel::FromVectorIcon(vector_icons::kPlayArrowOldIcon,
                                         ::ui::kColorLabelForeground,
                                         kHandoffButtonIconSize);
       break;

@@ -231,7 +231,7 @@ DownloadItemNotification::DownloadItemNotification(
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.should_make_spoken_feedback_for_popup_updates = false;
   rich_notification_data.vector_small_image =
-      &vector_icons::kNotificationDownloadIcon;
+      &vector_icons::kNotificationDownloadOldIcon;
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, GetNotificationId(),

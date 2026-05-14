@@ -294,7 +294,7 @@ gfx::ImageSkia GetIcon(const ui::ColorProvider* color_provider,
     // The system tray uses a smaller icon.
     return gfx::CreateVectorIcon(
         IsTrayIcon(icon_type) ? kNetworkEthernetIcon
-                              : vector_icons::kEthernetIcon,
+                              : vector_icons::kEthernetOldIcon,
         GetDefaultColorForIconType(color_provider, icon_type));
   }
   if (network->type == NetworkType::kVPN) {

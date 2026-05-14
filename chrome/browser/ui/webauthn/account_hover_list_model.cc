@@ -39,7 +39,7 @@ AccountHoverListModel::AccountHoverListModel(
     items_.emplace_back(
         NameTokenForDisplay(cred.user.name.value_or("")),
         AuthenticatorRequestDialogModel::GetMechanismDescription(cred),
-        ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyOldIcon,
                                        dialog_model->ui_disabled_
                                            ? ui::kColorIconDisabled
                                            : ui::kColorIcon,

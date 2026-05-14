@@ -373,14 +373,14 @@ void RecentTabsSubMenuModel::Build() {
   InsertItemWithStringIdAt(next_command_id++, IDC_SHOW_HISTORY,
                            IDS_HISTORY_SHOW_HISTORY);
   SetCommandIcon(this, IDC_SHOW_HISTORY,
-                 vector_icons::kHistoryChromeRefreshIcon);
+                 vector_icons::kHistoryChromeRefreshOldIcon);
   if (browser_->GetFeatures().side_panel_ui()) {
     if (HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
       InsertItemWithStringIdAt(next_command_id++,
                                IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
                                IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
       SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-                     vector_icons::kHistoryChromeRefreshIcon);
+                     vector_icons::kHistoryChromeRefreshOldIcon);
     }
     if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
             browser_->profile())) {
@@ -668,7 +668,7 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
   const int restore_all_command_id = GetAndIncrementNextMenuID();
   window_model->AddItemWithStringIdAndIcon(
       restore_all_command_id, IDS_RESTORE_WINDOW,
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon));
+      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchOldIcon));
   local_window_items_.emplace(restore_all_command_id, window.id);
   window_model->AddSeparator(ui::NORMAL_SEPARATOR);
 
@@ -715,7 +715,7 @@ RecentTabsSubMenuModel::CreateGroupSubMenuModel(
   int command_id = GetAndIncrementNextMenuID();
   group_model->AddItemWithStringIdAndIcon(
       command_id, IDS_RESTORE_GROUP,
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon));
+      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchOldIcon));
   local_group_items_.emplace(command_id, group.id);
   group_model->AddSeparator(ui::NORMAL_SEPARATOR);
   CHECK_EQ(static_cast<int>(group_model->GetItemCount()), kInitialGroupItem);

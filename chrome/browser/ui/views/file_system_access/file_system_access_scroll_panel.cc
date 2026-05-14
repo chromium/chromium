@@ -43,9 +43,10 @@ std::unique_ptr<views::ScrollView> FileSystemAccessScrollPanel::Create(
         chrome_layout_provider->GetDistanceMetric(
             DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING)));
 
-    auto* icon = line_container->AddChildView(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kFolderOpenIcon, ui::kColorIcon, kFolderIconSize)));
+    auto* icon =
+        line_container->AddChildView(std::make_unique<views::ImageView>(
+            ui::ImageModel::FromVectorIcon(vector_icons::kFolderOpenOldIcon,
+                                           ui::kColorIcon, kFolderIconSize)));
     icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
 
     auto* label = line_container->AddChildView(std::make_unique<views::Label>(

@@ -151,7 +151,7 @@ void TabStripNudgeButton::SetCloseButton(PressedCallback pressed_callback) {
       l10n_util::GetStringUTF16(IDS_TOOLTIP_GLIC_CLOSE));
 
   const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kCloseChromeRefreshIcon,
+      vector_icons::kCloseChromeRefreshOldIcon,
       kColorTabSearchButtonCRForegroundFrameActive,
       kTabStripNudgeCloseButtonSize);
 

@@ -20,7 +20,8 @@ class ToastRegistryTest : public testing::Test {};
 TEST_F(ToastRegistryTest, DefaultToast) {
   const int string_id = 0;
   std::unique_ptr<ToastSpecification> spec =
-      ToastSpecification::Builder(vector_icons::kEmailIcon, string_id).Build();
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, string_id)
+          .Build();
 
   EXPECT_EQ(string_id, spec->body_string_id());
   EXPECT_FALSE(spec->has_close_button());
@@ -32,7 +33,7 @@ TEST_F(ToastRegistryTest, DefaultToast) {
 TEST_F(ToastRegistryTest, ToastWithCloseButton) {
   const int string_id = 0;
   std::unique_ptr<ToastSpecification> spec =
-      ToastSpecification::Builder(vector_icons::kEmailIcon, string_id)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, string_id)
           .AddCloseButton()
           .Build();
 
@@ -47,7 +48,7 @@ TEST_F(ToastRegistryTest, ToastWithActionButton) {
   const int body_string_id = 0;
   const int action_button_string_id = 1;
   std::unique_ptr<ToastSpecification> spec =
-      ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, body_string_id)
           .AddActionButton(action_button_string_id, base::DoNothing())
           .AddCloseButton()
           .Build();
@@ -60,14 +61,14 @@ TEST_F(ToastRegistryTest, ToastWithActionButton) {
 
   // Toasts with an action button must have a close button.
   EXPECT_DEATH(
-      ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, body_string_id)
           .AddActionButton(action_button_string_id, base::DoNothing())
           .Build(),
       "");
 
   // A toast cannot have an action button, close button, and a menu.
   EXPECT_DEATH(
-      ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, body_string_id)
           .AddActionButton(action_button_string_id, base::DoNothing())
           .AddCloseButton()
           .AddMenu()
@@ -78,7 +79,7 @@ TEST_F(ToastRegistryTest, ToastWithActionButton) {
 TEST_F(ToastRegistryTest, ToastWithMenu) {
   const int body_string_id = 0;
   std::unique_ptr<ToastSpecification> spec =
-      ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon, body_string_id)
           .AddMenu()
           .Build();
   EXPECT_EQ(body_string_id, spec->body_string_id());
@@ -90,7 +91,7 @@ TEST_F(ToastRegistryTest, ToastWithMenu) {
 
 TEST_F(ToastRegistryTest, RegisterSpecification) {
   std::unique_ptr<ToastSpecification> unique_spec =
-      ToastSpecification::Builder(vector_icons::kEmailIcon,
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon,
                                   /*body_string_id=*/0)
           .Build();
 
@@ -120,16 +121,17 @@ TEST_F(ToastRegistryTest, RegisterDuplicateToastId) {
       std::make_unique<ToastRegistry>();
 
   toast_registry->RegisterToast(
-      ToastId::kImageCopied, ToastSpecification::Builder(
-                                 vector_icons::kEmailIcon, /*body_string_id=*/0)
-                                 .Build());
+      ToastId::kImageCopied,
+      ToastSpecification::Builder(vector_icons::kEmailOldIcon,
+                                  /*body_string_id=*/0)
+          .Build());
 
   // Even though we are registering a slightly different toast, the
   // ToastRegistry should still hit a CHECK because we are using an already
   // registered ToastId.
   EXPECT_DEATH(toast_registry->RegisterToast(
                    ToastId::kImageCopied,
-                   ToastSpecification::Builder(vector_icons::kEmailIcon,
+                   ToastSpecification::Builder(vector_icons::kEmailOldIcon,
                                                /*body_string_id=*/0)
                        .AddCloseButton()
                        .Build()),

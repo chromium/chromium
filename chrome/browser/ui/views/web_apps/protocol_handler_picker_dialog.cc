@@ -281,7 +281,7 @@ ProtocolHandlerPickerSelectionRowView::ProtocolHandlerPickerSelectionRowView(
     builder.AddChild(
         views::Builder<views::ImageView>()
             .SetImage(ui::ImageModel::FromVectorIcon(
-                vector_icons::kCheckCircleIcon,
+                vector_icons::kCheckCircleOldIcon,
                 cros_tokens::kCrosSysOnPrimaryContainer, kCheckIconSize))
             .SetVisible(false)
             .SetProperty(views::kMarginsKey, left_gap)

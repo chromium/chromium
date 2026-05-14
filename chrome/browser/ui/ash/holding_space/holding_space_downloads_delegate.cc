@@ -54,7 +54,7 @@ gfx::ImageSkia CreateErrorPlaceholderImageSkia(
   return gfx::ImageSkiaOperations::CreateSuperimposedImage(
       image_util::CreateEmptyImage(size),
       gfx::CreateVectorIcon(
-          vector_icons::kErrorOutlineIcon, kHoldingSpaceIconSize,
+          vector_icons::kErrorOutlineOldIcon, kHoldingSpaceIconSize,
           cros_styles::ResolveColor(
               color_name,
               /*is_dark_mode=*/

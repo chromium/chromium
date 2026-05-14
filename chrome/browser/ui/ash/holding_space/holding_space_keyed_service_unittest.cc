@@ -2436,7 +2436,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
                   gfx::ImageSkiaOperations::CreateSuperimposedImage(
                       image_util::CreateEmptyImage(kImageSize),
                       gfx::CreateVectorIcon(
-                          vector_icons::kErrorOutlineIcon,
+                          vector_icons::kErrorOutlineOldIcon,
                           kHoldingSpaceIconSize,
                           cros_styles::ResolveColor(
                               cros_styles::ColorName::kIconColorAlert,
@@ -2475,7 +2475,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
                   gfx::ImageSkiaOperations::CreateSuperimposedImage(
                       image_util::CreateEmptyImage(kImageSize),
                       gfx::CreateVectorIcon(
-                          vector_icons::kErrorOutlineIcon,
+                          vector_icons::kErrorOutlineOldIcon,
                           kHoldingSpaceIconSize,
                           cros_styles::ResolveColor(
                               cros_styles::ColorName::kIconColorWarning,

@@ -119,8 +119,8 @@ void SharingHubModel::PopulateFirstPartyActions() {
     first_party_action_list_.emplace_back(
         IDC_ROUTE_MEDIA,
         l10n_util::GetStringUTF16(IDS_SHARING_HUB_MEDIA_ROUTER_LABEL),
-        &vector_icons::kMediaRouterIdleIcon, "SharingHubDesktop.CastSelected",
-        0);
+        &vector_icons::kMediaRouterIdleOldIcon,
+        "SharingHubDesktop.CastSelected", 0);
   }
 
   first_party_action_list_.emplace_back(

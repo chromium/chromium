@@ -102,7 +102,7 @@ class FeatureTilePixelTest : public AshTestBase {
 
 TEST_F(FeatureTilePixelTest, PrimaryTile) {
   auto* tile = CreateQSFeatureTileBase(widget_.get());
-  tile->SetVectorIcon(vector_icons::kDogfoodIcon);
+  tile->SetVectorIcon(vector_icons::kDogfoodOldIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
   // Needed for accessibility paint checks.
@@ -133,7 +133,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile) {
 
 TEST_F(FeatureTilePixelTest, PrimaryTileWithoutDiveInButton) {
   auto* tile = CreateQSFeatureTileBase(widget_.get());
-  tile->SetVectorIcon(vector_icons::kDogfoodIcon);
+  tile->SetVectorIcon(vector_icons::kDogfoodOldIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
   // Needed for accessibility paint checks.
@@ -167,7 +167,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
   EXPECT_TRUE(base::i18n::IsRTL());
 
   auto* tile = CreateQSFeatureTileBase(widget_.get());
-  tile->SetVectorIcon(vector_icons::kDogfoodIcon);
+  tile->SetVectorIcon(vector_icons::kDogfoodOldIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
   tile->CreateDecorativeDrillInArrow();
@@ -182,7 +182,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
 
 TEST_F(FeatureTilePixelTest, CompactTile) {
   auto* tile = CreateQSFeatureTileBase(widget_.get(), /*is_compact=*/true);
-  tile->SetVectorIcon(vector_icons::kDogfoodIcon);
+  tile->SetVectorIcon(vector_icons::kDogfoodOldIcon);
   tile->SetLabel(u"Multi-line label");
   // Needed for accessibility paint checks.
   tile->SetTooltipText(u"Tooltip");
@@ -277,7 +277,7 @@ class FeatureTileVcDlcUiEnabledPixelTest : public FeatureTilePixelTest {
     tile_->SetProperty(views::kBoxLayoutFlexKey,
                        views::BoxLayoutFlexSpecification());
     tile_->SetTooltipText(u"Tooltip");
-    tile_->SetVectorIcon(vector_icons::kDogfoodIcon);
+    tile_->SetVectorIcon(vector_icons::kDogfoodOldIcon);
     tile_->SetLabel(u"One-line label");
   }
   void TearDown() override {

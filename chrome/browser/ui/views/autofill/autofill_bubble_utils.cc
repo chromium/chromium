@@ -27,7 +27,7 @@ std::unique_ptr<views::ImageButton> CreateEditButton(
     views::Button::PressedCallback callback) {
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
-          std::move(callback), vector_icons::kEditIcon, kIconSize);
+          std::move(callback), vector_icons::kEditOldIcon, kIconSize);
   button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));
   button->SetTooltipText(l10n_util::GetStringUTF16(

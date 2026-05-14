@@ -35,6 +35,6 @@ OmniboxActionId CrossDeviceTabAction::ActionId() const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& CrossDeviceTabAction::GetVectorIcon() const {
-  return vector_icons::kDevicesIcon;
+  return vector_icons::kDevicesOldIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)

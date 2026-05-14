@@ -412,7 +412,7 @@ QuickAnswersView::QuickAnswersView(
                   .SetImageModel(
                       views::Button::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(
-                          vector_icons::kDogfoodIcon,
+                          vector_icons::kDogfoodOldIcon,
                           design_ == Design::kCurrent ? ui::kColorIconSecondary
                                                       : ui::kColorSysSecondary,
                           kDogfoodButtonSizeDip)))
@@ -427,7 +427,7 @@ QuickAnswersView::QuickAnswersView(
                   .SetImageModel(
                       views::Button::ButtonState::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(
-                          vector_icons::kSettingsOutlineIcon,
+                          vector_icons::kSettingsOutlineOldIcon,
                           design_ == Design::kCurrent ? ui::kColorIconSecondary
                                                       : ui::kColorSysSecondary,
                           kSettingsButtonSizeDip))

@@ -70,7 +70,7 @@ TEST(VectorIcon, NilIcon) {
 TEST(VectorIcon, SmokeTest) {
   UiScene scene;
   auto icon = std::make_unique<TestVectorIcon>(kMaximumWidth);
-  icon->SetIcon(vector_icons::kCloseRoundedIcon);
+  icon->SetIcon(vector_icons::kCloseRoundedOldIcon);
   UiTexture* texture = icon->GetTexture();
   scene.AddUiElement(kRoot, std::move(icon));
   base::TimeTicks start_time = gfx::MsToTicks(1);

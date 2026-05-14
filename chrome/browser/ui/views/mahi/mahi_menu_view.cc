@@ -254,7 +254,7 @@ MahiMenuView::MahiMenuView(
           base::BindRepeating(&MahiMenuView::OnButtonPressed,
                               weak_ptr_factory_.GetWeakPtr(),
                               ButtonType::kSettings),
-          vector_icons::kSettingsOutlineIcon,
+          vector_icons::kSettingsOutlineOldIcon,
           l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
   settings_button_->SetID(ViewID::kSettingsButton);
 
@@ -506,13 +506,13 @@ std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
                   .SetCallback(
                       base::BindRepeating(&MahiMenuView::OnQuestionSubmitted,
                                           weak_ptr_factory_.GetWeakPtr()))
-                  .SetImageModel(
-                      views::Button::STATE_NORMAL,
-                      ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon))
-                  .SetImageModel(
-                      views::Button::STATE_DISABLED,
-                      ui::ImageModel::FromVectorIcon(
-                          vector_icons::kSendIcon, ui::kColorSysStateDisabled))
+                  .SetImageModel(views::Button::STATE_NORMAL,
+                                 ui::ImageModel::FromVectorIcon(
+                                     vector_icons::kSendOldIcon))
+                  .SetImageModel(views::Button::STATE_DISABLED,
+                                 ui::ImageModel::FromVectorIcon(
+                                     vector_icons::kSendOldIcon,
+                                     ui::kColorSysStateDisabled))
                   .SetAccessibleName(l10n_util::GetStringUTF16(
                       IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME))
                   .SetProperty(views::kMarginsKey, kTextfieldButtonPadding)

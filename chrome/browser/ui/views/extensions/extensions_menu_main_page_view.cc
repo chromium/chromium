@@ -602,7 +602,7 @@ ExtensionsMenuMainPageView::CreateManageButtonBuilder() {
                      },
                      browser_),
                  ui::ImageModel::FromVectorIcon(
-                     vector_icons::kSettingsChromeRefreshIcon),
+                     vector_icons::kSettingsChromeRefreshOldIcon),
                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
       .SetProperty(views::kElementIdentifierKey,
                    kExtensionsMenuManageExtensionsElementId);

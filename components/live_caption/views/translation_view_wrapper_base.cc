@@ -226,7 +226,7 @@ void TranslationViewWrapperBase::SetTextColor(
       vector_icons::kGTranslateIcon, header_color,
       kLiveTranslateImageWidthDip));
   translate_arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kArrowRightAltIcon, header_color,
+      vector_icons::kArrowRightAltOldIcon, header_color,
       kLiveTranslateImageWidthDip));
 }
 

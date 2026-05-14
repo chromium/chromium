@@ -98,7 +98,7 @@ std::u16string IdleDialogView::GetWindowTitle() const {
 
 ui::ImageModel IdleDialogView::GetWindowIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, ui::kColorIcon,
+      vector_icons::kBusinessOldIcon, ui::kColorIcon,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }

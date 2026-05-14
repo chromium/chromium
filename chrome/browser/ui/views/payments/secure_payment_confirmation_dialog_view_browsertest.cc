@@ -243,7 +243,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     const SkBitmap* merchant_icon =
         gfx::CreateVectorIcon(
-            vector_icons::kStorefrontIcon,
+            vector_icons::kStorefrontOldIcon,
             kSecurePaymentConfirmationIconDefaultWidthPx,
             test_delegate_->dialog_view()->GetColorProvider()->GetColor(
                 ui::kColorSysOnSurfaceSubtle))
@@ -288,7 +288,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     const SkBitmap* total_icon =
         gfx::CreateVectorIcon(
-            vector_icons::kPaymentsIcon,
+            vector_icons::kPaymentsOldIcon,
             kSecurePaymentConfirmationIconDefaultWidthPx,
             test_delegate_->dialog_view()->GetColorProvider()->GetColor(
                 ui::kColorSysOnSurfaceSubtle))

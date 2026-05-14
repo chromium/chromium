@@ -39,7 +39,7 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithDangerousLevel) {
       security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::DANGEROUS, &visible_security_state);
-  EXPECT_EQ(icon.name, vector_icons::kDangerousChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kDangerousChromeRefreshOldIcon.name);
 }
 
 TEST(LocationBarModelUtilTest,
@@ -49,7 +49,8 @@ TEST(LocationBarModelUtilTest,
       security_state::MALICIOUS_CONTENT_STATUS_BILLING;
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::DANGEROUS, &visible_security_state);
-  EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name,
+            vector_icons::kNotSecureWarningChromeRefreshOldIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithWarningLevel) {
@@ -58,7 +59,8 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithWarningLevel) {
       security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::WARNING, &visible_security_state);
-  EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name,
+            vector_icons::kNotSecureWarningChromeRefreshOldIcon.name);
 }
 
 TEST(
@@ -73,7 +75,7 @@ TEST(
   visible_security_state.is_https_only_mode_upgraded = true;
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::WARNING, &visible_security_state);
-  EXPECT_EQ(icon.name, vector_icons::kNoEncryptionIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kNoEncryptionOldIcon.name);
 }
 
 TEST(
@@ -88,5 +90,6 @@ TEST(
   visible_security_state.is_https_only_mode_upgraded = true;
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::WARNING, &visible_security_state);
-  EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name,
+            vector_icons::kNotSecureWarningChromeRefreshOldIcon.name);
 }

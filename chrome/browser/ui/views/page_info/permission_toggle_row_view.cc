@@ -47,8 +47,8 @@ const ui::ImageModel GetManagedPermissionIcon(
     const PageInfo::PermissionInfo& info) {
   const gfx::VectorIcon& managed_vector_icon =
       info.source == content_settings::SettingSource::kExtension
-          ? vector_icons::kExtensionIcon
-          : vector_icons::kBusinessIcon;
+          ? vector_icons::kExtensionOldIcon
+          : vector_icons::kBusinessOldIcon;
   return PageInfoViewFactory::GetImageModel(managed_vector_icon);
 }
 
@@ -240,7 +240,7 @@ void PermissionToggleRowView::InitForUserSource(
                   row->permission_.type);
             },
             base::Unretained(this)),
-        vector_icons::kSubmenuArrowChromeRefreshIcon, icon_size);
+        vector_icons::kSubmenuArrowChromeRefreshOldIcon, icon_size);
     subpage_button->SetProperty(views::kElementIdentifierKey,
                                 kSubpageButtonElementId);
     subpage_button->SetTooltipText(

@@ -51,7 +51,7 @@ LockScreenNotificationController::CreateNotification() {
                                  kLockScreenNotifierId,
                                  NotificationCatalogName::kLockScreen),
       optional_fields,
-      /*delegate=*/nullptr, vector_icons::kLockIcon,
+      /*delegate=*/nullptr, vector_icons::kLockOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 

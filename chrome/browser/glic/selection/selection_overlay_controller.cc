@@ -430,7 +430,7 @@ SelectionOverlayController::GetPreselectionBubbleConfig() {
       .show_cancel_button = true,
       .cancel_button_color = kColorGlicSelectionOverlayToastCancelButton,
       .bubble_background_color = kColorGlicSelectionOverlayToast,
-      .icon = &vector_icons::kCropFreeIcon};
+      .icon = &vector_icons::kCropFreeOldIcon};
 }
 
 bool SelectionOverlayController::IsOverlayViewShared() const {

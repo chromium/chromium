@@ -15,7 +15,7 @@ OverlayWindowLiveCaptionButton::OverlayWindowLiveCaptionButton(
     PressedCallback callback)
     : SimpleOverlayWindowImageButton(
           std::move(callback),
-          vector_icons::kLiveCaptionOnIcon,
+          vector_icons::kLiveCaptionOnOldIcon,
           l10n_util::GetStringUTF16(
               IDS_PICTURE_IN_PICTURE_LIVE_CAPTION_CONTROL_TEXT)) {}
 

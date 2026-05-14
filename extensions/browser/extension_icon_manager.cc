@@ -91,8 +91,9 @@ void ExtensionIconManager::OnImageLoaded(const ExtensionId& extension_id,
 
 void ExtensionIconManager::EnsureDefaultIcon() {
   if (default_icon_.IsEmpty()) {
-    default_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kExtensionIcon, gfx::kFaviconSize, gfx::kGoogleGrey700));
+    default_icon_ = gfx::Image(
+        gfx::CreateVectorIcon(vector_icons::kExtensionOldIcon,
+                              gfx::kFaviconSize, gfx::kGoogleGrey700));
   }
 }
 

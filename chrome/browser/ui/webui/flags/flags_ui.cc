@@ -120,7 +120,7 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
         infobars::ContentInfoBarManager::FromWebContents(
             flags_ui->web_ui()->GetWebContents()),
         infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
-        &vector_icons::kWarningIcon,
+        &vector_icons::kWarningOldIcon,
         l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_DUE_TO_CRASHY_CHROME),
         /*auto_expire=*/false, /*should_animate=*/true, /*closeable=*/true,
         /*infobar_priority=*/
@@ -133,7 +133,7 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
         infobars::ContentInfoBarManager::FromWebContents(
             flags_ui->web_ui()->GetWebContents()),
         infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
-        &vector_icons::kWarningIcon,
+        &vector_icons::kWarningOldIcon,
         l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_SECONDARY_USERS),
         /*auto_expire=*/false, /*should_animate=*/true, /*closeable=*/true,
         /*infobar_priority=*/

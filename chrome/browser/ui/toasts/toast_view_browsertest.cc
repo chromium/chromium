@@ -60,7 +60,7 @@ class ToastViewTest : public DialogBrowserTest {
     }
     std::unique_ptr<toasts::ToastView> toast =
         std::make_unique<toasts::ToastView>(
-            anchor_view_, toast_text, vector_icons::kLinkIcon,
+            anchor_view_, toast_text, vector_icons::kLinkOldIcon,
             std::move(image_override), false, base::DoNothing());
     if (options_.add_close_button) {
       toast->AddCloseButton(base::DoNothing());

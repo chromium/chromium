@@ -212,7 +212,7 @@ std::unique_ptr<IconButton> RefreshBannerView::CreateRefreshButton() {
               // Using `base::Unretained()` is safe here since
               // `ui_controller` outlives this `RefreshBannerView`.
               base::Unretained(ui_controller_)))
-          .SetVectorIcon(&vector_icons::kReloadChromeRefreshIcon)
+          .SetVectorIcon(&vector_icons::kReloadChromeRefreshOldIcon)
           .SetType(IconButton::Type::kSmallProminentFloating)
           .SetAccessibleName(l10n_util::GetStringUTF16(
               IDS_ASH_MAHI_REFRESH_BANNER_BUTTON_ACCESSIBLE_NAME))

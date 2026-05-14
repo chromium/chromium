@@ -110,7 +110,7 @@ void EditorMenuTextfieldView::InitLayout() {
       base::BindRepeating(
           &EditorMenuTextfieldView::OnTextfieldArrowButtonPressed,
           weak_factory_.GetWeakPtr()),
-      vector_icons::kForwardArrowIcon,
+      vector_icons::kForwardArrowOldIcon,
       GetEditorMenuFreeformTextfieldArrowButtonTooltip()));
   arrow_button_->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);

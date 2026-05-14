@@ -201,7 +201,7 @@ void PageInfoMainView::SetCookieInfo(const CookiesInfo& cookie_info) {
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                               base::Unretained(navigation_handler_)),
           PageInfoViewFactory::GetImageModel(
-              vector_icons::kCookieChromeRefreshIcon),
+              vector_icons::kCookieChromeRefreshOldIcon),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
           /*subtitle_text=*/std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
@@ -469,7 +469,7 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
 
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(
-      PageInfoViewFactory::GetImageModel(vector_icons::kVrHeadsetIcon));
+      PageInfoViewFactory::GetImageModel(vector_icons::kVrHeadsetOldIcon));
   content_view->AddChildView(std::move(icon));
 
   auto label = std::make_unique<views::Label>(
@@ -702,7 +702,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
   auto ads_personalization_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoNavigationHandler::OpenAdPersonalizationPage,
                           base::Unretained(navigation_handler_)),
-      PageInfoViewFactory::GetImageModel(vector_icons::kAdsClickIcon),
+      PageInfoViewFactory::GetImageModel(vector_icons::kAdsClickOldIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
   ads_personalization_button->SetID(
@@ -748,7 +748,7 @@ PageInfoMainView::CreateMerchantTrustSubpageButton(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
                           base::Unretained(navigation_handler_),
                           page_info::MerchantBubbleOpenReferrer::kPageInfo),
-      PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontIcon),
+      PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontOldIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
 
@@ -760,7 +760,7 @@ PageInfoMainView::CreateMerchantTrustLaunchButton(GURL page_url) {
   auto button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoMainView::OpenMerchantTrustSidePanel,
                           weak_factory_.GetWeakPtr(), page_url),
-      PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontIcon),
+      PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontOldIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
       std::u16string(), PageInfoViewFactory::GetLaunchIcon());
   return button;

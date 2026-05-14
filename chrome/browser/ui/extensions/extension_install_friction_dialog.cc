@@ -113,7 +113,7 @@ void ShowExtensionInstallFrictionDialog(
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_EXTENSION_PROMPT_INSTALL_FRICTION_TITLE))
           .SetIcon(ui::ImageModel::FromVectorIcon(
-              vector_icons::kGppMaybeIcon, ui::kColorAlertMediumSeverityIcon,
+              vector_icons::kGppMaybeOldIcon, ui::kColorAlertMediumSeverityIcon,
               extension_misc::EXTENSION_ICON_SMALLISH))
           .AddOkButton(
               base::BindOnce(

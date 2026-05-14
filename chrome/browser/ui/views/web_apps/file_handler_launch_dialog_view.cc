@@ -115,7 +115,7 @@ FileHandlerLaunchDialogView::CreateBelowAppInfoView() {
   constexpr int kIconSize = 16;
   auto* icon = files_view->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kDescriptionIcon, ui::kColorIcon, kIconSize)));
+          vector_icons::kDescriptionOldIcon, ui::kColorIcon, kIconSize)));
   const int icon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   icon->SetProperty(views::kMarginsKey,

@@ -163,16 +163,16 @@ class AffordanceView : public views::View {
     if (is_activated) {
       canvas->DrawImageInt(
           gfx::CreateVectorIcon(
-              is_rtl ? vector_icons::kForwardArrowIcon
-                     : vector_icons::kBackArrowIcon,
+              is_rtl ? vector_icons::kForwardArrowOldIcon
+                     : vector_icons::kBackArrowOldIcon,
               kArrowSize,
               color_provider->GetColor(kColorAshButtonIconColorPrimary)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     } else {
       canvas->DrawImageInt(
           gfx::CreateVectorIcon(
-              is_rtl ? vector_icons::kForwardArrowIcon
-                     : vector_icons::kBackArrowIcon,
+              is_rtl ? vector_icons::kForwardArrowOldIcon
+                     : vector_icons::kBackArrowOldIcon,
               kArrowSize, color_provider->GetColor(kColorAshButtonIconColor)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     }

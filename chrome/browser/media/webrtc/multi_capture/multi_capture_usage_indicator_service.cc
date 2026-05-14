@@ -195,7 +195,7 @@ MultiCaptureUsageIndicatorService::CreateFutureCaptureNotification(
   // popup).
   optional_fields.priority = message_center::LOW_PRIORITY;
   optional_fields.pinned = true;
-  optional_fields.vector_small_image = &vector_icons::kScreenRecordIcon;
+  optional_fields.vector_small_image = &vector_icons::kScreenRecordOldIcon;
 
   optional_fields.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_BUTTON_TEXT));
@@ -260,7 +260,7 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
     optional_fields.priority = message_center::LOW_PRIORITY;
   }
 
-  optional_fields.vector_small_image = &vector_icons::kScreenRecordIcon;
+  optional_fields.vector_small_image = &vector_icons::kScreenRecordOldIcon;
   optional_fields.pinned = true;
 
   message_center::Notification notification(

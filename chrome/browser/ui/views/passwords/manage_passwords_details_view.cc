@@ -478,14 +478,14 @@ std::unique_ptr<RichHoverButton> CreateManagePasswordRow(
       /*callback=*/
       std::move(on_manage_password_clicked_callback),
       /*main_image_icon=*/
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
                                      ui::kColorIcon),
       /*title_text=*/
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORD_BUTTON),
       /*subtitle_text=*/std::u16string(),
       /*action_image_icon=*/
       ui::ImageModel::FromVectorIcon(
-          vector_icons::kLaunchIcon, ui::kColorIconSecondary,
+          vector_icons::kLaunchOldIcon, ui::kColorIconSecondary,
           GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   manage_password_row->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordButton));
@@ -516,7 +516,7 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
 
   if (on_back_clicked_callback) {
     auto back_button = views::CreateVectorImageButtonWithNativeTheme(
-        *on_back_clicked_callback, vector_icons::kArrowBackIcon);
+        *on_back_clicked_callback, vector_icons::kArrowBackOldIcon);
     back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
     views::InstallCircleHighlightPathGenerator(back_button.get());
     back_button->SetProperty(views::kElementIdentifierKey, kBackButton);
@@ -573,7 +573,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
   } else if (allow_empty_username_edit) {
     read_username_row_ = AddChildView(CreateDetailsRowWithActionButton(
         kAccountCircleOldIcon, std::move(username_label),
-        vector_icons::kEditIcon,
+        vector_icons::kEditOldIcon,
         l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_USERNAME_TOOLTIP),
         base::BindRepeating(
             &ManagePasswordsDetailsView::SwitchToEditUsernameMode,
@@ -597,7 +597,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       static_cast<int>(ManagePasswordsViewIDs::kPasswordLabel));
   if (password_form.IsFederatedCredential()) {
     // Federated credentials, there is no note and no copy password button.
-    AddChildView(CreateDetailsRow(vector_icons::kPasswordManagerIcon,
+    AddChildView(CreateDetailsRow(vector_icons::kPasswordManagerOldIcon,
                                   std::move(password_label)));
     return;
   }
@@ -611,7 +611,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
               PasswordManagementBubbleInteractions::
                   kPasswordCopyButtonClicked));
   AddChildView(CreateDetailsRowWithActionButton(
-      vector_icons::kPasswordManagerIcon,
+      vector_icons::kPasswordManagerOldIcon,
       CreatePasswordLabelWithEyeIconView(std::move(password_label),
                                          on_activity_callback_),
       kCopyOldIcon,
@@ -623,7 +623,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
   // another to edit the note, which is hidden by default. Clicking the Edit
   // icon next to the note row will hide the read row, and show the edit row.
   read_note_row_ = AddChildView(CreateDetailsRowWithActionButton(
-      kNotesOldIcon, CreateNoteLabel(password_form), vector_icons::kEditIcon,
+      kNotesOldIcon, CreateNoteLabel(password_form), vector_icons::kEditOldIcon,
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_NOTE_TOOLTIP),
       base::BindRepeating(&ManagePasswordsDetailsView::SwitchToEditNoteMode,
                           base::Unretained(this)),

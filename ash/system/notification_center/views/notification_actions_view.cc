@@ -77,7 +77,7 @@ NotificationActionsView::NotificationActionsView() {
       inline_reply_container_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&NotificationActionsView::SendButtonPressed,
                               base::Unretained(this)),
-          IconButton::Type::kSmallFloating, &vector_icons::kSendIcon,
+          IconButton::Type::kSmallFloating, &vector_icons::kSendOldIcon,
           /*is_togglable=*/false,
           /*has_border*/ true));
   send_button_->SetEnabled(false);

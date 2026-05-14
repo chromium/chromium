@@ -164,7 +164,7 @@ void CastDialogNoSinksView::SetHelpIcon() {
       AddChildViewAt(std::make_unique<HoverButtonHandCursor>(
                          base::BindRepeating(navigate, profile_),
                          ui::ImageModel::FromVectorIcon(
-                             vector_icons::kHelpOutlineIcon,
+                             vector_icons::kHelpOutlineOldIcon,
                              kColorCastDialogHelpIcon, kPrimaryIconSize)),
                      0);
   icon->SetInstallFocusRingOnFocus(true);

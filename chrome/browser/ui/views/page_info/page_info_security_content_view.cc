@@ -64,11 +64,11 @@ void PageInfoSecurityContentView::SetIdentityInfo(
         identity_info.safe_browsing_status ==
             PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE) {
       security_view_->SetIcon(ui::ImageModel::FromVectorIcon(
-          vector_icons::kDangerousIcon, ui::kColorAlertHighSeverity,
+          vector_icons::kDangerousOldIcon, ui::kColorAlertHighSeverity,
           icon_size));
     } else {
       security_view_->SetIcon(ui::ImageModel::FromVectorIcon(
-          vector_icons::kNotSecureWarningIcon, ui::kColorAlertHighSeverity,
+          vector_icons::kNotSecureWarningOldIcon, ui::kColorAlertHighSeverity,
           icon_size));
     }
     security_view_->SetSummary(security_description->summary, STYLE_RED);
@@ -79,7 +79,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
               identity_info.safe_browsing_status ==
                   PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK)) {
     security_view_->SetIcon(
-        PageInfoViewFactory::GetImageModel(vector_icons::kBusinessIcon));
+        PageInfoViewFactory::GetImageModel(vector_icons::kBusinessOldIcon));
     security_view_->SetSummary(security_description->summary,
                                views::style::STYLE_BODY_3_MEDIUM);
   } else {
@@ -122,11 +122,12 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     // Add the Certificate Section.
     const ui::ImageModel icon =
         base::FeatureList::IsEnabled(net::features::kVerifyQWACs)
-            ? PageInfoViewFactory::GetImageModel(vector_icons::kStickyNote2Icon)
+            ? PageInfoViewFactory::GetImageModel(
+                  vector_icons::kStickyNote2OldIcon)
             : (valid_identity ? PageInfoViewFactory::GetImageModel(
-                                    vector_icons::kCertificateIcon)
+                                    vector_icons::kCertificateOldIcon)
                               : PageInfoViewFactory::GetImageModel(
-                                    vector_icons::kCertificateOffIcon));
+                                    vector_icons::kCertificateOffOldIcon));
     const int title_id = (valid_identity && !base::FeatureList::IsEnabled(
                                                 net::features::kVerifyQWACs))
                              ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID

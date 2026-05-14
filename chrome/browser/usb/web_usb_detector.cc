@@ -248,7 +248,7 @@ void WebUsbDetector::OnDeviceAdded(
           IDS_WEBUSB_DEVICE_DETECTED_NOTIFICATION,
           url_formatter::FormatUrlForSecurityDisplay(
               landing_page, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)),
-      ui::ImageModel::FromVectorIcon(vector_icons::kUsbIcon, ui::kColorIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kUsbOldIcon, ui::kColorIcon,
                                      64),
       std::u16string(), GURL(),
 #if BUILDFLAG(IS_CHROMEOS)

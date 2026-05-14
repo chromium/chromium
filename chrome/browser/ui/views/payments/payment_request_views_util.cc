@@ -444,7 +444,7 @@ std::unique_ptr<views::View> CreateWarningView(const std::u16string& message,
     auto warning_icon = std::make_unique<views::ImageView>();
     warning_icon->SetCanProcessEventsWithinSubtree(false);
     warning_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kWarningIcon, ui::kColorAlertHighSeverity, 16));
+        vector_icons::kWarningOldIcon, ui::kColorAlertHighSeverity, 16));
     header_view->AddChildView(std::move(warning_icon));
     label->set_enabled_color_id(ui::kColorAlertHighSeverity);
   }

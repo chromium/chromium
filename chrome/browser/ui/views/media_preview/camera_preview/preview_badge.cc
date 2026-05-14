@@ -44,7 +44,7 @@ std::unique_ptr<views::View> CreatePreviewBadge() {
       ui::kColorSysTertiaryContainer, kRoundedRadius));
 
   const int kIconSize = 12;
-  const auto& icon = vector_icons::kVideocamChromeRefreshIcon;
+  const auto& icon = vector_icons::kVideocamChromeRefreshOldIcon;
   const auto image_model = ui::ImageModel::FromVectorIcon(
       icon, ui::kColorSysOnTertiaryContainer, kIconSize);
   badge_view->AddChildView(

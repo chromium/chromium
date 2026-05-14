@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_for_testing,
-                        &vector_icons::kVideocamChromeRefreshIcon));
+                        &vector_icons::kVideocamChromeRefreshOldIcon));
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_for_testing,
-                        &vector_icons::kMicChromeRefreshIcon));
+                        &vector_icons::kMicChromeRefreshOldIcon));
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
@@ -271,5 +271,5 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       // at once, we show a single indicator with a camera icon.
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_for_testing,
-                        &vector_icons::kVideocamChromeRefreshIcon));
+                        &vector_icons::kVideocamChromeRefreshOldIcon));
 }

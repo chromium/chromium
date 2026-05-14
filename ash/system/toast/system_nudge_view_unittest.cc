@@ -133,7 +133,7 @@ TEST_F(SystemNudgeViewTest, TitleAndLeadingImage) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   const std::u16string title_text = u"Title text";
   const ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kDogfoodIcon, cros_tokens::kCrosSysOnSurface,
+      vector_icons::kDogfoodOldIcon, cros_tokens::kCrosSysOnSurface,
       /*icon_size=*/60);
 
   // Set up base nudge data and add a title and an image model.

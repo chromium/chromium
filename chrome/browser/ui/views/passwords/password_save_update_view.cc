@@ -115,11 +115,11 @@ class CancelSplitButton : public views::View,
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_MORE_OPTIONS));
     caret_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kCaretDownIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kCaretDownOldIcon,
                                        ui::kColorIcon, kCaretIconSize));
     caret_button_->SetImageModel(
         views::Button::STATE_PRESSED,
-        ui::ImageModel::FromVectorIcon(vector_icons::kCaretUpIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kCaretUpOldIcon,
                                        ui::kColorIcon, kCaretIconSize));
     caret_button_->SetStyle(ui::ButtonStyle::kTonal);
     caret_button_->SetMinSize(gfx::Size(0, 0));
@@ -162,7 +162,7 @@ class CancelSplitButton : public views::View,
 
     caret_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kCaretUpIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kCaretUpOldIcon,
                                        ui::kColorIcon, kCaretIconSize));
     caret_button_->SetCornerRadii(gfx::RoundedCornersF(GetOuterRadius()));
     caret_button_->SetBorder(views::CreateEmptyBorder(kCaretButtonBorders));
@@ -185,7 +185,7 @@ class CancelSplitButton : public views::View,
   void OnMenuClosed() {
     caret_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kCaretDownIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kCaretDownOldIcon,
                                        ui::kColorIcon, kCaretIconSize));
     caret_button_->SetBorder(views::CreateEmptyBorder(kCaretButtonBorders));
     caret_button_->SetCornerRadii(GetCaretButtonRadii());

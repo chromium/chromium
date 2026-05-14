@@ -93,7 +93,7 @@ void ShowNotification(Profile* profile,
       title, message, /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), notifier_id, optional_fields,
       base::MakeRefCounted<LocalAuthFactorsNotificationDelegate>(profile),
-      vector_icons::kBusinessIcon,
+      vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
   notification.SetSystemPriority();
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(

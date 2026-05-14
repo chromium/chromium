@@ -45,7 +45,7 @@ std::optional<const gfx::VectorIcon*> GetOverlayIcon(
   DCHECK(HoldingSpaceItem::IsScreenCaptureType(item->type()));
   switch (item->type()) {
     case HoldingSpaceItem::Type::kScreenRecording:
-      return &vector_icons::kPlayArrowIcon;
+      return &vector_icons::kPlayArrowOldIcon;
     case HoldingSpaceItem::Type::kScreenRecordingGif:
       return &kGifIcon;
     case HoldingSpaceItem::Type::kArcDownload:

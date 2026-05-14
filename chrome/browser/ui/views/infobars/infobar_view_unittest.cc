@@ -38,7 +38,7 @@ class TestInfoBarDelegateWithIcon : public infobars::InfoBarDelegate {
   }
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kWarningIcon;
+    return vector_icons::kWarningOldIcon;
   }
 };
 

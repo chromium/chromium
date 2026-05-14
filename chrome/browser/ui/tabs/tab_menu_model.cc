@@ -377,8 +377,8 @@ void TabMenuModel::Build(int index) {
     SetIconForCommandId(
         TabStripModel::CommandToggleSiteMuted,
         ui::ImageModel::FromVectorIcon(
-            will_mute ? vector_icons::kVolumeOffChromeRefreshIcon
-                      : vector_icons::kVolumeUpChromeRefreshIcon,
+            will_mute ? vector_icons::kVolumeOffChromeRefreshOldIcon
+                      : vector_icons::kVolumeUpChromeRefreshOldIcon,
             ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
   }
 

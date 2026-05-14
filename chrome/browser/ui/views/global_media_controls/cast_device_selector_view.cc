@@ -153,8 +153,8 @@ CastDeviceSelectorView::CastDeviceSelectorView(
                               base::Unretained(this)),
           global_media_controls::kEmptyMediaActionButtonId,
           IDS_GLOBAL_MEDIA_CONTROLS_CLOSE_DEVICE_LIST_TEXT,
-          kCloseButtonIconSize, vector_icons::kCloseSmallIcon, kCloseButtonSize,
-          media_color_theme_.secondary_foreground_color_id,
+          kCloseButtonIconSize, vector_icons::kCloseSmallOldIcon,
+          kCloseButtonSize, media_color_theme_.secondary_foreground_color_id,
           media_color_theme_.secondary_foreground_color_id,
           media_color_theme_.focus_ring_color_id);
   close_button_ = cast_header_row->AddChildView(std::move(close_button));

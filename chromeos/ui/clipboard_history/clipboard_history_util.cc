@@ -79,14 +79,14 @@ ui::ImageModel GetIconForDescriptor(const ItemDescriptor& descriptor) {
   switch (descriptor.display_format) {
     case DisplayFormat::kText:
       // TODO(http://b/275629173): Consider a new display format for URLs.
-      icon = IsUrl(descriptor.display_text) ? &vector_icons::kLinkIcon
+      icon = IsUrl(descriptor.display_text) ? &vector_icons::kLinkOldIcon
                                             : &kTextIcon;
       break;
     case DisplayFormat::kPng:
       icon = &kFiletypeImageIcon;
       break;
     case DisplayFormat::kHtml:
-      icon = &vector_icons::kCodeIcon;
+      icon = &vector_icons::kCodeOldIcon;
       break;
     case DisplayFormat::kFile: {
       // If `display_text` is the name of a single file, use the icon
@@ -95,7 +95,7 @@ ui::ImageModel GetIconForDescriptor(const ItemDescriptor& descriptor) {
       icon = descriptor.file_count == 1
                  ? &chromeos::GetIconForPath(base::FilePath(
                        base::UTF16ToUTF8(descriptor.display_text)))
-                 : &vector_icons::kContentCopyIcon;
+                 : &vector_icons::kContentCopyOldIcon;
       break;
     }
     case DisplayFormat::kUnknown:

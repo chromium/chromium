@@ -140,7 +140,7 @@ PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
   close_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PasswordChangeToast::OnCloseButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kCloseChromeRefreshIcon,
+      vector_icons::kCloseChromeRefreshOldIcon,
       layout_provider->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
       ui::kColorToastForeground));
   // Override the image button's border with the appropriate icon border size.

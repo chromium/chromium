@@ -142,9 +142,9 @@ TEST_F(DownloadBubbleRowViewTest, OnlyEnabledQuickActionsVisible) {
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item(), CanShowInFolder()).WillByDefault(Return(true));
   info_->SetQuickActionsForTesting(
-      {{DownloadCommands::PAUSE, u"label", &vector_icons::kPauseIcon},
+      {{DownloadCommands::PAUSE, u"label", &vector_icons::kPauseOldIcon},
        {DownloadCommands::SHOW_IN_FOLDER, u"label",
-        &vector_icons::kFolderIcon}});
+        &vector_icons::kFolderOldIcon}});
   download_item()->NotifyObserversDownloadUpdated();
   ASSERT_EQ(row_view()->info().quick_actions().size(), 2u);
 
@@ -182,7 +182,7 @@ TEST_F(DownloadBubbleRowViewTest, InputProtectorDeniesClicks) {
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item(), CanOpenDownload()).WillByDefault(Return(true));
   info_->SetQuickActionsForTesting({{DownloadCommands::OPEN_WHEN_COMPLETE,
-                                     u"label", &vector_icons::kFolderIcon}});
+                                     u"label", &vector_icons::kFolderOldIcon}});
   download_item()->NotifyObserversDownloadUpdated();
   ASSERT_TRUE(row_view()->IsQuickActionButtonVisibleForTesting(
       DownloadCommands::OPEN_WHEN_COMPLETE));

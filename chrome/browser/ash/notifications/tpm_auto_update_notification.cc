@@ -56,7 +56,7 @@ void ShowAutoUpdateNotification(
                                  notification_id, catalog_name),
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::NotificationDelegate>(),
-      vector_icons::kBusinessIcon,
+      vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_priority(message_center::SYSTEM_PRIORITY);
   notification->set_pinned(pinned);

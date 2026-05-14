@@ -35,7 +35,7 @@ RollBackModeBInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& RollBackModeBInfoBarDelegate::GetVectorIcon() const {
-  return vector_icons::kCookieChromeRefreshIcon;
+  return vector_icons::kCookieChromeRefreshOldIcon;
 }
 
 std::u16string RollBackModeBInfoBarDelegate::GetMessageText() const {

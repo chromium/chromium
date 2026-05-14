@@ -94,9 +94,9 @@ void AiOverlayDialogController::ShowOverlay() {
   if (auto* action_item = actions::ActionManager::Get().FindAction(
           kActionShowAiOverlayDialog,
           browser_->GetActions()->root_action_item())) {
-    action_item->SetImage(
-        ui::ImageModel::FromVectorIcon(vector_icons::kPauseIcon, ui::kColorIcon,
-                                       ui::SimpleMenuModel::kDefaultIconSize));
+    action_item->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kPauseOldIcon, ui::kColorIcon,
+        ui::SimpleMenuModel::kDefaultIconSize));
     action_item->SetProperty(kActionAiOverlayActiveKey, true);
   }
 
@@ -117,9 +117,9 @@ void AiOverlayDialogController::HideOverlay() {
   if (auto* action_item = actions::ActionManager::Get().FindAction(
           kActionShowAiOverlayDialog,
           browser_->GetActions()->root_action_item())) {
-    action_item->SetImage(
-        ui::ImageModel::FromVectorIcon(vector_icons::kMicIcon, ui::kColorIcon,
-                                       ui::SimpleMenuModel::kDefaultIconSize));
+    action_item->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kMicOldIcon, ui::kColorIcon,
+        ui::SimpleMenuModel::kDefaultIconSize));
     action_item->SetProperty(kActionAiOverlayActiveKey, false);
   }
 

@@ -194,7 +194,7 @@ SaveAddressProfileView::SaveAddressProfileView(
   std::u16string address = controller_->GetAddressSummary();
   if (!address.empty()) {
     std::unique_ptr<views::ImageView> icon =
-        CreateAddressSectionIcon(vector_icons::kLocationOnIcon);
+        CreateAddressSectionIcon(vector_icons::kLocationOnOldIcon);
     address_section_icons_.push_back(icon.get());
     AddAddressSection(/*parent_view=*/address_components_view_, std::move(icon),
                       CreateStreetAddressView(address));
@@ -203,7 +203,7 @@ SaveAddressProfileView::SaveAddressProfileView(
   std::u16string phone = controller_->GetProfilePhone();
   if (!phone.empty()) {
     std::unique_ptr<views::ImageView> icon =
-        CreateAddressSectionIcon(vector_icons::kCallIcon);
+        CreateAddressSectionIcon(vector_icons::kCallOldIcon);
     address_section_icons_.push_back(icon.get());
     AddAddressSection(
         /*parent_view=*/address_components_view_, std::move(icon), phone,
@@ -213,7 +213,7 @@ SaveAddressProfileView::SaveAddressProfileView(
   std::u16string email = controller_->GetProfileEmail();
   if (!email.empty()) {
     std::unique_ptr<views::ImageView> icon =
-        CreateAddressSectionIcon(vector_icons::kEmailIcon);
+        CreateAddressSectionIcon(vector_icons::kEmailOldIcon);
     address_section_icons_.push_back(icon.get());
     AddAddressSection(
         /*parent_view=*/address_components_view_, std::move(icon), email,

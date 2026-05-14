@@ -485,7 +485,7 @@ std::unique_ptr<ui::SimpleMenuModel> PhoneHubTray::CreateContextMenuModel() {
   context_menu_model->AddItemWithIcon(
       kHidePhoneHubIconCommandId,
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ICON_DISMISS_TEXT),
-      ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffOldIcon,
                                      ui::kColorAshSystemUIMenuIcon,
                                      kHidePhoneHubContexMenuIconSize));
 

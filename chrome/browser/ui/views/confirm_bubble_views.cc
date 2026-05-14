@@ -47,7 +47,7 @@ ConfirmBubbleViews::ConfirmBubbleViews(
                 bubble->GetWidget()->Close();
               },
               base::Unretained(this)),
-          vector_icons::kHelpOutlineIcon));
+          vector_icons::kHelpOutlineOldIcon));
   help_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(

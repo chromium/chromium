@@ -333,9 +333,9 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
                                      ui::ColorVariant color) {
   const gfx::VectorIcon* icon_id;
   if (icon_type == BookmarkFolderIconType::kNormal) {
-    icon_id = &vector_icons::kFolderChromeRefreshIcon;
+    icon_id = &vector_icons::kFolderChromeRefreshOldIcon;
   } else {
-    icon_id = &vector_icons::kFolderManagedRefreshIcon;
+    icon_id = &vector_icons::kFolderManagedRefreshOldIcon;
   }
   return ui::ImageModel::FromVectorIcon(*icon_id, color);
 }

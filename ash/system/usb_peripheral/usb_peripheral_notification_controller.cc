@@ -300,7 +300,7 @@ void UsbPeripheralNotificationController::OnUsbDeviceOrEndpointLimit() {
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               message_center::HandleNotificationClickDelegate::
                   ButtonClickCallback(base::DoNothing())),
-          vector_icons::kUsbIcon,
+          vector_icons::kUsbOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
 
   message_center_->AddNotification(std::move(notification));

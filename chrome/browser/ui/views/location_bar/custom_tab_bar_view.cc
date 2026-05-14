@@ -319,7 +319,7 @@ void CustomTabBarView::OnThemeChanged() {
   const SkColor foreground_disabled_color =
       color_provider->GetColor(kColorPwaToolbarButtonIconDisabled);
   SetImageFromVectorIconWithColor(
-      close_button_, vector_icons::kCloseRoundedIcon,
+      close_button_, vector_icons::kCloseRoundedOldIcon,
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       {foreground_color, foreground_disabled_color});
 

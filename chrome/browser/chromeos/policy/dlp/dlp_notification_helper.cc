@@ -63,7 +63,7 @@ void ShowDlpNotification(const std::string& id,
           base::BindRepeating(&OnNotificationClicked, id)));
   // Set critical warning color.
   notification.set_accent_color_id(ui::kColorSysError);
-  notification.set_vector_small_image(vector_icons::kBusinessIcon);
+  notification.set_vector_small_image(vector_icons::kBusinessOldIcon);
   notification.set_renotify(true);
   NotificationDisplayServiceFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile())

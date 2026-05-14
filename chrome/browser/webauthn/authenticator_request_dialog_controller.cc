@@ -202,7 +202,7 @@ const gfx::VectorIcon& GetCredentialIcon(AuthenticatorType type) {
   if (type == AuthenticatorType::kPhone) {
     return kSmartphoneOldIcon;
   }
-  return vector_icons::kPasskeyIcon;
+  return vector_icons::kPasskeyOldIcon;
 }
 
 int GetHybridButtonLabel(bool has_security_key) {
@@ -380,10 +380,10 @@ const gfx::VectorIcon& GetMechanismIcon(
           },
           [](const Mechanism::Enclave&) -> const gfx::VectorIcon& {
             // Always use the standard password manager icon here.
-            return vector_icons::kPasswordManagerIcon;
+            return vector_icons::kPasswordManagerOldIcon;
           },
           [](const Mechanism::SignInAgain&) -> const gfx::VectorIcon& {
-            return vector_icons::kSyncIcon;
+            return vector_icons::kSyncOldIcon;
           }},
       type);
 }

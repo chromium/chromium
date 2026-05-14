@@ -73,7 +73,7 @@ void DetachableBaseNotificationController::
               kDetachableBaseNotifierId,
               NotificationCatalogName::kDetachableBaseRequiresUpdate),
           message_center::RichNotificationData(), nullptr,
-          vector_icons::kNotificationWarningIcon,
+          vector_icons::kNotificationWarningOldIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   // Set system priority so the notification gets shown when the user session is
   // blocked.
@@ -148,7 +148,7 @@ void DetachableBaseNotificationController::ShowPairingNotificationIfNeeded() {
               message_center::NotifierType::SYSTEM_COMPONENT,
               kDetachableBaseNotifierId,
               NotificationCatalogName::kDetachableBasePairingNotification),
-          options, nullptr, vector_icons::kNotificationWarningIcon,
+          options, nullptr, vector_icons::kNotificationWarningOldIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 
   message_center::MessageCenter::Get()->AddNotification(

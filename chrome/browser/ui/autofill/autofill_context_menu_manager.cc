@@ -85,7 +85,7 @@ constexpr int kContextMenuIconSize = 16;
 const gfx::VectorIcon& kPlusAddressLogoIcon =
     plus_addresses::kPlusAddressLogoSmallIcon;
 #else
-const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kEmailIcon;
+const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kEmailOldIcon;
 #endif
 
 bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
@@ -308,7 +308,7 @@ void AutofillContextMenuManager::MaybeAddAutofillFeedbackItem() {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
         IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
-        ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon));
+        ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodOldIcon));
 
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
@@ -344,8 +344,8 @@ void AutofillContextMenuManager::MaybeAddAutofillAtMemoryItem() {
   menu_model_->AddItemWithStringIdAndIcon(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
       IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSearchIcon, ui::kColorIcon,
-                                     kContextMenuIconSize));
+      ui::ImageModel::FromVectorIcon(vector_icons::kSearchOldIcon,
+                                     ui::kColorIcon, kContextMenuIconSize));
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 }
 
@@ -474,7 +474,7 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
       menu_model_->SetIconForCommandId(
           IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kPasswordManagerIcon, ui::kColorMenuIcon,
+              vector_icons::kPasswordManagerOldIcon, ui::kColorMenuIcon,
               ui::SimpleMenuModel::kDefaultIconSize));
     }
   }

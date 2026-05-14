@@ -81,7 +81,7 @@ class SettingsButton : public views::ImageButton {
       : views::ImageButton(std::move(callback)) {
     SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+        ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
                                        kHUDDefaultColor, kHUDSettingsIconSize));
     SetBorder(views::CreateEmptyBorder(kHUDSettingsIconBorder));
     SetProperty(kHUDClickHandler, HTCLIENT);

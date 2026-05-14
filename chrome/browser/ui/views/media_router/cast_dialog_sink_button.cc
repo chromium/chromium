@@ -76,7 +76,7 @@ std::unique_ptr<views::View> CreatePrimaryIconForSink(const UIMediaSink& sink) {
         kGenericStopOldIcon, ui::kColorAccent, kPrimaryIconSize));
   } else if (sink.issue) {
     auto icon = std::make_unique<views::ImageView>(
-        ui::ImageModel::FromVectorIcon(::vector_icons::kInfoOutlineIcon,
+        ui::ImageModel::FromVectorIcon(::vector_icons::kInfoOutlineOldIcon,
                                        ui::kColorIcon, kPrimaryIconSize));
     icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
     return icon;
@@ -251,7 +251,7 @@ const gfx::VectorIcon* CastDialogSinkButton::GetVectorIcon(
 
 // static
 const gfx::VectorIcon* CastDialogSinkButton::GetVectorIcon(UIMediaSink sink) {
-  return sink.issue ? &::vector_icons::kInfoOutlineIcon
+  return sink.issue ? &::vector_icons::kInfoOutlineOldIcon
                     : GetVectorIcon(sink.icon_type);
 }
 

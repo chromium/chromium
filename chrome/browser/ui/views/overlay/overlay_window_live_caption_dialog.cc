@@ -50,7 +50,7 @@ OverlayWindowLiveCaptionDialog::OverlayWindowLiveCaptionDialog(Profile* profile)
 
   auto live_caption_image = std::make_unique<views::ImageView>();
   live_caption_image->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kLiveCaptionOnIcon, ui::kColorIcon, kImageWidthDip));
+      vector_icons::kLiveCaptionOnOldIcon, ui::kColorIcon, kImageWidthDip));
   live_caption_container->AddChildView(std::move(live_caption_image));
 
   auto live_caption_title =

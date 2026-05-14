@@ -45,7 +45,7 @@ TEST(SystemNotificationBuilderTest, TrivialSetters) {
           .SetDelegate(base::MakeRefCounted<
                        message_center::HandleNotificationClickDelegate>(
               base::DoNothingAs<void()>()))
-          .SetSmallImage(vector_icons::kSettingsIcon)
+          .SetSmallImage(vector_icons::kSettingsOldIcon)
           .SetOptionalFields(optional_data)
           .SetWarningLevel(
               message_center::SystemNotificationWarningLevel::WARNING)
@@ -58,7 +58,8 @@ TEST(SystemNotificationBuilderTest, TrivialSetters) {
   EXPECT_EQ(notification.display_source(), u"test");
   EXPECT_TRUE(notification.origin_url().is_valid());
   EXPECT_NE(notification.delegate(), nullptr);
-  EXPECT_EQ(&notification.vector_small_image(), &vector_icons::kSettingsIcon);
+  EXPECT_EQ(&notification.vector_small_image(),
+            &vector_icons::kSettingsOldIcon);
   EXPECT_EQ(notification.rich_notification_data().progress, 1);
   EXPECT_EQ(notification.system_notification_warning_level(),
             message_center::SystemNotificationWarningLevel::WARNING);

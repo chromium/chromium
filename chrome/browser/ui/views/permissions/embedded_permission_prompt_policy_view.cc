@@ -62,7 +62,7 @@ std::u16string EmbeddedPermissionPromptPolicyView::GetWindowTitle() const {
 }
 
 const gfx::VectorIcon& EmbeddedPermissionPromptPolicyView::GetIcon() const {
-  return vector_icons::kBusinessIcon;
+  return vector_icons::kBusinessOldIcon;
 }
 
 void EmbeddedPermissionPromptPolicyView::RunButtonCallback(int button_id) {

@@ -318,8 +318,8 @@ void MaybeRegisterChromeFeaturePromos(
   // This icon got updated, so select the 2023 Refresh version.
   // Note that the WebUI refresh state is not taken into account, so
   // this selection will affect both Views and WebUI help bubbles.
-  const gfx::VectorIcon* const kLightbulbOutlineIcon =
-      &vector_icons::kLightbulbOutlineChromeRefreshIcon;
+  const gfx::VectorIcon* const kLightbulbOutlineOldIcon =
+      &vector_icons::kLightbulbOutlineChromeRefreshOldIcon;
 
   // Verify that we haven't already registered the expected features.
   // Use a known test feature that is unlikely to change.
@@ -536,7 +536,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "externally-saved card.")));
 
 
-
   // TODO(crbug.com/404437008): Update with final IPH strings.
   // kIPHAutofillEnableLoyaltyCardsFeature:
   registry.RegisterFeature(std::move(
@@ -618,7 +617,7 @@ void MaybeRegisterChromeFeaturePromos(
                 tutorial_service->LogIPHLinkClicked(tutorial_id, true);
               }))
           .SetBubbleArrow(HelpBubbleArrow::kNone)
-          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineOldIcon)
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)
           // See: crbug.com/40075441
@@ -869,7 +868,7 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_BODY,
           kPasswordManagerTutorialId)
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
-          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineOldIcon)
           .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE)));
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
@@ -926,7 +925,7 @@ void MaybeRegisterChromeFeaturePromos(
           feature_engagement::kIPHLensOverlayFeature,
           kToolbarAppMenuButtonElementId,
           IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_INTRO_BODY, kLensOverlayTutorialId)
-          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineOldIcon)
           .SetBubbleTitleText(IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_INTRO_HEADER)
           .SetMetadata(131, "nguyenbryan@google.com",
                        "Triggered by certain URLs to start the Lens Overlay "
@@ -941,7 +940,7 @@ void MaybeRegisterChromeFeaturePromos(
                     IDS_PASSWORD_MANAGER_IPH_SHARE_PASSWORD_BUTTON_SCREENREADER,
                     FeaturePromoSpecification::AcceleratorInfo())
                     .SetInAnyContext(true)
-                    .SetBubbleIcon(kLightbulbOutlineIcon)
+                    .SetBubbleIcon(kLightbulbOutlineOldIcon)
                     .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 
   // kIPHPowerBookmarksSidePanelFeature:
@@ -986,7 +985,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleTitleText(
               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN_REMINDER)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetBubbleIcon(&vector_icons::kCelebrationIcon)
+          .SetBubbleIcon(&vector_icons::kCelebrationOldIcon)
           .SetReshowPolicy(base::Days(14), /*max_show_count=*/6)));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -1033,7 +1032,7 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetBubbleTitleText(IDS_COOKIE_CONTROLS_PROMO_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineOldIcon)
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(
               IDS_COOKIE_CONTROLS_PROMO_CLOSE_BUTTON_TEXT)));
@@ -1124,7 +1123,7 @@ void MaybeRegisterChromeFeaturePromos(
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleTitleText(IDS_RESUMPTION_RAIL_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+          .SetBubbleIcon(&vector_icons::kLightbulbOutlineOldIcon)
           .SetMetadata(147, "gqueen@chromium.org",
                        "Triggered to educate users about the Resumption Rail "
                        "feature entrypoint.")));
@@ -1160,7 +1159,7 @@ void MaybeRegisterChromeFeaturePromos(
           kBrowserDialogAnchorElementId,
           IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_BODY, kSplitViewTutorialId)
           .SetBubbleArrow(HelpBubbleArrow::kNone)
-          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineOldIcon)
           .SetBubbleTitleText(IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_TITLE)
           .SetMetadata(141, "lugli@google.com",
                        "Triggered when user swaps between two tabs three times "
@@ -1199,7 +1198,7 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetBubbleIcon(&vector_icons::kCelebrationIcon)
+          .SetBubbleIcon(&vector_icons::kCelebrationOldIcon)
           .SetMetadata(
               126, "dfried@chromium.org, jdonnelly@google.com",
               "Triggered when the lens overlay side panel is pinned.")));
@@ -1346,7 +1345,7 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetPromoSubtype(
               FeaturePromoSpecification::PromoSubtype::kActionableAlert)
-          .SetBubbleIcon(&vector_icons::kFamilyLinkIcon)
+          .SetBubbleIcon(&vector_icons::kFamilyLinkOldIcon)
           .SetBubbleTitleText(IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetCustomActionIsDefault(false)
@@ -1406,7 +1405,7 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_BODY,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineOldIcon)
           .SetBubbleTitleText(IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_TITLE)
           .SetMetadata(136, "emshack@chromium.org",
                        "Triggered when the tab search button has been moved "
@@ -1448,7 +1447,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT)
           .SetInAnyContext(true)
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
-          .SetBubbleIcon(&vector_icons::kCelebrationIcon)
+          .SetBubbleIcon(&vector_icons::kCelebrationOldIcon)
           .SetMetadata(
               90, "dfried@chromium.org",
               "This is a test IPH, designed to verify that IPH can attach to "
@@ -1558,7 +1557,7 @@ void MaybeRegisterChromeFeaturePromos(
                     IDS_MERCHANT_TRUST_IPH_BODY_SCREEN_READER,
                     FeaturePromoSpecification::AcceleratorInfo())
                     .SetBubbleTitleText(IDS_MERCHANT_TRUST_IPH_TITLE)
-                    .SetBubbleIcon(&vector_icons::kStorefrontIcon)
+                    .SetBubbleIcon(&vector_icons::kStorefrontOldIcon)
                     .SetMetadata(134, "tommasin@chromium.org",
                                  "Triggered when the merchant trust entry "
                                  "point is shown and expanded.")));
@@ -1812,7 +1811,7 @@ void MaybeRegisterChromeFeaturePromos(
           kBrowserDialogAnchorElementId, IDS_VERTICAL_TABS_IPH_BODY,
           kVerticalTabsTutorialId)
           .SetBubbleArrow(HelpBubbleArrow::kNone)
-          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineOldIcon)
           .SetBubbleTitleText(IDS_VERTICAL_TABS_IPH_TITLE)
           .SetMetadata(
               147, "charlesmeng@google.com",
@@ -1831,7 +1830,7 @@ void MaybeRegisterChromeFeaturePromos(
           kVerticalTabStripCollapseButtonElementId,
           expand_on_hover_iph_body_string_id)
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineOldIcon)
           .SetMetadata(148, "charlesmeng@chromium.org",
                        "Triggered when the vertical tabs is enabled and the "
                        "user has not enabled expand on hover before.")));

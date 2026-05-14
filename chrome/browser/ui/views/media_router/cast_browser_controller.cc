@@ -99,13 +99,13 @@ void CastBrowserController::UpdateIcon() {
 
   if ((!issue_severity_ || issue_severity_ == Severity::NOTIFICATION) &&
       !has_local_route_) {
-    new_icon = &vector_icons::kMediaRouterIdleChromeRefreshIcon;
+    new_icon = &vector_icons::kMediaRouterIdleChromeRefreshOldIcon;
   } else if (issue_severity_ == Severity::WARNING) {
-    new_icon = &vector_icons::kMediaRouterWarningChromeRefreshIcon;
+    new_icon = &vector_icons::kMediaRouterWarningChromeRefreshOldIcon;
   } else if (is_frozen) {
-    new_icon = &vector_icons::kMediaRouterPausedIcon;
+    new_icon = &vector_icons::kMediaRouterPausedOldIcon;
   } else {
-    new_icon = &vector_icons::kMediaRouterActiveChromeRefreshIcon;
+    new_icon = &vector_icons::kMediaRouterActiveChromeRefreshOldIcon;
     active = true;
   }
 
@@ -173,7 +173,7 @@ void CastBrowserController::ToggleDialog() {
 }
 
 void CastBrowserController::LogIconChange(const gfx::VectorIcon* icon) {
-  if (icon == &vector_icons::kMediaRouterIdleChromeRefreshIcon) {
+  if (icon == &vector_icons::kMediaRouterIdleChromeRefreshOldIcon) {
     logger_->LogInfo(
         mojom::LogCategory::kUi, kLoggerComponent,
         "Cast toolbar icon indicates no active session nor issues.", "", "",
@@ -181,16 +181,16 @@ void CastBrowserController::LogIconChange(const gfx::VectorIcon* icon) {
   } else if (icon == &vector_icons::kMediaRouterErrorIcon) {
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon shows a fatal issue.", "", "", "");
-  } else if (icon == &vector_icons::kMediaRouterWarningChromeRefreshIcon) {
+  } else if (icon == &vector_icons::kMediaRouterWarningChromeRefreshOldIcon) {
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon shows a warning issue.", "", "", "");
-  } else if (icon == &vector_icons::kMediaRouterPausedIcon) {
+  } else if (icon == &vector_icons::kMediaRouterPausedOldIcon) {
     logger_->LogInfo(
         mojom::LogCategory::kUi, kLoggerComponent,
         "Cast toolbar icon indicated there is a paused mirroring session.", "",
         "", "");
   } else {
-    CHECK_EQ(icon, &vector_icons::kMediaRouterActiveChromeRefreshIcon);
+    CHECK_EQ(icon, &vector_icons::kMediaRouterActiveChromeRefreshOldIcon);
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon is blue, indicating an active session.",
                      "", "", "");

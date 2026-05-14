@@ -840,13 +840,13 @@ void MediaStreamCaptureIndicator::GetStatusTrayIconInfo(
   const gfx::VectorIcon* icon = nullptr;
   if (audio && video) {
     message_id = IDS_MEDIA_STREAM_STATUS_TRAY_TEXT_AUDIO_AND_VIDEO;
-    icon = &vector_icons::kVideocamIcon;
+    icon = &vector_icons::kVideocamOldIcon;
   } else if (audio && !video) {
     message_id = IDS_MEDIA_STREAM_STATUS_TRAY_TEXT_AUDIO_ONLY;
-    icon = &vector_icons::kMicIcon;
+    icon = &vector_icons::kMicOldIcon;
   } else if (!audio && video) {
     message_id = IDS_MEDIA_STREAM_STATUS_TRAY_TEXT_VIDEO_ONLY;
-    icon = &vector_icons::kVideocamIcon;
+    icon = &vector_icons::kVideocamOldIcon;
   }
 
   *tool_tip = l10n_util::GetStringUTF16(message_id);

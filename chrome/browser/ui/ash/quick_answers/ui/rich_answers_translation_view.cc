@@ -144,7 +144,7 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
       weak_factory_.GetWeakPtr(), translation_result_.translated_text,
       translation_result_.target_locale);
   ui::ImageModel read_image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kVolumeUpIcon, ui::kColorSysOnSurface,
+      vector_icons::kVolumeUpOldIcon, ui::kColorSysOnSurface,
       /*icon_size=*/kRichAnswersIconSizeDip);
   container_view->AddChildView(CreateImageButtonView(
       read_closure, read_image_model, ui::kColorSysStateHoverOnSubtle,
@@ -156,7 +156,7 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
       &RichAnswersTranslationView::OnCopyButtonPressed,
       weak_factory_.GetWeakPtr(), translation_result_.translated_text);
   ui::ImageModel copy_image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kContentCopyIcon, ui::kColorSysOnSurface,
+      vector_icons::kContentCopyOldIcon, ui::kColorSysOnSurface,
       /*icon_size=*/kRichAnswersIconSizeDip);
   container_view->AddChildView(CreateImageButtonView(
       copy_closure, copy_image_model, ui::kColorSysStateHoverOnSubtle,

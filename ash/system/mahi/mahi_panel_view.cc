@@ -723,7 +723,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           .SetViewId(mahi_constants::ViewId::kAskQuestionSendButton)
           .SetType(IconButton::Type::kSmallFloating)
           .SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase1)
-          .SetVectorIcon(&vector_icons::kSendIcon)
+          .SetVectorIcon(&vector_icons::kSendOldIcon)
           .SetCallback(base::BindRepeating(&MahiPanelView::OnSendButtonPressed,
                                            weak_ptr_factory_.GetWeakPtr()))
           .SetAccessibleName(l10n_util::GetStringUTF16(
@@ -733,10 +733,10 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
 
   send_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon));
+      ui::ImageModel::FromVectorIcon(vector_icons::kSendOldIcon));
   send_button_->SetImageModel(
       views::Button::STATE_DISABLED,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSendOldIcon,
                                      ui::kColorSysStateDisabled));
 
   question_textfield_->RemoveHoverEffect();

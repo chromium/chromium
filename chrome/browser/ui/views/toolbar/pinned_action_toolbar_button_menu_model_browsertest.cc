@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(PinnedActionToolbarButtonMenuModelBrowserTest,
   const std::u16string test_child_string1 = u"test_child_string1";
   const std::u16string test_child_string2 = u"test_child_string2";
   const auto test_child_icon1 = ui::ImageModel::FromVectorIcon(
-      vector_icons::kBackArrowIcon, ui::kColorSysPrimary,
+      vector_icons::kBackArrowOldIcon, ui::kColorSysPrimary,
       ui::SimpleMenuModel::kDefaultIconSize);
   // Add two child actions
   action_item()->AddChild(actions::ActionItem::Builder()

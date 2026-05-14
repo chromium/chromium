@@ -111,7 +111,7 @@ void RenderViewContextMenuBase::AddCustomItemsToMenu(
         if (item->is_experimental_feature) {
           menu_model->SetMinorIcon(
               menu_model->GetItemCount() - 1,
-              ui::ImageModel::FromVectorIcon(vector_icons::kScienceIcon));
+              ui::ImageModel::FromVectorIcon(vector_icons::kScienceOldIcon));
         }
         if (!item->feature_name.empty()) {
           menu_model->SetIsNewFeatureAt(
@@ -138,7 +138,7 @@ void RenderViewContextMenuBase::AddCustomItemsToMenu(
         if (item->is_experimental_feature) {
           menu_model->SetMinorIcon(
               menu_model->GetItemCount() - 1,
-              ui::ImageModel::FromVectorIcon(vector_icons::kScienceIcon));
+              ui::ImageModel::FromVectorIcon(vector_icons::kScienceOldIcon));
         }
         break;
       }

@@ -349,7 +349,7 @@ class TouchBarNotificationBridge : public CommandObserver,
       [[NSCustomTouchBarItem alloc] initWithIdentifier:identifier];
   if ([identifier hasSuffix:kBackTouchId]) {
     auto* button =
-        CreateTouchBarButton(vector_icons::kBackArrowChromeRefreshIcon, self,
+        CreateTouchBarButton(vector_icons::kBackArrowChromeRefreshOldIcon, self,
                              IDC_BACK, IDS_ACCNAME_BACK);
     [button bind:@"enabled" toObject:self withKeyPath:@"canGoBack" options:nil];
     [touchBarItem setView:button];
@@ -357,8 +357,8 @@ class TouchBarNotificationBridge : public CommandObserver,
         setCustomizationLabel:l10n_util::GetNSString(IDS_ACCNAME_BACK)];
   } else if ([identifier hasSuffix:kForwardTouchId]) {
     auto* button =
-        CreateTouchBarButton(vector_icons::kForwardArrowChromeRefreshIcon, self,
-                             IDC_FORWARD, IDS_ACCNAME_FORWARD);
+        CreateTouchBarButton(vector_icons::kForwardArrowChromeRefreshOldIcon,
+                             self, IDC_FORWARD, IDS_ACCNAME_FORWARD);
     [button bind:@"enabled"
            toObject:self
         withKeyPath:@"canGoForward"
@@ -578,11 +578,11 @@ class TouchBarNotificationBridge : public CommandObserver,
         gfx::CreateVectorIcon(vector_icons::kGoogleGLogoIcon,
                               kOldTouchBarIconSize, gfx::kPlaceholderColor));
   } else {
-    image = CreateNSImageFromIcon(vector_icons::kSearchChromeRefreshIcon);
+    image = CreateNSImageFromIcon(vector_icons::kSearchChromeRefreshOldIcon);
   }
 #endif
   if (!image) {
-    image = CreateNSImageFromIcon(vector_icons::kSearchChromeRefreshIcon);
+    image = CreateNSImageFromIcon(vector_icons::kSearchChromeRefreshOldIcon);
   }
 
   if (!_searchButton) {
@@ -671,7 +671,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 + (NSImage*)reloadIcon {
   static __strong NSImage* reloadIcon =
-      CreateNSImageFromIcon(vector_icons::kReloadChromeRefreshIcon);
+      CreateNSImageFromIcon(vector_icons::kReloadChromeRefreshOldIcon);
   return reloadIcon;
 }
 

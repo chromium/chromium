@@ -212,7 +212,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
           base::Unretained(delegate_))));
   close_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshOldIcon,
                                      ui::kColorIcon, kAnchoredMessageIconSize));
   close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE));
   close_button_->SetProperty(views::kMarginsKey,
@@ -309,7 +309,7 @@ void AnchoredMessageBubbleView::OnThemeChanged() {
     close_button_->SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
-            vector_icons::kCloseChromeRefreshIcon,
+            vector_icons::kCloseChromeRefreshOldIcon,
             color_provider->GetColor(ui::kColorSysOnSurfaceVariant),
             kAnchoredMessageIconSize));
   }

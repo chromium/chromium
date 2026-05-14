@@ -573,7 +573,7 @@ HoverHighlightView* AccessibilityDetailedView::AddLiveCaptionView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->live_caption().enabled();
   return AddScrollListFeatureItem(
-      container, vector_icons::kLiveCaptionOnIcon,
+      container, vector_icons::kLiveCaptionOnOldIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION), checked,
       controller->IsEnterpriseIconVisibleForLiveCaption());
 }

@@ -1485,7 +1485,7 @@ LensOverlayController::GetPreselectionBubbleConfig() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       .icon = &vector_icons::kGoogleLensMonochromeLogoIcon
 #else
-      .icon = &vector_icons::kSearchChromeRefreshIcon
+      .icon = &vector_icons::kSearchChromeRefreshOldIcon
 #endif
   };
 }

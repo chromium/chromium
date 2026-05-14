@@ -378,10 +378,11 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
               GetCscIndicatorButtonLabel(browser, i),
               l10n_util::GetStringUTF16(
                   IDS_TAB_SHARING_INFOBAR_CAPTURED_SURFACE_CONTROL_PERMISSION_BUTTON));
-          EXPECT_EQ(GetCscIndicatorButtonImage(browser, i),
-                    ui::ImageModel::FromVectorIcon(
-                        vector_icons::kTouchpadMouseIcon, ui::kColorSysPrimary,
-                        /*icon_size=*/16));
+          EXPECT_EQ(
+              GetCscIndicatorButtonImage(browser, i),
+              ui::ImageModel::FromVectorIcon(
+                  vector_icons::kTouchpadMouseOldIcon, ui::kColorSysPrimary,
+                  /*icon_size=*/16));
         }
       } else if (i == captured_tab) {
         // Captured-tab's infobar.

@@ -44,11 +44,11 @@ base::optional_ref<const gfx::VectorIcon> GetVectorIconForType(FieldType type) {
     case AddressUIComponentIconType::kName:
       return kAccountCircleOldIcon;
     case AddressUIComponentIconType::kAddress:
-      return vector_icons::kLocationOnIcon;
+      return vector_icons::kLocationOnOldIcon;
     case AddressUIComponentIconType::kEmail:
-      return vector_icons::kEmailIcon;
+      return vector_icons::kEmailOldIcon;
     case AddressUIComponentIconType::kPhone:
-      return vector_icons::kCallIcon;
+      return vector_icons::kCallOldIcon;
   }
 }
 

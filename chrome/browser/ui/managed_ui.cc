@@ -139,11 +139,11 @@ const gfx::VectorIcon& GetManagedUiIcon(Profile* profile) {
   CHECK(ShouldDisplayManagedUi(profile));
 
   if (enterprise_util::IsBrowserManaged(profile)) {
-    return vector_icons::kBusinessChromeRefreshIcon;
+    return vector_icons::kBusinessChromeRefreshOldIcon;
   }
 
   CHECK(ShouldDisplayManagedByParentUi(profile));
-  return vector_icons::kFamilyLinkIcon;
+  return vector_icons::kFamilyLinkOldIcon;
 }
 
 std::u16string GetManagedUiMenuItemLabel(Profile* profile) {

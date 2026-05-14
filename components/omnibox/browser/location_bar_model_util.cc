@@ -38,21 +38,21 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
       if (base::FeatureList::IsEnabled(
               security_interstitials::features::kHttpsFirstDialogUi) &&
           visible_security_state->is_https_only_mode_upgraded) {
-        return vector_icons::kNoEncryptionIcon;
+        return vector_icons::kNoEncryptionOldIcon;
       }
-      return vector_icons::kNotSecureWarningChromeRefreshIcon;
+      return vector_icons::kNotSecureWarningChromeRefreshOldIcon;
     case security_state::DANGEROUS:
       if (malicious_content_status ==
               security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN ||
           malicious_content_status ==
               security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK) {
-        return vector_icons::kBusinessChromeRefreshIcon;
+        return vector_icons::kBusinessChromeRefreshOldIcon;
       }
       if (malicious_content_status !=
           security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
-        return vector_icons::kDangerousChromeRefreshIcon;
+        return vector_icons::kDangerousChromeRefreshOldIcon;
       }
-      return vector_icons::kNotSecureWarningChromeRefreshIcon;
+      return vector_icons::kNotSecureWarningChromeRefreshOldIcon;
 
     case security_state::SECURITY_LEVEL_COUNT:
       NOTREACHED();

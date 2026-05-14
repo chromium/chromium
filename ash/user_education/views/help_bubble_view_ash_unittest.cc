@@ -121,13 +121,13 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         /*body_icon_from_params=*/::testing::Values(
             std::make_optional(std::cref(gfx::VectorIcon::EmptyIcon())),
-            std::make_optional(std::cref(vector_icons::kCelebrationIcon)),
-            std::make_optional(std::cref(vector_icons::kHelpIcon)),
+            std::make_optional(std::cref(vector_icons::kCelebrationOldIcon)),
+            std::make_optional(std::cref(vector_icons::kHelpOldIcon)),
             std::nullopt),
         /*body_icon_from_extended_properties=*/::testing::Values(
             std::make_optional(std::cref(gfx::VectorIcon::EmptyIcon())),
-            std::make_optional(std::cref(vector_icons::kCelebrationIcon)),
-            std::make_optional(std::cref(vector_icons::kHelpIcon)),
+            std::make_optional(std::cref(vector_icons::kCelebrationOldIcon)),
+            std::make_optional(std::cref(vector_icons::kHelpOldIcon)),
             std::nullopt)));
 
 // Tests -----------------------------------------------------------------------

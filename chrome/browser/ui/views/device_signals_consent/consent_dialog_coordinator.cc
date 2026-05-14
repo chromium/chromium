@@ -42,7 +42,7 @@ std::unique_ptr<ConsentRequester>* GetTestInstanceStorage() {
 
 ui::ImageModel GetIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, ui::kColorIcon,
+      vector_icons::kBusinessOldIcon, ui::kColorIcon,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }

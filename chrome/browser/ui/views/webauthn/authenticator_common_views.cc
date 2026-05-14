@@ -41,7 +41,7 @@ std::unique_ptr<views::View> CreatePasskeyWithUsernameLabel(
   container->SetBetweenChildSpacing(kHorizontalSpacing);
   container->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kPasskeyIcon, ui::kColorIcon, kMediumIconSize)));
+          vector_icons::kPasskeyOldIcon, ui::kColorIcon, kMediumIconSize)));
 
   auto username_column = std::make_unique<views::BoxLayoutView>();
   username_column->SetOrientation(views::BoxLayout::Orientation::kVertical);

@@ -427,7 +427,7 @@ ui::ImageModel GetLensContextMenuIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       vector_icons::kGoogleLensMonochromeLogoIcon
 #else
-      vector_icons::kSearchChromeRefreshIcon
+      vector_icons::kSearchChromeRefreshOldIcon
 #endif
   );
 }

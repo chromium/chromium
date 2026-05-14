@@ -222,7 +222,7 @@ class TabSharingInfoBarDelegate::CscIndicatorButton
 
   ui::ImageModel GetImage() const override {
     return ui::ImageModel::FromVectorIcon(
-        vector_icons::kTouchpadMouseIcon, ui::kColorSysPrimary,
+        vector_icons::kTouchpadMouseOldIcon, ui::kColorSysPrimary,
         kCapturedSurfaceControlIndicatorButtonIconHeight);
   }
 
@@ -388,8 +388,8 @@ bool TabSharingInfoBarDelegate::IsCloseable() const {
 
 const gfx::VectorIcon& TabSharingInfoBarDelegate::GetVectorIcon() const {
   return base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks)
-             ? vector_icons::kScreenShareIcon
-             : vector_icons::kScreenShareOldIcon;
+             ? vector_icons::kScreenShareOldIcon
+             : vector_icons::kScreenShareOldOldIcon;
 }
 
 const TabSharingInfoBarDelegateButton& TabSharingInfoBarDelegate::GetButton(

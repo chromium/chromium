@@ -70,7 +70,7 @@ void ShowArcMigrationGuideNotification(Profile* profile) {
       l10n_util::GetStringUTF16(IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_TITLE),
       message, std::u16string(), GURL(), notifier_id,
       message_center::RichNotificationData(), std::move(delegate),
-      vector_icons::kSettingsIcon,
+      vector_icons::kSettingsOldIcon,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   notification.set_renotify(true);
 

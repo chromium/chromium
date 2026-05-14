@@ -34,7 +34,7 @@ DesktopDataControlsDialog::TestObserver* observer_for_testing_ = nullptr;
 std::unique_ptr<views::View> CreateEnterpriseIcon() {
   auto enterprise_icon = std::make_unique<views::ImageView>();
   enterprise_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, ui::kColorSysOnSurfaceSubtle,
+      vector_icons::kBusinessOldIcon, ui::kColorSysOnSurfaceSubtle,
       kBusinessIconSize));
   return enterprise_icon;
 }

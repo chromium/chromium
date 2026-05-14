@@ -192,7 +192,7 @@ void InsertFooterContentV2(
           .AddChildren(
               views::Builder<views::ImageView>().SetImage(
                   ui::ImageModel::FromVectorIcon(
-                      vector_icons::kHelpOutlineIcon,
+                      vector_icons::kHelpOutlineOldIcon,
                       cros_tokens::kCrosSysOnSurfaceVariant,
                       ClipboardHistoryViews::kFooterContentV2IconSize)),
               views::Builder<views::StyledLabel>()

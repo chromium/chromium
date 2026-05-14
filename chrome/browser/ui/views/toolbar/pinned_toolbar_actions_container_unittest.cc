@@ -142,7 +142,7 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     action->SetText(u"Test Action");
     action->SetTooltipText(u"Test Action");
     action->SetImage(
-        ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon));
+        ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodOldIcon));
     action->SetVisible(true);
     action->SetEnabled(true);
     action->SetProperty(actions::kActionItemPinnableKey,

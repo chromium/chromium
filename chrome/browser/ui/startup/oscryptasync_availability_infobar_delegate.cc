@@ -69,7 +69,7 @@ OSCryptAsyncAvailabilityInfoBarDelegate::GetPriority() const {
 
 const gfx::VectorIcon& OSCryptAsyncAvailabilityInfoBarDelegate::GetVectorIcon()
     const {
-  return vector_icons::kErrorIcon;
+  return vector_icons::kErrorOldIcon;
 }
 
 std::u16string OSCryptAsyncAvailabilityInfoBarDelegate::GetMessageText() const {

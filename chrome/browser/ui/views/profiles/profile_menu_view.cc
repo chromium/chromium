@@ -952,14 +952,14 @@ void ProfileMenuView::MaybeBuildBatchUploadButton() {
       base::BindRepeating(&ProfileMenuView::OnBatchUploadButtonClicked,
                           base::Unretained(this),
                           ActionableItem::kBatchUploadButton),
-      vector_icons::kSaveCloudIcon);
+      vector_icons::kSaveCloudOldIcon);
 }
 
 void ProfileMenuView::BuildAutofillSettingsButton() {
   CHECK(!profile().IsGuestSession());
 
   int message_id = IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON;
-  const gfx::VectorIcon& icon = vector_icons::kPasswordManagerIcon;
+  const gfx::VectorIcon& icon = vector_icons::kPasswordManagerOldIcon;
   auto action = base::FeatureList::IsEnabled(
                     autofill::features::kYourSavedInfoSettingsPage)
                     ? &ProfileMenuView::OnYourSavedInfoSettingsButtonClicked
@@ -975,7 +975,7 @@ void ProfileMenuView::BuildCustomizeProfileButton() {
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON),
       base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kEditChromeRefreshIcon);
+      vector_icons::kEditChromeRefreshOldIcon);
 }
 
 void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
@@ -1004,7 +1004,7 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_ACCOUNT_SETTINGS_BUTTON),
       base::BindRepeating(&ProfileMenuView::OnAccountSettingsButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kSettingsChromeRefreshIcon);
+      vector_icons::kSettingsChromeRefreshOldIcon);
 }
 
 void ProfileMenuView::MaybeBuildChromeAccountSettingsButtonWithSync() {
@@ -1028,7 +1028,7 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButtonWithSync() {
   }
 
   int message_id = IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS;
-  const gfx::VectorIcon* icon = &vector_icons::kSettingsChromeRefreshIcon;
+  const gfx::VectorIcon* icon = &vector_icons::kSettingsChromeRefreshOldIcon;
   if (signin_util::GetSignedInState(identity_manager) ==
       signin_util::SignedInState::kSyncing) {
     // Indicates clearly that Sync is ON.
@@ -1062,7 +1062,7 @@ void ProfileMenuView::MaybeBuildGoogleServicesSettingsButton() {
       base::BindRepeating(
           &ProfileMenuView::OnGoogleServicesSettingsButtonClicked,
           base::Unretained(this)),
-      vector_icons::kSettingsChromeRefreshIcon);
+      vector_icons::kSettingsChromeRefreshOldIcon);
 }
 
 void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
@@ -1100,7 +1100,7 @@ void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
       l10n_util::GetStringUTF16(IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT),
       base::BindRepeating(&ProfileMenuView::OnManageGoogleAccountButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kFilterIcon);
+      vector_icons::kFilterOldIcon);
 #endif
 }
 
@@ -1137,7 +1137,7 @@ void ProfileMenuView::MaybeBuildCloseBrowsersButton() {
 
   AddFeatureButton(
       l10n_util::GetPluralStringFUTF16(button_title_id, window_count),
-      std::move(callback), vector_icons::kCloseChromeRefreshIcon);
+      std::move(callback), vector_icons::kCloseChromeRefreshOldIcon);
 }
 
 void ProfileMenuView::MaybeBuildSignoutButton() {

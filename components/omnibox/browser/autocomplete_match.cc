@@ -517,11 +517,11 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         // When not specified, fall back on regular match icon logic below.
         break;
       case omnibox::SuggestTemplateInfo::HISTORY:
-        return vector_icons::kHistoryChromeRefreshIcon;
+        return vector_icons::kHistoryChromeRefreshOldIcon;
       case omnibox::SuggestTemplateInfo::NOTES_SPARK:
         return omnibox::kNotesSparkOldIcon;
       case omnibox::SuggestTemplateInfo::SEARCH_LOOP:
-        return vector_icons::kSearchChromeRefreshIcon;
+        return vector_icons::kSearchChromeRefreshOldIcon;
       case omnibox::SuggestTemplateInfo::SEARCH_LOOP_WITH_SPARKLE:
         return omnibox::kSearchSparkOldIcon;
       case omnibox::SuggestTemplateInfo::TRENDING:
@@ -530,7 +530,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         return omnibox::kSubdirectoryArrowRightOldIcon;
       default:
         // Out of range value defaults to search loupe.
-        return vector_icons::kSearchChromeRefreshIcon;
+        return vector_icons::kSearchChromeRefreshOldIcon;
     }
   }
 
@@ -569,18 +569,18 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
                 omnibox_feature_configs::ContextualSearch::Get()
                     .contextual_zero_suggest_lens_fulfillment)
                  ? omnibox::kSubdirectoryArrowRightOldIcon
-                 : vector_icons::kSearchChromeRefreshIcon;
+                 : vector_icons::kSearchChromeRefreshOldIcon;
 
     case Type::PEDAL:
       return takeover_action ? takeover_action->GetVectorIcon()
-                             : vector_icons::kSearchChromeRefreshIcon;
+                             : vector_icons::kSearchChromeRefreshOldIcon;
 
     case Type::SEARCH_OTHER_ENGINE:
       if (provider != nullptr &&
           provider->type() == AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
         return omnibox::kExtensionAppOldIcon;
       }
-      return vector_icons::kSearchChromeRefreshIcon;
+      return vector_icons::kSearchChromeRefreshOldIcon;
 
     case Type::SEARCH_WHAT_YOU_TYPED:
     case Type::SEARCH_SUGGEST_ENTITY:
@@ -591,12 +591,12 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::CLIPBOARD_IMAGE:
     case Type::TILE_SUGGESTION:
     case Type::TILE_REPEATABLE_QUERY:
-      return vector_icons::kSearchChromeRefreshIcon;
+      return vector_icons::kSearchChromeRefreshOldIcon;
 
     case Type::SEARCH_HISTORY:
     case Type::SEARCH_SUGGEST_PERSONALIZED:
       DCHECK(IsSearchHistoryType(type));
-      return vector_icons::kHistoryChromeRefreshIcon;
+      return vector_icons::kHistoryChromeRefreshOldIcon;
 
     case Type::EXTENSION_APP_DEPRECATED:
       return omnibox::kExtensionAppOldIcon;
@@ -620,7 +620,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         case IphType::kHistoryEmbeddingsDisclaimer:
           return gfx::VectorIcon::EmptyIcon();
         case IphType::kHistoryScopePromo:
-          return vector_icons::kHistoryChromeRefreshIcon;
+          return vector_icons::kHistoryChromeRefreshOldIcon;
         case IphType::kHistoryEmbeddingsScopePromo:
           return omnibox::kSparkIcon;
       }
@@ -662,7 +662,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
           case KEYWORD_MODE_STARTER_PACK_BOOKMARKS:
             return omnibox::kStarActiveChromeRefreshOldIcon;
           case KEYWORD_MODE_STARTER_PACK_HISTORY:
-            return vector_icons::kHistoryChromeRefreshIcon;
+            return vector_icons::kHistoryChromeRefreshOldIcon;
           case KEYWORD_MODE_STARTER_PACK_TABS:
             return omnibox::kProductChromeRefreshOldIcon;
           case KEYWORD_MODE_STARTER_PACK_GEMINI:

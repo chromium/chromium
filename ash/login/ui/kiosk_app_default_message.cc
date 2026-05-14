@@ -50,7 +50,7 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
   // Set up the icon.
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kErrorOutlineIcon, kColorAshButtonIconColor, kIconSize));
+      vector_icons::kErrorOutlineOldIcon, kColorAshButtonIconColor, kIconSize));
   icon_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0,

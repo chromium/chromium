@@ -44,7 +44,7 @@ void FileSystemAccessPageActionController::UpdateVisibility() {
       page_action_controller->OverrideImage(
           kActionShowFileSystemAccess,
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kInsertDriveFileOutlineIcon));
+              vector_icons::kInsertDriveFileOutlineOldIcon));
       page_action_controller->OverrideText(
           kActionShowFileSystemAccess,
           l10n_util::GetStringUTF16(

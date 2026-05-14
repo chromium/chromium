@@ -136,7 +136,7 @@ void RichAnswersDefinitionView::AddPhoneticsAudioButtonTo(
       &RichAnswersDefinitionView::OnPhoneticsAudioButtonPressed,
       weak_factory_.GetWeakPtr());
   ui::ImageModel phonetics_audio_button_closure_image_model =
-      ui::ImageModel::FromVectorIcon(vector_icons::kVolumeUpIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kVolumeUpOldIcon,
                                      ui::kColorSysOnSurface,
                                      kRichAnswersIconSizeDip);
   views::ImageButton* button_view =

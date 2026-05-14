@@ -144,7 +144,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
                               eol_date, icu::TimeZone::getGMT())})
         .SetMessageWithArgs(IDS_PENDING_EOL_NOTIFICATION_MESSAGE,
                             {ui::GetChromeOSDeviceName()})
-        .SetSmallImage(vector_icons::kBusinessIcon);
+        .SetSmallImage(vector_icons::kBusinessOldIcon);
     catalog_name = NotificationCatalogName::kPendingEOL;
   } else {
     DCHECK_EQ(BUTTON_DISMISS, data.buttons.size());

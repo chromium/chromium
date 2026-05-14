@@ -164,14 +164,15 @@ class GlicSelectionContentsView : public views::View {
         l10n_util::GetStringUTF16(IDS_APP_COPY), nullptr, nullptr);
     auto* copy_btn =
         ask_pill_->AddChildView(views::ImageButton::CreateIconButton(
-            std::move(on_copy), vector_icons::kContentCopyIcon, copy_tooltip));
+            std::move(on_copy), vector_icons::kContentCopyOldIcon,
+            copy_tooltip));
     copy_btn->SetTooltipText(copy_tooltip);
     copy_btn->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     copy_btn->SetBorder(
         views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
             views::INSETS_VECTOR_IMAGE_BUTTON)));
     views::SetImageFromVectorIconWithColor(
-        copy_btn, vector_icons::kContentCopyIcon, kIconSize,
+        copy_btn, vector_icons::kContentCopyOldIcon, kIconSize,
         views::IconColors(ui::kColorSysOnSurfaceVariant,
                           ui::kColorLabelForegroundDisabled,
                           ui::kColorSysOnSurfaceVariant));
@@ -218,7 +219,7 @@ class GlicSelectionContentsView : public views::View {
     if (features::kGlicSelectionPromptEnablePinning.Get()) {
       pin_btn_ =
           dismiss_pill_->AddChildView(views::ImageButton::CreateIconButton(
-              std::move(on_toggle_pin), vector_icons::kCaretUpIcon,
+              std::move(on_toggle_pin), vector_icons::kCaretUpOldIcon,
               std::u16string()));
       pin_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
       pin_btn_->SetBorder(views::CreateEmptyBorder(
@@ -231,7 +232,7 @@ class GlicSelectionContentsView : public views::View {
       auto dismiss_tooltip = l10n_util::GetStringUTF16(IDS_APP_CLOSE);
       dismiss_btn_ =
           dismiss_pill_->AddChildView(views::ImageButton::CreateIconButton(
-              std::move(on_dismiss), vector_icons::kCloseIcon,
+              std::move(on_dismiss), vector_icons::kCloseOldIcon,
               dismiss_tooltip));
       dismiss_btn_->SetTooltipText(dismiss_tooltip);
       dismiss_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
@@ -239,7 +240,7 @@ class GlicSelectionContentsView : public views::View {
           views::LayoutProvider::Get()->GetInsetsMetric(
               views::INSETS_VECTOR_IMAGE_BUTTON)));
       views::SetImageFromVectorIconWithColor(
-          dismiss_btn_, vector_icons::kCloseIcon, kIconSize,
+          dismiss_btn_, vector_icons::kCloseOldIcon, kIconSize,
           views::IconColors(ui::kColorSysOnSurfaceVariant,
                             ui::kColorLabelForegroundDisabled,
                             ui::kColorSysOnSurfaceVariant));
@@ -290,8 +291,8 @@ class GlicSelectionContentsView : public views::View {
 
   void SetPinned(bool is_pinned) {
     if (pin_btn_) {
-      const gfx::VectorIcon& icon =
-          is_pinned ? vector_icons::kCaretDownIcon : vector_icons::kCaretUpIcon;
+      const gfx::VectorIcon& icon = is_pinned ? vector_icons::kCaretDownOldIcon
+                                              : vector_icons::kCaretUpOldIcon;
       views::SetImageFromVectorIconWithColor(
           pin_btn_, icon, kIconSize,
           views::IconColors(ui::kColorSysOnSurfaceVariant,

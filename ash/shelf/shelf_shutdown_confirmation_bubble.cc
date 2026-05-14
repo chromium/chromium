@@ -92,7 +92,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   // Set up the icon.
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kWarningOutlineIcon, cros_tokens::kColorPrimary));
+      vector_icons::kWarningOutlineOldIcon, cros_tokens::kColorPrimary));
   icon_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, 0,

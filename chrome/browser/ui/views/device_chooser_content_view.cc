@@ -186,9 +186,9 @@ ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) {
   DCHECK_LT(row, RowCount());
 
   if (chooser_controller_->IsConnected(row)) {
-    return ui::ImageModel::FromVectorIcon(vector_icons::kBluetoothConnectedIcon,
-                                          ui::kColorIcon,
-                                          TableModel::kIconSize);
+    return ui::ImageModel::FromVectorIcon(
+        vector_icons::kBluetoothConnectedOldIcon, ui::kColorIcon,
+        TableModel::kIconSize);
   }
 
   int level = chooser_controller_->GetSignalStrengthLevel(row);
@@ -295,7 +295,7 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
     help_button = views::ImageButton::CreateIconButton(
         base::BindRepeating(&permissions::ChooserController::OpenHelpCenterUrl,
                             base::Unretained(chooser_controller_.get())),
-        vector_icons::kHelpOutlineIcon,
+        vector_icons::kHelpOutlineOldIcon,
         l10n_util::GetStringUTF16(IDS_LEARN_MORE),
         views::ImageButton::MaterialIconStyle::kLarge,
         views::LayoutProvider::Get()->GetInsetsMetric(

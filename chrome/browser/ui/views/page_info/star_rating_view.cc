@@ -70,7 +70,7 @@ ui::ImageModel StarRatingView::GetImageModel(double rating, int index) {
   double rest;
   if (rating >= index + 1) {
     // Full icon.
-    return ui::ImageModel::FromVectorIcon(vector_icons::kStarIcon,
+    return ui::ImageModel::FromVectorIcon(vector_icons::kStarOldIcon,
                                           kColorStarRatingFullIcon, icon_size);
   } else if (rating >= index && std::modf(rating, &rest) >= 0.5) {
     // Half icon.
@@ -78,7 +78,7 @@ ui::ImageModel StarRatingView::GetImageModel(double rating, int index) {
                                           kColorStarRatingFullIcon, icon_size);
   }
   // Empty icon.
-  return ui::ImageModel::FromVectorIcon(vector_icons::kStarIcon,
+  return ui::ImageModel::FromVectorIcon(vector_icons::kStarOldIcon,
                                         kColorStarRatingEmptyIcon, icon_size);
 }
 

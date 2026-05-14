@@ -341,7 +341,7 @@ std::unique_ptr<TriView> AudioDetailedView::CreateNbsWarningView() {
       base::WrapUnique(TrayPopupUtils::CreateMainImageView(
           /*use_wide_layout=*/true));
   image_view->SetImage(
-      ui::ImageModel::FromVectorIcon(vector_icons::kNotificationWarningIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kNotificationWarningOldIcon,
                                      kColorAshIconColorWarning, kMenuIconSize));
   nbs_warning_view->AddView(TriView::Container::START, std::move(image_view));
 

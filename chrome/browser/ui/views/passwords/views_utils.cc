@@ -307,7 +307,7 @@ std::unique_ptr<views::View> CreateTitleView(const std::u16string& title) {
   const int close_button_width =
       layout_provider->GetDistanceMetric(
           views::DISTANCE_RELATED_BUTTON_HORIZONTAL) +
-      gfx::GetDefaultSizeOfVectorIcon(vector_icons::kCloseRoundedIcon) +
+      gfx::GetDefaultSizeOfVectorIcon(vector_icons::kCloseRoundedOldIcon) +
       layout_provider->GetDistanceMetric(views::DISTANCE_CLOSE_BUTTON_MARGIN);
   const int title_width =
       layout_provider->GetDistanceMetric(

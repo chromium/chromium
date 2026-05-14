@@ -3132,13 +3132,13 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
   const std::vector<std::pair<const gfx::VectorIcon&,
                               toolbar_ui_api::mojom::PinnedToolbarAction>>
       kRouteMediaIcons = {
-          {vector_icons::kMediaRouterIdleChromeRefreshIcon,
+          {vector_icons::kMediaRouterIdleChromeRefreshOldIcon,
            toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle},
-          {vector_icons::kMediaRouterWarningChromeRefreshIcon,
+          {vector_icons::kMediaRouterWarningChromeRefreshOldIcon,
            toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaWarning},
-          {vector_icons::kMediaRouterPausedIcon,
+          {vector_icons::kMediaRouterPausedOldIcon,
            toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaPaused},
-          {vector_icons::kMediaRouterActiveChromeRefreshIcon,
+          {vector_icons::kMediaRouterActiveChromeRefreshOldIcon,
            toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive},
           {kCastChromeRefreshOldIcon,
            toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia},

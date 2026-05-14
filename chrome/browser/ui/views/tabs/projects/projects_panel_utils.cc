@@ -65,7 +65,7 @@ const gfx::VectorIcon& GetIconForThreadType(
       NOTREACHED();
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return vector_icons::kChatSparkIcon;
+  return vector_icons::kChatSparkOldIcon;
 }
 
 bool IsFirstFocusableViewInPanel(views::View* view) {

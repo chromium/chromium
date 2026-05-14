@@ -168,14 +168,14 @@ const gfx::VectorIcon& GetIconForClipboardData(
     const QuickInsertClipboardResult& data) {
   switch (data.display_format) {
     case QuickInsertClipboardResult::DisplayFormat::kText:
-      return GURL(data.display_text).is_valid() ? vector_icons::kLinkIcon
+      return GURL(data.display_text).is_valid() ? vector_icons::kLinkOldIcon
                                                 : chromeos::kTextIcon;
     case QuickInsertClipboardResult::DisplayFormat::kImage:
       return chromeos::kFiletypeImageIcon;
     case QuickInsertClipboardResult::DisplayFormat::kFile:
       return data.file_count == 1 ? chromeos::GetIconForPath(base::FilePath(
                                         base::UTF16ToUTF8(data.display_text)))
-                                  : vector_icons::kContentCopyIcon;
+                                  : vector_icons::kContentCopyOldIcon;
     case QuickInsertClipboardResult::DisplayFormat::kHtml:
       NOTREACHED();
   }

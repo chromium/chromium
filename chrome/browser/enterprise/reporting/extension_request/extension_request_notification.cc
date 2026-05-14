@@ -71,7 +71,7 @@ void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
   const std::u16string body = l10n_util::GetPluralStringFUTF16(
       kNotificationBodies[notify_type_], extension_ids_.size());
   GURL original_url("https://chrome.google.com/webstore");
-  auto icon = ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+  auto icon = ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
                                              ui::kColorIcon,
                                              message_center::kSmallImageSize);
 

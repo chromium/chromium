@@ -1316,7 +1316,7 @@ void CaptionBubble::SetTextColor() {
   generic_error_text_->SetEnabledColor(primary_color);
 
   generic_error_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kErrorOutlineIcon, primary_color));
+      vector_icons::kErrorOutlineOldIcon, primary_color));
 
   translation_view_wrapper_->SetTextColor(
       language_label_color, language_label_border_color, header_color);
@@ -1349,7 +1349,7 @@ void CaptionBubble::SetTextColor() {
   media_foundation_renderer_error_text_->AddStyleRange(
       gfx::Range(offset + link.length(), text.length()), error_message_style);
   media_foundation_renderer_error_icon_->SetImage(
-      ui::ImageModel::FromVectorIcon(vector_icons::kErrorOutlineIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kErrorOutlineOldIcon,
                                      primary_color));
   media_foundation_renderer_error_checkbox_->SetEnabledTextColors(
       primary_color);
@@ -1359,17 +1359,17 @@ void CaptionBubble::SetTextColor() {
       color_provider->GetColor(ui::kColorLiveCaptionBubbleCheckbox));
 #endif
   views::SetImageFromVectorIconWithColor(
-      back_to_tab_button_, vector_icons::kBackToTabChromeRefreshIcon,
+      back_to_tab_button_, vector_icons::kBackToTabChromeRefreshOldIcon,
       kButtonDip, {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(
-      close_button_, vector_icons::kCloseRoundedIcon, kButtonDip,
+      close_button_, vector_icons::kCloseRoundedOldIcon, kButtonDip,
       {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(
-      expand_button_, vector_icons::kCaretDownIcon, kButtonDip,
+      expand_button_, vector_icons::kCaretDownOldIcon, kButtonDip,
       {header_color, icon_disabled_color});
-  views::SetImageFromVectorIconWithColor(collapse_button_,
-                                         vector_icons::kCaretUpIcon, kButtonDip,
-                                         {header_color, icon_disabled_color});
+  views::SetImageFromVectorIconWithColor(
+      collapse_button_, vector_icons::kCaretUpOldIcon, kButtonDip,
+      {header_color, icon_disabled_color});
 }
 
 void CaptionBubble::SetBackgroundColor() {

@@ -418,12 +418,12 @@ void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
           base::BindRepeating(
               &PageInfoCookiesContentView::RwsSettingsButtonClicked,
               base::Unretained(this)),
-          PageInfoViewFactory::GetImageModel(vector_icons::kTenancyIcon),
+          PageInfoViewFactory::GetImageModel(vector_icons::kTenancyOldIcon),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES),
           /*secondary_text=*/u" ", PageInfoViewFactory::GetLaunchIcon(),
-          is_managed
-              ? PageInfoViewFactory::GetImageModel(vector_icons::kBusinessIcon)
-              : ui::ImageModel()));
+          is_managed ? PageInfoViewFactory::GetImageModel(
+                           vector_icons::kBusinessOldIcon)
+                     : ui::ImageModel()));
   rws_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
   rws_button_->SetTooltipText(
@@ -525,7 +525,7 @@ void PageInfoCookiesContentView::MaybeAddSyncDisclaimer() {
   const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
   cookies_sync_icon_->SetImageSize({icon_size, icon_size});
   cookies_sync_icon_->SetImage(
-      PageInfoViewFactory::GetImageModel(vector_icons::kBusinessIcon));
+      PageInfoViewFactory::GetImageModel(vector_icons::kBusinessOldIcon));
 
   // Add the description.
   cookies_sync_description_ = cookies_sync_container_->AddChildView(

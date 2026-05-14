@@ -100,7 +100,7 @@ ui::ImageModel RelaunchRequiredDialogView::GetWindowIcon() {
 #else
                 kSecurityOldIcon
 #endif
-                : vector_icons::kBusinessIcon,
+                : vector_icons::kBusinessOldIcon,
       ui::kColorIcon,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));

@@ -185,7 +185,7 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                   .AddChildren(
                       views::Builder<views::ImageView>().SetImage(
                           ui::ImageModel::FromVectorIcon(
-                              vector_icons::kChatSparkIcon,
+                              vector_icons::kChatSparkOldIcon,
                               ui::kColorSysOnSurfaceVariant, kFeatureIconSize)),
                       views::Builder<views::Label>()
                           .SetText(l10n_util::GetStringUTF16(
@@ -208,13 +208,13 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                                        kExpandButtonElementId)
                           .SetImageModel(views::Button::STATE_NORMAL,
                                          ui::ImageModel::FromVectorIcon(
-                                             vector_icons::kCaretDownIcon,
+                                             vector_icons::kCaretDownOldIcon,
                                              ui::kColorSysOnSurfaceSubtle,
                                              kControlIconSize))
                           .SetToggledImageModel(
                               views::Button::STATE_NORMAL,
                               ui::ImageModel::FromVectorIcon(
-                                  vector_icons::kCaretUpIcon,
+                                  vector_icons::kCaretUpOldIcon,
                                   ui::kColorSysOnSurfaceSubtle,
                                   kControlIconSize))
                           .SetTooltipText(l10n_util::GetStringUTF16(
@@ -244,7 +244,7 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                                        kCloseButtonElementId)
                           .SetImageModel(views::Button::STATE_NORMAL,
                                          ui::ImageModel::FromVectorIcon(
-                                             vector_icons::kCloseIcon,
+                                             vector_icons::kCloseOldIcon,
                                              ui::kColorSysOnSurfaceSubtle,
                                              kControlIconSize))
                           .SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE))
@@ -273,7 +273,7 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                           CreateExpandedButton(
                               l10n_util::GetStringUTF16(
                                   IDS_INDIGO_TOOLBAR_REGENERATE),
-                              vector_icons::kReloadIcon,
+                              vector_icons::kReloadOldIcon,
                               base::BindRepeating(
                                   &IndigoToolbar::OnRegenerateButtonClicked,
                                   base::Unretained(this))))
@@ -289,7 +289,7 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                           CreateExpandedButton(
                               l10n_util::GetStringUTF16(
                                   IDS_INDIGO_TOOLBAR_REPLACE_ORIGINAL_PHOTO),
-                              vector_icons::kPhotoIcon,
+                              vector_icons::kPhotoOldIcon,
                               base::BindRepeating(
                                   &IndigoToolbar::OnReplacePhotoClicked,
                                   base::Unretained(this))))

@@ -39,7 +39,7 @@ NotificationSwipeControlView::NotificationSwipeControlView(
   settings_button = std::make_unique<IconButton>(
       base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
                           base::Unretained(this)),
-      IconButton::Type::kMedium, &vector_icons::kSettingsOutlineIcon,
+      IconButton::Type::kMedium, &vector_icons::kSettingsOutlineOldIcon,
       IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME);
 
   settings_button->SetImageHorizontalAlignment(

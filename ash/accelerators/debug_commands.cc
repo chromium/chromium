@@ -330,7 +330,7 @@ void HandleShowSystemNudge() {
 
   if (has_image) {
     nudge_data.image_model = ui::ImageModel::FromVectorIcon(
-        vector_icons::kDogfoodIcon, kColorAshIconColorPrimary,
+        vector_icons::kDogfoodOldIcon, kColorAshIconColorPrimary,
         /*icon_size=*/60);
   }
 

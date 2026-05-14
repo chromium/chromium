@@ -234,7 +234,7 @@ ui::ImageModel CreateWalletIcon() {
 
 #else
   // This is a placeholder icon on non-branded builds.
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeIcon,
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeOldIcon,
                                         ui::kColorIcon, kWalletIconSize);
 #endif
 }

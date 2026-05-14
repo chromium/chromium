@@ -73,9 +73,9 @@ class PageActionContainerViewTest : public views::ViewsTestBase {
 TEST_F(PageActionContainerViewTest, GetPageActionView) {
   actions::ActionItem* action_item = actions::ActionManager::Get().AddAction(
       actions::ActionItem::Builder()
-          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
-                                                   ui::kColorSysPrimary,
-                                                   /*icon_size=*/16))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              vector_icons::kBackArrowOldIcon, ui::kColorSysPrimary,
+              /*icon_size=*/16))
           .SetActionId(kTestPageActionId)
           .Build());
 

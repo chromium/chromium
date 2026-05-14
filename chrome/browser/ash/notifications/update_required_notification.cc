@@ -164,7 +164,7 @@ void UpdateRequiredNotification::DisplayNotification(
       data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()),
-      vector_icons::kBusinessIcon, color_type);
+      vector_icons::kBusinessOldIcon, color_type);
   notification->set_priority(priority);
 
   message_center::MessageCenter::Get()->AddNotification(

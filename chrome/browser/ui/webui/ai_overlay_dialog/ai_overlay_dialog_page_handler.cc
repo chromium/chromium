@@ -139,8 +139,8 @@ void AiOverlayDialogPageHandler::UpdateAudioEnergy(float energy) {
     auto* controller = AiOverlayDialogController::From(browser_);
     const gfx::VectorIcon* base_icon =
         (controller && controller->IsOverlayShowing())
-            ? &vector_icons::kPauseIcon
-            : &vector_icons::kMicIcon;
+            ? &vector_icons::kPauseOldIcon
+            : &vector_icons::kMicOldIcon;
 
     overlay_action_item_->SetImage(ui::ImageModel::FromImageGenerator(
         base::BindRepeating(

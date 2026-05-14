@@ -113,7 +113,7 @@ void CoralChipButton::Init(BirchItem* item) {
       &CoralChipButton::OnCoralAddonClicked, weak_factory_.GetWeakPtr());
 
   auto button = birch_bar_util::CreateCoralAddonButton(
-      std::move(callback), vector_icons::kCaretUpIcon);
+      std::move(callback), vector_icons::kCaretUpOldIcon);
   button->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN, item_->title()));
   chevron_button_ = button.get();

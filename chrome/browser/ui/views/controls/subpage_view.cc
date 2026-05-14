@@ -59,7 +59,7 @@ void SubpageView::SetUpSubpageTitle(views::Button::PressedCallback callback) {
           .right());
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
-      std::move(callback), vector_icons::kArrowBackChromeRefreshIcon,
+      std::move(callback), vector_icons::kArrowBackChromeRefreshOldIcon,
       kBackIconSize);
   back_button->SetID(VIEW_ID_SUBPAGE_BACK_BUTTON);
   back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));

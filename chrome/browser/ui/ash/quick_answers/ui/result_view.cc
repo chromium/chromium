@@ -185,7 +185,7 @@ void ResultView::SetDesign(Design design) {
 
   phonetics_audio_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kVolumeUpIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kVolumeUpOldIcon,
                                      design == Design::kCurrent
                                          ? ui::kColorButtonBackgroundProminent
                                          : ui::kColorSysOnSurface,

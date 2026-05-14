@@ -47,9 +47,10 @@ PasskeyDetailView::PasskeyDetailView(
   layout->set_minimum_cross_axis_size(kHeight);
   layout->set_between_child_spacing(kMargin);
 
-  AddChildView(std::make_unique<views::ImageView>(
-      ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon, ui::kColorIcon,
-                                     /*icon_size=*/24)));
+  AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          vector_icons::kPasskeyOldIcon, ui::kColorIcon,
+          /*icon_size=*/24)));
 
   auto* label = AddChildView(std::make_unique<views::Label>(
       GetUserNameForDisplay(user), views::style::CONTEXT_DIALOG_BODY_TEXT));

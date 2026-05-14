@@ -123,7 +123,7 @@ class BackToTabButton : public OverlayWindowImageButton {
  public:
   explicit BackToTabButton(PressedCallback callback)
       : OverlayWindowImageButton(std::move(callback)) {
-    auto* icon = &vector_icons::kBackToTabChromeRefreshIcon;
+    auto* icon = &vector_icons::kBackToTabChromeRefreshOldIcon;
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
                       *icon, kColorPipWindowForeground, kBackToTabImageSize));

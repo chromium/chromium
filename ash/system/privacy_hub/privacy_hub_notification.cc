@@ -146,7 +146,7 @@ PrivacyHubNotification::PrivacyHubNotification(
 
   builder_.SetId(id)
       .SetCatalogName(catalog_name)
-      .SetSmallImage(vector_icons::kSettingsIcon)
+      .SetSmallImage(vector_icons::kSettingsOldIcon)
       .SetWarningLevel(message_center::SystemNotificationWarningLevel::NORMAL);
 
   // Sets up the observation / throttling logic

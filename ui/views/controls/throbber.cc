@@ -91,7 +91,7 @@ void Throbber::OnPaint(gfx::Canvas* canvas) {
       const int kCheckmarkDipSize = diameter_ + 2;
       canvas->Translate(gfx::Vector2d((width() - kCheckmarkDipSize) / 2,
                                       (height() - kCheckmarkDipSize) / 2));
-      gfx::PaintVectorIcon(canvas, vector_icons::kCheckCircleIcon,
+      gfx::PaintVectorIcon(canvas, vector_icons::kCheckCircleOldIcon,
                            kCheckmarkDipSize, color);
     }
     return;

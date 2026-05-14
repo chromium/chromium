@@ -93,7 +93,7 @@ class ErrorBubble : public views::FlexLayoutView {
             views::Builder<views::ImageView>()
                 .SetID(mahi_constants::ViewId::kQuestionAnswerErrorImage)
                 .SetImage(ui::ImageModel::FromVectorIcon(
-                    vector_icons::kErrorIcon, cros_tokens::kCrosSysSecondary,
+                    vector_icons::kErrorOldIcon, cros_tokens::kCrosSysSecondary,
                     kErrorIconSize)),
             views::Builder<views::Label>()
                 .SetBorder(views::CreateEmptyBorder(kErrorLabelInteriorMargin))

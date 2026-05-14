@@ -64,7 +64,7 @@ DiscountsCouponCodeLabelView::DiscountsCouponCodeLabelView(
       l10n_util::GetStringUTF16(IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT)));
   copy_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyOldIcon,
                                      ui::kColorIcon, kContentCopyIconSizePx));
   copy_button_->SetStyle(ui::ButtonStyle::kTonal);
   UpdateCopyButtonTooltipsAndAccessibleNames(

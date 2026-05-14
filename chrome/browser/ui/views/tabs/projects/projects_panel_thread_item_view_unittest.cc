@@ -61,7 +61,7 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysAimIconAndTitle) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       &vector_icons::kGoogleGLogoMonochromeIcon,
 #else
-      &vector_icons::kChatSparkIcon,
+      &vector_icons::kChatSparkOldIcon,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       &thread_item_view->chat_type_icon_for_testing());
 
@@ -92,7 +92,7 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysGeminiIconAndTitle) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       &vector_icons::kGoogleAgentspaceMonochromeLogo25Icon,
 #else
-      &vector_icons::kChatSparkIcon,
+      &vector_icons::kChatSparkOldIcon,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       &thread_item_view->chat_type_icon_for_testing());
 

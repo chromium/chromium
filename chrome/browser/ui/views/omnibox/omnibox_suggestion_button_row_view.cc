@@ -455,7 +455,7 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        CONTEXT_OMNIBOX_PRIMARY, vector_icons::kSearchChromeRefreshIcon,
+        CONTEXT_OMNIBOX_PRIMARY, vector_icons::kSearchChromeRefreshOldIcon,
         gfx::Image(), popup_view_, selection));
   }
 

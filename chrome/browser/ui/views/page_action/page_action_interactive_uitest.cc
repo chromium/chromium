@@ -1089,7 +1089,8 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
       Do([this]() {
         ShowTestAnchoredMessage(
             u"", AnchoredMessageActionIconType::kNone,
-            ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon), nullptr);
+            ui::ImageModel::FromVectorIcon(vector_icons::kEditOldIcon),
+            nullptr);
       }),
       WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
       Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId, "no_chip",

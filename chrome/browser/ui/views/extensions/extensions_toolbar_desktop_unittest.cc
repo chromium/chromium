@@ -609,7 +609,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, ExtensionsToolbarButtonIconAndText) {
       ExtensionsToolbarViewModel::GetToolbarButtonIcon(
           ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault)
           .name,
-      vector_icons::kExtensionChromeRefreshIcon.name);
+      vector_icons::kExtensionChromeRefreshOldIcon.name);
   EXPECT_EQ(
       ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
           ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault),
@@ -624,7 +624,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, ExtensionsToolbarButtonIconAndText) {
                 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
                     kAllExtensionsBlocked)
                 .name,
-            vector_icons::kExtensionOffIcon.name);
+            vector_icons::kExtensionOffOldIcon.name);
   EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
                 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
                     kAllExtensionsBlocked),
@@ -641,7 +641,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, ExtensionsToolbarButtonIconAndText) {
                 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
                     kAnyExtensionHasAccess)
                 .name,
-            vector_icons::kExtensionOnIcon.name);
+            vector_icons::kExtensionOnOldIcon.name);
   EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
                 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
                     kAnyExtensionHasAccess),

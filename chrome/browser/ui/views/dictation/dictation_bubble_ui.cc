@@ -116,7 +116,7 @@ void DictationToastView::Init() {
 
   views::ImageButton* close_button =
       AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-          close_callback_, vector_icons::kCloseChromeRefreshIcon,
+          close_callback_, vector_icons::kCloseChromeRefreshOldIcon,
           lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
           ui::kColorToastForeground, ui::kColorIconDisabled,
           ui::kColorToastForeground));

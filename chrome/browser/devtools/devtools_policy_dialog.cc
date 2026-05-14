@@ -91,7 +91,7 @@ void DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
                     icon->SetBorder(views::CreateEmptyBorder(
                         gfx::Insets::TLBR(kIconPadding, 0, 0, 0)));
                     icon->SetImage(ui::ImageModel::FromVectorIcon(
-                        vector_icons::kBusinessIcon, ui::kColorIcon,
+                        vector_icons::kBusinessOldIcon, ui::kColorIcon,
                         extension_misc::EXTENSION_ICON_BITTY));
 
                     auto label = std::make_unique<views::Label>(

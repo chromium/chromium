@@ -93,9 +93,9 @@ TEST_F(ThemeTrackingImageViewTest, CreateWithImageSkia) {
 
 TEST_F(ThemeTrackingImageViewTest, CreateWithImageModel) {
   ui::ImageModel light_model{ui::ImageModel::FromVectorIcon(
-      vector_icons::kSyncIcon, ui::kColorMenuIcon, kImageSize)};
+      vector_icons::kSyncOldIcon, ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel dark_model{ui::ImageModel::FromVectorIcon(
-      vector_icons::kCallIcon, ui::kColorMenuIcon, kImageSize)};
+      vector_icons::kCallOldIcon, ui::kColorMenuIcon, kImageSize)};
 
   SetView(std::make_unique<ThemeTrackingImageView>(
       light_model, dark_model,
@@ -113,11 +113,11 @@ TEST_F(ThemeTrackingImageViewTest, CreateWithImageModel) {
 
 TEST_F(ThemeTrackingImageViewTest, SetLightImage) {
   ui::ImageModel light_model1{ui::ImageModel::FromVectorIcon(
-      vector_icons::kSyncIcon, ui::kColorMenuIcon, kImageSize)};
+      vector_icons::kSyncOldIcon, ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel light_model2{ui::ImageModel::FromVectorIcon(
-      vector_icons::kUsbIcon, ui::kColorMenuIcon, kImageSize)};
+      vector_icons::kUsbOldIcon, ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel dark_model{ui::ImageModel::FromVectorIcon(
-      vector_icons::kCallIcon, ui::kColorMenuIcon, kImageSize)};
+      vector_icons::kCallOldIcon, ui::kColorMenuIcon, kImageSize)};
 
   SetView(std::make_unique<ThemeTrackingImageView>(
       light_model1, dark_model,
@@ -144,11 +144,11 @@ TEST_F(ThemeTrackingImageViewTest, SetLightImage) {
 
 TEST_F(ThemeTrackingImageViewTest, SetDarkImage) {
   ui::ImageModel light_model{ui::ImageModel::FromVectorIcon(
-      vector_icons::kSyncIcon, ui::kColorMenuIcon, kImageSize)};
+      vector_icons::kSyncOldIcon, ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel dark_model1{ui::ImageModel::FromVectorIcon(
-      vector_icons::kUsbIcon, ui::kColorMenuIcon, kImageSize)};
+      vector_icons::kUsbOldIcon, ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel dark_model2{ui::ImageModel::FromVectorIcon(
-      vector_icons::kCallIcon, ui::kColorMenuIcon, kImageSize)};
+      vector_icons::kCallOldIcon, ui::kColorMenuIcon, kImageSize)};
 
   SetView(std::make_unique<ThemeTrackingImageView>(
       light_model, dark_model1,

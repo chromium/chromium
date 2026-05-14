@@ -64,7 +64,7 @@ void ManagePasswordsAutoSigninToastDelegate::OnAutoSignInToast(
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
   menu_model->AddItemWithStringIdAndIcon(
       kAutoSignInOpenPasswordManagerSettingsCommand, IDS_MANAGE,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
                                      ui::kColorMenuIcon, 16));
   params.menu_model = std::move(menu_model);
   toast_controller->MaybeShowToast(std::move(params));

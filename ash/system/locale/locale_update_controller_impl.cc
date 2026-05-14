@@ -124,7 +124,7 @@ void LocaleUpdateControllerImpl::ConfirmLocaleChange(
                                  kNotifierLocale,
                                  NotificationCatalogName::kLocaleUpdate),
       optional, new LocaleNotificationDelegate(std::move(callback)),
-      vector_icons::kSettingsIcon,
+      vector_icons::kSettingsOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));

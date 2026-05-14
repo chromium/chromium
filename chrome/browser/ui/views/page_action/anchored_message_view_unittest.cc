@@ -76,10 +76,10 @@ class AnchoredMessageBubbleViewTest
   NiceMock<MockAnchoredMessageDelegate> delegate_;
   std::optional<ui::ImageModel> no_icon_ = std::nullopt;
   std::optional<ui::ImageModel> test_icon_opt_ =
-      ui::ImageModel::FromVectorIcon(vector_icons::kInstallDesktopIcon);
+      ui::ImageModel::FromVectorIcon(vector_icons::kInstallDesktopOldIcon);
   ui::ImageModel empty_image_;
   ui::ImageModel test_image_ =
-      ui::ImageModel::FromVectorIcon(vector_icons::kInstallDesktopIcon);
+      ui::ImageModel::FromVectorIcon(vector_icons::kInstallDesktopOldIcon);
   std::u16string empty_text_ = u"";
   std::u16string test_text_ = u"Test text";
 

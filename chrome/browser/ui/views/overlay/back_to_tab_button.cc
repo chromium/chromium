@@ -29,7 +29,7 @@ OverlayWindowBackToTabButton::OverlayWindowBackToTabButton(
 
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
-                    vector_icons::kBackToTabChromeRefreshIcon,
+                    vector_icons::kBackToTabChromeRefreshOldIcon,
                     kColorPipWindowForeground, kBackToTabButtonIconSize));
 
   // Accessibility.

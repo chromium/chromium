@@ -65,7 +65,7 @@ void DeviceRestrictionScheduleControllerDelegateImpl::
           kUpcomingLogoutNotificationId, title, body,
           std::u16string() /* display_source */, GURL() /* origin_url */,
           notifier_id, data, nullptr /* delegate */,
-          vector_icons::kBusinessIcon,
+          vector_icons::kBusinessOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING));
 }
 
@@ -95,7 +95,7 @@ void DeviceRestrictionScheduleControllerDelegateImpl::
           message_center::NOTIFICATION_TYPE_SIMPLE, kPostLogoutNotificationId,
           title, body, std::u16string() /* display_source */,
           GURL() /* origin_url */, notifier_id, data, nullptr /* delegate */,
-          vector_icons::kBusinessIcon,
+          vector_icons::kBusinessOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING));
 }
 

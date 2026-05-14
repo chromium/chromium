@@ -188,10 +188,10 @@ class CollapsibleListView : public views::View {
         l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_USAGE_COLLAPSE));
     expand_collapse_button_ = label_container->AddChildView(std::move(button));
     views::SetImageFromVectorIconWithColor(
-        expand_collapse_button_, vector_icons::kCaretDownIcon,
+        expand_collapse_button_, vector_icons::kCaretDownOldIcon,
         ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
     views::SetToggledImageFromVectorIconWithColor(
-        expand_collapse_button_, vector_icons::kCaretUpIcon,
+        expand_collapse_button_, vector_icons::kCaretUpOldIcon,
         ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
 
     if (model->RowCount() < 3) {
@@ -278,8 +278,8 @@ std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
 ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
     size_t row) {
   return ui::ImageModel::FromVectorIcon(
-      row < files_.size() ? vector_icons::kInsertDriveFileOutlineIcon
-                          : vector_icons::kFolderOpenIcon,
+      row < files_.size() ? vector_icons::kInsertDriveFileOutlineOldIcon
+                          : vector_icons::kFolderOpenOldIcon,
       ui::kColorIcon, kIconSize);
 }
 

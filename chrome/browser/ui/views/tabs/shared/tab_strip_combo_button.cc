@@ -431,7 +431,7 @@ void TabStripComboButton::SetTabSearchBubbleHost(TabSearchBubbleHost* host) {
     GetEndButtonActionItem()->SetImage(
         ui::ImageModel::FromVectorIcon(context_ == Context::kVerticalTabStrip
                                            ? kTabSearchTabStripOldIcon
-                                           : vector_icons::kExpandMoreIcon));
+                                           : vector_icons::kExpandMoreOldIcon));
   }
 }
 

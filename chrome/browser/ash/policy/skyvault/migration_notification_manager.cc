@@ -59,7 +59,7 @@ std::unique_ptr<message_center::Notification> CreateNotificationPtr(
       message_center::NotifierId(), optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           callback),
-      vector_icons::kBusinessIcon,
+      vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 

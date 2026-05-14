@@ -80,7 +80,7 @@ TEST_F(RollBackModeBInfoBarDelegateTest, Properties) {
             infobars::InfoBarDelegate::InfoBarIdentifier::
                 ROLL_BACK_MODE_B_INFOBAR_DELEGATE);
   EXPECT_EQ(&delegate->GetVectorIcon(),
-            &vector_icons::kCookieChromeRefreshIcon);
+            &vector_icons::kCookieChromeRefreshOldIcon);
   EXPECT_EQ(delegate->GetMessageText(),
             l10n_util::GetStringUTF16(IDS_MODE_B_ROLLBACK_DESCRIPTION));
   EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),

@@ -190,7 +190,7 @@ std::u16string EnableLinkCapturingInfoBarDelegate::GetButtonLabel(
 
 const gfx::VectorIcon& EnableLinkCapturingInfoBarDelegate::GetVectorIcon()
     const {
-  return vector_icons::kSettingsIcon;
+  return vector_icons::kSettingsOldIcon;
 }
 
 bool EnableLinkCapturingInfoBarDelegate::IsCloseable() const {

@@ -89,7 +89,7 @@ WebAppBlockedMigrationInfoBarDelegate::GetIdentifier() const {
 
 const gfx::VectorIcon& WebAppBlockedMigrationInfoBarDelegate::GetVectorIcon()
     const {
-  return vector_icons::kSettingsIcon;
+  return vector_icons::kSettingsOldIcon;
 }
 
 std::u16string WebAppBlockedMigrationInfoBarDelegate::GetMessageText() const {

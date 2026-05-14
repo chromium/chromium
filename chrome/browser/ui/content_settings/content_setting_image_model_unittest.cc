@@ -752,7 +752,7 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kStorageAccessIcon);
+            &vector_icons::kStorageAccessOldIcon);
 
   // Add a blocked permission.
   content_settings->OnTwoSitePermissionChanged(
@@ -761,7 +761,7 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kStorageAccessOffIcon);
+            &vector_icons::kStorageAccessOffOldIcon);
 
   // Change permission to be allowed. E.g. through PageInfo.
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -771,7 +771,7 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kStorageAccessIcon);
+            &vector_icons::kStorageAccessOldIcon);
 
   // Reset permissions.
   map->SetContentSettingDefaultScope(
@@ -801,7 +801,7 @@ TEST_F(ContentSettingImageModelTest, SmartCard) {
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kSmartCardReaderIcon);
+            &vector_icons::kSmartCardReaderOldIcon);
 
   // Last connection ends.
   content_settings->OnLastDeviceConnectionLost(
@@ -845,7 +845,7 @@ TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Allowed) {
             l10n_util::GetStringUTF16(
                 IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE));
   EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kSyncSavedLocallyIcon);
+            &vector_icons::kSyncSavedLocallyOldIcon);
 }
 
 TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Blocked) {
@@ -876,7 +876,7 @@ TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Blocked) {
             l10n_util::GetStringUTF16(
                 IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE));
   EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kSyncSavedLocallyOffIcon);
+            &vector_icons::kSyncSavedLocallyOffOldIcon);
 }
 
 TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Reconciled) {

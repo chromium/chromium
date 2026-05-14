@@ -93,7 +93,7 @@ void NameTag::Init() {
       ash::TypographyToken::kCrosButton2, u"", cros_tokens::kCrosSysOnSurface);
   auto error_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorOutlineIcon, cros_tokens::kCrosSysError,
+          vector_icons::kErrorOutlineOldIcon, cros_tokens::kCrosSysError,
           kErrorIconSize));
 
   if (for_editing_list_) {

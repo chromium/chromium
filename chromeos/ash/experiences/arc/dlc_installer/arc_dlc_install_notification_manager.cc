@@ -64,7 +64,7 @@ void Show(NotificationType notification_type) {
           l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE),
           GetMessage(notification_type), std::u16string(), GURL(), notifier_id,
           message_center::RichNotificationData(), std::move(click_delegate),
-          vector_icons::kSettingsIcon,
+          vector_icons::kSettingsOldIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   message_center::MessageCenter::Get()->AddNotification(

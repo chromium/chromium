@@ -354,7 +354,7 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
                           update.HasTitleChange())))
                   .AddChild(views::Builder<views::ImageView>().SetImage(
                       ui::ImageModel::FromVectorIcon(
-                          vector_icons::kForwardArrowIcon, ui::kColorIcon,
+                          vector_icons::kForwardArrowOldIcon, ui::kColorIcon,
                           kArrowIconSizeDp)))
                   .AddChild(views::Builder<WebAppUpdateIdentityView>(
                       std::make_unique<WebAppUpdateIdentityView>(

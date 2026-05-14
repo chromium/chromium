@@ -385,84 +385,84 @@ void GetIconChromeRefresh(ContentSettingsType type,
                           raw_ptr<const gfx::VectorIcon>* icon) {
   switch (type) {
     case ContentSettingsType::COOKIES:
-      *icon = blocked ? &vector_icons::kDatabaseOffIcon
-                      : &vector_icons::kDatabaseIcon;
+      *icon = blocked ? &vector_icons::kDatabaseOffOldIcon
+                      : &vector_icons::kDatabaseOldIcon;
       return;
     case ContentSettingsType::IMAGES:
-      *icon = blocked ? &vector_icons::kPhotoOffChromeRefreshIcon
-                      : &vector_icons::kPhotoChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kPhotoOffChromeRefreshOldIcon
+                      : &vector_icons::kPhotoChromeRefreshOldIcon;
       return;
     case ContentSettingsType::JAVASCRIPT:
-      *icon = blocked ? &vector_icons::kCodeOffChromeRefreshIcon
-                      : &vector_icons::kCodeChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kCodeOffChromeRefreshOldIcon
+                      : &vector_icons::kCodeChromeRefreshOldIcon;
       return;
     case ContentSettingsType::MIXEDSCRIPT:
-      *icon = blocked ? &vector_icons::kNotSecureWarningOffChromeRefreshIcon
-                      : &vector_icons::kNotSecureWarningChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kNotSecureWarningOffChromeRefreshOldIcon
+                      : &vector_icons::kNotSecureWarningChromeRefreshOldIcon;
       return;
     case ContentSettingsType::SOUND:
-      *icon = blocked ? &vector_icons::kVolumeOffChromeRefreshIcon
-                      : &vector_icons::kVolumeUpChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kVolumeOffChromeRefreshOldIcon
+                      : &vector_icons::kVolumeUpChromeRefreshOldIcon;
       return;
     case ContentSettingsType::ADS:
-      *icon = blocked ? &vector_icons::kAdsOffChromeRefreshIcon
-                      : &vector_icons::kAdsChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kAdsOffChromeRefreshOldIcon
+                      : &vector_icons::kAdsChromeRefreshOldIcon;
       return;
     case ContentSettingsType::GEOLOCATION:
-      *icon = blocked ? &vector_icons::kLocationOffChromeRefreshIcon
-                      : &vector_icons::kLocationOnChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kLocationOffChromeRefreshOldIcon
+                      : &vector_icons::kLocationOnChromeRefreshOldIcon;
       return;
     case ContentSettingsType::PROTOCOL_HANDLERS:
-      *icon = blocked ? &vector_icons::kProtocolHandlerOffChromeRefreshIcon
-                      : &vector_icons::kProtocolHandlerChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kProtocolHandlerOffChromeRefreshOldIcon
+                      : &vector_icons::kProtocolHandlerChromeRefreshOldIcon;
       return;
     case ContentSettingsType::MIDI_SYSEX:
-      *icon = blocked ? &vector_icons::kMidiOffChromeRefreshIcon
-                      : &vector_icons::kMidiChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kMidiOffChromeRefreshOldIcon
+                      : &vector_icons::kMidiChromeRefreshOldIcon;
       return;
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
-      *icon = blocked ? &vector_icons::kFileDownloadOffChromeRefreshIcon
-                      : &vector_icons::kFileDownloadChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kFileDownloadOffChromeRefreshOldIcon
+                      : &vector_icons::kFileDownloadChromeRefreshOldIcon;
       return;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      *icon = blocked ? &vector_icons::kContentPasteOffIcon
-                      : &vector_icons::kContentPasteIcon;
+      *icon = blocked ? &vector_icons::kContentPasteOffOldIcon
+                      : &vector_icons::kContentPasteOldIcon;
       return;
     case ContentSettingsType::MEDIASTREAM_MIC:
-      *icon = blocked ? &vector_icons::kMicOffChromeRefreshIcon
-                      : &vector_icons::kMicChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kMicOffChromeRefreshOldIcon
+                      : &vector_icons::kMicChromeRefreshOldIcon;
       return;
     case ContentSettingsType::MEDIASTREAM_CAMERA:
-      *icon = blocked ? &vector_icons::kVideocamOffChromeRefreshIcon
-                      : &vector_icons::kVideocamChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kVideocamOffChromeRefreshOldIcon
+                      : &vector_icons::kVideocamChromeRefreshOldIcon;
       return;
     case ContentSettingsType::NOTIFICATIONS:
-      *icon = blocked ? &vector_icons::kNotificationsOffChromeRefreshIcon
-                      : &vector_icons::kNotificationsChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kNotificationsOffChromeRefreshOldIcon
+                      : &vector_icons::kNotificationsChromeRefreshOldIcon;
       return;
     case ContentSettingsType::SENSORS:
-      *icon = blocked ? &vector_icons::kSensorsOffChromeRefreshIcon
-                      : &vector_icons::kSensorsChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kSensorsOffChromeRefreshOldIcon
+                      : &vector_icons::kSensorsChromeRefreshOldIcon;
       return;
     case ContentSettingsType::STORAGE_ACCESS:
-      *icon = blocked ? &vector_icons::kStorageAccessOffIcon
-                      : &vector_icons::kStorageAccessIcon;
+      *icon = blocked ? &vector_icons::kStorageAccessOffOldIcon
+                      : &vector_icons::kStorageAccessOldIcon;
       return;
     case ContentSettingsType::POPUPS:
-      *icon =
-          blocked ? &vector_icons::kIframeOffIcon : &vector_icons::kIframeIcon;
+      *icon = blocked ? &vector_icons::kIframeOffOldIcon
+                      : &vector_icons::kIframeOldIcon;
       return;
 #if BUILDFLAG(IS_CHROMEOS)
     case ContentSettingsType::SMART_CARD_GUARD:
       // Indicator shows only when at least one connection is active, hence no
       // need for the off icon.
-      *icon = &vector_icons::kSmartCardReaderIcon;
+      *icon = &vector_icons::kSmartCardReaderOldIcon;
       return;
 #endif
 #if BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      *icon = blocked ? &vector_icons::kSyncSavedLocallyOffIcon
-                      : &vector_icons::kSyncSavedLocallyIcon;
+      *icon = blocked ? &vector_icons::kSyncSavedLocallyOffOldIcon
+                      : &vector_icons::kSyncSavedLocallyOldIcon;
       return;
 #endif  // BUILDFLAG(IS_WIN)
     default:

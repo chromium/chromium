@@ -34,11 +34,11 @@ std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
           .SetToggledTooltipText(
               l10n_util::GetStringUTF16(IDS_WEBAUTHN_HIDE_PIN))
           .Build();
-  SetImageFromVectorIconWithColor(button.get(), vector_icons::kVisibilityIcon,
-                                  {ui::kColorIcon, ui::kColorIconDisabled},
-                                  kEyeIconSize);
+  SetImageFromVectorIconWithColor(
+      button.get(), vector_icons::kVisibilityOldIcon,
+      {ui::kColorIcon, ui::kColorIconDisabled}, kEyeIconSize);
   SetToggledImageFromVectorIconWithColor(
-      button.get(), vector_icons::kVisibilityOffIcon,
+      button.get(), vector_icons::kVisibilityOffOldIcon,
       {ui::kColorIcon, ui::kColorIconDisabled}, kEyeIconSize);
   views::InkDrop::Get(button.get())
       ->SetMode(views::InkDropHost::InkDropMode::ON);

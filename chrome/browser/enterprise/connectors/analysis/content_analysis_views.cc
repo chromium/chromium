@@ -75,7 +75,7 @@ ContentAnalysisSideIconImageView::ContentAnalysisSideIconImageView(
     Delegate* delegate)
     : ContentAnalysisBaseView(delegate) {
   SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, gfx::kPlaceholderColor, kSideImageSize));
+      vector_icons::kBusinessOldIcon, gfx::kPlaceholderColor, kSideImageSize));
   SetBorder(views::CreateEmptyBorder(kSideImageInsets));
 }
 
@@ -83,7 +83,7 @@ void ContentAnalysisSideIconImageView::Update() {
   if (!GetWidget()) {
     return;
   }
-  SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+  SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
                                           delegate()->GetSideImageLogoColor(),
                                           kSideImageSize));
   if (delegate()->is_result()) {

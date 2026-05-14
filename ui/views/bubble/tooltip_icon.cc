@@ -126,7 +126,7 @@ void TooltipIcon::RemoveObserver(Observer* observer) {
 
 void TooltipIcon::SetDrawAsHovered(bool hovered) {
   SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kInfoOutlineIcon,
+      vector_icons::kInfoOutlineOldIcon,
       GetColorProvider()->GetColor(hovered ? ui::kColorHelpIconActive
                                            : ui::kColorHelpIconInactive),
       tooltip_icon_size_));
