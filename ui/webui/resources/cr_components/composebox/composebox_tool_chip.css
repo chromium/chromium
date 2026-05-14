@@ -81,7 +81,7 @@
 }
 
 #rightCloseIcon {
-  color: var(--color-searchbox-results-foreground-dimmed);
+  color: var(--cr-composebox-tool-chip-right-close-icon-color);
   display: none;
   height: 10px;
   padding: 7px;
