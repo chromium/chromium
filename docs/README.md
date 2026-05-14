@@ -444,6 +444,9 @@ used when committed.
 *   [Chrome Speed](speed/README.md) - Documentation for performance measurements and regressions in Chrome.
 *   [Chrome Speed Metrics](speed_metrics/README.md) - Documentation about user experience metrics on the web and their JavaScript APIs.
 
+### Stability
+*   [Overview of stability/crash metrics and reporting](stability.md) - Describes the different ways Chrome monitors stability and attempts to improve stability.
+
 ### UI
 *   [Chromium UI Platform](ui/index.md) - All things user interface
 
