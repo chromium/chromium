@@ -30,40 +30,6 @@ Value::Value(Value&& that) noexcept {
   InternalMoveConstructFrom(std::move(that));
 }
 
-Value::Value(Type type) : type_(type) {
-  // Initialize with the default value.
-  switch (type_) {
-    case Type::UNSIGNED:
-    case Type::NEGATIVE:
-      integer_value_ = 0;
-      return;
-    case Type::INVALID_UTF8:
-    case Type::BYTE_STRING:
-      new (&bytestring_value_) BinaryValue();
-      return;
-    case Type::STRING:
-      new (&string_value_) std::string();
-      return;
-    case Type::ARRAY:
-      new (&array_value_) ArrayValue();
-      return;
-    case Type::MAP:
-      new (&map_value_) MapValue();
-      return;
-    case Type::TAG:
-      NOTREACHED() << constants::kUnsupportedMajorType;
-    case Type::SIMPLE_VALUE:
-      simple_value_ = Value::SimpleValue::UNDEFINED;
-      return;
-    case Type::FLOAT_VALUE:
-      float_value_ = 0.0;
-      return;
-    case Type::NONE:
-      return;
-  }
-  NOTREACHED();
-}
-
 Value::Value(SimpleValue in_simple)
     : type_(Type::SIMPLE_VALUE), simple_value_(in_simple) {
   CHECK(static_cast<int>(in_simple) >= 20 && static_cast<int>(in_simple) <= 23);

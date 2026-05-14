@@ -122,8 +122,6 @@ class CBOR_EXPORT Value {
   Value(Value&& that) noexcept;
   Value() noexcept;  // A NONE value.
 
-  explicit Value(Type type);
-
   explicit Value(SimpleValue in_simple);
   explicit Value(bool boolean_value);
   explicit Value(double in_float);
