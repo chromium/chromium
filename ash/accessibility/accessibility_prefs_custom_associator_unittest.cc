@@ -32,8 +32,10 @@ static constexpr const char* kBatch2_NonLockablePref =
 // Batch 3 prefs.
 static constexpr const char* kBatch3_LockablePref =
     prefs::kAccessibilityScreenMagnifierEnabled;
-static constexpr const char* kBatch3_NonLockablePref =
+static constexpr const char* kBatch3_LockablePref_NoDialog =
     prefs::kAccessibilityScreenMagnifierScale;
+static constexpr const char* kBatch3_NonLockablePref =
+    prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted;
 
 struct BatchParams {
   raw_ptr<const base::Feature> feature;
@@ -57,7 +59,7 @@ class AccessibilityPrefsCustomAssociatorTest : public testing::Test {
 
   std::optional<base::Value> GetMergeValue(const std::string& pref_name,
                                            const base::Value& server) {
-    return associator_->GetPreferredPrefMergeValue(pref_name, server.Clone());
+    return associator_->GetPreferredPrefMergeValue(pref_name, server);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -131,8 +133,8 @@ TEST_P(AccessibilityPrefsCustomAssociatorParameterizedTest,
 
 // Verifies that non-lockable prefs cannot be locked.
 TEST_P(AccessibilityPrefsCustomAssociatorParameterizedTest,
-       TryLockPref_IntegerPrefCantLock) {
-  base::Value value(123);
+       TryLockPref_NonLockablePrefCantLock) {
+  base::Value value(true);
   associator_->TryLockPref(non_lockable_pref(), value);
 
   EXPECT_FALSE(
@@ -219,10 +221,12 @@ TEST_F(AccessibilityPrefsCustomAssociatorTest_Batches1_2_3,
   base::Value value1(true);
   base::Value value2(42);
   base::Value value3(true);
+  base::Value value4(1.5f);
 
   associator_->TryLockPref(kBatch1_LockablePref, value1);
   associator_->TryLockPref(kBatch2_NonLockablePref, value2);
   associator_->TryLockPref(kBatch3_LockablePref, value3);
+  associator_->TryLockPref(kBatch3_LockablePref_NoDialog, value4);
 
   std::optional<base::Value> merge_value =
       GetMergeValue(kBatch1_LockablePref, kIrrelevantServerValue);
@@ -234,13 +238,13 @@ TEST_F(AccessibilityPrefsCustomAssociatorTest_Batches1_2_3,
   merge_value = GetMergeValue(kBatch3_LockablePref, kIrrelevantServerValue);
   EXPECT_EQ(*merge_value, value3);
 
+  merge_value = GetMergeValue(kBatch3_LockablePref_NoDialog, base::Value());
+  EXPECT_EQ(*merge_value, value4);
+
   associator_->UnlockPref(kBatch1_LockablePref);
 
   merge_value = GetMergeValue(kBatch1_LockablePref, base::Value(false));
   EXPECT_EQ(*merge_value, base::Value(false));
-
-  merge_value = GetMergeValue(kBatch3_LockablePref, kIrrelevantServerValue);
-  EXPECT_EQ(*merge_value, value3);
 }
 
 class AccessibilityPrefsCustomAssociatorDisabledParameterizedTest

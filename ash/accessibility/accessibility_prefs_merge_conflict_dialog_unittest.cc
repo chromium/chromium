@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -85,7 +86,13 @@ class AccessibilityPrefsMergeConflictDialogTest : public AshTestBase {
 TEST_F(AccessibilityPrefsMergeConflictDialogTest, BuildsRowsFromConflicts) {
   std::vector<FakeController::PrefConflict> conflicts;
   conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
-                         base::Value(true), base::Value(false));
+                         /*local_value=*/base::Value(true),
+                         /*pending_value=*/base::Value(false),
+                         /*needs_resolution_dialog=*/true);
+  conflicts.emplace_back(prefs::kAccessibilityScreenMagnifierScale,
+                         /*local_value=*/base::Value(1.5),
+                         /*pending_value=*/base::Value(2.0),
+                         /*needs_resolution_dialog=*/false);
 
   auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
@@ -93,10 +100,27 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest, BuildsRowsFromConflicts) {
   EXPECT_EQ(GetAllChildrenOfType<HoverHighlightView>(dialog).size(), 1u);
 }
 
+TEST_F(AccessibilityPrefsMergeConflictDialogTest, NoDialogFromConflicts) {
+  std::vector<FakeController::PrefConflict> conflicts;
+  conflicts.emplace_back(prefs::kAccessibilityScreenMagnifierScale,
+                         /*local_value=*/base::Value(1.5),
+                         /*pending_value=*/base::Value(2.0),
+                         /*needs_resolution_dialog=*/false);
+  conflicts.emplace_back(prefs::kDockedMagnifierScale,
+                         /*local_value=*/base::Value(1.5),
+                         /*pending_value=*/base::Value(2.0),
+                         /*needs_resolution_dialog=*/false);
+
+  auto controller = std::make_unique<FakeController>(std::move(conflicts));
+  EXPECT_DEATH(ShowDialog(std::move(controller)), "");
+}
+
 TEST_F(AccessibilityPrefsMergeConflictDialogTest, ToggleReflectsInitialState) {
   std::vector<FakeController::PrefConflict> conflicts;
   conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
-                         base::Value(true), base::Value(false));
+                         /*local_value=*/base::Value(true),
+                         /*pending_value=*/base::Value(false),
+                         /*needs_resolution_dialog=*/true);
 
   auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
@@ -111,7 +135,9 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
        ClickingRowTogglesAndUpdatesController) {
   std::vector<FakeController::PrefConflict> conflicts;
   conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
-                         base::Value(true), base::Value(false));
+                         /*local_value=*/base::Value(true),
+                         /*pending_value=*/base::Value(false),
+                         /*needs_resolution_dialog=*/true);
 
   auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* controller_ptr = controller.get();
@@ -133,7 +159,9 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
        AccessibilityStateStaysInSyncWithToggle) {
   std::vector<FakeController::PrefConflict> conflicts;
   conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
-                         base::Value(true), base::Value(false));
+                         /*local_value=*/base::Value(true),
+                         /*pending_value=*/base::Value(false),
+                         /*needs_resolution_dialog=*/true);
 
   auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
@@ -160,7 +188,9 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
 
   std::vector<FakeController::PrefConflict> conflicts;
   conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
-                         base::Value(true), base::Value(false));
+                         /*local_value=*/base::Value(true),
+                         /*pending_value=*/base::Value(false),
+                         /*needs_resolution_dialog=*/true);
 
   auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
@@ -174,7 +204,9 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
 
   std::vector<FakeController::PrefConflict> conflicts;
   conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
-                         base::Value(true), base::Value(false));
+                         /*local_value=*/base::Value(true),
+                         /*pending_value=*/base::Value(false),
+                         /*needs_resolution_dialog=*/true);
 
   auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));

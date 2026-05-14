@@ -23,7 +23,8 @@ class ASH_EXPORT AccessibilityPrefsMergeConflictController {
   struct PrefConflict {
     PrefConflict(std::string pref_name,
                  base::Value local_value,
-                 base::Value pending_value);
+                 base::Value pending_value,
+                 bool needs_conflict_resolution_dialog);
     PrefConflict(const PrefConflict&) = delete;
     PrefConflict& operator=(const PrefConflict&) = delete;
     PrefConflict(PrefConflict&&);
@@ -33,6 +34,7 @@ class ASH_EXPORT AccessibilityPrefsMergeConflictController {
     std::string pref_name;
     base::Value local_value;
     base::Value pending_value;
+    bool needs_conflict_resolution_dialog;
   };
 
   // Returns a controller if accessibility prefs have sync/OOBE conflicts;
@@ -54,6 +56,10 @@ class ASH_EXPORT AccessibilityPrefsMergeConflictController {
   // Updates and persists the preference value of the given |pref_name|.
   virtual void UpdateConflict(std::string_view pref_name, base::Value value);
 
+  bool needs_conflict_resolution_dialog() const {
+    return needs_conflict_resolution_dialog_;
+  }
+
   static std::unique_ptr<AccessibilityPrefsMergeConflictController>
   CreateForTest(std::vector<PrefConflict> conflicts);
   static std::vector<PrefConflict> BuildConflictsForTest(
@@ -66,6 +72,7 @@ class ASH_EXPORT AccessibilityPrefsMergeConflictController {
 
  private:
   std::vector<PrefConflict> conflicts_;
+  bool needs_conflict_resolution_dialog_ = false;
 };
 
 }  // namespace ash

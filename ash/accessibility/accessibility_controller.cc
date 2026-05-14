@@ -2502,8 +2502,8 @@ void AccessibilityController::OnFirstSessionReady() {
   // By the time the user desktop is fully loaded, any syncable or conflicting
   // preferences have already been processed by the associator.
   // If needed, launch the merge resolution dialog.
-  if (auto controller =
-          AccessibilityPrefsMergeConflictController::MaybeCreate()) {
+  auto controller = AccessibilityPrefsMergeConflictController::MaybeCreate();
+  if (controller && controller->needs_conflict_resolution_dialog()) {
     prefs_conflict_resolution_dialog_ =
         AccessibilityPrefsMergeConflictDialog::CreateAndShow(
             std::move(controller),

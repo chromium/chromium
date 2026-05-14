@@ -25,6 +25,7 @@ std::vector<PrefConflict> BuildConflicts(base::DictValue locked_prefs,
 
   for (const auto& pref : GetAccessibilityPrefBatchesWithSyncEnabled()) {
     switch (pref.resolution_policy) {
+      case ConflictResolutionPolicy::kLocalClobberRemote:
       case ConflictResolutionPolicy::kDialogNeeded: {
         const base::Value* locked_value = locked_prefs.Find(pref.pref_name);
         const base::Value* pending_value = pending_prefs.Find(pref.pref_name);
@@ -40,12 +41,12 @@ std::vector<PrefConflict> BuildConflicts(base::DictValue locked_prefs,
             pref.pref_name,
             locked_value ? locked_value->Clone()
                          : prefs->GetDefaultPrefValue(pref.pref_name)->Clone(),
-            pending_value
-                ? pending_value->Clone()
-                : prefs->GetDefaultPrefValue(pref.pref_name)->Clone());
+            pending_value ? pending_value->Clone()
+                          : prefs->GetDefaultPrefValue(pref.pref_name)->Clone(),
+            (pref.resolution_policy ==
+             ConflictResolutionPolicy::kDialogNeeded));
         continue;
       }
-      case ConflictResolutionPolicy::kLocalClobberRemote:
       case ConflictResolutionPolicy::kNone:
         continue;
     }
@@ -58,10 +59,12 @@ std::vector<PrefConflict> BuildConflicts(base::DictValue locked_prefs,
 
 PrefConflict::PrefConflict(std::string pref_name,
                            base::Value local_value,
-                           base::Value pending_value)
+                           base::Value pending_value,
+                           bool needs_conflict_resolution_dialog)
     : pref_name(std::move(pref_name)),
       local_value(std::move(local_value)),
-      pending_value(std::move(pending_value)) {}
+      pending_value(std::move(pending_value)),
+      needs_conflict_resolution_dialog(needs_conflict_resolution_dialog) {}
 
 PrefConflict::PrefConflict(PrefConflict&&) = default;
 PrefConflict& PrefConflict::operator=(PrefConflict&&) = default;
@@ -141,6 +144,8 @@ AccessibilityPrefsMergeConflictController::
       Shell::Get()->accessibility_controller()->GetActiveUserPrefs();
   for (auto& conflict : conflicts_) {
     pref_service->Set(conflict.pref_name, conflict.local_value);
+    needs_conflict_resolution_dialog_ |=
+        conflict.needs_conflict_resolution_dialog;
   }
 }
 

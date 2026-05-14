@@ -51,14 +51,22 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
   locked.Set(kBatch3_LockablePref, base::Value(true));
   pending.Set(kBatch3_LockablePref, base::Value(false));
 
+  locked.Set(kBatch3_LockablePref_NoDialog, 1.5f);
+  pending.Set(kBatch3_LockablePref_NoDialog, 2.f);
+
   auto conflicts =
       AccessibilityPrefsMergeConflictController::BuildConflictsForTest(
           std::move(locked), std::move(pending));
 
-  ASSERT_EQ(conflicts.size(), 1u);
+  ASSERT_EQ(conflicts.size(), 2u);
   EXPECT_EQ(conflicts[0].pref_name, kBatch3_LockablePref);
   EXPECT_TRUE(conflicts[0].local_value.GetBool());
   EXPECT_FALSE(conflicts[0].pending_value.GetBool());
+  EXPECT_TRUE(conflicts[0].needs_conflict_resolution_dialog);
+  EXPECT_EQ(conflicts[1].pref_name, kBatch3_LockablePref_NoDialog);
+  EXPECT_EQ(conflicts[1].local_value, base::Value(1.5f));
+  EXPECT_EQ(conflicts[1].pending_value, base::Value(2.f));
+  EXPECT_FALSE(conflicts[1].needs_conflict_resolution_dialog);
 }
 
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
@@ -73,6 +81,9 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
   locked.Set(kBatch3_LockablePref, true);
   pending.Set(kBatch3_LockablePref, true);
 
+  locked.Set(kBatch3_LockablePref_NoDialog, 1.5f);
+  pending.Set(kBatch3_LockablePref_NoDialog, 1.5f);
+
   auto conflicts =
       AccessibilityPrefsMergeConflictController::BuildConflictsForTest(
           std::move(locked), std::move(pending));
@@ -81,7 +92,7 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
 }
 
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
-       BuildConflictsIgnoresNonDialogPrefs) {
+       BuildConflictsIgnoresNonLockablePrefs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kOsSyncAccessibilitySettingsBatch1);
@@ -118,34 +129,43 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
        BuildConflictsUsesDefaultFalseWhenPrefMissing) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kOsSyncAccessibilitySettingsBatch3);
+  feature_list.InitWithFeatures({features::kOsSyncAccessibilitySettingsBatch1,
+                                 features::kOsSyncAccessibilitySettingsBatch3},
+                                {});
 
   base::DictValue locked;
   base::DictValue pending;
 
   // Only pending has the pref.
-  pending.Set(kBatch3_LockablePref, true);
+  pending.Set(kBatch1_LockablePref, true);
+
+  // Only pending has the pref.
+  locked.Set(kBatch3_LockablePref, true);
 
   auto conflicts =
       AccessibilityPrefsMergeConflictController::BuildConflictsForTest(
           std::move(locked), std::move(pending));
 
-  ASSERT_EQ(conflicts.size(), 1u);
+  ASSERT_EQ(conflicts.size(), 2u);
   EXPECT_FALSE(conflicts[0].local_value.GetBool());  // default
   EXPECT_TRUE(conflicts[0].pending_value.GetBool());
+  EXPECT_TRUE(conflicts[1].local_value.GetBool());
+  EXPECT_FALSE(conflicts[1].pending_value.GetBool());  // default
 }
 
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
        UpdateConflictsUpdatesPrefAndState) {
-  // Feature enabled not needed.
+  // Feature enablement not needed.
   std::vector<PrefConflict> conflicts;
-  conflicts.emplace_back(kBatch1_LockablePref, base::Value(true),
-                         base::Value(false));
-  conflicts.emplace_back(kBatch3_LockablePref, base::Value(false),
-                         base::Value(true));
-  conflicts.emplace_back(kBatch3_LockablePref_NoDialog, base::Value(0.),
-                         base::Value(1.));
+  conflicts.emplace_back(
+      kBatch1_LockablePref, /*local_value=*/base::Value(true),
+      /*pending_value=*/base::Value(false), /*needs_resolution_dialog=*/true);
+  conflicts.emplace_back(
+      kBatch3_LockablePref, /*local_value=*/base::Value(false),
+      /*pending_value=*/base::Value(true), /*needs_resolution_dialog=*/false);
+  conflicts.emplace_back(
+      kBatch3_LockablePref_NoDialog, /*local_value=*/base::Value(0.),
+      /*pending_value=*/base::Value(1.), /*needs_resolution_dialog=*/false);
 
   auto controller = AccessibilityPrefsMergeConflictController::CreateForTest(
       std::move(conflicts));
@@ -161,7 +181,7 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
 
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
        UpdateConflictUnknownPrefDies) {
-  // Feature enabled not needed.
+  // Feature enablement not needed.
   std::vector<PrefConflict> conflicts = {};
 
   auto controller = AccessibilityPrefsMergeConflictController::CreateForTest(
@@ -184,8 +204,9 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
                 base::BindLambdaForTesting([&]() { notified = true; }));
 
   std::vector<PrefConflict> conflicts;
-  conflicts.emplace_back(kBatch1_LockablePref, base::Value(true),
-                         base::Value(false));
+  conflicts.emplace_back(
+      kBatch1_LockablePref, /*local_value=*/base::Value(true),
+      /*pending_value=*/base::Value(false), /*needs_resolution_dialog=*/true);
 
   auto controller = AccessibilityPrefsMergeConflictController::CreateForTest(
       std::move(conflicts));
