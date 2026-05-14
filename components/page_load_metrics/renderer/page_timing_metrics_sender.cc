@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -252,6 +253,9 @@ void PageTimingMetricsSender::UpdateResourceMetadata(
 
 void PageTimingMetricsSender::UpdateCustomUserTimings(
     mojom::CustomUserTimingMarkPtr custom_timing) {
+  TRACE_EVENT("loading", "PageTimingMetricsSender::UpdateCustomUserTimings",
+              "mark_name", custom_timing->mark_name, "custom_timings_count",
+              custom_user_timings_.size());
   custom_user_timings_.push_back(std::move(custom_timing));
   EnsureSendTimer();
 }
@@ -292,6 +296,9 @@ void PageTimingMetricsSender::DidObserveSoftLargestContentfulPaint(
 
 void PageTimingMetricsSender::SendCustomUserTimingMark(
     mojom::CustomUserTimingMarkPtr custom_timing) {
+  TRACE_EVENT("loading", "PageTimingMetricsSender::SendCustomUserTimingMark",
+              "mark_name", custom_timing->mark_name, "custom_timings_count",
+              custom_user_timings_.size());
   // `custom_timing` is sent to the browser to clarify when the abandoned
   // navigation happens. When the navigation is abandoned, the renderer may be
   // busy, so it's important to start IPC and report UMA immediately.
@@ -346,6 +353,9 @@ void PageTimingMetricsSender::SendNow() {
       page_resource_data_use_.erase(resource->resource_id());
     }
   }
+
+  TRACE_EVENT("loading", "PageTimingMetricsSender::SendNow",
+              "custom_user_timings_count", custom_user_timings_.size());
 
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
