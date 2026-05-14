@@ -106,6 +106,18 @@
   top: 14px;
 }
 
+:host([energy-effect-enabled_]) #composebox::part(context-menu-entrypoint-icon) {
+  --cr-composebox-entrypoint-background-color: var(--color-omnibox-composebox-context-entrypoint-background);
+  --cr-composebox-entrypoint-border-radius: 100px;
+  --cr-composebox-entrypoint-height: 32px;
+  --cr-composebox-entrypoint-width: 40px;
+  --cr-icon-button-icon-size: 20px;
+}
+
+:host([energy-effect-enabled_]) #composebox[in-tool-mode]::part(context-menu-entrypoint-icon) {
+  --cr-composebox-entrypoint-background-color: transparent;
+}
+
 #composebox::part(input) {
   min-height: 44px;
 }
