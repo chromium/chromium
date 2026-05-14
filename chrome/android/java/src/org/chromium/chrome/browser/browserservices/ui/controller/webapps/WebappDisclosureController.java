@@ -74,9 +74,9 @@ public class WebappDisclosureController extends DisclosureController {
                 WebappRegistry.getInstance()
                         .getWebappDataStorage(
                                 assumeNonNull(mIntentDataProvider.getWebappExtras()).id);
-        assert storage != null;
-
-        storage.clearShowDisclosure();
+        if (storage != null) {
+            storage.clearShowDisclosure();
+        }
         super.onDisclosureAccepted();
     }
 
