@@ -239,7 +239,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
       ToolbarController::ResponsiveElementInfo(
           ToolbarController::ElementIdInfo{
               kToolbarSplitTabsToolbarButtonElementId,
-              IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_TABS, &kSplitSceneOldIcon,
+              IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW, &kSplitSceneOldIcon,
               kToolbarSplitTabsToolbarButtonElementId},
           /*is_section_end=*/false),
       ToolbarController::ResponsiveElementInfo(
