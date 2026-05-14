@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/counter_directives.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
@@ -3529,66 +3530,34 @@ CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
 CSSValue* ComputedStyleUtils::ValueForCounterDirectives(
     const ComputedStyle& style,
     CountersAttachmentContext::Type type) {
-  const CounterDirectiveMap* map = style.GetCounterDirectives();
-  if (!map) {
+  const CounterPropertyList* list = nullptr;
+  switch (type) {
+    case CountersAttachmentContext::Type::kIncrementType:
+      list = style.CounterIncrementList();
+      break;
+    case CountersAttachmentContext::Type::kResetType:
+      list = style.CounterResetList();
+      break;
+    case CountersAttachmentContext::Type::kSetType:
+      list = style.CounterSetList();
+      break;
+  }
+  if (!list || list->empty()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  for (const auto& item : *map) {
-    bool is_valid_counter_value = false;
-    switch (type) {
-      case CountersAttachmentContext::Type::kIncrementType:
-        is_valid_counter_value = item.value.HasIncrement();
-        break;
-      case CountersAttachmentContext::Type::kResetType:
-        is_valid_counter_value = item.value.IsReset();
-        break;
-      case CountersAttachmentContext::Type::kSetType:
-        is_valid_counter_value = item.value.HasSet();
-        break;
-    }
-
-    if (!is_valid_counter_value) {
-      continue;
-    }
-
-    bool is_reversed = false;
-    std::optional<int32_t> number;
-    switch (type) {
-      case CountersAttachmentContext::Type::kIncrementType:
-        number = item.value.IncrementValue();
-        break;
-      case CountersAttachmentContext::Type::kResetType: {
-        if (item.value.IsResetReversed()) {
-          is_reversed = true;
-        }
-        const std::optional<int> reset_value = item.value.ResetValue();
-        if (reset_value.has_value()) {
-          number = reset_value.value();
-        }
-        break;
-      }
-      case CountersAttachmentContext::Type::kSetType:
-        number = item.value.SetValue();
-        break;
-    }
+  CSSValueList* result = CSSValueList::CreateSpaceSeparated();
+  for (const CounterPropertyEntry& entry : *list) {
     const CSSNumericLiteralValue* counter_value = nullptr;
-    if (number.has_value()) {
+    if (entry.value.has_value()) {
       counter_value =
-          CSSNumericLiteralValue::Create(static_cast<double>(number.value()),
+          CSSNumericLiteralValue::Create(static_cast<double>(*entry.value),
                                          CSSPrimitiveValue::UnitType::kInteger);
     }
-    list->Append(*MakeGarbageCollected<cssvalue::CSSCounterValue>(
-        *MakeGarbageCollected<CSSCustomIdentValue>(item.key), counter_value,
-        is_reversed));
+    result->Append(*MakeGarbageCollected<cssvalue::CSSCounterValue>(
+        *MakeGarbageCollected<CSSCustomIdentValue>(entry.name), counter_value,
+        entry.is_reversed));
   }
-
-  if (!list->length()) {
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
-  }
-
-  return list;
+  return result;
 }
 
 CSSValue* ComputedStyleUtils::ValueForShape(const ComputedStyle& style,

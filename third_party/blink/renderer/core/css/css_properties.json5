@@ -3312,7 +3312,7 @@
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      stored_on_extra_field: ["CounterDirectives"],
+      stored_on_extra_field: ["CounterDirectives", "CounterIncrementList"],
     },
     {
       name: "counter-reset",
@@ -3325,7 +3325,7 @@
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      stored_on_extra_field: ["CounterDirectives"],
+      stored_on_extra_field: ["CounterDirectives", "CounterResetList"],
     },
     {
       name: "counter-set",
@@ -3338,7 +3338,7 @@
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      stored_on_extra_field: ["CounterDirectives"],
+      stored_on_extra_field: ["CounterDirectives", "CounterSetList"],
     },
     {
       name: "cursor",

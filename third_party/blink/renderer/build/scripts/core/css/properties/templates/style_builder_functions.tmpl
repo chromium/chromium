@@ -317,23 +317,23 @@ state.GetFontBuilder().{{property.setter}}
     {% set action = property.style_builder_template_args['action'] %}
     {% call(property) apply_initial(property) %}
   state.StyleBuilder().Clear{{action}}Directives();
+  state.StyleBuilder().SetCounter{{action}}List(nullptr);
     {% endcall %}
 
     {% call(property) apply_inherit(property) %}
   state.StyleBuilder().Clear{{action}}Directives();
-  const CounterDirectiveMap* parent_map = state.ParentStyle()->GetCounterDirectives();
-  if (!parent_map)
-    return;
-
-  CounterDirectiveMap& map = state.StyleBuilder().AccessCounterDirectives();
-  DCHECK(!parent_map->empty());
-
-  typedef CounterDirectiveMap::const_iterator Iterator;
-  Iterator end = parent_map->end();
-  for (Iterator it = parent_map->begin(); it != end; ++it) {
-    CounterDirectives& directives = map.insert(it->key, CounterDirectives()).stored_value->value;
-    directives.Inherit{{action}}(it->value);
+  if (const CounterDirectiveMap* parent_map =
+          state.ParentStyle()->GetCounterDirectives()) {
+    DCHECK(!parent_map->empty());
+    CounterDirectiveMap& map = state.StyleBuilder().AccessCounterDirectives();
+    for (const auto& [name, parent_directives] : *parent_map) {
+      map.insert(name, CounterDirectives()).stored_value->value
+          .Inherit{{action}}(parent_directives);
+    }
   }
+  const auto* parent_list = state.ParentStyle()->Counter{{action}}List();
+  state.StyleBuilder().SetCounter{{action}}List(
+      parent_list ? parent_list->Clone() : nullptr);
     {% endcall %}
 
     {% call(property) apply_value(property) %}
@@ -342,38 +342,53 @@ state.GetFontBuilder().{{property.setter}}
   const auto* list = DynamicTo<CSSValueList>(value);
   if (!list) {
     DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
+    state.StyleBuilder().SetCounter{{action}}List(nullptr);
     return;
   }
 
   CounterDirectiveMap& map = state.StyleBuilder().AccessCounterDirectives();
+  auto new_list = std::make_unique<CounterPropertyList>();
 
   for (const CSSValue* item : *list) {
     const auto& counter_data = To<cssvalue::CSSCounterValue>(*item);
     AtomicString identifier(To<CSSCustomIdentValue>(counter_data.Identifier())->Value());
     CounterDirectives& directives =
         map.insert(identifier, CounterDirectives()).stored_value->value;
+    const CSSPrimitiveValue* counter_data_value = counter_data.Value();
+    CounterPropertyEntry entry;
+    entry.name = identifier;
         {% if action == 'Reset' %}
     if (counter_data.IsReversed()) {
       directives.SetIsResetReversed();
+      entry.is_reversed = true;
     }
-        {% endif %}
-    if (const CSSPrimitiveValue* counter_data_value = counter_data.Value()) {
-          {% if action == 'Reset' %}
-      int64_t counter_value = counter_data_value->ComputeNumber(state.CssToLengthConversionData());
-          {% else %}
-      int counter_value = counter_data_value->ComputeInteger(state.CssToLengthConversionData());
-          {% endif %}
-
-          {% if action == 'Reset' %}
-      directives.SetResetValue(counter_value);
-          {% elif action == 'Increment' %}
+    if (counter_data_value) {
+      directives.SetResetValue(counter_data_value->ComputeNumber(
+          state.CssToLengthConversionData()));
+      // CounterDirectives keeps reset as int64_t; the computed-value list
+      // serializes the saturated int.
+      entry.value = *directives.ResetValue();
+    } else if (!entry.is_reversed) {
+      entry.value = 0;
+    }
+        {% else %}
+    if (counter_data_value) {
+      const int counter_value = counter_data_value->ComputeInteger(
+          state.CssToLengthConversionData());
+          {% if action == 'Increment' %}
       directives.AddIncrementValue(counter_value);
           {% else %}
       directives.SetSetValue(counter_value);
           {% endif %}
+      entry.value = counter_value;
+    } else {
+      entry.value = {{ 1 if action == 'Increment' else 0 }};
     }
+        {% endif %}
+    new_list->push_back(entry);
   }
   DCHECK(!map.empty());
+  state.StyleBuilder().SetCounter{{action}}List(std::move(new_list));
     {% endcall %}
   {% endif %}
 {%- endmacro %}
