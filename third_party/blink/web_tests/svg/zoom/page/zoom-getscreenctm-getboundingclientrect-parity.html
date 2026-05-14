@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<title>getScreenCTM()-mapped getBBox() matches getBoundingClientRect() across page zoom levels</title>
+<!--
+  Chromium-internal regression guard for the SVG internal-coordinate
+  migration (crbug.com/469958423). TODO(vinaysingh): Move to WPTs once
+  the migration stabilizes and cross-engine behavior converges.
+
+  Sibling to svg/dom/getScreenCTM-getBoundingClientRect-parity.html,
+  which pins parity at the default zoom level; this file varies the
+  page zoom factor and asserts that getScreenCTM()-mapped getBBox()
+  corners continue to match getBoundingClientRect() at every level.
+  The rotated case stresses the canonical "did we apply the page zoom
+  twice" regression where the screenCTM would pick up a hidden scale
+  factor and decouple from getBoundingClientRect().
+
+  Complements (does not replace) the older svg/zoom/page/
+  zoom-get-screen-ctm.html: that file pins absolute getScreenCTM()
+  values after zoom; this file asserts the cross-API parity invariant
+  with getBoundingClientRect() across multiple zoom factors and adds
+  rotated / nested-SVG / viewBox-scaled cases.
+-->
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../dom/resources/svg-matrix-helpers.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#container { margin: 30px; }
+</style>
+<div id="container">
+  <svg width="200" height="200">
+    <rect id="r1" x="0" y="0" width="40" height="40"/>
+    <rect id="r2" x="60" y="80" width="30" height="20"/>
+    <g transform="translate(100,50) scale(1.5)">
+      <rect id="r3" x="0" y="0" width="20" height="20"/>
+    </g>
+    <g transform="rotate(30)">
+      <rect id="r-rot" x="10" y="10" width="20" height="20"/>
+    </g>
+  </svg>
+  <svg width="100" height="100" viewBox="0 0 200 200">
+    <rect id="r4" x="20" y="20" width="60" height="60"/>
+  </svg>
+  <svg width="200" height="200">
+    <svg id="svg-nested-inner" x="40" y="40" width="100" height="100">
+      <rect id="r-nested" x="10" y="10" width="30" height="30"/>
+    </svg>
+  </svg>
+</div>
+<script>
+// 0.0005 matches the tolerance landed in
+// svg/dom/getScreenCTM-getBoundingClientRect-parity.html and
+// svg/dom/getScreenCTM-ancestor-transform.html.
+//
+// Load-bearing assumption: getScreenCTM() on the outermost SVG cancels
+// the page-zoom factor (via the `1/EffectiveZoom` scale in
+// SVGSVGElement::LocalToScreenCTM), and getBoundingClientRect() goes
+// through the same effective-zoom-cancelled transform, so the two
+// values agree to FP precision at any page zoom. If the SVG internal-
+// coordinate migration removes that cancellation on one path but not
+// the other, this assertion will catch it as a parity break -- which
+// is the intended regression-guard behavior.
+const EPSILON = 0.0005;
+
+function assertGBCRMatchesBBox(elementId, zoomLabel) {
+  const el = document.getElementById(elementId);
+  const derived = bboxToClientRect(el);
+  const clientRect = el.getBoundingClientRect();
+  assert_approx_equals(derived.left, clientRect.left, EPSILON,
+    `${elementId}: left at ${zoomLabel}`);
+  assert_approx_equals(derived.top, clientRect.top, EPSILON,
+    `${elementId}: top at ${zoomLabel}`);
+  assert_approx_equals(derived.width, clientRect.width, EPSILON,
+    `${elementId}: width at ${zoomLabel}`);
+  assert_approx_equals(derived.height, clientRect.height, EPSILON,
+    `${elementId}: height at ${zoomLabel}`);
+}
+
+const elements = ['r1', 'r2', 'r3', 'r-rot', 'r4', 'r-nested'];
+// Exact zoom levels matching the test plan: 100%, 125%, 150%, 80%.
+const zoomLevels = [1.0, 1.25, 1.5, 0.8];
+
+let initialDpr;
+
+setup(() => {
+  // Force the default page zoom before measuring, so initialDpr is
+  // anchored to a known state regardless of what any earlier test in
+  // the same content_shell process left behind.
+  testRunner.setPageZoomFactor(1.0);
+  document.body.offsetHeight;
+
+  // Captured here so the direction-of-change assertion below stays
+  // correct under both the default suite (DPR=1) and scalefactor200
+  // (DPR=2).
+  initialDpr = window.devicePixelRatio;
+});
+
+test(t => {
+  // Always restore the default zoom on exit (including on assertion
+  // failure) so subsequent tests in the same process aren't affected.
+  t.add_cleanup(() => testRunner.setPageZoomFactor(1.0));
+
+  for (const zoom of zoomLevels) {
+    testRunner.setPageZoomFactor(zoom);
+    // Force a synchronous layout flush; setPageZoomFactor doesn't
+    // guarantee layout has run when measurements are taken next.
+    document.body.offsetHeight;
+    const label = `${Math.round(zoom * 100)}% zoom`;
+    for (const id of elements) assertGBCRMatchesBBox(id, label);
+  }
+
+  // The last level (0.8) is below 100%, so DPR must have decreased
+  // relative to the initial value.
+  assert_less_than(window.devicePixelRatio, initialDpr,
+    'devicePixelRatio should decrease at <100% zoom');
+}, 'getScreenCTM and getBoundingClientRect parity across multiple zoom levels');
+</script>

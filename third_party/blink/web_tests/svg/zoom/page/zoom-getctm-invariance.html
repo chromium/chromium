@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<title>getCTM() stays invariant under page zoom</title>
+<!--
+  Chromium-internal regression guard for the SVG internal-coordinate
+  migration (crbug.com/469958423). TODO(vinaysingh): Move to WPTs once
+  the migration stabilizes and cross-engine behavior converges.
+
+  Sibling to svg/dom/getCTM-zoom-invariance.html, which pins the
+  expected getCTM() values at the default (1.0) zoom level; this file
+  varies the page zoom factor and asserts getCTM() values do not change
+  in SVG user space. Rotation case is included to catch the canonical
+  "did we apply the page zoom twice" regression where the rotated CTM
+  would pick up a hidden scale factor; nested-SVG and CSS-transform-on-
+  root cases pin the orthogonal "zoom must not leak through a viewport
+  boundary or a CSS transform" guarantees under varying page zoom.
+-->
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../dom/resources/svg-matrix-helpers.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+/* CSS transform on an SVG root must NOT leak into getCTM() of a
+   descendant, even when combined with page zoom. */
+#svg-css-transform { transform: translate(20px, 20px); }
+</style>
+<svg width="200" height="200">
+  <rect id="r1" x="10" y="10" width="50" height="50"/>
+  <g transform="translate(30,40)">
+    <rect id="r2" x="0" y="0" width="20" height="20"/>
+  </g>
+  <g transform="scale(2)">
+    <rect id="r3" x="5" y="5" width="10" height="10"/>
+  </g>
+  <g transform="rotate(30) translate(10,0)">
+    <rect id="r-rot" x="0" y="0" width="10" height="10"/>
+  </g>
+</svg>
+<svg width="100" height="100" viewBox="0 0 200 200">
+  <g transform="translate(50,50)">
+    <rect id="r4" x="0" y="0" width="30" height="30"/>
+  </g>
+</svg>
+<svg width="200" height="200">
+  <svg id="svg-nested-inner" x="50" y="50" width="100" height="100">
+    <rect id="r-nested" x="0" y="0" width="30" height="30"/>
+  </svg>
+</svg>
+<svg id="svg-css-transform" width="200" height="200">
+  <rect id="r-css" x="10" y="10" width="50" height="50"/>
+</svg>
+<script>
+// getCTM() returns the SVG-space transform and is independent of CSS /
+// page zoom. Tolerance is FP-rounding-only.
+const EPSILON = 1e-5;
+
+const elementIds = ['r1', 'r2', 'r3', 'r-rot', 'r4', 'r-nested', 'r-css'];
+
+let baselineCTMs;
+let initialDpr;
+
+setup(() => {
+  // Force the default page zoom before measuring, so the baseline and
+  // initialDpr are anchored to a known state regardless of what any
+  // earlier test in the same content_shell process left behind.
+  testRunner.setPageZoomFactor(1.0);
+  document.body.offsetHeight;
+
+  baselineCTMs = {};
+  for (const id of elementIds) {
+    const ctm = document.getElementById(id).getCTM();
+    baselineCTMs[id] = {
+      a: ctm.a, b: ctm.b, c: ctm.c,
+      d: ctm.d, e: ctm.e, f: ctm.f
+    };
+  }
+
+  // Captured here so the direction-of-change assertion below stays
+  // correct under both the default suite (DPR=1) and scalefactor200
+  // (DPR=2).
+  initialDpr = window.devicePixelRatio;
+});
+
+function assertCTMUnchanged(zoomLabel) {
+  for (const id of elementIds) {
+    const ctm = document.getElementById(id).getCTM();
+    assertMatrixApproxEquals(ctm, baselineCTMs[id], EPSILON);
+  }
+}
+
+// Exact zoom levels matching the test plan: 100%, 125%, 150%, 80%.
+const zoomLevels = [1.0, 1.25, 1.5, 0.8];
+
+test(t => {
+  // Always restore the default zoom on exit (including on assertion
+  // failure) so subsequent tests in the same process aren't affected.
+  t.add_cleanup(() => testRunner.setPageZoomFactor(1.0));
+
+  for (const zoom of zoomLevels) {
+    testRunner.setPageZoomFactor(zoom);
+    // Force a synchronous layout flush; setPageZoomFactor doesn't
+    // guarantee layout has run when measurements are taken next.
+    document.body.offsetHeight;
+    assertCTMUnchanged(`${Math.round(zoom * 100)}% zoom`);
+  }
+
+  // The last level (0.8) is below 100%, so DPR must have decreased
+  // relative to the initial value.
+  assert_less_than(window.devicePixelRatio, initialDpr,
+    'devicePixelRatio should decrease at <100% zoom');
+}, 'getCTM() stays invariant across multiple page zoom levels');
+</script>

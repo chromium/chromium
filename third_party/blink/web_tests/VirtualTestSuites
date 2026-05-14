@@ -2911,7 +2911,13 @@
       "wpt_internal/html/canvas/drawElementImage/webgl-ink-overflow.html",
       "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html",
       "wpt_internal/html/canvas/drawElementImage/get-element-transform.html",
-      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html"
+      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html",
+      "svg/dom/getScreenCTM-getBoundingClientRect-parity.html",
+      "svg/dom/getBBox-getBoundingClientRect-consistency.html",
+      "svg/dom/getCTM-zoom-invariance.html",
+      "svg/zoom/page/zoom-getbbox-invariance.html",
+      "svg/zoom/page/zoom-getctm-invariance.html",
+      "svg/zoom/page/zoom-getscreenctm-getboundingclientrect-parity.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"

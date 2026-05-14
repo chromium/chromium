@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<title>getBBox() stays invariant in SVG space across page zoom levels</title>
+<!--
+  Chromium-internal regression guard for the SVG internal-coordinate
+  migration (crbug.com/469958423). TODO(vinaysingh): Move to WPTs once
+  the migration stabilizes and cross-engine behavior converges.
+
+  Sibling to svg/dom/getBBox-getBoundingClientRect-consistency.html,
+  which pins getBBox()-vs-gBCR relationships at the default zoom level;
+  this file varies the page zoom factor and asserts getBBox() values do
+  not change in SVG user space.
+-->
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+</style>
+<svg width="200" height="200">
+  <rect id="r1" x="10" y="20" width="50" height="30"/>
+  <circle id="c1" cx="150" cy="100" r="40"/>
+  <g transform="scale(2)">
+    <rect id="r2" x="5" y="5" width="20" height="10"/>
+  </g>
+</svg>
+<svg width="100" height="100" viewBox="0 0 400 400">
+  <rect id="r3" x="50" y="50" width="100" height="100"/>
+</svg>
+<script>
+// getBBox() returns values in SVG user units and must be entirely
+// independent of CSS / page zoom. Tolerance is FP-rounding-only.
+const EPSILON = 1e-5;
+const elementIds = ['r1', 'c1', 'r2', 'r3'];
+
+let baselineBBoxes;
+let initialDpr;
+
+setup(() => {
+  // Force the default page zoom before measuring, so the baseline and
+  // initialDpr are anchored to a known state regardless of what any
+  // earlier test in the same content_shell process left behind.
+  testRunner.setPageZoomFactor(1.0);
+  document.body.offsetHeight;
+
+  baselineBBoxes = {};
+  for (const id of elementIds) {
+    const bbox = document.getElementById(id).getBBox();
+    baselineBBoxes[id] = {
+      x: bbox.x, y: bbox.y,
+      width: bbox.width, height: bbox.height
+    };
+  }
+
+  // Captured here so the direction-of-change assertion below stays
+  // correct under both the default suite (DPR=1) and scalefactor200
+  // (DPR=2).
+  initialDpr = window.devicePixelRatio;
+});
+
+function assertBBoxUnchanged(zoomLabel) {
+  for (const id of elementIds) {
+    const bbox = document.getElementById(id).getBBox();
+    const baseline = baselineBBoxes[id];
+    assert_approx_equals(bbox.x, baseline.x, EPSILON,
+      `${id}: bbox.x unchanged at ${zoomLabel}`);
+    assert_approx_equals(bbox.y, baseline.y, EPSILON,
+      `${id}: bbox.y unchanged at ${zoomLabel}`);
+    assert_approx_equals(bbox.width, baseline.width, EPSILON,
+      `${id}: bbox.width unchanged at ${zoomLabel}`);
+    assert_approx_equals(bbox.height, baseline.height, EPSILON,
+      `${id}: bbox.height unchanged at ${zoomLabel}`);
+  }
+}
+
+// Exact zoom levels matching the test plan: 100%, 125%, 150%, 80%.
+const zoomLevels = [1.0, 1.25, 1.5, 0.8];
+
+test(t => {
+  // Always restore the default zoom on exit (including on assertion
+  // failure) so subsequent tests in the same process aren't affected.
+  t.add_cleanup(() => testRunner.setPageZoomFactor(1.0));
+
+  for (const zoom of zoomLevels) {
+    testRunner.setPageZoomFactor(zoom);
+    // Force a synchronous layout flush; setPageZoomFactor doesn't
+    // guarantee layout has run when measurements are taken next.
+    document.body.offsetHeight;
+    assertBBoxUnchanged(`${Math.round(zoom * 100)}% zoom`);
+  }
+
+  // The last level (0.8) is below 100%, so DPR must have decreased
+  // relative to the initial value.
+  assert_less_than(window.devicePixelRatio, initialDpr,
+    'devicePixelRatio should decrease at <100% zoom');
+}, 'getBBox() stays invariant in SVG space across multiple zoom levels');
+</script>
