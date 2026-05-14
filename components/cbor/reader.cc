@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include <iterator>
 #include <limits>
 #include <map>
 #include <utility>
@@ -395,25 +396,28 @@ std::optional<Value> Reader::ReadMapContent(
         error_code_ = DecoderError::INCORRECT_MAP_KEY_TYPE;
         return std::nullopt;
     }
-    if (IsDuplicateKey(key.value(), cbor_map))
-      return std::nullopt;
 
-    if (!config.allow_and_canonicalize_out_of_order_keys &&
-        !IsKeyInOrder(key.value(), cbor_map)) {
+    auto [it, inserted] =
+        cbor_map.try_emplace(std::move(key.value()), std::move(value.value()));
+    if (!inserted) {
+      error_code_ = DecoderError::DUPLICATE_KEY;
       return std::nullopt;
     }
 
-    cbor_map.emplace(std::move(key.value()), std::move(value.value()));
+    if (!config.allow_and_canonicalize_out_of_order_keys &&
+        std::next(it) != cbor_map.end()) {
+      error_code_ = DecoderError::OUT_OF_ORDER_KEY;
+      return std::nullopt;
+    }
   }
 
-  Value::MapValue map;
-  map.reserve(cbor_map.size());
+  std::vector<std::pair<Value, Value>> items;
+  items.reserve(cbor_map.size());
   while (!cbor_map.empty()) {
     auto node = cbor_map.extract(cbor_map.begin());
-    map.emplace_hint(map.end(), std::move(node.key()),
-                     std::move(node.mapped()));
+    items.emplace_back(std::move(node.key()), std::move(node.mapped()));
   }
-  return Value(std::move(map));
+  return Value(Value::MapValue(base::sorted_unique, std::move(items)));
 }
 
 std::optional<uint8_t> Reader::ReadByte() {
@@ -443,30 +447,6 @@ bool Reader::IsEncodingMinimal(uint8_t additional_bytes, uint64_t uint_data) {
     error_code_ = DecoderError::NON_MINIMAL_CBOR_ENCODING;
     return false;
   }
-  return true;
-}
-
-bool Reader::IsKeyInOrder(const Value& new_key,
-                          const std::map<Value, Value, Value::Less>& map) {
-  if (map.empty()) {
-    return true;
-  }
-
-  const auto& max_current_key = map.rbegin()->first;
-  const auto less = map.key_comp();
-  if (!less(max_current_key, new_key)) {
-    error_code_ = DecoderError::OUT_OF_ORDER_KEY;
-    return false;
-  }
-  return true;
-}
-
-bool Reader::IsDuplicateKey(const Value& new_key,
-                            const std::map<Value, Value, Value::Less>& map) {
-  if (map.find(new_key) == map.end()) {
-    return false;
-  }
-  error_code_ = DecoderError::DUPLICATE_KEY;
   return true;
 }
 

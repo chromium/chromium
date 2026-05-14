@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <optional>
 
 #include "base/containers/span.h"
@@ -207,12 +206,6 @@ class CBOR_EXPORT Reader {
                                       int max_nesting_level);
   std::optional<uint8_t> ReadByte();
   std::optional<base::span<const uint8_t>> ReadBytes(uint64_t num_bytes);
-  bool IsKeyInOrder(const Value& new_key,
-                    const std::map<Value, Value, Value::Less>& map);
-  // Check if `new_key` is a duplicate of a key that already exists in the
-  // `map`.
-  bool IsDuplicateKey(const Value& new_key,
-                      const std::map<Value, Value, Value::Less>& map);
   bool IsEncodingMinimal(uint8_t additional_bytes, uint64_t uint_data);
 
   DecoderError GetErrorCode() { return error_code_; }
