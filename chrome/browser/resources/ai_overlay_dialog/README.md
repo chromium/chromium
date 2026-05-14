@@ -4,6 +4,7 @@ This directory contains the WebUI implementation of the AI Overlay Dialog.
 
 ## Architecture
 
+```
                 ┌──────────────────┐ ┌─────────────┐
                 │   AudioCapturer  │ │ AudioPlayer │
                 └─────────▲────────┘ └───────▲─────┘
@@ -26,7 +27,26 @@ This directory contains the WebUI implementation of the AI Overlay Dialog.
                   │                               │     │                  │
                   │          Conversation         ┼─────►    ApiSession    │
                   │                               │     │                  │
-                  └───────────────────────────────┘     └──────────────────┘
+                  └─────┬───────────────────────┬─┘     └──────────────────┘
+                        │                       │
+                        │                       │
+                        │                       │
+           ┌────────────▼────────┐            ┌─▼──────────────────────┐
+           │                     │            │                        │
+           │ PageContextManager  │            │       ToolExecutor     │
+           │                     │            │                        │
+           └──────────────▲──────┘            └────────┬──▲────────────┘
+                          │                            │  │
+──────────────────────────┼────────────────────────────┼──┼─────────────────
+                          │                            │  │
+ Chrome C++ Controller    │                            │  │
+                          │                            │  │
+           ┌──────────────┴─────┐            ┌─────────▼──┴────────────┐
+           │                    │            │                         │
+           │ PageContextMonitor │            │     AiOverlayTools      │
+           │                    │            │                         │
+           └────────────────────┘            └─────────────────────────┘
+```
 
 (diagram can be modified using asciiflow.com)
 
@@ -42,6 +62,12 @@ This directory contains the WebUI implementation of the AI Overlay Dialog.
     context is updated. In practice, this means whenever the active tab changes
     or is navigated.
 - **`Persona` (`persona.ts`)**: Defines the system instruction for the AI.
+- **`PageContextManager`**: Manages the context from the current page. Receives
+    updates from the C++ side PageContextMonitor which listens to Browser-side
+    changes like tab switches, navigations, etc.
+- **`ToolExecutor`**: Responsible for unpacking tool calls from the model and
+    sending them to the AiOverlayTools object in C++ to actually execute on the
+    tool calls.
 
 ## State
 
@@ -54,6 +80,14 @@ Conversation is the source of truth for the conversation state which can be in o
 
 The UI in app.ts receives changes in the Conversation state but uses it's own,
 similar but distinct, state machine to update the UI.
+
+## Tools
+
+Tool calls are defined in the [tools.mojom](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom;l=1?q=tools.mojom&sq=&ss=chromium%2Fchromium%2Fsrc)
+interface between ToolExecutor in WebUI and AIOverlayTools in C++. The
+[generate_tool_definitions.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/ai_overlay_dialog/tools/generate_tool_definitions.py)
+build step reads the mojom and documentation in comments and converts it into
+tool definition schemas passed to the model API.
 
 ## System Instructions
 
