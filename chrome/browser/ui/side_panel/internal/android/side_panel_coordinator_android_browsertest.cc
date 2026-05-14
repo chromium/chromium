@@ -817,6 +817,217 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_WindowScopedEntryShowing_NewTabHasNoActiveEntry_KeepsWindowScopedEntry) {
+  // Arrange: Open 2 tabs.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  ASSERT_FALSE(first_tab->IsActivated());
+  ASSERT_TRUE(second_tab->IsActivated());
+
+  // Switch back to first tab to set up window entry while it's active.
+  tab_list->ActivateTab(first_tab->GetHandle());
+
+  // Arrange: Register a window-scoped SidePanelEntry.
+  auto* window_registry = SidePanelRegistry::From(browser);
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  window_registry->Register(CreateSidePanelEntry(entry_key, browser));
+
+  // Arrange: Show the window-scoped entry.
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+
+  // Act: Switch to second tab (which has no active entry).
+  tab_list->ActivateTab(second_tab->GetHandle());
+
+  // Assert: Side panel should still show the window-scoped entry.
+  EXPECT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_WindowScopedEntryShowing_NewTabHasActiveTabScopedEntry_ShowsTabScopedEntry) {
+  // Arrange: Open 2 tabs.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  ASSERT_FALSE(first_tab->IsActivated());
+  ASSERT_TRUE(second_tab->IsActivated());
+
+  // Arrange: Register a window-scoped entry.
+  auto* window_registry = SidePanelRegistry::From(browser);
+  auto window_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto window_entry = CreateSidePanelEntry(window_entry_key, browser);
+  TestSidePanelEntryObserver window_entry_observer;
+  window_entry->AddObserver(&window_entry_observer);
+  window_registry->Register(std::move(window_entry));
+
+  // Arrange: Register a tab-scoped entry for the 2nd tab.
+  auto* second_registry = SidePanelRegistry::From(second_tab);
+  auto tab_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+  auto tab_entry = CreateSidePanelEntry(tab_entry_key, browser);
+  TestSidePanelEntryObserver tab_entry_observer;
+  tab_entry->AddObserver(&tab_entry_observer);
+  second_registry->Register(std::move(tab_entry));
+
+  // Activate 1st tab, show window entry.
+  tab_list->ActivateTab(first_tab->GetHandle());
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(window_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(window_entry_key));
+
+  // Activate 2nd tab
+  tab_list->ActivateTab(second_tab->GetHandle());
+  // Initially it continues showing window entry because 2nd tab has no active
+  // entry yet.
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(window_entry_key));
+
+  // Show its tab-scoped entry (making it active for 2nd tab).
+  coordinator->SidePanelUIBase::Show(tab_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(tab_entry_key));
+  EXPECT_EQ(SidePanelEntryHideReason::kReplaced,
+            window_entry_observer.reason_for_last_entry_will_hide_.value());
+
+  // Reset observer state to cleanly verify the next transition.
+  window_entry_observer.reason_for_last_entry_will_hide_.reset();
+  tab_entry_observer.reason_for_last_entry_will_hide_.reset();
+
+  // Act: Switch back to 1st tab.
+  tab_list->ActivateTab(first_tab->GetHandle());
+
+  // Assert: Side panel should restore the window-scoped entry.
+  EXPECT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(window_entry_key));
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(tab_entry_key));
+
+  // Assert: The tab-scoped entry should be notified of "hidden" events due to
+  // backgrounding.
+  EXPECT_EQ(SidePanelEntryHideReason::kBackgrounded,
+            tab_entry_observer.reason_for_last_entry_will_hide_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_TabScopedActive_SwitchToTabAndShowWindowScoped_SwitchBack_RestoresTabScoped) {
+  // Arrange: Open 2 tabs.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  ASSERT_FALSE(first_tab->IsActivated());
+  ASSERT_TRUE(second_tab->IsActivated());
+
+  // Arrange: Register a tab-scoped entry for the 1st tab.
+  auto* first_registry = SidePanelRegistry::From(first_tab);
+  auto tab_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+  auto tab_entry = CreateSidePanelEntry(tab_entry_key, browser);
+  TestSidePanelEntryObserver tab_entry_observer;
+  tab_entry->AddObserver(&tab_entry_observer);
+  first_registry->Register(std::move(tab_entry));
+
+  // Arrange: Register a window-scoped entry.
+  auto* window_registry = SidePanelRegistry::From(browser);
+  auto window_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto window_entry = CreateSidePanelEntry(window_entry_key, browser);
+  TestSidePanelEntryObserver window_entry_observer;
+  window_entry->AddObserver(&window_entry_observer);
+  window_registry->Register(std::move(window_entry));
+
+  // Activate 1st tab, show its tab-scoped entry (making it active for 1st tab).
+  tab_list->ActivateTab(first_tab->GetHandle());
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(tab_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(tab_entry_key));
+
+  // Act: Switch to 2nd tab. Side panel closes because 2nd tab has no active
+  // entry.
+  tab_list->ActivateTab(second_tab->GetHandle());
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(SidePanelEntryHideReason::kBackgrounded,
+            tab_entry_observer.reason_for_last_entry_will_hide_.value());
+
+  // Reset observer state.
+  tab_entry_observer.reason_for_last_entry_will_hide_.reset();
+
+  // Act: Show window-scoped entry on 2nd tab.
+  coordinator->SidePanelUIBase::Show(window_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(window_entry_key));
+
+  // Act: Switch back to 1st tab.
+  tab_list->ActivateTab(first_tab->GetHandle());
+
+  // Assert: 1st tab's active tab-scoped entry should replace the window-scoped
+  // entry.
+  EXPECT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(tab_entry_key));
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(window_entry_key));
+  EXPECT_EQ(SidePanelEntryHideReason::kBackgrounded,
+            window_entry_observer.reason_for_last_entry_will_hide_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_CloseTab_WindowScopedEntryShowing_KeepsWindowScopedEntry) {
+  // Arrange: Open 2 tabs.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  ASSERT_FALSE(first_tab->IsActivated());
+  ASSERT_TRUE(second_tab->IsActivated());
+
+  // Arrange: Register a window-scoped entry.
+  auto* window_registry = SidePanelRegistry::From(browser);
+  auto window_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  window_registry->Register(CreateSidePanelEntry(window_entry_key, browser));
+
+  // Arrange: Show the window-scoped entry on the 2nd tab.
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(window_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(window_entry_key));
+
+  // Act: Close the 2nd tab. 1st tab becomes active (has no active entries).
+  tab_list->CloseTab(second_tab->GetHandle());
+
+  // Assert: Side panel should continue showing the window-scoped entry
+  // smoothly.
+  EXPECT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(window_entry_key));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
     MaybeShowEntryOnTabStripModelChanged_CloseTab_NewActiveTabHasNoEntry_ClosesSidePanel) {
   // Arrange: Open 2 tabs.
   BrowserWindowInterface* browser = GetBrowserWindow();
