@@ -5,11 +5,13 @@
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
+#include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/base64.h"
 #include "base/check_is_test.h"
@@ -39,19 +41,22 @@ class TabInfoCollectorImpl : public TabInfoCollector {
   ~TabInfoCollectorImpl() override = default;
 
   // TabInfoCollector:
-  std::vector<mojom::WindowPtr> GetWindowTabInfo() override {
+  std::vector<mojom::WindowPtr> GetWindowTabInfo(
+      UrlTypeGetter url_type_getter) override {
     if (!is_producer_) {
       if (web_ui_ && web_ui_->GetWebContents()) {
         return GetWindowTabInfoForTarget(
-            web_ui_->GetWebContents()->GetTopLevelNativeWindow());
+            web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
+            url_type_getter);
       }
       return {};
     }
-    return GetWindowTabInfoForAllBrowserWindows();
+    return GetWindowTabInfoForAllBrowserWindows(url_type_getter);
   }
 
   std::vector<mojom::WindowPtr> GetWindowTabInfoForTarget(
-      aura::Window* target_window) override {
+      aura::Window* target_window,
+      UrlTypeGetter url_type_getter) override {
     if (!Shell::HasInstance()) {
       return {};
     }
@@ -61,11 +66,11 @@ class TabInfoCollectorImpl : public TabInfoCollector {
     }
     std::vector<std::vector<ash::TabInfo>> windows = {
         delegate->GetTabsListForWindow(target_window)};
-    return AshToPageWindows(windows);
+    return AshToPageWindows(windows, url_type_getter);
   }
 
-  std::vector<mojom::WindowPtr> GetWindowTabInfoForAllBrowserWindows()
-      override {
+  std::vector<mojom::WindowPtr> GetWindowTabInfoForAllBrowserWindows(
+      UrlTypeGetter url_type_getter) override {
     if (!Shell::HasInstance()) {
       return {};
     }
@@ -94,16 +99,21 @@ class TabInfoCollectorImpl : public TabInfoCollector {
       }
     }
     SortWindowList(windows);
-    return AshToPageWindows(windows);
+    return AshToPageWindows(windows, url_type_getter);
   }
 
  private:
-  mojom::TabInfoPtr AshToPageTabInfo(ash::TabInfo tab) {
+  mojom::TabInfoPtr AshToPageTabInfo(ash::TabInfo tab,
+                                     UrlTypeGetter url_type_getter) {
     mojom::TabInfoPtr tab_info = mojom::TabInfo::New();
     tab_info->title = base::UTF16ToUTF8(tab.title);
     tab_info->url = std::move(tab.url);
     tab_info->favicon = std::move(tab.favicon);
     tab_info->id = tab.id;
+    std::optional<mojom::UrlType> url_type = url_type_getter.Run(tab.id);
+    if (url_type.has_value()) {
+      tab_info->url_type = url_type.value();
+    }
     return tab_info;
   }
 
@@ -124,12 +134,13 @@ class TabInfoCollectorImpl : public TabInfoCollector {
   }
 
   std::vector<mojom::WindowPtr> AshToPageWindows(
-      std::vector<std::vector<ash::TabInfo>> windows) {
+      std::vector<std::vector<ash::TabInfo>> windows,
+      UrlTypeGetter url_type_getter) {
     std::vector<mojom::WindowPtr> out;
     for (auto window : windows) {
       mojom::WindowPtr window_out = mojom::Window::New();
       for (auto tab : window) {
-        window_out->tab_list.push_back(AshToPageTabInfo(tab));
+        window_out->tab_list.push_back(AshToPageTabInfo(tab, url_type_getter));
       }
       out.push_back(std::move(window_out));
     }

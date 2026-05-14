@@ -392,7 +392,8 @@ void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {
 }
 
 std::vector<mojom::WindowPtr> BocaAppHandler::GetWindowTabInfoSync() {
-  return tab_info_collector_->GetWindowTabInfo();
+  return tab_info_collector_->GetWindowTabInfo(base::BindRepeating(
+      &BocaAppHandler::GetTabUrlType, base::Unretained(this)));
 }
 
 void BocaAppHandler::ListCourses(ListCoursesCallback callback) {
@@ -1582,6 +1583,14 @@ TeacherScreenPresenter* BocaAppHandler::teacher_screen_presenter() {
 
 StudentScreenPresenter* BocaAppHandler::student_screen_presenter() {
   return GetSessionManager()->GetStudentScreenPresenter();
+}
+
+std::optional<mojom::UrlType> BocaAppHandler::GetTabUrlType(int32_t tab_id) {
+  std::optional<::boca::UrlType> url_type_proto =
+      GetSessionManager()->GetTabUrlType(tab_id);
+  return url_type_proto.has_value()
+             ? ConvertUrlTypeProtoToMojom(url_type_proto.value())
+             : std::nullopt;
 }
 
 }  // namespace ash::boca

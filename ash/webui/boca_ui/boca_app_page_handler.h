@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/content_settings_handler.h"
@@ -292,6 +293,8 @@ class BocaAppHandler : public mojom::PageHandler,
 
   TeacherScreenPresenter* teacher_screen_presenter();
   StudentScreenPresenter* student_screen_presenter();
+
+  std::optional<mojom::UrlType> GetTabUrlType(int32_t tab_id);
 
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;

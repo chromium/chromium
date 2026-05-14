@@ -5,16 +5,20 @@
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -69,6 +73,14 @@ class TabInfoCollectorTest : public InProcessBrowserTest {
   TabInfoCollector* tab_info_collector() { return tab_info_collector_.get(); }
 
  protected:
+  auto GetUrlTypeCallback(
+      std::optional<mojom::UrlType> url_type = std::nullopt) {
+    return base::BindRepeating(
+        [](std::optional<mojom::UrlType> url_type_param,
+           int32_t) -> std::optional<mojom::UrlType> { return url_type_param; },
+        url_type);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TabInfoCollector> tab_info_collector_;
 };
@@ -107,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
   // Create browser 3 and navigate to url4
   CreateBrowser({GURL(kTabUrl4)});
 
-  auto window_list = tab_info_collector()->GetWindowTabInfo();
+  auto window_list =
+      tab_info_collector()->GetWindowTabInfo(GetUrlTypeCallback());
 
   // Start with 1 existing window.
   ASSERT_EQ(4u, window_list.size());
@@ -140,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  auto window_list = tab_info_collector()->GetWindowTabInfo();
+  auto window_list =
+      tab_info_collector()->GetWindowTabInfo(GetUrlTypeCallback());
 
   EXPECT_EQ(0u, window_list.size());
 }
@@ -150,7 +164,8 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
   CreateIncognitoBrowser(ProfileManager::GetActiveUserProfile());
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  auto window_list = tab_info_collector()->GetWindowTabInfo();
+  auto window_list =
+      tab_info_collector()->GetWindowTabInfo(GetUrlTypeCallback());
 
   EXPECT_EQ(1u, window_list.size());
 }
@@ -162,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorConsumerTest,
   observer.set_shown_callback(
       base::BindLambdaForTesting([&](views::Widget* widget) {
         auto* window = widget->GetNativeWindow();
-        auto window_list =
-            tab_info_collector()->GetWindowTabInfoForTarget(window);
+        auto window_list = tab_info_collector()->GetWindowTabInfoForTarget(
+            window, GetUrlTypeCallback(mojom::UrlType::kGeminiGuidedLearning));
 
         // Only target window should be recorded.
         ASSERT_EQ(1u, window_list.size());
@@ -173,6 +188,8 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorConsumerTest,
         // Verify tab is listed in non-ascending order inside window based on
         // last access time.
         EXPECT_EQ(kTabUrl1, window_list[0]->tab_list[0]->url);
+        EXPECT_EQ(mojom::UrlType::kGeminiGuidedLearning,
+                  window_list[0]->tab_list[0]->url_type);
       }));
 
   // Create browser 1 and navigate to url1 and then url2
