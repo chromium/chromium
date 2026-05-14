@@ -384,10 +384,12 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
+  const int instances = num_instances_.Increment();
   can_use_decoder_ =
-      num_instances_.Increment() < kMaxNumOfInstances ||
+      instances < kMaxNumOfInstances ||
       !base::FeatureList::IsEnabled(media::kLimitConcurrentDecoderInstances);
   if (!can_use_decoder_) {
+    num_instances_.Decrement();
     VLOGF(1) << "Reached maximum number of decoder instances ("
              << kMaxNumOfInstances << ")";
     return V4L2Status::Codes::kMaxDecoderInstanceCount;
