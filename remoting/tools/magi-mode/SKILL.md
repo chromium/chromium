@@ -108,7 +108,8 @@ next expert.
 *   **Engineering Manager:** `IMPLEMENTATION`
     (or `CRITIQUE` if `task_type` is `REVIEW` or `AUDIT`)
 *   **Domain Experts:** `SYNTHESIS`
-*   **Synthesizing Architect:** `CRITIQUE`
+*   **Synthesizing Architect:** `TEST_FILLING`
+*   **Test Expert:** `CRITIQUE`
 *   **Reviewers:** `ANALYSIS`
 *   **Review Analyst:** `TPM_UPDATE`
 *   **Technical Program Manager:** `SYNTHESIS` (if iteration needed) or
@@ -289,6 +290,17 @@ next expert.
 ### 3. Parallel Implementation
 Invoke the selected expert sub-agents in parallel (`wait_for_previous: false`).
 Instruct each to implement the stubbed internals from the Base Scaffold.
+
+**Mandates for Domain Experts:**
+- **Production Code Focus:** Domain experts SHOULD focus primarily on
+  implementing the production code logic.
+- **Domain Edge Cases:** If a domain expert identifies specific edge cases or
+  scenarios that need verification, they MUST add a stubbed test case in the
+  test file (with both `ADD_FAILURE() << "NOT IMPLEMENTED"` and a descriptive
+  TODO comment) rather than fully implementing the test.
+- **Test Hooks & Accessors:** Domain experts MUST provide any necessary public
+  accessors, test-only hooks, or `friend` declarations in the production code
+  that the Test Expert will need to verify internal state.
 **File I/O:** Each sub-agent MUST read `project.magi.json` to ground their
 implementation in the actual requirements. They MUST securely save their draft
 to disk using the versioned naming convention
@@ -306,8 +318,22 @@ Once the Domain Experts finish:
         full-file overwrites to resolve conflicts between domain experts.
     *   **Synthesis Build:** If `build_targets` are defined in
         `project.magi.json`, the Synthesizing Architect MUST run the local
-        build/test suite on "Draft A" and attach the build logs to the
-        synthesis report before signaling `next_phase: CRITIQUE`.
+        build/test suite on "Draft A". The Orchestrator MUST verify that the
+        scaffold compiles and that the tests still fail with "NOT IMPLEMENTED"
+        (as Domain Experts only added stubbed tests). The Synthesizing Architect
+        MUST attach the build logs to the synthesis report before signaling
+        `next_phase: TEST_FILLING`.
+
+### 4.5 Test Filling (The Test Expert)
+*This phase is ONLY executed if `task_type` is `IMPLEMENTATION`.*
+1.  **Action:** Invoke the Test Expert sub-agent.
+2.  **Mandate:** The Test Expert reads the synthesized "Draft A" and fills out
+    the actual implementation of all tests (both the original scaffold and any
+    new domain-specific stubs added by Domain Experts in Phase 3).
+3.  **Verification:** The Test Expert MUST run the tests to verify they now PASS
+    (or fail for legitimate reasons, not "NOT IMPLEMENTED").
+4.  **Output:** The Test Expert saves the updated test files and signals
+    `next_phase: CRITIQUE` to proceed to Phase 5.
 ### 5. The Review Workflow (Consensus Loop vs. Supervisor)
 1.  **Blind Critique:** Push the files to be reviewed to the expanded panel of
     Reviewers selected in Phase 2.
