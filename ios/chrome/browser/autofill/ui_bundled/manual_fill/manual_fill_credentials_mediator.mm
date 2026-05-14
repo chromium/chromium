@@ -22,6 +22,9 @@
 #import "components/sync/service/sync_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
+#import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_fetcher_consumer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
@@ -42,6 +45,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/favicon_size.h"
@@ -151,6 +155,12 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
   // Provides access to passkeys stored in user's account.
   raw_ptr<webauthn::PasskeyModel> _passkeyModel;
+
+  // The WebAuthn credentials delegate for the frame currently registering form
+  // activity, or the main frame as a fallback. Can be null if conditional
+  // passkey login is disabled or no frame is active.
+  base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
+      _webAuthnDelegate;
 }
 
 - (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
@@ -229,6 +239,13 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
   }
 
   _formFetcher->Fetch();
+
+  if (_webAuthnDelegate && !_webAuthnDelegate->GetPasskeys().has_value()) {
+    __weak __typeof(self) weakSelf = self;
+    _webAuthnDelegate->RequestNotificationWhenPasskeysReady(base::BindOnce(^{
+      [weakSelf postDataToConsumer];
+    }));
+  }
 }
 
 - (void)fetchAllPasswords {
@@ -610,6 +627,14 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
     didRegisterFormActivity:(const autofill::FormActivityParams&)params
                     inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
+  CHECK(frame);
+
+  if (IsConditionalPasskeyLoginEnabled()) {
+    webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+        webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(webState)
+            ->GetDelegateForFrameId(frame->GetFrameId());
+    _webAuthnDelegate = delegate ? delegate->AsWeakPtr() : nullptr;
+  }
   if (_activeFieldIsObfuscated !=
       (params.field_type == autofill::kObfuscatedFieldType)) {
     _activeFieldIsObfuscated =

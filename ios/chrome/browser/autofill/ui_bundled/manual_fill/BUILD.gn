@@ -57,6 +57,7 @@ source_set("manual_fill") {
     "//components/password_manager/ios:account_select_fill_data",
     "//components/strings:components_strings_grit",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/ios",
     "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
