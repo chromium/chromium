@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
@@ -511,25 +513,19 @@ class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
 - (void)assistantButtonTappedWithState:(AppBarAssistantButtonState)state {
   switch (state) {
     case AppBarAssistantButtonState::kAsk: {
-      if (!_authenticationService->HasPrimaryIdentity()) {
-        ShowSigninCommand* command = [[ShowSigninCommand alloc]
-            initWithOperation:AuthenticationOperation::kSigninOnly
-                  accessPoint:signin_metrics::AccessPoint::kIosAppBar];
-        [self.sceneHandler showSignin:command
-                   baseViewController:self.baseViewController];
-        return;
-      }
-      if (!_geminiService || (!_geminiService->IsProfileEligibleForGemini() &&
-                              _geminiService->GeminiIneligibilityForProfile()
-                                  .value()
-                                  .account_capability)) {
-        // TODO(crbug.com/484000888): If user is not eligible, then show prompt
-        // notifying ineligibility.
-        return;
-      }
-      GeminiStartupState* startupState = [[GeminiStartupState alloc]
-          initWithEntryPoint:gemini::EntryPoint::AppBar];
-      [self.geminiHandler startGeminiFlowWithStartupState:startupState];
+      __weak __typeof(self) weakSelf = self;
+      [self.geminiHandler
+          startGeminiEntryFlowWithStartupState:
+              [[GeminiStartupState alloc]
+                  initWithEntryPoint:gemini::EntryPoint::AppBar]
+                            baseViewController:self.baseViewController
+                                   accessPoint:signin_metrics::AccessPoint::
+                                                   kIosAppBar
+                      showSnackbarOnCompletion:YES
+                                    completion:^(GeminiEntryFlowResult result) {
+                                      [weakSelf
+                                          handleGeminiEntryFlowResult:result];
+                                    }];
       break;
     }
     case AppBarAssistantButtonState::kAIM: {
@@ -829,4 +825,21 @@ class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
   return webStateListCount != webStateList->count();
 }
 
+// Handles the result of the Gemini entry flow from the app bar.
+- (void)handleGeminiEntryFlowResult:(GeminiEntryFlowResult)result {
+  switch (result) {
+    case kGeminiEntryFlowResultAccountCapabilityRestricted:
+    case kGeminiEntryFlowResultAccountIneligibleByEnterprise:
+    case kGeminiEntryFlowResultAccountIneligibleByGemini:
+      // TODO(crbug.com/484000888): Update app bar button state to reflect
+      // ineligibility.
+      break;
+    case kGeminiEntryFlowResultSuccess:
+    case kGeminiEntryFlowResultTimeout:
+    case kGeminiEntryFlowResultCancelled:
+    case kGeminiEntryFlowResultPageIneligible:
+    case kGeminiEntryFlowResultUnknown:
+      break;
+  }
+}
 @end
