@@ -94,9 +94,6 @@ declare_args() {
   # True to use the Chromium runtime for cast rendering.
   enable_chromium_runtime_cast_renderer = false
 
-  # True to use the remoting implementation of cast streaming for the cast web
-  # runtime (as opposed to the mirroring-only implementation).
-  enable_remoting_for_cwr = false
 
   # device specific string to append to User string.
   device_user_agent_suffix = ""
