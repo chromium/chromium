@@ -1434,16 +1434,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Calendar.FetchEvents.PreFetched" units="fetches"
-    expires_after="2025-09-02">
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Recorded whenever calendar events are requested, and no fetch is required
-    because the fetch has already returned.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Calendar.FetchEvents.SingleMonthSize" units="bytes"
     expires_after="2025-09-02">
   <owner>jiamingc@google.com</owner>
