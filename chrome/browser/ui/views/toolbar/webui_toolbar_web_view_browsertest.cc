@@ -550,13 +550,12 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
 };
 
 // TODO(crbug.com/493362471): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, DISABLED_Basic) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
   BasicPixelTest(browser(), "Basic");
 }
 
 // TODO(crbug.com/493362471): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       DISABLED_IncognitoBasic) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, IncognitoBasic) {
   BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
 }
 
