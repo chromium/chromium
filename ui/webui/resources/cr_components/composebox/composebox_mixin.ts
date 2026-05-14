@@ -516,6 +516,14 @@ export const ComposeboxEmbedderMixin =
           if (this.smartComposeInlineHint !== nextHint) {
             this.smartComposeInlineHint = nextHint;
           }
+
+          // Smart compose stats are incremented on every response from the
+          // server.
+          if (this.smartComposeInlineHint) {
+            this.smartComposeStats.shownCount++;
+            this.smartComposeStats.shownLength +=
+                this.smartComposeInlineHint.length;
+          }
         }
 
         onContextualInputStatusChanged(
