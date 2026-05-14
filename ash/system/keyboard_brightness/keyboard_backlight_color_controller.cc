@@ -18,7 +18,6 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -434,10 +433,6 @@ SkColor KeyboardBacklightColorController::GetCurrentWallpaperColor() {
   if (!missing_wallpaper_color) {
     color = ConvertBacklightColorToSkColor(
         personalization_app::mojom::BacklightColor::kWallpaper);
-    bool invalid_color = color == kInvalidWallpaperColor;
-    base::UmaHistogramBoolean(
-        "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2",
-        !invalid_color);
   }
   if (ShouldUseDefaultColor(color)) {
     color = kDefaultColor;

@@ -14,7 +14,6 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/session_manager/session_manager_types.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -134,14 +133,10 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorUpdatesPref) {
 TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
   controller_->OnRgbKeyboardSupportedChanged(true);
   // Verify the user starts with wallpaper-extracted color.
-  base::HistogramTester histogram_tester;
   SimulateUserLogin(account_id_1);
   // Expect the default choice to be wallpaper color.
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
             controller_->GetBacklightColor(account_id_1));
-  // Expect no histogram entries because the wallpaper color is not available.
-  histogram_tester.ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2", false, 0);
   EXPECT_EQ(kDefaultColor, displayed_color());
 
   controller_->SetBacklightColor(
@@ -164,15 +159,9 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
 
 TEST_F(KeyboardBacklightColorControllerTest,
        DisplaysDefaultColorForNearlyBlackColor) {
-  base::HistogramTester histogram_tester;
   SetWallpaperColor(SkColorSetRGB(/*r=*/0, /*g=*/0, /*b=*/10));
   controller_->OnRgbKeyboardSupportedChanged(true);
 
-  // This triggers twice. Once because OnWallpaperColorsChanged() is triggered
-  // in OnRgbKeyboardSupportedChanged() and again in that same method because
-  // we're logged in.
-  histogram_tester.ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2", true, 2);
   EXPECT_EQ(kDefaultColor, displayed_color());
 }
 
@@ -232,14 +221,11 @@ TEST_F(KeyboardBacklightColorControllerTest,
   // Set the wallpaper and check that the displayed color now matches the
   // default color.
   TestWallpaperObserver observer;
-  base::HistogramTester histogram_tester;
   gfx::ImageSkia one_shot_wallpaper =
       CreateImage(640, 480, SkColorSetRGB(/*r=*/0, /*g=*/0, /*b=*/10));
   wallpaper_controller_->ShowOneShotWallpaper(one_shot_wallpaper);
   observer.WaitForWallpaperColorsChanged();
 
-  histogram_tester.ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2", true, 1);
   EXPECT_EQ(kDefaultColor, displayed_color());
 }
 

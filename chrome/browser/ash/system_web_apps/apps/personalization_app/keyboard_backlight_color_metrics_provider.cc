@@ -15,6 +15,10 @@
 
 using DisplayType = ash::KeyboardBacklightColorController::DisplayType;
 
+constexpr char
+    kPersonalizationKeyboardBacklightDisplayTypeSettledHistogramName[] =
+        "Ash.Personalization.KeyboardBacklight.DisplayType.Settled";
+
 KeyboardBacklightColorMetricsProvider::KeyboardBacklightColorMetricsProvider() =
     default;
 KeyboardBacklightColorMetricsProvider::
@@ -41,11 +45,6 @@ void KeyboardBacklightColorMetricsProvider::ProvideCurrentSessionData(
       base::UmaHistogramEnumeration(
           kPersonalizationKeyboardBacklightDisplayTypeSettledHistogramName,
           DisplayType::kStatic);
-      auto backlight_color =
-          keyboard_backlight_color_controller->GetBacklightColor(account_id);
-      base::UmaHistogramEnumeration(
-          kPersonalizationKeyboardBacklightColorSettledHistogramName,
-          backlight_color);
       return;
     }
     case DisplayType::kMultiZone: {

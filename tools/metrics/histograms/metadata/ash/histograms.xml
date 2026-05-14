@@ -6415,16 +6415,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Personalization.KeyboardBacklight.Color.Settled"
-    enum="PersonalizationKeyboardBacklightColor" expires_after="2024-11-03">
-  <owner>jasontt@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records the keyboard backlight color that the user has settled on. Emitted
-    once for every UMA upload.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Personalization.KeyboardBacklight.DisplayType.Settled"
     enum="PersonalizationKeyboardBacklightDisplayType"
     expires_after="2025-10-26">
@@ -6444,17 +6434,6 @@ chromium-metrics-reviews@google.com.
     Emitted every time the user selects 'Customize' button to open zone
     customization dialog to view or set zone colors, even when no zone color
     changed.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2"
-    enum="BooleanValid" expires_after="2024-07-26">
-  <owner>jasontt@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Emitted when the wallpaper extracted color is available and the keyboard
-    backlight selection is updated to be wallpaper color. Only non transparent
-    colors are considered valid.
   </summary>
 </histogram>
 
