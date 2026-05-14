@@ -8,13 +8,12 @@
 #import "base/gtest_prod_util.h"
 #import "components/enterprise/connectors/core/connectors_service_base.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_manager.h"
 
 class ProfileIOS;
 
 namespace policy {
 class UserCloudPolicyManager;
-}  // namespace policy
+}
 
 namespace enterprise_connectors {
 

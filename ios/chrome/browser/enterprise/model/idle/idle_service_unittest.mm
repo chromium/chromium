@@ -8,6 +8,7 @@
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
+#import "components/enterprise/idle/action_type.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "ios/chrome/browser/enterprise/model/idle/action_runner.h"

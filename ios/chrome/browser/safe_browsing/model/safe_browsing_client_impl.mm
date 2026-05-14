@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/memory/weak_ptr.h"
+#import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"

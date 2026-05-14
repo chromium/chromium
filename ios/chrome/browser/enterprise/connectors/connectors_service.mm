@@ -14,6 +14,7 @@
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_types.h"
 #import "ios/chrome/browser/enterprise/common/util.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_manager.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

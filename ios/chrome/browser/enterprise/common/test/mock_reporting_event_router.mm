@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
 
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
+
 MockReportingEventRouter::MockReportingEventRouter(
     enterprise_connectors::IOSRealtimeReportingClient* reporting_client)
     : ReportingEventRouter(reporting_client) {}

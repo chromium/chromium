@@ -7,8 +7,10 @@
 
 #import "base/functional/callback_forward.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
-#import "ios/web/public/web_state.h"
-#import "ui/base/clipboard/clipboard_metadata.h"
+
+namespace ui {
+struct ClipboardMetadata;
+}
 
 class ProfileIOS;
 class GURL;

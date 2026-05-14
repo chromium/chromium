@@ -6,10 +6,10 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_CLIENT_CERTIFICATES_CERTIFICATE_STORE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/enterprise/client_certificates/core/certificate_store.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace client_certificates {
+class CertificateStore;
 
 class CertificateStoreFactory : public ProfileKeyedServiceFactoryIOS {
  public:

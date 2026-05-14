@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/ios_clipboard_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ui/base/clipboard/clipboard_metadata.h"
 #import "url/gurl.h"
 
 namespace data_controls {

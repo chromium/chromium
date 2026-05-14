@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_CLIENT_CERTIFICATES_PROFILE_CONTEXT_DELEGATE_IOS_H_
 
 #import "base/memory/raw_ptr.h"
-#import "base/scoped_observation.h"
 #import "components/enterprise/client_certificates/core/context_delegate.h"
 
 namespace client_certificates {

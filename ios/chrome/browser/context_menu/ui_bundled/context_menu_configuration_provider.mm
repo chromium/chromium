@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider_delegate.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/image_preview_view_controller.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"

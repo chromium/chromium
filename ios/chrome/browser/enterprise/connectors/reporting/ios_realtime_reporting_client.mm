@@ -20,6 +20,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"

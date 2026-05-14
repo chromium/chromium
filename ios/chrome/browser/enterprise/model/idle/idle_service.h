@@ -8,10 +8,11 @@
 #import "base/cancelable_callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
-#import "ios/chrome/browser/enterprise/model/idle/action_runner_impl.h"
+#import "ios/chrome/browser/enterprise/model/idle/action_runner.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_timeout_policy_utils.h"
 
 class ProfileIOS;

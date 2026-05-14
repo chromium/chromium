@@ -9,14 +9,13 @@
 #import <queue>
 #import <vector>
 
-#import "base/containers/flat_set.h"
 #import "base/containers/span.h"
 #import "base/functional/callback.h"
-#import "base/no_destructor.h"
 #import "build/build_config.h"
 #import "components/enterprise/idle/action_type.h"
-#import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+
+class BrowsingDataRemover;
 
 namespace enterprise_idle {
 

@@ -6,10 +6,10 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace enterprise_connectors {
+class ConnectorsService;
 
 class ConnectorsServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:

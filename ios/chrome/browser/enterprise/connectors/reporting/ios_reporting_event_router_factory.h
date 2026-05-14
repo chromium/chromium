@@ -6,10 +6,10 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_IOS_REPORTING_EVENT_ROUTER_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace enterprise_connectors {
+class ReportingEventRouter;
 
 class IOSReportingEventRouterFactory : public ProfileKeyedServiceFactoryIOS {
  public:

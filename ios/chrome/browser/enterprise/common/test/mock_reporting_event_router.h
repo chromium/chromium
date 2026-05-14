@@ -9,10 +9,12 @@
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
-#import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
+
+namespace enterprise_connectors {
+class IOSRealtimeReportingClient;
+}
 
 // Mock version for ReportingEventRouter.
 class MockReportingEventRouter

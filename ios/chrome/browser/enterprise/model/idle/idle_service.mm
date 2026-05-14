@@ -10,6 +10,7 @@
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/enterprise/model/idle/action_runner_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 

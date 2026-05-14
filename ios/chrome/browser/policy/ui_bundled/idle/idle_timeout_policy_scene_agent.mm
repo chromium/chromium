@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"

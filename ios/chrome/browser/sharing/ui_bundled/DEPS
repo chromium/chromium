@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
   "+ios/chrome/browser/enterprise/cloud_content_scanning/model",
   "+ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h",
+  "+ios/chrome/browser/enterprise/connectors/connectors_service.h",
   "+ios/chrome/browser/enterprise/connectors/connectors_service_factory.h",
   "+ios/chrome/browser/find_in_page/model/find_tab_helper.h",
   "+ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h",

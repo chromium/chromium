@@ -9,6 +9,7 @@
 #import "components/enterprise/connectors/core/reporting_constants.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_content_analysis_request.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"

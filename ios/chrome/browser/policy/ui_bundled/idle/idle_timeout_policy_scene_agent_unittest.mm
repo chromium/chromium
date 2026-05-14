@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_scene_agent.h"
 
+#import "components/enterprise/idle/action_type.h"
 #import "components/enterprise/idle/idle_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"

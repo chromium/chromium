@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_ANALYSIS_SERVICE_SETTINGS_H_
 
 #import "components/enterprise/connectors/core/analysis_service_settings_base.h"
-#import "components/enterprise/connectors/core/analysis_settings.h"
 
 namespace enterprise_connectors {
 
