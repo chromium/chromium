@@ -41,12 +41,12 @@ constexpr base::TimeDelta kUpdateMessageTimeout = base::Seconds(10);
 
 glic::GlicInvokeOptions CreateInvokeOptions(
     const components_sharing_message::GlicExperimentalTriggering& request,
-    tabs::TabInterface* tab) {
+    BrowserWindowInterface* window) {
   glic::GlicInvokeOptions options{
       glic::mojom::InvocationSource::kExperimentalTriggering};
 
   glic::NewTab new_tab;
-  new_tab.window = tab->GetBrowserWindowInterface();
+  new_tab.window = window;
   new_tab.open_in_foreground = false;
   options.target.surface = new_tab;
 
@@ -187,15 +187,16 @@ class ExperimentalTriggeringUpdatesHandler
       return;
     }
 
-    tabs::TabInterface* active_tab = message_handler_->GetActiveTab();
-    if (!active_tab) {
-      DLOG(ERROR)
-          << "No active tab found for Profile for GlicExperimentalTriggering";
+    BrowserWindowInterface* browser_window =
+        message_handler_->GetBrowserWindow();
+    if (!browser_window) {
+      DLOG(ERROR) << "No browser window found for Profile for "
+                     "GlicExperimentalTriggering";
       message_handler_->OnUpdatesHandlerCleanup(context_id_);
       return;
     }
 
-    auto options = CreateInvokeOptions(request, active_tab);
+    auto options = CreateInvokeOptions(request, browser_window);
     options.on_client_connected = base::BindOnce(
         [](base::WeakPtr<ExperimentalTriggeringUpdatesHandler> updates_handler,
            base::WeakPtr<glic::GlicInstance> instance) {
@@ -362,8 +363,8 @@ GlicExperimentalTriggeringMessageHandler::
 GlicExperimentalTriggeringMessageHandler::
     ~GlicExperimentalTriggeringMessageHandler() = default;
 
-tabs::TabInterface* GlicExperimentalTriggeringMessageHandler::GetActiveTab()
-    const {
+BrowserWindowInterface*
+GlicExperimentalTriggeringMessageHandler::GetBrowserWindow() const {
   BrowserWindowInterface* browser = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&browser, this](BrowserWindowInterface* b) {
@@ -373,6 +374,12 @@ tabs::TabInterface* GlicExperimentalTriggeringMessageHandler::GetActiveTab()
         }
         return true;  // Continue
       });
+  return browser;
+}
+
+tabs::TabInterface* GlicExperimentalTriggeringMessageHandler::GetActiveTab()
+    const {
+  BrowserWindowInterface* browser = GetBrowserWindow();
   return browser ? TabListInterface::From(browser)->GetActiveTab() : nullptr;
 }
 

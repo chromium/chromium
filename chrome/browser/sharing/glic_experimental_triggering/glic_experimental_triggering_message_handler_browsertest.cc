@@ -32,6 +32,15 @@ namespace glic {
 
 using testing::_;
 
+class MockGlicExperimentalTriggeringMessageHandler
+    : public GlicExperimentalTriggeringMessageHandler {
+ public:
+  MockGlicExperimentalTriggeringMessageHandler(Profile* profile,
+                                               SharingMessageSender* sender)
+      : GlicExperimentalTriggeringMessageHandler(profile, sender) {}
+  MOCK_METHOD(BrowserWindowInterface*, GetBrowserWindow, (), (const, override));
+};
+
 class GlicExperimentalTriggeringMessageHandlerBrowserTest
     : public GlicApiBrowserTest {
  public:
@@ -164,10 +173,14 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
-                       HandlesMessageGracefullyWhenNoActiveTab) {
-  // Close the active tab to simulate no active tab.
-  auto* tab = GetTabListInterface()->GetActiveTab();
-  GetTabListInterface()->CloseTab(tab->GetHandle());
+                       HandlesMessageGracefullyWhenNoBrowserWindow) {
+  OptIn();
+  auto mock_handler = std::make_unique<
+      testing::NiceMock<MockGlicExperimentalTriggeringMessageHandler>>(
+      GetProfile(), &mock_sharing_message_sender_);
+
+  EXPECT_CALL(*mock_handler, GetBrowserWindow())
+      .WillOnce(testing::Return(nullptr));
 
   components_sharing_message::SharingMessage message;
   message.mutable_server_channel_configuration()->set_configuration(
@@ -180,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
       std::unique_ptr<components_sharing_message::ResponseMessage>>
       done_future;
 
-  handler_->OnMessage(std::move(message), done_future.GetCallback());
+  mock_handler->OnMessage(std::move(message), done_future.GetCallback());
 
   EXPECT_TRUE(done_future.Wait());
 }

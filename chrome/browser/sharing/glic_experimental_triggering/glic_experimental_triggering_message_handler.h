@@ -23,6 +23,8 @@ class GlicExperimentalOptInController;
 
 class Profile;
 
+class BrowserWindowInterface;
+
 class SharingMessageSender;
 
 namespace tabs {
@@ -47,6 +49,8 @@ class GlicExperimentalTriggeringMessageHandler : public SharingMessageHandler {
  protected:
   // Virtual for testing purposes to allow mocking the active tab.
   virtual tabs::TabInterface* GetActiveTab() const;
+  // Virtual for testing purposes to allow mocking the browser window.
+  virtual BrowserWindowInterface* GetBrowserWindow() const;
 
  private:
   friend class ExperimentalTriggeringUpdatesHandler;
