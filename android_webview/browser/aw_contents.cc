@@ -733,21 +733,23 @@ void AwContents::HideGeolocationPrompt(const GURL& origin) {
   }
 }
 
-void AwContents::OnPermissionRequest(
-    base::android::ScopedJavaLocalRef<jobject> j_request,
-    AwPermissionRequest* request) {
-  DCHECK(j_request);
-  DCHECK(request);
+base::WeakPtr<AwPermissionRequest> AwContents::OnPermissionRequest(
+    std::unique_ptr<AwPermissionRequestDelegate> permission_request) {
+  DCHECK(permission_request);
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_ref = java_ref_.get(env);
   if (!j_ref) {
-    permission_request_handler_->CancelRequest(request->GetOrigin(),
-                                               request->GetResources());
-    return;
+    return nullptr;
   }
 
+  base::WeakPtr<AwPermissionRequest> weak_request;
+  // The Create method also assigns the `weak_request` ptr.
+  base::android::ScopedJavaLocalRef<jobject> j_request =
+      AwPermissionRequest::Create(std::move(permission_request), &weak_request);
+
   Java_AwContents_onPermissionRequest(env, j_ref, j_request);
+  return weak_request;
 }
 
 void AwContents::OnPermissionRequestCanceled(AwPermissionRequest* request) {

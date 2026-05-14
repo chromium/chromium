@@ -54,13 +54,19 @@ class TestPermissionRequestHandlerClient
 
   TestPermissionRequestHandlerClient() : request_(nullptr) {}
 
-  void OnPermissionRequest(base::android::ScopedJavaLocalRef<jobject> j_request,
-                           AwPermissionRequest* request) override {
-    DCHECK(request);
-    request_ = request;
-    java_request_ = j_request;
-    requested_permission_ =
-        Permission(request->GetOrigin(), request->GetResources());
+  base::WeakPtr<AwPermissionRequest> OnPermissionRequest(
+      std::unique_ptr<AwPermissionRequestDelegate> permission_request)
+      override {
+    DCHECK(permission_request);
+    base::WeakPtr<AwPermissionRequest> weak_request;
+    java_request_ = AwPermissionRequest::Create(std::move(permission_request),
+                                                &weak_request);
+    request_ = weak_request.get();
+    if (request_) {
+      requested_permission_ =
+          Permission(request_->GetOrigin(), request_->GetResources());
+    }
+    return weak_request;
   }
 
   void OnPermissionRequestCanceled(AwPermissionRequest* request) override {
@@ -110,7 +116,7 @@ class TestPermissionRequestHandlerClient
 
 class TestPermissionRequestHandler : public PermissionRequestHandler {
  public:
-  TestPermissionRequestHandler(PermissionRequestHandlerClient* client)
+  explicit TestPermissionRequestHandler(PermissionRequestHandlerClient* client)
       : PermissionRequestHandler(client, nullptr) {}
 
   const std::vector<base::WeakPtr<AwPermissionRequest>> requests() {

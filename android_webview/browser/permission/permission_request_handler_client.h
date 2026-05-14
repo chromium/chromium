@@ -5,20 +5,26 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_PERMISSION_PERMISSION_REQUEST_HANDLER_CLIENT_H_
 #define ANDROID_WEBVIEW_BROWSER_PERMISSION_PERMISSION_REQUEST_HANDLER_CLIENT_H_
 
+#include <memory>
+
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/weak_ptr.h"
 
 namespace android_webview {
 
 class AwPermissionRequest;
+class AwPermissionRequestDelegate;
 
 class PermissionRequestHandlerClient {
  public:
   PermissionRequestHandlerClient();
   virtual ~PermissionRequestHandlerClient();
 
-  virtual void OnPermissionRequest(
-      base::android::ScopedJavaLocalRef<jobject> java_request,
-      AwPermissionRequest* request) = 0;
+  // Handles the permission request. Will return a WeakPtr to the created
+  // AwPermissionRequest if one was instantiated, or `nullptr` if no Java
+  // objects were created.
+  virtual base::WeakPtr<AwPermissionRequest> OnPermissionRequest(
+      std::unique_ptr<AwPermissionRequestDelegate> permission_request) = 0;
   virtual void OnPermissionRequestCanceled(AwPermissionRequest* request) = 0;
 };
 

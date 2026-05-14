@@ -228,8 +228,8 @@ class AwContents : public FindHelper::Listener,
   bool GetViewTreeForceDarkState() { return view_tree_force_dark_state_; }
 
   // PermissionRequestHandlerClient implementation.
-  void OnPermissionRequest(base::android::ScopedJavaLocalRef<jobject> j_request,
-                           AwPermissionRequest* request) override;
+  base::WeakPtr<AwPermissionRequest> OnPermissionRequest(
+      std::unique_ptr<AwPermissionRequestDelegate> permission_request) override;
   void OnPermissionRequestCanceled(AwPermissionRequest* request) override;
 
   PermissionRequestHandler* GetPermissionRequestHandler() {
