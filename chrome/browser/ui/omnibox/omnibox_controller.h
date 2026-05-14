@@ -58,29 +58,12 @@ class OmniboxController : public AutocompleteController::Observer {
   OmniboxClient* client() { return client_.get(); }
   const OmniboxClient* client() const { return client_.get(); }
 
-  OmniboxEditModel* edit_model() {
-    // TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
-    return edit_model_.get();
-#else
-    return nullptr;
-#endif
-  }
-  const OmniboxEditModel* edit_model() const {
-    // TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
-    return edit_model_.get();
-#else
-    return nullptr;
-#endif
-  }
+  OmniboxEditModel* edit_model() { return edit_model_.get(); }
+  const OmniboxEditModel* edit_model() const { return edit_model_.get(); }
 
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   void SetEditModelForTesting(std::unique_ptr<OmniboxEditModel> edit_model) {
     edit_model_ = std::move(edit_model);
   }
-#endif
 
   AutocompleteController* autocomplete_controller() {
     return autocomplete_controller_.get();
@@ -113,21 +96,11 @@ class OmniboxController : public AutocompleteController::Observer {
       base::RepeatingCallback<void(OmniboxPopupState)> callback);
 
   OmniboxPopupStateManager* popup_state_manager() {
-    // TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
     return popup_state_manager_.get();
-#else
-    return nullptr;
-#endif
   }
 
   const OmniboxPopupStateManager* popup_state_manager() const {
-    // TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
     return popup_state_manager_.get();
-#else
-    return nullptr;
-#endif
   }
 
  private:
@@ -147,13 +120,10 @@ class OmniboxController : public AutocompleteController::Observer {
   // objects owned by `autocomplete_controller_`.  Because of this (per
   // docs/dangling_ptr_guide.md) the `edit_model_` field needs to be declared
   // *after* the `autocomplete_controller_` field.
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<OmniboxEditModel> edit_model_;
 
   // Manages the visibility state of omnibox popups, i.e., None, Classic, AIM.
   std::unique_ptr<OmniboxPopupStateManager> popup_state_manager_;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Callback to validate popup state is in sync with widget visibility.
   base::RepeatingCallback<void(OmniboxPopupState)>

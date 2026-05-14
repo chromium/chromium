@@ -35,23 +35,15 @@
 OmniboxController::OmniboxController(
     std::unique_ptr<OmniboxClient> client,
     std::optional<base::TimeDelta> autocomplete_stop_timer_duration)
-    : client_(std::move(client))
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
-      ,
+    : client_(std::move(client)),
       edit_model_(std::make_unique<OmniboxEditModel>(
           /*omnibox_controller=*/this)),
-      popup_state_manager_(std::make_unique<OmniboxPopupStateManager>())
-#endif
-{
+      popup_state_manager_(std::make_unique<OmniboxPopupStateManager>()) {
   AutocompleteControllerConfig autocomplete_controller_config{
       .provider_types = AutocompleteClassifier::DefaultOmniboxProviders()};
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   if (omnibox::IsWebUIOmniboxPopupEnabled()) {
     autocomplete_controller_config.show_iph_matches = false;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
   if (autocomplete_stop_timer_duration.has_value()) {
     autocomplete_controller_config.stop_timer_duration =
         autocomplete_stop_timer_duration.value();
@@ -67,10 +59,7 @@ OmniboxController::OmniboxController(
 }
 
 void OmniboxController::SetView(OmniboxView* view) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   edit_model_->set_view(view);
-#endif  // !BUILDFLAG(IS_ANDROID)
   if (view) {
     // Start observing the AutocompleteController when a View is associated with
     // the OmniboxController. WebUI searchboxes observe the
@@ -137,8 +126,6 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
   }
 
   const bool popup_was_open = IsPopupOpen();
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   if (default_match_changed) {
     // The default match has changed, we need to let the OmniboxEditModel know
     // about new inline autocomplete text (blue highlight).
@@ -155,15 +142,12 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
   } else {
     edit_model_->OnPopupResultChanged();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   const bool popup_is_open = IsPopupOpen();
   if (popup_was_open != popup_is_open) {
     client_->OnPopupVisibilityChanged(popup_is_open);
   }
 
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   if (popup_was_open && !popup_is_open) {
     // Accept the temporary text as the user text, because it makes little sense
     // to have temporary text when the popup is closed.
@@ -176,7 +160,6 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
     // to a search suggestion upon closing the popup.
     edit_model_->ClearAdditionalText();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Note: The client outlives |this|, so bind a weak pointer to the callback
   // passed in to eliminate the potential for crashes on shutdown.
@@ -191,8 +174,6 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
 
 void OmniboxController::ClearPopupKeywordMode() const {
   TRACE_EVENT0("omnibox", "OmniboxController::ClearPopupKeywordMode");
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   if (IsPopupOpen()) {
     OmniboxPopupSelection selection = edit_model_->GetPopupSelection();
     if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
@@ -200,7 +181,6 @@ void OmniboxController::ClearPopupKeywordMode() const {
       edit_model_->SetPopupSelection(selection);
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 bool OmniboxController::IsSuggestionHidden(
@@ -209,16 +189,11 @@ bool OmniboxController::IsSuggestionHidden(
 }
 
 bool OmniboxController::IsPopupOpen() const {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   OmniboxPopupState state = popup_state_manager_->popup_state();
   if (popup_state_validation_callback_) {
     popup_state_validation_callback_.Run(state);
   }
   return state != OmniboxPopupState::kNone;
-#else
-  return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void OmniboxController::SetPopupStateValidationCallback(
@@ -229,12 +204,9 @@ void OmniboxController::SetPopupStateValidationCallback(
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
                                                 const GURL& icon_url,
                                                 SkBitmap bitmap) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   if (!icon_url.is_empty()) {
     edit_model_->SetIconBitmap(icon_url, bitmap);
   } else {
     edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }

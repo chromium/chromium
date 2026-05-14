@@ -35,18 +35,11 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/theme_resources.h"
@@ -57,7 +50,6 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/grit/components_scaled_resources.h"
-#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
@@ -101,6 +93,7 @@
 #include "components/search_engines/util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
@@ -119,6 +112,16 @@
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"  // nogncheck
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/vector_icons/vector_icons.h"  // nogncheck
@@ -889,6 +892,7 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
 
   if (!query_contextualizer_initialized_) {
     query_contextualizer_initialized_ = true;
+#if !BUILDFLAG(IS_ANDROID)
     if (controller_->client()->IsChromeOmniboxClient()) {
       auto* chrome_omnibox_client =
           static_cast<ChromeOmniboxClient*>(controller_->client());
@@ -917,6 +921,7 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
                 service, query_contextualizer_delegate_.get());
       }
     }
+#endif
   }
 
   if (query_contextualizer_) {
@@ -962,6 +967,7 @@ void OmniboxEditModel::OnContextualizationComplete(
     WindowOpenDisposition disposition,
     base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
         session_handle) {
+#if !BUILDFLAG(IS_ANDROID)
   if (!controller_->client()->IsChromeOmniboxClient()) {
     return;
   }
@@ -997,6 +1003,7 @@ void OmniboxEditModel::OnContextualizationComplete(
                    /*additional_params=*/{});
 
   NavigateToUrlWithSession(nullptr, query_text, disposition, ai_mode_url);
+#endif
 }
 
 void OmniboxEditModel::NavigateToUrlWithSession(
@@ -1005,6 +1012,7 @@ void OmniboxEditModel::NavigateToUrlWithSession(
     const std::u16string& query_text,
     WindowOpenDisposition disposition,
     GURL url) {
+#if !BUILDFLAG(IS_ANDROID)
   auto* chrome_omnibox_client =
       static_cast<ChromeOmniboxClient*>(controller_->client());
   auto* location_bar = chrome_omnibox_client->GetLocationBar();
@@ -1056,12 +1064,15 @@ void OmniboxEditModel::NavigateToUrlWithSession(
   } else {
     chrome_omnibox_client->OpenUrl(url);
   }
+#endif
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                                      base::TimeTicks timestamp,
                                      WindowOpenDisposition disposition,
                                      bool via_keyboard) {
+  controller_->StopAutocomplete(/*clear_result=*/false);
+
   base::UmaHistogramMicrosecondsTimes("Omnibox.InputToOpenSelection",
                                       base::TimeTicks::Now() - timestamp);
 
@@ -1451,10 +1462,12 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   if (controller_->IsPopupOpen()) {
     base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
                                   OmniboxEscapeAction::kClosePopup);
+#if !BUILDFLAG(IS_ANDROID)
     if (auto* popup_closer = controller_->client()->GetOmniboxPopupCloser()) {
       popup_closer->CloseWithReason(
           omnibox::PopupCloseReason::kEscapeKeyPressed);
     }
+#endif
     return true;
   }
 
@@ -2183,7 +2196,7 @@ void OmniboxEditModel::ResetPopupToInitialState() {
 }
 
 OmniboxPopupSelection OmniboxEditModel::GetPopupSelection() const {
-  DCHECK(popup_view_);
+  DCHECK(BUILDFLAG(IS_ANDROID) || popup_view_);
   return popup_selection_;
 }
 
@@ -2191,11 +2204,13 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                                          bool reset_to_default,
                                          bool force_update_ui,
                                          bool native_update) {
-  DCHECK(popup_view_);
+  DCHECK(BUILDFLAG(IS_ANDROID) || popup_view_);
 
   // Special case for updating the focus ring around the AIM button.
-  view_->ApplyFocusRingToAimButton(new_selection.state ==
-                                   OmniboxPopupSelection::FOCUSED_BUTTON_AIM);
+  if (view_) {
+    view_->ApplyFocusRingToAimButton(new_selection.state ==
+                                     OmniboxPopupSelection::FOCUSED_BUTTON_AIM);
+  }
 
   if (autocomplete_controller()->result().empty()) {
     return;
@@ -2238,7 +2253,8 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     // TODO(tommycli): Fold the focus hint into
     // popup_view_->OnSelectionChanged(). Caveat: We must update the
     // accessibility label before notifying the View.
-    if (popup_selection_.line != OmniboxPopupSelection::kNoMatch) {
+    if (popup_view_ &&
+        popup_selection_.line != OmniboxPopupSelection::kNoMatch) {
       popup_view_->ProvideButtonFocusHint(GetPopupSelection().line);
     }
   }
@@ -2274,7 +2290,7 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
 }
 
 bool OmniboxEditModel::IsPopupSelectionOnInitialLine() const {
-  DCHECK(popup_view_);
+  DCHECK(BUILDFLAG(IS_ANDROID) || popup_view_);
   size_t initial_line = autocomplete_controller()->result().default_match()
                             ? 0
                             : OmniboxPopupSelection::kNoMatch;
@@ -2283,12 +2299,12 @@ bool OmniboxEditModel::IsPopupSelectionOnInitialLine() const {
 
 bool OmniboxEditModel::IsPopupControlPresentOnMatch(
     OmniboxPopupSelection selection) const {
-  DCHECK(popup_view_);
+  DCHECK(BUILDFLAG(IS_ANDROID) || popup_view_);
   return selection.IsControlPresentOnMatch(autocomplete_controller()->result());
 }
 
 void OmniboxEditModel::TryDeletingPopupLine(size_t line) {
-  DCHECK(popup_view_);
+  DCHECK(BUILDFLAG(IS_ANDROID) || popup_view_);
 
   // When called with line == GetPopupSelection().line, we could use
   // GetInfoForCurrentText() here, but it seems better to try and delete the
@@ -2334,7 +2350,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     const std::u16string& match_text,
     bool include_positional_info,
     int* label_prefix_length) {
-  DCHECK(popup_view_);
+  DCHECK(BUILDFLAG(IS_ANDROID) || popup_view_);
 
   size_t line = popup_selection_.line;
   DCHECK_NE(line, OmniboxPopupSelection::kNoMatch)
@@ -2857,6 +2873,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // resolved, the next call to
   // `ShowConfirmationDialogIfDefaultSearchExtensionControlled` return false and
   // the normal flow continues using the correct search engine.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (base::FeatureList::IsEnabled(
           extensions_features::kSearchEngineExplicitChoiceDialog) &&
       AutocompleteMatch::IsSearchType(match.type) && !match.keyword.empty() &&
@@ -2870,6 +2887,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                   alternate_nav_url, pasted_text, match_selection_timestamp))) {
     return;
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // If the user is executing an action, this will be non-null and some match
   // opening and metrics behavior will be adjusted accordingly.

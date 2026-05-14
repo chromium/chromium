@@ -13,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/uuid.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -95,8 +96,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"  // nogncheck
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
+#include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"  // nogncheck
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/zoom/zoom_controller.h"  // nogncheck
 #endif
