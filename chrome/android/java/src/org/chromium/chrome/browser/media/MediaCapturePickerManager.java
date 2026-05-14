@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.media;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
+import android.app.ActivityManager.AppTask;
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.IntDef;
 
@@ -20,12 +20,13 @@ import org.chromium.blink.mojom.PreferredDisplaySurface;
 import org.chromium.blink.mojom.WindowAudioPreference;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -217,12 +218,12 @@ public class MediaCapturePickerManager {
     private static @Nullable Callback<Tab> sBringTabToFrontCallbackForTesting;
 
     /**
-     * Move the window of the given tab to the front and selects the tab. To ensure the tab is
-     * visible and could be shared.
+     * Move the window of the given tab to the front, with the tab selected if it is from a Chrome
+     * tabbed activity. To ensure the tab is visible and could be shared.
      *
      * @param tab The tab to be brought forward.
      */
-    public static void bringTabToFront(Tab tab) {
+    public static void bringTabToFront(Context context, Tab tab) {
         if (sBringTabToFrontCallbackForTesting != null) {
             sBringTabToFrontCallbackForTesting.onResult(tab);
             return;
@@ -230,20 +231,45 @@ public class MediaCapturePickerManager {
 
         // We should always get a non-null window and activity.
         Activity activity = tab.getWindowAndroidChecked().getActivity().get();
-        // Bring window to front. Even if the next step to bring tab to front fails, this would
-        // ensure the window is visible and tab sharing could start.
-        ApiCompatibilityUtils.moveTaskToFront(
-                assumeNonNull(activity), assumeNonNull(activity).getTaskId(), 0);
-
-        @Nullable TabModelSelector tabModelSelector =
-                TabModelSelectorSupplier.getValueOrNullFrom(tab.getWindowAndroid());
-        if (tabModelSelector == null) {
-            Log.e(TAG, "PickerManager.bringTabToFront: cannot get tab model selector for tab");
+        if (activity == null) {
+            Log.e(TAG, "PickerManager.bringTabToFront: cannot get activity for tab %s", tab);
             return;
         }
-        TabModel tabModel = tabModelSelector.getModel(tab.isOffTheRecord());
-        // Switch window's current tab to the shared tab.
-        TabModelUtils.setIndex(tabModel, TabModelUtils.getTabIndexById(tabModel, tab.getId()));
+
+        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
+        if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
+            Intent intent =
+                    IntentHandler.createTrustedBringTabToFrontIntent(
+                            tab.getId(), IntentHandler.BringToFrontSource.ACTIVATE_TAB);
+            if (MultiWindowUtils.launchIntentInInstance(intent, windowId)) {
+                return;
+            }
+        }
+        Log.w(
+                TAG,
+                "PickerManager.bringTabToFront: launch MultiWindowUtils.launchIntentInInstance"
+                        + " failed; fallback to ApiCompatibilityUtils.moveTaskToFront");
+
+        // Fallback for non-tabbed activities (e.g. Custom Tabs) which are not handled by
+        // MultiWindowUtils.launchIntentInInstance.
+        // Since they are non-tabbed, we ony need to bring window to front and no manual tab switch
+        // is needed.
+        AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
+        if (appTask != null) {
+            try {
+                Intent intent = new Intent(activity, activity.getClass());
+                appTask.startActivity(context, intent, null);
+                return;
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to start activity via AppTask", e);
+            }
+        }
+        Log.w(
+                TAG,
+                "PickerManager.bringTabToFront: start activity via app task failed, fallback to"
+                        + " ApiCompatibilityUtils.moveTaskToFront");
+
+        ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), 0);
     }
 
     public static void setBringTabToFrontCallbackForTesting(@Nullable Callback<Tab> callback) {

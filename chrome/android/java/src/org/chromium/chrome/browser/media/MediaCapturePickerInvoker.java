@@ -56,7 +56,12 @@ public class MediaCapturePickerInvoker {
                 fragment.startAndroidCapturePrompt(
                         (action, result) ->
                                 onPickAndroidCapturePrompt(
-                                        action, result, params.webContents, delegate, impl),
+                                        context,
+                                        action,
+                                        result,
+                                        params.webContents,
+                                        delegate,
+                                        impl),
                         intent);
                 return;
             }
@@ -73,6 +78,7 @@ public class MediaCapturePickerInvoker {
     }
 
     private static void onPickAndroidCapturePrompt(
+            Context context,
             @CaptureAction int action,
             ActivityResult result,
             WebContents webContents,
@@ -99,7 +105,7 @@ public class MediaCapturePickerInvoker {
                 // minimized window, or sharing will not be able to start.
                 // TODO(crbug.com/454192534): reconsider this behavior when the android system bug
                 // is fixed to keep it consistent with desktop Chrome.
-                MediaCapturePickerManager.bringTabToFront(tab);
+                MediaCapturePickerManager.bringTabToFront(context, tab);
 
                 impl.startAppContentMediaProjection(webContents, result);
 

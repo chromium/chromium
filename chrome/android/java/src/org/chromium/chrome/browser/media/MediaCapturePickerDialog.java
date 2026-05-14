@@ -269,7 +269,7 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
                             // start.
                             // TODO(crbug.com/454192534): reconsider this behavior when the android
                             // system bug is fixed to keep it consistent with desktop Chrome.
-                            MediaCapturePickerManager.bringTabToFront(tab);
+                            MediaCapturePickerManager.bringTabToFront(mContext, tab);
 
                             Log.d(TAG, "PickerDialog: call delegate.onPickTab");
                             localDelegate.onPickTab(webContents, mAudioSwitch.isChecked());
