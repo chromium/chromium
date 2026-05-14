@@ -32,7 +32,7 @@ IntentChipButton::IntentChipButton(Browser* browser,
       browser_(browser),
       delegate_(delegate) {
   DCHECK(browser);
-  SetIcon(kOpenInNewChromeRefreshIcon);
+  SetIcon(kOpenInNewChromeRefreshOldIcon);
   SetText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));

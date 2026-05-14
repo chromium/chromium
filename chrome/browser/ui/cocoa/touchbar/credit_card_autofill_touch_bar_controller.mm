@@ -44,7 +44,7 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
   // If it's a generic card image, use the vector icon instead.
   if (iconId == IDR_AUTOFILL_CC_GENERIC) {
     return NSImageFromImageSkia(
-        gfx::CreateVectorIcon(kCreditCardIcon, 16, SK_ColorWHITE));
+        gfx::CreateVectorIcon(kCreditCardOldIcon, 16, SK_ColorWHITE));
   }
 
   return ui::ResourceBundle::GetSharedInstance()

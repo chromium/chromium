@@ -33,11 +33,11 @@ const gfx::VectorIcon& GetIconType(
     const syncer::DeviceInfo::FormFactor& device_form_factor) {
   switch (device_form_factor) {
     case syncer::DeviceInfo::FormFactor::kPhone:
-      return kHardwareSmartphoneIcon;
+      return kHardwareSmartphoneOldIcon;
     case syncer::DeviceInfo::FormFactor::kTablet:
-      return kTabletIcon;
+      return kTabletOldIcon;
     default:
-      return kHardwareComputerIcon;
+      return kHardwareComputerOldIcon;
   }
 }
 
@@ -71,7 +71,7 @@ std::unique_ptr<views::ImageView> CreateCheckmarkIcon() {
     return nullptr;
   }
   return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      kCheckIcon, ui::kColorAccent, kCheckmarkIconSize));
+      kCheckOldIcon, ui::kColorAccent, kCheckmarkIconSize));
 }
 
 }  // namespace

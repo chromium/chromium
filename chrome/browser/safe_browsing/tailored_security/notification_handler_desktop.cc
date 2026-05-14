@@ -115,7 +115,7 @@ ui::ImageModel GetNotificationIcon() {
   return ui::ImageModel::FromResourceId(
       IDR_TAILORED_SECURITY_UNCONSENTED_NOTIFICATION);
 #else
-  return ui::ImageModel::FromVectorIcon(kSafetyCheckIcon, ui::kColorAccent,
+  return ui::ImageModel::FromVectorIcon(kSafetyCheckOldIcon, ui::kColorAccent,
                                         message_center::kNotificationIconSize);
 #endif
 }

@@ -29,8 +29,9 @@ void UpdateGroupIndicatorForMenuItem(
       [AppController.sharedController lastActiveColorProvider];
   const ui::ColorId color_id =
       GetTabGroupContextMenuColorId(tab_group_color_id.value());
-  gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
-      kTabGroupIcon, kTabGroupIndicatorSize, color_provider.GetColor(color_id));
+  gfx::ImageSkia group_icon =
+      gfx::CreateVectorIcon(kTabGroupOldIcon, kTabGroupIndicatorSize,
+                            color_provider.GetColor(color_id));
   NSImage* image = NSImageFromImageSkia(group_icon);
 
   // Create text attachment to hold the group indicator image.

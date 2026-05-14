@@ -66,7 +66,7 @@ std::unique_ptr<views::View> CreateDialogContentView(
   container_view->AddChildView(CreateInfoBoxContainer(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_FFR_WHEN_ON_TITLE),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_FFR_WHEN_ON_DESCRIPTION),
-      kTextAnalysisIcon, InfoBoxPosition::kStart));
+      kTextAnalysisOldIcon, InfoBoxPosition::kStart));
 
   container_view->AddChildView(CreateInfoBoxContainerWithLearnMore(
       l10n_util::GetStringUTF16(IDS_SETTINGS_COLUMN_HEADING_CONSIDER),

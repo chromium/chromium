@@ -231,7 +231,7 @@ void RemoteCopyMessageHandler::ShowNotification(const std::u16string& title,
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::ShowNotification");
 
   message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.vector_small_image = &kDevicesIcon;
+  rich_notification_data.vector_small_image = &kDevicesOldIcon;
   rich_notification_data.renotify = true;
 
   ui::Accelerator paste_accelerator(ui::VKEY_V, ui::EF_PLATFORM_ACCELERATOR);

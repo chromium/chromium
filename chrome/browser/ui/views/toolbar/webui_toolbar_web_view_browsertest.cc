@@ -3140,7 +3140,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
            toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaPaused},
           {vector_icons::kMediaRouterActiveChromeRefreshIcon,
            toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive},
-          {kCastChromeRefreshIcon,
+          {kCastChromeRefreshOldIcon,
            toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia},
       };
 

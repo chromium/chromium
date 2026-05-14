@@ -200,7 +200,7 @@ std::u16string PermissionPromptBubbleTwoOriginsView::CreateWindowTitle() {
 void PermissionPromptBubbleTwoOriginsView::CreateFaviconRow() {
   // Getting default favicon.
   ui::ImageModel default_favicon_ = ui::ImageModel::FromVectorIcon(
-      kGlobeIcon, ui::kColorIcon, kDesiredFaviconSizeInPixel);
+      kGlobeOldIcon, ui::kColorIcon, kDesiredFaviconSizeInPixel);
 
   const int favicon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_VECTOR_ICON_PADDING);

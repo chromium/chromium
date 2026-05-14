@@ -1130,7 +1130,7 @@ void ExtensionsToolbarDesktop::UpdateCloseSidePanelButtonIcon() {
   const bool is_right_aligned = browser_->profile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
   close_side_panel_button_->SetVectorIcon(
-      is_right_aligned ? kRightPanelCloseIcon : kLeftPanelCloseIcon);
+      is_right_aligned ? kRightPanelCloseOldIcon : kLeftPanelCloseOldIcon);
 }
 
 void ExtensionsToolbarDesktop::MaybeShowIPH() {

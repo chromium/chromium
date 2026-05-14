@@ -109,7 +109,7 @@ void SavePaymentIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& SavePaymentIconView::GetVectorIcon() const {
-  return kCreditCardChromeRefreshIcon;
+  return kCreditCardChromeRefreshOldIcon;
 }
 
 std::u16string SavePaymentIconView::GetTextForTooltipAndAccessibleName() const {

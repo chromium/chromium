@@ -386,7 +386,7 @@ RecentActivityBubbleDialogView::CreateCloseButton() {
 std::unique_ptr<views::Button>
 RecentActivityBubbleDialogView::CreateOptionsMenuButton() {
   auto menu_button = views::CreateVectorImageButtonWithNativeTheme(
-      views::Button::PressedCallback(), kBrowserToolsIcon);
+      views::Button::PressedCallback(), kBrowserToolsOldIcon);
   menu_button->SetCallback(base::BindRepeating(
       &RecentActivityBubbleDialogView::ShowOptionsMenu, base::Unretained(this),
       base::Unretained(menu_button.get())));
@@ -904,7 +904,7 @@ void RecentActivityRowImageView::PaintFallbackIcon(gfx::Canvas* canvas,
   int icon_offset = (bounds.width() - icon_size) / 2.0;
   canvas->Translate({icon_offset, icon_offset});
   gfx::PaintVectorIcon(
-      canvas, kPersonFilledPaddedSmallIcon, icon_size,
+      canvas, kPersonFilledPaddedSmallOldIcon, icon_size,
       GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer));
 }
 

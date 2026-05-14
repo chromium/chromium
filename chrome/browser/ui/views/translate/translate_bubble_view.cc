@@ -672,7 +672,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
         /*subtitle=*/std::u16string(),
         /*secondary_view=*/
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            kChevronRightIcon, ui::kColorIcon, 16)));
+            kChevronRightOldIcon, ui::kColorIcon, 16)));
     choose_language_button->SetProperty(views::kElementIdentifierKey,
                                         kChangeTargetLanguage);
     view->AddChildView(std::move(choose_language_button));
@@ -990,7 +990,7 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateOptionsMenuButton() {
   // Three dots options menu button
   auto tab_translate_options_button =
       views::CreateVectorImageButtonWithNativeTheme(
-          views::Button::PressedCallback(), kBrowserToolsIcon);
+          views::Button::PressedCallback(), kBrowserToolsOldIcon);
   tab_translate_options_button->SetCallback(base::BindRepeating(
       &TranslateBubbleView::ShowOptionsMenu, base::Unretained(this),
       base::Unretained(tab_translate_options_button.get())));

@@ -30,7 +30,7 @@ IconAndColor IconAndColorForDangerousUiPattern() {
 }
 
 IconAndColor IconAndColorForSuspiciousUiPattern() {
-  return IconAndColor{&kDownloadWarningIcon, kColorDownloadItemIconWarning};
+  return IconAndColor{&kDownloadWarningOldIcon, kColorDownloadItemIconWarning};
 }
 
 IconAndColor IconAndColorForDownloadOff() {
@@ -54,7 +54,7 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
       if (enterprise_connectors::ShouldPromptReviewForDownload(
               model.profile(), model.GetDownloadItem())) {
-        return IconAndColor{&kDownloadWarningIcon,
+        return IconAndColor{&kDownloadWarningOldIcon,
                             kColorDownloadItemIconDangerous};
       }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -129,7 +129,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
         return IconAndColor{&vector_icons::kDangerousChromeRefreshIcon,
                             kColorDownloadItemIconDangerous};
       case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
-        return IconAndColor{&kDownloadWarningIcon,
+        return IconAndColor{&kDownloadWarningOldIcon,
                             kColorDownloadItemIconWarning};
       case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
         return IconAndColor{&views::kInfoChromeRefreshOldIcon,
@@ -166,7 +166,8 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
-      return IconAndColor{&kDownloadWarningIcon, kColorDownloadItemIconWarning};
+      return IconAndColor{&kDownloadWarningOldIcon,
+                          kColorDownloadItemIconWarning};
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:

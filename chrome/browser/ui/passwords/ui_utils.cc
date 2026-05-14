@@ -273,7 +273,7 @@ const gfx::VectorIcon& GooglePasswordManagerVectorIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return vector_icons::kGooglePasswordManagerIcon;
 #else
-  return kKeyIcon;
+  return kKeyOldIcon;
 #endif
 }
 

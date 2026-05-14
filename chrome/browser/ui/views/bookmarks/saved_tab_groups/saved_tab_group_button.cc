@@ -265,7 +265,7 @@ void SavedTabGroupButton::UpdateButtonLayout() {
   if (is_shared_) {
     SetImageModel(ButtonState::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
-                      kPeopleGroupIcon,
+                      kPeopleGroupOldIcon,
                       GetSavedTabGroupForegroundColorId(tab_group_color_id_),
                       gfx::kFaviconSize));
   }

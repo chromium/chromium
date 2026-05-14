@@ -37,9 +37,9 @@ void WindowControlsOverlayToggleButton::UpdateState() {
   bool enabled = browser_view_->browser()
                      ->app_controller()
                      ->IsWindowControlsOverlayEnabled();
-  // If you update the kKeyboardArrowDownIcon, please update
+  // If you update the kKeyboardArrowDownOldIcon, please update
   // kKeyboardArrowLeftIcon defined in `ash/resources/vector_icons` as well.
-  SetVectorIcon(enabled ? kKeyboardArrowDownIcon : kKeyboardArrowUpIcon);
+  SetVectorIcon(enabled ? kKeyboardArrowDownOldIcon : kKeyboardArrowUpOldIcon);
   SetTooltipText(l10n_util::GetStringUTF16(
       enabled ? IDS_WEB_APP_DISABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP
               : IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP));

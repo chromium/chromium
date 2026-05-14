@@ -68,12 +68,12 @@ ui::ImageModel SplitTabSwapMenuModel::GetIconForCommandId(
   const gfx::VectorIcon* icon = nullptr;
   if (id == CommandId::kSwapStartTab) {
     icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
-               ? &kSplitSceneLeftIcon
-               : &kSplitSceneUpIcon;
+               ? &kSplitSceneLeftOldIcon
+               : &kSplitSceneUpOldIcon;
   } else if (id == CommandId::kSwapEndTab) {
     icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
-               ? &kSplitSceneRightIcon
-               : &kSplitSceneDownIcon;
+               ? &kSplitSceneRightOldIcon
+               : &kSplitSceneDownOldIcon;
   }
   CHECK(icon);
   return ui::ImageModel::FromVectorIcon(*icon, ui::kColorMenuIcon,

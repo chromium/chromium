@@ -262,14 +262,14 @@ void ExtensionsMenuEntryView::UpdateContextMenuButton(
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
   auto three_dot_icon = ui::ImageModel::FromVectorIcon(
-      kBrowserToolsChromeRefreshIcon, kColorExtensionMenuIcon, icon_size);
+      kBrowserToolsChromeRefreshOldIcon, kColorExtensionMenuIcon, icon_size);
 
   // Show a pin button for the context menu normal state icon when the action is
   // pinned in the toolbar. All other states should look, and behave, the same.
   context_menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       button_state.is_on ? ui::ImageModel::FromVectorIcon(
-                               kKeepIcon, kColorExtensionMenuIcon, icon_size)
+                               kKeepOldIcon, kColorExtensionMenuIcon, icon_size)
                          : three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
                                       three_dot_icon);

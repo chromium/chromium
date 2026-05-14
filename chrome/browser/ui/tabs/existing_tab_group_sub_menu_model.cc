@@ -258,7 +258,8 @@ ExistingTabGroupSubMenuModel::CreateMenuItemInfo(
   const ui::ColorProvider& color_provider =
       model()->GetWebContentsAt(GetContextIndex())->GetColorProvider();
   ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-      kTabGroupIcon, color_provider.GetColor(context_menu_color_id), kIconSize);
+      kTabGroupOldIcon, color_provider.GetColor(context_menu_color_id),
+      kIconSize);
 
   return {displayed_title, image_model};
 }

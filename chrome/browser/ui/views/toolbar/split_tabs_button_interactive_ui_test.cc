@@ -165,19 +165,19 @@ class SplitTabButtonInteractiveTest
   }
 
   std::string GetWebUIIconName(const gfx::VectorIcon& icon) {
-    if (&icon == &kSplitSceneIcon) {
+    if (&icon == &kSplitSceneOldIcon) {
       return "split-tabs-button:split-scene";
     }
-    if (&icon == &kSplitSceneLeftIcon) {
+    if (&icon == &kSplitSceneLeftOldIcon) {
       return "split-tabs-button:split-scene-left";
     }
-    if (&icon == &kSplitSceneRightIcon) {
+    if (&icon == &kSplitSceneRightOldIcon) {
       return "split-tabs-button:split-scene-right";
     }
-    if (&icon == &kSplitSceneUpIcon) {
+    if (&icon == &kSplitSceneUpOldIcon) {
       return "split-tabs-button:split-scene-up";
     }
-    if (&icon == &kSplitSceneDownIcon) {
+    if (&icon == &kSplitSceneDownOldIcon) {
       return "split-tabs-button:split-scene-down";
     }
     return "";
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, PinButtonWithMenu) {
           CheckSplitTabButtonPinState(false),
           CheckMenuString(kPinnedActionToolbarPinElementId,
                           IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN),
-          CheckMenuIcon(kPinnedActionToolbarPinElementId, kKeepIcon),
+          CheckMenuIcon(kPinnedActionToolbarPinElementId, kKeepOldIcon),
           SelectMenuItem(kPinnedActionToolbarPinElementId)),
       WaitForHide(kPinnedActionToolbarPinElementId),
       // Verify that the split tab button is pinned.
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, PinButtonWithMenu) {
           CheckSplitTabButtonPinState(true),
           CheckMenuString(kPinnedActionToolbarUnpinElementId,
                           IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN),
-          CheckMenuIcon(kPinnedActionToolbarUnpinElementId, kKeepOffIcon),
+          CheckMenuIcon(kPinnedActionToolbarUnpinElementId, kKeepOffOldIcon),
           SelectMenuItem(kPinnedActionToolbarUnpinElementId)));
 }
 
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, UnpinButtonWithMenu) {
           CheckSplitTabButtonPinState(false),
           CheckMenuString(kPinnedActionToolbarPinElementId,
                           IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN),
-          CheckMenuIcon(kPinnedActionToolbarPinElementId, kKeepIcon)));
+          CheckMenuIcon(kPinnedActionToolbarPinElementId, kKeepOldIcon)));
 }
 
 IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest,
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, DefaultButtonIcon) {
       UpdateSplitTabButtonPinState(true),
       WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
       WaitForElementNonzeroSize(kToolbarSplitTabsToolbarButtonElementId),
-      WaitForAXNode(), CheckSplitTabButtonIcon(kSplitSceneIcon));
+      WaitForAXNode(), CheckSplitTabButtonIcon(kSplitSceneOldIcon));
 }
 
 IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, ButtonIconUpdates) {
@@ -493,11 +493,11 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, ButtonIconUpdates) {
       WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
       WaitForElementNonzeroSize(kToolbarSplitTabsToolbarButtonElementId),
       WaitForAXNode(), DoWaitForLayout(),
-      CheckSplitTabButtonIcon(kSplitSceneLeftIcon),
+      CheckSplitTabButtonIcon(kSplitSceneLeftOldIcon),
       ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
       FocusInactiveTabInSplit(), WaitForState(kActiveTabChanged, true),
       EnsurePresent(kToolbarSplitTabsToolbarButtonElementId),
-      CheckSplitTabButtonIcon(kSplitSceneRightIcon));
+      CheckSplitTabButtonIcon(kSplitSceneRightOldIcon));
 }
 
 IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, EnterSplitView) {
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest,
           CheckMenuString(SplitTabMenuModel::kReversePositionMenuItem,
                           IDS_SPLIT_TAB_REVERSE_VIEWS),
           CheckMenuIcon(SplitTabMenuModel::kReversePositionMenuItem,
-                        kSplitSceneRightIcon),
+                        kSplitSceneRightOldIcon),
           DismissContextMenu(kToolbarSplitTabsToolbarButtonElementId,
                              SplitTabMenuModel::kReversePositionMenuItem)),
       WaitForHide(SplitTabMenuModel::kReversePositionMenuItem),
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest,
       CheckMenuString(SplitTabMenuModel::kReversePositionMenuItem,
                       IDS_SPLIT_TAB_REVERSE_VIEWS),
       CheckMenuIcon(SplitTabMenuModel::kReversePositionMenuItem,
-                    kSplitSceneLeftIcon));
+                    kSplitSceneLeftOldIcon));
 }
 
 IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, ReverseSplitTabPosition) {
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, ReverseSplitTabPosition) {
       WaitForElementNonzeroSize(kToolbarSplitTabsToolbarButtonElementId),
       WaitForAXNode(), DoWaitForLayout(),
       // The newly created split tab should be active
-      CheckSplitTabButtonIcon(kSplitSceneLeftIcon),
+      CheckSplitTabButtonIcon(kSplitSceneLeftOldIcon),
       NavigateWebContents(kWebContents1Id, GetTestUrl()),
       // Reversing the tab positions should move the active tab to the left.
       ClickSplitTabButton(),
@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, ReverseSplitTabPosition) {
       ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
       SelectMenuItem(SplitTabMenuModel::kReversePositionMenuItem),
       WaitForState(kActiveTabChanged, true),
-      CheckSplitTabButtonIcon(kSplitSceneRightIcon),
+      CheckSplitTabButtonIcon(kSplitSceneRightOldIcon),
       CheckResult(
           [this]() {
             TabStripModel* const tab_strip_model = browser()->tab_strip_model();

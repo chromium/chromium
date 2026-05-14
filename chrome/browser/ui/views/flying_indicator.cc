@@ -77,7 +77,7 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
   auto* const link_image =
       bubble_view->AddChildView(std::make_unique<views::ImageView>());
   link_image->SetImage(ui::ImageModel::FromVectorIcon(
-      kWebIcon, kColorFlyingIndicatorForeground, kIconSize));
+      kWebOldIcon, kColorFlyingIndicatorForeground, kIconSize));
   link_image->SetPreferredSize(gfx::Size(kBubbleSize, kBubbleSize));
 
   // Use the default fill layout because there's only one child view.

@@ -167,14 +167,14 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
   }
   switch (*id) {
     case kActionNewIncognitoWindow:
-      CHECK_EQ(icon, &kIncognitoRefreshMenuIcon);
+      CHECK_EQ(icon, &kIncognitoRefreshMenuOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kNewIncognitoWindow;
     case kActionShowPasswordsBubbleOrPage:
       CHECK_EQ(icon, &vector_icons::kPasswordManagerIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kShowPasswordsBubbleOrPage;
     case kActionShowPaymentsBubbleOrPage:
-      CHECK_EQ(icon, &kCreditCardChromeRefreshIcon);
+      CHECK_EQ(icon, &kCreditCardChromeRefreshOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kShowPaymentsBubbleOrPage;
     case kActionShowAddressesBubbleOrPage:
@@ -182,11 +182,11 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kShowAddressesBubbleOrPage;
     case kActionSidePanelShowBookmarks:
-      CHECK_EQ(icon, &kBookmarksSidePanelRefreshIcon);
+      CHECK_EQ(icon, &kBookmarksSidePanelRefreshOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowBookmarks;
     case kActionSidePanelShowReadingList:
-      CHECK_EQ(icon, &kReadingListIcon);
+      CHECK_EQ(icon, &kReadingListOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowReadingList;
     case kActionSidePanelShowHistoryCluster:
@@ -194,13 +194,13 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowHistoryCluster;
     case kActionShowDownloads:
-      CHECK_EQ(icon, &kDownloadToolbarButtonChromeRefreshIcon);
+      CHECK_EQ(icon, &kDownloadToolbarButtonChromeRefreshOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads;
     case kActionClearBrowsingData:
-      CHECK_EQ(icon, &kTrashCanRefreshIcon);
+      CHECK_EQ(icon, &kTrashCanRefreshOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kClearBrowsingData;
     case kActionPrint:
-      CHECK_EQ(icon, &kPrintMenuIcon);
+      CHECK_EQ(icon, &kPrintMenuOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
     case kActionSidePanelShowLensOverlayResults:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -214,7 +214,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
       CHECK_EQ(icon, &vector_icons::kGTranslateIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kShowTranslate;
     case kActionQrCodeGenerator:
-      CHECK_EQ(icon, &kQrCodeChromeRefreshIcon);
+      CHECK_EQ(icon, &kQrCodeChromeRefreshOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kQrCodeGenerator;
     case kActionRouteMedia:
       if (icon == &vector_icons::kMediaRouterIdleChromeRefreshIcon) {
@@ -226,26 +226,26 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
       } else if (icon == &vector_icons::kMediaRouterActiveChromeRefreshIcon) {
         return toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive;
       }
-      CHECK_EQ(icon, &kCastChromeRefreshIcon);
+      CHECK_EQ(icon, &kCastChromeRefreshOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia;
     case kActionSidePanelShowReadAnything:
-      CHECK_EQ(icon, &kMenuBookChromeRefreshIcon);
+      CHECK_EQ(icon, &kMenuBookChromeRefreshOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowReadAnything;
     case kActionCopyUrl:
-      CHECK_EQ(icon, &kLinkChromeRefreshIcon);
+      CHECK_EQ(icon, &kLinkChromeRefreshOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kCopyUrl;
     case kActionSendTabToSelf:
-      CHECK_EQ(icon, &kDevicesChromeRefreshIcon);
+      CHECK_EQ(icon, &kDevicesChromeRefreshOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kSendTabToSelf;
     case kActionTaskManager:
-      CHECK_EQ(icon, &kTaskManagerIcon);
+      CHECK_EQ(icon, &kTaskManagerOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kTaskManager;
     case kActionDevTools:
-      CHECK_EQ(icon, &kDeveloperToolsIcon);
+      CHECK_EQ(icon, &kDeveloperToolsOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kDevTools;
     case kActionTabSearch:
-      CHECK_EQ(icon, &kTabSearchTabStripIcon);
+      CHECK_EQ(icon, &kTabSearchTabStripOldIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kTabSearch;
     case kActionSidePanelShowContextualTasks:
       CHECK_EQ(icon, &kDockToRightSparkIcon);

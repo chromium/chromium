@@ -335,13 +335,13 @@ void OmniboxContextMenuController::AddContextualInputItems() {
     min_tools_and_models_command_id_ = next_command_id_;
   } else {
     auto add_image_icon = ui::ImageModel::FromVectorIcon(
-        kAddPhotoAlternateIcon, ui::kColorMenuIcon,
+        kAddPhotoAlternateOldIcon, ui::kColorMenuIcon,
         ui::SimpleMenuModel::kDefaultIconSize);
     AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_ADD_IMAGE,
                                IDS_NTP_COMPOSE_ADD_IMAGE, add_image_icon);
 
     auto add_file_icon =
-        ui::ImageModel::FromVectorIcon(kAttachFileIcon, ui::kColorMenuIcon,
+        ui::ImageModel::FromVectorIcon(kAttachFileOldIcon, ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize);
     AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_ADD_FILE,
                                IDS_NTP_COMPOSE_ADD_FILE, add_file_icon);
@@ -362,7 +362,7 @@ void OmniboxContextMenuController::AddToolItems() {
   auto create_images_icon = ui::ImageModel::FromResourceId(
       IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
   auto deep_search_icon =
-      ui::ImageModel::FromVectorIcon(kTravelExploreIcon, ui::kColorMenuIcon,
+      ui::ImageModel::FromVectorIcon(kTravelExploreOldIcon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize);
 
   if (use_pec_api) {
@@ -421,11 +421,11 @@ void OmniboxContextMenuController::AddModelPickerItems() {
                                      has_thinking_model &&
                                      has_pro_no_gen_ui_model;
   auto thinking_model_icon = ui::ImageModel::FromVectorIcon(
-      use_new_thinking_icon ? kAstrophotographyModeIcon : kTimerIcon,
+      use_new_thinking_icon ? kAstrophotographyModeOldIcon : kTimerOldIcon,
       ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
   auto check_icon = ui::ImageModel::FromVectorIcon(
-      kCheckIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+      kCheckOldIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
   next_command_id_ = min_tools_and_models_command_id_;
   for (const auto model : input_state_.allowed_models) {
@@ -766,11 +766,11 @@ ui::ImageModel OmniboxContextMenuController::GetIconForInputType(
   switch (input_type) {
     case omnibox::InputType::INPUT_TYPE_LENS_IMAGE:
       return ui::ImageModel::FromVectorIcon(
-          kAddPhotoAlternateIcon, ui::kColorMenuIcon,
+          kAddPhotoAlternateOldIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::InputType::INPUT_TYPE_LENS_FILE:
       return ui::ImageModel::FromVectorIcon(
-          kAttachFileIcon, ui::kColorMenuIcon,
+          kAttachFileOldIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
     // The Google Drive icon is only available in Google Chrome branded builds.
     // This guard is necessary to prevent compilation errors in Chromium.
@@ -834,11 +834,11 @@ ui::ImageModel OmniboxContextMenuController::GetIconForTool(
           IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
     case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
       return ui::ImageModel::FromVectorIcon(
-          kTravelExploreIcon, ui::kColorMenuIcon,
+          kTravelExploreOldIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::ToolMode::TOOL_MODE_CANVAS:
       return ui::ImageModel::FromVectorIcon(
-          kDraftSparkIcon, ui::kColorMenuIcon,
+          kDraftSparkOldIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
     default:
       return ui::ImageModel();
@@ -892,15 +892,16 @@ ui::ImageModel OmniboxContextMenuController::GetIconForModel(
   switch (model) {
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
       return ui::ImageModel::FromVectorIcon(
-          kAutorenewIcon, ui::kColorMenuIcon,
+          kAutorenewOldIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
       return ui::ImageModel::FromVectorIcon(
-          kBoltIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+          kBoltOldIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
       return ui::ImageModel::FromVectorIcon(
-          kTimerIcon, ui::kColorMenuIcon,
+          kTimerOldIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
     default:
       return ui::ImageModel();

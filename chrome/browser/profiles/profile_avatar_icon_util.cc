@@ -473,8 +473,8 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 ui::ImageModel GetGuestAvatar(int size) {
   // Guest profiles generally use the default theme, no need to go through the
   // `ThemeService`.
-  return ui::ImageModel::FromVectorIcon(kAccountBoxIcon, ui::kColorSysPrimary,
-                                        size);
+  return ui::ImageModel::FromVectorIcon(kAccountBoxOldIcon,
+                                        ui::kColorSysPrimary, size);
 }
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,

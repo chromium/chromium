@@ -86,7 +86,7 @@ void ManageSharingRow::RebuildChildren() {
           member_size));
 
   manage_group_icon_ = AddChildView(std::make_unique<views::ImageView>(
-      ui::ImageModel::FromVectorIcon(kTabGroupSharingIcon)));
+      ui::ImageModel::FromVectorIcon(kTabGroupSharingOldIcon)));
   manage_group_icon_->SetProperty(
       views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, kImageLabelSpacing));
   manage_group_icon_->SetProperty(

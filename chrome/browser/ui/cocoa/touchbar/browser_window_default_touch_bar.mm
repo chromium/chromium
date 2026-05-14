@@ -374,13 +374,13 @@ class TouchBarNotificationBridge : public CommandObserver,
                           IDS_TOUCH_BAR_STOP_RELOAD_CUSTOMIZATION_LABEL)];
   } else if ([identifier hasSuffix:kHomeTouchId]) {
     [touchBarItem
-        setView:CreateTouchBarButton(kNavigateHomeChromeRefreshIcon, self,
+        setView:CreateTouchBarButton(kNavigateHomeChromeRefreshOldIcon, self,
                                      IDC_HOME, IDS_ACCNAME_HOME)];
     [touchBarItem
         setCustomizationLabel:l10n_util::GetNSString(
                                   IDS_TOUCH_BAR_HOME_CUSTOMIZATION_LABEL)];
   } else if ([identifier hasSuffix:kNewTabTouchId]) {
-    [touchBarItem setView:CreateTouchBarButton(kNewTabMacTouchbarIcon, self,
+    [touchBarItem setView:CreateTouchBarButton(kNewTabMacTouchbarOldIcon, self,
                                                IDC_NEW_TAB, IDS_TOOLTIP_NEW_TAB,
                                                kTouchBarDefaultIconColor,
                                                kOldTouchBarIconSize)];
@@ -665,7 +665,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 + (NSImage*)navigateStopIcon {
   static __strong NSImage* navigateStopIcon =
-      CreateNSImageFromIcon(kNavigateStopChromeRefreshIcon);
+      CreateNSImageFromIcon(kNavigateStopChromeRefreshOldIcon);
   return navigateStopIcon;
 }
 

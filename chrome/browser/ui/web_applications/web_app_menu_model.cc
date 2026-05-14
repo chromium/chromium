@@ -139,7 +139,7 @@ void WebAppMenuModel::Build() {
     }
     if (update_icon.IsEmpty()) {
       update_icon = ui::ImageModel::FromVectorIcon(
-          kBrowserToolsUpdateChromeRefreshIcon,
+          kBrowserToolsUpdateChromeRefreshOldIcon,
           ui::kColorMenuIconOnEmphasizedBackground, kDefaultIconSize);
     }
     AddItemWithStringIdAndIcon(IDC_WEB_APP_UPGRADE_DIALOG,
@@ -196,14 +196,14 @@ void WebAppMenuModel::Build() {
       browser()->app_controller()->has_tab_strip() &&
       !browser()->app_controller()->ShouldHideNewTabButton()) {
     AddItemWithStringIdAndVectorIcon(this, IDC_NEW_TAB, IDS_NEW_TAB,
-                                     kNewTabRefreshIcon);
+                                     kNewTabRefreshOldIcon);
   }
   AddItemWithStringIdAndVectorIcon(this, IDC_COPY_URL, IDS_COPY_URL,
-                                   kLinkChromeRefreshIcon);
+                                   kLinkChromeRefreshOldIcon);
 
   if (ShouldAllowOpenInChrome(browser())) {
     AddItemWithStringIdAndVectorIcon(this, IDC_OPEN_IN_CHROME,
-                                     IDS_OPEN_IN_CHROME, kBrowserLogoIcon);
+                                     IDS_OPEN_IN_CHROME, kBrowserLogoOldIcon);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -230,18 +230,19 @@ void WebAppMenuModel::Build() {
                         IDS_UNINSTALL_FROM_OS_LAUNCH_SURFACE,
                         ui::EscapeMenuLabelAmpersands(
                             browser()->app_controller()->GetAppShortName())),
-                    ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon));
+                    ui::ImageModel::FromVectorIcon(kTrashCanRefreshOldIcon));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   AddSeparator(ui::NORMAL_SEPARATOR);
   CreateZoomMenu();
   AddSeparator(ui::NORMAL_SEPARATOR);
-  AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT, kPrintMenuIcon);
+  AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT,
+                                   kPrintMenuOldIcon);
   CreateFindAndEditSubMenu();
 
   if (media_router::MediaRouterEnabled(browser()->profile())) {
     AddItemWithStringIdAndVectorIcon(this, IDC_ROUTE_MEDIA,
                                      IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
-                                     kCastChromeRefreshIcon);
+                                     kCastChromeRefreshOldIcon);
   }
 }

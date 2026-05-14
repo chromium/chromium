@@ -42,7 +42,7 @@ std::vector<IndicatorSpec> GetIndicatorSpecs() {
 
   std::vector<IndicatorSpec> specs = {
       {kLocationAccessIndicator, kWebVrLocationAccessIndicator,
-       kMyLocationIcon,
+       kMyLocationOldIcon,
        IDS_VR_SHELL_SITE_IS_TRACKING_LOCATION,
        // Background tabs cannot track high accuracy location.
        0,

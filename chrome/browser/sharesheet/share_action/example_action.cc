@@ -25,7 +25,7 @@ const std::u16string ExampleAction::GetActionName() {
 }
 
 const gfx::VectorIcon& ExampleAction::GetActionIcon() {
-  return kAddIcon;
+  return kAddOldIcon;
 }
 
 void ExampleAction::LaunchAction(SharesheetController* controller,

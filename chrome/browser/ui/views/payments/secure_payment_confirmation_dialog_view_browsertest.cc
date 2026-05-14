@@ -272,7 +272,8 @@ class SecurePaymentConfirmationDialogViewTest
     const SkBitmap* instrument_icon =
         instrument_icon_->drawsNothing()
             ? gfx::CreateVectorIcon(
-                  kCreditCardIcon, kSecurePaymentConfirmationIconDefaultWidthPx,
+                  kCreditCardOldIcon,
+                  kSecurePaymentConfirmationIconDefaultWidthPx,
                   test_delegate_->dialog_view()->GetColorProvider()->GetColor(
                       ui::kColorSysOnSurfaceSubtle))
                   .bitmap()

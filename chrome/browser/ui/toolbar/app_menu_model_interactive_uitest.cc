@@ -526,7 +526,7 @@ class UniversalInstallAppMenuModelInteractiveTest
   // install icon next to them.
   auto VerifyDiyAppMenuItemViews() {
     const ui::ImageModel icon_image = ui::ImageModel::FromVectorIcon(
-        kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
+        kInstallDesktopChromeRefreshOldIcon, ui::kColorMenuIcon,
         ui::SimpleMenuModel::kDefaultIconSize);
     return Steps(
         EnsurePresent(AppMenuModel::kInstallAppItem),

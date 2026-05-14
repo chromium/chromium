@@ -76,7 +76,7 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysAimIconAndTitle) {
 
   auto* trailing_icon_view = thread_item_view->trailing_icon_for_testing();
   EXPECT_TRUE(trailing_icon_view);
-  EXPECT_EQ(&kOpenInNewIcon,
+  EXPECT_EQ(&kOpenInNewOldIcon,
             trailing_icon_view->GetImageModel().GetVectorIcon().vector_icon());
 }
 
@@ -107,7 +107,7 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysGeminiIconAndTitle) {
 
   auto* trailing_icon_view = thread_item_view->trailing_icon_for_testing();
   EXPECT_TRUE(trailing_icon_view);
-  EXPECT_EQ(&kOpenInNewIcon,
+  EXPECT_EQ(&kOpenInNewOldIcon,
             trailing_icon_view->GetImageModel().GetVectorIcon().vector_icon());
 }
 

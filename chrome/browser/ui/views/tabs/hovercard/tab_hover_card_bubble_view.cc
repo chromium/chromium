@@ -164,13 +164,13 @@ class TabHoverCardBubbleView::ThumbnailView
   // Clears the preview image and replaces it with a placeholder image. The old
   // image will be faded out.
   void SetPlaceholderImage() {
-    SetImageFromIcon(ImageType::kPlaceholder, kGlobeIcon);
+    SetImageFromIcon(ImageType::kPlaceholder, kGlobeOldIcon);
   }
 
   // Clears the preview image and replaces it with a crashed image. The old
   // image will be faded out.
   void SetCrashedImage() {
-    SetImageFromIcon(ImageType::kCrashed, kCrashedTabIcon);
+    SetImageFromIcon(ImageType::kCrashed, kCrashedTabOldIcon);
   }
 
   void ClearImage() {

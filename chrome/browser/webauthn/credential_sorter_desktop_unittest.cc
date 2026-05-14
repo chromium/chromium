@@ -27,7 +27,7 @@ Mechanism CreateGpmPasskey(const std::u16string& user_name,
                            std::optional<base::Time> last_used_time) {
   Mechanism::Credential cred_info(
       {device::AuthenticatorType::kEnclave, kUserId, last_used_time});
-  return Mechanism(std::move(cred_info), user_name, kSmartphoneIcon,
+  return Mechanism(std::move(cred_info), user_name, kSmartphoneOldIcon,
                    base::DoNothing());
 }
 
@@ -36,7 +36,7 @@ Mechanism CreatePlatformPasskey(const std::u16string& user_name,
                                 std::optional<base::Time> last_used_time) {
   Mechanism::Credential cred_info(
       {device::AuthenticatorType::kICloudKeychain, kUserId, last_used_time});
-  return Mechanism(std::move(cred_info), user_name, kSmartphoneIcon,
+  return Mechanism(std::move(cred_info), user_name, kSmartphoneOldIcon,
                    base::DoNothing());
 }
 
@@ -45,7 +45,7 @@ Mechanism CreatePassword(const std::u16string& user_name,
                          base::Time last_used_time) {
   Mechanism::Type password_data =
       Mechanism::Password(Mechanism::PasswordInfo(last_used_time));
-  return Mechanism(std::move(password_data), user_name, kSmartphoneIcon,
+  return Mechanism(std::move(password_data), user_name, kSmartphoneOldIcon,
                    base::DoNothing());
 }
 

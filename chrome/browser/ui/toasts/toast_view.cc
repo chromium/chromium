@@ -253,7 +253,7 @@ void ToastView::Init() {
 
   if (menu_model_) {
     menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-        base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon,
+        base::RepeatingClosure(), kBrowserToolsChromeRefreshOldIcon,
         /*dip_size=*/
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE),
         ui::kColorToastForeground, ui::kColorIconDisabled,

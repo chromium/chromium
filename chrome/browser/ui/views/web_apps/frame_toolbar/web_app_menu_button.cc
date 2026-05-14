@@ -41,7 +41,7 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view)
       browser_view_(browser_view) {
   views::SetHitTestComponent(this, static_cast<int>(HTCLIENT));
 
-  SetVectorIcons(kBrowserToolsIcon, kBrowserToolsTouchIcon);
+  SetVectorIcons(kBrowserToolsOldIcon, kBrowserToolsTouchOldIcon);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 

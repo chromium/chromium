@@ -299,7 +299,7 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                           CreateExpandedButton(
                               l10n_util::GetStringUTF16(
                                   IDS_INDIGO_TOOLBAR_DELETE_ORIGINAL_PHOTO),
-                              kDeleteIcon,
+                              kDeleteOldIcon,
                               base::BindRepeating(
                                   &IndigoToolbar::OnDeletePhotoClicked,
                                   base::Unretained(this))))

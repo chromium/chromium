@@ -1824,8 +1824,8 @@ void RenderViewContextMenu::AppendLinkItems() {
 
         menu_model_.AddItemWithStringIdAndIcon(
             IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, string_id,
-            ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
-                                           kTabMenuIconSize));
+            ui::ImageModel::FromVectorIcon(
+                kSplitSceneOldIcon, ui::kColorMenuIcon, kTabMenuIconSize));
         const int command_index =
             menu_model_
                 .GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW)
@@ -4185,7 +4185,7 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
     menu_model_.AddSubMenuWithStringIdAndIcon(
         IDC_SEND_TAB_TO_SELF, IDS_MENU_SEND_TAB_TO_SELF,
         send_tab_to_self_submenu_.get(),
-        ui::ImageModel::FromVectorIcon(kDevicesIcon));
+        ui::ImageModel::FromVectorIcon(kDevicesOldIcon));
 #endif
     return;
   }
@@ -4197,7 +4197,7 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
   menu_model_.AddItemWithIcon(
       IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
-      ui::ImageModel::FromVectorIcon(kDevicesIcon));
+      ui::ImageModel::FromVectorIcon(kDevicesOldIcon));
 #endif
 }
 

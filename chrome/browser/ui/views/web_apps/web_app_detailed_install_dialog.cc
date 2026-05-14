@@ -133,12 +133,12 @@ class ScrollButton : public views::ImageButton {
             ? IDS_ACCNAME_WEB_APP_DETAILED_INSTALL_DIALOG_LEADING_SCROLL_BUTTON
             : IDS_ACCNAME_WEB_APP_DETAILED_INSTALL_DIALOG_TRAILING_SCROLL_BUTTON));
 
-    SetImageModel(
-        views::Button::ButtonState::STATE_NORMAL,
-        button_type == ButtonType::kLeading
-            ? ui::ImageModel::FromVectorIcon(kLeadingScrollIcon, ui::kColorIcon)
-            : ui::ImageModel::FromVectorIcon(kTrailingScrollIcon,
-                                             ui::kColorIcon));
+    SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                  button_type == ButtonType::kLeading
+                      ? ui::ImageModel::FromVectorIcon(kLeadingScrollOldIcon,
+                                                       ui::kColorIcon)
+                      : ui::ImageModel::FromVectorIcon(kTrailingScrollOldIcon,
+                                                       ui::kColorIcon));
 
     views::InkDrop::Get(this)->SetBaseColor(
         views::TypographyProvider::Get().GetColorId(

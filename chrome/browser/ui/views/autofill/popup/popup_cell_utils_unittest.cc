@@ -57,7 +57,7 @@ TEST(PopupCellUtilsTest,
      GetExpandableMenuIcon_ComposeSuggestions_ReturnThreeDotsMenuIcon) {
   EXPECT_EQ(GetExpandableMenuIconNameFromSuggestionType(
                 SuggestionType::kComposeProactiveNudge),
-            kBrowserToolsChromeRefreshIcon.name);
+            kBrowserToolsChromeRefreshOldIcon.name);
   // No other Compose type should allow an expandable menu.
   EXPECT_FALSE(IsExpandableSuggestionType(SuggestionType::kComposeResumeNudge));
   EXPECT_FALSE(IsExpandableSuggestionType(

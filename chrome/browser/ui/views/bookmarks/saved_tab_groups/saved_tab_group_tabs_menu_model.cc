@@ -77,7 +77,7 @@ void STGTabsMenuModel::Build(
   int latest_command_id = get_next_command_id.Run();
   AddItemWithStringIdAndIcon(
       latest_command_id, IDS_OPEN_GROUP_IN_BROWSER_MENU,
-      ui::ImageModel::FromVectorIcon(kOpenInBrowserIcon, ui::kColorMenuIcon,
+      ui::ImageModel::FromVectorIcon(kOpenInBrowserOldIcon, ui::kColorMenuIcon,
                                      kUIUpdateIconSize));
   SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                          kOpenGroup);
@@ -96,7 +96,7 @@ void STGTabsMenuModel::Build(
   latest_command_id = get_next_command_id.Run();
   AddItemWithIcon(
       latest_command_id, move_or_open_group_text,
-      ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowRefreshOldIcon,
                                      ui::kColorMenuIcon, kUIUpdateIconSize));
   SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                          kMoveGroupToNewWindowMenuItem);
@@ -113,8 +113,9 @@ void STGTabsMenuModel::Build(
         latest_command_id,
         group_pinned ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
                      : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
-        ui::ImageModel::FromVectorIcon(group_pinned ? kKeepOffIcon : kKeepIcon,
-                                       ui::kColorMenuIcon, kUIUpdateIconSize));
+        ui::ImageModel::FromVectorIcon(
+            group_pinned ? kKeepOffOldIcon : kKeepOldIcon, ui::kColorMenuIcon,
+            kUIUpdateIconSize));
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                            kToggleGroupPinStateMenuItem);
     command_id_to_action_.emplace(
@@ -129,7 +130,7 @@ void STGTabsMenuModel::Build(
     // Add item: delete group.
     AddItemWithStringIdAndIcon(
         latest_command_id, IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
-        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
+        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshOldIcon,
                                        ui::kColorMenuIcon, kUIUpdateIconSize));
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                            kDeleteGroupMenuItem);
@@ -141,7 +142,7 @@ void STGTabsMenuModel::Build(
     // Add item: leave group.
     AddItemWithStringIdAndIcon(
         latest_command_id, IDS_DATA_SHARING_LEAVE_GROUP,
-        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
+        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshOldIcon,
                                        ui::kColorMenuIcon, kUIUpdateIconSize));
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                            kLeaveGroupMenuItem);
@@ -157,7 +158,7 @@ void STGTabsMenuModel::Build(
     AddItemWithStringIdAndIcon(
         latest_command_id,
         IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_GROUP_TO_BOOKMARK_FOLDER,
-        ui::ImageModel::FromVectorIcon(kBookmarkAllTabsChromeRefreshIcon,
+        ui::ImageModel::FromVectorIcon(kBookmarkAllTabsChromeRefreshOldIcon,
                                        ui::kColorMenuIcon, kUIUpdateIconSize));
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                            kConvertToBookmarkMenuItem);

@@ -61,7 +61,7 @@ TEST_F(LazyLoadingImageViewTest, ImageLoaderProvidesContent) {
           });
 
   auto* view = widget().SetContentsView(std::make_unique<LazyLoadingImageView>(
-      image.Size(), ui::ImageModel::FromVectorIcon(kGlobeIcon),
+      image.Size(), ui::ImageModel::FromVectorIcon(kGlobeOldIcon),
       mock_loader.Get()));
 
   ASSERT_FALSE(gfx::test::AreImagesEqual(image, view->GetImageForTesting()));
@@ -100,7 +100,7 @@ TEST_F(LazyLoadingImageViewTest, ImageLoaderIsTriggerredForVisibleViewsOnly) {
                                   .SetPreferredSize(visible_area_size)
                                   .Build());
   container->AddChildView(std::make_unique<LazyLoadingImageView>(
-      gfx::Size(10, 10), ui::ImageModel::FromVectorIcon(kGlobeIcon),
+      gfx::Size(10, 10), ui::ImageModel::FromVectorIcon(kGlobeOldIcon),
       mock_loader.Get()));
 
   Paint();

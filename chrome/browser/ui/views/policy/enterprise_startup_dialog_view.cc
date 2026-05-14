@@ -208,7 +208,7 @@ void EnterpriseStartupDialogView::DisplayErrorMessage(
   std::unique_ptr<views::Label> text = CreateText(error_message);
   auto error_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity, kIconSize));
+          kBrowserToolsErrorOldIcon, ui::kColorAlertHighSeverity, kIconSize));
 
   AddContent(std::move(error_icon), std::move(text));
 }

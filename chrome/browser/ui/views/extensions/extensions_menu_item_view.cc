@@ -148,12 +148,12 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       view_model_->GetActionName()))
                   .SetImageModel(views::Button::STATE_NORMAL,
                                  ui::ImageModel::FromVectorIcon(
-                                     kBrowserToolsChromeRefreshIcon,
+                                     kBrowserToolsChromeRefreshOldIcon,
                                      kColorExtensionMenuIcon, icon_size))
                   .SetImageModel(
                       views::Button::STATE_DISABLED,
                       ui::ImageModel::FromVectorIcon(
-                          kBrowserToolsChromeRefreshIcon,
+                          kBrowserToolsChromeRefreshOldIcon,
                           kColorExtensionMenuIconDisabled, icon_size)));
 
   if (allow_pinning) {
@@ -209,7 +209,7 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
                           !browser_->GetProfile()->IsOffTheRecord());
 
   // Update the icon based on whether the extension is pinned.
-  const gfx::VectorIcon& icon = is_pinned ? kKeepOffIcon : kKeepIcon;
+  const gfx::VectorIcon& icon = is_pinned ? kKeepOffOldIcon : kKeepOldIcon;
   const ui::ColorId icon_color_id =
       is_pinned ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon;
   const ui::ColorId disabled_icon_color_id =

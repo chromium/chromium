@@ -56,7 +56,7 @@ AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
   auto image_view = std::make_unique<NonAccessibleImageView>();
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetImage(ui::ImageModel::FromVectorIcon(
-      target >= 1 ? views::kMenuCheckOldIcon : kFingerprintIcon,
+      target >= 1 ? views::kMenuCheckOldIcon : kFingerprintOldIcon,
       ui::kColorAccent, kFingerprintSize));
   animation_container->AddChildView(std::move(image_view));
 

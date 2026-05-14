@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
                 .GetVectorIcon()
                 .vector_icon()
                 ->name,
-            kKeyboardArrowUpChromeRefreshIcon.name);
+            kKeyboardArrowUpChromeRefreshOldIcon.name);
 
   // Collapse the tab group and verify the collapse icon is correctly updated.
   ClickTabGroupHeaderToToggleCollapse();
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
                ->GetImageModel()
                .GetVectorIcon()
                .vector_icon()
-               ->name == kKeyboardArrowDownChromeRefreshIcon.name;
+               ->name == kKeyboardArrowDownChromeRefreshOldIcon.name;
   }));
 }
 

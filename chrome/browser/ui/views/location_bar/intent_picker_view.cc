@@ -81,7 +81,7 @@ bool IntentPickerView::GetShowIcon() const {
 }
 
 const gfx::VectorIcon& IntentPickerView::GetVectorIcon() const {
-  return kOpenInNewChromeRefreshIcon;
+  return kOpenInNewChromeRefreshOldIcon;
 }
 
 BEGIN_METADATA(IntentPickerView)

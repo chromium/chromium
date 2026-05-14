@@ -58,8 +58,9 @@ ProjectsPanelRecentThreadsExpandButton::
 void ProjectsPanelRecentThreadsExpandButton::SetExpanded(bool expanded) {
   const int string_id =
       expanded ? IDS_THREADS_SHOW_LESS : IDS_THREADS_SHOW_MORE;
-  const gfx::VectorIcon& icon = expanded ? kKeyboardArrowUpChromeRefreshIcon
-                                         : kKeyboardArrowDownChromeRefreshIcon;
+  const gfx::VectorIcon& icon = expanded
+                                    ? kKeyboardArrowUpChromeRefreshOldIcon
+                                    : kKeyboardArrowDownChromeRefreshOldIcon;
 
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       icon, kColorProjectsPanelButtonIcon, kExpandIconSize));

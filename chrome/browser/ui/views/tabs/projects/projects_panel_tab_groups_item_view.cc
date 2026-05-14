@@ -61,8 +61,8 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
       more_button_callback_(std::move(more_button_callback)),
       tab_group_color_id_(group.color()),
       tab_group_vector_icon_(group.local_group_id().has_value()
-                                 ? kTabGroupIcon
-                                 : kTabGroupClosedIcon) {
+                                 ? kTabGroupOldIcon
+                                 : kTabGroupClosedOldIcon) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(projects_panel::kListItemMargins)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -95,7 +95,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
     shared_icon_->SetProperty(views::kMarginsKey,
                               projects_panel::kTrailingIconMargins);
     ui::ImageModel shared_group_image_model = ui::ImageModel::FromVectorIcon(
-        kPeopleGroupIcon, kColorProjectsPanelButtonIcon,
+        kPeopleGroupOldIcon, kColorProjectsPanelButtonIcon,
         projects_panel::kTrailingIconSize);
     shared_icon_->SetImage(shared_group_image_model);
     shared_icon_->SetProperty(
@@ -118,7 +118,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
           },
           weak_ptr_factory_.GetWeakPtr())));
   ui::ImageModel menu_icon_image_model = ui::ImageModel::FromVectorIcon(
-      kBrowserToolsChromeRefreshIcon, kColorProjectsPanelButtonIcon,
+      kBrowserToolsChromeRefreshOldIcon, kColorProjectsPanelButtonIcon,
       projects_panel::kTrailingIconSize);
   more_button_->SetPreferredSize(kMoreButtonSize);
   more_button_->SetImageModel(ButtonState::STATE_NORMAL, menu_icon_image_model);

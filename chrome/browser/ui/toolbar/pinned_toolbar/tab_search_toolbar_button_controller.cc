@@ -78,7 +78,7 @@ void TabSearchToolbarButtonController::UpdateBubbleHost(
   if (new_tab_search_bubble_host) {
     action_item->SetVisible(true);
     action_item->SetImage(
-        ui::ImageModel::FromVectorIcon(kTabSearchToolbarIcon));
+        ui::ImageModel::FromVectorIcon(kTabSearchToolbarOldIcon));
     action_item->SetProperty(
         actions::kActionItemPinnableKey,
         static_cast<int>(actions::ActionPinnableState::kPinnable));

@@ -2774,14 +2774,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       switch (test_case.expected_button) {
         case kHelloOrSk:
         case kHello:
-          EXPECT_EQ(win_button_it->icon, kLaptopIcon);
+          EXPECT_EQ(win_button_it->icon, kLaptopOldIcon);
           break;
         case kSk:
           EXPECT_EQ(win_button_it->icon, kUsbSecurityKeyOldIcon);
           break;
         case kPhoneOrSk:
         case kPhone:
-          EXPECT_EQ(win_button_it->icon, kSmartphoneIcon);
+          EXPECT_EQ(win_button_it->icon, kSmartphoneOldIcon);
           break;
         default:
           NOTREACHED();
@@ -2837,7 +2837,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     switch (test_case.expected_button) {
       case kHelloOrSk:
       case kHello:
-        EXPECT_EQ(win_button_it->icon, kLaptopIcon);
+        EXPECT_EQ(win_button_it->icon, kLaptopOldIcon);
         break;
       case kSk:
         EXPECT_EQ(win_button_it->icon, kUsbSecurityKeyOldIcon);

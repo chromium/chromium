@@ -388,7 +388,7 @@ void RecentTabsSubMenuModel::Build() {
                                IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL,
                                IDS_SIDE_PANEL_SHOW_TABS_FROM_OTHER_DEVICES);
       SetCommandIcon(this, IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL,
-                     kDevicesChromeRefreshIcon);
+                     kDevicesChromeRefreshOldIcon);
     }
   }
 
@@ -508,13 +508,13 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
       AddItemWithStringIdAndIcon(IDC_RECENT_TABS_SEE_DEVICE_TABS,
                                  IDS_RECENT_TABS_SEE_DEVICE_TABS,
                                  ui::ImageModel::FromVectorIcon(
-                                     kSyncRefreshIcon, ui::kColorMenuIcon,
+                                     kSyncRefreshOldIcon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize));
     } else {
       AddItemWithStringIdAndIcon(IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
                                  IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
                                  ui::ImageModel::FromVectorIcon(
-                                     kSyncRefreshIcon, ui::kColorMenuIcon,
+                                     kSyncRefreshOldIcon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize));
     }
     return;
@@ -585,7 +585,7 @@ void RecentTabsSubMenuModel::BuildLocalTabItem(
     SetMinorIcon(
         curr_model_index,
         ui::ImageModel::FromVectorIcon(
-            kTabGroupIcon, color_provider->GetColor(color_id), kIconSize));
+            kTabGroupOldIcon, color_provider->GetColor(color_id), kIconSize));
   }
 }
 
@@ -602,7 +602,7 @@ void RecentTabsSubMenuModel::BuildLocalWindowItem(
       window_model.get());
   local_sub_menu_items_.emplace(
       command_id, SubMenuItem(command_id, std::move(window_model)));
-  SetIcon(curr_model_index, CreateFavicon(kTabIcon));
+  SetIcon(curr_model_index, CreateFavicon(kTabOldIcon));
 }
 
 void RecentTabsSubMenuModel::BuildLocalGroupItem(
@@ -626,7 +626,7 @@ void RecentTabsSubMenuModel::BuildLocalGroupItem(
   const ui::ColorId color_id =
       GetTabGroupContextMenuColorId(group.visual_data.color());
   ui::ImageModel group_icon = ui::ImageModel::FromVectorIcon(
-      kTabGroupIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
+      kTabGroupOldIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
   SetIcon(curr_model_index, group_icon);
 }
 
@@ -743,7 +743,7 @@ void RecentTabsSubMenuModel::AddGroupItemToModel(
   const ui::ColorId color_id =
       GetTabGroupContextMenuColorId(group.visual_data.color());
   ui::ImageModel group_icon = ui::ImageModel::FromVectorIcon(
-      kTabGroupIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
+      kTabGroupOldIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
   parent_model->AddSubMenuWithIcon(sub_menu_command_id, sub_menu_label,
                                    group_model.get(), group_icon);
   local_sub_menu_items_.emplace(
@@ -800,10 +800,10 @@ void RecentTabsSubMenuModel::AddDeviceFavicon(
   const gfx::VectorIcon* favicon = nullptr;
   switch (device_form_factor) {
     case syncer::DeviceInfo::FormFactor::kPhone:
-      favicon = &kSmartphoneIcon;
+      favicon = &kSmartphoneOldIcon;
       break;
     case syncer::DeviceInfo::FormFactor::kTablet:
-      favicon = &kTabletIcon;
+      favicon = &kTabletOldIcon;
       break;
     // Return the laptop icon as default.
     case syncer::DeviceInfo::FormFactor::kUnknown:
@@ -815,7 +815,7 @@ void RecentTabsSubMenuModel::AddDeviceFavicon(
     case syncer::DeviceInfo::FormFactor::kTv:
       [[fallthrough]];
     case syncer::DeviceInfo::FormFactor::kDesktop:
-      favicon = &kLaptopIcon;
+      favicon = &kLaptopOldIcon;
       break;
   }
 

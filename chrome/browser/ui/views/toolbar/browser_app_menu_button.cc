@@ -199,8 +199,8 @@ void BrowserAppMenuButton::UpdateThemeBasedState() {
 
 void BrowserAppMenuButton::UpdateIcon() {
   const gfx::VectorIcon& icon = ui::TouchUiController::Get()->touch_ui()
-                                    ? kBrowserToolsTouchIcon
-                                    : kBrowserToolsChromeRefreshIcon;
+                                    ? kBrowserToolsTouchOldIcon
+                                    : kBrowserToolsChromeRefreshOldIcon;
 
   const double click_animation_value =
       base::FeatureList::IsEnabled(features::kToolbarGlowUp)

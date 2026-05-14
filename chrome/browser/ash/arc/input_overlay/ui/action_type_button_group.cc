@@ -120,7 +120,7 @@ ActionTypeButton* ActionTypeButtonGroup::AddActionTypeButton(
 ActionTypeButton* ActionTypeButtonGroup::AddButton(
     ActionTypeButton::PressedCallback callback,
     const std::u16string& label) {
-  return AddActionTypeButton(std::move(callback), label, kGlobeIcon);
+  return AddActionTypeButton(std::move(callback), label, kGlobeOldIcon);
 }
 
 void ActionTypeButtonGroup::OnButtonSelected(ash::OptionButtonBase* button) {

@@ -153,7 +153,7 @@ void BnplIssuerView::PopulateIssuers() {
     issuer_button->AddChildView(
         views::Builder<views::ImageView>()
             .SetImage(ui::ImageModel::FromVectorIcon(
-                kChevronRightChromeRefreshIcon,
+                kChevronRightChromeRefreshOldIcon,
                 issuer_eligible ? kColorBnplIssuerLabelForeground
                                 : kColorBnplIssuerLabelForegroundDisabled))
             .SetProperty(views::kMarginsKey,

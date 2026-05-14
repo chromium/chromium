@@ -390,7 +390,7 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
       gfx::Insets::VH(0, layout_provider->GetDistanceMetric(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  row->AddChildView(CreateWrappedView(CreateIconView(kAccountCircleIcon)));
+  row->AddChildView(CreateWrappedView(CreateIconView(kAccountCircleOldIcon)));
   auto* username_with_error_label_view =
       row->AddChildView(std::make_unique<views::BoxLayoutView>());
   username_with_error_label_view->SetOrientation(
@@ -435,7 +435,7 @@ std::unique_ptr<views::View> CreateEditNoteRow(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-  row->AddChildView(CreateWrappedView(CreateIconView(kNotesIcon)));
+  row->AddChildView(CreateWrappedView(CreateIconView(kNotesOldIcon)));
   auto* note_with_error_label_view =
       row->AddChildView(std::make_unique<views::BoxLayoutView>());
   note_with_error_label_view->SetOrientation(
@@ -566,13 +566,14 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                 PasswordManagementBubbleInteractions::
                     kUsernameCopyButtonClicked));
     AddChildView(CreateDetailsRowWithActionButton(
-        kAccountCircleIcon, std::move(username_label), kCopyIcon,
+        kAccountCircleOldIcon, std::move(username_label), kCopyOldIcon,
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
         std::move(copy_username_button_callback),
         ManagePasswordsViewIDs::kCopyUsernameButton));
   } else if (allow_empty_username_edit) {
     read_username_row_ = AddChildView(CreateDetailsRowWithActionButton(
-        kAccountCircleIcon, std::move(username_label), vector_icons::kEditIcon,
+        kAccountCircleOldIcon, std::move(username_label),
+        vector_icons::kEditIcon,
         l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_USERNAME_TOOLTIP),
         base::BindRepeating(
             &ManagePasswordsDetailsView::SwitchToEditUsernameMode,
@@ -587,7 +588,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     edit_username_row_->SetVisible(false);
   } else {
     AddChildView(
-        CreateDetailsRow(kAccountCircleIcon, std::move(username_label)));
+        CreateDetailsRow(kAccountCircleOldIcon, std::move(username_label)));
   }
 
   std::unique_ptr<views::Label> password_label =
@@ -613,7 +614,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       vector_icons::kPasswordManagerIcon,
       CreatePasswordLabelWithEyeIconView(std::move(password_label),
                                          on_activity_callback_),
-      kCopyIcon,
+      kCopyOldIcon,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD),
       std::move(copy_password_button_callback),
       ManagePasswordsViewIDs::kCopyPasswordButton));
@@ -622,7 +623,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
   // another to edit the note, which is hidden by default. Clicking the Edit
   // icon next to the note row will hide the read row, and show the edit row.
   read_note_row_ = AddChildView(CreateDetailsRowWithActionButton(
-      kNotesIcon, CreateNoteLabel(password_form), vector_icons::kEditIcon,
+      kNotesOldIcon, CreateNoteLabel(password_form), vector_icons::kEditIcon,
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_NOTE_TOOLTIP),
       base::BindRepeating(&ManagePasswordsDetailsView::SwitchToEditNoteMode,
                           base::Unretained(this)),

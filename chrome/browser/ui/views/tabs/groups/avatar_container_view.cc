@@ -71,7 +71,7 @@ void DrawFallbackIcon(gfx::Canvas& canvas, int diameter, SkColor icon_color) {
   int icon_offset = (diameter - kIconSize) / 2;
   canvas.Save();
   canvas.Translate({icon_offset, icon_offset});
-  gfx::PaintVectorIcon(&canvas, kTabGroupSharingIcon, kIconSize, icon_color);
+  gfx::PaintVectorIcon(&canvas, kTabGroupSharingOldIcon, kIconSize, icon_color);
   canvas.Restore();
 }
 

@@ -73,7 +73,7 @@ std::unique_ptr<views::View> CreatePrimaryIconForSink(const UIMediaSink& sink) {
   // The stop button has the highest priority, and the issue icon comes second.
   if (sink.state == UIMediaSinkState::CONNECTED) {
     return CreatePrimaryIconView(ui::ImageModel::FromVectorIcon(
-        kGenericStopIcon, ui::kColorAccent, kPrimaryIconSize));
+        kGenericStopOldIcon, ui::kColorAccent, kPrimaryIconSize));
   } else if (sink.issue) {
     auto icon = std::make_unique<views::ImageView>(
         ui::ImageModel::FromVectorIcon(::vector_icons::kInfoOutlineIcon,
@@ -232,18 +232,18 @@ const gfx::VectorIcon* CastDialogSinkButton::GetVectorIcon(
   const gfx::VectorIcon* vector_icon;
   switch (icon_type) {
     case SinkIconType::CAST_AUDIO_GROUP:
-      vector_icon = &kSpeakerGroupIcon;
+      vector_icon = &kSpeakerGroupOldIcon;
       break;
     case SinkIconType::CAST_AUDIO:
-      vector_icon = &kSpeakerIcon;
+      vector_icon = &kSpeakerOldIcon;
       break;
     case SinkIconType::WIRED_DISPLAY:
-      vector_icon = &kInputIcon;
+      vector_icon = &kInputOldIcon;
       break;
     case SinkIconType::CAST:
     case SinkIconType::GENERIC:
     default:
-      vector_icon = &kTvIcon;
+      vector_icon = &kTvOldIcon;
       break;
   }
   return vector_icon;

@@ -145,8 +145,8 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel(
   menu_model->AddItemWithIcon(
       IDC_CREATE_NEW_TAB_GROUP,
       l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP),
-      ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon, ui::kColorMenuIcon,
-                                     kUIUpdateIconSize));
+      ui::ImageModel::FromVectorIcon(kCreateNewTabGroupOldIcon,
+                                     ui::kColorMenuIcon, kUIUpdateIconSize));
   menu_model->SetElementIdentifierAt(
       menu_model->GetIndexOfCommandId(IDC_CREATE_NEW_TAB_GROUP).value(),
       kCreateNewTabGroup);
@@ -169,7 +169,8 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel(
     }
     const auto color_id = GetTabGroupDialogColorId(tab_group->color());
     const auto group_icon = ui::ImageModel::FromVectorIcon(
-        kTabGroupIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
+        kTabGroupOldIcon, color_provider->GetColor(color_id),
+        gfx::kFaviconSize);
     auto title = tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(*tab_group);
     // For saved tab group items, use the indice in `sorted_tab_groups_` as the
     // command ids.
@@ -192,7 +193,7 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel(
     if (tab_group->is_shared_tab_group()) {
       menu_model->SetMinorIcon(index.value(),
                                ui::ImageModel::FromVectorIcon(
-                                   kPeopleGroupIcon, ui::kColorMenuIcon,
+                                   kPeopleGroupOldIcon, ui::kColorMenuIcon,
                                    ui::SimpleMenuModel::kDefaultIconSize));
     }
 

@@ -434,7 +434,7 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
             switch (prompt) {
               case ExternalPromptNotificationType::kPromptGenericPermission:
                 message_id = IDS_VR_DESKTOP_GENERIC_PERMISSION_PROMPT;
-                icon = &kOpenInBrowserIcon;
+                icon = &kOpenInBrowserOldIcon;
                 break;
               case ExternalPromptNotificationType::kPromptNone:
                 NOTREACHED();
@@ -533,7 +533,7 @@ void UiSceneCreator::CreateWebVrTimeoutScreen() {
 
   auto timeout_icon =
       Create<VectorIcon>(kWebVrTimeoutMessageIcon, kPhaseForeground, 512);
-  timeout_icon->SetIcon(kSadTabIcon);
+  timeout_icon->SetIcon(kSadTabOldIcon);
   timeout_icon->SetSize(kTimeoutMessageIconWidthDMM,
                         kTimeoutMessageIconHeightDMM);
 

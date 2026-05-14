@@ -52,7 +52,7 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestDisplay) {
 TEST_F(ProjectsPanelTabGroupsItemViewTest, TestTabGroupClosed) {
   auto tab_groups_closed_item =
       std::make_unique<ProjectsPanelTabGroupsItemView>(GetTestSavedTabGroup());
-  EXPECT_EQ(&kTabGroupClosedIcon,
+  EXPECT_EQ(&kTabGroupClosedOldIcon,
             &tab_groups_closed_item->tab_group_vector_icon_for_testing());
 }
 
@@ -64,7 +64,7 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestTabGroupOpen) {
           base::Token{0x12345678, 0x9ABCDEF0}));
   auto tab_groups_open_item =
       std::make_unique<ProjectsPanelTabGroupsItemView>(open_group);
-  EXPECT_EQ(&kTabGroupIcon,
+  EXPECT_EQ(&kTabGroupOldIcon,
             &tab_groups_open_item->tab_group_vector_icon_for_testing());
 }
 
@@ -89,7 +89,7 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestChildrenSharedTabGroup) {
       collaboration_group_view->shared_icon_for_testing();
   EXPECT_NE(nullptr, collaboration_view);
   EXPECT_TRUE(collaboration_view->GetImageModel().IsVectorIcon());
-  EXPECT_EQ(&kPeopleGroupIcon,
+  EXPECT_EQ(&kPeopleGroupOldIcon,
             collaboration_view->GetImageModel().GetVectorIcon().vector_icon());
 }
 

@@ -87,7 +87,7 @@ void ContentSettingSiteRowView::OnFaviconLoaded(
         gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data)));
   } else {
     favicon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlobeIcon, ui::kColorIcon,
+        kGlobeOldIcon, ui::kColorIcon,
         GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   }
 }

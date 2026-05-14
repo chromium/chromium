@@ -1033,7 +1033,7 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButtonWithSync() {
       signin_util::SignedInState::kSyncing) {
     // Indicates clearly that Sync is ON.
     message_id = IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON;
-    icon = &kSyncChromeRefreshIcon;
+    icon = &kSyncChromeRefreshOldIcon;
   }
 
   AddFeatureButton(
@@ -1172,7 +1172,7 @@ void ProfileMenuView::MaybeBuildSignoutButton() {
   AddFeatureButton(signout_button_text,
                    base::BindRepeating(&ProfileMenuView::OnSignoutButtonClicked,
                                        base::Unretained(this)),
-                   kLogoutIcon);
+                   kLogoutOldIcon);
 }
 
 void ProfileMenuView::BuildFeatureButtons() {
@@ -1258,7 +1258,7 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
 
   if (profiles::IsProfileCreationAllowed()) {
     AddProfileManagementFeatureButton(
-        kAccountAddChromeRefreshIcon,
+        kAccountAddChromeRefreshOldIcon,
         l10n_util::GetStringUTF16(IDS_PROFILE_MENU_ADD_PROFILE),
         base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
                             base::Unretained(this)));
@@ -1267,14 +1267,14 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
   if (profiles::IsGuestModeEnabled(profile()) &&
       !web_app::AppBrowserController::IsWebApp(&browser())) {
     AddProfileManagementFeatureButton(
-        kAccountBoxIcon,
+        kAccountBoxOldIcon,
         l10n_util::GetStringUTF16(IDS_PROFILE_MENU_OPEN_GUEST_PROFILE),
         base::BindRepeating(&ProfileMenuView::OnGuestProfileButtonClicked,
                             base::Unretained(this)));
   }
 
   AddProfileManagementFeatureButton(
-      kAccountManageChromeRefreshIcon,
+      kAccountManageChromeRefreshOldIcon,
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_MANAGE_PROFILES),
       base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
                           base::Unretained(this)));

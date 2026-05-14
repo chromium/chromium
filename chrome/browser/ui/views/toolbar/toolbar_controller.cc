@@ -234,12 +234,12 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
       ToolbarController::ResponsiveElementInfo(
           ToolbarController::ElementIdInfo{
               kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
-              &kNavigateHomeChromeRefreshIcon, kToolbarHomeButtonElementId},
+              &kNavigateHomeChromeRefreshOldIcon, kToolbarHomeButtonElementId},
           /*is_section_end=*/false),
       ToolbarController::ResponsiveElementInfo(
           ToolbarController::ElementIdInfo{
               kToolbarSplitTabsToolbarButtonElementId,
-              IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_TABS, &kSplitSceneIcon,
+              IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_TABS, &kSplitSceneOldIcon,
               kToolbarSplitTabsToolbarButtonElementId},
           /*is_section_end=*/false),
       ToolbarController::ResponsiveElementInfo(
@@ -287,13 +287,14 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
            ToolbarController::ElementIdInfo(
                kToolbarBatterySaverButtonElementId,
                IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER,
-               &kBatterySaverRefreshIcon, kToolbarBatterySaverButtonElementId,
+               &kBatterySaverRefreshOldIcon,
+               kToolbarBatterySaverButtonElementId,
                kToolbarBatterySaverBubbleElementId),
            /*is_section_end=*/false),
        ToolbarController::ResponsiveElementInfo(
            ToolbarController::ElementIdInfo(kToolbarChromeLabsButtonElementId,
                                             IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
-                                            &kScienceIcon,
+                                            &kScienceOldIcon,
                                             kToolbarChromeLabsButtonElementId,
                                             kToolbarChromeLabsBubbleElementId),
            /*is_section_end=*/false),
@@ -301,15 +302,15 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
            ToolbarController::ElementIdInfo(
                kToolbarMediaButtonElementId,
                IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
-               &kMediaToolbarButtonChromeRefreshIcon,
+               &kMediaToolbarButtonChromeRefreshOldIcon,
                kToolbarMediaButtonElementId, kToolbarMediaBubbleElementId),
            /*is_section_end=*/true),
        ToolbarController::ResponsiveElementInfo(
            ToolbarController::ElementIdInfo(
                kToolbarAvatarButtonElementId,
                IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
-               is_incognito ? (&kIncognitoRefreshMenuIcon)
-                            : (&kUserAccountAvatarRefreshIcon),
+               is_incognito ? (&kIncognitoRefreshMenuOldIcon)
+                            : (&kUserAccountAvatarRefreshOldIcon),
                kToolbarAvatarButtonElementId, kToolbarAvatarBubbleElementId),
            /*is_section_end=*/false)});
   return elements;

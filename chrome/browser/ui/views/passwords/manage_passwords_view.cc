@@ -366,9 +366,10 @@ void ManagePasswordsView::OnFaviconReady(const gfx::Image& favicon) {
 
 ui::ImageModel ManagePasswordsView::GetFaviconImageModel() const {
   // Use a globe fallback icon until the actual favicon is loaded.
-  return favicon_.IsEmpty() ? ui::ImageModel::FromVectorIcon(
-                                  kGlobeIcon, ui::kColorIcon, gfx::kFaviconSize)
-                            : ui::ImageModel::FromImage(favicon_);
+  return favicon_.IsEmpty()
+             ? ui::ImageModel::FromVectorIcon(kGlobeOldIcon, ui::kColorIcon,
+                                              gfx::kFaviconSize)
+             : ui::ImageModel::FromImage(favicon_);
 }
 
 void ManagePasswordsView::AuthenticateUserAndDisplayDetailsOf(

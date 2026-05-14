@@ -678,11 +678,11 @@ void DownloadToolbarUIController::UpdateIcon() {
   bool is_touch_mode = ui::TouchUiController::Get()->touch_ui();
   if (state_ == IconState::kProgress || state_ == IconState::kDeepScanning ||
       state_ == IconState::kContentCheckPending) {
-    new_icon = is_touch_mode ? &kDownloadInProgressTouchIcon
-                             : &kDownloadInProgressChromeRefreshIcon;
+    new_icon = is_touch_mode ? &kDownloadInProgressTouchOldIcon
+                             : &kDownloadInProgressChromeRefreshOldIcon;
   } else {
-    new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchIcon
-                             : &kDownloadToolbarButtonChromeRefreshIcon;
+    new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchOldIcon
+                             : &kDownloadToolbarButtonChromeRefreshOldIcon;
   }
   action_item_->SetProperty(kActionItemUnderlineIndicatorKey, is_icon_active);
 

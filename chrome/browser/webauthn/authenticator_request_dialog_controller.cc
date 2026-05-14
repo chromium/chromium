@@ -152,9 +152,9 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
       return kUsbSecurityKeyOldIcon;
     case AuthenticatorTransport::kInternal:
-      return kLaptopIcon;
+      return kLaptopOldIcon;
     case AuthenticatorTransport::kHybrid:
-      return kSmartphoneIcon;
+      return kSmartphoneOldIcon;
     case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
@@ -200,7 +200,7 @@ bool WebAuthnApiSupportsHybrid() {
 
 const gfx::VectorIcon& GetCredentialIcon(AuthenticatorType type) {
   if (type == AuthenticatorType::kPhone) {
-    return kSmartphoneIcon;
+    return kSmartphoneOldIcon;
   }
   return vector_icons::kPasskeyIcon;
 }

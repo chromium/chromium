@@ -227,7 +227,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
       prefs()->GetBoolean(prefs::kShowHomeButton), false,
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
-          ui::ImageModel::FromVectorIcon(kNavigateHomeChromeRefreshIcon,
+          ui::ImageModel::FromVectorIcon(kNavigateHomeChromeRefreshOldIcon,
                                          icon_color_id)
               .Rasterize(&provider),
           scale_factor)));
@@ -252,7 +252,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
       prefs()->GetBoolean(prefs::kPinSplitTabButton), false,
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
-          ui::ImageModel::FromVectorIcon(kSplitSceneIcon, icon_color_id)
+          ui::ImageModel::FromVectorIcon(kSplitSceneOldIcon, icon_color_id)
               .Rasterize(&provider),
           scale_factor)));
 

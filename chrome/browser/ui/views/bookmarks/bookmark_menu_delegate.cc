@@ -1344,7 +1344,7 @@ void BookmarkMenuDelegate::BuildOtherNodeMenuHeader(MenuItemView* menu) {
     menu->RemoveAllMenuItems();
   }
   ui::ImageModel bookmarks_side_panel_icon = ui::ImageModel::FromVectorIcon(
-      kBookmarksSidePanelIcon, ui::kColorMenuIcon,
+      kBookmarksSidePanelOldIcon, ui::kColorMenuIcon,
       ui::SimpleMenuModel::kDefaultIconSize);
   menu->AppendMenuItem(
       IDC_SHOW_BOOKMARK_SIDE_PANEL,

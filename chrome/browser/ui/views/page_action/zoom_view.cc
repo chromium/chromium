@@ -48,7 +48,7 @@ ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "Zoom"),
-      icon_(&kZoomMinusIcon) {
+      icon_(&kZoomMinusOldIcon) {
   SetVisible(false);
   GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_TOOLTIP_ZOOM, base::FormatPercent(current_zoom_percent_)));
@@ -114,8 +114,8 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
     // The icon is hidden when the zoom level is default.
     icon_ = zoom_controller && zoom_controller->GetZoomRelativeToDefault() ==
                                    zoom::ZoomController::ZOOM_BELOW_DEFAULT_ZOOM
-                ? &kZoomMinusChromeRefreshIcon
-                : &kZoomPlusChromeRefreshIcon;
+                ? &kZoomMinusChromeRefreshOldIcon
+                : &kZoomPlusChromeRefreshOldIcon;
     UpdateIconImage();
 
     // Visibility must be enabled before the bubble is shown to ensure the

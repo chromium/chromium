@@ -167,10 +167,10 @@ NotificationTesterHandler::GetRichDataSmallImageFromString(
     const std::string& small_image_name) {
   if (small_image_name == "ash::kTerminalSshIcon") {
     return ash::kTerminalSshIcon;
-  } else if (small_image_name == "kCreditCardIcon") {
-    return kCreditCardIcon;
-  } else if (small_image_name == "kSmartphoneIcon") {
-    return kSmartphoneIcon;
+  } else if (small_image_name == "kCreditCardOldIcon") {
+    return kCreditCardOldIcon;
+  } else if (small_image_name == "kSmartphoneOldIcon") {
+    return kSmartphoneOldIcon;
   }
 
   return gfx::VectorIcon::EmptyIcon();

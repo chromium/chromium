@@ -80,29 +80,30 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(kLinkChromeRefreshIcon,
+      ToastSpecification::Builder(kLinkChromeRefreshOldIcon,
                                   IDS_LINK_COPIED_TOAST_BODY)
           .Build());
 
   toast_registry_->RegisterToast(
       ToastId::kImageCopied,
-      ToastSpecification::Builder(kCopyMenuIcon, IDS_IMAGE_COPIED_TOAST_BODY)
+      ToastSpecification::Builder(kCopyMenuOldIcon, IDS_IMAGE_COPIED_TOAST_BODY)
           .Build());
   toast_registry_->RegisterToast(
       ToastId::kVideoFrameCopied,
-      ToastSpecification::Builder(kCopyMenuIcon,
+      ToastSpecification::Builder(kCopyMenuOldIcon,
                                   IDS_VIDEO_FRAME_COPIED_TOAST_BODY)
           .Build());
 
   toast_registry_->RegisterToast(
       ToastId::kLinkToHighlightCopied,
-      ToastSpecification::Builder(kLinkChromeRefreshIcon,
+      ToastSpecification::Builder(kLinkChromeRefreshOldIcon,
                                   IDS_LINK_COPIED_TO_HIGHLIGHT_TOAST_BODY)
           .Build());
 
   toast_registry_->RegisterToast(
       ToastId::kAddedToReadingList,
-      ToastSpecification::Builder(kReadingListIcon, IDS_READING_LIST_TOAST_BODY)
+      ToastSpecification::Builder(kReadingListOldIcon,
+                                  IDS_READING_LIST_TOAST_BODY)
           .AddActionButton(IDS_READING_LIST_TOAST_BUTTON,
                            base::BindRepeating(
                                [](BrowserWindowInterface* window) {
@@ -116,7 +117,7 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kClearBrowsingData,
-      ToastSpecification::Builder(kTrashCanRefreshIcon,
+      ToastSpecification::Builder(kTrashCanRefreshOldIcon,
                                   IDS_CLEAR_BROWSING_DATA_TOAST_BODY)
           .Build());
 
@@ -125,7 +126,7 @@ void ToastService::RegisterToasts(
   // updated.
   toast_registry_->RegisterToast(
       ToastId::kNonMilestoneUpdate,
-      ToastSpecification::Builder(kBrowserLogoIcon,
+      ToastSpecification::Builder(kBrowserLogoOldIcon,
                                   IDS_NON_MILESTONE_UPDATE_TOAST_BODY)
           .AddGlobalScoped()
           .Build());
@@ -153,7 +154,7 @@ void ToastService::RegisterToasts(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             vector_icons::kGshieldIcon,
 #else
-            kSecurityIcon,
+            kSecurityOldIcon,
 #endif
             IDS_SETTINGS_SAFEBROWSING_ENHANCED_ON_TOAST_MESSAGE)
             .AddActionButton(
@@ -174,14 +175,14 @@ void ToastService::RegisterToasts(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             vector_icons::kGshieldIcon,
 #else
-            kSecurityIcon,
+            kSecurityOldIcon,
 #endif
             IDS_SETTINGS_SAFEBROWSING_ENHANCED_ON_TOAST_MESSAGE)
             .Build());
     toast_registry_->RegisterToast(
         ToastId::kSyncEsbOff,
         ToastSpecification::Builder(
-            kInfoIcon, IDS_SETTINGS_SAFEBROWSING_ENHANCED_OFF_TOAST_MESSAGE)
+            kInfoOldIcon, IDS_SETTINGS_SAFEBROWSING_ENHANCED_OFF_TOAST_MESSAGE)
             .AddActionButton(
                 IDS_SETTINGS_SAFEBROWSING_TURN_ON_ENHANCED_TOAST_BUTTON,
                 base::BindRepeating(
@@ -201,7 +202,7 @@ void ToastService::RegisterToasts(
     // Current tab has been removed from the group.
     toast_registry_->RegisterToast(
         ToastId::kTabGroupSyncTabRemoved,
-        ToastSpecification::Builder(kAccountCircleChromeRefreshIcon,
+        ToastSpecification::Builder(kAccountCircleChromeRefreshOldIcon,
                                     IDS_DATA_SHARING_TOAST_TAB_REMOVED)
             .AddCloseButton()
             .AddActionButton(
@@ -224,7 +225,7 @@ void ToastService::RegisterToasts(
     // Another user has joined an open group (global)
     toast_registry_->RegisterToast(
         ToastId::kTabGroupSyncUserJoined,
-        ToastSpecification::Builder(kAccountCircleChromeRefreshIcon,
+        ToastSpecification::Builder(kAccountCircleChromeRefreshOldIcon,
                                     IDS_DATA_SHARING_TOAST_NEW_MEMBER)
             .AddCloseButton()
             .AddActionButton(
@@ -247,7 +248,7 @@ void ToastService::RegisterToasts(
     // Profile has been removed from open group (global)
     toast_registry_->RegisterToast(
         ToastId::kTabGroupSyncRemovedFromGroup,
-        ToastSpecification::Builder(kTabGroupSharingIcon,
+        ToastSpecification::Builder(kTabGroupSharingOldIcon,
                                     IDS_DATA_SHARING_TOAST_BLOCK_LEAVE)
             .AddGlobalScoped()
             .Build());
@@ -256,7 +257,7 @@ void ToastService::RegisterToasts(
     toast_registry_->RegisterToast(
         ToastId::kTabGroupSharingVersionUpToDate,
         ToastSpecification::Builder(
-            kTabGroupSharingIcon,
+            kTabGroupSharingOldIcon,
             IDS_COLLABORATION_SHARED_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE)
             .AddGlobalScoped()
             .Build());
@@ -264,7 +265,7 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kClosePinnedTab,
-      ToastSpecification::Builder(kKeepIcon, IDS_CLOSE_PINNED_TAB_TOAST_BODY)
+      ToastSpecification::Builder(kKeepOldIcon, IDS_CLOSE_PINNED_TAB_TOAST_BODY)
           .SetToastAsActionable()
           .Build());
 
@@ -310,7 +311,8 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kCopiedToClipboard,
-      ToastSpecification::Builder(kInfoIcon, IDS_COPIED_TO_CLIPBOARD_TOAST_BODY)
+      ToastSpecification::Builder(kInfoOldIcon,
+                                  IDS_COPIED_TO_CLIPBOARD_TOAST_BODY)
           .Build());
 
   toast_registry_->RegisterToast(
@@ -319,7 +321,7 @@ void ToastService::RegisterToasts(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           vector_icons::kGshieldIcon,
 #else
-          kSecurityIcon,
+          kSecurityOldIcon,
 #endif
           IDS_SETTINGS_SECURITY_BUNDLE_TOAST_FOR_USER_OPTED_INTO_ENHANCED_BUNDLE)
           .AddActionButton(
@@ -337,7 +339,7 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kSkillSaved,
-      ToastSpecification::Builder(kCheckIcon, IDS_SKILL_SAVED_TOAST_BODY)
+      ToastSpecification::Builder(kCheckOldIcon, IDS_SKILL_SAVED_TOAST_BODY)
           .AddCloseButton()
           .AddActionButton(IDS_SKILL_SAVED_TOAST_BUTTON,
                            base::BindRepeating(
@@ -350,12 +352,12 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kSkillSavedWithoutInvokeButton,
-      ToastSpecification::Builder(kCheckIcon, IDS_SKILL_SAVED_TOAST_BODY)
+      ToastSpecification::Builder(kCheckOldIcon, IDS_SKILL_SAVED_TOAST_BODY)
           .Build());
 
   toast_registry_->RegisterToast(
       ToastId::kSkillDeleted,
-      ToastSpecification::Builder(kDeleteIcon, IDS_SKILL_DELETED_TOAST_BODY)
+      ToastSpecification::Builder(kDeleteOldIcon, IDS_SKILL_DELETED_TOAST_BODY)
           .AddCloseButton()
           .AddActionButton(IDS_SKILL_UNDO_TOAST_BUTTON,
                            base::BindRepeating(
@@ -367,7 +369,8 @@ void ToastService::RegisterToasts(
           .Build());
 
   toast_registry_->RegisterToast(
-      ToastId::kRecordReplay, ToastSpecification::Builder(kInfoIcon).Build());
+      ToastId::kRecordReplay,
+      ToastSpecification::Builder(kInfoOldIcon).Build());
 
   toast_registry_->RegisterToast(
       ToastId::kAutoSignIn,
@@ -535,7 +538,7 @@ void ToastService::RegisterToasts(
   // Report a scam confirmation toast.
   toast_registry_->RegisterToast(
       ToastId::kReportUnsafeSiteConfirmation,
-      ToastSpecification::Builder(kCheckIcon,
+      ToastSpecification::Builder(kCheckOldIcon,
                                   IDS_REPORT_UNSAFE_SITE_CONFIRMATION_TOAST)
           .Build());
 }  // RegisterToasts() end.

@@ -96,7 +96,7 @@ ui::ImageModel CreateSizedFallback(float scale_factor,
   // Paint fallback icon. This will be the width of the icon container
   // minus the padding from both sides.
   canvas.Translate({icon_padding, icon_padding});
-  gfx::PaintVectorIcon(&canvas, kPersonFilledPaddedSmallIcon,
+  gfx::PaintVectorIcon(&canvas, kPersonFilledPaddedSmallOldIcon,
                        icon_width - (icon_padding * 2),
                        color_provider->GetColor(ui::kColorSysOnTonalContainer));
 

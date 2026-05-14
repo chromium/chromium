@@ -265,7 +265,7 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
     }
     if (model_->instrument_icon()->drawsNothing()) {
       image_view->SetImage(ui::ImageModel::FromVectorIcon(
-          kCreditCardIcon, ui::kColorSysOnSurfaceSubtle,
+          kCreditCardOldIcon, ui::kColorSysOnSurfaceSubtle,
           kSecurePaymentConfirmationIconDefaultWidthPx));
     }
   }
@@ -412,7 +412,7 @@ void SecurePaymentConfirmationDialogView::InitViews() {
   ui::ImageModel instrument_icon;
   if (model_->instrument_icon()->drawsNothing()) {
     instrument_icon = ui::ImageModel::FromVectorIcon(
-        kCreditCardIcon, ui::kColorSysOnSurfaceSubtle,
+        kCreditCardOldIcon, ui::kColorSysOnSurfaceSubtle,
         kSecurePaymentConfirmationIconDefaultWidthPx);
   } else {
     instrument_icon = ui::ImageModel::FromImageSkia(

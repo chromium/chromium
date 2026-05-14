@@ -303,10 +303,10 @@ class UpdateSettingsPane : public views::BoxLayoutView {
         l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_UPDATE_SETTINGS));
 
     views::SetImageFromVectorIconWithColor(
-        button.get(), kKeyboardArrowDownIcon, 16,
+        button.get(), kKeyboardArrowDownOldIcon, 16,
         {ui::kColorIcon, ui::kColorIconDisabled});
     views::SetToggledImageFromVectorIconWithColor(
-        button.get(), kKeyboardArrowUpIcon, 16,
+        button.get(), kKeyboardArrowUpOldIcon, 16,
         {ui::kColorIcon, ui::kColorIconDisabled});
 
     return button;
@@ -516,7 +516,7 @@ class GetMetadataView : public InstallerDialogView {
  public:
   GetMetadataView()
       : InstallerDialogView(
-            CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
+            CreateImageModelFromVector(kFingerprintOldIcon, ui::kColorAccent),
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_VERIFICATION_SUBTITLE) {
     auto progress_bar =
@@ -543,7 +543,7 @@ class ShowMetadataView : public InstallerDialogView {
  public:
   explicit ShowMetadataView(IsolatedWebAppInstallerView::Delegate* delegate)
       : InstallerDialogView(
-            CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
+            CreateImageModelFromVector(kFingerprintOldIcon, ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE) {
@@ -608,7 +608,7 @@ class InstallView : public InstallerDialogView {
  public:
   InstallView()
       : InstallerDialogView(
-            CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
+            CreateImageModelFromVector(kFingerprintOldIcon, ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_INSTALL_SUBTITLE) {
@@ -635,7 +635,7 @@ class InstallSuccessView : public InstallerDialogView {
  public:
   InstallSuccessView()
       : InstallerDialogView(
-            CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
+            CreateImageModelFromVector(kFingerprintOldIcon, ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_SUCCESS_SUBTITLE) {
@@ -860,10 +860,10 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
             // user-facing articles are released.
             auto subtitle =
                 ui::DialogModelLabel(IDS_IWA_INSTALLER_CONFIRM_SUBTITLE);
-            return ShowChildDialog(
-                IDS_IWA_INSTALLER_CONFIRM_TITLE, subtitle,
-                CreateImageModelFromVector(kPrivacyTipIcon, ui::kColorAccent),
-                IDS_IWA_INSTALLER_CONFIRM_CONTINUE);
+            return ShowChildDialog(IDS_IWA_INSTALLER_CONFIRM_TITLE, subtitle,
+                                   CreateImageModelFromVector(
+                                       kPrivacyTipOldIcon, ui::kColorAccent),
+                                   IDS_IWA_INSTALLER_CONFIRM_CONTINUE);
           },
           [this](
               const IsolatedWebAppInstallerModel::InstallationFailedDialog&) {

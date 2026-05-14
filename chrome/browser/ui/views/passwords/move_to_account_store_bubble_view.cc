@@ -157,7 +157,7 @@ gfx::ImageSkia ImageWithBadge::GetBadge() const {
   }
   // If there is no badge set, fallback to the default globe icon.
   const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
-  return gfx::CreateVectorIcon(kGlobeIcon, gfx::kFaviconSize, color);
+  return gfx::CreateVectorIcon(kGlobeOldIcon, gfx::kFaviconSize, color);
 }
 
 void ImageWithBadge::Render() {
@@ -238,7 +238,7 @@ MoveToAccountStoreBubbleView::MovingBannerView::MovingBannerView(
 
   auto arrow_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kChevronRightIcon, ui::kColorIcon, gfx::kFaviconSize));
+          kChevronRightOldIcon, ui::kColorIcon, gfx::kFaviconSize));
   arrow_view->SetFlipCanvasOnPaintForRTLUI(true);
   AddChildView(std::move(arrow_view));
 
@@ -280,7 +280,7 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
   AddChildView(CreateDescription(controller_.GetProfileEmail()));
 
   auto computer_view =
-      std::make_unique<ImageWithBadge>(kHardwareComputerSmallIcon);
+      std::make_unique<ImageWithBadge>(kHardwareComputerSmallOldIcon);
   auto avatar_view = std::make_unique<ImageWithBadge>(
       *controller_.GetProfileIcon(kImageSize).ToImageSkia());
 

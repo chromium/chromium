@@ -396,7 +396,7 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(sessions::tab_restore::Group* group,
   const ui::ColorId color_id =
       GetTabGroupContextMenuColorId(group->visual_data.color());
   gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
-      kTabGroupIcon, gfx::kFaviconSize, color_provider.GetColor(color_id));
+      kTabGroupOldIcon, gfx::kFaviconSize, color_provider.GetColor(color_id));
 
   // Create the submenu.
   NSMenu* submenu = [[NSMenu alloc] init];

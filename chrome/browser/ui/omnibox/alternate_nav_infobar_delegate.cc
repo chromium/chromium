@@ -49,7 +49,7 @@ AlternateNavInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& AlternateNavInfoBarDelegate::GetVectorIcon() const {
-  return kGlobeIcon;
+  return kGlobeOldIcon;
 }
 
 std::u16string AlternateNavInfoBarDelegate::GetLinkText() const {

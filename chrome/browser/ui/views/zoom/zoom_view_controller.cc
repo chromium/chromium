@@ -75,13 +75,13 @@ void ZoomViewController::UpdatePageActionIconProperties() {
     case ZoomController::ZOOM_BELOW_DEFAULT_ZOOM:
       page_action_controller_->OverrideImage(
           kActionZoomNormal,
-          ui::ImageModel::FromVectorIcon(kZoomMinusChromeRefreshIcon));
+          ui::ImageModel::FromVectorIcon(kZoomMinusChromeRefreshOldIcon));
       break;
     case ZoomController::ZOOM_AT_DEFAULT_ZOOM:
     case ZoomController::ZOOM_ABOVE_DEFAULT_ZOOM:
       page_action_controller_->OverrideImage(
           kActionZoomNormal,
-          ui::ImageModel::FromVectorIcon(kZoomPlusChromeRefreshIcon));
+          ui::ImageModel::FromVectorIcon(kZoomPlusChromeRefreshOldIcon));
       break;
     default:
       NOTREACHED();

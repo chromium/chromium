@@ -72,7 +72,7 @@ void MandatoryReauthIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& MandatoryReauthIconView::GetVectorIcon() const {
-  return kCreditCardChromeRefreshIcon;
+  return kCreditCardChromeRefreshOldIcon;
 }
 
 MandatoryReauthBubbleController* MandatoryReauthIconView::GetController()

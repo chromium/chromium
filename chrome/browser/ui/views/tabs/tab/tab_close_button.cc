@@ -212,7 +212,7 @@ bool TabCloseButton::GetHitTestMask(SkPath* mask) const {
   return true;
 }
 void TabCloseButton::UpdateIcon() {
-  const auto& icon = kCloseTabChromeRefreshIcon;
+  const auto& icon = kCloseTabChromeRefreshOldIcon;
 
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(

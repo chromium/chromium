@@ -344,7 +344,7 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       vector_icons::kGoogleGLogoIcon;
 #else
-      kBrowserLogoIcon;
+      kBrowserLogoOldIcon;
 #endif
 
   SetImageModel(

@@ -159,7 +159,7 @@ std::unique_ptr<views::ImageView> CreateIconView(
     case TitleWithIconAfterLabelView::Icon::AFTERPAY:
     case TitleWithIconAfterLabelView::Icon::KLARNA:
     case TitleWithIconAfterLabelView::Icon::ZIP: {
-      const gfx::VectorIcon& icon = kCreditCardIcon;
+      const gfx::VectorIcon& icon = kCreditCardOldIcon;
 #endif
       model = ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kIconHeight);
       break;

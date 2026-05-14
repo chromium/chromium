@@ -75,11 +75,11 @@ class BadgeView : public views::ImageView {
     switch (badge_type_) {
       case BadgedProfilePhoto::BadgeType::kSupervisor:
         SetImage(ui::ImageModel::FromVectorIcon(
-            kSupervisorAccountCircleIcon, ui::kColorIcon, kBadgeIconSize));
+            kSupervisorAccountCircleOldIcon, ui::kColorIcon, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BadgeType::kChild:
         SetImage(ui::ImageModel::FromVectorIcon(
-            kAccountChildCircleIcon, ui::kColorIcon, kBadgeIconSize));
+            kAccountChildCircleOldIcon, ui::kColorIcon, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BadgeType::kSyncComplete:
         SetImage(ui::ImageModel::FromVectorIcon(

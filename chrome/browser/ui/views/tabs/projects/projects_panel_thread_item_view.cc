@@ -88,7 +88,7 @@ ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
   trailing_icon_->SetProperty(views::kMarginsKey,
                               projects_panel::kTrailingIconMargins);
   ui::ImageModel open_in_new_image_model = ui::ImageModel::FromVectorIcon(
-      kOpenInNewIcon, kColorProjectsPanelButtonDisabledIcon,
+      kOpenInNewOldIcon, kColorProjectsPanelButtonDisabledIcon,
       projects_panel::kTrailingIconSize);
   trailing_icon_->SetImage(open_in_new_image_model);
 

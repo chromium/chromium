@@ -26,7 +26,7 @@ constexpr int kIconBackgroundRadius = 32;
 ui::ImageModel GetDownloadIconImageModel(SkColor image_foreground_color,
                                          SkColor image_background_color) {
   gfx::ImageSkia icon = gfx::CreateVectorIcon(gfx::IconDescription(
-      kDownloadToolbarButtonIcon, kIconSize, image_foreground_color));
+      kDownloadToolbarButtonOldIcon, kIconSize, image_foreground_color));
   gfx::ImageSkia image =
       gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
           kIconBackgroundRadius, image_background_color, icon);

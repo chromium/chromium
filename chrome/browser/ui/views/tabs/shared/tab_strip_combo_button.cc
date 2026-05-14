@@ -326,7 +326,7 @@ void TabStripComboButton::ShowContextMenuForViewImpl(
   }
 
   const bool is_pinned = prefs->GetBoolean(pref_name);
-  const gfx::VectorIcon& icon = is_pinned ? kKeepOffIcon : kKeepIcon;
+  const gfx::VectorIcon& icon = is_pinned ? kKeepOffOldIcon : kKeepOldIcon;
 
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   menu_model_->AddItemWithStringIdAndIcon(
@@ -430,7 +430,7 @@ void TabStripComboButton::SetTabSearchBubbleHost(TabSearchBubbleHost* host) {
     tab_search_bubble_host_observation_.Observe(host);
     GetEndButtonActionItem()->SetImage(
         ui::ImageModel::FromVectorIcon(context_ == Context::kVerticalTabStrip
-                                           ? kTabSearchTabStripIcon
+                                           ? kTabSearchTabStripOldIcon
                                            : vector_icons::kExpandMoreIcon));
   }
 }

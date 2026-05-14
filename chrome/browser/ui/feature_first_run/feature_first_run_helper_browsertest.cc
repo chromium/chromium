@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
   // RichControlsContainerView currently doesn't expose secondary labels or
   // store a pointer to them.
   const std::u16string description = u"Test Description";
-  const gfx::VectorIcon& icon = kTextAnalysisIcon;
+  const gfx::VectorIcon& icon = kTextAnalysisOldIcon;
   const int radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS);
 

@@ -28,7 +28,7 @@ OverlayWindowMinimizeButton::OverlayWindowMinimizeButton(
   SetSize(gfx::Size(kMinimizeButtonSize, kMinimizeButtonSize));
 
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(kChromiumMinimizeIcon,
+                ui::ImageModel::FromVectorIcon(kChromiumMinimizeOldIcon,
                                                kColorPipWindowForeground,
                                                kMinimizeButtonIconSize));
 

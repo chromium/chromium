@@ -122,7 +122,7 @@ void LensPreselectionBubble::Init() {
   if (lens::IsLensOverlayContextualSearchboxEnabled(
           tab_handle_.Get()->GetBrowserWindowInterface()->GetProfile())) {
     auto button = views::CreateVectorImageButtonWithNativeTheme(
-        base::RepeatingClosure(), kHelpMenuIcon, 20,
+        base::RepeatingClosure(), kHelpMenuOldIcon, 20,
         kColorLensOverlayToastForeground, kColorLensOverlayToastForeground,
         kColorLensOverlayToastForeground);
     views::HighlightPathGenerator::Install(

@@ -650,7 +650,7 @@ class GlicButton : public GlicBaseShim<T>,
         std::make_unique<ui::SimpleMenuModel>(this);
     model->AddItemWithStringIdAndIcon(
         IDC_GLIC_TOGGLE_PIN, IDS_GLIC_BUTTON_CXMENU_UNPIN,
-        ui::ImageModel::FromVectorIcon(kKeepOffIcon, ui::kColorIcon, 16));
+        ui::ImageModel::FromVectorIcon(kKeepOffOldIcon, ui::kColorIcon, 16));
     return model;
   }
 

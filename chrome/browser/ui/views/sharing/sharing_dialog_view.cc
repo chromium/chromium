@@ -96,11 +96,11 @@ const gfx::VectorIcon& GetIconType(
     const syncer::DeviceInfo::FormFactor& device_form_factor) {
   switch (device_form_factor) {
     case syncer::DeviceInfo::FormFactor::kPhone:
-      return kHardwareSmartphoneIcon;
+      return kHardwareSmartphoneOldIcon;
     case syncer::DeviceInfo::FormFactor::kTablet:
-      return kTabletIcon;
+      return kTabletOldIcon;
     default:
-      return kHardwareComputerIcon;
+      return kHardwareComputerOldIcon;
   }
 }
 

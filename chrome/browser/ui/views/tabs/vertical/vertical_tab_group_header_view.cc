@@ -98,15 +98,15 @@ void UpdateEditorButtonColors(views::LabelButton* button,
       color_utils::GetColorWithMaxContrast(foreground_color));
   button->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshOldIcon,
                                      foreground_color, kIconSize));
   button->SetImageModel(
       views::Button::STATE_HOVERED,
-      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshOldIcon,
                                      foreground_color, kIconSize));
   button->SetImageModel(
       views::Button::STATE_PRESSED,
-      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshOldIcon,
                                      foreground_color, kIconSize));
 }
 
@@ -464,7 +464,7 @@ void VerticalTabGroupHeaderView::OnDataChanged(
     sync_icon_->SetVisible(is_shared_);
     if (is_shared_) {
       sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-          kPeopleGroupIcon, foreground_color, kIconSize));
+          kPeopleGroupOldIcon, foreground_color, kIconSize));
     }
     if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
       attention_indicator_->SetVisible(true);
@@ -479,11 +479,11 @@ void VerticalTabGroupHeaderView::OnDataChanged(
     UpdateEditorButtonColors(editor_bubble_button_, foreground_color);
 
     // Update collapse icon.
-    collapse_icon_->SetImage(
-        ui::ImageModel::FromVectorIcon(tab_group_visual_data_.is_collapsed()
-                                           ? kKeyboardArrowDownChromeRefreshIcon
-                                           : kKeyboardArrowUpChromeRefreshIcon,
-                                       foreground_color, kIconSize));
+    collapse_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        tab_group_visual_data_.is_collapsed()
+            ? kKeyboardArrowDownChromeRefreshOldIcon
+            : kKeyboardArrowUpChromeRefreshOldIcon,
+        foreground_color, kIconSize));
 
     // Update background.
     SetBackground(views::CreateRoundedRectBackground(background_color,

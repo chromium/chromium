@@ -38,9 +38,9 @@ const int kLayoutInteriorMarginRight = 8;
 
 const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
   if (glic::GlicActorTaskIconManager::RequiresAttention(state)) {
-    return kHourglassIcon;
+    return kHourglassOldIcon;
   } else if (state == actor::ActorTask::State::kFinished) {
-    return kTaskSparkIcon;
+    return kTaskSparkOldIcon;
   }
   return glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
 }

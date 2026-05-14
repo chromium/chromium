@@ -559,7 +559,7 @@ ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
 }
 
 ui::ImageModel OmniboxEditModel::GetAddContextIcon(int image_size) const {
-  return ui::ImageModel::FromVectorIcon(kAddChromeRefreshIcon,
+  return ui::ImageModel::FromVectorIcon(kAddChromeRefreshOldIcon,
                                         ui::kColorSysPrimary, image_size);
 }
 

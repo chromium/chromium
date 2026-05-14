@@ -42,7 +42,8 @@ ProjectsPanelControlsView::ProjectsPanelControlsView(
   projects_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   projects_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kCloseChromeRefreshIcon, ui::kColorIcon));
+      ui::ImageModel::FromVectorIcon(kCloseChromeRefreshOldIcon,
+                                     ui::kColorIcon));
   projects_button_->SetProperty(views::kElementIdentifierKey,
                                 kProjectsPanelButtonElementId);
   UpdateTooltipText();

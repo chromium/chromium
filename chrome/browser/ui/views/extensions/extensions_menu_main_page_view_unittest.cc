@@ -1018,7 +1018,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {
   const ui::ColorProvider* color_provider =
       context_menu_button->GetColorProvider();
   auto three_dot_icon = gfx::Image(
-      gfx::CreateVectorIcon(kBrowserToolsChromeRefreshIcon,
+      gfx::CreateVectorIcon(kBrowserToolsChromeRefreshOldIcon,
                             color_provider->GetColor(kColorExtensionMenuIcon)));
 
   // Verify context menu button has three dot icon for all button states.

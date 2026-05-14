@@ -72,7 +72,7 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
   AddSubMenuWithStringIdAndIcon(
       IDC_READING_LIST_MENU, IDS_READING_LIST_MENU,
       reading_list_sub_menu_model_.get(),
-      ui::ImageModel::FromVectorIcon(kReadingListIcon));
+      ui::ImageModel::FromVectorIcon(kReadingListOldIcon));
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_READING_LIST_MENU).value(),
                          kReadingListMenuItem);
 
@@ -84,10 +84,10 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
     }
   };
 
-  set_icon(IDC_BOOKMARK_THIS_TAB, kBookmarksListsMenuIcon);
-  set_icon(IDC_BOOKMARK_ALL_TABS, kBookmarkAllTabsChromeRefreshIcon);
-  set_icon(IDC_SHOW_BOOKMARK_BAR, kToolbarChromeRefreshIcon);
-  set_icon(IDC_SHOW_BOOKMARK_MANAGER, kBookmarksManagerIcon);
-  set_icon(IDC_SHOW_BOOKMARK_SIDE_PANEL, kBookmarksSidePanelRefreshIcon);
-  set_icon(IDC_IMPORT_SETTINGS, kMenuBookChromeRefreshIcon);
+  set_icon(IDC_BOOKMARK_THIS_TAB, kBookmarksListsMenuOldIcon);
+  set_icon(IDC_BOOKMARK_ALL_TABS, kBookmarkAllTabsChromeRefreshOldIcon);
+  set_icon(IDC_SHOW_BOOKMARK_BAR, kToolbarChromeRefreshOldIcon);
+  set_icon(IDC_SHOW_BOOKMARK_MANAGER, kBookmarksManagerOldIcon);
+  set_icon(IDC_SHOW_BOOKMARK_SIDE_PANEL, kBookmarksSidePanelRefreshOldIcon);
+  set_icon(IDC_IMPORT_SETTINGS, kMenuBookChromeRefreshOldIcon);
 }

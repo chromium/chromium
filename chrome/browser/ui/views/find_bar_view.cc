@@ -274,39 +274,39 @@ FindBarView::FindBarView(FindBarHost* host) {
 
   // Theme-aware image models.
   views::SetImageFromVectorIconWithColor(
-      find_previous_button_, kKeyboardArrowUpChromeRefreshIcon,
+      find_previous_button_, kKeyboardArrowUpChromeRefreshOldIcon,
       {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
   find_previous_button_->SetImageModel(
       views::Button::STATE_HOVERED,
-      ui::ImageModel::FromVectorIcon(kKeyboardArrowUpChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kKeyboardArrowUpChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
   find_previous_button_->SetImageModel(
       views::Button::STATE_PRESSED,
-      ui::ImageModel::FromVectorIcon(kKeyboardArrowUpChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kKeyboardArrowUpChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
 
   views::SetImageFromVectorIconWithColor(
-      find_next_button_, kKeyboardArrowDownChromeRefreshIcon,
+      find_next_button_, kKeyboardArrowDownChromeRefreshOldIcon,
       {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
   find_next_button_->SetImageModel(
       views::Button::STATE_HOVERED,
-      ui::ImageModel::FromVectorIcon(kKeyboardArrowDownChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kKeyboardArrowDownChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
   find_next_button_->SetImageModel(
       views::Button::STATE_PRESSED,
-      ui::ImageModel::FromVectorIcon(kKeyboardArrowDownChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kKeyboardArrowDownChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
 
   views::SetImageFromVectorIconWithColor(
-      close_button_, kCloseChromeRefreshIcon,
+      close_button_, kCloseChromeRefreshOldIcon,
       {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
   close_button_->SetImageModel(
       views::Button::STATE_HOVERED,
-      ui::ImageModel::FromVectorIcon(kCloseChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kCloseChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
   close_button_->SetImageModel(
       views::Button::STATE_PRESSED,
-      ui::ImageModel::FromVectorIcon(kCloseChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kCloseChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);

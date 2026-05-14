@@ -137,7 +137,7 @@ void PerformanceInterventionButton::UpdateIconColor() {
 
   SetImageModel(
       ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kPerformanceSpeedometerIcon,
+      ui::ImageModel::FromVectorIcon(kPerformanceSpeedometerOldIcon,
                                      GetColorProvider()->GetColor(icon_color)));
 }
 

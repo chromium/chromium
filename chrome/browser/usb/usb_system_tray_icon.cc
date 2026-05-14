@@ -17,7 +17,7 @@
 
 // static
 const gfx::VectorIcon& UsbSystemTrayIcon::GetIcon() {
-  return kTabUsbConnectedIcon;
+  return kTabUsbConnectedOldIcon;
 }
 
 // static

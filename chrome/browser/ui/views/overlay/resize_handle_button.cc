@@ -106,8 +106,8 @@ void ResizeHandleButton::UpdateImageForQuadrant() {
   const SkColor color =
       SkColorSetA(GetColorProvider()->GetColor(kColorPipWindowForeground),
                   kResizeHandleOpacity);
-  gfx::ImageSkia icon =
-      gfx::CreateVectorIcon(kResizeHandleIcon, kResizeHandleButtonSize, color);
+  gfx::ImageSkia icon = gfx::CreateVectorIcon(kResizeHandleOldIcon,
+                                              kResizeHandleButtonSize, color);
   switch (current_quadrant_) {
     case VideoOverlayWindowViews::WindowQuadrant::kBottomLeft:
       SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);

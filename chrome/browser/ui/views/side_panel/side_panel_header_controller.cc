@@ -140,14 +140,14 @@ SidePanelHeaderController::CreatePinButton() {
 
   int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
-  const gfx::VectorIcon& pin_icon = kKeepIcon;
+  const gfx::VectorIcon& pin_icon = kKeepOldIcon;
   views::SetImageFromVectorIconWithColor(
       button.get(), pin_icon,
       {kColorSidePanelHeaderButtonIcon,
        kColorSidePanelHeaderButtonIconDisabled},
       dip_size);
 
-  const gfx::VectorIcon& unpin_icon = kKeepOffIcon;
+  const gfx::VectorIcon& unpin_icon = kKeepOffOldIcon;
   views::SetToggledImageFromVectorIconWithColor(
       button.get(), unpin_icon, dip_size,
       {kColorSidePanelHeaderButtonIcon,
@@ -175,7 +175,7 @@ SidePanelHeaderController::CreateOpenNewTabButton() {
   auto button = CreateImageButton(
       base::BindRepeating(&SidePanelHeaderController::OpenInNewTab,
                           base::Unretained(this)),
-      kOpenInNewIcon);
+      kOpenInNewOldIcon);
 
   button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ACCNAME_OPEN_IN_NEW_TAB));
@@ -195,7 +195,7 @@ SidePanelHeaderController::CreateMoreInfoButton() {
   CHECK(side_panel_entry_);
 
   // Callback will not be used since a button controller is being set.
-  auto button = CreateImageButton(base::RepeatingClosure(), kHelpMenuIcon);
+  auto button = CreateImageButton(base::RepeatingClosure(), kHelpMenuOldIcon);
   button->SetVisible(side_panel_entry_->SupportsMoreInfoButton());
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP));

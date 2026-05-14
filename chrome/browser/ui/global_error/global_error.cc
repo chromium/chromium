@@ -18,7 +18,7 @@ GlobalError::Severity GlobalError::GetSeverity() {
 }
 
 ui::ImageModel GlobalError::MenuItemIcon() {
-  return ui::ImageModel::FromVectorIcon(kBrowserToolsErrorIcon,
+  return ui::ImageModel::FromVectorIcon(kBrowserToolsErrorOldIcon,
                                         ui::kColorAlertMediumSeverityIcon);
 }
 

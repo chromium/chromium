@@ -42,7 +42,7 @@ base::optional_ref<const gfx::VectorIcon> GetVectorIconForType(FieldType type) {
     case AddressUIComponentIconType::kNoIcon:
       return std::nullopt;
     case AddressUIComponentIconType::kName:
-      return kAccountCircleIcon;
+      return kAccountCircleOldIcon;
     case AddressUIComponentIconType::kAddress:
       return vector_icons::kLocationOnIcon;
     case AddressUIComponentIconType::kEmail:

@@ -98,7 +98,7 @@ ui::ImageModel RelaunchRequiredDialogView::GetWindowIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
                 vector_icons::kGshieldIcon
 #else
-                kSecurityIcon
+                kSecurityOldIcon
 #endif
                 : vector_icons::kBusinessIcon,
       ui::kColorIcon,

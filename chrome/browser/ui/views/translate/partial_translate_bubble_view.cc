@@ -878,7 +878,7 @@ PartialTranslateBubbleView::CreateOptionsMenuButton() {
   // Three dots options menu button
   auto tab_translate_options_button =
       views::CreateVectorImageButtonWithNativeTheme(
-          views::Button::PressedCallback(), kBrowserToolsIcon);
+          views::Button::PressedCallback(), kBrowserToolsOldIcon);
   tab_translate_options_button->SetCallback(base::BindRepeating(
       &PartialTranslateBubbleView::ShowOptionsMenu, base::Unretained(this),
       base::Unretained(tab_translate_options_button.get())));

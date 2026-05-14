@@ -60,7 +60,7 @@ ui::ImageModel SplitViewLayoutMenuModel::GetIconForCommandId(
   const gfx::VectorIcon* icon = nullptr;
   switch (id) {
     case CommandId::kVertical:
-      icon = &kSplitSceneIcon;
+      icon = &kSplitSceneOldIcon;
       break;
     case CommandId::kHorizontal:
       icon = &kSplitSceneHorizontalIcon;

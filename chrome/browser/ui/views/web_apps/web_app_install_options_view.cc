@@ -163,7 +163,7 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(
                       /*corner_radius=*/0, &icon_view_),
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
-                          kArrowForwardIcon, ui::kColorIcon))
+                          kArrowForwardOldIcon, ui::kColorIcon))
                       .SetPreferredSize(
                           gfx::Size(kIconArrowSize, kIconArrowSize)),
                   CreateIconWithLabelView(

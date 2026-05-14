@@ -145,7 +145,7 @@ SiteDataRowView::SiteDataRowView(
   views::TableLayout* layout = SetLayoutManager(SetupTableLayout());
   favicon_image_ = AddChildView(std::make_unique<NonAccessibleImageView>());
   favicon_image_->SetImage(
-      ui::ImageModel::FromVectorIcon(kGlobeIcon, ui::kColorIcon, kIconSize));
+      ui::ImageModel::FromVectorIcon(kGlobeOldIcon, ui::kColorIcon, kIconSize));
 
   // It's safe to bind to this here because both the row view and the favicon
   // service have the same lifetime and all be destroyed when the dialog is
@@ -172,7 +172,7 @@ SiteDataRowView::SiteDataRowView(
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&SiteDataRowView::OnDeleteIconClicked,
                               base::Unretained(this)),
-          kTrashCanIcon, kIconSize));
+          kTrashCanOldIcon, kIconSize));
   views::InstallCircleHighlightPathGenerator(delete_button_);
   delete_button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_DELETE_BUTTON_TOOLTIP,
@@ -184,7 +184,7 @@ SiteDataRowView::SiteDataRowView(
   menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&SiteDataRowView::OnMenuIconClicked,
                           base::Unretained(this)),
-      kBrowserToolsIcon, kIconSize));
+      kBrowserToolsOldIcon, kIconSize));
   menu_button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_CONTEXT_MENU_TOOLTIP,
       origin_display_name));

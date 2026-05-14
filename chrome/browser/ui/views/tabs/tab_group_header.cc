@@ -637,7 +637,7 @@ void TabGroupHeader::UpdateSyncIconView() {
   if (should_show_header_icon_) {
     bool use_share_icon = SupportsDataSharing();
     sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        use_share_icon ? kPeopleGroupIcon : kTabGroupsSyncIcon,
+        use_share_icon ? kPeopleGroupOldIcon : kTabGroupsSyncOldIcon,
         color_utils::GetColorWithMaxContrast(color_),
         group_style_->GetSyncIconWidth()));
   }

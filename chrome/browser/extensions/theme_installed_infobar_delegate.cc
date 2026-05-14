@@ -106,7 +106,7 @@ ThemeInstalledInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& ThemeInstalledInfoBarDelegate::GetVectorIcon() const {
-  return kPaintbrushIcon;
+  return kPaintbrushOldIcon;
 }
 
 ThemeInstalledInfoBarDelegate*

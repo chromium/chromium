@@ -57,7 +57,7 @@ void apps::AppServiceProxy::CreateLocalBlockDialog(
 }
 
 AppLocalBlockDialogView::AppLocalBlockDialogView(const std::string& app_name)
-    : AppDialogView(ui::ImageModel::FromVectorIcon(kGuardianIcon,
+    : AppDialogView(ui::ImageModel::FromVectorIcon(kGuardianOldIcon,
                                                    ui::kColorIcon,
                                                    kIconSize)) {
   InitializeView();

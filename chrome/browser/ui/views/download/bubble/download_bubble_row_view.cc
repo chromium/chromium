@@ -271,13 +271,13 @@ void DownloadBubbleRowView::SetIcon() {
   // For downloads in incognito mode.
   if (info_->model()->profile() &&
       info_->model()->profile()->IsIncognitoProfile()) {
-    if (last_overridden_icon_ == &kIncognitoIcon) {
+    if (last_overridden_icon_ == &kIncognitoOldIcon) {
       return;
     }
-    last_overridden_icon_ = &kIncognitoIcon;
+    last_overridden_icon_ = &kIncognitoOldIcon;
     has_default_icon_ = false;
     SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
-        kIncognitoIcon, ui::kColorIcon,
+        kIncognitoOldIcon, ui::kColorIcon,
         GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
     return;
   }
@@ -285,10 +285,10 @@ void DownloadBubbleRowView::SetIcon() {
   // For downloads in guest sessions.
   if (info_->model()->profile() &&
       info_->model()->profile()->IsGuestSession()) {
-    if (last_overridden_icon_ == &kUserAccountAvatarIcon) {
+    if (last_overridden_icon_ == &kUserAccountAvatarOldIcon) {
       return;
     }
-    last_overridden_icon_ = &kUserAccountAvatarIcon;
+    last_overridden_icon_ = &kUserAccountAvatarOldIcon;
     has_default_icon_ = false;
     SetIconFromImageModel(profiles::GetGuestAvatar(
         GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
@@ -456,7 +456,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       gfx::Insets(kDownloadSubpageIconMargin) + kRowInterElementPadding);
   subpage_icon_->SetVisible(false);
   subpage_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kChevronRightChromeRefreshIcon, ui::kColorIcon,
+      kChevronRightChromeRefreshOldIcon, ui::kColorIcon,
       GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
 
   // The content of the label will be populated in the `UpdateRow` function.

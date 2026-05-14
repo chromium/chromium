@@ -63,7 +63,7 @@ void FilledCardInformationIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& FilledCardInformationIconView::GetVectorIcon() const {
-  return kCreditCardChromeRefreshIcon;
+  return kCreditCardChromeRefreshOldIcon;
 }
 
 FilledCardInformationBubbleController*

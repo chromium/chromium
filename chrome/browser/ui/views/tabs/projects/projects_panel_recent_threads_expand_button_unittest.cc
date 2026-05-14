@@ -31,7 +31,7 @@ TEST_F(ProjectsPanelRecentThreadsExpandButtonTest, ShowsCorrectTextAndIcon) {
   ui::ImageModel icon_model = button->icon_view_for_testing()->GetImageModel();
   EXPECT_TRUE(icon_model.IsVectorIcon());
   EXPECT_EQ(icon_model.GetVectorIcon().vector_icon()->name,
-            kKeyboardArrowDownChromeRefreshIcon.name);
+            kKeyboardArrowDownChromeRefreshOldIcon.name);
 
   // Switch to expanded.
   button->SetExpanded(true);
@@ -41,7 +41,7 @@ TEST_F(ProjectsPanelRecentThreadsExpandButtonTest, ShowsCorrectTextAndIcon) {
   icon_model = button->icon_view_for_testing()->GetImageModel();
   EXPECT_TRUE(icon_model.IsVectorIcon());
   EXPECT_EQ(icon_model.GetVectorIcon().vector_icon()->name,
-            kKeyboardArrowUpChromeRefreshIcon.name);
+            kKeyboardArrowUpChromeRefreshOldIcon.name);
 
   // Switch back to collapsed.
   button->SetExpanded(false);
@@ -51,5 +51,5 @@ TEST_F(ProjectsPanelRecentThreadsExpandButtonTest, ShowsCorrectTextAndIcon) {
   icon_model = button->icon_view_for_testing()->GetImageModel();
   EXPECT_TRUE(icon_model.IsVectorIcon());
   EXPECT_EQ(icon_model.GetVectorIcon().vector_icon()->name,
-            kKeyboardArrowDownChromeRefreshIcon.name);
+            kKeyboardArrowDownChromeRefreshOldIcon.name);
 }

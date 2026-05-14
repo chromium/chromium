@@ -191,7 +191,7 @@ void CompletionSuggestionView::SetHighlighted(bool highlighted) {
 
 void CompletionSuggestionView::OnThemeChanged() {
   down_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kKeyboardArrowDownIcon, ui::kColorIcon, kDownIconSize));
+      kKeyboardArrowDownOldIcon, ui::kColorIcon, kDownIconSize));
   arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       ash::kKeyboardArrowRightIcon, ui::kColorIcon, kArrowIconSize));
   views::View::OnThemeChanged();

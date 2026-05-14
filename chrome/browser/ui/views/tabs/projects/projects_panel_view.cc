@@ -137,7 +137,7 @@ class ProjectsPanelNewTabGroupButton : public views::Button {
     auto* icon = AddChildView(std::make_unique<views::ImageView>());
     icon->SetCanProcessEventsWithinSubtree(false);
     icon->SetProperty(views::kMarginsKey, kCreateNewTabGroupIconMargins);
-    icon->SetImage(ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon,
+    icon->SetImage(ui::ImageModel::FromVectorIcon(kCreateNewTabGroupOldIcon,
                                                   kColorProjectsPanelButtonIcon,
                                                   kCreateNewTabGroupIconSize));
 
@@ -350,7 +350,7 @@ ProjectsPanelView::ProjectsPanelView(
             base::Unretained(this))));
     threads_activity_menu_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshIcon,
+        ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshOldIcon,
                                        kColorProjectsPanelButtonIcon,
                                        kThreadsActivityMenuButtonIconSize));
     threads_activity_menu_button_->SetPreferredSize(

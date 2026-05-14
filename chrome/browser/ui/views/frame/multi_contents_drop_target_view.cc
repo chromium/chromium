@@ -90,7 +90,7 @@ MultiContentsDropTargetView::MultiContentsDropTargetView()
   icon_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
   icon_view_->layer()->SetFillsBoundsOpaquely(false);
   icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-      kAddCircleIcon, ui::kColorSysPrimary, kIconSize));
+      kAddCircleOldIcon, ui::kColorSysPrimary, kIconSize));
 
   label_ = inner_container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_SPLIT_VIEW_DRAG_ENTRYPOINT_LABEL)));

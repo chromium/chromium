@@ -30,13 +30,13 @@ gfx::ShadowValues GetShadowValues() {
 const gfx::VectorIcon& GetDropArrowIcon(DropArrow::Direction direction) {
   switch (direction) {
     case DropArrow::Direction::kUp:
-      return kArrowUpwardIcon;
+      return kArrowUpwardOldIcon;
     case DropArrow::Direction::kDown:
-      return kArrowDownwardIcon;
+      return kArrowDownwardOldIcon;
     case DropArrow::Direction::kLeft:
-      return kArrowBackIcon;
+      return kArrowBackOldIcon;
     case DropArrow::Direction::kRight:
-      return kArrowForwardIcon;
+      return kArrowForwardOldIcon;
     default:
       NOTREACHED();
   }

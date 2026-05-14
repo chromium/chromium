@@ -155,7 +155,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
             weak_ptr_factory_.GetWeakPtr())));
     button->SetUninstallText(
         l10n_util::GetStringUTF16(IDS_WEB_APP_UNINSTALL_BUTTON_FRAME));
-    button->SetVectorIcon(kDeleteIcon);
+    button->SetVectorIcon(kDeleteOldIcon);
     button->SetImageLabelSpacing(
         views::LayoutProvider::Get()->GetDistanceMetric(
             views::DistanceMetric::DISTANCE_VECTOR_ICON_PADDING));

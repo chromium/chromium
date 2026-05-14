@@ -211,7 +211,7 @@ class AvatarImageView : public views::ImageView {
       // This can happen if the account image hasn't been fetched yet, if there
       // is no image, or in tests.
       avatar_image_ = ui::ImageModel::FromVectorIcon(
-          kUserAccountAvatarIcon, ui::kColorMenuIcon, image_size_);
+          kUserAccountAvatarOldIcon, ui::kColorMenuIcon, image_size_);
     }
   }
 

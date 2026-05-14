@@ -113,7 +113,7 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
       split_tab_index_(split_tab_index) {
   AddItemWithStringIdAndIcon(
       GetCommandIdInt(CommandId::kExitSplit), IDS_SPLIT_TAB_SEPARATE_VIEWS,
-      ui::ImageModel::FromVectorIcon(kOpenInFullIcon, ui::kColorMenuIcon,
+      ui::ImageModel::FromVectorIcon(kOpenInFullOldIcon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize));
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
@@ -159,7 +159,7 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
     AddItemWithStringIdAndIcon(GetCommandIdInt(CommandId::kSendFeedback),
                                IDS_SPLIT_TAB_SEND_FEEDBACK,
-                               ui::ImageModel::FromVectorIcon(kReportIcon));
+                               ui::ImageModel::FromVectorIcon(kReportOldIcon));
   }
 }
 
@@ -202,12 +202,12 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
     icon = &GetReversePositionIcon(active_split_tab_location);
   } else if (id == CommandId::kCloseStartTab) {
     icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
-               ? &kLeftPanelCloseIcon
-               : &kTopPanelCloseIcon;
+               ? &kLeftPanelCloseOldIcon
+               : &kTopPanelCloseOldIcon;
   } else if (id == CommandId::kCloseEndTab) {
     icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
-               ? &kRightPanelCloseIcon
-               : &kBottomPanelCloseIcon;
+               ? &kRightPanelCloseOldIcon
+               : &kBottomPanelCloseOldIcon;
   }
   CHECK(icon);
   return ui::ImageModel::FromVectorIcon(*icon, ui::kColorMenuIcon,
@@ -271,13 +271,13 @@ const gfx::VectorIcon& SplitTabMenuModel::GetReversePositionIcon(
     split_tabs::SplitTabActiveLocation active_split_tab_location) const {
   switch (active_split_tab_location) {
     case split_tabs::SplitTabActiveLocation::kStart:
-      return kSplitSceneRightIcon;
+      return kSplitSceneRightOldIcon;
     case split_tabs::SplitTabActiveLocation::kEnd:
-      return kSplitSceneLeftIcon;
+      return kSplitSceneLeftOldIcon;
     case split_tabs::SplitTabActiveLocation::kTop:
-      return kSplitSceneDownIcon;
+      return kSplitSceneDownOldIcon;
     case split_tabs::SplitTabActiveLocation::kBottom:
-      return kSplitSceneUpIcon;
+      return kSplitSceneUpOldIcon;
   }
 }
 

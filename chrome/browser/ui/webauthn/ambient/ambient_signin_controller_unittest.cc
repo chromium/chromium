@@ -124,7 +124,7 @@ TEST_F(AmbientSigninControllerTest, ShowSinglePassword) {
       AuthenticatorRequestDialogModel::Mechanism::Password(
           AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
               std::nullopt)),
-      u"username", kPasswordFieldIcon, base::DoNothing());
+      u"username", kPasswordFieldOldIcon, base::DoNothing());
 
   EXPECT_CALL(*page_action_controller(), Show(kActionWebAuthnAmbientSignin));
   EXPECT_CALL(*page_action_controller(),
@@ -167,7 +167,7 @@ TEST_F(AmbientSigninControllerTest, TriggerPageActionSignInPassword) {
       AuthenticatorRequestDialogModel::Mechanism::Password(
           AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
               std::nullopt)),
-      u"username", kPasswordFieldIcon, password_callback.Get());
+      u"username", kPasswordFieldOldIcon, password_callback.Get());
 
   EXPECT_CALL(password_callback, Run());
 
@@ -226,7 +226,7 @@ TEST_F(AmbientSigninControllerTest, GetSignInCallbackPassword) {
       AuthenticatorRequestDialogModel::Mechanism::Password(
           AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
               std::nullopt)),
-      u"username", kPasswordFieldIcon, password_callback.Get());
+      u"username", kPasswordFieldOldIcon, password_callback.Get());
 
   EXPECT_CALL(password_callback, Run());
 

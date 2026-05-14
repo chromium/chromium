@@ -68,8 +68,8 @@ ui::ImageModel CreateDeviceIcon(
     const syncer::DeviceInfo::FormFactor device_form_factor) {
   const gfx::VectorIcon& icon =
       device_form_factor == syncer::DeviceInfo::FormFactor::kTablet
-          ? kTabletIcon
-          : kHardwareSmartphoneIcon;
+          ? kTabletOldIcon
+          : kHardwareSmartphoneOldIcon;
   return ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kDeviceIconSize);
 }
 

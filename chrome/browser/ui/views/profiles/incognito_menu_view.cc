@@ -53,7 +53,8 @@ void IncognitoMenuView::BuildMenu() {
   // Padded icon.
   params.profile_image_padding = std::nearbyint(kIdentityInfoImageSize * 0.25f);
   params.profile_image = ui::ImageModel::FromVectorIcon(
-      kIncognitoRefreshMenuIcon, kColorAvatarButtonHighlightIncognitoForeground,
+      kIncognitoRefreshMenuOldIcon,
+      kColorAvatarButtonHighlightIncognitoForeground,
       kIdentityInfoImageSize - 2 * params.profile_image_padding);
   SetProfileIdentityWithCallToAction(std::move(params));
   AddBottomMargin();

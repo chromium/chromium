@@ -78,7 +78,7 @@ void VirtualCardEnrollIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& VirtualCardEnrollIconView::GetVectorIcon() const {
-  return kCreditCardChromeRefreshIcon;
+  return kCreditCardChromeRefreshOldIcon;
 }
 
 VirtualCardEnrollBubbleController* VirtualCardEnrollIconView::GetController()

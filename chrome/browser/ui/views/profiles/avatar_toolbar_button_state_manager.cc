@@ -326,7 +326,7 @@ class IncognitoStateProvider : public PrivateBaseStateProvider {
       int icon_size,
       SkColor icon_color,
       const ui::ColorProvider& /*color_provider*/) const override {
-    return {ui::ImageModel::FromVectorIcon(kIncognitoRefreshMenuIcon,
+    return {ui::ImageModel::FromVectorIcon(kIncognitoRefreshMenuOldIcon,
                                            icon_color, icon_size),
             AvatarIconType::kNonPlaceholder};
   }

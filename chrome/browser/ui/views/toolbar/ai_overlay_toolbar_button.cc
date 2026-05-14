@@ -117,7 +117,7 @@ void AiOverlayToolbarButton::UpdateIcon() {
   if (GetWidget()) {
     const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
     const gfx::VectorIcon& icon =
-        touch_ui ? kBrowserToolsTouchIcon : kBrowserToolsIcon;
+        touch_ui ? kBrowserToolsTouchOldIcon : kBrowserToolsOldIcon;
     int icon_size = touch_ui ? kOptionsIconSizeTouch : kOptionsIconSize;
     views::SetImageFromVectorIconWithColor(
         options_button_, icon, icon_size,
