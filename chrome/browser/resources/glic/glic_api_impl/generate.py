@@ -77,6 +77,7 @@ class Converter:
         mojom_files = [
             'chrome/browser/glic/host/glic.mojom',
             'chrome/common/actor_webui.mojom',
+            'chrome/common/glic_enums.mojom',
         ]
         self.mojom_trees = [
             _ParseAst(os.path.join(SOURCE_DIR, f)) for f in mojom_files
@@ -104,6 +105,8 @@ class Converter:
         for tree in self.mojom_trees:
             if 'actor_webui.mojom' in tree.filename:
                 source = 'actor'
+            elif 'glic_enums.mojom' in tree.filename:
+                source = 'glic_enums'
             else:
                 source = 'glic'
             for v in tree.definition_list:
@@ -152,13 +155,19 @@ class Converter:
 
 import type * as mojomGlic from '../glic.mojom-webui.js';
 import type * as mojomActor from '../actor_webui.mojom-webui.js';
+import type * as mojomGlicEnums from '../glic_enums.mojom-webui.js';
 import type * as glicApi from '../glic_api/glic_api.js';
 
 """)
 
         sorted_enums = sorted(self.converted_enums)
         for enum_name, source in sorted_enums:
-            mojom_ns = 'mojomGlic' if source == 'glic' else 'mojomActor'
+            if source == 'glic':
+                mojom_ns = 'mojomGlic'
+            elif source == 'actor':
+                mojom_ns = 'mojomActor'
+            else:
+                mojom_ns = 'mojomGlicEnums'
             print(_FunctionSignatureString('enumToClient',
                                            f'{mojom_ns}.{enum_name}',
                                            f'glicApi.{enum_name}'),
@@ -174,7 +183,12 @@ import type * as glicApi from '../glic_api/glic_api.js';
         print('', file=out)
 
         for enum_name, source in sorted_enums:
-            mojom_ns = 'mojomGlic' if source == 'glic' else 'mojomActor'
+            if source == 'glic':
+                mojom_ns = 'mojomGlic'
+            elif source == 'actor':
+                mojom_ns = 'mojomActor'
+            else:
+                mojom_ns = 'mojomGlicEnums'
             print(_FunctionSignatureString('enumFromClient',
                                            f'glicApi.{enum_name}',
                                            f'{mojom_ns}.{enum_name}'),

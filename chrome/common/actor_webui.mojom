@@ -6,6 +6,7 @@ module actor.webui.mojom;
 
 import "skia/public/mojom/bitmap.mojom";
 import "url/mojom/origin.mojom";
+import "chrome/common/glic_enums.mojom";
 
 //
 // Place the mojom structs that require Javascript bindings here.
@@ -29,6 +30,8 @@ struct TaskOptions {
   string? title;
   // The expected duration of the the task.
   TaskDuration? duration;
+  // The feature mode for the task.
+  glic.mojom.FeatureMode? feature_mode;
 };
 
 // @generate glic_api

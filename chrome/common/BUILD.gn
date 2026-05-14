@@ -791,6 +791,18 @@ mojom("mojo_bindings") {
   }
 }
 
+mojom("glic_enums_mojom") {
+  disable_variants = true
+
+  sources = [ "glic_enums.mojom" ]
+
+  webui_module_path = "/"
+
+  generate_legacy_js_bindings = true
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
 mojom("actor_webui_mojom") {
   disable_variants = true
 
@@ -801,6 +813,7 @@ mojom("actor_webui_mojom") {
   generate_legacy_js_bindings = true
 
   public_deps = [
+    ":glic_enums_mojom",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//url/mojom:url_mojom_origin",

@@ -66,6 +66,7 @@ build_webui("build") {
     "//chrome/browser/glic:mojo_bindings_ts__generator",
     "//chrome/browser/glic/fre:mojo_bindings_ts__generator",
     "//chrome/common:actor_webui_mojom_ts__generator",
+    "//chrome/common:glic_enums_mojom_ts__generator",
     "//components/content_settings/core/common:content_settings_types_ts__generator",
     "//components/optimization_guide/content/mojom:mojo_interfaces_ts__generator",
     "//third_party/blink/public/mojom/content_extraction:content_extraction_ts__generator",
@@ -75,6 +76,7 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/glic/host/glic_internals.mojom-webui.ts",
     "$root_gen_dir/chrome/common/actor_webui.mojom-webui.ts",
+    "$root_gen_dir/chrome/common/glic_enums.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
     "$root_gen_dir/third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-webui.ts",
   ]

@@ -27,6 +27,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
+#include "chrome/common/glic_enums.mojom.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -95,6 +96,8 @@ class ActorTask : public base::SupportsUserData {
   TaskId id() const { return id_; }
 
   const TaskSourceInfo& source_info() const { return source_info_; }
+
+  glic::mojom::FeatureMode feature_mode() const { return feature_mode_; }
 
   const std::string& title() const { return title_; }
   base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
@@ -368,6 +371,9 @@ class ActorTask : public base::SupportsUserData {
 
   // The task duration type does not change for the lifetime of a task.
   const TaskDuration duration_;
+
+  // The feature mode for the task.
+  const glic::mojom::FeatureMode feature_mode_;
 
   // The callback to notify the client of the result of calling Act().
   ActCallback callback_for_act_;

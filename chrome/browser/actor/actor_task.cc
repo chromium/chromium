@@ -158,6 +158,9 @@ ActorTask::ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
                             actor::webui::mojom::TaskDuration::kTransient
                     ? TaskDuration::kTransient
                     : TaskDuration::kDefault),
+      feature_mode_(options && options->feature_mode.has_value()
+                        ? options->feature_mode.value()
+                        : glic::mojom::FeatureMode::kUnspecified),
       policy_checker_(*policy_checker),
       delegate_(std::move(delegate)),
       ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {

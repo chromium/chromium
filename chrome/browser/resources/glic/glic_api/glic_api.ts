@@ -1933,6 +1933,10 @@ export declare interface TaskOptions {
    * The expected duration of the the task.
    */
   duration?: TaskDuration;
+  /**
+   * The feature mode for the task.
+   */
+  featureMode?: FeatureMode;
 }
 
 /** Maps the ErrorWithReason.reasonType to the type of reason. */
@@ -3002,19 +3006,6 @@ export enum InvocationSource {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
-// Mode for specific feature behaviors.
-export enum FeatureMode {
-  UNSPECIFIED = 0,
-  IMAGE_GENERATION = 1,
-  ACTUATION = 2,
-  // Client feature mode to initiate actuation for Experimental Triggering.
-  EXPERIMENTAL_TRIGGERING = 3,
-  // Client feature mode to initiate actuation for Universal Cart.
-  UNIVERSAL_CART = 4,
-}
-
-///////////////////////////////////////////////
-// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // Target for actuation.
 export enum ActuationTarget {
   // Will default to the agent if the target is unknown.
@@ -3219,6 +3210,19 @@ export enum CredentialType {
   PASSWORD = 0,
   // Used with an identity provider (e.g. Sign in with Google).
   FEDERATED = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Mode for specific feature behaviors.
+export enum FeatureMode {
+  UNSPECIFIED = 0,
+  IMAGE_GENERATION = 1,
+  ACTUATION = 2,
+  // Client feature mode to initiate actuation for Experimental Triggering.
+  EXPERIMENTAL_TRIGGERING = 3,
+  // Client feature mode to initiate actuation for Universal Cart.
+  UNIVERSAL_CART = 4,
 }
 
 

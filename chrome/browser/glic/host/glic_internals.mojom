@@ -5,6 +5,7 @@
 module glic.mojom;
 
 import "chrome/browser/glic/host/glic.mojom";
+import "chrome/common/glic_enums.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 

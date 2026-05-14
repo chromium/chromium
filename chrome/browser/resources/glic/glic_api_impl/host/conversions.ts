@@ -21,7 +21,7 @@ import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metad
 import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, InvocationPayload as InvocationPayloadMojo, InvokeOptions as InvokeOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinTabsOptions as PinTabsOptionsMojo, Screenshot as ScreenshotMojo, ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, SubscriberObservationType as SubscriberObservationTypeMojo, TabContext as TabContextMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo, ZssConfig as ZssConfigMojo} from '../../glic.mojom-webui.js';
 import {MicrophoneStatus as MicrophoneStatusMojo, PinTrigger as PinTriggerMojo, ScreenshotCompressionQuality as ScreenshotCompressionQualityMojo, ScreenshotImageFormat as ScreenshotImageFormatMojo, UnpinTrigger as UnpinTriggerMojo, WebClientMode as WebClientModeMojo} from '../../glic.mojom-webui.js';
 import type {CaptureRegionResult, ConversationInfo, GetPinCandidatesOptions, HostCapability, InvocationPayload, PageMetadata, PanelOpeningData, PanelState, PinTabsOptions, PinTrigger, Screenshot, ScreenshotCollectionOptions, TabContextOptions, TaskOptions, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2, ZssConfig} from '../../glic_api/glic_api.js';
-import {DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, MicrophoneStatus, Platform, WebClientMode} from '../../glic_api/glic_api.js';
+import {DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, FeatureMode, MicrophoneStatus, Platform, WebClientMode} from '../../glic_api/glic_api.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
 
 import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from './../../actor_webui.mojom-webui.js';
@@ -623,6 +623,8 @@ export function taskOptionsToMojo(taskOptions?: TaskOptions): TaskOptionsMojo|
     return {
       title: taskOptions.title ?? null,
       duration: enumFromClient(taskOptions.duration),
+      featureMode:
+          enumFromClient(taskOptions.featureMode ?? FeatureMode.UNSPECIFIED),
     };
   }
   return null;

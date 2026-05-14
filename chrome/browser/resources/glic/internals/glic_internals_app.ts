@@ -7,7 +7,8 @@ import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ActuationEligibility, ActuationTarget, FeatureMode, FreOverride, InvocationSource} from '../glic.mojom-webui.js';
+import {ActuationEligibility, ActuationTarget, FreOverride, InvocationSource} from '../glic.mojom-webui.js';
+import {FeatureMode} from '../glic_enums.mojom-webui.js';
 import {InternalsPageHandlerFactory, InternalsPageHandlerRemote} from '../glic_internals.mojom-webui.js';
 import type {InternalsDataPayload, TriggerInvokeFromInternalsOptions} from '../glic_internals.mojom-webui.js';
 
