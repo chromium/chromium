@@ -349,10 +349,7 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   // it on, not AED.
   trigger_source_ = trigger_source;
 
-  shown_suggestion_types_.clear();
-  for (const Suggestion& suggestion : suggestions) {
-    shown_suggestion_types_.push_back(suggestion.type);
-  }
+  shown_suggestion_types_ = base::ToVector(suggestions, &Suggestion::type);
 
   if (suggestions.empty() && !IsAtMemoryTriggerSource(trigger_source)) {
     OnAutofillAvailabilityEvent(
@@ -417,7 +414,7 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   AutofillClient::PopupOpenArgs open_args(
       should_use_caret_bounds ? gfx::RectF(caret_bounds_)
                               : query_field_.bounds(),
-      query_field_.text_direction(), suggestions, trigger_source_,
+      query_field_.text_direction(), std::move(suggestions), trigger_source_,
       query_field_.form_control_ax_id(),
       should_use_caret_bounds ? PopupAnchorType::kCaret : default_anchor_type,
       show_tabbed_popup, prefer_prev_arrow_side_on_suggestions_update);
