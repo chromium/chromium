@@ -229,6 +229,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/searchactivityutils/java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityExtras.java:IntentOrigin) -->
 
+<variants name="TabBottomSheetClient">
+  <variant name="ContextualTasks" summary="Contextual Tasks"/>
+  <variant name="Glic" summary="Glic"/>
+</variants>
+
 <variants name="TabLaunchType">
   <variant name="AppWidget" summary="tabs opened from an app widget"/>
   <variant name="BookmarkBarBackground"
@@ -5915,6 +5920,53 @@ chromium-metrics-reviews@google.com.
     accordingly.
   </summary>
   <token key="TabLaunchType" variants="TabLaunchType"/>
+</histogram>
+
+<histogram name="Android.TabBottomSheet.{ClientType}.CurrentState"
+    enum="BottomSheet.State" expires_after="2027-05-13">
+  <owner>ssid@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <summary>
+    Records the stable state (Peek, Half, Full, or Hidden/Closed) entered by the
+    Tab Bottom Sheet for {ClientType}. Recorded every time a stable state is
+    reached, ignoring transient scrolling or transition states.
+  </summary>
+  <token key="ClientType" variants="TabBottomSheetClient"/>
+</histogram>
+
+<histogram name="Android.TabBottomSheet.{ClientType}.StateChangeReason.Hidden"
+    enum="BottomSheet.StateChangeReason" expires_after="2027-05-13">
+  <owner>ssid@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <summary>
+    Records the reason why the Tab Bottom Sheet for {ClientType} was hidden.
+    Recorded every time the bottom sheet settles into the Hidden/Closed state.
+  </summary>
+  <token key="ClientType" variants="TabBottomSheetClient"/>
+</histogram>
+
+<histogram name="Android.TabBottomSheet.{ClientType}.StateChangeReason.Peek"
+    enum="BottomSheet.StateChangeReason" expires_after="2027-05-13">
+  <owner>ssid@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <summary>
+    Records the reason why the Tab Bottom Sheet for {ClientType} entered the
+    Peek state. Recorded every time the bottom sheet settles into the Peek
+    state.
+  </summary>
+  <token key="ClientType" variants="TabBottomSheetClient"/>
+</histogram>
+
+<histogram name="Android.TabBottomSheet.{ClientType}.StateTransition"
+    enum="TabBottomSheetStateTransition" expires_after="2027-05-13">
+  <owner>ssid@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <summary>
+    Records transitions between open stable states (Peek, Half, Full) for the
+    Tab Bottom Sheet for {ClientType}. Recorded when transitioning between two
+    different open stable states, ignoring transient scrolling states.
+  </summary>
+  <token key="ClientType" variants="TabBottomSheetClient"/>
 </histogram>
 
 <histogram

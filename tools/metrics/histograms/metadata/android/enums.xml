@@ -874,6 +874,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Filtered weaker signals"/>
 </enum>
 
+<!-- LINT.IfChange(BottomSheet.State) -->
+
+<enum name="BottomSheet.State">
+  <int value="0" label="Hidden"/>
+  <int value="1" label="Peek"/>
+  <int value="2" label="Half"/>
+  <int value="3" label="Full"/>
+  <int value="4" label="Scrolling"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/bottomsheet/android/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetController.java:SheetState) -->
+
 <!-- LINT.IfChange(BringTabToFrontResult) -->
 
 <enum name="BringTabToFrontResult">
@@ -1939,6 +1951,20 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="LeftEdge"/>
   <int value="1" label="RightEdge"/>
 </enum>
+
+<!-- LINT.IfChange(TabBottomSheetStateTransition) -->
+
+<enum name="TabBottomSheetStateTransition">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Peek to Half"/>
+  <int value="2" label="Peek to Full"/>
+  <int value="3" label="Half to Peek"/>
+  <int value="4" label="Half to Full"/>
+  <int value="5" label="Full to Peek"/>
+  <int value="6" label="Full to Half"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/context_sharing/tab_bottom_sheet/android/java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMetrics.java:Transition) -->
 
 <enum name="TabGroupColorChangeActionType">
   <int value="0" label="VIA_COLOR_ICON"/>

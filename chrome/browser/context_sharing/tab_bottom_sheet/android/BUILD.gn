@@ -74,6 +74,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManagerImpl.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMediator.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMetrics.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetNativeInterface.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetProperties.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetUtils.java",

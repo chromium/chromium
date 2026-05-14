@@ -51,6 +51,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetCoordinator.SheetEventsCallback;
@@ -757,5 +758,121 @@ public class TabBottomSheetCoordinatorTest {
 
         // Verify collapse is NOT triggered
         verify(mMockBottomSheetController, never()).collapseSheet(anyBoolean());
+    }
+
+    @Test
+    public void testMetrics_Glic_CurrentStateAndTransitions() {
+        // Re-create coordinator with GLIC client type
+        mCoBrowseViews =
+                new CoBrowseViews(mView, TabBottomSheetClientType.GLIC, mMockWebUi, null, 0);
+        mCoordinator =
+                new TabBottomSheetCoordinator(
+                        mContext,
+                        mWindowAndroid,
+                        mMockBottomSheetController,
+                        mMockTouchEventProvider,
+                        mCoBrowseViews,
+                        mSheetEventsCallback);
+
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // Initial entry to PEEK state via SWIPE (1 = SWIPE)
+        HistogramWatcher stateWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.Glic.CurrentState", 1); // 1 = PEEK
+        HistogramWatcher reasonWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.Glic.StateChangeReason.Peek", 1); // 1 = SWIPE
+        observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
+        stateWatcher.assertExpected();
+        reasonWatcher.assertExpected();
+
+        // Transition to FULL
+        HistogramWatcher transitionWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.Glic.StateTransition", 2); // 2 = PEEK_TO_FULL
+        stateWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.Glic.CurrentState", 3); // 3 = FULL
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        transitionWatcher.assertExpected();
+        stateWatcher.assertExpected();
+
+        // Transition to HALF
+        transitionWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.Glic.StateTransition", 6); // 6 = FULL_TO_HALF
+        stateWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.Glic.CurrentState", 2); // 2 = HALF
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+        transitionWatcher.assertExpected();
+        stateWatcher.assertExpected();
+
+        // Transition to HIDDEN via BACK_PRESS (2 = BACK_PRESS)
+        stateWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.Glic.CurrentState", 0); // 0 = HIDDEN
+        reasonWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.Glic.StateChangeReason.Hidden",
+                        2); // 2 = BACK_PRESS
+        observer.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.BACK_PRESS);
+        stateWatcher.assertExpected();
+        reasonWatcher.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_ContextualTasks_CurrentStateAndTransitions() {
+        // Re-create coordinator with CONTEXTUAL_TASKS client type
+        mCoBrowseViews =
+                new CoBrowseViews(
+                        mView, TabBottomSheetClientType.CONTEXTUAL_TASKS, mMockWebUi, null, 0);
+        mCoordinator =
+                new TabBottomSheetCoordinator(
+                        mContext,
+                        mWindowAndroid,
+                        mMockBottomSheetController,
+                        mMockTouchEventProvider,
+                        mCoBrowseViews,
+                        mSheetEventsCallback);
+
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // Initial entry to FULL state
+        HistogramWatcher stateWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.ContextualTasks.CurrentState", 3); // 3 = FULL
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        stateWatcher.assertExpected();
+
+        // Transition to PEEK
+        HistogramWatcher transitionWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.ContextualTasks.StateTransition",
+                        5); // 5 = FULL_TO_PEEK
+        stateWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.ContextualTasks.CurrentState", 1); // 1 = PEEK
+        HistogramWatcher reasonWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.ContextualTasks.StateChangeReason.Peek",
+                        3); // 3 = TAP_SCRIM
+        observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.TAP_SCRIM);
+        transitionWatcher.assertExpected();
+        stateWatcher.assertExpected();
+        reasonWatcher.assertExpected();
+
+        // Close sheet via onSheetContentChanged (should record reason as NONE = 0)
+        stateWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.ContextualTasks.CurrentState", 0); // 0 = HIDDEN
+        reasonWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabBottomSheet.ContextualTasks.StateChangeReason.Hidden",
+                        0); // 0 = NONE
+        observer.onSheetContentChanged(null);
+        stateWatcher.assertExpected();
+        reasonWatcher.assertExpected();
     }
 }

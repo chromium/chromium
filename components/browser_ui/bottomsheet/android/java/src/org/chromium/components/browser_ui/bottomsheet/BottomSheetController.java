@@ -25,7 +25,14 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public interface BottomSheetController {
-    /** The different states that the bottom sheet can have. */
+    // LINT.IfChange(SheetState)
+    /**
+     * The different states that the bottom sheet can have.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused. Please keep in sync with "BottomSheet.State" in
+     * tools/metrics/histograms/metadata/android/enums.xml.
+     */
     @IntDef({
         SheetState.NONE,
         SheetState.HIDDEN,
@@ -52,6 +59,8 @@ public interface BottomSheetController {
 
         int SCROLLING = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:BottomSheet.State)
 
     /**
      * The different reasons that the sheet's state can change.

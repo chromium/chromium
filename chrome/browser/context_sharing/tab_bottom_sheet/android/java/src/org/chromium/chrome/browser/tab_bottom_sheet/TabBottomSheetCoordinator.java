@@ -397,6 +397,8 @@ public class TabBottomSheetCoordinator {
 
     private BottomSheetObserver buildBottomSheetObserver() {
         return new EmptyBottomSheetObserver() {
+            private @SheetState int mLastStableState = SheetState.HIDDEN;
+
             @Override
             public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
                 if (mSheetContent == null
@@ -415,6 +417,10 @@ public class TabBottomSheetCoordinator {
 
                 if (ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
                     mMediator.onSheetResizingStatusChanged(state == SheetState.SCROLLING);
+                }
+
+                if (state != SheetState.SCROLLING && state != SheetState.NONE) {
+                    handleStableStateEntered(state, reason);
                 }
             }
 
@@ -454,7 +460,7 @@ public class TabBottomSheetCoordinator {
                 }
             }
 
-            // Called before onSheetStateChanged.
+            // Called when the sheet content changes (e.g., when swapped out or hidden).
             @Override
             public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
                 if (mSheetEventsCallback == null) {
@@ -464,6 +470,11 @@ public class TabBottomSheetCoordinator {
                     mIsShowingTabBottomSheet = true;
                 } else {
                     if (mIsShowingTabBottomSheet) {
+                        // When the sheet is immediately closed or content is swapped,
+                        // onSheetStateChanged may not be called for HIDDEN. Record HIDDEN
+                        // here to ensure full coverage. The deduplication guard in
+                        // handleStableStateEntered prevents double-logging.
+                        handleStableStateEntered(SheetState.HIDDEN, StateChangeReason.NONE);
                         mMediator.onSheetStateChanged(BottomSheetController.SheetState.HIDDEN);
                         mSheetEventsCallback.onBottomSheetClosed();
                         stopObservingCompositorViewInteractions();
@@ -475,6 +486,26 @@ public class TabBottomSheetCoordinator {
             @Override
             public void onInsetAnimationEnd() {
                 mCoBrowseViews.setIgnoreClearFocus(/* ignoreClearFocus= */ false);
+            }
+
+            private void handleStableStateEntered(
+                    @SheetState int state, @StateChangeReason int reason) {
+                if (mLastStableState == state) {
+                    return;
+                }
+
+                @TabBottomSheetClientType int clientType = mCoBrowseViews.getClientType();
+
+                // Record current state hit
+                TabBottomSheetMetrics.recordStateHit(clientType, state);
+
+                // Record transition if between open stable states (PEEK, HALF, FULL)
+                TabBottomSheetMetrics.recordTransition(clientType, mLastStableState, state);
+
+                // Record state change reasons for PEEK and HIDDEN states
+                TabBottomSheetMetrics.recordStateChangeReason(clientType, state, reason);
+
+                mLastStableState = state;
             }
         };
     }
