@@ -1740,7 +1740,7 @@
     },
     {
       name: "CSSOverscrollBehaviorChain",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPaintAPIArguments",
