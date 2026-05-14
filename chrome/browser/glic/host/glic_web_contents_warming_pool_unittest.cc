@@ -287,4 +287,65 @@ TEST_F(GlicWebContentsWarmingPoolTest, Clear) {
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
 }
 
+TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Used) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  warming_pool.EnsurePreload();
+
+  std::unique_ptr<WebUIContentsContainer> container =
+      warming_pool.TakeContainer();
+
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 0,
+                                      1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Expired) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(kGlicReloadWebContentsAfterExpiry);
+
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  warming_pool.EnsurePreload();
+
+  // Let it expire.
+  task_environment_.FastForwardBy(
+      features::kGlicWebContentsWarmingPoolExpiryDelay.Get());
+
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 1,
+                                      1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Crashed) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  warming_pool.EnsurePreload();
+
+  // Crash the container.
+  content::WebContentsTester::For(warming_pool.GetWarmedWebContents())
+      ->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, 0);
+
+  // Trigger a check that replaces it.
+  warming_pool.EnsurePreload();
+
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 3,
+                                      1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       WarmedContainerFate_DeletedOnChromeClosed) {
+  base::HistogramTester histogram_tester;
+  {
+    TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                                &web_contents_factory_);
+    warming_pool.EnsurePreload();
+    // warming_pool goes out of scope here and is destroyed.
+  }
+
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate", 2,
+                                      1);
+}
+
 }  // namespace glic

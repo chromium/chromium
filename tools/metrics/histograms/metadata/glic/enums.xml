@@ -872,6 +872,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/context/glic_sharing_manager.h:GlicUnpinTrigger) -->
 
+<!-- LINT.IfChange(GlicWarmedContainerFate) -->
+
+<enum name="GlicWarmedContainerFate">
+  <int value="0" label="Used"/>
+  <int value="1" label="Expired"/>
+  <int value="2" label="Deleted on Chrome Closed"/>
+  <int value="3" label="Crashed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.cc:GlicWarmedContainerFate) -->
+
 <!-- LINT.IfChange(GlicWarmingPoolStatus) -->
 
 <enum name="GlicWarmingPoolStatus">

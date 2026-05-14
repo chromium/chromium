@@ -29,7 +29,20 @@ constexpr base::TimeDelta kDelayTooLong = base::Days(7);
 
 class GlicWebContentsWarmingPool::Metrics {
  public:
-  void OnContainerExpired() { was_expired_ = true; }
+  // LINT.IfChange(GlicWarmedContainerFate)
+  enum class WarmedContainerFate {
+    kUsed = 0,
+    kExpired = 1,
+    kDeletedOnChromeClosed = 2,
+    kCrashed = 3,
+    kMaxValue = kCrashed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmedContainerFate)
+
+  void OnContainerExpired() {
+    was_expired_ = true;
+    RecordWarmedContainerFate(WarmedContainerFate::kExpired);
+  }
 
   void OnReloadAfterExpiry(
       GlicWebContentsWarmingPool::ReloadAfterExpiryStatus status) {
@@ -41,6 +54,10 @@ class GlicWebContentsWarmingPool::Metrics {
     was_expired_ = false;
   }
 
+  void RecordWarmedContainerFate(WarmedContainerFate fate) {
+    base::UmaHistogramEnumeration("Glic.WarmingPool.WarmedContainerFate", fate);
+  }
+
   GlicWebContentsWarmingPool::WarmingPoolStatus RecordTakeContainerStatus(
       const std::unique_ptr<WebUIContentsContainer>& warmed_container) {
     WarmingPoolStatus status = WarmingPoolStatus::kCold;
@@ -49,6 +66,9 @@ class GlicWebContentsWarmingPool::Metrics {
                    ? WarmingPoolStatus::kCrashed
                    : WarmingPoolStatus::kHit;
       warmed_container_creation_time_ = warmed_container->creation_time();
+      if (status == WarmingPoolStatus::kHit) {
+        RecordWarmedContainerFate(WarmedContainerFate::kUsed);
+      }
     } else if (was_expired_) {
       status = WarmingPoolStatus::kExpired;
     }
@@ -60,6 +80,18 @@ class GlicWebContentsWarmingPool::Metrics {
       was_expired_ = false;
     }
     return status;
+  }
+
+  void RecordWarmedContainerDestruction(
+      const std::unique_ptr<WebUIContentsContainer>& warmed_container) {
+    if (!warmed_container) {
+      return;
+    }
+    if (warmed_container->web_contents()->IsCrashed()) {
+      RecordWarmedContainerFate(WarmedContainerFate::kCrashed);
+    } else {
+      RecordWarmedContainerFate(WarmedContainerFate::kDeletedOnChromeClosed);
+    }
   }
 
  private:
@@ -94,7 +126,9 @@ GlicWebContentsWarmingPool::GlicWebContentsWarmingPool(Profile* profile)
   }
 }
 
-GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() = default;
+GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() {
+  metrics_->RecordWarmedContainerDestruction(warmed_container_);
+}
 
 std::unique_ptr<WebUIContentsContainer>
 GlicWebContentsWarmingPool::TakeContainer() {
@@ -112,6 +146,7 @@ GlicWebContentsWarmingPool::TakeContainer() {
 
 void GlicWebContentsWarmingPool::EnsurePreload() {
   if (warmed_container_ && warmed_container_->web_contents()->IsCrashed()) {
+    metrics_->RecordWarmedContainerDestruction(warmed_container_);
     warmed_container_ = nullptr;
   }
 
