@@ -117,10 +117,10 @@ const ACTIVATION_DELAY_INDEX = 6;
 const BAR_WIDTH = 12;
 
 // Space between each bar, in px.
-export const BAR_GAP = 3;
+export const BAR_GAP = 7;
 
 // Maximum height of each bar, in px.
-const MAX_BAR_HEIGHT = 32;
+const MAX_BAR_HEIGHT = 36;
 
 // Target decimal percentage of the height that the bar should end up at
 // after oscillating.

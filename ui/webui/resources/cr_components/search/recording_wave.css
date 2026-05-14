@@ -54,7 +54,7 @@
 
 .bar-pill {
   background-color: var(--color-recording-wave);
-  border-radius: 1000px;
+  border-radius: calc(var(--bar-width) / 2);
   flex-shrink: 0;
   inline-size: var(--bar-width, 12px);
   min-block-size: 4px;
@@ -68,7 +68,7 @@
  * that major layout recalculation does not occur. */
 .bar-pill.is-unspawned {
   background: transparent;
-  block-size: 4px;
+  block-size: 6px;
   box-shadow: none;
   min-block-size: 0;
   transform: none;
@@ -82,9 +82,9 @@
 .bar-pill.is-unspawned::before {
   border-radius: 50%;
   background: var(--color-recording-wave);
-  block-size: 4px;
+  block-size: 6px;
   content: '';
-  inline-size: 4px;
+  inline-size: 6px;
   inset-block-start: 50%;
   inset-inline-start: 50%;
   transform: translate(-50%, -50%);
