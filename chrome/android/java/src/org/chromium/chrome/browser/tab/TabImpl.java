@@ -463,7 +463,7 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public boolean hasObserver(TabObserver observer) {
+    public boolean hasObserverForTesting(TabObserver observer) {
         return mObservers.hasObserver(observer);
     }
 

@@ -48,7 +48,8 @@ public class TabModelTabObserverUnitTest {
         mTabModel.setIndex(0, TabSelectionType.FROM_USER);
         mTabModelTabObserver = new TabModelTabObserver(mTabModel);
 
-        assertTrue(TabModelUtils.getCurrentTab(mTabModel).hasObserver(mTabModelTabObserver));
+        assertTrue(
+                TabModelUtils.getCurrentTab(mTabModel).hasObserverForTesting(mTabModelTabObserver));
     }
 
     @Test
@@ -59,7 +60,7 @@ public class TabModelTabObserverUnitTest {
         mTabModel.addTab(mTab, 1, TabLaunchType.FROM_LINK, TabCreationState.LIVE_IN_FOREGROUND);
         mTabModel.setIndex(1, TabSelectionType.FROM_USER);
         assertEquals(2, mTabModel.getCount());
-        assertTrue(mTabModel.getTabAt(1).hasObserver(mTabModelTabObserver));
+        assertTrue(mTabModel.getTabAt(1).hasObserverForTesting(mTabModelTabObserver));
     }
 
     @Test
@@ -67,6 +68,6 @@ public class TabModelTabObserverUnitTest {
     public void testDestroyRemovesObservers() {
         assertEquals(1, mTabModel.getCount());
         mTabModelTabObserver.destroy();
-        assertFalse(mTabModel.getTabAt(0).hasObserver(mTabModelTabObserver));
+        assertFalse(mTabModel.getTabAt(0).hasObserverForTesting(mTabModelTabObserver));
     }
 }

@@ -376,7 +376,7 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void addObserver(TabModelSelectorObserver observer) {
-        if (!mObservers.hasObserver(observer)) mObservers.addObserver(observer);
+        mObservers.addObserver(observer);
     }
 
     @Override

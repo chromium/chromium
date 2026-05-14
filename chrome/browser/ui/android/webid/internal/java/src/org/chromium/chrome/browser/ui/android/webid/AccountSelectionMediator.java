@@ -1119,7 +1119,7 @@ class AccountSelectionMediator {
         mBottomSheetController.addObserver(mBottomSheetObserver);
         KeyboardVisibilityDelegate.getInstance()
                 .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
-        if (!mTab.hasObserver(mTabObserver)) mTab.addObserver(mTabObserver);
+        mTab.addObserver(mTabObserver);
         return true;
     }
 

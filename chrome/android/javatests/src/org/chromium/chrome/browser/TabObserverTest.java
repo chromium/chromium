@@ -138,7 +138,7 @@ public class TabObserverTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sTab.updateAttachment(null, null);
-                    assertFalse(sTab.hasObserver(sTabObserver));
+                    assertFalse(sTab.hasObserverForTesting(sTabObserver));
                 });
     }
 
