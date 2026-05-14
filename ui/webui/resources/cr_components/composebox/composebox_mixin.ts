@@ -510,10 +510,12 @@ export const ComposeboxEmbedderMixin =
           }
 
           // Populate the smart compose suggestion.
-          this.smartComposeInlineHint =
-              this.result.smartComposeInlineHint?.trim() ?
+          const nextHint = this.result.smartComposeInlineHint?.trim() ?
               this.result.smartComposeInlineHint :
               '';
+          if (this.smartComposeInlineHint !== nextHint) {
+            this.smartComposeInlineHint = nextHint;
+          }
         }
 
         onContextualInputStatusChanged(
@@ -588,7 +590,16 @@ export const ComposeboxEmbedderMixin =
         }
 
         onInputInput(_e: CustomEvent<Event>) {
-          this.input = this.getInputElement().input;
+          const newInput = this.getInputElement().input;
+          if (this.smartComposeEnabled && this.smartComposeInlineHint) {
+            if (newInput === this.input + this.smartComposeInlineHint[0]) {
+              this.smartComposeInlineHint =
+                  this.smartComposeInlineHint.substring(1);
+            } else if (newInput !== this.input) {
+              this.smartComposeInlineHint = '';
+            }
+          }
+          this.input = newInput;
 
           // `clearMatches` is true if input is empty stop any in progress
           // providers before requerying for on-focus (zero-suggest) inputs. The
@@ -669,7 +680,7 @@ export const ComposeboxEmbedderMixin =
               this.input = this.input + this.smartComposeInlineHint;
               this.smartComposeInlineHint = '';
               e.preventDefault();
-              this.queryAutocomplete(/* clearMatches= */ true);
+              this.queryAutocomplete(/* clearMatches= */ false);
             }
             return;
           }

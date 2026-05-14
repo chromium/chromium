@@ -56,6 +56,7 @@ suite('ComposeboxTest', () => {
       suggestionActivityLink: '<a>Activity</a>',
       composeboxSubmitButtonTitle: 'Submit',
       composeboxSmartComposeTabTitle: 'Tab',
+      composeboxSmartComposeTitle: 'Smart Compose',
       voiceListening: 'Listening',
       voiceDetails: 'Details',
       voiceClose: 'Close',
@@ -292,6 +293,51 @@ suite('ComposeboxTest', () => {
 
         assertTrue(input.hasAttribute('smart-compose-enabled'));
       });
+
+  test('smartComposeInlineHint is sliced on sequential typing', async () => {
+    composebox.smartComposeEnabled = true;
+    composebox.input = 'hello';
+    composebox.smartComposeInlineHint = ' world';
+    await composebox.updateComplete;
+
+    const inputElem = composebox.getInputElement();
+    const innerInput = inputElem.inputElement;
+
+    // User types the space.
+    innerInput.value = 'hello ';
+    innerInput.dispatchEvent(
+        new Event('input', {bubbles: true, composed: true}));
+    await composebox.updateComplete;
+
+    assertEquals('world', composebox.smartComposeInlineHint);
+    assertEquals('hello ', composebox.input);
+
+    // User types 'w'.
+    innerInput.value = 'hello w';
+    innerInput.dispatchEvent(
+        new Event('input', {bubbles: true, composed: true}));
+    await composebox.updateComplete;
+
+    assertEquals('orld', composebox.smartComposeInlineHint);
+  });
+
+  test('smartComposeInlineHint is cleared on non-matching typing', async () => {
+    composebox.smartComposeEnabled = true;
+    composebox.input = 'hello';
+    composebox.smartComposeInlineHint = ' world';
+    await composebox.updateComplete;
+
+    const inputElem = composebox.getInputElement();
+    const innerInput = inputElem.inputElement;
+
+    // User types something else (unexpected char).
+    innerInput.value = 'hello!';
+    innerInput.dispatchEvent(
+        new Event('input', {bubbles: true, composed: true}));
+    await composebox.updateComplete;
+
+    assertEquals('', composebox.smartComposeInlineHint);
+  });
 });
 
 suite('composeboxSharedMountAutoRepostionDefault', () => {
@@ -302,7 +348,8 @@ suite('composeboxSharedMountAutoRepostionDefault', () => {
 
     loadTimeData.resetForTesting({
       // Reuse the ComposeboxTest suite's key set, but sets
-      // `composeboxShowContextMenu` to true so composebox_context_menu.html.ts's
+      // `composeboxShowContextMenu` to true so
+      // composebox_context_menu.html.ts's
       // shared `<cr-composebox-contextual-entrypoint-and-menu>` mount renders.
       composeboxShowImageSuggest: false,
       composeboxSmartComposeEnabled: false,
@@ -325,7 +372,8 @@ suite('composeboxSharedMountAutoRepostionDefault', () => {
       // Keys accessed by ContextualActionMenuElement /
       // ContextualEntrypointAndMenuElement class-field initializations once the
       // shared `<cr-composebox-contextual-entrypoint-and-menu>` mount renders.
-      // loadTimeData.getBoolean() asserts on absent keys, so these are required.
+      // loadTimeData.getBoolean() asserts on absent keys, so these are
+      // required.
       // Not optional with defaults - when `composeboxShowContextMenu` is true.
       composeboxContextMenuEnableMultiTabSelection: false,
       composeboxShowContextMenuTabPreviews: false,
@@ -344,6 +392,7 @@ suite('composeboxSharedMountAutoRepostionDefault', () => {
       suggestionActivityLink: '<a>Activity</a>',
       composeboxSubmitButtonTitle: 'Submit',
       composeboxSmartComposeTabTitle: 'Tab',
+      composeboxSmartComposeTitle: 'Smart Compose',
       voiceListening: 'Listening',
       voiceDetails: 'Details',
       voiceClose: 'Close',
