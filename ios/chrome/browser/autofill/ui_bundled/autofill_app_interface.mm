@@ -715,35 +715,6 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
       base::Time::FromNSDate(time), base::Time::Now());
 }
 
-#pragma mark - Private
-
-// The PersonalDataManager instance for the current profile.
-+ (autofill::PersonalDataManager*)personalDataManager {
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForProfile(profile);
-  personalDataManager->payments_data_manager().SetSyncingForTest(true);
-  return personalDataManager;
-}
-
-+ (void)showAutofillAiSaveEntityBubble {
-  autofill::EntityInstance entity = autofill::test::GetVehicleEntityInstance();
-  autofill::ChromeAutofillClientIOS* client =
-      static_cast<autofill::ChromeAutofillClientIOS*>(
-          autofill::AutofillClientIOS::FromWebState(
-              chrome_test_util::GetCurrentWebState()));
-  if (client) {
-    client->ShowEntityImportBubble(std::move(entity), std::nullopt,
-                                   /*save_is_synchronous=*/true,
-                                   base::DoNothing());
-  }
-}
-
-+ (autofill::EntityDataManager*)entityDataManager {
-  return autofill::FakeCreditCardServer::GetAutofillClient()
-      .GetEntityDataManager();
-}
-
 + (BOOL)savePassportEntity {
   autofill::AutofillClient& client =
       autofill::FakeCreditCardServer::GetAutofillClient();
@@ -778,6 +749,59 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
       autofill::test::MaskEntityInstance(entity);
   entityDataManager->AddOrUpdateEntityInstance(masked_entity);
   return base::SysUTF8ToNSString(guid_str);
+}
+
++ (BOOL)saveVehicleEntity {
+  autofill::AutofillClient& client =
+      autofill::FakeCreditCardServer::GetAutofillClient();
+
+  autofill::EntityDataManager* entityDataManager =
+      client.GetEntityDataManager();
+
+  if (!entityDataManager) {
+    return NO;
+  }
+
+  autofill::EntityInstance entity = autofill::test::GetVehicleEntityInstance();
+  size_t entity_count = entityDataManager->GetEntityInstances().size();
+  entityDataManager->AddOrUpdateEntityInstance(entity);
+
+  ConditionBlock conditionBlock = ^bool {
+    return entity_count < entityDataManager->GetEntityInstances().size();
+  };
+
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, conditionBlock));
+  return YES;
+}
+
+#pragma mark - Private
+
+// The PersonalDataManager instance for the current profile.
++ (autofill::PersonalDataManager*)personalDataManager {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  autofill::PersonalDataManager* personalDataManager =
+      autofill::PersonalDataManagerFactory::GetForProfile(profile);
+  personalDataManager->payments_data_manager().SetSyncingForTest(true);
+  return personalDataManager;
+}
+
++ (void)showAutofillAiSaveEntityBubble {
+  autofill::EntityInstance entity = autofill::test::GetVehicleEntityInstance();
+  autofill::ChromeAutofillClientIOS* client =
+      static_cast<autofill::ChromeAutofillClientIOS*>(
+          autofill::AutofillClientIOS::FromWebState(
+              chrome_test_util::GetCurrentWebState()));
+  if (client) {
+    client->ShowEntityImportBubble(std::move(entity), std::nullopt,
+                                   /*save_is_synchronous=*/true,
+                                   base::DoNothing());
+  }
+}
+
++ (autofill::EntityDataManager*)entityDataManager {
+  return autofill::FakeCreditCardServer::GetAutofillClient()
+      .GetEntityDataManager();
 }
 
 @end

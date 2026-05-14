@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vehicle Form</title>
+</head>
+<body>
+  <form id="vehicle_form" action="destination.html">
+    Make: <input type="text" id="vehicleMake" name="vehicleMake" autocomplete="vehicle-make"><br>
+    Model: <input type="text" id="vehicleModel" name="vehicleModel" autocomplete="vehicle-model"><br>
+    Year: <input type="text" id="vehicleYear" name="vehicleYear" autocomplete="vehicle-year"><br>
+    Owner: <input type="text" id="vehicleOwner" name="vehicleOwner" autocomplete="vehicle-owner"><br>
+    License plate: <input type="text" id="vehicleLicensePlate" name="vehicleLicensePlate" autocomplete="vehicle-license-plate"><br>
+    Plate state: <input type="text" id="vehiclePlateState" name="vehiclePlateState" autocomplete="vehicle-plate-state"><br>
+    VIN: <input type="text" id="vehicleVIN" name="vehicleVIN" autocomplete="vehicle-vin"><br>
+    <input type="submit" id="submit-button" value="Submit">
+  </form>
+  <button type="button" onclick="FillVehicleForm()" id="fill_vehicle_form">
+    Fill Form (vehicle)
+  </button>
+  <script>
+      function FillVehicleForm() {
+      const form = document.forms['vehicle_form'];
+      form['vehicleMake'].value = 'BMW';
+      form['vehicleModel'].value = 'Series 2';
+      form['vehicleYear'].value = '2025';
+      form['vehicleOwner'].value = 'Knecht Ruprecht';
+      form['vehicleLicensePlate'].value = '123456';
+      form['vehiclePlateState'].value = 'California';
+      form['vehicleVIN'].value = '12312345';
+    }
+  </script>
+</body>
+</html>
