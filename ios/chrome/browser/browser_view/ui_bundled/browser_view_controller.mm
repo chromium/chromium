@@ -2283,9 +2283,11 @@ bool IsFullscreenNextIAEnabled() {
     if (self.secondaryToolbarHeightConstraint.constant != height) {
       self.secondaryToolbarHeightConstraint.constant = height;
       // Force a layout to cause the frame to be recalculated.
-      UIView* view = self.view;
-      [view setNeedsLayout];
-      [view layoutIfNeeded];
+      if ([self isViewLoaded]) {
+        UIView* view = self.view;
+        [view setNeedsLayout];
+        [view layoutIfNeeded];
+      }
     }
   }
 }
