@@ -138,9 +138,6 @@ const char kOverrideUseSoftwareGLForTests[] =
 // Disables specified comma separated GL Extensions if found.
 const char kDisableGLExtensions[] = "disable-gl-extensions";
 
-// Enables SwapBuffersWithBounds if it is supported.
-const char kEnableSwapBuffersWithBounds[] = "enable-swap-buffers-with-bounds";
-
 // Disable DirectComposition.
 const char kDisableDirectComposition[] = "disable-direct-composition";
 
@@ -188,7 +185,6 @@ const auto kGLSwitchesCopiedFromGpuProcessHostArray = std::to_array({
     kDisableGLDrawingForTests,
     kOverrideUseSoftwareGLForTests,
     kUseANGLE,
-    kEnableSwapBuffersWithBounds,
     kDisableDirectComposition,
     kEnableDirectCompositionVideoOverlays,
     kDirectCompositionVideoSwapChainFormat,

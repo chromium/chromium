@@ -69,8 +69,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       SurfaceDamageRectList surface_damage_rect_list,
       const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,
-      gfx::Rect* damage_rect,
-      std::vector<gfx::Rect>* content_bounds)
+      gfx::Rect* damage_rect)
       // TODO(petermcneeley) : Restore to "final" once
       // |OverlayProcessorDelegated| has been reintegrated into
       // |OverlayProcessorOzone|.
@@ -208,7 +207,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       SurfaceDamageRectList* surface_damage_rect_list,
       std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* candidates,
-      std::vector<gfx::Rect>* content_bounds,
       gfx::Rect* incoming_damage);
 
   // Skips overlay when we have recently had copy output requests
