@@ -901,6 +901,19 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
+    public void layoutStateChange_ToolbarSwipe() {
+        initAndAssertProperties(mTab2);
+        mDialogControllerSupplier.get();
+
+        mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TOOLBAR_SWIPE);
+        verify(mTabGridDialogController, atLeastOnce()).hideDialog(false);
+        verifyResetStrip(false, null);
+
+        mLayoutStateObserverCaptor.getValue().onFinishedHiding(LayoutType.TOOLBAR_SWIPE);
+        verifyResetStrip(true, mTabGroup2);
+    }
+
+    @Test
     public void destroy_TabGroup() {
         initAndAssertProperties(mTab1);
         verify(mThemeColorProvider).addThemeColorObserver(mThemeColorObserverCaptor.capture());

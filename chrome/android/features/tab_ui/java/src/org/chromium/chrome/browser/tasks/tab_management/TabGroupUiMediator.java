@@ -169,6 +169,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private @Nullable Token mCurrentTabGroupId;
     private boolean mIsShowingHub;
+    private boolean mIsToolbarSwipeActive;
 
     TabGroupUiMediator(
             BottomControlsVisibilityController visibilityController,
@@ -234,9 +235,13 @@ public class TabGroupUiMediator implements BackPressHandler {
         }
 
         var layoutStateProvider = layoutStateProviderSupplier.get();
-        if (layoutStateProvider != null
-                && layoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-            mIsShowingHub = true;
+        if (layoutStateProvider != null) {
+            if (layoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                mIsShowingHub = true;
+            }
+            if (layoutStateProvider.isLayoutVisible(LayoutType.TOOLBAR_SWIPE)) {
+                mIsToolbarSwipeActive = true;
+            }
         }
 
         // Register for tab model.
@@ -280,6 +285,10 @@ public class TabGroupUiMediator implements BackPressHandler {
                             mIsShowingHub = true;
                             hideTabGridDialog();
                             resetTabStrip();
+                        } else if (layoutType == LayoutType.TOOLBAR_SWIPE) {
+                            mIsToolbarSwipeActive = true;
+                            hideTabGridDialog();
+                            resetTabStrip();
                         }
                     }
 
@@ -287,6 +296,9 @@ public class TabGroupUiMediator implements BackPressHandler {
                     public void onFinishedHiding(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER) {
                             mIsShowingHub = false;
+                            resetTabStrip();
+                        } else if (layoutType == LayoutType.TOOLBAR_SWIPE) {
+                            mIsToolbarSwipeActive = false;
                             resetTabStrip();
                         }
                     }
@@ -481,7 +493,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private void resetTabStrip() {
         if (!mTabModelSelector.isTabStateInitialized()) return;
 
-        if (mIsShowingHub || mOmniboxFocusStateSupplier.get()) {
+        if (mIsShowingHub || mIsToolbarSwipeActive || mOmniboxFocusStateSupplier.get()) {
             hideTabStrip();
             return;
         }
