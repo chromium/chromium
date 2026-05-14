@@ -579,7 +579,8 @@ void FilePathWatcherImpl::OnFilePathChanged(
     auto callback = callback_;
     Cancel();
 
-    // Fires the error callback. `this` may be deleted as a result of this call.
+    // Fires the error callback. `this` may be deleted as a result of this
+    // call.
     callback.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
   }
 }
@@ -723,10 +724,12 @@ bool FilePathWatcherImpl::UpdateRecursiveWatches(
     return true;
   }
 
+  auto changed_dir_it = recursive_paths_by_watch_.find(fired_watch);
+  bool contains_fired_watch = changed_dir_it != recursive_paths_by_watch_.end();
+
   // Check to see if this is a forced update or if some component of `target_`
   // has changed. For these cases, redo the watches for `target_` and below.
-  if (!recursive_paths_by_watch_.contains(fired_watch) &&
-      fired_watch != watches_.back().watch) {
+  if (!contains_fired_watch && fired_watch != watches_.back().watch) {
     return UpdateRecursiveWatchesForPath(target_);
   }
 
@@ -735,9 +738,8 @@ bool FilePathWatcherImpl::UpdateRecursiveWatches(
     return true;
   }
 
-  const FilePath& changed_dir = recursive_paths_by_watch_.contains(fired_watch)
-                                    ? recursive_paths_by_watch_[fired_watch]
-                                    : target_;
+  const FilePath& changed_dir =
+      contains_fired_watch ? changed_dir_it->second : target_;
 
   auto start_it = recursive_watches_by_path_.upper_bound(changed_dir);
   auto end_it = start_it;
@@ -796,7 +798,22 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
 
     // Check `recursive_watches_by_path_` as a heuristic to determine if this
     // needs to be an add or update operation.
-    if (!recursive_watches_by_path_.contains(current)) {
+    if (auto current_watch_it = recursive_watches_by_path_.find(current);
+        current_watch_it != recursive_watches_by_path_.end()) {
+      // Update existing watches.
+      InotifyReader::Watch old_watch = current_watch_it->second;
+      DUMP_WILL_BE_CHECK_NE(InotifyReader::kInvalidWatch, old_watch);
+      InotifyReader::Watch watch = GetInotifyReader().AddWatch(current, this);
+      if (watch == InotifyReader::kWatchLimitExceeded) {
+        return false;
+      }
+      if (watch != old_watch) {
+        GetInotifyReader().RemoveWatch(old_watch, this);
+        recursive_paths_by_watch_.erase(old_watch);
+        recursive_watches_by_path_.erase(current_watch_it);
+        TrackWatchForRecursion(watch, current);
+      }
+    } else {
       // Try to add new watches.
       InotifyReader::Watch watch = GetInotifyReader().AddWatch(current, this);
       if (watch == InotifyReader::kWatchLimitExceeded) {
@@ -811,20 +828,6 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
         recursive_paths_by_watch_.erase(it);
       }
       TrackWatchForRecursion(watch, current);
-    } else {
-      // Update existing watches.
-      InotifyReader::Watch old_watch = recursive_watches_by_path_[current];
-      DUMP_WILL_BE_CHECK_NE(InotifyReader::kInvalidWatch, old_watch);
-      InotifyReader::Watch watch = GetInotifyReader().AddWatch(current, this);
-      if (watch == InotifyReader::kWatchLimitExceeded) {
-        return false;
-      }
-      if (watch != old_watch) {
-        GetInotifyReader().RemoveWatch(old_watch, this);
-        recursive_paths_by_watch_.erase(old_watch);
-        recursive_watches_by_path_.erase(current);
-        TrackWatchForRecursion(watch, current);
-      }
     }
   }
   return true;
