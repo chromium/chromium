@@ -59,10 +59,4 @@ views::WebDialogView* ShowCredentialProviderSigninDialog(
     content::BrowserContext* context,
     HandleGcpwSigninCompleteResult signin_complete_handler);
 
-#if BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
-// Allow displaying of GCPW signin dialog when not under the winlogon desktop
-// for testing purposes.
-void EnableGcpwSigninDialogForTesting(bool enable);
-#endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
-
 #endif  // CHROME_BROWSER_UI_STARTUP_CREDENTIAL_PROVIDER_SIGNIN_DIALOG_WIN_H_

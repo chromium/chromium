@@ -9,9 +9,11 @@ import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 
-# Allow browser tests that startup with --gcpw-signin flag only on
-# non-Google Chrome builds.
-can_test_gcpw_signin_startup = !is_chrome_branded
+declare_args() {
+  # Allow browser tests that startup with --gcpw-signin flag.
+  # Defaults to !is_chrome_branded, but can be overridden via gn args.
+  can_test_gcpw_signin_startup = !is_chrome_branded
+}
 
 buildflag_header("buildflags") {
   header = "buildflags.h"

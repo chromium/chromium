@@ -497,12 +497,10 @@ class CredentialProviderSigninDialogWinIntegrationDialogDisplayTest
 CredentialProviderSigninDialogWinIntegrationDialogDisplayTest::
     CredentialProviderSigninDialogWinIntegrationDialogDisplayTest()
     : CredentialProviderSigninDialogWinIntegrationTestBase() {
-  EnableGcpwSigninDialogForTesting(true);
 }
 
 CredentialProviderSigninDialogWinIntegrationDialogDisplayTest::
     ~CredentialProviderSigninDialogWinIntegrationDialogDisplayTest() {
-  EnableGcpwSigninDialogForTesting(false);
 }
 
 void CredentialProviderSigninDialogWinIntegrationDialogDisplayTest::

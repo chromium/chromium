@@ -42,10 +42,6 @@ namespace {
 // The OAuth token consumer name.
 const char kOAuthConsumerName[] = "credential_provider_signin_dialog";
 
-#if BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
-bool g_enable_gcpw_signin_during_tests = false;
-#endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
-
 // This message must match the one sent in inline_login_app.js:
 // sendLSTFetchResults.
 constexpr char kLSTFetchResultsMessage[] = "lstFetchResults";
@@ -424,21 +420,14 @@ bool ValidateSigninCompleteResult(const std::string& access_token,
          signin_result.is_dict();
 }
 
-#if BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
-void EnableGcpwSigninDialogForTesting(bool enable) {
-  g_enable_gcpw_signin_during_tests = enable;
-}
-#endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
-
 bool CanStartGCPWSignin() {
 #if BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
-  if (g_enable_gcpw_signin_during_tests) {
-    return true;
-  }
-#endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
+  return true;
+#else
   // Ensure that we are running under a "winlogon" desktop before starting the
   // gcpw sign in dialog.
   return base::win::IsRunningUnderDesktopName(L"winlogon");
+#endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
 }
 
 bool StartGCPWSignin(const base::CommandLine& command_line,
