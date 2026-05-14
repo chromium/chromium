@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 
@@ -24,7 +25,7 @@ class SessionOptions final {
   SessionOptions();
   SessionOptions(const SessionOptions& other);
   SessionOptions(SessionOptions&& other);
-  explicit SessionOptions(const std::string& parameter);
+  explicit SessionOptions(std::string_view parameter);
   explicit SessionOptions(const base::DictValue& dict);
 
   ~SessionOptions();
@@ -33,24 +34,24 @@ class SessionOptions final {
   SessionOptions& operator=(SessionOptions&& other);
 
   // Appends one key-value pair into current instance.
-  void Append(const std::string& key, const std::string& value);
+  void Append(std::string_view key, std::string_view value);
 
   // Retrieves the value of |key|. Returns a true Optional if |key| has been
   // found, value of the Optional will be set to corresponding value.
-  std::optional<std::string> Get(const std::string& key) const;
+  std::optional<std::string> Get(std::string_view key) const;
 
   // Retrieves the value of |key|. Returns a true Optional if |key| has been
   // found and the corresponding value can be converted to a boolean value.
   // "true", "1" or empty will be converted to true, "false" or "0" will be
   // converted to false.
-  std::optional<bool> GetBool(const std::string& key) const;
+  std::optional<bool> GetBool(std::string_view key) const;
 
   // Equivalent to GetBool(key).value_or(false).
-  bool GetBoolValue(const std::string& key) const;
+  bool GetBoolValue(std::string_view key) const;
 
   // Retrieves the value of |key|. Returns a true Optional if |key| has been
   // found and the corresponding value can be converted to an integer.
-  std::optional<int> GetInt(const std::string& key) const;
+  std::optional<int> GetInt(std::string_view key) const;
 
   // Returns a string to represent current instance. Consumers can rebuild an
   // exactly same instance with Import() function.
@@ -59,7 +60,7 @@ class SessionOptions final {
   // Overwrite current instance with |parameter|, which is a string returned by
   // Export() function. So a parent process can send SessionOptions to a
   // child process.
-  void Import(const std::string& parameter);
+  void Import(std::string_view parameter);
 
  private:
   base::flat_map<std::string, std::string> options_;
