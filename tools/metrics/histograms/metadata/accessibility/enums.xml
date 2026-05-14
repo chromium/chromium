@@ -2416,17 +2416,26 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeMetrics.java:ReaderModeContextualPageActionEvent) -->
 
+<!-- LINT.IfChange(ReaderModePrefsFontFamily) -->
+
 <enum name="ReaderModePrefsFontFamily">
   <int value="0" label="Sans serif"/>
   <int value="1" label="Serif"/>
   <int value="2" label="Monospace"/>
+  <int value="3" label="Lexend"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/dom_distiller/core/mojom/distilled_page_prefs.mojom:ReaderModePrefsFontFamily) -->
+
+<!-- LINT.IfChange(ReaderModePrefsTheme) -->
 
 <enum name="ReaderModePrefsTheme">
   <int value="0" label="Light"/>
   <int value="1" label="Dark"/>
   <int value="2" label="Sepia"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/dom_distiller/core/mojom/distilled_page_prefs.mojom:ReaderModePrefsTheme) -->
 
 <!-- LINT.IfChange(SodaLanguageCode) -->
 

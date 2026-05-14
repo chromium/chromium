@@ -4,15 +4,23 @@
 
 module dom_distiller.mojom;
 
+// LINT.IfChange(ReaderModePrefsTheme)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum Theme {
   kLight = 0,
   kDark = 1,
   kSepia = 2,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReaderModePrefsTheme)
 
+// LINT.IfChange(ReaderModePrefsFontFamily)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum FontFamily {
   kSansSerif = 0,
   kSerif = 1,
   kMonospace = 2,
   kLexend = 3,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReaderModePrefsFontFamily)
