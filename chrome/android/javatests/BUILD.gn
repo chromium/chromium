@@ -467,7 +467,8 @@ android_library("chrome_test_java_org.chromium.chrome.browser.actor") {
   ]
 }
 
-# Partition tests into one target per-package to keep incremental build times down.
+# Partition tests into one target per-package to keep incremental build times
+# down.
 android_library("chrome_test_java_org.chromium.chrome.browser") {
   resources_package = "org.chromium.chrome"
 
@@ -575,6 +576,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
   resources_package = "org.chromium.chrome"
 
   sources = [
+    "src/org/chromium/chrome/browser/autofill/AtMemoryBottomSheetRenderTest.java",
     "src/org/chromium/chrome/browser/autofill/AutofillSnackbarControllerTest.java",
     "src/org/chromium/chrome/browser/autofill/TouchToFillCreditCardTest.java",
     "src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogTest.java",
@@ -594,7 +596,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
     "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetViewBinderTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/autofill/internal:java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.bottombar") {
@@ -1867,7 +1872,8 @@ java_group("common_unit_test_deps_java") {
   ]
 }
 
-# Partition tests into one target per-package to keep incremental build times down.
+# Partition tests into one target per-package to keep incremental build times
+# down.
 android_library("chrome_unit_test_java_org.chromium.chrome.browser.actor") {
   resources_package = "org.chromium.chrome"
 

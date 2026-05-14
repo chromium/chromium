@@ -10,6 +10,7 @@ android_library("java") {
   visibility = [
     ":*",
     "//chrome/android:chrome_all_java",
+    "//chrome/android/javatests:*",
   ]
   srcjar_deps = [ ":jni_headers" ]
   sources = [
@@ -81,6 +82,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
   sources = [
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutMediatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridgeTest.java",
@@ -121,6 +123,7 @@ robolectric_library("junit") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/at_memory_search_bar_background.xml",
     "java/res/layout/at_memory_bottom_sheet.xml",
     "java/res/layout/authenticator_option.xml",
     "java/res/layout/authenticator_selection_dialog.xml",
@@ -133,6 +136,7 @@ android_resources("java_resources") {
   deps = [
     "//chrome/android:chrome_app_java_resources",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/strings:components_strings_grd",
     "//ui/android:ui_java_resources",
   ]
 }

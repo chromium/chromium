@@ -905,6 +905,11 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION" desc="Description for the suggestion shown when the query is unsupported by @memory." translateable="false">
     Try asking Gemini
   </message>
+  <if expr="is_android">
+    <message name="IDS_AT_MEMORY_SEARCH_HINT" desc="Hint text for the search bar in the @memory bottom sheet." formatter_data="android_java" translateable="false">
+      Find and fill info with Gemini
+    </message>
+  </if>
 
   <!-- Autofill Address Edit Dialog -->
   <!-- Common on all platforms -->

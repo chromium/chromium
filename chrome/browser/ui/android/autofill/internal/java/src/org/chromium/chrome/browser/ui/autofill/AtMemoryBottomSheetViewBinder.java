@@ -12,6 +12,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class AtMemoryBottomSheetViewBinder {
     static void bind(PropertyModel model, AtMemoryBottomSheetView view, PropertyKey propertyKey) {
-        // No properties to bind for now.
+        if (propertyKey == AtMemoryBottomSheetProperties.VISIBLE) {
+            if (model.get(AtMemoryBottomSheetProperties.VISIBLE)) {
+                view.clearSearchText();
+                view.focusSearchArea();
+            }
+        }
     }
 }
