@@ -6,7 +6,7 @@ import 'chrome://managed-user-profile-notice/managed_user_profile_notice_app_ref
 
 import type {ManagedUserProfileNoticeAppRefreshElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_app_refresh.js';
 import type {ManagedUserProfileInfo} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
-import {ManagedUserProfileNoticeBrowserProxyImpl, State} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
+import {ManagedUserProfileNoticeBrowserProxyImpl, ScreenType, State} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
 import type {ManagedUserProfileNoticeDisclosureRefreshElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_disclosure_refresh.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -40,11 +40,15 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
         testManagedUserProfileInfo);
     ManagedUserProfileNoticeBrowserProxyImpl.setInstance(browserProxy);
     loadTimeData.overrideValues({'showLinkDataCheckbox': false});
-    app = document.createElement('managed-user-profile-notice-app-refresh');
-    document.body.appendChild(app);
-    await browserProxy.whenCalled('initialized');
+    await createManagedUserProfileNoticeApp();
     return microtasksFinished();
   });
+
+  function createManagedUserProfileNoticeApp() {
+    app = document.createElement('managed-user-profile-notice-app-refresh');
+    document.body.appendChild(app);
+    return browserProxy.whenCalled('initialized');
+  }
 
   /**
    * Checks that the expected image url is displayed.
@@ -182,5 +186,37 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
     checkImageUrl(targetElement, AVATAR_URL_2);
     assertTrue(isChildVisible(targetElement, '.work-badge'));
     assertTrue(isVisible(app.$.cancelButton));
+  });
+
+  test('change animation file depending on the theme', async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // The animation is only shown during the first run with the revamp enabled.
+    loadTimeData.overrideValues({
+      'screenType': ScreenType.FIRST_RUN,
+    });
+    await createManagedUserProfileNoticeApp();
+
+    // The animation is only shown in the disclosure section.
+    webUIListenerCallback('on-state-changed', State.DISCLOSURE);
+    await microtasksFinished();
+
+    const targetElement =
+        app.shadowRoot
+            .querySelector<ManagedUserProfileNoticeDisclosureRefreshElement>(
+                '#disclosure');
+    assertTrue(!!targetElement);
+
+    browserProxy.setMatchMediaMatches(false);
+    await microtasksFinished();
+
+    const avatarAnimation = targetElement.$.avatarAnimation;
+    assertTrue(isVisible(avatarAnimation));
+    assertFalse(
+        avatarAnimation.getAttribute('animation-url')!.includes('dark'));
+
+    browserProxy.setMatchMediaMatches(true);
+    await microtasksFinished();
+
+    assertTrue(avatarAnimation.getAttribute('animation-url')!.includes('dark'));
   });
 });

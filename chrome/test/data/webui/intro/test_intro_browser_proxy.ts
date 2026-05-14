@@ -4,8 +4,7 @@
 
 import type {IntroBrowserProxy} from 'chrome://intro/browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
-import {FakeMediaQueryList} from './fake_media_query_list.js';
+import {FakeMediaQueryList} from 'chrome://webui-test/fake_media_query_list.js';
 
 export class TestIntroBrowserProxy extends TestBrowserProxy implements
     IntroBrowserProxy {

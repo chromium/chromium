@@ -69,6 +69,8 @@ export interface ManagedUserProfileNoticeBrowserProxy {
    * Called when the user clicks the cancel button.
    */
   cancel(): void;
+
+  matchMedia(query: string): MediaQueryList;
 }
 
 export class ManagedUserProfileNoticeBrowserProxyImpl implements
@@ -96,6 +98,10 @@ export class ManagedUserProfileNoticeBrowserProxyImpl implements
 
   static setInstance(obj: ManagedUserProfileNoticeBrowserProxy) {
     instance = obj;
+  }
+
+  matchMedia(query: string): MediaQueryList {
+    return window.matchMedia(query);
   }
 }
 

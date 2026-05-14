@@ -488,6 +488,7 @@ webui_ts_library("build_ts") {
 
   if (!is_android) {
     in_files += [
+      "fake_media_query_list.ts",
       "fake_settings_private.ts",
       "metrics_test_support.ts",
       "mocked_metrics_reporter.ts",

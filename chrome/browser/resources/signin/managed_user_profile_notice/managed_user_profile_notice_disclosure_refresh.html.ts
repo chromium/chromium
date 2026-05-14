@@ -13,7 +13,7 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureRefreshElement) 
       <cr-lottie id="avatarAnimation"
           animation-url="${this.getAnimationUrl_()}"
           single-loop
-          ?autoplay="${!this.shouldDisableAnimations_()}">
+          ?autoplay="${!this.disableAnimations_}">
       </cr-lottie>
     ` : ''}
     <div id="avatarContainer">

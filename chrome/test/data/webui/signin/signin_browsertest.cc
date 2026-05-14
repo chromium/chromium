@@ -98,7 +98,8 @@ class SigninManagedUserProfileNoticeRefreshTest : public SigninTest {
   SigninManagedUserProfileNoticeRefreshTest() {
     feature_list_.InitWithFeatures(
         {switches::kFirstRunDesktopRefresh,
-         switches::kFirstRunDesktopChoiceScreenRefresh},
+         switches::kFirstRunDesktopChoiceScreenRefresh,
+         switches::kFirstRunDesktopRevamp},
         {});
   }
 
