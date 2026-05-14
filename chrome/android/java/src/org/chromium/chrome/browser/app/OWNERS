@@ -1,5 +1,3 @@
 file://chrome/android/OWNERS
 
 per-file MainLayoutSwitcher.java=file://chrome/browser/ui/side_ui/OWNERS
-
-per-file ...PopupCreator*=jthiesen@chromium.org
