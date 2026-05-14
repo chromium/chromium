@@ -484,6 +484,16 @@ if (enable_js_protobuf) {
   }
 }
 
+_current_dir = rebase_path(".", "//")
+_proto_out_dir_full = "$_current_dir/full/src"
+
+proto_library("google_protobuf_any_full_proto") {
+  sources = [ "src/google/protobuf/any.proto" ]
+  proto_in_dir = "src"
+  proto_out_dir = "$_proto_out_dir_full"
+  use_protobuf_full = true
+}
+
 proto_library("google_protobuf_duration_lite_proto") {
   sources = [ "src/google/protobuf/duration.proto" ]
   proto_in_dir = "src"
