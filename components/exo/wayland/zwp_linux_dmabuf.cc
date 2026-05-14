@@ -81,7 +81,6 @@ void linux_buffer_params_add(wl_client* client,
 bool ValidateLinuxBufferParams(wl_resource* resource,
                                int32_t width,
                                int32_t height,
-                               uint32_t format,
                                uint32_t flags) {
   if (width <= 0 || height <= 0) {
     wl_resource_post_error(resource,
@@ -129,14 +128,6 @@ bool ValidateLinuxBufferParams(wl_resource* resource,
     }
   }
 
-  if (!linux_buffer_params->feedback_manager->IsFormatAndModifierSupported(
-          format, modifier)) {
-    wl_resource_post_error(resource,
-                           ZWP_LINUX_BUFFER_PARAMS_V1_ERROR_INVALID_FORMAT,
-                           "format and modifier combination not supported");
-    return false;
-  }
-
   return true;
 }
 
@@ -157,7 +148,7 @@ wl_resource* create_buffer(wl_client* client,
     return nullptr;
   }
 
-  if (!ValidateLinuxBufferParams(resource, width, height, format, flags)) {
+  if (!ValidateLinuxBufferParams(resource, width, height, flags)) {
     return nullptr;
   }
 
