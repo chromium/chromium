@@ -419,6 +419,9 @@ group("gn_all") {
           "//chrome/browser/android/examples/partner_browser_customizations_provider:partner_browser_customizations_example_apk",
           "//content/shell/android:content_shell_test_apk",
         ]
+        if (defined(android_app_secondary_abi)) {
+          deps += [ "//android_webview/tools/pinlist:generate_pinlist" ]
+        }
       }
 
       if (enable_chrome_android_internal) {
@@ -598,8 +601,8 @@ group("gn_all") {
         "//tools/accessibility/inspect:ax_dump_tree",
       ]
       deps -= [
-        # Mojo in GN contains some things which are never compiled in GYP on Mac,
-        # so compilation fails on Mac. They need porting.
+        # Mojo in GN contains some things which are never compiled in GYP on
+        # Mac, so compilation fails on Mac. They need porting.
         "//mojo",
       ]
     }
@@ -649,9 +652,9 @@ group("gn_all") {
       # TODO(crbug.com/349268750): This alias exists because the official Mac
       # arm64 builders (which cross-build the x64 binaries) use the hardcoded
       # path of the `$host_toolchain/symupload` to build and run the symupload
-      # binary. And the same recipes are used on all branches!! So we would break
-      # the stable branch builders by changing the recipe to build and run the
-      # binary from the root_build_dir.
+      # binary. And the same recipes are used on all branches!! So we would
+      # break the stable branch builders by changing the recipe to build and run
+      # the binary from the root_build_dir.
       #
       # Once this code is in stable, we can land the following CLs to change how
       # symupload is built and run on Mac arm64 official builders, and then this
@@ -1493,7 +1496,8 @@ if (!running_modularize) {
       target_os != "ios" && target_os != "mac" &&
       (target_os != "linux" || use_libfuzzer || !build_with_chromium)
 
-  # Note: v8_target_cpu == arm allows using the V8 arm simulator on x86 for fuzzing.
+  # Note: v8_target_cpu == arm allows using the V8 arm simulator on x86 for
+  # fuzzing.
   assert(
       is_valid_x86_target || target_cpu != "x86" || v8_target_cpu == "arm",
       "'target_cpu=x86' is not supported for 'target_os=$target_os'. Consider omitting 'target_cpu' (default) or using 'target_cpu=x64' instead.")
@@ -1607,9 +1611,9 @@ if (is_chromeos && enable_js_type_check) {
 }
 
 if (use_remoteexec && target_os != "chromeos" && rbe_exec_root != "/") {
-  # Different nesting levels technically work, but cache hits are basically zero.
-  # for `target_os="chromeos" rbe_exec_root="/"` is used for chromeos chroot
-  # and it doesn't use 2-level out dir.
+  # Different nesting levels technically work, but cache hits are basically
+  # zero. for `target_os="chromeos" rbe_exec_root="/"` is used for chromeos
+  # chroot and it doesn't use 2-level out dir.
   assert(
       rebase_path("//", root_build_dir) == "../../",
       "In order for remote builds (use_remoteexec=true) to have cache hits, output directories should be nested two directories deep within src (e.g. \"out/Debug\", or \"foo/bar\"). Found: $root_build_dir")

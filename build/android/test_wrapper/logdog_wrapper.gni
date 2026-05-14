@@ -15,7 +15,7 @@ template("logdog_wrapper_script_test") {
                              "args",
                              "data_deps",
                            ])
-    executable = "../../build/android/test_wrapper/logdog_wrapper.py"
+    executable = "//build/android/test_wrapper/logdog_wrapper.py"
     wrapper_script = "$root_out_dir/bin/run_${target_name}"
     testonly = true
 

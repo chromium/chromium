@@ -1,0 +1,46 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/chrome_build.gni")
+import("//build/config/python.gni")
+import("//testing/test.gni")
+
+# Target to run the pinlist generator.
+# This target ensures all dependencies are built.
+if (defined(android_app_secondary_abi)) {
+  script_test("generate_pinlist") {
+    script = "//android_webview/tools/pinlist/generate_pinlist.py"
+
+    # Stream logcat from device (doesn't seem to fully work yet).
+    enable_android_wrapper = true
+
+    args = [
+      # Assume that we are running this script from the output directory.
+      "--builddir",
+      ".",
+    ]
+
+    deps = [ ":generate_pinlist_py" ]
+
+    data_deps = [
+      "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
+    ]
+
+    if (enable_chrome_android_internal) {
+      data_deps += [
+        "//chrome/test:telemetry_perf_tests_android_clank_webview_64_32_bundle",
+      ]
+    } else {
+      data_deps +=
+          [ "//chrome/test:telemetry_perf_tests_android_webview_bundle" ]
+    }
+  }
+}
+
+python_library("generate_pinlist_py") {
+  testonly = true
+  pydeps_file = "generate_pinlist.pydeps"
+  data = [ "//.vpython3" ]
+}
