@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -32,29 +33,21 @@ constexpr char kWebSpeechGeminiNanoDuration[] =
     "Accessibility.WebSpeech.GeminiNano.Duration";
 }  // namespace
 
-OnDeviceSpeechRecognitionEngine::Core::Core() = default;
+OnDeviceSpeechRecognitionEngine::Core::Core(
+    StreamCreatedCallback on_stream_created_callback)
+    : on_stream_created_callback_(std::move(on_stream_created_callback)) {}
 OnDeviceSpeechRecognitionEngine::Core::~Core() = default;
-
-void OnDeviceSpeechRecognitionEngine::Core::Deleter::operator()(
-    Core* core) const {
-  // This class is created on the UI thread and thus must be deleted on the UI
-  // thread.
-  if (!GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, core)) {
-    delete core;
-  }
-}
 
 OnDeviceSpeechRecognitionEngine::OnDeviceSpeechRecognitionEngine(
     const SpeechRecognitionSessionConfig& config)
-    : ui_task_runner_(GetUIThreadTaskRunner({})),
-      io_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      config_(config),
-      core_(new Core()) {
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OnDeviceSpeechRecognitionEngine::CreateModelClientOnUI,
-                     weak_factory_.GetWeakPtr(),
-                     config_.initial_context.global_id));
+    : config_(config) {
+  core_ = base::SequenceBound<Core>(
+      content::GetUIThreadTaskRunner({}),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &OnDeviceSpeechRecognitionEngine::OnAsrStreamCreated,
+          weak_factory_.GetWeakPtr())));
+  core_.AsyncCall(&Core::CreateModelClient)
+      .WithArgs(config_.initial_context.global_id, config_.quality);
 }
 
 OnDeviceSpeechRecognitionEngine::~OnDeviceSpeechRecognitionEngine() = default;
@@ -76,7 +69,7 @@ void OnDeviceSpeechRecognitionEngine::EndRecognition() {
                                    audio_duration_);
   }
 
-  core_.reset();
+  core_.Reset();
   asr_stream_.reset();
   asr_stream_responder_.reset();
 }
@@ -85,10 +78,8 @@ void OnDeviceSpeechRecognitionEngine::SetAudioParameters(
     media::AudioParameters audio_parameters) {
   SpeechRecognitionEngine::SetAudioParameters(audio_parameters);
 
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OnDeviceSpeechRecognitionEngine::CreateSessionOnUI,
-                     weak_factory_.GetWeakPtr()));
+  core_.AsyncCall(&Core::SetAudioParameters)
+      .WithArgs(audio_parameters.sample_rate());
 }
 
 void OnDeviceSpeechRecognitionEngine::TakeAudioChunk(const AudioChunk& data) {
@@ -143,7 +134,7 @@ void OnDeviceSpeechRecognitionEngine::OnResponse(
 
 void OnDeviceSpeechRecognitionEngine::AudioChunksEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  core_.reset();
+  core_.Reset();
   asr_stream_.reset();
   asr_stream_responder_.reset();
 }
@@ -153,42 +144,45 @@ int OnDeviceSpeechRecognitionEngine::GetDesiredAudioChunkDurationMs() const {
   return kAudioPacketIntervalMs;
 }
 
-void OnDeviceSpeechRecognitionEngine::CreateModelClientOnUI(
-    GlobalRenderFrameHostId global_id) {
-  RenderFrameHost* rfh =
-      RenderFrameHost::FromID(config_.initial_context.global_id);
+void OnDeviceSpeechRecognitionEngine::Core::CreateModelClient(
+    GlobalRenderFrameHostId global_id,
+    media::mojom::SpeechRecognitionQuality quality) {
+  RenderFrameHost* rfh = RenderFrameHost::FromID(global_id);
   if (!rfh) {
     return;
   }
 
-  core_->model_broker_client =
-      GetContentClient()->browser()->CreateModelBrokerClient(
-          rfh->GetBrowserContext());
+  model_broker_client_ = GetContentClient()->browser()->CreateModelBrokerClient(
+      rfh->GetBrowserContext());
 
   optimization_guide::mojom::OnDeviceFeature feature =
-      config_.quality == media::mojom::SpeechRecognitionQuality::kDictation
+      quality == media::mojom::SpeechRecognitionQuality::kDictation
           ? optimization_guide::mojom::OnDeviceFeature::
                 kSpeechRecognitionSmallExpertModel
           : optimization_guide::mojom::OnDeviceFeature::
                 kOnDeviceSpeechRecognition;
 
-  if (core_->model_broker_client) {
-    core_->model_broker_client->RequestAssetsFor(feature);
-    core_->model_broker_client->GetSubscriber(feature).WaitForClient(
-        base::BindOnce(&OnDeviceSpeechRecognitionEngine::OnModelClientAvailable,
-                       weak_factory_.GetWeakPtr()));
+  if (model_broker_client_) {
+    model_broker_client_->RequestAssetsFor(feature);
+    model_broker_client_->GetSubscriber(feature).WaitForClient(base::BindOnce(
+        &Core::OnModelClientAvailable, weak_factory_.GetWeakPtr()));
   }
 }
 
-void OnDeviceSpeechRecognitionEngine::OnModelClientAvailable(
+void OnDeviceSpeechRecognitionEngine::Core::OnModelClientAvailable(
     base::WeakPtr<optimization_guide::ModelClient> client) {
-  core_->model_client = client;
-  CreateSessionOnUI();
+  model_client_ = client;
+  TryCreateSession();
 }
 
-void OnDeviceSpeechRecognitionEngine::CreateSessionOnUI() {
-  if (!core_ || !core_->model_client || !audio_parameters_.IsValid() ||
-      session_created_) {
+void OnDeviceSpeechRecognitionEngine::Core::SetAudioParameters(
+    int sample_rate_hz) {
+  sample_rate_hz_ = sample_rate_hz;
+  TryCreateSession();
+}
+
+void OnDeviceSpeechRecognitionEngine::Core::TryCreateSession() {
+  if (!model_client_ || !sample_rate_hz_.has_value() || session_created_) {
     return;
   }
 
@@ -196,25 +190,24 @@ void OnDeviceSpeechRecognitionEngine::CreateSessionOnUI() {
 
   auto params = on_device_model::mojom::SessionParams::New();
   params->capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
-  core_->model_client->solution().CreateSession(
-      core_->session.BindNewPipeAndPassReceiver(), std::move(params));
+  model_client_->solution().CreateSession(session_.BindNewPipeAndPassReceiver(),
+                                          std::move(params));
 
   auto asr_options = on_device_model::mojom::AsrStreamOptions::New();
-  asr_options->sample_rate_hz = audio_parameters_.sample_rate();
+  asr_options->sample_rate_hz = *sample_rate_hz_;
 
   mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> asr_stream;
   mojo::PendingReceiver<on_device_model::mojom::AsrStreamResponder>
       asr_stream_responder;
 
-  core_->session->AsrStream(
-      std::move(asr_options), asr_stream.InitWithNewPipeAndPassReceiver(),
-      asr_stream_responder.InitWithNewPipeAndPassRemote());
+  session_->AsrStream(std::move(asr_options),
+                      asr_stream.InitWithNewPipeAndPassReceiver(),
+                      asr_stream_responder.InitWithNewPipeAndPassRemote());
 
-  io_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OnDeviceSpeechRecognitionEngine::OnAsrStreamCreated,
-                     weak_factory_.GetWeakPtr(), std::move(asr_stream),
-                     std::move(asr_stream_responder)));
+  if (on_stream_created_callback_) {
+    std::move(on_stream_created_callback_)
+        .Run(std::move(asr_stream), std::move(asr_stream_responder));
+  }
 }
 
 void OnDeviceSpeechRecognitionEngine::OnAsrStreamCreated(
