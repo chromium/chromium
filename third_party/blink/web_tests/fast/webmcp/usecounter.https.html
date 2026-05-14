@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="resources/webmcp-helpers.js"></script>
 <form id=f1>
     <input type="text" name="dummy">
     <input type="submit" id=s1>
@@ -17,7 +18,7 @@ const kModelContextExecuteTool = 5799;
 const kModelContextExecuteDeclarativeTool = 5800;
 const kModelContextExecuteDeclarativeAutosubmit = 5801;
 
-test(() => {
+promise_test(async () => {
     assert_false(internals.isUseCounted(document, kModelContextRegisterTool));
     assert_false(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
 
@@ -36,6 +37,9 @@ test(() => {
     const f1 = document.getElementById("f1");
     f1.setAttribute("toolname", "declarative1");
     f1.setAttribute("tooldescription", "dummy");
+
+    await waitForTool("declarative1");
+
     assert_true(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
     assert_false(internals.isUseCounted(document, kModelContextRegisterTool));
 }, "Registration use counters");
@@ -76,6 +80,8 @@ promise_test(async () => {
     const f2 = document.getElementById("f2");
     f2.setAttribute("toolname", "declarative2");
     f2.setAttribute("tooldescription", "dummy");
+
+    await waitForTool("declarative2");
 
     try {
         await navigator.modelContextTesting.executeTool("declarative2", "invalid json");

@@ -14,7 +14,7 @@
   const { promise: allEventsReceived, resolve } = Promise.withResolvers();
 
   function checkDone() {
-    if (addedCount === 2 && removedCount === 1) {
+    if (addedCount === 1 && removedCount === 0) {
       resolve();
     }
   }

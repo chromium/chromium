@@ -171,8 +171,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   void DidFinishParsing();
 
-  void MaybeNotifyToolChanged();
-
   // Returns registered tools, sorted by CodeUnitCompareLessThan().
   HeapVector<Member<const ToolData>> ListTools() const;
 
@@ -212,9 +210,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
       const base::UnguessableToken& invocation_id,
       base::expected<String, std::pair<ScriptValue, ScriptState*>> result);
 
-  void OnToolChange(bool force);
-  void InvokeToolChangeClosure(bool force);
-
   void MaybeRecordToolCount();
 
   HeapHashMap<String, Member<ToolData>> tool_map_;
@@ -237,10 +232,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
   HeapMojoRemote<mojom::blink::ModelContextHost> model_context_host_remote_;
   HeapMojoReceiver<mojom::blink::ModelContext, ModelContext>
       model_context_receiver_{this, nullptr};
-
-  // True when a task to invoke tool_change_closure_ is pending.
-  // This batches multiple synchronous tool changes into a single notification.
-  bool tool_change_task_pending_ = false;
 
   // true when there is a pending or completed task to record the number
   // of registered tools.

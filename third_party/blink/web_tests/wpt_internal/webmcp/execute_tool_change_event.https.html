@@ -3,6 +3,7 @@
 <link rel="author" href="mailto:masonf@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/webmcp-helpers.js"></script>
 
 <form toolname="fill_text" tooldescription="Fill some text"
   toolautosubmit target="hidden_iframe" action="about:blank">
@@ -21,7 +22,7 @@
 
 <script>
 promise_test(async t => {
-  assert_true(!!navigator.modelContextTesting);
+  await waitForTool('fill_text');
 
   let form = document.querySelector('form');
   let inputs = form.querySelectorAll('input, textarea, select');

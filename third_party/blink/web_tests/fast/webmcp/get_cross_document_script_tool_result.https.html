@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="resources/webmcp-helpers.js"></script>
 <iframe name="target"></iframe>
 <form toolautosubmit
       toolname="declarative_tool"
@@ -31,6 +32,11 @@ async function runTests() {
         if (window.testRunner) testRunner.notifyDone();
         return;
     }
+
+
+
+
+    await waitForTool("declarative_tool");
 
     try {
         const frame = document.querySelector("iframe");

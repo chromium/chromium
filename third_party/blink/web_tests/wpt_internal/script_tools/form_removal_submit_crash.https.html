@@ -3,6 +3,7 @@
 <link rel="author" href="mailto:dom@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../webmcp/resources/webmcp-helpers.js"></script>
 
 <form toolname="crash_test" tooldescription="the crashy form!" toolautosubmit target="iframe" action="about:blank">
   <input name="dummy" type="text">
@@ -31,6 +32,8 @@ promise_test(async t => {
     // See https://crbug.com/493850055.
     form.remove();
   });
+
+  await waitForTool('crash_test');
 
   // Execute the tool. This synchronously fires the `submit` event at the form.
   // The tool execution to reject since the tool definition is updated/cancelled
