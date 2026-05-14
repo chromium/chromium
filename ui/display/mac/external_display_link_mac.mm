@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/display/mac/screen_utils_mac.h"
 
 namespace ui {
@@ -14,6 +15,7 @@ namespace ui {
 // static
 scoped_refptr<DisplayLinkMac> ExternalDisplayLinkMac::GetForDisplay(
     int64_t display_id) {
+  TRACE_EVENT("gpu", "ExternalDisplayLinkMac::GetForDisplay");
   if (!IsDisplayLinkInBrowserValid(display_id)) {
     return nullptr;
   }
@@ -43,6 +45,7 @@ ExternalDisplayLinkMac::~ExternalDisplayLinkMac() {
 std::unique_ptr<VSyncCallbackMac> ExternalDisplayLinkMac::RegisterCallback(
     VSyncCallbackMac::Callback callback) {
   CHECK(!callback_for_providers_thread_);
+  TRACE_EVENT("gpu", "ExternalDisplayLinkMac::RegisterCallback");
 
   std::unique_ptr<VSyncCallbackMac> new_callback =
       base::WrapUnique(new VSyncCallbackMac(
@@ -77,6 +80,7 @@ std::unique_ptr<VSyncCallbackMac> ExternalDisplayLinkMac::RegisterCallback(
 
 void ExternalDisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   CHECK(callback_for_providers_thread_);
+  TRACE_EVENT("gpu", "ExternalDisplayLinkMac::UnregisterCallback");
   vsync_provider_->UnregisterCallback(std::move(callback_for_providers_thread_),
                                       display_id_);
 }

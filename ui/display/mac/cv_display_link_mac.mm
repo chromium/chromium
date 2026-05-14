@@ -160,6 +160,7 @@ void CVDisplayLinkMac::TryRecordDisplayLinkCreation(
 // static
 scoped_refptr<CVDisplayLinkMac> CVDisplayLinkMac::GetForDisplay(
     CGDirectDisplayID display_id) {
+  TRACE_EVENT("gpu", "CVDisplayLinkMac::GetForDisplay");
   const auto thread_id = base::PlatformThread::CurrentId();
 
   // If there already exists an object for this display on this thread, return
@@ -216,7 +217,6 @@ scoped_refptr<CVDisplayLinkMac> CVDisplayLinkMac::GetForDisplay(
     return nullptr;
   }
 
-  TRACE_EVENT("gpu", "CVDisplayLinkMac::GetForDisplay succeeded");
   TryRecordDisplayLinkCreation(display_id, true);
   return result;
 }

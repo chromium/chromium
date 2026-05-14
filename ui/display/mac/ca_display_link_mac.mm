@@ -151,6 +151,8 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
     CGDirectDisplayID display_id,
     bool in_gpu_process) {
   if (@available(macos 14.0, *)) {
+    TRACE_EVENT("gpu", "CADisplayLinkMac::GetForDisplay");
+
     scoped_refptr<CADisplayLinkMac> display_link(
         new CADisplayLinkMac(display_id));
     auto* objc_state = display_link->objc_state_.get();
@@ -191,8 +193,6 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
         setCallback:base::BindRepeating(
                         &CADisplayLinkMac::Step,
                         display_link->weak_factory_.GetWeakPtr())];
-
-    TRACE_EVENT("gpu", "CADisplayLinkMac::GetForDisplay succeeded");
 
     return display_link;
   }
