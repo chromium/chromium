@@ -743,6 +743,54 @@ void PasteIfAllowedByPolicy(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+bool IsPastePolicyCheckRequired(const content::ClipboardEndpoint& source,
+                                const content::ClipboardEndpoint& destination,
+                                const ui::ClipboardMetadata& metadata) {
+  if (SkipDataControlOrContentAnalysisChecks(destination)) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          data_controls::kEnableClipboardDataControlsAndroid)) {
+    return false;
+  }
+#else
+  if (ui::DataTransferPolicyController::HasInstance()) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  if (GetPasteVerdict(source, destination).level() !=
+      data_controls::Rule::Level::kNotSet) {
+    return true;
+  }
+
+  if (source.browser_context() &&
+      metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
+    return true;
+  }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  Profile* profile = Profile::FromBrowserContext(destination.browser_context());
+  if (profile) {
+    bool is_files =
+        metadata.format_type == ui::ClipboardFormatType::FilenamesType();
+    enterprise_connectors::AnalysisConnector connector =
+        is_files ? enterprise_connectors::AnalysisConnector::FILE_ATTACHED
+                 : enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY;
+    enterprise_connectors::ContentAnalysisDelegate::Data dialog_data;
+    if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+            profile, GetUrlFromEndpoint(destination), &dialog_data,
+            connector)) {
+      return true;
+    }
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+  return false;
+}
+
 void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardEndpoint& source,
     const ui::ClipboardMetadata& metadata,

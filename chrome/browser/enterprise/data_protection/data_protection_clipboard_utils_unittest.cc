@@ -218,9 +218,13 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
        DataTransferPolicyController_NoController) {
   // Without a controller set up, the paste should be allowed through.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto source = SourceEndpoint();
+  auto destination = DestinationEndpoint();
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  EXPECT_FALSE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
   auto paste_data = future.Get();
   EXPECT_TRUE(paste_data);
   EXPECT_EQ(paste_data->text, u"text");
@@ -245,9 +249,13 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
           });
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto source = SourceEndpoint();
+  auto destination = DestinationEndpoint();
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   testing::Mock::VerifyAndClearExpectations(&policy_controller);
   auto paste_data = future.Get();
@@ -271,9 +279,13 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
           });
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto source = SourceEndpoint();
+  auto destination = DestinationEndpoint();
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   testing::Mock::VerifyAndClearExpectations(&policy_controller);
   EXPECT_FALSE(future.Get());
@@ -285,12 +297,14 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   // Missing a destination WebContents implies the tab is gone, so null should
   // always be returned even if no DC rule is set.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      SourceEndpoint(),
-      content::ClipboardEndpoint(
-          ui::DataTransferEndpoint(GURL("https://destination.com"))),
-      {.size = 1234}, MakeClipboardPasteData("text", "image", {}),
-      future.GetCallback());
+  auto source = SourceEndpoint();
+  auto destination = content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(GURL("https://destination.com")));
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  EXPECT_FALSE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   EXPECT_FALSE(future.Get());
 }
@@ -387,7 +401,11 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
   // still be allowed and use cached data.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       first_paste_future;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), metadata,
+  auto paste_source = SourceEndpoint();
+  auto paste_destination = DestinationEndpoint();
+  EXPECT_TRUE(
+      IsPastePolicyCheckRequired(paste_source, paste_destination, metadata));
+  PasteIfAllowedByPolicy(paste_source, paste_destination, metadata,
                          MakeClipboardPasteData("to be", "replaced", {}),
                          first_paste_future.GetCallback());
 
@@ -409,7 +427,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       second_paste_future;
   ui::ClipboardMetadata new_metadata;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
+  EXPECT_FALSE(IsPastePolicyCheckRequired(paste_source, paste_destination,
+                                          new_metadata));
+  PasteIfAllowedByPolicy(paste_source, paste_destination, new_metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          second_paste_future.GetCallback());
 
@@ -476,8 +496,11 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   // the data isn't allowed to be replaced back.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       first_paste_future;
-  PasteIfAllowedByPolicy(NoBrowserContextSourceEndpoint(),
-                         DestinationEndpoint(), metadata,
+  auto first_paste_source = NoBrowserContextSourceEndpoint();
+  auto first_paste_destination = DestinationEndpoint();
+  EXPECT_FALSE(IsPastePolicyCheckRequired(first_paste_source,
+                                          first_paste_destination, metadata));
+  PasteIfAllowedByPolicy(first_paste_source, first_paste_destination, metadata,
                          MakeClipboardPasteData("to be", "kept", {}),
                          first_paste_future.GetCallback());
 
@@ -500,7 +523,12 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       second_paste_future;
   ui::ClipboardMetadata new_metadata;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
+  auto second_paste_source = SourceEndpoint();
+  auto second_paste_destination = DestinationEndpoint();
+  EXPECT_FALSE(IsPastePolicyCheckRequired(
+      second_paste_source, second_paste_destination, new_metadata));
+  PasteIfAllowedByPolicy(second_paste_source, second_paste_destination,
+                         new_metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          second_paste_future.GetCallback());
 
@@ -575,7 +603,11 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   // still be allowed and use cached data.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       first_paste_future;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), metadata,
+  auto paste_source = SourceEndpoint();
+  auto paste_destination = DestinationEndpoint();
+  EXPECT_TRUE(
+      IsPastePolicyCheckRequired(paste_source, paste_destination, metadata));
+  PasteIfAllowedByPolicy(paste_source, paste_destination, metadata,
                          content::ClipboardPasteData(),
                          first_paste_future.GetCallback());
 
@@ -595,7 +627,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       second_paste_future;
   ui::ClipboardMetadata new_metadata;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
+  EXPECT_FALSE(IsPastePolicyCheckRequired(paste_source, paste_destination,
+                                          new_metadata));
+  PasteIfAllowedByPolicy(paste_source, paste_destination, new_metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          second_paste_future.GetCallback());
 
@@ -675,7 +709,11 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   // still be allowed and use cached data.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       first_text_paste_future;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), text_metadata,
+  auto paste_source = SourceEndpoint();
+  auto paste_destination = DestinationEndpoint();
+  EXPECT_TRUE(IsPastePolicyCheckRequired(paste_source, paste_destination,
+                                         text_metadata));
+  PasteIfAllowedByPolicy(paste_source, paste_destination, text_metadata,
                          MakeClipboardPasteData("to be", "replaced", {}),
                          first_text_paste_future.GetCallback());
 
@@ -700,7 +738,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       second_paste_future;
   ui::ClipboardMetadata new_metadata;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
+  EXPECT_FALSE(IsPastePolicyCheckRequired(paste_source, paste_destination,
+                                          new_metadata));
+  PasteIfAllowedByPolicy(paste_source, paste_destination, new_metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          second_paste_future.GetCallback());
 
@@ -811,7 +851,11 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
   // still be allowed and use cached data.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       first_paste_future;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), metadata,
+  auto paste_source = SourceEndpoint();
+  auto paste_destination = DestinationEndpoint();
+  EXPECT_TRUE(
+      IsPastePolicyCheckRequired(paste_source, paste_destination, metadata));
+  PasteIfAllowedByPolicy(paste_source, paste_destination, metadata,
                          MakeClipboardPasteData("to be", "replaced", {}),
                          first_paste_future.GetCallback());
 
@@ -841,7 +885,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       second_paste_future;
   ui::ClipboardMetadata new_metadata;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
+  EXPECT_FALSE(IsPastePolicyCheckRequired(paste_source, paste_destination,
+                                          new_metadata));
+  PasteIfAllowedByPolicy(paste_source, paste_destination, new_metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          second_paste_future.GetCallback());
 
@@ -915,9 +961,13 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
 
   // Without a controller set up, the paste should be allowed through.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto source = SourceEndpoint();
+  auto destination = DestinationEndpoint();
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  EXPECT_FALSE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
   auto paste_data = future.Get();
   EXPECT_TRUE(paste_data);
   EXPECT_EQ(paste_data->text, u"text");

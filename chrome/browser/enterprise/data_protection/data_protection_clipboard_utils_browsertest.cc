@@ -166,11 +166,13 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(std::nullopt),
-      /*destination=*/CreateURLClipboardEndpoint("https://google.com"),
-      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("text", "image", {}),
-      future.GetCallback());
+  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto destination = CreateURLClipboardEndpoint("https://google.com");
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  EXPECT_FALSE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   auto paste_data = future.Get();
   EXPECT_TRUE(paste_data);
@@ -189,15 +191,16 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/CreateURLClipboardEndpoint(test_url_0()),
-      /*destination=*/CreateURLClipboardEndpoint(test_url_0()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::HtmlType(),
-      },
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto source = CreateURLClipboardEndpoint(test_url_0());
+  auto destination = CreateURLClipboardEndpoint(test_url_0());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::HtmlType(),
+  };
+  EXPECT_FALSE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   auto paste_data = future.Get();
   EXPECT_TRUE(paste_data);
@@ -257,15 +260,16 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(std::nullopt),
-      /*destination=*/CreateURLClipboardEndpoint(test_url_1()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::PlainTextType(),
-      },
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto destination = CreateURLClipboardEndpoint(test_url_1());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   auto paste_data = future.Get();
   EXPECT_FALSE(paste_data);
@@ -328,15 +332,16 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(std::nullopt),
-      /*destination=*/CreateURLClipboardEndpoint(test_url_0()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::SvgType(),
-      },
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto destination = CreateURLClipboardEndpoint(test_url_0());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::SvgType(),
+  };
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   helper.WaitForDialogToInitialize();
   run_loop_warn.Run();
@@ -443,15 +448,16 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(std::nullopt),
-      /*destination=*/CreateURLClipboardEndpoint(test_url_1()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::PngType(),
-      },
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto destination = CreateURLClipboardEndpoint(test_url_1());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PngType(),
+  };
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   helper.WaitForDialogToInitialize();
 
@@ -527,24 +533,27 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/
-      content::ClipboardEndpoint(
-          ui::DataTransferEndpoint(GURL(test_url_0())),
-          base::BindLambdaForTesting(
-              [&source_profile]() -> content::BrowserContext* {
-                return source_profile;
-              }),
-          *contents()->GetPrimaryMainFrame()),
-      /*destination=*/
+  auto source = content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(GURL(test_url_0())),
+      base::BindLambdaForTesting(
+          [&source_profile]() -> content::BrowserContext* {
+            return source_profile;
+          }),
+      *contents()->GetPrimaryMainFrame());
+  auto destination =
       content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL(test_url_1())),
                                  base::BindLambdaForTesting([this]() {
                                    return contents()->GetBrowserContext();
                                  }),
-                                 *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/
-      {.size = 1234, .format_type = ui::ClipboardFormatType::PlainTextType()},
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+                                 *contents()->GetPrimaryMainFrame());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   auto paste_data = future.Get();
   EXPECT_FALSE(paste_data);
@@ -614,24 +623,27 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/
-      content::ClipboardEndpoint(
-          ui::DataTransferEndpoint(GURL(test_url_0())),
-          base::BindLambdaForTesting(
-              [&source_profile]() -> content::BrowserContext* {
-                return source_profile;
-              }),
-          *contents()->GetPrimaryMainFrame()),
-      /*destination=*/
+  auto source = content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(GURL(test_url_0())),
+      base::BindLambdaForTesting(
+          [&source_profile]() -> content::BrowserContext* {
+            return source_profile;
+          }),
+      *contents()->GetPrimaryMainFrame());
+  auto destination =
       content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL(test_url_1())),
                                  base::BindLambdaForTesting([this]() {
                                    return contents()->GetBrowserContext();
                                  }),
-                                 *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/
-      {.size = 1234, .format_type = ui::ClipboardFormatType::PlainTextType()},
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+                                 *contents()->GetPrimaryMainFrame());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   // The dialog will stay up until a user action dismisses it, so `future`
   // shouldn't be ready yet.
@@ -741,24 +753,27 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/
-      content::ClipboardEndpoint(
-          ui::DataTransferEndpoint(GURL(test_url_0())),
-          base::BindLambdaForTesting(
-              [&source_profile]() -> content::BrowserContext* {
-                return source_profile;
-              }),
-          *contents()->GetPrimaryMainFrame()),
-      /*destination=*/
+  auto source = content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(GURL(test_url_0())),
+      base::BindLambdaForTesting(
+          [&source_profile]() -> content::BrowserContext* {
+            return source_profile;
+          }),
+      *contents()->GetPrimaryMainFrame());
+  auto destination =
       content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL(test_url_1())),
                                  base::BindLambdaForTesting([this]() {
                                    return contents()->GetBrowserContext();
                                  }),
-                                 *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/
-      {.size = 1234, .format_type = ui::ClipboardFormatType::PlainTextType()},
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+                                 *contents()->GetPrimaryMainFrame());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   // The dialog will stay up until a user action dismisses it, so `future`
   // shouldn't be ready yet.
@@ -825,15 +840,16 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(std::nullopt),
-      /*destination=*/CreateURLClipboardEndpoint(test_url_0()),
-      /*metadata=*/
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::SvgType(),
-      },
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto destination = CreateURLClipboardEndpoint(test_url_0());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::SvgType(),
+  };
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   ASSERT_FALSE(helper.dialog());
   auto paste_data = future.Get();
@@ -904,24 +920,27 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/
-      content::ClipboardEndpoint(
-          ui::DataTransferEndpoint(GURL(test_url_0())),
-          base::BindLambdaForTesting(
-              [&source_profile]() -> content::BrowserContext* {
-                return source_profile;
-              }),
-          *contents()->GetPrimaryMainFrame()),
-      /*destination=*/
+  auto source = content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(GURL(test_url_0())),
+      base::BindLambdaForTesting(
+          [&source_profile]() -> content::BrowserContext* {
+            return source_profile;
+          }),
+      *contents()->GetPrimaryMainFrame());
+  auto destination =
       content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL(test_url_1())),
                                  base::BindLambdaForTesting([this]() {
                                    return contents()->GetBrowserContext();
                                  }),
-                                 *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/
-      {.size = 1234, .format_type = ui::ClipboardFormatType::PlainTextType()},
-      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+                                 *contents()->GetPrimaryMainFrame());
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         future.GetCallback());
 
   ASSERT_FALSE(helper.dialog());
   auto paste_data = future.Get();
@@ -1606,10 +1625,13 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       paste_future;
+  auto paste_source = CreateURLClipboardEndpoint("https://source.com/");
+  auto paste_destination =
+      CreateURLClipboardEndpoint("https://destination.com");
+  EXPECT_TRUE(
+      IsPastePolicyCheckRequired(paste_source, paste_destination, metadata));
   // Simulate clipboard paste data being replaced.
-  PasteIfAllowedByPolicy(CreateURLClipboardEndpoint("https://source.com/"),
-                         CreateURLClipboardEndpoint("https://destination.com"),
-                         metadata,
+  PasteIfAllowedByPolicy(paste_source, paste_destination, metadata,
                          MakeClipboardPasteData("replacement", "", {}),
                          paste_future.GetCallback());
 
@@ -1709,17 +1731,20 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // original data is replaced back after pasting.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       paste_future;
-  PasteIfAllowedByPolicy(
-      CreateURLClipboardEndpoint("https://source.com/"),
-      CreateURLClipboardEndpoint("https://destination.com"),
-      {
-          .size = 1234,
-          .format_type = ui::ClipboardFormatType::PlainTextType(),
-          .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-              ui::ClipboardBuffer::kCopyPaste),
-      },
-      MakeClipboardPasteData("replacement", "", {}),
-      paste_future.GetCallback());
+  auto source = CreateURLClipboardEndpoint("https://source.com/");
+  auto destination = CreateURLClipboardEndpoint("https://destination.com");
+  ui::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+      .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste),
+  };
+  // Even though no rule is triggered by the following `PasteIfAllowedByPolicy`
+  // call, the policy check is still required to replace back the data.
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
+  PasteIfAllowedByPolicy(source, destination, metadata,
+                         MakeClipboardPasteData("replacement", "", {}),
+                         paste_future.GetCallback());
   auto paste_data = paste_future.Get();
   EXPECT_TRUE(paste_data);
   EXPECT_EQ(paste_data->text, kText);
