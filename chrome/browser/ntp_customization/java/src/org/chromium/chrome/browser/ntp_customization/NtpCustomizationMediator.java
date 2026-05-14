@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_TIP;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
@@ -60,11 +61,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
     // Defines the back navigation hierarchy for theme-related bottom sheets. <Child, Parent>
-    private final Map<Integer, Integer> mThemeBackNavigationMap =
-            Map.ofEntries(
-                    Map.entry(SINGLE_THEME_COLLECTION, THEME_COLLECTIONS),
-                    Map.entry(THEME_COLLECTIONS, THEME),
-                    Map.entry(CHROME_COLORS, THEME));
+    private final Map<Integer, Integer> mThemeBackNavigationMap = new HashMap<>();
 
     /**
      * A map of <{@link NtpCustomizationCoordinator.BottomSheetType}, view's position index in the
@@ -108,6 +105,11 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
         mTypeToListenersMap = new HashMap<>();
         mContext = context;
         mListContent = buildListContent(context);
+
+        // Initializes the back navigation map.
+        mThemeBackNavigationMap.put(SINGLE_THEME_COLLECTION, THEME_COLLECTIONS);
+        mThemeBackNavigationMap.put(THEME_COLLECTIONS, THEME);
+        mThemeBackNavigationMap.put(CHROME_COLORS, THEME);
 
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
@@ -180,7 +182,7 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
     void backPressOnCurrentBottomSheet() {
         if (mCurrentBottomSheet == null) return;
 
-        if (mCurrentBottomSheet == MAIN) {
+        if (mCurrentBottomSheet == MAIN || mCurrentBottomSheet == THEME_TIP) {
             dismissBottomSheet(/* animate= */ true);
             return;
         }
@@ -362,6 +364,10 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
         mContainerPropertyModel.set(
                 MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE,
                 isMvtVisible ? R.string.text_on : R.string.text_off);
+    }
+
+    void setParentForBackOperations(Integer childType, Integer parentType) {
+        mThemeBackNavigationMap.put(childType, parentType);
     }
 
     /** Returns the source id of the feed section subtitle. */

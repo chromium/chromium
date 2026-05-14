@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_TIP;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
@@ -197,7 +198,7 @@ public class NtpCustomizationUtils {
                 return R.string.ntp_customization_ntp_cards_bottom_sheet;
             case FEED:
                 return R.string.ntp_customization_feed_bottom_sheet;
-            case THEME:
+            case THEME, THEME_TIP:
                 return R.string.ntp_customization_theme_bottom_sheet;
             case THEME_COLLECTIONS:
             case SINGLE_THEME_COLLECTION:
@@ -225,7 +226,7 @@ public class NtpCustomizationUtils {
                 return R.string.ntp_customization_ntp_cards_bottom_sheet_opened_full;
             case FEED:
                 return R.string.ntp_customization_feed_bottom_sheet_opened_full;
-            case THEME:
+            case THEME, THEME_TIP:
                 return R.string.ntp_customization_theme_bottom_sheet_opened_full;
             case THEME_COLLECTIONS:
             case SINGLE_THEME_COLLECTION:
@@ -253,7 +254,7 @@ public class NtpCustomizationUtils {
                 return R.string.ntp_customization_ntp_cards_bottom_sheet_opened_half;
             case FEED:
                 return R.string.ntp_customization_feed_bottom_sheet_opened_half;
-            case THEME:
+            case THEME, THEME_TIP:
                 return R.string.ntp_customization_theme_bottom_sheet_opened_half;
             case THEME_COLLECTIONS:
             case SINGLE_THEME_COLLECTION:

@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_TIP;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
@@ -282,6 +283,20 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
+    public void testBackPressOnThemeTipBottomSheet() {
+        mMediator.setCurrentBottomSheetForTesting(THEME_TIP);
+
+        mMediator.backPressOnCurrentBottomSheet();
+
+        // Verifies that hideContent() is called and mCurrentBottomSheet is set to null.
+        verify(mBottomSheetController).hideContent(eq(mBottomSheetContent), eq(true));
+        assertNull(mMediator.getCurrentBottomSheetType());
+
+        // Verifies that showBottomSheet() is not called.
+        verify(mViewFlipperPropertyModel, never()).set(eq(LAYOUT_TO_DISPLAY), anyInt());
+    }
+
+    @Test
     public void testBackPressOnNtpCardsBottomSheet() {
         mViewFlipperMap.put(BottomSheetType.MAIN, 10);
         mMediator.setCurrentBottomSheetForTesting(BottomSheetType.NTP_CARDS);
@@ -522,6 +537,30 @@ public class NtpCustomizationMediatorUnitTest {
         mMediator.updateFeedSectionSubtitle(/* isFeedVisible= */ false);
         verify(mContainerPropertyModel)
                 .set(eq(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE), eq(R.string.text_off));
+    }
+
+    @Test
+    public void testSetParentForBackOperations() {
+        mMediator.registerBottomSheetLayout(THEME_TIP);
+        mMediator.registerBottomSheetLayout(THEME);
+        mMediator.registerBottomSheetLayout(MAIN);
+        int themeTipIndex = mViewFlipperMap.get(THEME_TIP);
+        int mainIndex = mViewFlipperMap.get(MAIN);
+
+        mMediator.setCurrentBottomSheetForTesting(THEME);
+
+        // Initially THEME should go back to MAIN (if not in map)
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(MAIN, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(mainIndex));
+
+        // Set THEME_TIP as parent of THEME
+        mMediator.setParentForBackOperations(THEME, THEME_TIP);
+        mMediator.setCurrentBottomSheetForTesting(THEME);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(THEME_TIP, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(themeTipIndex));
     }
 
     @Test

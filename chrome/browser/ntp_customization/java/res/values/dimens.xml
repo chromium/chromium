@@ -49,4 +49,8 @@ found in the LICENSE file.
   <dimen name="ntp_customization_gradient_toolbar_height">120dp</dimen>
   <dimen name="ntp_customization_preview_dialog_bottom_gradient_height">240dp</dimen>
   <dimen name="ntp_customization_theme_sync_history_recyclerview_padding">16dp</dimen>
+
+  <dimen name="ntp_customization_theme_tip_sheet_button_padding">4dp</dimen>
+  <dimen name="ntp_customization_theme_tip_sheet_horizontal_margin">24dp</dimen>
+  <dimen name="ntp_customization_theme_main_sheet_vertical_margin">20dp</dimen>
 </resources>
