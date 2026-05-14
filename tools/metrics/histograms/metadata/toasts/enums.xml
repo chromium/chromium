@@ -98,6 +98,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="Unsafe site report successfully sent"/>
   <int value="38" label="Send Tab To Self failed to send"/>
   <int value="39" label="Send Tab To Self successfully sent but throttled"/>
+  <int value="40" label="Default browser update success"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

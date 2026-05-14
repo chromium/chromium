@@ -12,6 +12,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "default_browser_setter.h"
 
 namespace default_browser {
@@ -103,6 +109,21 @@ void DefaultBrowserController::OnDismissed() {
 void DefaultBrowserController::OnSetterExecutionComplete(
     DefaultBrowserState default_browser_state) {
   RecordResultMetric(default_browser_state == DefaultBrowserState::IS_DEFAULT);
+
+  if (default_browser_state == DefaultBrowserState::IS_DEFAULT) {
+    BrowserWindowInterface* browser =
+        GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+    if (browser && browser->GetActiveTabInterface() &&
+        browser->GetActiveTabInterface()->GetContents()) {
+      ToastController* toast_controller =
+          ToastController::MaybeGetForWebContents(
+              browser->GetActiveTabInterface()->GetContents());
+      if (toast_controller) {
+        toast_controller->MaybeShowToast(
+            ToastParams(ToastId::kDefaultBrowserUpdateSuccess));
+      }
+    }
+  }
 
   std::move(completion_callback_).Run(default_browser_state);
 }

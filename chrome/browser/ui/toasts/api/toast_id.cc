@@ -87,6 +87,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "SendTabToSelfSuccessThrottled";
     case ToastId::kReportUnsafeSiteConfirmation:
       return "ReportUnsafeSiteConfirmation";
+    case ToastId::kDefaultBrowserUpdateSuccess:
+      return "DefaultBrowserUpdateSuccess";
   }
 
   NOTREACHED();

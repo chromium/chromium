@@ -542,4 +542,12 @@ void ToastService::RegisterToasts(
       ToastSpecification::Builder(kCheckOldIcon,
                                   IDS_REPORT_UNSAFE_SITE_CONFIRMATION_TOAST)
           .Build());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  toast_registry_->RegisterToast(
+      ToastId::kDefaultBrowserUpdateSuccess,
+      ToastSpecification::Builder(kCheckOldIcon,
+                                  IDS_DEFAULT_BROWSER_SUCCESS_TOAST_BODY)
+          .Build());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }  // RegisterToasts() end.

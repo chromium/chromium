@@ -12,11 +12,17 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_notification_observer.h"
+#include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/default_browser/test_support/fake_shell_delegate.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -437,5 +443,24 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+using DefaultBrowserManagerBrowserTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerBrowserTest, OnAcceptedShowsToast) {
+  DefaultBrowserController controller(
+      std::make_unique<FakeDefaultBrowserSetter>(),
+      DefaultBrowserEntrypointType::kSettingsPage);
+
+  base::test::TestFuture<DefaultBrowserState> future;
+  controller.OnAccepted(future.GetCallback());
+  EXPECT_EQ(future.Get(), DefaultBrowserState::IS_DEFAULT);
+
+  ToastController* toast_controller =
+      browser()->browser_window_features()->toast_controller();
+  ASSERT_TRUE(toast_controller);
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+  EXPECT_EQ(toast_controller->GetCurrentToastId(),
+            ToastId::kDefaultBrowserUpdateSuccess);
+}
 
 }  // namespace default_browser
