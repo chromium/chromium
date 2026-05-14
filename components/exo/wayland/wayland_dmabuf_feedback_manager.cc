@@ -391,6 +391,22 @@ bool WaylandDmabufFeedbackManager::IsFormatSupported(uint32_t format) const {
   return drm_formats_and_modifiers_.contains(format);
 }
 
+bool WaylandDmabufFeedbackManager::IsFormatAndModifierSupported(
+    uint32_t format,
+    uint64_t modifier) const {
+  auto it = drm_formats_and_modifiers_.find(format);
+  if (it == drm_formats_and_modifiers_.end()) {
+    return false;
+  }
+
+  for (const auto& [index, m] : it->second) {
+    if (m == modifier) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void WaylandDmabufFeedbackManager::SendFormatsAndModifiers(
     wl_resource* resource) const {
   for (const auto& [format, modifier_entries] : drm_formats_and_modifiers_) {

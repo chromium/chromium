@@ -53,6 +53,7 @@ class WaylandDmabufFeedbackManager {
   uint32_t GetVersionSupportedByPlatform() const { return version_; }
 
   bool IsFormatSupported(uint32_t format) const;
+  bool IsFormatAndModifierSupported(uint32_t format, uint64_t modifier) const;
   void SendFormatsAndModifiers(wl_resource* resource) const;
   void GetDefaultFeedback(wl_client* client,
                           wl_resource* dma_buf_resource,
