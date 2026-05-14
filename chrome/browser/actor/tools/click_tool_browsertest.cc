@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -581,22 +582,31 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolScaledBrowserTest,
 
 class ActorClickToolPDFBrowserTest
     : public ActorToolsTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ActorClickToolPDFBrowserTest() {
-    if (BypassTOUValidationForGuestView()) {
-      feature_list_.InitWithFeatures({kActorBypassTOUValidationForGuestView},
-                                     {chrome_pdf::features::kPdfOopif});
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (BypassGuestViewTOU()) {
+      enabled_features.push_back(kActorBypassTOUValidationForGuestView);
     } else {
-      feature_list_.InitWithFeatures({},
-                                     {chrome_pdf::features::kPdfOopif,
-                                      kActorBypassTOUValidationForGuestView});
+      disabled_features.push_back(kActorBypassTOUValidationForGuestView);
     }
+
+    if (UsePdfOopif()) {
+      enabled_features.push_back(chrome_pdf::features::kPdfOopif);
+    } else {
+      disabled_features.push_back(chrome_pdf::features::kPdfOopif);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~ActorClickToolPDFBrowserTest() override = default;
 
-  bool BypassTOUValidationForGuestView() { return GetParam(); }
+  bool BypassGuestViewTOU() { return std::get<0>(GetParam()); }
+  bool UsePdfOopif() { return std::get<1>(GetParam()); }
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
@@ -606,22 +616,17 @@ class ActorClickToolPDFBrowserTest
 
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "BypassGuestViewTOU" : "CheckGuestViewTOU";
+    return base::StrCat(
+        {std::get<0>(info.param) ? "BypassGuestViewTOU" : "CheckGuestViewTOU",
+         "_",
+         std::get<1>(info.param) ? "PdfOopifEnabled" : "PdfOopifDisabled"});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Ensure clicks can rotate on a PDF.
-// TODO(crbug.com/485814156): Re-enable the test on Linux.
-// TODO(crbug.com/500937645): Re-enable the test on Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_Click DISABLED_Click
-#else
-#define MAYBE_Click Click
-#endif
-IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, MAYBE_Click) {
+IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, Click) {
   const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -643,7 +648,7 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, MAYBE_Click) {
         MakeClickRequest(*active_tab(), gfx::Point(650, 25));
     ActResultFuture future;
     actor_task().Act(ToRequestList(action), future.GetCallback());
-    if (BypassTOUValidationForGuestView()) {
+    if (BypassGuestViewTOU() || UsePdfOopif()) {
       // This should always pass the first time.
       ExpectOkResult(future);
       break;
@@ -661,9 +666,47 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, MAYBE_Click) {
   }
 }
 
+// Ensure clicks work on the PDF content area.
+IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, ClickContent) {
+  if (!BypassGuestViewTOU()) {
+    GTEST_SKIP()
+        << "Skipping ClickContent test because BypassGuestViewTOU is false";
+  }
+  // TODO(b/458776473): Enable this for non-OOPIF PDF as well.
+  // In non-OOPIF PDF viewer, the APC hit test and live DOM hit test might land
+  // on different nested frames within the same PDF extension, causing the
+  // frame validation to fail.
+  if (!UsePdfOopif()) {
+    GTEST_SKIP() << "Skipping ClickContent test because UsePdfOopif is false";
+  }
+  const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  WaitForCondition(
+      base::BindLambdaForTesting([this]() {
+        auto* pdf_helper =
+            pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
+        if (!pdf_helper) {
+          return false;
+        }
+        return pdf_helper->IsDocumentLoadComplete() &&
+               web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame();
+      }),
+      "PDF Loaded");
+
+  GetPageApc();
+  // Point(400, 400) should hit the PDF content area.
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*active_tab(), gfx::Point(400, 400));
+  ActResultFuture future;
+  actor_task().Act(ToRequestList(action), future.GetCallback());
+  ExpectOkResult(future);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          ActorClickToolPDFBrowserTest,
-                         ::testing::Bool(),
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()),
                          &ActorClickToolPDFBrowserTest::DescribeParams);
 
 #endif  // BUILDFLAG(ENABLE_PDF) && !BUILDFLAG(IS_CHROMEOS)

@@ -45,6 +45,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/common/pdf_util.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -90,17 +91,26 @@ bool ValidateTargetFrameCandidate(
                               candidate_frame->GetRenderWidgetHost()) {
     return true;
   }
-
 #if BUILDFLAG(ENABLE_PDF)
-  // TODO(b/458776473): Remove once PdfOopif is shipped. The APC is sent
-  // correctly for these pages.
   if (base::FeatureList::IsEnabled(kActorBypassTOUValidationForGuestView) &&
-      !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      apc_target_frame && !candidate_frame->GetParent() &&
-      !candidate_frame->IsFencedFrameRoot() &&
-      candidate_frame->GetParentOrOuterDocumentOrEmbedder() ==
-          apc_target_frame) {
-    return true;
+      apc_target_frame) {
+    // Check if this is the menu bar in non-OOPIF PDF.
+    if (!chrome_pdf::features::IsOopifPdfEnabled() &&
+        !candidate_frame->GetParent() &&
+        !candidate_frame->IsFencedFrameRoot() &&
+        candidate_frame->GetParentOrOuterDocumentOrEmbedder() ==
+            apc_target_frame) {
+      return true;
+    }
+
+    // Check if this is the PDF child frame. For pdf child frame,
+    // apc_target_frame is the parent frame when OOPIF is enabled. However, when
+    // OOPIF is disabled, apc_target_frame will live in a different process from
+    // the candidate frame, and thus we cannot easily compare them.
+    return chrome_pdf::features::IsOopifPdfEnabled() &&
+           candidate_frame->GetParent() == apc_target_frame &&
+           IsPdfExtensionOrigin(
+               candidate_frame->GetParent()->GetLastCommittedOrigin());
   }
 #endif
 

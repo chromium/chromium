@@ -206,6 +206,7 @@ source_set("impl") {
     "//components/page_load_metrics/browser",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/pdf/common:util",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/tabs:public",
