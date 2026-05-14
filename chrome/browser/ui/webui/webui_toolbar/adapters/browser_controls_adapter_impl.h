@@ -31,6 +31,7 @@ class BrowserControlsAdapterImpl : public BrowserControlsAdapter {
   void BackButtonHovered() override;
   void CreateNewSplitTab() override;
   void NavigateHome(WindowOpenDisposition disposition) override;
+  void Navigate(const GURL& url) override;
   webui_toolbar::TabSplitStatus ComputeSplitTabStatus() override;
 
  private:

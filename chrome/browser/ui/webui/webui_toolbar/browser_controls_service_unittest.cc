@@ -308,6 +308,14 @@ TEST_F(BrowserControlsServiceTest, NavigateHome_ShiftClick) {
             toy_browser().received_commands().back().disposition);
 }
 
+// Tests that calling Navigate() executes the navigate command on the adapter.
+TEST_F(BrowserControlsServiceTest, Navigate) {
+  GURL test_url("https://www.example.test/");
+  std::ignore = service().Navigate(test_url);
+  EXPECT_EQ(1ul, toy_browser().received_urls().size());
+  EXPECT_EQ(test_url, toy_browser().received_urls().back());
+}
+
 }  // namespace
 
 }  // namespace browser_controls_api

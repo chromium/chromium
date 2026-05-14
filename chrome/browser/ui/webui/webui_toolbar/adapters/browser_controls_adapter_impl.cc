@@ -68,6 +68,10 @@ void BrowserControlsAdapterImpl::NavigateHome(
   command_updater_->ExecuteCommandWithDisposition(IDC_HOME, disposition);
 }
 
+void BrowserControlsAdapterImpl::Navigate(const GURL& url) {
+  browser_.get().OpenGURL(url, WindowOpenDisposition::CURRENT_TAB);
+}
+
 webui_toolbar::TabSplitStatus
 BrowserControlsAdapterImpl::ComputeSplitTabStatus() {
   return webui_toolbar::ComputeTabSplitStatus(&browser_.get());

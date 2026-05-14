@@ -20,6 +20,8 @@ mojom("mojom") {
   public_deps = [
     ":mojom_data_model",
     "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
 
   # Generate TypeScript bindings for WebUI.

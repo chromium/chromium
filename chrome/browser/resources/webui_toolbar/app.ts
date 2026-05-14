@@ -196,6 +196,9 @@ export class ToolbarAppElement extends AppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
+    this.addEventListener('dragover', this.onDragOver_.bind(this));
+    this.addEventListener('drop', this.onDrop_.bind(this));
+
     // Initial setup of CSS variables
     this.style.setProperty(
         '--split-tabs-indicator-width',
@@ -268,6 +271,35 @@ export class ToolbarAppElement extends AppElementBase {
     Promise.all(promises).then(() => {
       this.browserProxy_.toolbarUIHandler.onPageInitialized();
     });
+  }
+
+  protected onDragOver_(e: DragEvent) {
+    if (e.dataTransfer &&
+        (e.dataTransfer.types.includes('text/uri-list') ||
+         e.dataTransfer.types.includes('Files'))) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  protected onDrop_(e: DragEvent) {
+    if (e.defaultPrevented) {
+      return;
+    }
+
+    e.preventDefault();
+    if (!e.dataTransfer) {
+      return;
+    }
+
+    const url = e.dataTransfer.getData('text/uri-list');
+    if (url) {
+      this.browserProxy_.browserControlsHandler.navigate(
+          url.split('\n')[0]!);
+    } else if (e.dataTransfer.types.includes('Files')) {
+      this.browserProxy_.toolbarUIHandler.onToolbarDropFile(
+          {x: e.clientX, y: e.clientY});
+    }
   }
 }
 

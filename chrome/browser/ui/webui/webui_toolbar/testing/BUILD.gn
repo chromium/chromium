@@ -16,5 +16,6 @@ source_set("testing") {
     "//components/browser_apis/browser_controls:mojom_data_model",
     "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
     "//ui/base:types",
+    "//url",
   ]
 }

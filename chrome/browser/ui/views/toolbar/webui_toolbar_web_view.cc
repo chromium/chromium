@@ -755,6 +755,12 @@ void WebUIToolbarWebView::OnHomeButtonDropFile(
   }
 }
 
+void WebUIToolbarWebView::OnToolbarDropFile(const gfx::PointF& drop_position) {
+  if (std::optional<GURL> url = web_view_->ConsumeDroppedUrl(drop_position)) {
+    browser_->OpenGURL(*url, WindowOpenDisposition::CURRENT_TAB);
+  }
+}
+
 void WebUIToolbarWebView::OnReloadControlStateChanged(
     toolbar_ui_api::mojom::ReloadControlStatePtr state) {
   if (*state != *last_queued_state_.reload_control_state) {

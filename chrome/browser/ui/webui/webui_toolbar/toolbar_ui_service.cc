@@ -170,4 +170,10 @@ void ToolbarUIService::OnHomeButtonDropFile(const gfx::PointF& drop_position) {
   }
 }
 
+void ToolbarUIService::OnToolbarDropFile(const gfx::PointF& drop_position) {
+  if (delegate_) {
+    delegate_->OnToolbarDropFile(drop_position);
+  }
+}
+
 }  // namespace toolbar_ui_api

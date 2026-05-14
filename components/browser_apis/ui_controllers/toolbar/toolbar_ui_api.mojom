@@ -83,12 +83,15 @@ interface ToolbarUIService {
 
   // Called when a collapse animation finishes.
   OnLhsChipCollapseAnimationEnded(LhsChipIdentifier identifier);
-  // Sets the home page to the currently dragged url, if any, and displays the
 
+  // Sets the home page to the currently dragged url, if any, and displays the
   // home page undo bubble.
   OnHomeButtonDropUrl(url.mojom.Url url);
 
   // Sets the home page to the currently dragged file, if any, and displays the
   // home page undo bubble.
   OnHomeButtonDropFile(gfx.mojom.PointF drop_position);
+
+  // Navigates the current tab to the currently dragged file at `drop_position`.
+  OnToolbarDropFile(gfx.mojom.PointF drop_position);
 };

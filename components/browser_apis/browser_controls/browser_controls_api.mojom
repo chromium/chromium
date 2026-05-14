@@ -7,6 +7,7 @@ module browser_controls_api.mojom;
 import "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom";
 import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
+import "url/mojom/url.mojom";
 
 // BrowserControlsService defines methods to be called from the WebUI to the
 // browser-side. This interface consolidates various browser control actions.
@@ -46,5 +47,9 @@ interface BrowserControlsService {
 
   // Navigates to the user's home page.
   NavigateHome(array<ClickDispositionFlag> click_flags)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Navigates the current tab to `url`.
+  Navigate(url.mojom.Url url)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };

@@ -88,6 +88,7 @@ export class HomeButtonElement extends CrLitElement {
 
   protected onDrop_(e: DragEvent) {
     e.preventDefault();
+    e.stopPropagation();
     if (!e.dataTransfer) {
       return;
     }

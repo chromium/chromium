@@ -24,6 +24,7 @@ source_set("webui_toolbar") {
     "//content/public/browser",
     "//ui/webui/resources/js/tracked_element:mojo_bindings",
     "//ui/webui/tracked_element",
+    "//url",
   ]
   deps = [
     "adapters",
@@ -126,5 +127,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
     "//testing/gtest",
+    "//url",
   ]
 }

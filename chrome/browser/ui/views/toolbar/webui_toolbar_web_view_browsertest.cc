@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -19,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -422,6 +425,46 @@ WebUIToolbarWebView* SetUpAndPinHomeButton(Browser* browser) {
   return webui_toolbar_view;
 }
 
+void SetUpWebUI(const ui::ElementIdentifier& element_id,
+                ui::TrackedElement** element_out,
+                WebUIToolbarWebView** webui_toolbar_view_out,
+                views::WebView** web_view_out,
+                Browser* browser) {
+  // Wait for the WebUIToolbarWebView to be available.
+  *webui_toolbar_view_out = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    if (!browser_view || !browser_view->toolbar()) {
+      return false;
+    }
+    ToolbarButtonProvider* provider = browser_view->toolbar();
+    *webui_toolbar_view_out = provider->GetWebUIToolbarViewForTesting();
+    return *webui_toolbar_view_out != nullptr;
+  }));
+  ASSERT_TRUE(*webui_toolbar_view_out);
+
+  if (element_id == kWebUIToolbarElementIdentifier) {
+    // We already have the view, and the Basic test doesn't strictly need the
+    // TrackedElement. ElementTracker might be flaky or slow here.
+    *element_out = views::ElementTrackerViews::GetInstance()->GetElementForView(
+        *webui_toolbar_view_out);
+  } else {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      *element_out = BrowserElements::From(browser)->GetElement(element_id);
+      return *element_out != nullptr;
+    }));
+    ASSERT_TRUE(*element_out);
+  }
+
+  ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 1u);
+  *web_view_out = views::AsViewClass<views::WebView>(
+      (*webui_toolbar_view_out)->children()[0].get());
+  ASSERT_TRUE(*web_view_out);
+
+  // Wait for the WebView to finish composition.
+  content::WaitForCopyableViewInWebContents((*web_view_out)->GetWebContents());
+}
+
 }  // namespace
 
 class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
@@ -452,49 +495,6 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
     // Force the color mode to light to avoid flakiness.
     ThemeServiceFactory::GetForProfile(browser()->profile())
         ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
-  }
-
-  void SetUpWebUI(const ui::ElementIdentifier& element_id,
-                  ui::TrackedElement** element_out,
-                  WebUIToolbarWebView** webui_toolbar_view_out,
-                  views::WebView** web_view_out,
-                  Browser* browser) {
-    // Wait for the WebUIToolbarWebView to be available.
-    *webui_toolbar_view_out = nullptr;
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      BrowserView* browser_view =
-          BrowserView::GetBrowserViewForBrowser(browser);
-      if (!browser_view || !browser_view->toolbar()) {
-        return false;
-      }
-      ToolbarButtonProvider* provider = browser_view->toolbar();
-      *webui_toolbar_view_out = provider->GetWebUIToolbarViewForTesting();
-      return *webui_toolbar_view_out != nullptr;
-    }));
-    ASSERT_TRUE(*webui_toolbar_view_out);
-
-    if (element_id == kWebUIToolbarElementIdentifier) {
-      // We already have the view, and the Basic test doesn't strictly need the
-      // TrackedElement. ElementTracker might be flaky or slow here.
-      *element_out =
-          views::ElementTrackerViews::GetInstance()->GetElementForView(
-              *webui_toolbar_view_out);
-    } else {
-      ASSERT_TRUE(base::test::RunUntil([&]() {
-        *element_out = BrowserElements::From(browser)->GetElement(element_id);
-        return *element_out != nullptr;
-      }));
-      ASSERT_TRUE(*element_out);
-    }
-
-    ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 1u);
-    *web_view_out = views::AsViewClass<views::WebView>(
-        (*webui_toolbar_view_out)->children()[0].get());
-    ASSERT_TRUE(*web_view_out);
-
-    // Wait for the WebView to finish composition.
-    content::WaitForCopyableViewInWebContents(
-        (*web_view_out)->GetWebContents());
   }
 
   SkColor GetCenterPixelColor(views::WebView* web_view, const gfx::Rect& rect) {
@@ -2366,6 +2366,90 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewTouchBrowserTest, VerifyLayout) {
   EXPECT_EQ(
       "9px",
       content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropUrlOnToolbar) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  GURL new_url("https://www.example.test/");
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              base::StringPrintf(R"(
+    const toolbarApp = document.querySelector('toolbar-app');
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', '%s');
+    const dropEvent = new DragEvent('drop', {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: dataTransfer
+    });
+    toolbarApp.dispatchEvent(dropEvent);
+  )",
+                                                 new_url.spec().c_str())));
+
+  navigation_observer.Wait();
+  EXPECT_EQ(new_url, browser()
+                         ->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropFileOnToolbar) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  base::WriteFile(file_path, "<html><body>test</body></html>");
+  GURL file_url = net::FilePathToFileURL(file_path);
+
+  gfx::Point click_point(10, 10);  // Somewhere on the toolbar
+
+  content::DropData drop_data;
+  drop_data.filenames.emplace_back(file_path, base::FilePath());
+
+  web_view->GetWebContents()->GetDelegate()->PreHandleDragUpdate(
+      drop_data, gfx::PointF(click_point));
+
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents, base::StringPrintf(R"(
+    const toolbarApp = document.querySelector('toolbar-app');
+    const dataTransfer = new DataTransfer();
+    Object.defineProperty(dataTransfer, 'types', {value: ['Files']});
+    const dropEvent = new DragEvent('drop', {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: dataTransfer,
+      clientX: %d,
+      clientY: %d
+    });
+    toolbarApp.dispatchEvent(dropEvent);
+  )",
+                                       click_point.x(), click_point.y())));
+
+  navigation_observer.Wait();
+  EXPECT_EQ(file_url, browser()
+                          ->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
 }
 
 // Tests for the home button. Also serve as the general PressHandler tests.

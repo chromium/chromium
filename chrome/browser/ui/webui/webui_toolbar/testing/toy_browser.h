@@ -12,6 +12,7 @@
 #include "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 namespace browser_controls_api {
 
@@ -41,6 +42,8 @@ class ToyBrowser {
     return received_commands_;
   }
 
+  const std::vector<GURL>& received_urls() const { return received_urls_; }
+
   // Noop if the pin state doesn't change.
   void PinButton(toolbar_ui_api::mojom::ToolbarButtonType type);
   void UnpinButton(toolbar_ui_api::mojom::ToolbarButtonType type);
@@ -51,6 +54,7 @@ class ToyBrowser {
  private:
   friend class ToyBrowserControlsAdapter;
   std::vector<ToyBrowserCommand> received_commands_;
+  std::vector<GURL> received_urls_;
   // True when split tab is created. This state currently sticks, with no way
   // to unset it.
   bool is_split_tab_ = false;

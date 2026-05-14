@@ -53,6 +53,7 @@ class BrowserControlsService
   SplitActiveTabResult SplitActiveTab() override;
   NavigateHomeResult NavigateHome(
       const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
+  NavigateResult Navigate(const GURL& url) override;
 
  private:
   // Callback for `MetricsReporter::Measure()`. Records the resulting
