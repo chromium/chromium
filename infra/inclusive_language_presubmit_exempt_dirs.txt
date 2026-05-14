@@ -844,8 +844,6 @@ third_party/wpt_tools/wpt/resources
 third_party/wpt_tools/wpt/tools/lint
 third_party/wpt_tools/wpt/tools/third_party/atomicwrites
 third_party/wpt_tools/wpt/tools/third_party/html5lib
-third_party/wpt_tools/wpt/tools/third_party_modified/mozlog/mozlog/pytest_mozlog
-third_party/wpt_tools/wpt/tools/third_party_modified/mozlog/mozlog/unstructured
 third_party/wpt_tools/wpt/tools/third_party/websockets/src/websockets/legacy
 third_party/wpt_tools/wpt/tools/webdriver/webdriver
 third_party/wpt_tools/wpt/tools/wpt
