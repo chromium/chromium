@@ -255,10 +255,6 @@ BASE_DECLARE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection);
 // Feature for the promotion banner on the top of chrome://management page
 BASE_DECLARE_FEATURE(kEnableManagementPromotionBanner);
 
-// Controls whether a performance improvement in browser feature support
-// checking is enabled.
-BASE_DECLARE_FEATURE(kInlineFullscreenPerfExperiment);
-
 // Controls whether the new page actions framework should be displaying page
 // actions.
 BASE_DECLARE_FEATURE(kPageActionsMigration);
