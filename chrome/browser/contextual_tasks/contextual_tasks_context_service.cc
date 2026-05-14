@@ -28,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_model_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_scoring_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_signal_utils.h"
@@ -274,6 +275,7 @@ const passage_embeddings::Embedding* GetTitleEmbedding(
   return it != tab_embeddings.end() ? &it->embedding : nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::string GetFormattedQueryString(const std::string& query) {
   std::string task = kQueryEmbeddingTask.Get();
   if (!task.empty()) {
@@ -281,6 +283,7 @@ std::string GetFormattedQueryString(const std::string& query) {
   }
   return query;
 }
+#endif
 
 }  // namespace
 
@@ -333,6 +336,14 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
     const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
         callback) {
+#if BUILDFLAG(IS_ANDROID)
+  // The relevancy scoring model is not ready on Android yet.
+  // TODO(crbug.com/513234526): Fix the scoring models for Android.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     std::vector<base::WeakPtr<content::WebContents>>()));
+#else
   base::TimeTicks now = tick_clock_->NowTicks();
 
   AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s in mode %d", query,
@@ -372,6 +383,7 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
                          explicit_urls, request_id));
   pending_requests_[request_id] =
       std::make_unique<PendingRequest>(task_id, std::move(callback));
+#endif
 }
 
 // TODO: crbug.com/503189770 - Integrate the multi-turn ML model. For now, just
