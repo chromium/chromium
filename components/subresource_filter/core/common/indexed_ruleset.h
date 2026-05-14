@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -18,6 +19,7 @@
 #include "components/subresource_filter/core/common/flat/indexed_ruleset_generated.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/style_rule_indexer.h"
+#include "components/subresource_filter/core/common/style_rule_matcher.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
@@ -170,12 +172,43 @@ class IndexedRulesetMatcher {
 
   uint64_t ruleset_id() const { return root_->ruleset_id(); }
 
+  // Returns the selectors that apply to the `document_origin`.
+  void GetDomainSelectors(const url::Origin& document_origin,
+                          std::vector<std::string_view>& out_selectors) const;
+
+  // Note: several methods below take a `hash` argument. It is a hash of either
+  // the class or id in question. The `hash` should be the same as that would
+  // be provided by `blink::AtomicString::hash()` if the string is ascii,
+  // otherwise the string needs to be converted to UTF8 and `GetStyleRuleHash`
+  // should be called on it.
+
+  // Returns whether the ruleset might have any selectors matching the given
+  // `hash`. This is backed by a bloom filter, so it may return false positives
+  // but not false negatives.
+  bool MaybeHasStyleRule(uint32_t hash) const;
+
+  // Returns the selectors that contain `class_name` and apply to the
+  // `document_origin`.
+  void GetSelectorsByClass(const url::Origin& document_origin,
+                           std::string_view class_name,
+                           uint32_t hash,
+                           std::vector<std::string_view>& out_selectors) const;
+
+  // Returns the selectors that contain `id_name` and apply to the
+  // `document_origin`.
+  void GetSelectorsById(const url::Origin& document_origin,
+                        std::string_view id_name,
+                        uint32_t hash,
+                        std::vector<std::string_view>& out_selectors) const;
+
  private:
   raw_ptr<const flat::IndexedRuleset> root_;
 
   url_pattern_index::UrlPatternIndexMatcher blocklist_;
   url_pattern_index::UrlPatternIndexMatcher allowlist_;
   url_pattern_index::UrlPatternIndexMatcher deactivation_;
+
+  StyleRuleMatcher style_rule_matcher_;
 };
 
 }  // namespace subresource_filter

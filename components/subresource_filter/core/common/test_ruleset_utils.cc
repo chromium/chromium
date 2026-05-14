@@ -94,19 +94,30 @@ proto::StyleRule CreateStyleRule(std::string_view selector,
                                  bool is_exclusion,
                                  const std::vector<std::string>& classes,
                                  const std::vector<std::string>& ids) {
+  return CreateStyleRule(StyleRuleParams()
+                             .SetSelector(std::string(selector))
+                             .SetDomains(domains)
+                             .SetExclusion(is_exclusion)
+                             .SetClasses(classes)
+                             .SetIds(ids));
+}
+
+StyleRuleParams::StyleRuleParams() = default;
+StyleRuleParams::~StyleRuleParams() = default;
+
+proto::StyleRule CreateStyleRule(const StyleRuleParams& params) {
   proto::StyleRule rule;
-  rule.set_selector(std::string(selector));
-  rule.set_semantics(is_exclusion ? proto::RULE_SEMANTICS_ALLOWLIST
-                                  : proto::RULE_SEMANTICS_BLOCKLIST);
-  for (const auto& domain : domains) {
-    DCHECK(domain.empty() || domain[0] != '~');
+  rule.set_selector(params.selector);
+  rule.set_semantics(params.is_exclusion ? proto::RULE_SEMANTICS_ALLOWLIST
+                                         : proto::RULE_SEMANTICS_BLOCKLIST);
+  for (const auto& domain : params.domains) {
     auto* item = rule.add_domains();
     item->set_domain(domain);
   }
-  for (const auto& class_name : classes) {
+  for (const auto& class_name : params.classes) {
     rule.add_classes(class_name);
   }
-  for (const auto& id_name : ids) {
+  for (const auto& id_name : params.ids) {
     rule.add_ids(id_name);
   }
   return rule;

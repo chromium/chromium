@@ -9,25 +9,13 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
+#include "components/subresource_filter/core/common/style_rule_bloom_filter.h"
 #include "third_party/rapidhash/rapidhash.h"
 
 namespace subresource_filter {
 
 namespace {
 
-// Helper function to set bits in Bloom filter.
-// The bloom filter makes 2 hashes out of the 24 bit blink string hash. The
-// first is the first 16 bits. The second shuffles the original 24 bit hash
-// and then takes 16 bits from that. This is better than just using the first
-// 16 bits and the final 8 bits as keys.
-void SetBloomBits(std::vector<uint8_t>& filter, uint32_t hash) {
-  uint32_t num_bits = filter.size() * 8;
-  size_t bit_index1 = hash % num_bits;
-  size_t bit_index2 =
-      static_cast<size_t>((static_cast<uint64_t>(hash) * 16777619u) % num_bits);
-  filter[bit_index1 / 8] |= (1 << (bit_index1 % 8));
-  filter[bit_index2 / 8] |= (1 << (bit_index2 % 8));
-}
 
 // Helper function to write a map of names->selector indices into `builder`.
 // Returns the offset into the flatbuffer.
@@ -228,12 +216,7 @@ flatbuffers::Offset<flat::StyleRuleIndex> StyleRuleIndexer::Finish() {
   auto class_map_offset = BuildNameToRules(*builder_, class_map_);
   auto id_map_offset = BuildNameToRules(*builder_, id_map_);
 
-  size_t expected_rule_count = class_map_.size() + id_map_.size();
-  size_t filter_size_bytes =
-      std::max<size_t>(1024, (expected_rule_count * 10 + 7) / 8);
-
-  std::vector<uint8_t> bloom_filter;
-  bloom_filter.resize(filter_size_bytes, 0);
+  StyleRuleBloomFilterBuilder bloom_builder(class_map_.size() + id_map_.size());
 
   auto populate_bloom =
       [&](const std::map<std::string, std::vector<uint16_t>>& rules_map) {
@@ -241,14 +224,14 @@ flatbuffers::Offset<flat::StyleRuleIndex> StyleRuleIndexer::Finish() {
           if (!name.empty()) {
             std::string_view name_without_prefix =
                 std::string_view(name).substr(1);
-            SetBloomBits(bloom_filter, GetStyleRuleHash(name_without_prefix));
+            bloom_builder.SetBits(GetStyleRuleHash(name_without_prefix));
           }
         }
       };
   populate_bloom(class_map_);
   populate_bloom(id_map_);
 
-  auto bloom_offset = builder_->CreateVector(bloom_filter);
+  auto bloom_offset = builder_->CreateVector(bloom_builder.buffer());
 
   return flat::CreateStyleRuleIndex(
       *builder_, selectors_offset, domain_map_offset, exclusion_map_offset,

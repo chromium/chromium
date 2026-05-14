@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
+#include "components/subresource_filter/core/common/style_rule_matcher.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "third_party/rapidhash/rapidhash.h"
 #include "url/gurl.h"
@@ -169,7 +170,8 @@ IndexedRulesetMatcher::IndexedRulesetMatcher(base::span<const uint8_t> buffer)
     : root_(flat::GetIndexedRuleset(buffer.data())),
       blocklist_(root_->blocklist_index()),
       allowlist_(root_->allowlist_index()),
-      deactivation_(root_->deactivation_index()) {}
+      deactivation_(root_->deactivation_index()),
+      style_rule_matcher_(root_->style_rule_index()) {}
 
 IndexedRulesetMatcher::~IndexedRulesetMatcher() = default;
 
@@ -250,6 +252,34 @@ const url_pattern_index::flat::UrlRule* IndexedRulesetMatcher::MatchedUrlRule(
   }
   auto* allowlist_rule = find_match(allowlist_);
   return allowlist_rule ? allowlist_rule : blocklist_rule;
+}
+
+bool IndexedRulesetMatcher::MaybeHasStyleRule(uint32_t hash) const {
+  return style_rule_matcher_.MaybeHasStyleRule(hash);
+}
+
+void IndexedRulesetMatcher::GetDomainSelectors(
+    const url::Origin& document_origin,
+    std::vector<std::string_view>& out_selectors) const {
+  style_rule_matcher_.GetDomainSelectors(document_origin, out_selectors);
+}
+
+void IndexedRulesetMatcher::GetSelectorsByClass(
+    const url::Origin& document_origin,
+    std::string_view class_name,
+    uint32_t hash,
+    std::vector<std::string_view>& out_selectors) const {
+  style_rule_matcher_.GetSelectorsByClass(document_origin, class_name, hash,
+                                          out_selectors);
+}
+
+void IndexedRulesetMatcher::GetSelectorsById(
+    const url::Origin& document_origin,
+    std::string_view id_name,
+    uint32_t hash,
+    std::vector<std::string_view>& out_selectors) const {
+  style_rule_matcher_.GetSelectorsById(document_origin, id_name, hash,
+                                       out_selectors);
 }
 
 }  // namespace subresource_filter

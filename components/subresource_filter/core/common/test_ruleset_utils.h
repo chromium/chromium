@@ -65,6 +65,42 @@ url_pattern_index::proto::StyleRule CreateStyleRule(
     const std::vector<std::string>& classes = {},
     const std::vector<std::string>& ids = {});
 
+struct StyleRuleParams {
+  StyleRuleParams();
+  ~StyleRuleParams();
+
+  StyleRuleParams& SetSelector(std::string s) {
+    selector = std::move(s);
+    return *this;
+  }
+  StyleRuleParams& SetDomains(std::vector<std::string> d) {
+    domains = std::move(d);
+    return *this;
+  }
+  StyleRuleParams& SetExclusion(bool e) {
+    is_exclusion = e;
+    return *this;
+  }
+  StyleRuleParams& SetClasses(std::vector<std::string> c) {
+    classes = std::move(c);
+    return *this;
+  }
+  StyleRuleParams& SetIds(std::vector<std::string> i) {
+    ids = std::move(i);
+    return *this;
+  }
+
+  std::string selector;
+  std::vector<std::string> domains;
+  bool is_exclusion = false;
+  std::vector<std::string> classes;
+  std::vector<std::string> ids;
+};
+
+// Creates a StyleRule with the given `params`.
+url_pattern_index::proto::StyleRule CreateStyleRule(
+    const StyleRuleParams& params);
+
 }  // namespace testing
 }  // namespace subresource_filter
 
