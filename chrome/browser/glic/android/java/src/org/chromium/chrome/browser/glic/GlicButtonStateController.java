@@ -174,7 +174,7 @@ public class GlicButtonStateController
 
         long browserWindowPtr = task.getNativeBrowserWindowPtr(mCurrentProfile, mActivity);
         boolean isOpen = false;
-        if (browserWindowPtr != 0) {
+        if (browserWindowPtr != 0 && !mActivity.isDestroyed()) {
             isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
         }
         if (mIsPanelOpen != isOpen) {

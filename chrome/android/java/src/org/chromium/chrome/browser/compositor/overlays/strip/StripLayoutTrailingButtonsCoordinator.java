@@ -427,7 +427,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (task == null) return;
         long browserWindowPtr = task.getNativeBrowserWindowPtr(mProfile, activity);
         boolean isOpened = false;
-        if (browserWindowPtr != 0) {
+        if (browserWindowPtr != 0 && !activity.isDestroyed()) {
             isOpened = mGlicKeyedService.isPanelShowingForBrowser(browserWindowPtr);
         }
 
