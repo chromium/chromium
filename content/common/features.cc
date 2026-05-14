@@ -687,6 +687,12 @@ BASE_FEATURE(kServiceWorkerStaticRouterCORPCheck,
 BASE_FEATURE(kServiceWorkerStaticRouterOpaqueCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// (crbug.com/507149743): When enabled, the browser process and the renderer
+// process repopulate parsed_headers if it is missing for the response from the
+// static router.
+BASE_FEATURE(kServiceWorkerStaticRouterParsedHeaders,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // (crbug.com/497302265): When enabled, the main script response fetching is
 // consolidated into ServiceWorkerVersion.
 BASE_FEATURE(kServiceWorkerStaticRouterConsolidateMainScriptResponse,

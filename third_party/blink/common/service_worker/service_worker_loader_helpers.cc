@@ -10,7 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -48,20 +49,8 @@ class BlobCompleteCaller : public mojom::BlobReaderClient {
 
 void SaveResponseHeaders(const mojom::FetchAPIResponse& response,
                          network::mojom::URLResponseHead* out_head) {
-  // Build a string instead of using HttpResponseHeaders::AddHeader on
-  // each header, since AddHeader has O(n^2) performance.
-  std::string buf(base::StringPrintf("HTTP/1.1 %d %s\r\n", response.status_code,
-                                     response.status_text.c_str()));
-  for (const auto& item : response.headers) {
-    buf.append(item.first);
-    buf.append(": ");
-    buf.append(item.second);
-    buf.append("\r\n");
-  }
-  buf.append("\r\n");
-
-  out_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      net::HttpUtil::AssembleRawHeaders(buf));
+  out_head->headers =
+      ServiceWorkerLoaderHelpers::GetHttpResponseHeaders(response);
 
   // Populate |out_head|'s MIME type with the value from the HTTP response
   // headers.
@@ -224,6 +213,25 @@ const char* ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
       return "CacheStorage";
   }
   NOTREACHED();
+}
+
+// static
+scoped_refptr<net::HttpResponseHeaders>
+ServiceWorkerLoaderHelpers::GetHttpResponseHeaders(
+    const blink::mojom::FetchAPIResponse& response) {
+  // To avoid O(n^2) performance of net::HttpResponseHeaders::AddHeader(), we
+  // use net::HttpResponseHeaders::Builder here, which provides O(n) performance
+  // by taking all headers at once upon Build().
+  //
+  // We don't use net::HttpUtil::AssembleRawHeaders() because net::HttpUtil is
+  // disallowed in this directory.
+  std::string status = base::StrCat(
+      {base::ToString(response.status_code), " ", response.status_text});
+  net::HttpResponseHeaders::Builder builder({1, 1}, status);
+  for (const auto& item : response.headers) {
+    builder.AddHeader(item.first, item.second);
+  }
+  return builder.Build();
 }
 
 }  // namespace blink

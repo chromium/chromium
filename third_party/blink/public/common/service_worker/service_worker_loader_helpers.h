@@ -29,6 +29,10 @@ class BLINK_COMMON_EXPORT ServiceWorkerLoaderHelpers {
   static void SaveResponseInfo(const blink::mojom::FetchAPIResponse& response,
                                network::mojom::URLResponseHead* out_head);
 
+  // Reconstructs net::HttpResponseHeaders from the given |response|.
+  static scoped_refptr<net::HttpResponseHeaders> GetHttpResponseHeaders(
+      const blink::mojom::FetchAPIResponse& response);
+
   // Returns a redirect info if |response_head| is an redirect response.
   // Otherwise returns std::nullopt.
   static std::optional<net::RedirectInfo> ComputeRedirectInfo(

@@ -54,6 +54,13 @@ class CONTENT_EXPORT ServiceWorkerCacheStorageMatcher {
  private:
   void FailFallback();
   void DidMatch(blink::mojom::CacheStorage::MatchResult result);
+  void RebuildParsedHeaders(
+      blink::mojom::FetchAPIResponsePtr response,
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing);
+  void OnParsedHeadersReady(
+      blink::mojom::FetchAPIResponsePtr response,
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+      network::mojom::ParsedHeadersPtr parsed_headers);
   void RunCallback(blink::ServiceWorkerStatusCode status,
                    ServiceWorkerFetchDispatcher::FetchEventResult fetch_result,
                    blink::mojom::FetchAPIResponsePtr response,
@@ -64,6 +71,7 @@ class CONTENT_EXPORT ServiceWorkerCacheStorageMatcher {
   blink::mojom::FetchAPIRequestPtr request_;
   scoped_refptr<ServiceWorkerVersion> version_;
   ServiceWorkerFetchDispatcher::FetchCallback fetch_callback_;
+  const GURL request_url_;
 
   mojo::Remote<blink::mojom::CacheStorage> remote_;
   base::TimeTicks cache_lookup_start_;

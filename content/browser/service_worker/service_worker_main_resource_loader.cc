@@ -1256,6 +1256,19 @@ void ServiceWorkerMainResourceLoader::StartResponse(
 
   blink::ServiceWorkerLoaderHelpers::SaveResponseInfo(*response,
                                                       response_head_.get());
+  // We need to explicitly copy `parsed_headers` here because
+  // `ServiceWorkerLoaderHelpers::SaveResponseInfo()` does not handle the
+  // restoration or copying of this Mojo field.
+  //
+  // For the Static Router 'cache' source path, the headers are already parsed
+  // in the browser process via a Network Service IPC. By cloning them here,
+  // we ensure they are available for immediate checks (like TAO) within this
+  // loader, and more importantly, we prevent the downstream navigation stack
+  // (e.g., `NavigationURLLoaderImpl`) from performing a redundant second IPC
+  // to re-parse the same headers.
+  if (response->parsed_headers) {
+    response_head_->parsed_headers = response->parsed_headers.Clone();
+  }
 
   response_head_->did_service_worker_navigation_preload =
       dispatched_preload_type() == DispatchedPreloadType::kNavigationPreload;
@@ -1271,9 +1284,10 @@ void ServiceWorkerMainResourceLoader::StartResponse(
   if (resource_request_.request_initiator && response_head_->parsed_headers &&
       (resource_request_.request_initiator->IsSameOriginWith(
            resource_request_.url) ||
-       network::TimingAllowOriginCheck(
-           response_head_->parsed_headers->timing_allow_origin,
-           *resource_request_.request_initiator))) {
+       (response_head_->parsed_headers &&
+        network::TimingAllowOriginCheck(
+            response_head_->parsed_headers->timing_allow_origin,
+            *resource_request_.request_initiator)))) {
     response_head_->timing_allow_passed = true;
   }
 

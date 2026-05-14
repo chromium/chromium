@@ -1845,6 +1845,30 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingCache) {
   }
 }
 
+// Reproduces the crash reported in Issue 507149743.
+// When a response is served from CacheStorage via Static Router,
+// parsed_headers is currently reset to nullptr. If the request is cross-origin,
+// ServiceWorkerMainResourceLoader::StartResponse attempts to perform a TAO
+// check using parsed_headers, leading to a null pointer dereference.
+TEST_F(ServiceWorkerMainResourceLoaderTest,
+       StaticRoutingCache_TimingAllowOriginCrash) {
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kCache);
+
+  base::Time response_time = base::Time::Now();
+  auto request = CreateRequestAndSetupCache(response_time);
+  // Set request_initiator to a different origin to trigger TAO check.
+  request->request_initiator =
+      url::Origin::Create(GURL("https://other.example.com"));
+
+  StartRequest(std::move(request));
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+}
+
 // Similar to Basic test setup, but with matching cache static routing rule and
 // no entry in cache.
 TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingCacheMiss) {
