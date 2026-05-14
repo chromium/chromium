@@ -247,6 +247,12 @@ void CSSPaintValue::PaintImageGeneratorReady() {
   }
 }
 
+bool CSSPaintValue::IsCorsSameOrigin() const {
+  // TODO(https://crbug.com/513107673): This is pessimistic and incorrectly
+  // considers all paint values to be cross-origin.
+  return false;
+}
+
 bool CSSPaintValue::KnownToBeOpaque(const Document& document,
                                     const ComputedStyle&) const {
   auto it = generators_.find(&document);

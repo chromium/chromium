@@ -117,6 +117,7 @@ class CSSGradientValue : public CSSImageGeneratorValue {
 
   CSSGradientType GradientType() const { return gradient_type_; }
 
+  bool IsCorsSameOrigin() const { return true; }
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
   const CSSGradientValue& ResolveValuesIfNeeded(
       const StyleResolverState&) const;
@@ -435,6 +436,7 @@ class CSSConstantGradientValue : public CSSGradientValue {
                                            const Document&,
                                            const ComputedStyle&) const;
 
+  bool IsCorsSameOrigin() const { return true; }
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
   bool IsUsingCurrentColor() const;
   bool Equals(const CSSConstantGradientValue&) const;

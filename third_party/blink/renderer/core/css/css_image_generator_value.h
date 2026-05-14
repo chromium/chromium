@@ -103,6 +103,7 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
                                 const ContainerSizes&,
                                 const gfx::SizeF& target_size);
 
+  bool IsCorsSameOrigin() const;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
 
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,

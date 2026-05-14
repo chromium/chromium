@@ -70,6 +70,10 @@ CSSValue* StyleGeneratedImage::ComputedCSSValue(
   return image_generator_value_.Get();
 }
 
+bool StyleGeneratedImage::IsCorsSameOrigin() const {
+  return image_generator_value_->IsCorsSameOrigin();
+}
+
 NaturalSizingInfo StyleGeneratedImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {

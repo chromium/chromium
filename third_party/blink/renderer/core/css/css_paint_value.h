@@ -37,6 +37,7 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size);
 
+  bool IsCorsSameOrigin() const;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
 
   bool Equals(const CSSPaintValue&) const;

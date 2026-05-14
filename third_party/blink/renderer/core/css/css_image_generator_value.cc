@@ -207,6 +207,24 @@ bool CSSImageGeneratorValue::IsUsingContainerRelativeUnits() const {
   }
 }
 
+bool CSSImageGeneratorValue::IsCorsSameOrigin() const {
+  switch (GetClassType()) {
+    case kLinearGradientClass:
+      return To<CSSLinearGradientValue>(this)->IsCorsSameOrigin();
+    case kPaintClass:
+      return To<CSSPaintValue>(this)->IsCorsSameOrigin();
+    case kRadialGradientClass:
+      return To<CSSRadialGradientValue>(this)->IsCorsSameOrigin();
+    case kConicGradientClass:
+      return To<CSSConicGradientValue>(this)->IsCorsSameOrigin();
+    case kConstantGradientClass:
+    case kColorImageClass:
+      return To<CSSConstantGradientValue>(this)->IsCorsSameOrigin();
+    default:
+      NOTREACHED();
+  }
+}
+
 bool CSSImageGeneratorValue::KnownToBeOpaque(const Document& document,
                                              const ComputedStyle& style) const {
   switch (GetClassType()) {

@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>drawElementImage does not reveal cross-origin images in CSS Paint Worklet</title>
+  <link rel="help" href="https://github.com/WICG/html-in-canvas">
+  <script src='/resources/testharness.js'></script>
+  <script src='/resources/testharnessreport.js'></script>
+  <script src='../support/getPixel.js'></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
+  <style>
+    #child {
+      width: 100px;
+      height: 200px;
+      background: blue;
+      position: relative;
+    }
+    .target {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background-image: paint(border-image-source-painter);
+    }
+    #sameOriginPaint {
+      left: 0px;
+      top: 0px;
+    }
+    #crossOriginPaint {
+      left: 0px;
+      top: 100px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="100" height="200" layoutsubtree>
+    <div id="child">
+      <div id="sameOriginPaint" class="target"></div>
+      <div id="crossOriginPaint" class="target"></div>
+    </div>
+  </canvas>
+
+  <script>
+    // Paint worklet which paints the border-image-source image.
+    const workletCode = `
+      registerPaint('border-image-source-painter', class {
+        static get inputProperties() { return ['border-image-source']; }
+        paint(ctx, geom, properties) {
+          const img = properties.get('border-image-source');
+          if (img) {
+            ctx.drawImage(img, 0, 0, geom.width, geom.height);
+          }
+        }
+      });
+    `;
+
+    let setupPromise;
+    const preloadImage = (url) => new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+      img.src = url;
+    });
+
+    function doSetup() {
+      if (!setupPromise) {
+        setupPromise = (async () => {
+          const blob = new Blob([workletCode], {type: 'text/javascript'});
+          const url = URL.createObjectURL(blob);
+          await CSS.paintWorklet.addModule(url);
+
+          const sameOriginUrl = "https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/green-100x100.png";
+          const crossOriginUrl = "https://{{hosts[alt][www]}}:{{ports[https][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png";
+
+          // Preload both images.
+          await Promise.all([
+            preloadImage(sameOriginUrl),
+            preloadImage(crossOriginUrl)
+          ]);
+
+          document.getElementById('sameOriginPaint').style.borderImageSource = `url(${sameOriginUrl})`;
+          document.getElementById('crossOriginPaint').style.borderImageSource = `url(${crossOriginUrl})`;
+
+          await waitForCanvasPaint(canvas);
+        })();
+      }
+      return setupPromise;
+    }
+
+    // TODO(https://crbug.com/513107673): Paint worklets with only same-origin data should paint.
+    // promise_test(async function(t) {
+    //   await doSetup();
+    //   const context = canvas.getContext("2d");
+    //   context.drawElementImage(child, 0, 0);
+    //   const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+    //   let pixel = getPixel(imgData, 50, 50);
+    //   assert_array_equals(pixel, [0, 255, 0, 255], "Same origin paint worklet should draw a same-origin green image.");
+    // }, "Same origin paint worklet should draw");
+
+    promise_test(async function(t) {
+      await doSetup();
+      const context = canvas.getContext("2d");
+      context.drawElementImage(child, 0, 0);
+      const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+      let pixel = getPixel(imgData, 50, 150);
+      assert_array_equals(pixel, [0, 0, 255, 255], "Cross origin paint worklet should not draw a cross-origin red image, should remain blue.");
+    }, "Cross origin paint worklet should be blocked");
+  </script>
+</body>
+</html>
