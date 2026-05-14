@@ -325,6 +325,48 @@ public class TabRestorerUnitTest {
         verify(mTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
     }
 
+    @Test
+    public void testMaybeRestoreTab_noContentsState_NonActiveTab() {
+        TabState tabState = new TabState();
+        tabState.url = new GURL(UrlConstants.GOOGLE_URL);
+
+        LoadedTabState[] states = new LoadedTabState[] {new LoadedTabState(1, tabState)};
+        when(mStorageLoadedData.getLoadedTabStates()).thenReturn(states);
+        when(mStorageLoadedData.getActiveTabIndex()).thenReturn(-1);
+
+        mRestorer.onDataLoaded(mStorageLoadedData);
+        mRestorer.start(/* restoreActiveTabImmediately= */ false);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // Non-active tab without contentsState is restored as fallback GURL.
+        verify(mTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
+        verify(mTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
+    }
+
+    @Test
+    public void testMaybeRestoreTab_emptyBuffer() {
+        TabState tabState = new TabState();
+        tabState.url = new GURL(UrlConstants.GOOGLE_URL);
+        tabState.contentsState = mock(WebContentsState.class);
+        when(tabState.contentsState.getVirtualUrlFromState()).thenReturn(UrlConstants.GOOGLE_URL);
+        ByteBuffer buffer = ByteBuffer.allocate(0);
+        when(tabState.contentsState.buffer()).thenReturn(buffer);
+
+        LoadedTabState[] states = new LoadedTabState[] {new LoadedTabState(1, tabState)};
+        when(mStorageLoadedData.getLoadedTabStates()).thenReturn(states);
+        when(mStorageLoadedData.getActiveTabIndex()).thenReturn(-1);
+
+        mRestorer.onDataLoaded(mStorageLoadedData);
+        mRestorer.start(/* restoreActiveTabImmediately= */ false);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // Empty contentsState buffer limit == 0 falls back to createTabWithoutContentsState.
+        verify(mTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
+        verify(mTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
+    }
+
     private LoadedTabState createLoadedTabState(int id, String url) {
         TabState tabState = new TabState();
         tabState.url = new GURL(url);

@@ -512,11 +512,12 @@ class TabRestorer {
 
         Tab tab = null;
         GURL url = tabState.url;
-        if (isActiveTab && tabState.contentsState == null && url != null) {
-            // Use fallback url if no contents state is available.
-            tab = createTabWithoutContentsState(url, index);
-        } else if (tabState.contentsState != null) {
+        boolean hasEmptyBuffer =
+                tabState.contentsState != null && tabState.contentsState.buffer().limit() == 0;
+        if (tabState.contentsState != null && !hasEmptyBuffer) {
             tab = createFrozenTab(tabState, tabId, index);
+        } else if (url != null) {
+            tab = createTabWithoutContentsState(url, index);
         }
 
         if (isActiveTab && tab != null) {
@@ -524,7 +525,7 @@ class TabRestorer {
             TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tab.getId()));
             mDelegate.onActiveTabRestored(mIncognito);
         }
-        return tab;
+        return hasEmptyBuffer ? null : tab;
     }
 
     private @Nullable Tab createTabFromState(TabState tabState, int tabId, int index) {

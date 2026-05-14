@@ -35,10 +35,6 @@ public class TabPersistenceUtils {
      * @param tabState The tab state to check.
      */
     public static boolean shouldSkipTab(TabState tabState) {
-        if (tabState.contentsState == null || tabState.contentsState.buffer().limit() <= 0) {
-            return true;
-        }
-
         if (tabState.isPinned || tabState.tabGroupId != null) {
             return false;
         }
