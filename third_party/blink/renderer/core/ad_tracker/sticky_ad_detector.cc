@@ -7,6 +7,7 @@
 #include <cstdlib>
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -86,6 +87,13 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
           ->LayoutViewport()
           ->VisibleContentRect(kExcludeScrollbars)
           .size();
+
+  // HitTestNoLifecycleUpdate requires the lifecycle reached kPrePaintClean
+  // (enforced by PaintLayer::HitTestLayer).
+  if (outermost_main_frame->GetDocument()->Lifecycle().GetState() <
+      DocumentLifecycle::kPrePaintClean) {
+    return;
+  }
 
   // Hit test the bottom center of the viewport.
   HitTestLocation location(

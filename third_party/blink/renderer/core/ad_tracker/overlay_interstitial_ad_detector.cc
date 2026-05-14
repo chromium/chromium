@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/ad_tracker/overlay_interstitial_ad_detector.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -119,6 +120,13 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
   // We want to explicitly prevent mid-roll ads from being categorized as
   // pop-ups. Skip the detection if we are in the middle of a video play.
   if (outermost_main_frame->View()->HasDominantVideoElement()) {
+    return;
+  }
+
+  // HitTestNoLifecycleUpdate requires the lifecycle reached kPrePaintClean
+  // (enforced by PaintLayer::HitTestLayer).
+  if (outermost_main_frame->GetDocument()->Lifecycle().GetState() <
+      DocumentLifecycle::kPrePaintClean) {
     return;
   }
 

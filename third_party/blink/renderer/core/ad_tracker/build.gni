@@ -13,4 +13,8 @@ blink_core_sources_ad_tracker = [
   "sticky_ad_detector.h",
 ]
 
-blink_core_tests_ad_tracker = [ "ad_tracker_test.cc" ]
+blink_core_tests_ad_tracker = [
+  "ad_tracker_test.cc",
+  "overlay_interstitial_ad_detector_test.cc",
+  "sticky_ad_detector_test.cc",
+]
