@@ -395,6 +395,14 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
         }
     }
 
+    static boolean readIsRecoverable(int instanceId) {
+        if (sData != null) {
+            InstanceData instance = sData.getInstancesMap().get(instanceId);
+            return instance != null ? instance.getIsRecoverable() : false;
+        }
+        return false;
+    }
+
     static void writeIsRecoverable(int instanceId, boolean isRecoverable) {
         if (sData != null) {
             putInstance(

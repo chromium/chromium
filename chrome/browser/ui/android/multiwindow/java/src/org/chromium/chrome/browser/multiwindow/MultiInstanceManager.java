@@ -57,7 +57,8 @@ public abstract class MultiInstanceManager {
         NewWindowAppSource.EXTERNAL_NAVIGATION,
         NewWindowAppSource.DEV_TOOLS,
         NewWindowAppSource.BROWSER_WINDOW_CREATOR,
-        NewWindowAppSource.ANDROID_S_UPDATE
+        NewWindowAppSource.ANDROID_S_UPDATE,
+        NewWindowAppSource.CRASH_RECOVERY
     })
     public @interface NewWindowAppSource {
         int UNKNOWN = 0;
@@ -72,7 +73,8 @@ public abstract class MultiInstanceManager {
         int DEV_TOOLS = 9;
         int BROWSER_WINDOW_CREATOR = 10;
         int ANDROID_S_UPDATE = 11;
-        int NUM_ENTRIES = 12;
+        int CRASH_RECOVERY = 12;
+        int NUM_ENTRIES = 13;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)

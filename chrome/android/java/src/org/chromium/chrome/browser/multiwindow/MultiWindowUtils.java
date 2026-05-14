@@ -1204,12 +1204,12 @@ public class MultiWindowUtils implements ActivityStateListener {
         return filteredIds;
     }
 
-    private static SparseIntArray getWindowIdsOfRunningTabbedActivities() {
+    /* package */ static SparseIntArray getWindowIdsOfRunningTabbedActivities() {
         List<Activity> activities = ApplicationStatus.getRunningActivities();
         var windowIdsOfRunningTabbedActivities = new SparseIntArray();
         for (Activity activity : activities) {
-            if (!(activity instanceof ChromeTabbedActivity)) continue;
-            int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
+            if (!(activity instanceof ChromeTabbedActivity tabbedActivity)) continue;
+            int windowId = tabbedActivity.getWindowId();
             windowIdsOfRunningTabbedActivities.put(windowId, windowId);
         }
         return windowIdsOfRunningTabbedActivities;

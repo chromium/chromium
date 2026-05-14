@@ -1509,6 +1509,7 @@ chromium-metrics-reviews@google.com.
   <int value="10"
       label="Browser window creation from native feature (eg. extensions)"/>
   <int value="11" label="Upgrade to Android S multi-instance support"/>
+  <int value="12" label="Crash recovery"/>
 </enum>
 
 <enum name="NightMode">
