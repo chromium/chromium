@@ -47,6 +47,18 @@ export interface PageContextChangeEvent {
 
 export type PageContextListener = (event: PageContextChangeEvent) => void;
 
+// Some pages fire load before real content is actually rendered. Try to avoid
+// considering such pages as having content.
+function isNonEmpty(str: string|null): boolean {
+  const kMinimumContentThreshold = 100;
+
+  if (!str) {
+    return false;
+  }
+  // Consider only alphanumeric characters to look for real content.
+  return str.replace(/[^a-zA-Z0-9]/g, '').length > kMinimumContentThreshold;
+}
+
 /**
  * PageContextManager maintains state about the current page context as
  * provided by the browser.
@@ -83,7 +95,7 @@ export class PageContextManager {
     const oldContext = {...this.context};
     this.context.title = title;
     this.context.content = content;
-    this.context.hasHadContent ||= content.length > 0;
+    this.context.hasHadContent ||= isNonEmpty(content);
 
     for (const listener of this.listeners) {
       const event: PageContextChangeEvent = {
@@ -100,8 +112,7 @@ export class PageContextManager {
     debugLog(FILE, DebugLogTag.PAGE_CONTENT, 'Content', content);
 
     const oldContext = this.context ? {...this.context} : null;
-    this.context =
-        {url, title, content, hasHadContent: (content?.length ?? 0) > 0};
+    this.context = {url, title, content, hasHadContent: isNonEmpty(content)};
 
     for (const listener of this.listeners) {
       const event: PageContextChangeEvent = {

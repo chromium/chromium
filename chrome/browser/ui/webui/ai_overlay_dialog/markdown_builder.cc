@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/webui/ai_overlay_dialog/markdown_builder.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <sstream>
+#include <string>
 
 #include "base/containers/adapters.h"
 #include "base/strings/strcat.h"
@@ -41,6 +43,19 @@ bool IsSectionHeader(const ContentNode& node) {
     }
   }
   return false;
+}
+
+// TODO(b/513007633): This is a temporary hack intended to prevent super-long
+// URLs from blowing up the model's context window which is limited. This should
+// be removed ASAP and replaced with a better approach to context management in
+// AiOverlayDialog.
+std::string FilterEnormousUrls(const std::string& url) {
+  constexpr std::size_t kMaximumUrlLength = 2000;
+  if (url.length() > kMaximumUrlLength) {
+    return "";
+  }
+
+  return url;
 }
 
 std::string GetEmphasisSyntax(
@@ -315,7 +330,9 @@ void MarkdownBuilder::AddMarkdownAfterSubtree(const ContentNode& node) {
     case ContentAttributeType::CONTENT_ATTRIBUTE_ANCHOR:
       if (node.content_attributes().anchor_data().has_url()) {
         walk_state_.lines.back() +=
-            "](" + node.content_attributes().anchor_data().url() + ")";
+            "](" +
+            FilterEnormousUrls(node.content_attributes().anchor_data().url()) +
+            ")";
       } else {
         walk_state_.lines.back() += "]";
       }

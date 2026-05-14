@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -11,10 +12,13 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace ttc {
 
 static constexpr int kTruncateThresholdBytes = 30000;
+static constexpr int kEmptyPageThreshold = 200;
+const base::TimeDelta kEmptyPageRetryDelay = base::Seconds(2);
 
 using page_content_annotations::PageContentScreenshotServiceFactory;
 
@@ -32,6 +36,7 @@ PageContextMonitor::~PageContextMonitor() = default;
 void PageContextMonitor::PrimaryPageChanged(content::Page& page) {
   page_handler_->DidChangePage(web_contents()->GetLastCommittedURL(),
                                web_contents()->GetTitle(), std::nullopt);
+  did_retry_first_fetch_ = false;
   StartNewFetch();
 }
 
@@ -104,6 +109,18 @@ void PageContextMonitor::OnFetchComplete(
     // TODO(bokan): More sophisticated truncation.
     std::string markdown_content_truncated =
         markdown_content.substr(0, kTruncateThresholdBytes);
+
+    // If the page looks mostly empty, crudely wait a bit and retry in case the
+    // load comes before content is shown.
+    if (!did_retry_first_fetch_ &&
+        markdown_content_truncated.length() < kEmptyPageThreshold) {
+      did_retry_first_fetch_ = true;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PageContextMonitor::StartNewFetch,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kEmptyPageRetryDelay);
+    }
 
     page_handler_->UpdateCurrentPageContext(web_contents()->GetTitle(),
                                             markdown_content_truncated);

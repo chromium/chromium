@@ -37,7 +37,9 @@ enum ScrollGranularity {
 interface AiOverlayTools {
   // Browser tools
 
-  // Open a URL.
+  // Open a URL. Use when the user wants to follow/open a link or go to a page.
+  // When following a link, extract the exact URL from the page markdown
+  // content where links are of the format: `[text](url)`
   //
   // url: Exact URL. Use PerformSearch to find a page instead of guessing a URL.
   OpenUrl(string url, bool new_tab) => result<mojo_base.mojom.Empty, string>;

@@ -40,6 +40,7 @@ class PageContextMonitor : public content::WebContentsObserver {
   base::CallbackListSubscription active_tab_subscription_;
 
   bool fetch_waiting_on_load_ = false;
+  bool did_retry_first_fetch_ = false;
 
   std::unique_ptr<page_content_annotations::PageContextFetcher> fetcher_;
 

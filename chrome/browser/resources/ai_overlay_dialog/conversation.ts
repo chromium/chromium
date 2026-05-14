@@ -318,10 +318,13 @@ export class Conversation implements ApiSessionDelegate {
     // Untrusted page context and history are sent as a priming turn
     // (Dynamic/Untrusted).
     let content = context?.content ?? '';
-    if (content.length > 1000) {
-      content = content.substring(0, 1000) +
+    const kMaxContentSize = 10000;
+    if (content.length > kMaxContentSize) {
+      content = content.substring(0, kMaxContentSize) +
           '... (truncated, use get_page_content for more)';
     }
+
+    debugLog(FILE, DebugLogTag.PAGE_CONTENT, 'Provided Context', content);
 
     const primingTurn = buildContextPrimingTurn(
         context?.url || '', context?.title ?? '', content, transcript,
