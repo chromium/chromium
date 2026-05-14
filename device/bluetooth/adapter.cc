@@ -26,6 +26,7 @@
 #include "device/bluetooth/public/mojom/connect_result_type_converter.h"
 #include "device/bluetooth/server_socket.h"
 #include "device/bluetooth/socket.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -139,6 +140,13 @@ void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
                                     bool use_scan_response,
                                     bool connectable,
                                     RegisterAdvertisementCallback callback) {
+  if (!allowed_uuids_.contains(service_uuid)) {
+    mojo::ReportBadMessage(
+        "RegisterAdvertisement called with unauthorized UUID.");
+    std::move(callback).Run(/*advertisement=*/mojo::NullRemote());
+    return;
+  }
+
   auto advertisement_data =
       std::make_unique<device::BluetoothAdvertisement::Data>(
           connectable
@@ -232,6 +240,8 @@ void Adapter::ConnectToServiceInsecurely(
     bool should_unbond_on_error,
     ConnectToServiceInsecurelyCallback callback) {
   if (!allowed_uuids_.contains(service_uuid)) {
+    mojo::ReportBadMessage(
+        "ConnectToServiceInsecurely called with unauthorized UUID.");
     std::move(callback).Run(/*result=*/nullptr);
     return;
   }
@@ -268,6 +278,8 @@ void Adapter::CreateRfcommServiceInsecurely(
     const device::BluetoothUUID& service_uuid,
     CreateRfcommServiceInsecurelyCallback callback) {
   if (!allowed_uuids_.contains(service_uuid)) {
+    mojo::ReportBadMessage(
+        "CreateRfcommServiceInsecurely called with unauthorized UUID.");
     std::move(callback).Run(/*server_socket=*/mojo::NullRemote());
     return;
   }
@@ -291,6 +303,13 @@ void Adapter::CreateLocalGattService(
     const device::BluetoothUUID& service_id,
     mojo::PendingRemote<mojom::GattServiceObserver> observer,
     CreateLocalGattServiceCallback callback) {
+  if (!allowed_uuids_.contains(service_id)) {
+    mojo::ReportBadMessage(
+        "CreateLocalGattService called with unauthorized UUID.");
+    std::move(callback).Run(/*gatt_service=*/mojo::NullRemote());
+    return;
+  }
+
   // It is expected that callers of `CreateLocalGattService()` only call this
   // method when creating a new GATT service that corresponds to |service_id|.
   // See more details in //device/bluetooth/public/mojom/adapter.mojom method

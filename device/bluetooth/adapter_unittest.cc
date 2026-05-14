@@ -24,6 +24,8 @@
 #include "device/bluetooth/test/mock_bluetooth_socket.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunOnceCallback;
@@ -153,6 +155,8 @@ class AdapterTest : public testing::Test, public mojom::GattServiceObserver {
     auto service_data = GetByteVector(kDeviceServiceDataStr);
     mojo::Remote<mojom::Advertisement> advertisement;
 
+    adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
+
     base::RunLoop run_loop;
     adapter_->RegisterAdvertisement(
         device::BluetoothUUID(kServiceId), service_data,
@@ -259,8 +263,26 @@ TEST_F(AdapterTest, TestRegisterAdvertisement_Connectable) {
   VerifyAdvertisement();
 }
 
+TEST_F(AdapterTest, TestRegisterAdvertisement_DisallowedUuid) {
+  // Do not call Adapter::AllowConnectionsForUuid();
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  auto service_data = GetByteVector(kDeviceServiceDataStr);
+  base::test::TestFuture<mojo::PendingRemote<mojom::Advertisement>> future;
+  adapter_->RegisterAdvertisement(device::BluetoothUUID(kServiceId),
+                                  service_data,
+                                  /*use_scan_response=*/false,
+                                  /*connectable=*/false, future.GetCallback());
+  EXPECT_FALSE(future.Take().is_valid());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "RegisterAdvertisement called with unauthorized UUID.");
+}
+
 TEST_F(AdapterTest, TestConnectToServiceInsecurely_DisallowedUuid) {
   // Do not call Adapter::AllowConnectionsForUuid();
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
 
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
@@ -272,6 +294,8 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_DisallowedUuid) {
             run_loop.Quit();
           }));
   run_loop.Run();
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "ConnectToServiceInsecurely called with unauthorized UUID.");
 }
 
 TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Success) {
@@ -503,6 +527,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_HalfPaired) {
 }
 
 TEST_F(AdapterTest, CreateLocalGattService) {
+  adapter_->AllowConnectionsForUuid(bluetooth_service_id_);
   mojo::PendingRemote<mojom::GattServiceObserver> observer =
       observer_.BindNewPipeAndPassRemote();
   base::test::TestFuture<mojo::PendingRemote<mojom::GattService>> future;
@@ -511,7 +536,23 @@ TEST_F(AdapterTest, CreateLocalGattService) {
   EXPECT_TRUE(future.Take());
 }
 
+TEST_F(AdapterTest, CreateLocalGattService_DisallowedUuid) {
+  // Do not call Adapter::AllowConnectionsForUuid();
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::PendingRemote<mojom::GattServiceObserver> observer =
+      observer_.BindNewPipeAndPassRemote();
+  base::test::TestFuture<mojo::PendingRemote<mojom::GattService>> future;
+  adapter_->CreateLocalGattService(bluetooth_service_id_, std::move(observer),
+                                   future.GetCallback());
+  EXPECT_FALSE(future.Take().is_valid());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "CreateLocalGattService called with unauthorized UUID.");
+}
+
 TEST_F(AdapterTest, MemoryCleanUp_ResetGattServiceMojoRemote) {
+  adapter_->AllowConnectionsForUuid(bluetooth_service_id_);
   mojo::Remote<mojom::GattService> gatt_service_remote;
 
   // Create `GattService` and set the Mojo remote
@@ -561,6 +602,8 @@ TEST_F(AdapterTest, MemoryCleanUp_ResetGattServiceMojoRemote) {
 
 TEST_F(AdapterTest, TestCreateRfcommServiceInsecurely_DisallowedUuid) {
   // Do not call Adapter::AllowConnectionsForUuid();
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
 
   base::RunLoop run_loop;
   adapter_->CreateRfcommServiceInsecurely(
@@ -571,6 +614,8 @@ TEST_F(AdapterTest, TestCreateRfcommServiceInsecurely_DisallowedUuid) {
             run_loop.Quit();
           }));
   run_loop.Run();
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "CreateRfcommServiceInsecurely called with unauthorized UUID.");
 }
 
 TEST_F(AdapterTest, TestCreateRfcommServiceInsecurely_Error) {
