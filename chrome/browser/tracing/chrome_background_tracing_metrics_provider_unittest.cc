@@ -14,9 +14,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "content/public/browser/background_tracing_manager.h"
-#include "content/public/test/background_tracing_test_support.h"
+#include "content/public/browser/background_tracing.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -39,14 +39,16 @@ namespace {
 const char kDummyTrace[] = "Trace bytes as serialized proto";
 
 class TestBackgroundTracingHelper
-    : public content::BackgroundTracingManager::EnabledStateTestObserver {
+    : public tracing::BackgroundTracingManager::EnabledStateTestObserver {
  public:
   TestBackgroundTracingHelper() {
-    content::AddBackgroundTracingEnabledStateObserverForTesting(this);
+    tracing::BackgroundTracingManager::GetInstance()
+        .AddEnabledStateObserverForTesting(this);
   }
 
   ~TestBackgroundTracingHelper() {
-    content::RemoveBackgroundTracingEnabledStateObserverForTesting(this);
+    tracing::BackgroundTracingManager::GetInstance()
+        .RemoveEnabledStateObserverForTesting(this);
   }
 
   void OnTraceSaved() override { wait_for_trace_saved_.Quit(); }
@@ -63,13 +65,12 @@ class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
  public:
   ChromeBackgroundTracingMetricsProviderTest()
       : background_tracing_manager_(
-            content::BackgroundTracingManager::CreateInstance(
-                &tracing_delegate_)) {}
+            content::CreateBackgroundTracingManager(&tracing_delegate_)) {}
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   ChromeTracingDelegate tracing_delegate_;
-  std::unique_ptr<content::BackgroundTracingManager>
+  std::unique_ptr<tracing::BackgroundTracingManager>
       background_tracing_manager_;
 };
 
@@ -83,7 +84,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   ChromeBackgroundTracingMetricsProvider provider(nullptr);
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
-  content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
+  tracing::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
       kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
 
@@ -185,7 +186,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderChromeOSTest, HardwareClass) {
 
   TestBackgroundTracingHelper background_tracing_helper;
   // Fake a UMA collection for background tracing.
-  content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
+  tracing::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
       kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
   ASSERT_TRUE(provider.HasIndependentMetrics());

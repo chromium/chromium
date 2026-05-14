@@ -76,6 +76,7 @@ source_set("unit_tests") {
     "//content/public/browser",
     "//content/test:test_support",
     "//services/tracing/public/cpp",
+    "//services/tracing/public/cpp/background_tracing",
     "//testing/gtest",
     "//third_party/metrics_proto",
     "//third_party/zlib/google:compression_utils",
@@ -116,6 +117,7 @@ if (!is_android) {
       "//components/metrics:metrics_pref_names",
       "//components/prefs",
       "//content/test:test_support",
+      "//services/tracing/public/cpp/background_tracing",
     ]
   }
 }

@@ -86,6 +86,7 @@ if (!is_ios) {
       "//base",
       "//components/metrics:content",
       "//content/public/browser",
+      "//services/tracing/public/cpp/background_tracing",
       "//third_party/metrics_proto",
     ]
   }
@@ -102,6 +103,7 @@ if (!is_ios) {
       ":tracing_config",
       "//base",
       "//content/public/browser",
+      "//services/tracing/public/cpp/background_tracing",
     ]
   }
 }
@@ -158,6 +160,7 @@ source_set("unit_tests") {
       "//content/test:test_support",
       "//services/tracing:lib",
       "//services/tracing:test_utils",
+      "//services/tracing/public/cpp/background_tracing",
     ]
   }
 }

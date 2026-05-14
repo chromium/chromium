@@ -1,3 +1,9 @@
+include_rules = [
+  "+third_party/zlib/google",
+  "+components/variations/hashing.h",
+  "+net/base/network_change_notifier.h"
+]
+
 specific_include_rules = {
   'trace_report_database.cc': [
     "+sql/database.h",

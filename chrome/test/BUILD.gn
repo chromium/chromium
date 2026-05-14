@@ -7658,6 +7658,7 @@ test("unit_tests") {
     "//services/preferences/public/mojom",
     "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
     "//services/service_manager/public/cpp/test:test_support",
+    "//services/tracing/public/cpp/background_tracing",
     "//skia",
     "//storage/browser:test_support",
     "//testing/gmock",
@@ -8690,6 +8691,7 @@ test("unit_tests") {
       "//components/webapps/isolated_web_apps",
       "//components/webapps/isolated_web_apps/test_support",
       "//components/webauthn/content/browser",
+      "//services/tracing/public/cpp/background_tracing",
     ]
 
     # TODO(crbug.com/437811373): Remove this dependency when

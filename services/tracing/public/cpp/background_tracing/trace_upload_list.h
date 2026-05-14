@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_TRACING_TRACE_UPLOAD_LIST_H_
-#define CONTENT_BROWSER_TRACING_TRACE_UPLOAD_LIST_H_
+#ifndef SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_TRACE_UPLOAD_LIST_H_
+#define SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_TRACE_UPLOAD_LIST_H_
 
 #include <memory>
 #include <optional>
@@ -13,10 +13,9 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/token.h"
-#include "content/common/content_export.h"
 #include "services/tracing/public/cpp/background_tracing/trace_report_database.h"
 
-namespace content {
+namespace tracing {
 
 // TraceUploadList is used on to read/write from the database of trace
 // reports stored locally.
@@ -27,6 +26,8 @@ class TraceUploadList {
       base::OnceCallback<void(std::vector<tracing::ClientTraceReport> result)>;
   using GetProtoCallback =
       base::OnceCallback<void(std::optional<base::span<const char>> result)>;
+
+  virtual ~TraceUploadList() = default;
 
   virtual void OpenDatabaseIfExists() = 0;
 
@@ -44,6 +45,6 @@ class TraceUploadList {
                              GetProtoCallback callback) = 0;
 };
 
-}  // namespace content
+}  // namespace tracing
 
-#endif  // CONTENT_BROWSER_TRACING_TRACE_UPLOAD_LIST_H_
+#endif  // SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_TRACE_UPLOAD_LIST_H_

@@ -170,6 +170,7 @@ source_set("impl") {
     "//components/url_matcher",
     "//components/web_cache/browser",
     "//media/mojo/services",
+    "//services/tracing/public/cpp/background_tracing",
     "//ui/strings:ui_strings__strings_grit",
   ]
 
@@ -296,6 +297,7 @@ source_set("unit_tests") {
     "//components/site_isolation",
     "//components/ukm:test_support",
     "//content/test:test_support",
+    "//services/tracing/public/cpp/background_tracing",
     "//testing/gmock",
     "//testing/gtest",
   ]

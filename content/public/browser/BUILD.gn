@@ -58,7 +58,7 @@ source_set("browser_sources") {
     "background_sync_parameters.h",
     "background_sync_registration.cc",
     "background_sync_registration.h",
-    "background_tracing_manager.h",
+    "background_tracing.h",
     "blob_handle.h",
     "bluetooth_chooser.cc",
     "bluetooth_chooser.h",
@@ -612,7 +612,8 @@ source_set("browser_sources") {
     # We expose skia headers in the public API.
     "//skia",
 
-    # We expose storage headers for quota and blob storage context in the public API.
+    # We expose storage headers for quota and blob storage context in the public
+    # API.
     "//storage/browser",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base/dragdrop/mojom:mojom_headers",

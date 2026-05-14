@@ -14,7 +14,7 @@
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
-#include "content/public/browser/background_tracing_manager.h"
+#include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/trace_log.pb.h"
 
@@ -77,7 +77,7 @@ void BackgroundTracingMetricsProvider::AsyncInit(
 }
 
 bool BackgroundTracingMetricsProvider::HasIndependentMetrics() {
-  return content::BackgroundTracingManager::GetInstance().HasTraceToUpload();
+  return tracing::BackgroundTracingManager::GetInstance().HasTraceToUpload();
 }
 
 void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
@@ -87,7 +87,7 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
     base::HistogramSnapshotManager* snapshot_manager) {
   auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   auto provide_embedder_metrics = GetEmbedderMetricsProvider();
-  content::BackgroundTracingManager::GetInstance().GetTraceToUpload(
+  tracing::BackgroundTracingManager::GetInstance().GetTraceToUpload(
       base::BindOnce(
           [](base::OnceCallback<bool(metrics::ChromeUserMetricsExtension*,
                                      std::string&&)> provide_embedder_metrics,

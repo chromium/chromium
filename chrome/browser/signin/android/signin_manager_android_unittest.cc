@@ -49,14 +49,16 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_test_utils.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "content/public/browser/background_tracing_manager.h"
+#include "content/public/browser/background_tracing.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "net/cookies/cookie_store.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -118,7 +120,7 @@ class SigninManagerAndroidTest : public ::testing::Test {
     profile_ = profile_builder.Build();
 
     background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance(&tracing_delegate_);
+        content::CreateBackgroundTracingManager(&tracing_delegate_);
 
     // Creating a BookmarkModel also a creates a StubOfflinePageModel.
     // We need to replace this with a mock that responds to deletions.
@@ -176,7 +178,7 @@ class SigninManagerAndroidTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   content::TracingDelegate tracing_delegate_;
-  std::unique_ptr<content::BackgroundTracingManager>
+  std::unique_ptr<tracing::BackgroundTracingManager>
       background_tracing_manager_;
 };
 

@@ -81,7 +81,6 @@ class HostFrameSinkManager;
 namespace content {
 class BrowserAccessibilityStateImpl;
 class BrowserMainParts;
-class BackgroundTracingManager;
 class BrowserOnlineStateObserver;
 class BrowserThreadImpl;
 class MediaKeysListenerManagerImpl;
@@ -95,6 +94,7 @@ class TracingControllerImpl;
 }  // namespace content
 namespace tracing {
 class StartupTracingController;
+class BackgroundTracingManager;
 }
 namespace content {
 struct MainFunctionParams;
@@ -379,7 +379,8 @@ class CONTENT_EXPORT BrowserMainLoop {
   std::unique_ptr<content::TracingControllerImpl> tracing_controller_;
   std::unique_ptr<tracing::StartupTracingController>
       startup_tracing_controller_;
-  std::unique_ptr<BackgroundTracingManager> background_tracing_manager_;
+  std::unique_ptr<tracing::BackgroundTracingManager>
+      background_tracing_manager_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
 

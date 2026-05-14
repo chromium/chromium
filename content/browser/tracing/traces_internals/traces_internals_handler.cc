@@ -14,15 +14,14 @@
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/tracing_scenarios_config.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
-#include "content/browser/tracing/trace_upload_list.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
-#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/background_tracing/trace_report_database.h"
+#include "services/tracing/public/cpp/background_tracing/trace_upload_list.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 #include "third_party/snappy/src/snappy.h"
@@ -152,7 +151,7 @@ TracesInternalsHandler::TracesInternalsHandler(
 TracesInternalsHandler::TracesInternalsHandler(
     mojo::PendingReceiver<traces_internals::mojom::PageHandler> receiver,
     mojo::PendingRemote<traces_internals::mojom::Page> page,
-    TraceUploadList& trace_upload_list,
+    tracing::TraceUploadList& trace_upload_list,
     BackgroundTracingManagerImpl& background_tracing_manager,
     TracingDelegate* tracing_delegate)
     : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
@@ -424,11 +423,11 @@ void TracesInternalsHandler::SetScenariosConfigFromBuffer(
 
 bool TracesInternalsHandler::SetScenariosConfig(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config) {
-  content::BackgroundTracingManager::DataFiltering data_filtering =
+  tracing::BackgroundTracingManager::DataFiltering data_filtering =
       tracing::BackgroundTracingStateManager::GetInstance()
               .privacy_filter_enabled()
-          ? content::BackgroundTracingManager::ANONYMIZE_DATA
-          : content::BackgroundTracingManager::NO_DATA_FILTERING;
+          ? tracing::BackgroundTracingManager::ANONYMIZE_DATA
+          : tracing::BackgroundTracingManager::NO_DATA_FILTERING;
   background_tracing_manager_->OverwritePresetScenarios(std::move(config),
                                                         data_filtering);
   const auto& enabled_scenarios =
@@ -448,10 +447,10 @@ void TracesInternalsHandler::MaybeSetupPresetTracingFromFieldTrial() {
     return;
   }
   auto& config = tracing::BackgroundTracingStateManager::GetInstance();
-  content::BackgroundTracingManager::DataFiltering data_filtering =
+  tracing::BackgroundTracingManager::DataFiltering data_filtering =
       config.privacy_filter_enabled()
-          ? content::BackgroundTracingManager::ANONYMIZE_DATA
-          : content::BackgroundTracingManager::NO_DATA_FILTERING;
+          ? tracing::BackgroundTracingManager::ANONYMIZE_DATA
+          : tracing::BackgroundTracingManager::NO_DATA_FILTERING;
   background_tracing_manager_->AddPresetScenarios(
       std::move(*tracing_scenarios_config), data_filtering);
 }

@@ -10,12 +10,12 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "content/public/browser/background_tracing_manager.h"
+#include "content/public/browser/background_tracing.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_client.h"
-#include "content/public/test/background_tracing_test_support.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -27,14 +27,16 @@ namespace {
 const char kPlaceholderTrace[] = "Trace bytes as serialized proto";
 
 class TestBackgroundTracingHelper
-    : public content::BackgroundTracingManager::EnabledStateTestObserver {
+    : public tracing::BackgroundTracingManager::EnabledStateTestObserver {
  public:
   TestBackgroundTracingHelper() {
-    content::AddBackgroundTracingEnabledStateObserverForTesting(this);
+    tracing::BackgroundTracingManager::GetInstance()
+        .AddEnabledStateObserverForTesting(this);
   }
 
   ~TestBackgroundTracingHelper() {
-    content::RemoveBackgroundTracingEnabledStateObserverForTesting(this);
+    tracing::BackgroundTracingManager::GetInstance()
+        .RemoveEnabledStateObserverForTesting(this);
   }
 
   void OnTraceSaved() override { wait_for_trace_saved_.Quit(); }
@@ -53,7 +55,7 @@ class AwBackgroundTracingMetricsProviderTest : public testing::Test {
     content::SetContentClient(&content_client_);
     content::SetBrowserClientForTesting(&browser_client_);
     background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance(&tracing_delegate_);
+        content::CreateBackgroundTracingManager(&tracing_delegate_);
   }
 
   ~AwBackgroundTracingMetricsProviderTest() override {
@@ -66,7 +68,7 @@ class AwBackgroundTracingMetricsProviderTest : public testing::Test {
   content::ContentClient content_client_;
   content::ContentBrowserClient browser_client_;
   content::TracingDelegate tracing_delegate_;
-  std::unique_ptr<content::BackgroundTracingManager>
+  std::unique_ptr<tracing::BackgroundTracingManager>
       background_tracing_manager_;
 };
 
@@ -80,7 +82,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   AwBackgroundTracingMetricsProvider provider;
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
-  content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
+  tracing::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
       kPlaceholderTrace, "test_scenario", "test_rule",
       base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
@@ -125,7 +127,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, HandlesOversizeTraceLog) {
     trace[i] = base::RandIntInclusive('a', 'z');
   }
 
-  content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
+  tracing::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
       std::move(trace), "test_scenario", "test_rule",
       base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
@@ -156,7 +158,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, ClearsAppPackageName) {
   AwBackgroundTracingMetricsProvider provider;
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
-  content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
+  tracing::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
       kPlaceholderTrace, "test_scenario", "test_rule",
       base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();

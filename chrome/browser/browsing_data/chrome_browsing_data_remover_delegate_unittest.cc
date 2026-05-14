@@ -166,7 +166,7 @@
 #include "components/strike_database/strike_database.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/background_tracing_manager.h"
+#include "content/public/browser/background_tracing.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -174,6 +174,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -201,6 +202,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -1069,7 +1071,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     content::GetNetworkService();
     task_environment_.RunUntilIdle();
     background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance(&tracing_delegate_);
+        content::CreateBackgroundTracingManager(&tracing_delegate_);
 
     // This needs to be done after the test constructor, so that subclasses
     // that initialize a ScopedFeatureList in their constructors can do so
@@ -1294,7 +1296,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   raw_ptr<content::BrowsingDataRemover> remover_;
 
   content::TracingDelegate tracing_delegate_;
-  std::unique_ptr<content::BackgroundTracingManager>
+  std::unique_ptr<tracing::BackgroundTracingManager>
       background_tracing_manager_;
 
   content::BrowserTaskEnvironment task_environment_{

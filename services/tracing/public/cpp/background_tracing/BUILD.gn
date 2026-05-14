@@ -11,10 +11,13 @@ component("background_tracing") {
     "background_tracing_agent_impl.h",
     "background_tracing_agent_provider_impl.cc",
     "background_tracing_agent_provider_impl.h",
+    "background_tracing_manager.cc",
+    "background_tracing_manager.h",
     "background_tracing_rule.cc",
     "background_tracing_rule.h",
     "trace_report_database.cc",
     "trace_report_database.h",
+    "trace_upload_list.h",
     "tracing_agent_observer_manager.cc",
     "tracing_agent_observer_manager.h",
     "tracing_scenario.cc",
@@ -28,9 +31,12 @@ component("background_tracing") {
   public_deps = [ "//services/tracing/public/mojom" ]
   deps = [
     "//base",
+    "//components/variations",
+    "//net",
     "//services/tracing/public/cpp",
     "//sql",
     "//third_party/perfetto:libperfetto",
+    "//third_party/zlib/google:compression_utils",
   ]
 }
 
@@ -38,6 +44,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "background_tracing_agent_impl_unittest.cc",
+    "background_tracing_manager_unittest.cc",
     "background_tracing_rule_unittest.cc",
     "fake_tracing_manager.cc",
     "fake_tracing_manager.h",
@@ -53,10 +60,12 @@ source_set("unit_tests") {
     "//base/test:proto_test_support",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//net",
     "//sql",
     "//sql:test_support",
     "//testing/gtest",
     "//third_party/perfetto:libperfetto",
+    "//third_party/zlib/google:compression_utils",
   ]
 
   if (!is_ios) {
