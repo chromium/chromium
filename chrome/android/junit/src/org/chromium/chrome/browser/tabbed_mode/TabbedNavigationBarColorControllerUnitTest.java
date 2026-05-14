@@ -440,6 +440,49 @@ public class TabbedNavigationBarColorControllerUnitTest {
         verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.LTGRAY));
     }
 
+    @Test
+    public void testLayoutStateObserver_onStartedShowing_swappedOrder() {
+        when(mTab.getBackgroundColor()).thenReturn(Color.LTGRAY);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
+
+        mOverviewColorSupplier.set(Color.BLUE);
+
+        ArgumentCaptor<LayoutStateObserver> captor =
+                ArgumentCaptor.forClass(LayoutStateObserver.class);
+        verify(mLayoutManager).addObserver(captor.capture());
+        LayoutStateObserver observer = captor.getValue();
+
+        Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
+
+        observer.onStartedShowing(LayoutType.TAB_SWITCHER);
+
+        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.BLUE));
+    }
+
+    @Test
+    public void testLayoutStateObserver_onStartedHiding_swappedOrder() {
+        when(mTab.getBackgroundColor()).thenReturn(Color.LTGRAY);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mNavColorController.updateActiveTabForTesting();
+
+        mNavColorController.enableOverviewMode();
+        mOverviewColorSupplier.set(Color.BLUE);
+        runColorUpdateAnimation();
+
+        ArgumentCaptor<LayoutStateObserver> captor =
+                ArgumentCaptor.forClass(LayoutStateObserver.class);
+        verify(mLayoutManager).addObserver(captor.capture());
+        LayoutStateObserver observer = captor.getValue();
+
+        Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
+
+        observer.onStartedHiding(LayoutType.TAB_SWITCHER);
+
+        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.LTGRAY));
+    }
+
     private void runColorUpdateAnimation() {
         // Run the color  transition animation so color is applied to the window.
         RobolectricUtil.runAllBackgroundAndUi();
