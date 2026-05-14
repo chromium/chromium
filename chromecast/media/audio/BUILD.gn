@@ -136,8 +136,6 @@ cast_source_set("audio_renderer") {
 cast_source_set("audio") {
   sources = [
     "audio_clock_simulator_impl.cc",
-    "cast_audio_input_stream.cc",
-    "cast_audio_input_stream.h",
     "cast_audio_manager.cc",
     "cast_audio_manager.h",
     "cast_audio_manager_helper.cc",
@@ -158,9 +156,6 @@ cast_source_set("audio") {
     "//base",
     "//chromecast/base",
     "//chromecast/media/api",
-    "//chromecast/media/audio/capture_service:common",
-    "//chromecast/media/audio/capture_service:receiver",
-    "//chromecast/media/audio/capture_service:utils",
     "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/mixer_service:output_stream_connection",
     "//chromecast/media/audio/mixer_service:proto",
@@ -257,7 +252,7 @@ source_set("fake_external_audio_pipeline") {
 buildflag_header("audio_buildflags") {
   header = "audio_buildflags.h"
 
-  flags = [ "ENABLE_AUDIO_CAPTURE_SERVICE=$enable_audio_capture_service" ]
+  flags = []
 
   if (use_alsa) {
     # Currently, this flag will only be used in cast_audio_manager_alsa.cc

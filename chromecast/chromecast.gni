@@ -91,8 +91,6 @@ declare_args() {
   # Whether use unix sockets in Cast input/output stream.
   use_unix_sockets = is_linux || is_chromeos || is_android
 
-  # Set to true to enable audio capture service for audio input.
-  enable_audio_capture_service = false
 
   # Extra rpath to use for standalone services.
   iot_service_rpath = ""

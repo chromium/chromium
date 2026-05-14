@@ -14,7 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/audio_buildflags.h"
-#include "chromecast/media/audio/cast_audio_input_stream.h"
+
 #include "media/audio/alsa/alsa_input.h"
 #include "media/audio/alsa/alsa_wrapper.h"
 
@@ -29,10 +29,7 @@ const int kDefaultSampleRate = BUILDFLAG(AUDIO_INPUT_SAMPLE_RATE);
 // TODO(jyw): Query the preferred value from media backend.
 const int kDefaultInputBufferSize = 1024;
 
-#if BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
-const int kCommunicationsSampleRate = 16000;
-const int kCommunicationsInputBufferSize = 160;  // 10 ms.
-#endif
+
 
 // Since "default" and "dmix" devices are virtual devices mapped to real
 // devices, we remove them from the list to avoiding duplicate counting.
@@ -114,9 +111,7 @@ void CastAudioManagerAlsa::GetAudioInputDeviceNames(
   // list for all platforms. Note, pulse has exclusively opened the default
   // device, so we must open the device via the "default" moniker.
   device_names->push_front(::media::AudioDeviceName::CreateDefault());
-#if BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
-  device_names->push_back(::media::AudioDeviceName::CreateCommunications());
-#endif  // BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
+
 
   GetAlsaAudioDevices(kStreamCapture, device_names);
 }
@@ -124,16 +119,9 @@ void CastAudioManagerAlsa::GetAudioInputDeviceNames(
 ::media::AudioParameters CastAudioManagerAlsa::GetInputStreamParameters(
     const std::string& device_id) {
   if (device_id == ::media::AudioDeviceDescription::kCommunicationsDeviceId) {
-#if !BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
     NOTIMPLEMENTED()
         << "Capture Service is not enabled, return a fake AudioParameters.";
     return ::media::AudioParameters();
-#else
-    return ::media::AudioParameters(::media::AudioParameters::AUDIO_PCM_LINEAR,
-                                    ::media::CHANNEL_LAYOUT_MONO,
-                                    kCommunicationsSampleRate,
-                                    kCommunicationsInputBufferSize);
-#endif  // BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
   }
   // TODO(jyw): Be smarter about sample rate instead of hardcoding it.
   // Need to send a valid AudioParameters object even when it will be unused.
@@ -167,12 +155,8 @@ void CastAudioManagerAlsa::GetAudioInputDeviceNames(
           ? ::media::AlsaPcmInputStream::kAutoSelectDevice
           : device_id;
   if (device_name == ::media::AudioDeviceDescription::kCommunicationsDeviceId) {
-#if !BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
     NOTIMPLEMENTED() << "Capture Service is not enabled, return nullptr.";
     return nullptr;
-#else
-    return new CastAudioInputStream(this, params, device_name);
-#endif  // BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
   }
   return new ::media::AlsaPcmInputStream(this, device_name, params,
                                          wrapper_.get());
