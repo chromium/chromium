@@ -107,6 +107,11 @@ export class PowerBookmarksAppElement extends PolymerElement implements
         value: false,
       },
 
+      renamingId_: {
+        type: String,
+        value: '',
+      },
+
       selectedBookmarks_: {
         type: Object,
         value: () => {
@@ -190,6 +195,7 @@ export class PowerBookmarksAppElement extends PolymerElement implements
   declare private searchQuery_: string|undefined;
   declare private currentUrl_: string|undefined;
   declare private editing_: boolean;
+  declare private renamingId_: string;
   declare private selectedBookmarks_: {[key: string]: boolean};
   declare private guestMode_: boolean;
   declare private deletionDescription_: string;
@@ -697,6 +703,10 @@ export class PowerBookmarksAppElement extends PolymerElement implements
 
   private onHasScrollbarsChanged_(e: CustomEvent<boolean>) {
     this.hasScrollbars_ = e.detail;
+  }
+
+  private setRenamingId_(event: CustomEvent<{id: string}>) {
+    this.renamingId_ = event.detail.id;
   }
 }
 

@@ -784,8 +784,8 @@ suite('General', () => {
     // <if expr="not is_macosx">
     test('RenamesBookmark', async () => {
       const renamedBookmarkId = '4';
-      powerBookmarksApp.$.bookmarksList.setRenamingIdForTests(
-          renamedBookmarkId);
+      powerBookmarksApp.$.contextMenu.fire(
+          'rename-clicked', {id: renamedBookmarkId});
 
       await flushTasks();
 
@@ -819,8 +819,8 @@ suite('General', () => {
 
     test('BlursRenameInput', async () => {
       const renamedBookmarkId = '4';
-      powerBookmarksApp.$.bookmarksList.setRenamingIdForTests(
-          renamedBookmarkId);
+      powerBookmarksApp.$.contextMenu.fire(
+          'rename-clicked', {id: renamedBookmarkId});
 
       await flushTasks();
 

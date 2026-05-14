@@ -123,7 +123,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
         },
       },
 
-      renamingId_: {
+      renamingId: {
         type: String,
         value: '',
       },
@@ -156,7 +156,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
       canDrag_: {
         type: Boolean,
         value: true,
-        computed: 'computeCanDrag_(editing, renamingId_, hasSomeActiveFilter)',
+        computed: 'computeCanDrag_(editing, renamingId, hasSomeActiveFilter)',
         observer: 'onCanDragChange_',
       },
 
@@ -209,6 +209,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare hasSomeActiveFilter: boolean;
   declare hasShownBookmarks: boolean;
   declare labels: Label[];
+  declare renamingId: string;
   declare searchQuery: string|undefined;
 
   declare private compact_: boolean;
@@ -220,7 +221,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare private hasActiveDrag_: boolean;
   declare private sectionVisibility_: ListSectionVisibility;
   declare private hasFolders_: boolean;
-  declare private renamingId_: string;
   declare private shoppingCollectionFolderId_: string;
   declare private updatedElementIds_: string[];
 
@@ -419,10 +419,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.onRowClicked_(event);
   }
 
-  setRenamingIdForTests(id: string) {
-    this.renamingId_ = id;
-  }
-
   /**
    * Returns the KeyboardNavigationService instance for testing.
    */
@@ -460,7 +456,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private computeCanDrag_(): boolean {
-    return !this.editing && !this.renamingId_ && !this.hasSomeActiveFilter;
+    return !this.editing && !this.renamingId && !this.hasSomeActiveFilter;
   }
 
   private focusBookmark_(id: string) {
@@ -708,7 +704,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     if (newName != null) {
       this.bookmarksApi_.renameBookmark(event.detail.bookmark.id, newName);
     }
-    this.renamingId_ = '';
+    this.renamingId = '';
   }
 
   private getDisplayListElement_(index: number): IronListElement|null {
@@ -796,7 +792,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.bookmarksApi_
         .createFolder(newParent.id, loadTimeData.getString('newFolderTitle'))
         .then((result: {newFolderId: string}) => {
-          this.renamingId_ = result.newFolderId;
+          this.renamingId = result.newFolderId;
         });
   }
 
