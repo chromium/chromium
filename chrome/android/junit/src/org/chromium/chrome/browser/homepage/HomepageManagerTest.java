@@ -541,4 +541,13 @@ public class HomepageManagerTest {
                 JUnitTestGURLs.EXAMPLE_URL,
                 homepageManager.getHomepageGurlForZeroTabs(/* isIncognito= */ false));
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true")
+    public void testIsHomepageEnabled_HomeButtonRemovalEnabled() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+        Assert.assertFalse(homepageManager.isHomepageEnabled());
+    }
 }

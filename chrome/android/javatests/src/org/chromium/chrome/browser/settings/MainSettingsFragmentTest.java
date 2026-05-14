@@ -586,6 +586,58 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true")
+    public void testHomeButtonRemovalEnabled() {
+        startSettings();
+
+        // Verify UI removal
+        Assert.assertNull(
+                "Homepage preference should be removed when flag is on",
+                mMainSettings.findPreference(MainSettings.PREF_HOMEPAGE));
+
+        // Verify Search Index removal
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MainSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            mMainSettings.getProfile());
+                });
+
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                MainSettings.PREF_HOMEPAGE));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/false")
+    public void testHomeButtonRemovalDisabled() {
+        startSettings();
+
+        // Verify UI visibility
+        Assert.assertNotNull(
+                "Homepage preference should be visible when flag is off",
+                mMainSettings.findPreference(MainSettings.PREF_HOMEPAGE));
+
+        // Verify Search Index (not removed)
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MainSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            mMainSettings.getProfile());
+                });
+
+        verify(mSearchIndexDataMock, never())
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                MainSettings.PREF_HOMEPAGE));
+    }
+
+    @Test
+    @SmallTest
     public void testSearchEngineDisabled() {
         Mockito.doReturn(false).when(mMockTemplateUrlService).isLoaded();
         configureMockSearchEngine();

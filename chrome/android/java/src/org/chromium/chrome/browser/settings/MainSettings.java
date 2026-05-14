@@ -576,8 +576,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateAppearancePreference();
         addPreferenceIfAbsent(PREF_TABS);
 
-        Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
-        setOnOffSummary(homepagePref, HomepageManager.getInstance().isHomepageEnabled());
+        if (HomepageManager.shouldRemoveHomeButton()) {
+            removePreferenceIfPresent(PREF_HOMEPAGE);
+        } else {
+            Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
+            setOnOffSummary(homepagePref, HomepageManager.getInstance().isHomepageEnabled());
+        }
 
         if (shouldShowDeveloperSettings()) {
             addPreferenceIfAbsent(PREF_DEVELOPER);
@@ -1043,6 +1047,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowGlicPreference(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_GLIC));
+                    }
+                    if (HomepageManager.shouldRemoveHomeButton()) {
+                        indexData.removeEntry(getUniqueId(PREF_HOMEPAGE));
                     }
 
                     if (ChromeFeatureList.isEnabled(

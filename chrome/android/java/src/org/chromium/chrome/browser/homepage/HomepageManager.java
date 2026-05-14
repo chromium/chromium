@@ -108,10 +108,18 @@ public class HomepageManager
      * @return Whether or not homepage is enabled.
      */
     public boolean isHomepageEnabled() {
+        if (shouldRemoveHomeButton()) {
+            return false;
+        }
         if (HomepagePolicyManager.isShowHomeButtonManaged()) {
             return HomepagePolicyManager.getShowHomeButtonValue();
         }
         return HomepagePolicyManager.isHomepageLocationManaged() || getPrefHomepageEnabled();
+    }
+
+    /** Returns whether the home button should be removed. */
+    public static boolean shouldRemoveHomeButton() {
+        return ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue();
     }
 
     /**
