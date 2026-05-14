@@ -102,13 +102,15 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = static_cast<Profile*>(context);
   std::unique_ptr<TabStoragePackager> packager;
+  // TODO(crbug.com/451614469): Once OTR support is fully implemented, this
+  // should be set to `true` on Android.
+  bool support_off_the_record_data = false;
 #if BUILDFLAG(IS_ANDROID)
   packager = std::make_unique<TabStoragePackagerAndroid>(profile);
 #endif
   return std::make_unique<TabStateStorageService>(
-      profile->GetPath(), /* support_off_the_record_data= */ true,
-      std::move(packager), GetTabCanonicalizer(),
-      GetRestoreEntityTrackerFactory());
+      profile->GetPath(), support_off_the_record_data, std::move(packager),
+      GetTabCanonicalizer(), GetRestoreEntityTrackerFactory());
 }
 
 }  // namespace tabs
