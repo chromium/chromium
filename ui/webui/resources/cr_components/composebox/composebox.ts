@@ -23,6 +23,7 @@ import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_c
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -118,6 +119,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
+      voiceSearchCoherenceEnabled: {type: Boolean},
       carouselOnTop_: {
         type: Boolean,
       },
@@ -170,6 +172,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor carouselOnTop_: boolean = false;
   accessor entrypointName: string = '';
   accessor lensButtonDisabled: boolean = false;
+  accessor voiceSearchCoherenceEnabled: boolean = false;
 
   accessor submitButtonIconType: SubmitButtonIconType =
       SubmitButtonIconType.UPWARD;
@@ -276,7 +279,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       const {active} = await this.pageHandler_.getSmartTabSharingActive();
       this.smartTabSharingActive = active;
     }
-
     this.syncResizeObservers_();
   }
 
@@ -326,9 +328,23 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.isOmniboxInCompactMode_ = this.entrypointName === 'Omnibox' &&
           this.searchboxLayoutMode === 'Compact';
     }
+
     if (changedProperties.has('inputPlaceholderOverride') ||
         changedProperties.has('enableFileHint')) {
       this.updateInputPlaceholder();
+    }
+
+    // If it is the first render, or 'entrypointName' has changed from its default.
+    if (!this.hasUpdated || changedProperties.has('entrypointName')) {
+      // TODO(crbug.com/511319142): Add this first branch's logic to
+      // contextual tasks specific composebox.
+      if (this.entrypointName === 'ContextualTasks') {
+        this.voiceSearchCoherenceEnabled = loadTimeData.getBoolean(
+            'voiceSearchCoherenceCobrowsingComposeboxEnabled');
+      } else {
+        this.voiceSearchCoherenceEnabled =
+            loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
+      }
     }
   }
 

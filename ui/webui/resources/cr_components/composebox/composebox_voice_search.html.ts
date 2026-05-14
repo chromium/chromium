@@ -12,38 +12,33 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
     <div id="container">
       <div id="error-container" ?hidden="${!this.shouldShowErrorScrim_()}">
         <span id="error-message">${this.errorMessage_}</span>
-        ${
-      this.detailedError_ === VoiceSearchError.NO_MATCH ? html`
-          <a id="tryAgainLink" href="#" @click="${this.onTryAgainClick_}">
+        ${this.detailedError_ === VoiceSearchError.NO_MATCH ?
+          html`<a id="tryAgainLink" href="#" @click="${this.onTryAgainClick_}">
             ${this.i18n('tryAgain')}
-          </a>` : ''}
-        <a id="details" part="voice-details-link" target="_blank" href="${this.detailsUrl_}"
+          </a>
+        `: ''}
+        <a id="details" part="voice-details-link" target="_blank" href="${
+      this.detailsUrl_}"
             @click="${this.onLinkClick_}">
           ${this.i18n('voiceDetails')}
         </a>
       </div>
-      ${
-  !(this.voiceSearchCoherenceSearchboxEnabled_ ||
-    this.voiceSearchCoherenceComposeboxesEnabled_) ?
-      html`<textarea id="input"
+      ${this.liveTranscriptEnabled ?
+          html`<textarea id="input"
               .value="${this.transcript_}"
               placeholder="${this.listeningPlaceholder_}"
               ?hidden="${this.shouldShowErrorScrim_()}" disabled>
-          </textarea>` :
-      ''}
-      ${
-  !(this.voiceSearchCoherenceSearchboxEnabled_ ||
-    this.voiceSearchCoherenceComposeboxesEnabled_) ||
+          </textarea>
+          `: ''}
+      ${!this.submitStopButtonsEnabled ||
           this.shouldShowErrorScrim_() ?
       html`<cr-icon-button id="closeButton" class="icon-clear"
               part="voice-close-button"
               title="${this.i18n('voiceClose')}" @click="${this.onCloseClick_}"
-              >` :
-      ''}
-      </cr-icon-button>
+              ></cr-icon-button>
+          ` : ''}
       ${
-      this.voiceSearchCoherenceSearchboxEnabled_ ||
-      this.voiceSearchCoherenceComposeboxesEnabled_ ?
+      this.submitStopButtonsEnabled ?
       html`<div id="bottomActions"
               ?hidden="${this.shouldShowErrorScrim_()}">
             <cr-icon-button id="stopButton" part="voice-stop-button"
@@ -61,8 +56,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
                 ?disabled="${!(this.finalResult_ || this.interimResult_)}">
             </cr-composebox-submit>
           </div>
-      ` :
-      ''}
+        ` : ''}
     </div>
   `;
 }

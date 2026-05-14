@@ -163,6 +163,7 @@ suite('ComposeboxVoiceSearch', () => {
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: false,
       voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
+      voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
     });
 
     window.webkitSpeechRecognition =
@@ -207,7 +208,7 @@ suite('ComposeboxVoiceSearch', () => {
     return voiceSearchElement;
   }
 
-  test('verifies idle timeout is 1500ms', async () => {
+  test('verifies idle timeout is 3000ms', async () => {
     // Open the UI. This calls start(), but openVoiceSearchUI()
     // swallows/resets the setTimeout tracker at the end.
     await openVoiceSearchUI();
@@ -220,7 +221,7 @@ suite('ComposeboxVoiceSearch', () => {
     const [, timeoutMs] = await windowProxy.whenCalled('setTimeout');
 
     // Ensure it matches Google3.
-    assertEquals(1500, timeoutMs);
+    assertEquals(3000, timeoutMs);
   });
 
   test('ABORTED error bypasses timer management', async () => {
@@ -599,38 +600,6 @@ suite('ComposeboxVoiceSearch', () => {
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     assertTrue(!!voiceSearchButton);
   });
-
-  test(
-      'stop and submit buttons show when coherence flag is enabled',
-      async () => {
-        // Enable flag and recreate element to apply new loadTimeData values.
-        loadTimeData.overrideValues({
-          voiceSearchCoherenceComposeboxesEnabled: true,
-        });
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        composeboxElement = document.createElement('cr-composebox');
-        composeboxElement.showVoiceSearch = true;
-        document.body.appendChild(composeboxElement);
-        await microtasksFinished();
-        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
-        assertTrue(!!voiceSearchButton, 'Mic button should exist');
-        voiceSearchButton.click();
-        await microtasksFinished();
-
-        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
-
-        const stopButton =
-            voiceSearchElement.shadowRoot.querySelector('#stopButton');
-        const submitButton =
-            voiceSearchElement.shadowRoot.querySelector('#submitButton');
-
-        assertTrue(
-            isVisible(stopButton),
-            'Stop button should be visible when flag is enabled');
-        assertTrue(
-            (!!submitButton),
-            'Submit button should exist when flag is enabled');
-      });
 
   test(
       'stop and submit buttons hide when coherence flag is disabled',
@@ -1332,6 +1301,17 @@ suite('ComposeboxVoiceSearch', () => {
         searchAnimatedGlow!.shadowRoot.querySelector('recording-wave');
     assertFalse(!!recordingWave, 'Recording wave should not be shown');
 
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    assertTrue(!!voiceSearchElement, 'Voice search element should exist');
+
+    const stopButton =
+        voiceSearchElement.shadowRoot.querySelector('#stopButton');
+    assertFalse(!!stopButton, 'Stop button should not be shown');
+
+    const submitButton =
+        voiceSearchElement.shadowRoot.querySelector('#submitButton');
+    assertFalse(!!submitButton, 'Submit button should not be shown');
+
     mockComposeboxElement.transcript = 'foo';
     await mockComposeboxElement.updateComplete;
     await searchAnimatedGlow!.updateComplete;
@@ -1360,6 +1340,17 @@ suite('ComposeboxVoiceSearch', () => {
     const recordingWave: RecordingWaveElement|null =
         searchAnimatedGlow!.shadowRoot.querySelector('recording-wave');
     assertFalse(!!recordingWave, 'Recording wave should not be shown');
+
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    assertTrue(!!voiceSearchElement, 'Voice search element should exist');
+
+    const stopButton =
+        voiceSearchElement.shadowRoot.querySelector('#stopButton');
+    assertFalse(!!stopButton, 'Stop button should not be shown');
+
+    const submitButton =
+        voiceSearchElement.shadowRoot.querySelector('#submitButton');
+    assertFalse(!!submitButton, 'Submit button should not be shown');
   });
 
   test('recording wave is rendered when listening for composebox', async () => {
@@ -1374,7 +1365,8 @@ suite('ComposeboxVoiceSearch', () => {
     // SearchAnimatedGlow unconditionally exists
     const searchAnimatedGlow =
         composeboxElement.shadowRoot.querySelector('search-animated-glow');
-    await searchAnimatedGlow!.updateComplete;
+    await composeboxElement.updateComplete;
+
     const recordingWave: RecordingWaveElement|null =
         searchAnimatedGlow!.shadowRoot.querySelector('recording-wave');
     assertTrue(!!recordingWave, 'Recording wave should be shown');
@@ -1382,6 +1374,17 @@ suite('ComposeboxVoiceSearch', () => {
     const audioWave: AudioWaveElement|null =
         searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
     assertFalse(!!audioWave, 'Audio wave should not be shown');
+
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    assertTrue(!!voiceSearchElement, 'Voice search element should exist');
+
+    const stopButton =
+        voiceSearchElement.shadowRoot.querySelector('#stopButton');
+    assertTrue(!!stopButton, 'Stop button should be shown');
+
+    const submitButton =
+        voiceSearchElement.shadowRoot.querySelector('#submitButton');
+    assertTrue(!!submitButton, 'Submit button should be shown');
   });
 
   test('recording wave is hidden when not listening for composebox', async () => {
@@ -1389,10 +1392,7 @@ suite('ComposeboxVoiceSearch', () => {
           voiceSearchCoherenceComposeboxesEnabled: true,
     });
     await createComposeboxElement();
-
-    const mockComposeboxElement =
-        composeboxElement as unknown as MockComposebox;
-    mockComposeboxElement.inVoiceSearchMode = false;
+    composeboxElement.inVoiceSearchMode = false;
     await microtasksFinished();
 
     // SearchAnimatedGlow unconditionally exists
@@ -1407,6 +1407,17 @@ suite('ComposeboxVoiceSearch', () => {
     const audioWave: AudioWaveElement|null =
         searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
     assertFalse(!!audioWave, 'Audio wave should not be shown');
+
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    assertTrue(!!voiceSearchElement, 'Voice search element should exist');
+
+    const stopButton =
+        voiceSearchElement.shadowRoot.querySelector('#stopButton');
+    assertFalse(!!stopButton, 'Stop button should not be shown');
+
+    const submitButton =
+        voiceSearchElement.shadowRoot.querySelector('#submitButton');
+    assertFalse(!!submitButton, 'Submit button should not be shown');
   });
 
   test('recording wave is rendered when listening for searchbox', async () => {
@@ -1454,6 +1465,62 @@ suite('ComposeboxVoiceSearch', () => {
             searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
         assertFalse(!!audioWave, 'Audio wave should not be shown');
       });
+
+  test('live transcription shows if enabled', async () => {
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    voiceSearchElement.liveTranscriptEnabled = true;
+
+    await microtasksFinished();
+
+    const textArea = voiceSearchElement.shadowRoot.querySelector('#input');
+    assertTrue(
+        !!textArea, 'text area should exist when live transcript is enabled');
+  });
+
+  test('live transcription hides if not enabled', async () => {
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    voiceSearchElement.liveTranscriptEnabled = false;
+    await microtasksFinished();
+
+    const textArea = voiceSearchElement.shadowRoot.querySelector('#input');
+    assertFalse(
+        !!textArea,
+        'text area should not exist when live transcript is not enabled');
+  });
+
+  test('stop submit button hides if not enabled', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: false,
+    });
+    await createComposeboxElement();
+    composeboxElement.inVoiceSearchMode = true;
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    await microtasksFinished();
+    const stopButton =
+        voiceSearchElement.shadowRoot.querySelector('#stopButton');
+    assertFalse(!!stopButton, 'Stop button should not be shown');
+
+    const submitButton =
+        voiceSearchElement.shadowRoot.querySelector('#submitButton');
+    assertFalse(!!submitButton, 'Submit button should not be shown');
+  });
+
+  test('stop submit button shows if enabled', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    await createComposeboxElement();
+    composeboxElement.inVoiceSearchMode = true;
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    await microtasksFinished();
+    const stopButton =
+        voiceSearchElement.shadowRoot.querySelector('#stopButton');
+    assertTrue(!!stopButton, 'Stop button should be shown');
+
+    const submitButton =
+        voiceSearchElement.shadowRoot.querySelector('#submitButton');
+    assertTrue(!!submitButton, 'Submit button should be shown');
+  });
 
   test(
       'voice search container is empty without webkitSpeechRecognition API',
@@ -1583,6 +1650,146 @@ suite('ComposeboxVoiceSearch', () => {
         assertEquals('', voiceSearchElement.transcript_);
       });
 
+  test('contextual tasks uses correct flag', async () => {
+    loadTimeData.overrideValues({
+      // These are not the flags themselves, but the loadtime values, so
+      // the value derived from the main flag can be false here while
+      // the value derived from the feature param can be true.
+      voiceSearchCoherenceComposeboxesEnabled: false,
+      voiceSearchCoherenceCobrowsingComposeboxEnabled: true,
+    });
+    await createComposeboxElement();
+
+    composeboxElement.entrypointName = 'ContextualTasks';
+    composeboxElement.inVoiceSearchMode = true;  // Render voice search.
+    await microtasksFinished();
+
+    const searchAnimated = composeboxElement.$.animatedSearchElement;
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    assertTrue(
+        searchAnimated.coloredTicTacVoiceAnimationEnabled,
+        'Animation should be enabled when cobrowsing voice' +
+            ' coherence is enabled');
+    assertFalse(
+        voiceSearchElement.liveTranscriptEnabled,
+        'Live transcript should be disabled when cobrowsing' +
+            ' voice coherence is enabled');
+    assertTrue(
+        voiceSearchElement.submitStopButtonsEnabled,
+        'Stop submit buttons should be enabled when cobrowsing' +
+            ' voice coherence is enabled');
+  });
+
+  test('omnibox uses correct flag', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: false,
+      voiceSearchCoherenceCobrowsingComposeboxEnabled: true,
+    });
+    await createComposeboxElement();
+
+    composeboxElement.entrypointName = 'Omnibox';
+    composeboxElement.inVoiceSearchMode = true;  // Render voice search.
+    await microtasksFinished();
+
+    const searchAnimated = composeboxElement.$.animatedSearchElement;
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    assertFalse(
+        searchAnimated.coloredTicTacVoiceAnimationEnabled,
+        'Animation should be disabled for omnibox when' +
+            ' only cobrowsing is enabled');
+    assertTrue(
+        voiceSearchElement.liveTranscriptEnabled,
+        'Live transcription should be enabled for omnibox' +
+            'when only cobrowsing is enabled');
+    assertFalse(
+        voiceSearchElement.submitStopButtonsEnabled,
+        'Stop submit buttons should be disabled for omnibox' +
+            'when only cobrowsing is enabled');
+  });
+  test('NTP uses correct flag', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: false,
+      voiceSearchCoherenceCobrowsingComposeboxEnabled: true,
+    });
+    await createComposeboxElement();
+
+    composeboxElement.entrypointName = 'NTP';
+    composeboxElement.inVoiceSearchMode = true;  // Render voice search.
+    await microtasksFinished();
+
+    const searchAnimated = composeboxElement.$.animatedSearchElement;
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    assertFalse(
+        searchAnimated.coloredTicTacVoiceAnimationEnabled,
+        'Animation should be disabled for NTP when' +
+            ' only cobrowsing is enabled');
+    assertTrue(
+        voiceSearchElement.liveTranscriptEnabled,
+        'Live transcription should be enabled for NTP' +
+            'when only cobrowsing is enabled');
+    assertFalse(
+        voiceSearchElement.submitStopButtonsEnabled,
+        'Stop submit buttons should be disabled for NTP' +
+            'when only cobrowsing is enabled');
+  });
+
+  test(
+      'Enabled voice search coherence results in correct' +
+          ' parameters being passed',
+      async () => {
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+        await createComposeboxElement();
+
+        composeboxElement.entrypointName = 'Omnibox';
+        composeboxElement.inVoiceSearchMode = true;  // Render voice search.
+        await microtasksFinished();
+
+        const searchAnimated = composeboxElement.$.animatedSearchElement;
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+        assertTrue(
+            searchAnimated.coloredTicTacVoiceAnimationEnabled,
+            'Animation should be enabled when composeboxes' +
+                'voice coherence is enabled');
+        assertFalse(
+            voiceSearchElement.liveTranscriptEnabled,
+            'Live transcript should be disabled when composeboxes' +
+                'voice coherence is enabled');
+        assertTrue(
+            voiceSearchElement.submitStopButtonsEnabled,
+            'Stop submit buttons should be enabled when composeboxes' +
+                ' voice coherence is enabled');
+      });
+  test(
+      'Disabled voice search coherence results in' +
+          ' correct parameters being passed',
+      async () => {
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: false,
+        });
+        await createComposeboxElement();
+
+        composeboxElement.entrypointName = 'Omnibox';
+        composeboxElement.inVoiceSearchMode = true;  // Render voice search.
+        await microtasksFinished();
+
+        const searchAnimated = composeboxElement.$.animatedSearchElement;
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+        assertFalse(
+            searchAnimated.coloredTicTacVoiceAnimationEnabled,
+            'Animation should be disabled when composeboxes' +
+                ' voice coherence is disabled');
+        assertTrue(
+            voiceSearchElement.liveTranscriptEnabled,
+            'Live transcript should be enabled when composeboxes' +
+                'voice coherence is disabled');
+        assertFalse(
+            voiceSearchElement.submitStopButtonsEnabled,
+            'Stop submit buttons should be disabled when composeboxes' +
+                'voice coherence is disabled');
+      });
+
   test(
       'onResult_ force-submits when interim result exceeds length limit',
       async () => {
@@ -1591,6 +1798,8 @@ suite('ComposeboxVoiceSearch', () => {
         await microtasksFinished();
 
         const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+        // Set at 120 words.
+        voiceSearchElement.queryLengthLimit = 120;  // non-default limit.
 
         // Listen for the final result event to verify if it was
         // force-submitted.
@@ -1602,7 +1811,7 @@ suite('ComposeboxVoiceSearch', () => {
               submittedResult = e.detail;
             });
 
-        // Construct a long string exceeding the 120 character limit.
+        // Construct a long string exceeding the set 120 character limit.
         const longTranscript = 'a'.repeat(121);
         const result = createResults(1);
 
