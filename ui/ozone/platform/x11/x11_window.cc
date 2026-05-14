@@ -1382,7 +1382,11 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
   DCHECK(window_manager);
 
   // Process X11-specific bits
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   HandleEvent(xev);
+  if (!weak_this) {
+    return;
+  }
 
   x11::Event last_xev;
   std::unique_ptr<ui::Event> last_motion;
