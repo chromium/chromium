@@ -14,11 +14,15 @@
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory_coordinator/async_memory_consumer_registration.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/system/sys_info.h"
@@ -105,7 +109,6 @@ constexpr base::FeatureParam<int> kMaxChunksTotalParam(&kSlopBucket,
 // base::MemoryPressureLevel enum.
 constexpr base::FeatureParam<base::MemoryPressureLevel>::Option
     kMemoryPressureLevelOptions[] = {
-        {base::MEMORY_PRESSURE_LEVEL_NONE, "NONE"},
         {base::MEMORY_PRESSURE_LEVEL_MODERATE, "MODERATE"},
         {base::MEMORY_PRESSURE_LEVEL_CRITICAL, "CRITICAL"},
 };
@@ -223,10 +226,20 @@ class SlopBucket::Configuration {
   bool enabled_for_cache_response_ = true;
 };
 
+constexpr base::MemoryConsumerTraits kSlopBucketTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // This class uses AsyncMemoryConsumerRegistration, and must thus be marked
+    // as asynchronous, even though the actual code in OnReleaseMemory is
+    // synchronous.
+    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    base::MemoryConsumerTraits::IsStateful::kNo);
+
 // SlopBucketManager tracks global state for SlopBuckets. It is thread-hostile.
 // TODO(ricea): Make this be owned by the NetworkService so that it can function
 // correctly if there are multiple NetworkServices on different threads.
-class SlopBucket::Manager : public base::MemoryPressureListener {
+class SlopBucket::Manager : public base::MemoryConsumer {
  public:
   // Prevent accidental use of the constructor.
   using PassKey = base::PassKey<Manager>;
@@ -254,10 +267,9 @@ class SlopBucket::Manager : public base::MemoryPressureListener {
 
     DVLOG(1) << "SlopBucket enabled. Configuration:\n" << configuration_;
 
-    // This use of base::Unretained() is safe because the callback won't be
-    // called after `memory_pressure_listener_` is destroyed.
-    memory_pressure_listener_registration_.emplace(
-        FROM_HERE, base::MemoryPressureListenerTag::kSlopBucket, this);
+    memory_consumer_registration_.emplace(
+        "SlopBucket", kSlopBucketTraits, this,
+        base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled);
   }
 
   Manager(const Manager&) = delete;
@@ -396,22 +408,32 @@ class SlopBucket::Manager : public base::MemoryPressureListener {
     return base::ok(std::move(chunk));
   }
 
-  // Responds to a memory pressure notification by emptying the free pool and
-  // possibly disabling SlopBucket.
-  void OnMemoryPressure(base::MemoryPressureLevel level) override {
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override {}
+  void OnReleaseMemory() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (disabled()) {
       return;
     }
-    if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    if (memory_limit() >= base::kNoMemoryPressureThreshold) {
       return;
     }
-    if (level >= configuration_.memory_pressure_disable_level()) {
+
+    // Responds to a memory pressure notification by emptying the free pool and
+    // possibly disabling SlopBucket.
+    const int disable_limit_threshold =
+        configuration_.memory_pressure_disable_level() ==
+                base::MEMORY_PRESSURE_LEVEL_CRITICAL
+            ? base::kCriticalMemoryPressureThreshold
+            : base::kModerateMemoryPressureThreshold;
+
+    if (memory_limit() <= disable_limit_threshold) {
       Disable(DisabledReason::kMemoryPressure);
       RecordDisabledReason();
       DVLOG(1) << "Memory pressure detected. Disabling SlopBucket.";
-      memory_pressure_listener_registration_ = std::nullopt;
+      memory_consumer_registration_ = std::nullopt;
     }
+
     // We swap the vector so we don't have to hold the lock while we free the
     // elements.
     std::vector<base::HeapArray<uint8_t>> old_free_pool;
@@ -451,10 +473,10 @@ class SlopBucket::Manager : public base::MemoryPressureListener {
   // OS. Only accessed on the IO thread.
   base::TimeTicks disabled_reason_last_recorded_;
 
-  // Calls OnMemoryPressure() on the IO thread when there is memory pressure.
-  // Only set when SlopBucket is enabled. Only accessed on the IO thread.
-  std::optional<base::AsyncMemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  // Registration with the Memory Coordinator to be notified when memory should
+  // be released. Only set when enabled. Only accessed on the network thread.
+  std::optional<base::AsyncMemoryConsumerRegistration>
+      memory_consumer_registration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

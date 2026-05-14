@@ -38,7 +38,7 @@ enum class MemoryPressureListenerTag {
   kVulkanInProcessContextProvider = 5,
   // kDemuxerManager = 6,
   // kFrameEvictionManager = 7,
-  kSlopBucket = 8,
+  // kSlopBucket = 8,
   kDiscardableSharedMemoryManager = 9,
   // kSharedStorageManager = 10,
   // kStagingBufferPool = 11,
