@@ -1012,6 +1012,11 @@ TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
 
+  omnibox::InputState state;
+  state.max_total_inputs = 10;
+  handler().input_state_model()->set_state_for_testing(state);
+  handler().OnInputStateChangedForTesting(state);
+
   base::MockCallback<ComposeboxHandler::OnDriveUploadClickedCallback> callback;
 
   std::vector<base::UnguessableToken> start_file_upload_flow_tokens;
@@ -1038,6 +1043,66 @@ TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked) {
     EXPECT_EQ(callback_response->files[i]->token,
               start_file_upload_flow_tokens[i]);
   }
+}
+
+// TODO(crbug.com/508693783): Update these tests once the Drive file upload flow
+// is implemented.
+TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked_SizeLimitExceeded) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+
+  omnibox::InputState state;
+  state.max_total_inputs = 10;
+  handler().input_state_model()->set_state_for_testing(state);
+  handler().OnInputStateChangedForTesting(state);
+
+  base::MockCallback<ComposeboxHandler::OnDriveUploadClickedCallback> callback;
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow)
+      .WillRepeatedly(testing::Return());
+
+  searchbox::mojom::DriveUploadResponsePtr callback_response;
+  EXPECT_CALL(callback, Run)
+      .WillOnce([&](searchbox::mojom::DriveUploadResponsePtr response) {
+        callback_response = std::move(response);
+      });
+
+  handler().OnDriveUploadClicked(callback.Get());
+
+  ASSERT_TRUE(callback_response);
+  EXPECT_EQ(callback_response->files.size(), 2u);
+  EXPECT_EQ(callback_response->error,
+            searchbox::mojom::DriveUploadError::kSizeLimitExceeded);
+}
+
+// TODO(crbug.com/508693783): Update these tests once the Drive file upload flow
+// is implemented.
+TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked_MaxFilesExceeded) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+
+  omnibox::InputState state;
+  state.max_total_inputs = 1;
+  handler().input_state_model()->set_state_for_testing(state);
+  handler().OnInputStateChangedForTesting(state);
+
+  base::MockCallback<ComposeboxHandler::OnDriveUploadClickedCallback> callback;
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow)
+      .WillRepeatedly(testing::Return());
+
+  searchbox::mojom::DriveUploadResponsePtr callback_response;
+  EXPECT_CALL(callback, Run)
+      .WillOnce([&](searchbox::mojom::DriveUploadResponsePtr response) {
+        callback_response = std::move(response);
+      });
+
+  handler().OnDriveUploadClicked(callback.Get());
+
+  ASSERT_TRUE(callback_response);
+  EXPECT_EQ(callback_response->files.size(), 1u);
+  EXPECT_EQ(callback_response->error,
+            searchbox::mojom::DriveUploadError::kMaxFilesExceeded);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
