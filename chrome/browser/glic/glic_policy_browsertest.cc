@@ -534,8 +534,10 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
   service->ToggleUI(/*bwi=*/browser(), /*prevent_close=*/false,
                     /*source=*/mojom::InvocationSource::kOsButton);
 
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !GetGlicInstance()->IsShowing(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* instance = GetGlicInstance();
+    return !instance || !instance->IsShowing();
+  }));
 
   // 5. Open the side panel again.
   GlicInstanceTracker instance_tracker2(profile_1_);
@@ -617,7 +619,8 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
   run_loop.Run();
   ClickElementWithId(GetHost()->webui_contents(), "disabledByAdminCloseButton");
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !GetGlicInstance()->IsShowing();
+    auto* instance = GetGlicInstance();
+    return !instance || !instance->IsShowing();
   })) << "Timed out waiting for glic to close";
 #endif
 }
