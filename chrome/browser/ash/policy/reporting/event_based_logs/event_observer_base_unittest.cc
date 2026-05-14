@@ -9,13 +9,13 @@
 #include <set>
 #include <string>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/core/policy_pref_names.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_utils.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"

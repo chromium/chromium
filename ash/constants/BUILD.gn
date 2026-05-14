@@ -18,6 +18,7 @@ component("constants") {
     "ash_login_pref_names.h",
     "ash_paths.cc",
     "ash_paths.h",
+    "ash_policy_pref_names.h",
     "ash_pref_names.h",
     "ash_switches.cc",
     "ash_switches.h",

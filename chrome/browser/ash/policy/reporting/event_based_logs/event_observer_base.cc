@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -18,7 +19,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/core/policy_pref_names.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
