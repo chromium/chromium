@@ -11,7 +11,12 @@
 #include <string>
 
 #include "ash/calendar/calendar_client.h"
+#include "ash/system/time/calendar_list_model.h"
+#include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_utils.h"
+#include "base/functional/callback.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
@@ -234,6 +239,54 @@ class ScopedLibcTimeZone {
 
   bool success_ = true;
   std::optional<std::string> old_timezone_;
+};
+
+class CalendarListFetchWaiter : public CalendarListModel::Observer {
+ public:
+  explicit CalendarListFetchWaiter(CalendarListModel* calendar_list_model);
+  CalendarListFetchWaiter(const CalendarListFetchWaiter&) = delete;
+  CalendarListFetchWaiter& operator=(const CalendarListFetchWaiter&) = delete;
+  ~CalendarListFetchWaiter() override;
+
+  void Wait();
+
+ private:
+  // CalendarListModel::Observer:
+  void OnCalendarListFetchComplete() override;
+
+  bool complete_ = false;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<CalendarListModel, CalendarListModel::Observer>
+      scoped_observation_{this};
+};
+
+class CalendarEventsFetchWaiter : public CalendarModel::Observer {
+ public:
+  CalendarEventsFetchWaiter(CalendarModel* calendar_model,
+                            base::Time start_of_month);
+  CalendarEventsFetchWaiter(CalendarModel* calendar_model,
+                            base::RepeatingCallback<bool()> complete_predicate);
+  CalendarEventsFetchWaiter(const CalendarEventsFetchWaiter&) = delete;
+  CalendarEventsFetchWaiter& operator=(const CalendarEventsFetchWaiter&) =
+      delete;
+  ~CalendarEventsFetchWaiter() override;
+
+  void Wait();
+
+ private:
+  // CalendarModel::Observer:
+  void OnEventsFetched(const CalendarModel::FetchingStatus status,
+                       const base::Time start_time) override;
+
+  bool IsComplete();
+
+  bool match_successful_month_ = false;
+  base::Time start_of_month_;
+  base::RepeatingCallback<bool()> complete_predicate_;
+  bool complete_ = false;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<CalendarModel, CalendarModel::Observer>
+      scoped_observation_{this};
 };
 
 // A duration to let the animation finish and pass the cool down duration in

@@ -37,6 +37,67 @@ ScopedLibcTimeZone::~ScopedLibcTimeZone() {
   }
 }
 
+CalendarListFetchWaiter::CalendarListFetchWaiter(
+    CalendarListModel* calendar_list_model) {
+  scoped_observation_.Observe(calendar_list_model);
+}
+
+CalendarListFetchWaiter::~CalendarListFetchWaiter() = default;
+
+void CalendarListFetchWaiter::Wait() {
+  if (complete_) {
+    return;
+  }
+  run_loop_.Run();
+}
+
+void CalendarListFetchWaiter::OnCalendarListFetchComplete() {
+  complete_ = true;
+  run_loop_.Quit();
+}
+
+CalendarEventsFetchWaiter::CalendarEventsFetchWaiter(
+    CalendarModel* calendar_model,
+    base::Time start_of_month)
+    : match_successful_month_(true), start_of_month_(start_of_month) {
+  scoped_observation_.Observe(calendar_model);
+}
+
+CalendarEventsFetchWaiter::CalendarEventsFetchWaiter(
+    CalendarModel* calendar_model,
+    base::RepeatingCallback<bool()> complete_predicate)
+    : complete_predicate_(std::move(complete_predicate)) {
+  scoped_observation_.Observe(calendar_model);
+}
+
+CalendarEventsFetchWaiter::~CalendarEventsFetchWaiter() = default;
+
+void CalendarEventsFetchWaiter::Wait() {
+  if (IsComplete()) {
+    return;
+  }
+  run_loop_.Run();
+}
+
+void CalendarEventsFetchWaiter::OnEventsFetched(
+    const CalendarModel::FetchingStatus status,
+    const base::Time start_time) {
+  if (match_successful_month_) {
+    complete_ =
+        status == CalendarModel::kSuccess && start_time == start_of_month_;
+  } else {
+    complete_ = complete_predicate_.Run();
+  }
+
+  if (complete_) {
+    run_loop_.Quit();
+  }
+}
+
+bool CalendarEventsFetchWaiter::IsComplete() {
+  return complete_ || (!match_successful_month_ && complete_predicate_.Run());
+}
+
 std::unique_ptr<google_apis::calendar::SingleCalendar> CreateCalendar(
     const std::string& id,
     const std::string& summary,

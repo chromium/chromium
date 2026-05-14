@@ -20,8 +20,6 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -92,73 +90,6 @@ bool kCalendarPrimary1 = true;
 
 constexpr base::TimeDelta kCalendarClientResponseDelay =
     calendar_test_utils::kAnimationSettleDownDuration + base::Seconds(2);
-
-class CalendarListFetchWaiter : public CalendarListModel::Observer {
- public:
-  explicit CalendarListFetchWaiter(CalendarListModel* calendar_list_model) {
-    scoped_observation_.Observe(calendar_list_model);
-  }
-  CalendarListFetchWaiter(const CalendarListFetchWaiter&) = delete;
-  CalendarListFetchWaiter& operator=(const CalendarListFetchWaiter&) = delete;
-  ~CalendarListFetchWaiter() override = default;
-
-  void Wait() {
-    if (complete_) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
- private:
-  // CalendarListModel::Observer:
-  void OnCalendarListFetchComplete() override {
-    complete_ = true;
-    run_loop_.Quit();
-  }
-
-  bool complete_ = false;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<CalendarListModel, CalendarListModel::Observer>
-      scoped_observation_{this};
-};
-
-class CalendarEventsFetchWaiter : public CalendarModel::Observer {
- public:
-  CalendarEventsFetchWaiter(CalendarModel* calendar_model,
-                            base::Time start_of_month)
-      : start_of_month_(start_of_month) {
-    scoped_observation_.Observe(calendar_model);
-  }
-  CalendarEventsFetchWaiter(const CalendarEventsFetchWaiter&) = delete;
-  CalendarEventsFetchWaiter& operator=(const CalendarEventsFetchWaiter&) =
-      delete;
-  ~CalendarEventsFetchWaiter() override = default;
-
-  void Wait() {
-    if (complete_) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
- private:
-  // CalendarModel::Observer:
-  void OnEventsFetched(const CalendarModel::FetchingStatus status,
-                       const base::Time start_time) override {
-    if (status != CalendarModel::kSuccess || start_time != start_of_month_) {
-      return;
-    }
-
-    complete_ = true;
-    run_loop_.Quit();
-  }
-
-  const base::Time start_of_month_;
-  bool complete_ = false;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<CalendarModel, CalendarModel::Observer>
-      scoped_observation_{this};
-};
 
 }  // namespace
 
@@ -618,7 +549,7 @@ class CalendarViewEventListViewFetchTest
   }
 
   void FetchCalendars() {
-    CalendarListFetchWaiter waiter(
+    calendar_test_utils::CalendarListFetchWaiter waiter(
         Shell::Get()->system_tray_model()->calendar_list_model());
     Shell::Get()->system_tray_model()->calendar_list_model()->FetchCalendars();
     // Advance to the response callback using CalendarClientTestImpl's
@@ -628,7 +559,8 @@ class CalendarViewEventListViewFetchTest
   }
 
   void RefetchEvents(base::Time start_of_month) {
-    CalendarEventsFetchWaiter waiter(calendar_model_, start_of_month);
+    calendar_test_utils::CalendarEventsFetchWaiter waiter(calendar_model_,
+                                                          start_of_month);
     calendar_model_->FetchEvents(start_of_month);
     // Advance to the response callback using CalendarClientTestImpl's
     // default fetch delay.

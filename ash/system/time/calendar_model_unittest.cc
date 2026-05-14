@@ -26,7 +26,7 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -185,6 +185,8 @@ class CalendarModelTest
     calendar_model_ = std::make_unique<CalendarModel>();
     calendar_client_ =
         std::make_unique<calendar_test_utils::CalendarClientTestImpl>();
+    // Keep fetches posted asynchronously without requiring mock-time advances.
+    calendar_client_->SetResponseDelay(base::TimeDelta());
     Shell::Get()->calendar_controller()->RegisterClientForUser(
         account_id, calendar_client_.get());
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -214,9 +216,9 @@ class CalendarModelTest
     calendar_client_->SetCalendarList(
         calendar_test_utils::CreateMockCalendarList(std::move(calendars)));
 
-    // Start the calendar list fetch and fast forward until it is complete.
+    calendar_test_utils::CalendarListFetchWaiter waiter(calendar_list_model());
     calendar_list_model()->FetchCalendars();
-    WaitUntilFetched();
+    waiter.Wait();
   }
 
   int EventsNumberOfDay(const char* day, SingleDayEventList* events) {
@@ -321,12 +323,21 @@ class CalendarModelTest
     }
   }
 
-  // Wait until the response is back. Since we used `PostDelayedTask` with 1
-  // second to mimic the behavior of fetching, duration of 1 minute should be
-  // enough.
   void WaitUntilFetched() {
-    task_environment()->FastForwardBy(base::Minutes(1));
-    base::RunLoop().RunUntilIdle();
+    calendar_test_utils::CalendarEventsFetchWaiter waiter(
+        calendar_model_.get(),
+        base::BindRepeating(&CalendarModelTest::AllEventFetchesComplete,
+                            base::Unretained(this)));
+    waiter.Wait();
+  }
+
+  bool AllEventFetchesComplete() const {
+    for (const auto& pending_fetch : calendar_model_->pending_fetches_) {
+      if (!pending_fetch.second.empty()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   // Set today's date to add non-prunable months in the model.
