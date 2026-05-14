@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>
-      Test performance of AudioParamTimeline::InsertEvent.
+      Test performance of AudioParamHandler::InsertEvent.
     </title>
     <script src="../resources/runner.js"></script>
   </head>
@@ -45,7 +45,7 @@
         iterationCount: 5,
         warmUpCount: 2,
         tracingCategories: 'disabled-by-default-webaudio.audionode',
-        traceEventsToMeasure: ['AudioParamTimeline::InsertEvent'],
+        traceEventsToMeasure: ['AudioParamHandler::InsertEvent'],
       });
     </script>
   </body>
