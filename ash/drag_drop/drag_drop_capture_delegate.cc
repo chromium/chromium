@@ -9,7 +9,6 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
-#include "ui/aura/window_tracker.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
@@ -55,18 +54,21 @@ bool DragDropCaptureDelegate::TakeCapture(
   // queue to the |drag_drop_tracker_|'s capture window so that when it takes
   // capture, it still gets a valid gesture state.
   aura::Window* capture_window = drag_drop_tracker_->capture_window();
-  aura::WindowTracker tracker({source_window, capture_window});
+  base::WeakPtr<aura::Window> source_window_weak =
+      source_window->GetWeakPtrAsWindow();
+  base::WeakPtr<aura::Window> capture_window_weak =
+      capture_window->GetWeakPtrAsWindow();
   auto* gesture_recognizer = aura::Env::GetInstance()->gesture_recognizer();
   gesture_recognizer->TransferEventsTo(
       source_window, drag_drop_tracker_->capture_window(), behavior);
-  if (tracker.Contains(source_window)) {
+  if (source_window_weak) {
     // We also send a gesture end and touch cancel to the source window so it
     // can clear state.  TODO(varunjain): Remove this whole block when gesture
     // sequence transferring is properly done in the GR
     // (http://crbug.com/160558)
     NotifyWindowOfTouchDispatchGestureEnd(source_window);
   }
-  if (!tracker.Contains(capture_window)) {
+  if (!capture_window_weak) {
     // This means the drag was cancelled during event transfer.
     // See: crbug.com/1297209.
     return false;

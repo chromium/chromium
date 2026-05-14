@@ -10,7 +10,6 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 
 namespace wm {
@@ -72,11 +71,10 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
            raw_ptr<aura::client::CaptureDelegate, CtnExperimental>>
       delegates = delegates_;
 
-  aura::WindowTracker tracker;
-  if (new_capture_window)
-    tracker.Add(new_capture_window);
-  if (old_capture_window)
-    tracker.Add(old_capture_window);
+  base::WeakPtr<aura::Window> new_capture_window_weak =
+      new_capture_window ? new_capture_window->GetWeakPtrAsWindow() : nullptr;
+  base::WeakPtr<aura::Window> old_capture_window_weak =
+      old_capture_window ? old_capture_window->GetWeakPtrAsWindow() : nullptr;
 
   // If we're starting a new capture, cancel all touches that aren't
   // targeted to the capturing window.
@@ -86,10 +84,12 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
     // Cancelling touches might cause |new_capture_window| to get deleted.
     // Track |new_capture_window| and check if it still exists before
     // committing |capture_window_|.
-    if (!tracker.Contains(new_capture_window))
+    if (!new_capture_window_weak) {
       new_capture_window = nullptr;
-    if (old_capture_window && !tracker.Contains(old_capture_window))
+    }
+    if (old_capture_window && !old_capture_window_weak) {
       old_capture_window = nullptr;
+    }
   }
 
   capture_window_ = new_capture_window;
@@ -105,8 +105,9 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
   // a dangling pointer, so detect and handle it.
   for (const auto& it : delegates) {
     it.second->UpdateCapture(old_capture_window, new_capture_window);
-    if (old_capture_window && !tracker.Contains(old_capture_window))
+    if (old_capture_window && !old_capture_window_weak) {
       old_capture_window = nullptr;
+    }
   }
 
   if (capture_delegate_ != old_capture_delegate) {

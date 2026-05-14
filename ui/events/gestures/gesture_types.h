@@ -45,7 +45,9 @@ class EVENTS_EXPORT GestureConsumer {
 
   virtual const std::string& GetName() const;
 
-  base::WeakPtr<GestureConsumer> GetWeakPtr();
+  // This is defined as virtual to allow its subclass to provide its own
+  // WeakPtr<SubType>, with single shared WeakPtrFactory.
+  virtual base::WeakPtr<GestureConsumer> GetWeakPtr() = 0;
 
   std::unique_ptr<GestureProviderAura> TakeProvider();
   void reset_gesture_provider();
@@ -54,7 +56,6 @@ class EVENTS_EXPORT GestureConsumer {
 
  private:
   std::unique_ptr<GestureProviderAura> provider_;
-  base::WeakPtrFactory<GestureConsumer> weak_ptr_factory_{this};
 };
 
 // GestureEventHelper creates implementation-specific gesture events and

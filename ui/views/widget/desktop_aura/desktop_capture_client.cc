@@ -11,7 +11,6 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 
 namespace views {
@@ -70,11 +69,11 @@ void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
     // Cancelling touches might cause |new_capture_window| to get deleted.
     // Track |new_capture_window| and check if it still exists before
     // committing |capture_window_|.
-    aura::WindowTracker tracker;
-    tracker.Add(new_capture_window);
+    base::WeakPtr<aura::Window> new_capture_window_weak =
+        new_capture_window->GetWeakPtrAsWindow();
     aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouchesExcept(
         new_capture_window);
-    if (!tracker.Contains(new_capture_window)) {
+    if (!new_capture_window_weak) {
       new_capture_window = nullptr;
     }
   }
