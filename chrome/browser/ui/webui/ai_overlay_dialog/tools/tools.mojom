@@ -71,6 +71,10 @@ interface AiOverlayTools {
   FindAndHighlight(string query) => result<mojo_base.mojom.Empty, string>;
 
   // Scroll the viewport in a specific direction.
+  //
+  // granularity: ["document", "page"] - The units of the `magnitude` param.
+  //   "document" scrolls to the start or end of the document.
+  // magnitude: the distance to scroll. Positive is down, negative is up.
   Scroll(ScrollGranularity granularity, double magnitude)
       => result<mojo_base.mojom.Empty, string>;
 

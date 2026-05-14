@@ -70,6 +70,32 @@ def _MojomTypeToGeminiType(mojom_type):
     if 'double' in mojom_type or 'float' in mojom_type: return 'NUMBER'
     return 'STRING'
 
+# Takes the param documentation line (the part in the comment) and tries to
+# parse it as an enum type. Example of how such a line looks:
+#
+#    // paramName: ["enum1", "enum2"] - param description
+#
+# param_desc is the part after the ':' colon
+#
+# Returns a schema dict for the param if successful, None otherwise.
+def _ParseAsEnumParam(param_desc):
+    m = re.match(r'^(\[.*?\])\s*(?:-\s*)?(.*)', param_desc, re.DOTALL)
+    if not m:
+        return None
+
+    enum_values = json.loads(m.group(1))
+    if (not isinstance(enum_values, list) or
+        not all(isinstance(x, str) for x in enum_values)):
+        return None
+
+    enum_schema = {}
+    enum_schema["type"] = "STRING"
+    enum_schema["enum"] = enum_values
+    remainder = m.group(2).strip()
+    if remainder:
+        enum_schema["description"] = remainder
+    return enum_schema
+
 
 def ParseMojomFile(header_path):
     with open(header_path, 'r', encoding='utf-8') as f:
@@ -117,7 +143,11 @@ def ParseMojomFile(header_path):
 
                 param_schema = {"type": _MojomTypeToGeminiType(mojom_type)}
                 if param_name in param_descs:
-                    param_schema["description"] = param_descs[param_name]
+                    desc = param_descs[param_name]
+                    if enum_schema := _ParseAsEnumParam(desc):
+                        param_schema = enum_schema
+                    else:
+                        param_schema["description"] = desc
 
                 decl["parameters"]["properties"][param_name] = param_schema
                 decl["parameters"]["required"].append(param_name)

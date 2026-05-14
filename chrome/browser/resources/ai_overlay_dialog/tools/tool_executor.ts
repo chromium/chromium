@@ -31,7 +31,8 @@ interface FindAndHighlightArgs {
 }
 
 interface ScrollArgs {
-  direction: 'up'|'down'|'top'|'bottom';
+  granularity: string;
+  magnitude: number;
 }
 
 interface SeekToTimestampArgs {
@@ -194,29 +195,18 @@ export class ToolExecutor {
   }
 
   private async execScroll(args: ScrollArgs): Promise<void> {
-    let granularity: ScrollGranularity;
-    let magnitude: number;
-
-    switch (args.direction) {
-      case 'up':
-        granularity = ScrollGranularity.kPage;
-        magnitude = -1;
-        break;
-      case 'down':
-        granularity = ScrollGranularity.kPage;
-        magnitude = 1;
-        break;
-      case 'top':
-        granularity = ScrollGranularity.kDocument;
-        magnitude = -1;
-        break;
-      case 'bottom':
-        granularity = ScrollGranularity.kDocument;
-        magnitude = 1;
-        break;
-      default:
-        throw new Error(`Unknown scroll direction: ${args.direction}`);
+    // TODO(b/513218774): Ideally generated_tool_definitions would also
+    // generate a validator function for each tool to validate the incoming
+    // Args objects so we could do this automatically for each tool.
+    if (typeof args !== 'object' || typeof args.magnitude !== 'number' ||
+        (args.granularity !== 'document' && args.granularity !== 'page')) {
+      throw new Error(`Bad Scroll Args: ${JSON.stringify(args)}`);
     }
-    await this.toolsRemote.scroll(granularity, magnitude);
+
+    const granularity = args.granularity === 'document' ?
+        ScrollGranularity.kDocument :
+        ScrollGranularity.kPage;
+
+    await this.toolsRemote.scroll(granularity, args.magnitude);
   }
 }
