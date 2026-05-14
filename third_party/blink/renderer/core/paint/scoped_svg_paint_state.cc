@@ -141,12 +141,25 @@ void ScopedSVGPaintState::ApplyPaintPropertyState(
     const ObjectPaintProperties& properties) {
   auto& paint_controller = paint_info_.context.GetPaintController();
   auto state = paint_controller.CurrentPaintChunkProperties();
-  if (const auto* filter = properties.Filter()) {
+
+  const auto* filter = properties.Filter();
+  if (filter && filter->Filter() && filter->Filter()->OriginTainted() &&
+      (paint_info_.GetPaintFlags() & PaintFlag::kPrivacyPreserving)) {
+    filter = nullptr;
+  }
+
+  if (filter) {
     state.SetEffect(*filter);
   } else if (const auto* effect = properties.Effect()) {
     state.SetEffect(*effect);
   }
-  if (const auto* filter_clip = properties.PixelMovingFilterClipExpander()) {
+
+  const auto* filter_clip = properties.PixelMovingFilterClipExpander();
+  if (!filter) {
+    filter_clip = nullptr;
+  }
+
+  if (filter_clip) {
     state.SetClip(*filter_clip);
   } else if (const auto* mask_clip = properties.MaskClip()) {
     state.SetClip(*mask_clip);
