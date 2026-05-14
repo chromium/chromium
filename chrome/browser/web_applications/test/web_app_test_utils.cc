@@ -49,6 +49,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
@@ -1388,7 +1389,8 @@ void TestDeclineDialogCallback(
 // then triggering accept on the dialog.
 webapps::AppId InstallPwaForCurrentUrl(Browser* browser) {
   // Depending on the installability criteria, different dialogs can be used.
-  SetAutoAcceptWebAppDialogForTesting(true, true);
+  web_app::test::ScopedAutoAcceptCreateShortcutDialog auto_accept;
+  web_app::test::ScopedAutoCheckChromeOsOpenInWindow auto_check;
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
   SetAutoAcceptDiyAppsInstallDialogForTesting(true);
@@ -1396,7 +1398,6 @@ webapps::AppId InstallPwaForCurrentUrl(Browser* browser) {
   observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser, IDC_INSTALL_PWA));
   webapps::AppId app_id = observer.Wait();
-  SetAutoAcceptWebAppDialogForTesting(false, false);
   SetAutoAcceptDiyAppsInstallDialogForTesting(false);
   return app_id;
 }

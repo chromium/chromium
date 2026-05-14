@@ -4733,6 +4733,8 @@ static_library("ui") {
       "views/web_apps/web_app_modal_dialog_delegate.cc",
       "views/web_apps/web_app_modal_dialog_delegate.h",
       "views/web_apps/web_app_simple_install_dialog.cc",
+      "views/web_apps/web_app_testing_flags.cc",
+      "views/web_apps/web_app_testing_flags.h",
       "views/web_apps/web_app_uninstall_dialog_view.cc",
       "views/web_apps/web_app_uninstall_dialog_view.h",
       "views/web_apps/web_app_update_identity_view.cc",
@@ -5838,6 +5840,7 @@ static_library("test_support") {
 
   if (toolkit_views) {
     deps += [
+      ":web_app_dialog_test_support",
       "//chrome/browser/ui/extensions:test_support",
       "//components/constrained_window",
       "//components/webauthn/content/browser",
@@ -5852,8 +5855,6 @@ static_library("test_support") {
       "views/payments/test_secure_payment_confirmation_payment_request_delegate.h",
       "views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.cc",
       "views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h",
-      "views/web_apps/web_app_dialog_test_support.cc",
-      "views/web_apps/web_app_dialog_test_support.h",
       "views/webauthn/authenticator_request_dialog_view_test_api.cc",
       "views/webauthn/authenticator_request_dialog_view_test_api.h",
     ]
@@ -5921,6 +5922,21 @@ if (use_aura) {
       "//chrome/common",
       "//components/prefs",
       "//content/public/browser",
+    ]
+  }
+}
+
+if (toolkit_views) {
+  source_set("web_app_dialog_test_support") {
+    testonly = true
+    sources = [
+      "views/web_apps/web_app_dialog_test_support.cc",
+      "views/web_apps/web_app_dialog_test_support.h",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/web_applications",
     ]
   }
 }

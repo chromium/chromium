@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -893,8 +894,8 @@ class MLPromotionInstallDialogBrowserTest
         InstallAppForCurrentWebContents(/*install_locally=*/true);
         break;
       case InstallDialogState::kCreateShortcutDialog:
-        web_app::SetAutoAcceptWebAppDialogForTesting(
-            /*auto_accept=*/true, /*auto_open_in_window=*/false);
+        auto_accept_ = std::make_unique<
+            web_app::test::ScopedAutoAcceptCreateShortcutDialog>();
         chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
         break;
     }
@@ -903,6 +904,9 @@ class MLPromotionInstallDialogBrowserTest
   bool IsCurrentTestStateShortcutDialog() {
     return GetParam() == InstallDialogState::kCreateShortcutDialog;
   }
+
+  std::unique_ptr<web_app::test::ScopedAutoAcceptCreateShortcutDialog>
+      auto_accept_;
 };
 
 IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest, MlInstallNotShown) {

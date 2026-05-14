@@ -121,12 +121,6 @@ void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,
                                 Profile* profile,
                                 const webapps::AppId& app_id,
                                 WebAppLaunchAcceptanceCallback close_callback);
-// Sets whether |ShowWebAppDialog| should accept immediately without any
-// user interaction. |auto_open_in_window| sets whether the open in window
-// checkbox is checked.
-void SetAutoAcceptWebAppDialogForTesting(bool auto_accept,
-                                         bool auto_open_in_window);
-
 // Sets an override title for the Create Shortcut confirmation view.
 void SetOverrideTitleForTesting(const char* title_to_use);
 

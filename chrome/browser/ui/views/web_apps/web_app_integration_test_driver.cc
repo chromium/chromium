@@ -87,6 +87,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/views/web_apps/sub_apps_install_dialog_controller.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/views/web_apps/web_app_update_review_dialog.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -1409,15 +1410,20 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
   }
   MaybeNavigateTabbedBrowserInScope(site);
 
-  SetAutoAcceptWebAppDialogForTesting(
-      /*auto_accept=*/true,
-      /*auto_open_in_window=*/open_in_window);
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
   BrowserAddedWaiter browser_added_waiter;
-  CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-  active_app_id_ = observer.Wait();
-  SetAutoAcceptWebAppDialogForTesting(false, false);
+  {
+    std::unique_ptr<web_app::test::ScopedAutoCheckChromeOsOpenInWindow>
+        auto_check;
+    if (open_in_window) {
+      auto_check = std::make_unique<
+          web_app::test::ScopedAutoCheckChromeOsOpenInWindow>();
+    }
+    web_app::test::ScopedAutoAcceptCreateShortcutDialog auto_accept;
+    CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+    active_app_id_ = observer.Wait();
+  }
   if (open_in_window) {
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();

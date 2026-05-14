@@ -93,6 +93,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_app_window_icon_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -2569,14 +2570,17 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
       GURL(embedded_test_server()->GetURL("/banners/manifest_test_page.html")),
       ui::PAGE_TRANSITION_LINK));
   // Install shortcut app.
-  web_app::SetAutoAcceptWebAppDialogForTesting(true, true);
-  web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
-  install_observer.BeginListening();
-  ui_test_utils::BrowserCreatedObserver browser_observer;
-  chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
-  const webapps::AppId app_id = install_observer.Wait();
-  browser_observer.Wait();
-  web_app::SetAutoAcceptWebAppDialogForTesting(false, false);
+  webapps::AppId app_id;
+  {
+    web_app::test::ScopedAutoAcceptCreateShortcutDialog auto_accept;
+    web_app::test::ScopedAutoCheckChromeOsOpenInWindow auto_check;
+    web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
+    install_observer.BeginListening();
+    ui_test_utils::BrowserCreatedObserver browser_observer;
+    chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
+    app_id = install_observer.Wait();
+    browser_observer.Wait();
+  }
 
   ash::ShelfID shelf_id(app_id);
   EXPECT_FALSE(ChromeShelfController::instance()->IsPinned(shelf_id));

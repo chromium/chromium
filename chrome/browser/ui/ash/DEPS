@@ -17,6 +17,7 @@ specific_include_rules = {
   ".*test.*": [
     "+chrome/test",
     "+chrome/browser/ui/views/tabs",
+    "+chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h",
     "+components/user_education/views",
     "+components/viz/test",
     "+media",

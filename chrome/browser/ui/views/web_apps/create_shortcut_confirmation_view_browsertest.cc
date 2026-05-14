@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -109,8 +110,8 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
       GURL("https://example.com"));
   app_info->title = u"Test app";
 
-  web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                               /*auto_open_in_window=*/true);
+  web_app::test::ScopedAutoAcceptCreateShortcutDialog auto_accept;
+  web_app::test::ScopedAutoCheckChromeOsOpenInWindow auto_check;
   bool is_accepted = false;
   std::unique_ptr<web_app::WebAppInstallInfo> install_info;
   auto callback = [&is_accepted, &install_info](
@@ -143,8 +144,6 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
       GURL("https://example.com"));
   app_info->title = u"Test app";
 
-  web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/false,
-                                               /*auto_open_in_window=*/false);
   base::test::TestFuture<bool, std::unique_ptr<web_app::WebAppInstallInfo>>
       install_result;
 
@@ -182,8 +181,6 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
       GURL("https://example.com"));
   app_info->title = u"Test app";
 
-  web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/false,
-                                               /*auto_open_in_window=*/false);
   base::test::TestFuture<bool, std::unique_ptr<web_app::WebAppInstallInfo>>
       install_result;
 
@@ -219,8 +216,8 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
                        NormalizeTitles) {
-  web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                               /*auto_open_in_window=*/true);
+  web_app::test::ScopedAutoAcceptCreateShortcutDialog auto_accept;
+  web_app::test::ScopedAutoCheckChromeOsOpenInWindow auto_check;
 
   struct TestCases {
     std::u16string input;

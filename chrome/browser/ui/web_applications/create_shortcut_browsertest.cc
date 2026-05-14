@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -77,13 +78,20 @@ class CreateShortcutBrowserTest : public WebAppBrowserTestBase {
  public:
   CreateShortcutBrowserTest() = default;
   webapps::AppId InstallDiyAppForCurrentUrl(bool open_as_window = false) {
-    SetAutoAcceptWebAppDialogForTesting(true, open_as_window);
     WebAppTestInstallObserver observer(profile());
     observer.BeginListening();
-    CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-    webapps::AppId app_id = observer.Wait();
-    SetAutoAcceptWebAppDialogForTesting(false, false);
-    return app_id;
+    {
+      std::unique_ptr<web_app::test::ScopedAutoCheckChromeOsOpenInWindow>
+          auto_check;
+      if (open_as_window) {
+        auto_check = std::make_unique<
+            web_app::test::ScopedAutoCheckChromeOsOpenInWindow>();
+      }
+      web_app::test::ScopedAutoAcceptCreateShortcutDialog auto_accept;
+      CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+      webapps::AppId app_id = observer.Wait();
+      return app_id;
+    }
   }
 
   // Start URL points to `PageWithDifferentStartUrlManifestStartUrl`.

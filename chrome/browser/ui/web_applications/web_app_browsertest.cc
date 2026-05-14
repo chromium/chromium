@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -2780,20 +2781,23 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, FileAssociation) {
   NavigateViaLinkClickToURLAndWait(browser(), app_url);
 
   // Wait for OS hooks and installation to complete.
-  SetAutoAcceptWebAppDialogForTesting(true, true);
-  base::RunLoop run_loop_install;
-  WebAppInstallManagerObserverAdapter observer(profile());
-  observer.SetWebAppInstalledWithOsHooksDelegate(
-      base::BindLambdaForTesting([&](const webapps::AppId& installed_app_id) {
-        EXPECT_THAT(
-            tester.GetAllSamples("WebApp.FileHandlersRegistration.Result"),
-            BucketsAre(base::Bucket(true, 1)));
-        run_loop_install.Quit();
-      }));
-  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
-  run_loop_install.Run();
-  content::RunAllTasksUntilIdle();
-  SetAutoAcceptWebAppDialogForTesting(false, false);
+  webapps::AppId app_id;
+  {
+    web_app::test::ScopedAutoAcceptCreateShortcutDialog auto_accept;
+    web_app::test::ScopedAutoCheckChromeOsOpenInWindow auto_check;
+    base::RunLoop run_loop_install;
+    WebAppInstallManagerObserverAdapter observer(profile());
+    observer.SetWebAppInstalledWithOsHooksDelegate(
+        base::BindLambdaForTesting([&](const webapps::AppId& installed_app_id) {
+          EXPECT_THAT(
+              tester.GetAllSamples("WebApp.FileHandlersRegistration.Result"),
+              BucketsAre(base::Bucket(true, 1)));
+          run_loop_install.Quit();
+        }));
+    app_id = test::InstallPwaForCurrentUrl(browser());
+    run_loop_install.Run();
+    content::RunAllTasksUntilIdle();
+  }
 
   for (auto extension : expected_extensions) {
     EXPECT_TRUE(os_integration_override().IsFileExtensionHandled(
@@ -2858,17 +2862,20 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   NavigateViaLinkClickToURLAndWait(browser(), app_url);
 
   // Wait for OS hooks and installation to complete.
-  SetAutoAcceptWebAppDialogForTesting(true, true);
-  base::RunLoop run_loop_install;
-  WebAppInstallManagerObserverAdapter observer(profile());
-  observer.SetWebAppInstalledWithOsHooksDelegate(
-      base::BindLambdaForTesting([&](const webapps::AppId& installed_app_id) {
-        run_loop_install.Quit();
-      }));
-  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
-  run_loop_install.Run();
-  content::RunAllTasksUntilIdle();
-  SetAutoAcceptWebAppDialogForTesting(false, false);
+  webapps::AppId app_id;
+  {
+    web_app::test::ScopedAutoAcceptCreateShortcutDialog auto_accept;
+    web_app::test::ScopedAutoCheckChromeOsOpenInWindow auto_check;
+    base::RunLoop run_loop_install;
+    WebAppInstallManagerObserverAdapter observer(profile());
+    observer.SetWebAppInstalledWithOsHooksDelegate(
+        base::BindLambdaForTesting([&](const webapps::AppId& installed_app_id) {
+          run_loop_install.Quit();
+        }));
+    app_id = test::InstallPwaForCurrentUrl(browser());
+    run_loop_install.Run();
+    content::RunAllTasksUntilIdle();
+  }
 
   auto is_handling_extension = [&](const std::string& extension) {
     return os_integration_override().IsFileExtensionHandled(

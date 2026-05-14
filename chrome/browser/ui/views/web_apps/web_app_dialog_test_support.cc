@@ -6,19 +6,26 @@
 
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 
-namespace web_app {
-
-bool g_auto_accept_all_install_dialogs_for_testing = false;
-bool g_auto_check_open_in_window_for_testing = false;
+namespace web_app::test {
 
 ScopedAutoAcceptWebAppDialogs::ScopedAutoAcceptWebAppDialogs()
-    : auto_reset_(&g_auto_accept_all_install_dialogs_for_testing, true) {}
+    : auto_reset_(&g_auto_accept_all_install_dialogs_for_testing, true) {
+}  // IN-TEST
 
 ScopedAutoAcceptWebAppDialogs::~ScopedAutoAcceptWebAppDialogs() = default;
 
-ScopedAutoCheckOpenInWindow::ScopedAutoCheckOpenInWindow()
-    : auto_reset_(&g_auto_check_open_in_window_for_testing, true) {}
+ScopedAutoCheckChromeOsOpenInWindow::ScopedAutoCheckChromeOsOpenInWindow()
+    : auto_reset_(&g_auto_check_chromeos_open_in_window_for_testing, true) {
+}  // IN-TEST
 
-ScopedAutoCheckOpenInWindow::~ScopedAutoCheckOpenInWindow() = default;
+ScopedAutoCheckChromeOsOpenInWindow::~ScopedAutoCheckChromeOsOpenInWindow() =
+    default;
 
-}  // namespace web_app
+ScopedAutoAcceptCreateShortcutDialog::ScopedAutoAcceptCreateShortcutDialog()
+    : auto_reset_(&g_auto_accept_create_shortcut_dialog_for_testing, true) {
+}  // IN-TEST
+
+ScopedAutoAcceptCreateShortcutDialog::~ScopedAutoAcceptCreateShortcutDialog() =
+    default;
+
+}  // namespace web_app::test

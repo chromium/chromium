@@ -875,6 +875,7 @@ source_set("web_applications_test_support") {
   ]
 
   public_deps = [
+    "//chrome/browser/ui:web_app_dialog_test_support",
     "//chrome/browser/web_applications/isolated_web_apps/key_distribution/proto",
     "//components/webapps/common:mojo_bindings",
   ]

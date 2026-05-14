@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
+#include "chrome/browser/ui/views/web_apps/web_app_testing_flags.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
@@ -49,8 +50,6 @@
 namespace {
 
 CreateShortcutConfirmationView* g_dialog_for_testing = nullptr;
-bool g_auto_accept_web_app_for_testing = false;
-bool g_auto_check_open_in_window_for_testing = false;
 const char* g_title_to_use_for_app = nullptr;
 
 bool ShowRadioButtons() {
@@ -195,7 +194,7 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
 
   std::move(builder).BuildChildren();
 
-  if (g_auto_check_open_in_window_for_testing) {
+  if (web_app::test::g_auto_check_chromeos_open_in_window_for_testing) {
     if (ShowRadioButtons()) {
       open_as_window_radio_->SetChecked(true);
     } else {
@@ -307,15 +306,9 @@ void ShowCreateShortcutDialog(
 
   g_dialog_for_testing = dialog;
 
-  if (g_auto_accept_web_app_for_testing) {
+  if (test::g_auto_accept_create_shortcut_dialog_for_testing) {
     g_dialog_for_testing->Accept();
   }
-}
-
-void SetAutoAcceptWebAppDialogForTesting(bool auto_accept,  // IN-TEST
-                                         bool auto_open_in_window) {
-  g_auto_accept_web_app_for_testing = auto_accept;
-  g_auto_check_open_in_window_for_testing = auto_open_in_window;
 }
 
 void SetOverrideTitleForTesting(const char* title_to_use) {

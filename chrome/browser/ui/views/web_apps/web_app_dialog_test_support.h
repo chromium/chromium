@@ -6,15 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_DIALOG_TEST_SUPPORT_H_
 
 #include "base/auto_reset.h"
+#include "chrome/browser/ui/views/web_apps/web_app_testing_flags.h"
 
-namespace web_app {
-
-// Global flag to auto-accept all web app install and launch dialogs in tests.
-extern bool g_auto_accept_all_install_dialogs_for_testing;
-
-// Global flag to auto-check the open in window checkbox in web app dialogs in
-// tests.
-extern bool g_auto_check_open_in_window_for_testing;
+namespace web_app::test {
 
 // Scoped helper to enable auto-accepting all web app dialogs during its
 // lifetime.
@@ -30,19 +24,35 @@ class ScopedAutoAcceptWebAppDialogs {
   base::AutoReset<bool> auto_reset_;
 };
 
-// Scoped helper to auto-check the open in window checkbox in web app dialogs.
-class ScopedAutoCheckOpenInWindow {
+// Scoped helper to auto-check the open in window checkbox specifically on
+// ChromeOS.
+class ScopedAutoCheckChromeOsOpenInWindow {
  public:
-  ScopedAutoCheckOpenInWindow();
-  ScopedAutoCheckOpenInWindow(const ScopedAutoCheckOpenInWindow&) = delete;
-  ScopedAutoCheckOpenInWindow& operator=(const ScopedAutoCheckOpenInWindow&) =
-      delete;
-  ~ScopedAutoCheckOpenInWindow();
+  ScopedAutoCheckChromeOsOpenInWindow();
+  ScopedAutoCheckChromeOsOpenInWindow(
+      const ScopedAutoCheckChromeOsOpenInWindow&) = delete;
+  ScopedAutoCheckChromeOsOpenInWindow& operator=(
+      const ScopedAutoCheckChromeOsOpenInWindow&) = delete;
+  ~ScopedAutoCheckChromeOsOpenInWindow();
 
  private:
   base::AutoReset<bool> auto_reset_;
 };
 
-}  // namespace web_app
+// Scoped helper to auto-accept the create shortcut dialog.
+class ScopedAutoAcceptCreateShortcutDialog {
+ public:
+  ScopedAutoAcceptCreateShortcutDialog();
+  ScopedAutoAcceptCreateShortcutDialog(
+      const ScopedAutoAcceptCreateShortcutDialog&) = delete;
+  ScopedAutoAcceptCreateShortcutDialog& operator=(
+      const ScopedAutoAcceptCreateShortcutDialog&) = delete;
+  ~ScopedAutoAcceptCreateShortcutDialog();
+
+ private:
+  base::AutoReset<bool> auto_reset_;
+};
+
+}  // namespace web_app::test
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_DIALOG_TEST_SUPPORT_H_
