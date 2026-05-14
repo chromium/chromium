@@ -13,8 +13,7 @@
 edition = "2024"
 rust-version = "1.85.0"
 name = "hashbrown"
-version = "0.17.0"
-authors = ["Amanieu d'Antras <amanieu@gmail.com>"]
+version = "0.17.1"
 build = false
 exclude = [
     ".github",

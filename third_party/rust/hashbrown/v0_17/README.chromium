@@ -1,7 +1,7 @@
 Name: hashbrown
 URL: https://crates.io/crates/hashbrown
-Version: 0.17.0
-Revision: d290456969d0e89e6799d8a673c95112962b70ec
+Version: 0.17.1
+Revision: c62a63a61b7caf2de8f9ecb7b06a66b0ab6bdf3d
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/hashbrown-v0_17/LICENSE-APACHE

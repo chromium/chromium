@@ -117,9 +117,8 @@ impl Group {
         //   1111_1111 | 1000_0000 = 1111_1111
         //   0000_0000 | 1000_0000 = 1000_0000
         unsafe {
-            let zero = lsx_vreplgr2vr_b(0);
-            let special = lsx_vslt_b(self.0, zero);
-            Group(lsx_vor_v(special, lsx_vreplgr2vr_b(Tag::DELETED.0 as i32)))
+            let special = lsx_vslti_b::<0>(self.0);
+            Group(lsx_vori_b::<{ Tag::DELETED.0 as u32 }>(special))
         }
     }
 }

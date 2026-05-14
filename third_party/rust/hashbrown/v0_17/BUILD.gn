@@ -48,11 +48,10 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2024"
-  cargo_pkg_authors = "Amanieu d'Antras <amanieu@gmail.com>"
   cargo_pkg_name = "hashbrown"
   cargo_pkg_description = "A Rust port of Google's SwissTable hash map"
   cargo_pkg_repository = "https://github.com/rust-lang/hashbrown"
-  cargo_pkg_version = "0.17.0"
+  cargo_pkg_version = "0.17.1"
 
   allow_unsafe = true
 
