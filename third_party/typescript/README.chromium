@@ -1,0 +1,20 @@
+Name: TypeScript Native Preview
+Short Name: typescript
+URL: https://www.npmjs.com/package/@typescript/native-preview
+Version: 7.0.0-dev.20260421.2
+License: Apache-2.0
+License File: LICENSE
+Security Critical: no
+Shipped: no
+
+Description:
+TypeScript is a language for application-scale JavaScript. TypeScript adds
+optional types to JavaScript that support tools for large-scale JavaScript
+applications for any browser, for any host, on any OS. TypeScript compiles to
+readable, standards-based JavaScript.
+
+The compiler is not shipped with Chrome but code compiled using it is.
+
+Local Modifications:
+See patches/ folder to work-around
+https://github.com/microsoft/TypeScript/issues/30024
