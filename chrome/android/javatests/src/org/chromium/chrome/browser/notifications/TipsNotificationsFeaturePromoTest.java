@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -51,7 +50,7 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.notifications.TipsPromoDetailsPageBottomSheetFacility;
 import org.chromium.chrome.test.transit.notifications.TipsPromoMainPageBottomSheetFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.RecentTabsPageStation;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.transit.signin.SigninBottomSheetFacility;
@@ -703,7 +702,6 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/511908543: Test is failing across android builders")
     public void testRecentTabsBottomSheetMainPageAccept() {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.RECENT_TABS;
 
@@ -726,7 +724,7 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
 
-        CtaPageStation recentTabsPage = mainPageBottomSheet.clickPositiveButton(featureType);
+        RecentTabsPageStation recentTabsPage = mainPageBottomSheet.clickPositiveButton(featureType);
 
         // Verify that the opened page is indeed the Recent Tabs page.
         String url =
@@ -740,7 +738,6 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/511908543: Test is failing across android builders")
     public void testRecentTabsBottomSheetDetailPageAccept() throws IOException {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.RECENT_TABS;
         List<Integer> detailPageStepsRes =
@@ -771,7 +768,8 @@ public class TipsNotificationsFeaturePromoTest {
                 ((View) detailsPageBottomSheet.bottomSheetElement.value()),
                 "recent_tabs_feature_promo_detail_page");
 
-        CtaPageStation recentTabsPage = detailsPageBottomSheet.clickPositiveButton(featureType);
+        RecentTabsPageStation recentTabsPage =
+                detailsPageBottomSheet.clickPositiveButton(featureType);
 
         // Verify that the opened page is indeed the Recent Tabs page.
         String url =

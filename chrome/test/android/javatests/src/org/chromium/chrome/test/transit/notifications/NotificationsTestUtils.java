@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeat
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
-import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.RecentTabsPageStation;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.transit.signin.SigninBottomSheetFacility;
@@ -69,7 +69,7 @@ public class NotificationsTestUtils {
                 return settingsButtonElement
                         .clickTo()
                         .exitFacilityAnd()
-                        .arriveAt(CtaPageStation.newGenericBuilder().initOpeningNewTab().build());
+                        .arriveAt(RecentTabsPageStation.newBuilder().initOpeningNewTab().build());
             default:
                 throw new IllegalArgumentException("Unknown feature type: " + featureType);
         }
