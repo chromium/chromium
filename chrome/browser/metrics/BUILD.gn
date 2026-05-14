@@ -7,6 +7,19 @@ import("//components/metrics/generate_expired_histograms_array.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 # TODO(b/504980566): Further modularize //chrome/browser/metrics.
+if (!is_android) {
+  # Header-only target so downstream targets can include
+  # browser_activity_watcher.h without depending on all of :metrics.
+  source_set("browser_activity_watcher") {
+    public = [ "browser_activity_watcher.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    ]
+  }
+}
+
 source_set("metrics") {
   public = [
     "accessibility_state_provider.h",
@@ -75,7 +88,6 @@ source_set("metrics") {
 
   if (!is_android) {
     public += [
-      "browser_activity_watcher.h",
       "desktop_platform_features_metrics_provider.h",
       "desktop_session_duration/desktop_profile_session_durations_service.h",
       "desktop_session_duration/desktop_profile_session_durations_service_factory.h",
@@ -350,6 +362,7 @@ source_set("impl") {
       "usage_scenario/video_capture_event_provider.cc",
     ]
     deps += [
+      ":browser_activity_watcher",
       "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/performance_controls",

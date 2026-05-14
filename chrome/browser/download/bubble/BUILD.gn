@@ -21,6 +21,7 @@ source_set("bubble") {
     "//base",
     "//chrome/browser/download",
     "//chrome/browser/metrics",
+    "//chrome/browser/metrics:browser_activity_watcher",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/download",
     "//components/download/content/public",
