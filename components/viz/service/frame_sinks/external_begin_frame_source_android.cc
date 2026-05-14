@@ -195,6 +195,12 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
 
     bool viz_enabled = false;
     TRACE_EVENT_CATEGORY_GROUP_ENABLED("viz", &viz_enabled);
+
+    auto frame_time_us = base::TimeTicks::FromJavaNanoTime(frame_time_nanos)
+                             .since_origin()
+                             .InMicroseconds();
+    data->set_frame_time_us(frame_time_us);
+
     // TODO(crbug.com/500826814): Move to appropriate place once chrome chooses
     // its own preferred deadline.
     auto populate_timeline =
@@ -214,11 +220,6 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
       populate_timeline(timeline, deadline);
       return;
     }
-
-    auto frame_time_us = base::TimeTicks::FromJavaNanoTime(frame_time_nanos)
-                             .since_origin()
-                             .InMicroseconds();
-    data->set_frame_time_us(frame_time_us);
 
     for (const auto& deadline : possible_deadlines.deadlines) {
       auto* timeline = data->add_frame_timeline();
