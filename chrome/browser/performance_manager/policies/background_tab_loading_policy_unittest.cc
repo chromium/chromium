@@ -11,8 +11,9 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
@@ -141,6 +142,7 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
   void AllTabsLoadedCallback() { ++num_all_tabs_loaded_calls_; }
 
  protected:
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   using PageNodeToLoadData = BackgroundTabLoadingPolicy::PageNodeToLoadData;
 
   PageNodeToLoadData CreatePageNodeToLoadData(
@@ -156,7 +158,6 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
   SystemNodeImpl* system_node() { return system_node_.get()->get(); }
 
  private:
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   std::unique_ptr<
       performance_manager::TestNodeWrapper<performance_manager::SystemNodeImpl>>
       system_node_;
@@ -685,7 +686,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
   }
 }
 
-TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
+TEST_F(BackgroundTabLoadingPolicyTest, OnUpdateMemoryLimit) {
   // Multiple PageNodes are necessary to make sure that the policy
   // doesn't immediately kick off loading of all tabs.
   std::vector<
@@ -712,8 +713,9 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
   ::testing::Mock::VerifyAndClear(loader());
 
   // Simulate memory pressure and expect the tab loader to disable loading.
-  base::MemoryPressureListener::SimulatePressureNotification(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::kModerateMemoryPressureThreshold);
+  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_env().RunUntilIdle();
 
   PageNodeImpl* page_node_impl = page_nodes[0].get();

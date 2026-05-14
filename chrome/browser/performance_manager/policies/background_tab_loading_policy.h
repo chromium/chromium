@@ -11,8 +11,8 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
@@ -40,7 +40,7 @@ class BackgroundTabLoadingPolicy
     : public GraphOwnedAndRegistered<BackgroundTabLoadingPolicy>,
       public NodeDataDescriberDefaultImpl,
       public PageNodeObserver,
-      public base::MemoryPressureListener {
+      public base::MemoryConsumer {
  public:
   // `all_restored_tabs_loaded_callback` is invoked when all tabs passed to
   // ScheduleLoadForRestoredTabs() are loaded.
@@ -127,7 +127,9 @@ class BackgroundTabLoadingPolicy
   base::DictValue DescribePageNodeData(const PageNode* node) const override;
   base::DictValue DescribeSystemNodeData(const SystemNode* node) const override;
 
-  void OnMemoryPressure(base::MemoryPressureLevel new_level) override;
+  // base::MemoryConsumer implementation:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   // Returns the SiteDataReader instance for |page_node|, if any. Virtual for
   // testing.
@@ -216,8 +218,7 @@ class BackgroundTabLoadingPolicy
   // The mechanism used to load the pages.
   std::unique_ptr<performance_manager::mechanism::PageLoader> page_loader_;
 
-  base::MemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::MemoryConsumerRegistration memory_consumer_registration_;
 
   // The set of PageNodes that have been restored for which we need to schedule
   // loads.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sessions/session_restore_delegate.h"
 
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -58,6 +59,7 @@ class RestoreTabsTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   PerformanceManagerTestHarnessHelper perf_manager_helper_;
 };
 

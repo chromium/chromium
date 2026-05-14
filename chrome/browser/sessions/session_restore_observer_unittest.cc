@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -135,6 +136,8 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
+
   performance_manager::PerformanceManagerTestHarnessHelper pm_helper_;
 
   MockSessionRestoreObserver mock_observer_;
