@@ -310,6 +310,11 @@ CGFloat const kSheetCornerRadius = 30;
 
 // Creates a view controller for a page in the menu.
 - (UIViewController*)createMenuPage:(CustomizationMenuPage)page {
+  UITraitCollection* windowTraits =
+      self.baseViewController.view.window.traitCollection;
+  BOOL isRegularWidth =
+      windowTraits.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
+
   auto detentResolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
     return kBottomSheetDetentHeight;
@@ -352,11 +357,6 @@ CGFloat const kSheetCornerRadius = 30;
       // content height and cannot be resized shorter. The presenting view
       // controller has compact traits inside a form sheet, so check the
       // window's traits.
-      UITraitCollection* windowTraits =
-          self.baseViewController.view.window.traitCollection;
-      BOOL isRegularWidth =
-          windowTraits.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
-
       auto expandedDetentResolver = ^CGFloat(
           id<UISheetPresentationControllerDetentResolutionContext> context) {
         if (isRegularWidth) {
@@ -426,7 +426,9 @@ CGFloat const kSheetCornerRadius = 30;
   UISheetPresentationController* presentationController =
       navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.preferredCornerRadius = kSheetCornerRadius;
+  if (isRegularWidth) {
+    presentationController.preferredCornerRadius = kSheetCornerRadius;
+  }
   presentationController.delegate = self;
 
   presentationController.detents = detents;
