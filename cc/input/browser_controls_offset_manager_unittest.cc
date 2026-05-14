@@ -141,7 +141,7 @@ class MockBrowserControlsOffsetManagerClient
     return base::Seconds(1) / kDeviceFramesPerSecond;
   }
 
-  float RenderedDeviceScaleFactor() const override { return 1.0f; }
+  float DeviceScaleFactor() const override { return 1.0f; }
 
  private:
   FakeImplTaskRunnerProvider task_runner_provider_;

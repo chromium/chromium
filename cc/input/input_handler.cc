@@ -221,9 +221,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
       TRACE_EVENT_INSTANT("cc", "Hit Testing for ScrollNode");
       gfx::Point viewport_point(scroll_state->position_x(),
                                 scroll_state->position_y());
-      gfx::PointF device_viewport_point =
-          gfx::ScalePoint(gfx::PointF(viewport_point),
-                          compositor_delegate_->DeviceScaleFactor());
+      gfx::PointF device_viewport_point = gfx::ScalePoint(
+          gfx::PointF(viewport_point), ActiveTree().device_scale_factor());
 
       // The client should have discarded the scroll when the hit test came back
       // with an invalid element id.
@@ -745,7 +744,7 @@ InputHandlerPointerResult InputHandler::MouseMoveAt(
     return result;
 
   gfx::PointF device_viewport_point = gfx::ScalePoint(
-      gfx::PointF(viewport_point), compositor_delegate_->DeviceScaleFactor());
+      gfx::PointF(viewport_point), ActiveTree().device_scale_factor());
 
   ScrollHitTestResult hit_test = HitTestScrollNode(device_viewport_point);
 
@@ -819,7 +818,7 @@ void InputHandler::MouseLeave() {
 ElementId InputHandler::FindFrameElementIdAtPoint(
     const gfx::PointF& viewport_point) {
   gfx::PointF device_viewport_point = gfx::ScalePoint(
-      gfx::PointF(viewport_point), compositor_delegate_->DeviceScaleFactor());
+      gfx::PointF(viewport_point), ActiveTree().device_scale_factor());
   return ActiveTree().FindFrameElementIdAtPoint(device_viewport_point);
 }
 
@@ -956,7 +955,7 @@ EventListenerProperties InputHandler::GetEventListenerProperties(
 bool InputHandler::HasBlockingWheelEventHandlerAt(
     const gfx::Point& viewport_point) const {
   gfx::PointF device_viewport_point = gfx::ScalePoint(
-      gfx::PointF(viewport_point), compositor_delegate_->DeviceScaleFactor());
+      gfx::PointF(viewport_point), ActiveTree().device_scale_factor());
 
   LayerImpl* layer_impl_with_wheel_event_handler =
       ActiveTree().FindLayerThatIsHitByPointInWheelEventHandlerRegion(
@@ -969,9 +968,8 @@ InputHandler::TouchStartOrMoveEventListenerType
 InputHandler::EventListenerTypeForTouchStartOrMoveAt(
     const gfx::Rect& viewport_touch_rect,
     TouchAction* out_touch_action) {
-  gfx::RectF device_viewport_touch_rect =
-      gfx::ScaleRect(gfx::RectF(viewport_touch_rect),
-                     compositor_delegate_->DeviceScaleFactor());
+  gfx::RectF device_viewport_touch_rect = gfx::ScaleRect(
+      gfx::RectF(viewport_touch_rect), ActiveTree().device_scale_factor());
 
   // For stylus "near-miss" scenarios, we need to do a proximity based hit test.
   // The compositor has incomplete information, as it's not aware of the DOM
@@ -1748,8 +1746,8 @@ gfx::Size InputHandler::PageSize(const ScrollNode& scroll_node) const {
   scroller_size.Scale(compositor_delegate_->PageScaleFactor());
 
   // Convert from physical pixels to screen coordinates (if --use-zoom-for-dsf
-  // enabled, `DeviceScaleFactor()` returns 1).
-  viewport_size.InvScale(compositor_delegate_->DeviceScaleFactor());
+  // enabled, `ActiveTree().device_scale_factor()` returns 1).
+  viewport_size.InvScale(ActiveTree().device_scale_factor());
 
   return gfx::Size(std::min(scroller_size.width(), viewport_size.width()),
                    std::min(scroller_size.height(), viewport_size.height()));
@@ -1806,8 +1804,8 @@ gfx::Vector2dF InputHandler::ResolveScrollGranularityToPixels(
     scroller_size.Scale(compositor_delegate_->PageScaleFactor());
 
     // Convert from physical pixels to screen coordinates (if --use-zoom-for-dsf
-    // enabled, `DeviceScaleFactor()` returns 1).
-    viewport_size.InvScale(compositor_delegate_->DeviceScaleFactor());
+    // enabled, `ActiveTree().device_scale_factor()` returns 1).
+    viewport_size.InvScale(ActiveTree().device_scale_factor());
 
     pixel_delta.Scale(kMinFractionToStepWhenPaging);
     pixel_delta = ScrollUtils::ResolveScrollPercentageToPixels(
@@ -2029,7 +2027,7 @@ bool InputHandler::CalculateLocalScrollDeltaAndStartPoint(
       screen_space_transform.GetCheckedInverse();
 
   float scale_from_viewport_to_screen_space =
-      compositor_delegate_->DeviceScaleFactor();
+      ActiveTree().device_scale_factor();
   gfx::PointF screen_space_point =
       gfx::ScalePoint(viewport_point, scale_from_viewport_to_screen_space);
 
@@ -2098,7 +2096,7 @@ gfx::Vector2dF InputHandler::ScrollNodeWithViewportSpaceDelta(
     return gfx::Vector2dF();
 
   float scale_from_viewport_to_screen_space =
-      compositor_delegate_->DeviceScaleFactor();
+      ActiveTree().device_scale_factor();
   gfx::PointF actual_viewport_end_point = gfx::ScalePoint(
       actual_screen_space_end_point, 1.f / scale_from_viewport_to_screen_space);
   return actual_viewport_end_point - viewport_point;

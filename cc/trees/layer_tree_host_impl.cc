@@ -3710,12 +3710,6 @@ base::TimeDelta LayerTreeHostImpl::CurrentFrameInterval() const {
   return CurrentBeginFrameInterval();
 }
 
-float LayerTreeHostImpl::RenderedDeviceScaleFactor() const {
-  return settings().use_painted_device_scale_factor
-             ? active_tree_->painted_device_scale_factor()
-             : active_tree_->device_scale_factor();
-}
-
 ScrollNode* LayerTreeHostImpl::InnerViewportScrollNode() const {
   return active_tree_->InnerViewportScrollNode();
 }
@@ -4711,8 +4705,9 @@ void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
 }
 
 float LayerTreeHostImpl::DeviceScaleFactor() const {
-  // TODO(crbug.com/505784117): Unify with RenderedDeviceScaleFactor()
-  return active_tree_->device_scale_factor();
+  return settings().use_painted_device_scale_factor
+             ? active_tree_->painted_device_scale_factor()
+             : active_tree_->device_scale_factor();
 }
 
 float LayerTreeHostImpl::PageScaleFactor() const {

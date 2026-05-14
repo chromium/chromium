@@ -250,7 +250,7 @@ float BrowserControlsOffsetManager::SnapAnimationThreshold(
   // browser states that can greatly increase the height of the controls (e.g.
   // tab groups)
   const float reference_threshold =
-      client_->RenderedDeviceScaleFactor() * kSnapAnimationReferenceThresholdDp;
+      client_->DeviceScaleFactor() * kSnapAnimationReferenceThresholdDp;
 
   // Scale the threshold based on the animation duration. Start the animation
   // early when the animation duration is short, and late when the animation
