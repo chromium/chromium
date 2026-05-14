@@ -1026,8 +1026,55 @@ NavigationCapturingProcess::HandleRedirect() {
   navigation_handle_id_ = navigation_handle()->GetNavigationId();
   state_ = PipelineState::kFinished;
 
+  const bool initial_force_iph_off = force_iph_off_;
+  const std::optional<webapps::AppId> initial_launched_app_id =
+      launched_app_id_;
+
+  RedirectDecision decision = HandleRedirectImpl();
+
+  // If we cancel the current navigation, that target window will manage its own
+  // launch state. We exit early here to prevent recording duplicate launches on
+  // this aborted navigation.
+  if (decision.action.action() != content::NavigationThrottle::PROCEED) {
+    return decision.action;
+  }
+
+  // At this point, we're allowing the redirect to proceed.
+  // Only recalculate force_iph_off if the launched app ID actually changed.
+  // Redirects that proceed to a launch are always "new" launches, so we only
+  // force IPH off if the target app runs in a standard browser tab.
+  bool force_iph_off = initial_force_iph_off;
+  if (decision.launched_app_id != initial_launched_app_id) {
+    force_iph_off = false;
+    if (decision.launched_app_id) {
+      content::WebContents* const web_contents_for_navigation =
+          navigation_handle()->GetWebContents();
+      WebAppProvider* provider =
+          WebAppProvider::GetForWebContents(web_contents_for_navigation);
+      if (provider) {
+        blink::mojom::DisplayMode target_display_mode =
+            provider->registrar_unsafe().GetAppEffectiveDisplayMode(
+                *decision.launched_app_id);
+        force_iph_off =
+            (target_display_mode == blink::mojom::DisplayMode::kBrowser);
+      }
+    }
+  }
+
+  SetLaunchedAppId(decision.launched_app_id, force_iph_off);
+  return decision.action;
+}
+
+NavigationCapturingProcess::RedirectDecision
+NavigationCapturingProcess::HandleRedirectImpl() {
   // See https://bit.ly/pwa-navigation-capturing and
   // https://bit.ly/pwa-navigation-handling-dd for more context.
+
+  // Rules for setting the launched_app_id field for RedirectDecision
+  // - `launched_app_id_`: Preserves initial launch state.
+  // - `<new_app_id>`: Updates launch state to new app.
+  // - `std::nullopt`: Clears launch state.
+
   // Exit early if:
   // 1. If there were no redirects, then the only url in the redirect chain
   // should be the last url to go to.
@@ -1038,7 +1085,7 @@ NavigationCapturingProcess::HandleRedirect() {
       (navigation_handle()->WasStartedFromContextMenu())) {
     debug_data_.Set("!redirection_result", "ineligible");
     redirection_result_ = NavigationCapturingRedirectionResult::kNotHandled;
-    return content::NavigationThrottle::PROCEED;
+    return {content::NavigationThrottle::PROCEED, launched_app_id_};
   }
   CHECK(!isolated_web_app_navigation_)
       << "Isolated Web Apps do not support redirects.";
@@ -1046,7 +1093,7 @@ NavigationCapturingProcess::HandleRedirect() {
   debug_data_.Set("!redirection_final_url", final_url.possibly_invalid_spec());
   if (!final_url.is_valid()) {
     redirection_result_ = NavigationCapturingRedirectionResult::kNotHandled;
-    return content::NavigationThrottle::PROCEED;
+    return {content::NavigationThrottle::PROCEED, launched_app_id_};
   }
 
   // Do not handle redirections for navigations that create an auxiliary
@@ -1058,8 +1105,9 @@ NavigationCapturingProcess::HandleRedirect() {
           NavigationCapturingInitialResult::kAuxiliaryContextAppBrowserTab ||
       initial_nav_handling_result_ ==
           NavigationCapturingInitialResult::kAuxiliaryContextAppWindow) {
+    debug_data_.Set("!redirection_result", "auxiliary_context_or_not_handled");
     redirection_result_ = NavigationCapturingRedirectionResult::kNotHandled;
-    return content::NavigationThrottle::PROCEED;
+    return {content::NavigationThrottle::PROCEED, launched_app_id_};
   }
 
   content::WebContents* const web_contents_for_navigation =
@@ -1079,14 +1127,8 @@ NavigationCapturingProcess::HandleRedirect() {
   if (first_navigation_app_id_ == target_app_id) {
     debug_data_.Set("!redirection_result", "Same app.");
     redirection_result_ = NavigationCapturingRedirectionResult::kSameContext;
-    return content::NavigationThrottle::PROCEED;
+    return {content::NavigationThrottle::PROCEED, launched_app_id_};
   }
-
-  // Clear out the "launch app id" field. This way we ensure that in any branch
-  // where the redirect does not result in an app being launched we don't
-  // accidentally (try to) treat it as a launch. Any branch where an app launch
-  // does happen will re-set the field to the correct value.
-  SetLaunchedAppId(std::nullopt);
 
   // After this point:
   // - The browsing context is a top-level browsing context.
@@ -1115,7 +1157,7 @@ NavigationCapturingProcess::HandleRedirect() {
       debug_data_.Set("!redirection_result", "Noop1");
       redirection_result_ = NavigationCapturingRedirectionResult::kSameContext;
     }
-    return content::NavigationThrottle::PROCEED;
+    return {content::NavigationThrottle::PROCEED, std::nullopt};
   }
 
   CHECK(registrar.GetAppById(*target_app_id));
@@ -1139,23 +1181,22 @@ NavigationCapturingProcess::HandleRedirect() {
     // standalone-app -> browser-tab-app.
     if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
       debug_data_.Set("!redirection_result", "app to btab");
-      SetLaunchedAppId(*target_app_id, /*force_iph_off=*/true);
       ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
                                          disposition_,
                                          navigation_params_browser_);
       redirection_result_ =
           NavigationCapturingRedirectionResult::kReparentAppToBrowserTab;
-      return content::NavigationThrottle::PROCEED;
+      return {content::NavigationThrottle::PROCEED, *target_app_id};
     }
     debug_data_.Set("!redirection_result", "app to app");
     // standalone-app -> standalone-app.
-    SetLaunchedAppId(*target_app_id);
     CHECK(target_display_mode != blink::mojom::DisplayMode::kBrowser);
     redirection_result_ =
         NavigationCapturingRedirectionResult::kReparentAppToApp;
-    return ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
+    auto action = ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
         web_contents_for_navigation, *target_app_id, target_display_mode,
         final_url);
+    return {action, *target_app_id};
   }
   if (initial_nav_handling_result_ ==
       NavigationCapturingInitialResult::kForcedContextAppBrowserTab) {
@@ -1163,21 +1204,21 @@ NavigationCapturingProcess::HandleRedirect() {
     if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
       debug_data_.Set("!redirection_result", "N/A, btab");
       redirection_result_ = NavigationCapturingRedirectionResult::kSameContext;
-      return content::NavigationThrottle::PROCEED;
+      return {content::NavigationThrottle::PROCEED, *target_app_id};
     }
     // browser-tab-app -> standalone-app. This must have a source app id to
     // ensure that we cannot have a user-modified click go from a regular
     // browser tab to an app window.
     CHECK(target_display_mode != blink::mojom::DisplayMode::kBrowser);
     if (source_browser_app_id_.has_value()) {
-      SetLaunchedAppId(*target_app_id);
       debug_data_.Set("!redirection_result", "btab to app");
       redirection_result_ =
           NavigationCapturingRedirectionResult::kReparentBrowserTabToApp;
 
-      return ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
+      auto action = ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
           web_contents_for_navigation, *target_app_id, target_display_mode,
           final_url);
+      return {action, *target_app_id};
     }
   }
 
@@ -1198,21 +1239,20 @@ NavigationCapturingProcess::HandleRedirect() {
         (disposition_ == WindowOpenDisposition::NEW_WINDOW)) {
       // browser-tab -> browser-tab-app.
       if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
-        SetLaunchedAppId(*target_app_id, /*force_iph_off=*/true);
         debug_data_.Set("!redirection_result", "N/A, btab");
         redirection_result_ =
             NavigationCapturingRedirectionResult::kSameContext;
-        return content::NavigationThrottle::PROCEED;
+        return {content::NavigationThrottle::PROCEED, *target_app_id};
       }
       // browser-tab -> standalone app
-      SetLaunchedAppId(*target_app_id);
       debug_data_.Set("!redirection_result", "btab to app");
       redirection_result_ =
           NavigationCapturingRedirectionResult::kReparentBrowserTabToApp;
 
-      return ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
+      auto action = ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
           web_contents_for_navigation, *target_app_id, target_display_mode,
           final_url);
+      return {action, *target_app_id};
     }
   }
 
@@ -1221,7 +1261,7 @@ NavigationCapturingProcess::HandleRedirect() {
   if (is_user_modified_click()) {
     debug_data_.Set("!redirection_result", "N/A");
     redirection_result_ = NavigationCapturingRedirectionResult::kSameContext;
-    return content::NavigationThrottle::PROCEED;
+    return {content::NavigationThrottle::PROCEED, std::nullopt};
   }
 
   ClientModeAndBrowser client_mode_and_browser =
@@ -1250,19 +1290,18 @@ NavigationCapturingProcess::HandleRedirect() {
     // Handle all cases that result in a standalone app.
     // (browser tab, browser-tab-app, or standalone-app -> standalone-app)
     if (target_display_mode != blink::mojom::DisplayMode::kBrowser) {
-      SetLaunchedAppId(*target_app_id);
       debug_data_.Set("!redirection_result", "app");
       redirection_result_ =
           NavigationCapturingRedirectionResult::kAppWindowOpened;
 
-      return ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
+      auto action = ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
           web_contents_for_navigation, *target_app_id, target_display_mode,
           final_url);
+      return {action, *target_app_id};
     }
     // Handle all cases that result in a browser-tab-app.
     // (browser tab, browser-tab-app, or standalone-app -> browser-tab-app)
     CHECK(target_display_mode == blink::mojom::DisplayMode::kBrowser);
-    SetLaunchedAppId(*target_app_id, /*force_iph_off=*/true);
     if (initial_nav_handling_result_ ==
         NavigationCapturingInitialResult::kNewAppWindow) {
       debug_data_.Set("!redirection_result", "btab");
@@ -1272,7 +1311,7 @@ NavigationCapturingProcess::HandleRedirect() {
       redirection_result_ =
           NavigationCapturingRedirectionResult::kAppBrowserTabOpened;
     }
-    return content::NavigationThrottle::PROCEED;
+    return {content::NavigationThrottle::PROCEED, *target_app_id};
   }
 
   // Only proceed from now on if the final app can be capturable depending on
@@ -1286,7 +1325,7 @@ NavigationCapturingProcess::HandleRedirect() {
   if (!final_navigation_can_be_capturable) {
     debug_data_.Set("!redirection_result", "N/A, not capturable");
     redirection_result_ = NavigationCapturingRedirectionResult::kNotCapturable;
-    return content::NavigationThrottle::PROCEED;
+    return {content::NavigationThrottle::PROCEED, std::nullopt};
   }
 
   // Handle the use-case where the target_app_id has a launch handling mode of
@@ -1374,12 +1413,12 @@ NavigationCapturingProcess::HandleRedirect() {
       debug_data_.Set("redirection_closed_page", true);
       web_contents_for_navigation->ClosePage();
     }
-    return content::NavigationThrottle::CANCEL;
+    return {content::NavigationThrottle::CANCEL, target_app_id};
   }
 
   debug_data_.Set("!redirection_result", "Noop2");
   redirection_result_ = NavigationCapturingRedirectionResult::kSameContext;
-  return content::NavigationThrottle::PROCEED;
+  return {content::NavigationThrottle::PROCEED, std::nullopt};
 }
 
 void NavigationCapturingProcess::OnAttachedToNavigationHandle() {
@@ -1918,6 +1957,9 @@ void NavigationCapturingProcess::SetLaunchedAppId(
     std::optional<webapps::AppId> app_id,
     bool force_iph_off) {
   CHECK(IsHandledByNavigationCapturing());
+  if (launched_app_id_ == app_id && force_iph_off_ == force_iph_off) {
+    return;
+  }
   launched_app_id_ = app_id;
   force_iph_off_ = force_iph_off;
   debug_data_.Set("!result.launched_app_id", app_id.value_or("<none>"));

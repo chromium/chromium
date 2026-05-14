@@ -146,6 +146,10 @@ class NavigationCapturingProcess
   // any possible redirects have happened. Will only be called after this class
   // has been attached to a NavigationHandle, and will CHECK-fail otherwise.
   using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
+  struct RedirectDecision {
+    ThrottleCheckResult action;
+    std::optional<webapps::AppId> launched_app_id;
+  };
   ThrottleCheckResult HandleRedirect();
 
   content::NavigationHandle* navigation_handle() const {
@@ -170,6 +174,8 @@ class NavigationCapturingProcess
 
   std::optional<NavigationCapturingOverride> HandleIsolatedWebAppNavigation(
       const NavigateParams& params);
+
+  RedirectDecision HandleRedirectImpl();
 
   // Checks if a newly created `WebContents` was programmatically opened by an
   // Isolated Web App and notifies the
