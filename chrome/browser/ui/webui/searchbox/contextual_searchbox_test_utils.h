@@ -172,7 +172,8 @@ class MockContextualSearchMetricsRecorder
               (bool has_tab_context,
                bool has_non_tab_context,
                int query_text_length,
-               int file_count),
+               int file_count,
+               bool has_drive_context),
               (override));
   MOCK_METHOD(void, ActivateMetricsFunnel, (const std::string&), (override));
   MOCK_METHOD(void, RecordToolMode, (omnibox::ToolMode tool_mode), (override));
@@ -200,9 +201,11 @@ class MockContextualSearchMetricsRecorder
   void NotifyQuerySubmittedBase(bool has_tab_context,
                                 bool has_non_tab_context,
                                 int query_text_length,
-                                int file_count) {
+                                int file_count,
+                                bool has_drive_context) {
     ContextualSearchMetricsRecorder::NotifyQuerySubmitted(
-        has_tab_context, has_non_tab_context, query_text_length, file_count);
+        has_tab_context, has_non_tab_context, query_text_length, file_count,
+        has_drive_context);
   }
 
   void RecordToolModeBase(omnibox::ToolMode tool_mode) {
