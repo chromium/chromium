@@ -277,6 +277,38 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
+// Regression test for a shutdown race in the AppKit "About" menu path.
+//
+// Browser::Create() (chrome/browser/ui/browser.cc) CHECKs that a Browser can
+// be created for the given profile (GetCreationStatusForProfile == kOk).
+// Callers are expected to honor that contract; once the process is shutting
+// down the status flips to kErrorShuttingDown and any unguarded
+// Browser::Create() call trips the CHECK_EQ.
+//
+// The "About" menu item runs async: RunInLastProfileSafely() loads the
+// profile, then the callback calls OpenAboutWindow() -> Browser::Create().
+// If shutdown begins between the click and the callback firing, the callback
+// lands in a shutting-down process and the unguarded create crashes.
+//
+// With the OnProfileLoaded() shutdown guard, the callback short-circuits
+// (no Browser, no profile picker). Without it, this test crashes on the
+// CHECK_EQ.
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, AboutPanelDuringShutdown) {
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer;
+  chrome::AttemptExit();
+  browser_destroyed_observer.Wait();
+  ASSERT_TRUE(g_browser_process->IsShuttingDown());
+
+  [AppController.sharedController orderFrontStandardAboutPanel:nil];
+
+  // The non-kOk branch in OnProfileLoaded short-circuits silently rather than
+  // falling through to kShowProfilePickerOnFailure.
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
 class AppControllerKeepAliveBrowserTest : public InProcessBrowserTest {
  protected:
   AppControllerKeepAliveBrowserTest() {

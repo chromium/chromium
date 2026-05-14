@@ -1860,7 +1860,12 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     // Asynchronously load profile first if needed.
     // TODO(crbug.com/40261514): Replace CreateBrowser by LaunchBrowserStartup
     app_controller_mac::RunInLastProfileSafely(
-        base::BindOnce(base::IgnoreResult(&CreateBrowser)),
+        base::BindOnce([](Profile* profile) {
+          if (!profile) {
+            return;
+          }
+          CreateBrowser(profile);
+        }),
         app_controller_mac::kShowProfilePickerOnFailure);
   }
 
@@ -2594,7 +2599,17 @@ void OnProfileLoaded(base::OnceCallback<void(Profile*)> callback,
       case app_controller_mac::kIgnoreOnFailure:
         break;
     }
+    std::move(callback).Run(nullptr);
+    return;
   }
+
+  // Shutdown may have started since this callback was scheduled.
+  if (Browser::GetCreationStatusForProfile(safe_profile) !=
+      Browser::CreationStatus::kOk) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   std::move(callback).Run(safe_profile);
 }
 
