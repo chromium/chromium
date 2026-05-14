@@ -123,6 +123,12 @@ TARGET_DEVICES = {
         'speedometer3.crossbench': 3,
         'speedometer3.a11y.crossbench': 3,
     },
+    'android-pixel10-perf': {
+        'jetstream2': 10,
+        'motionmark1.3.crossbench': 10,
+        'speedometer3.crossbench': 10,
+        'speedometer3.a11y.crossbench': 10,
+    },
     'linux-perf': {
         'jetstream2.crossbench': 10,
         'motionmark1.3.crossbench': 10,

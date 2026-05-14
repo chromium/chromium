@@ -1,4 +1,5 @@
 bot,repeat,shard,flags
+android-pixel10-perf,1,1,--debug
 android-pixel25-ultra-perf,1,1,--debug
 android-pixel25-ultra-xl-perf,1,1,--debug
 android-pixel9-perf,1,1,--debug

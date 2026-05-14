@@ -156,6 +156,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'android-pixel9-pro-xl-perf',
     'android-pixel25-ultra-perf',
     'android-pixel25-ultra-xl-perf',
+    'android-pixel10-perf',
     'android-brya-kano-i5-8gb-perf',
     'android-corsola-steelix-8gb-perf',
     'android-nissa-uldren-8gb-perf',
@@ -204,6 +205,7 @@ PUBLIC_PERF_BUILDERS = [
     'android-pixel9-perf',
     'android-pixel9-pro-perf',
     'android-pixel9-pro-xl-perf',
+    'android-pixel10-perf',
     'linux-builder-perf',
     'linux-falcon-rak-5070-perf',
     'linux-perf',
@@ -889,6 +891,21 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
             'os': 'Android',
             'device_type': 'blazer',
+            'device_os': 'B',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel10-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'frankel',
             'device_os': 'B',
             'device_os_flavor': 'google',
         },

@@ -2,6 +2,7 @@ bot,repeat,shard,flags
 android-brya-kano-i5-8gb-perf,1,1,--fileserver --debug --disable-field-trials
 android-corsola-steelix-8gb-perf,1,1,--fileserver --debug
 android-nissa-uldren-8gb-perf,1,1,--fileserver --debug
+android-pixel10-perf,1,4,--fileserver --debug
 android-pixel25-ultra-perf,1,4,--fileserver --debug
 android-pixel25-ultra-xl-perf,1,3,--fileserver --debug
 android-pixel6-perf,1,1,--fileserver

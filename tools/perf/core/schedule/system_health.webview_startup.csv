@@ -3,6 +3,7 @@ android-go-wembley-perf,20,1
 android-go-wembley_webview-perf,20,1
 android-pixel-fold-perf,20,1
 android-pixel-tangor-perf,20,1
+android-pixel10-perf,20,1
 android-pixel4-perf,20,1
 android-pixel4-perf-pgo,20,1
 android-pixel4_webview-perf,20,1
