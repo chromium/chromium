@@ -437,10 +437,19 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
       [TableViewCellContentConfiguration dequeueTableViewCell:self.tableView];
 
   cell.contentConfiguration = configuration;
-  cell.accessoryType = selected ? UITableViewCellAccessoryCheckmark
-                                : UITableViewCellAccessoryNone;
   cell.accessibilityIdentifier = accessibilityIdentifier;
-  cell.accessibilityTraits |= UIAccessibilityTraitButton;
+
+  UIAccessibilityTraits traits = cell.accessibilityTraits;
+  traits |= UIAccessibilityTraitButton;
+  if (selected) {
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    traits |= UIAccessibilityTraitSelected;
+  } else {
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    traits &= ~UIAccessibilityTraitSelected;
+  }
+  cell.accessibilityTraits = traits;
+
   return cell;
 }
 
