@@ -1541,6 +1541,13 @@ TEST_F(ContextualTasksUiServiceTest, IsAllowedHost_WithOverride) {
       ContextualTasksUiService::IsAllowedHost(GURL("https://google.com")));
 }
 
+TEST_F(ContextualTasksUiServiceTest, IsAllowedHost_LensDebugNotAllowed) {
+  EXPECT_FALSE(ContextualTasksUiService::IsAllowedHost(
+      GURL("https://lndb.corp.google.com")));
+  EXPECT_FALSE(ContextualTasksUiService::IsAllowedHost(
+      GURL("https://lndb-autopush.corp.google.com")));
+}
+
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   GURL display_url("chrome://google.com/search?udm=50&q=test+query");
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
