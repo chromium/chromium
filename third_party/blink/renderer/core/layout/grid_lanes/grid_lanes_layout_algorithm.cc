@@ -1508,8 +1508,10 @@ GridSizingTree GridLanesLayoutAlgorithm::ComputeGridLanesSizingTree(
         // though we could end up with potentially more allowed repetitions
         // after percentages are properly resolved.
         InitializeTrackSizes(&sizing_tree);
-        MeasureVirtualGridLanesItems(GridSizingSubtree(&sizing_tree),
-                                     sizing_constraint,
+        const auto sizing_subtree = GridSizingSubtree(&sizing_tree);
+        CompleteTrackSizingAlgorithmInStandaloneAxis(sizing_subtree,
+                                                     sizing_constraint);
+        MeasureVirtualGridLanesItems(sizing_subtree, sizing_constraint,
                                      /*needs_intrinsic_track_size=*/false);
         CompleteTrackSizingAlgorithm(sizing_constraint, &sizing_tree,
                                      /*needs_intrinsic_track_size=*/false);
@@ -1712,14 +1714,23 @@ void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 
   // Complete both axes for subgrids. A subgrid nested in grid-lanes only
   // subgrids in the grid axis; its other (standalone) axis also needs track
-  // sizing completion. Always complete columns before rows, matching the grid
+  // sizing completion.
+  //
+  // When the grid axis is rows, if the subgrids has standalone column tracks,
+  // we will have already sized those tracks ahead of time to ensure that
+  // subgridded items can be sized with the standalone axis constraint. As
+  // a result, skip sizing the standalone axis again.
+  //
+  // Otherwise, always complete columns before rows, matching the grid
   // convention since row sizing can depend on resolved column sizes.
   //
   // TODO(almaher): We will eventually need to handle this in a different
   // way once we support grid lanes subgrids.
-  CompleteTrackSizingAlgorithmForEachSubgrid(
-      sizing_subtree, *this, kForColumns, sizing_constraint,
-      /*opt_needs_additional_pass=*/nullptr);
+  if (grid_axis_direction != kForRows) {
+    CompleteTrackSizingAlgorithmForEachSubgrid(
+        sizing_subtree, *this, kForColumns, sizing_constraint,
+        /*opt_needs_additional_pass=*/nullptr);
+  }
   CompleteTrackSizingAlgorithmForEachSubgrid(
       sizing_subtree, *this, kForRows, sizing_constraint,
       /*opt_needs_additional_pass=*/nullptr);
@@ -1741,6 +1752,22 @@ void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 
   CompleteTrackSizingAlgorithm(sizing_subtree, sizing_constraint,
                                needs_intrinsic_track_size);
+}
+
+void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithmInStandaloneAxis(
+    const GridSizingSubtree& sizing_subtree,
+    SizingConstraint sizing_constraint) const {
+  // Because columns are sized before rows in grid, we can size column
+  // standalone tracks for subgrids before sizing the grid lanes tracks.
+  // This allows us to to ensure those sizes are known before sizing the
+  // related subgridded items so that they can be properly constrained
+  // in both the subgridded and standalone axes.
+  if (Style().GridLanesTrackSizingDirection() != kForRows) {
+    return;
+  }
+  CompleteTrackSizingAlgorithmForEachSubgrid(
+      sizing_subtree, *this, kForColumns, sizing_constraint,
+      /*opt_needs_additional_pass=*/nullptr);
 }
 
 void GridLanesLayoutAlgorithm::CompleteFinalBaselineAlignment(
@@ -1874,8 +1901,11 @@ void GridLanesLayoutAlgorithm::ComputeSizingTreeInGridAxis(
                                 sizing_constraint, needs_intrinsic_track_size);
 
   InitializeTrackSizes(sizing_tree);
-  MeasureVirtualGridLanesItems(GridSizingSubtree(sizing_tree),
-                               sizing_constraint, needs_intrinsic_track_size);
+  const auto sizing_subtree = GridSizingSubtree(sizing_tree);
+  CompleteTrackSizingAlgorithmInStandaloneAxis(sizing_subtree,
+                                               sizing_constraint);
+  MeasureVirtualGridLanesItems(sizing_subtree, sizing_constraint,
+                               needs_intrinsic_track_size);
   CompleteTrackSizingAlgorithm(sizing_constraint, sizing_tree,
                                needs_intrinsic_track_size);
 }
