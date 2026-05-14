@@ -131,12 +131,44 @@ public class ToolbarTabControllerImplTest {
 
     @Test
     public void back_handledByBottomControls() {
+        doReturn(ObservableSuppliers.alwaysTrue())
+                .when(mBottomControlsCoordinator)
+                .getHandleBackPressChangedSupplier();
+        doReturn(BackPressResult.SUCCESS).when(mBottomControlsCoordinator).handleBackPress();
+        assertTrue(mToolbarTabController.back());
+
+
+        verify(mBottomControlsCoordinator).handleBackPress();
+        verify(mRunnable, never()).run();
+        verify(mTab, never()).goBack();
+    }
+
+    @Test
+    public void back_handledByBottomControls_SupplierTrue() {
+        doReturn(ObservableSuppliers.alwaysTrue())
+                .when(mBottomControlsCoordinator)
+                .getHandleBackPressChangedSupplier();
         doReturn(BackPressResult.SUCCESS).when(mBottomControlsCoordinator).handleBackPress();
         assertTrue(mToolbarTabController.back());
 
         verify(mBottomControlsCoordinator).handleBackPress();
         verify(mRunnable, never()).run();
         verify(mTab, never()).goBack();
+    }
+
+    @Test
+    public void back_notHandledByBottomControls_SupplierFalse() {
+        doReturn(ObservableSuppliers.alwaysFalse())
+                .when(mBottomControlsCoordinator)
+                .getHandleBackPressChangedSupplier();
+        doReturn(BackPressResult.SUCCESS).when(mBottomControlsCoordinator).handleBackPress();
+        doReturn(true).when(mTab).canGoBack();
+
+        assertTrue(mToolbarTabController.back());
+
+        verify(mBottomControlsCoordinator, never()).handleBackPress();
+        verify(mTab).goBack();
+        verify(mRunnable).run();
     }
 
     @Test
