@@ -4,6 +4,8 @@
 
 #include "partition_alloc/internal_allocator.h"
 
+#include "partition_alloc/internal/partition_root_internal.h"
+
 namespace partition_alloc::internal {
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 PartitionRoot& InternalAllocatorRoot() {

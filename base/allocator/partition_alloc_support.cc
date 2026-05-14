@@ -175,10 +175,10 @@ void RunThreadCachePeriodicPurge() {
       "Memory.PartitionAlloc.PeriodicPurge.Subsampled",
       base::ShouldRecordSubsampledMetric(0.01));
   TRACE_EVENT0("memory", "PeriodicPurge");
-  auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
-  instance.RunPeriodicPurge();
+  ::partition_alloc::ThreadCache::RunPeriodicPurge();
   TimeDelta delay =
-      Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
+      Microseconds(::partition_alloc::ThreadCache::
+                       GetPeriodicPurgeNextIntervalInMicroseconds());
   SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
 }
@@ -270,10 +270,10 @@ void MemoryReclaimerSupport::MaybeScheduleTask(TimeDelta delay) {
 }
 
 void StartThreadCachePeriodicPurge() {
-  auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
-  TimeDelta delay = std::max(
-      Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds()),
-      kFirstPAPurgeOrReclaimDelay);
+  TimeDelta delay =
+      std::max(Microseconds(::partition_alloc::ThreadCache::
+                                GetPeriodicPurgeNextIntervalInMicroseconds()),
+               kFirstPAPurgeOrReclaimDelay);
 
   SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
@@ -1415,7 +1415,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   // Lower thread cache limits to avoid stranding too much memory in the caches.
   if (SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
           features::kPartialLowEndModeExcludePartitionAllocSupport)) {
-    ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+    ::partition_alloc::ThreadCache::SetThreadCacheMultiplier(
         ::partition_alloc::ThreadCache::kDefaultMultiplier / 2.);
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)

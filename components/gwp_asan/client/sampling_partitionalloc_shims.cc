@@ -13,7 +13,7 @@
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "partition_alloc/flags.h"
-#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_hooks.h"
 
 namespace gwp_asan {
 namespace internal {

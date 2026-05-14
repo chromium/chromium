@@ -10,7 +10,7 @@
 
 #include "partition_alloc/address_space_randomization.h"
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/page_allocator_internal.h"
+#include "partition_alloc/internal/page_allocator_internal.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_check.h"

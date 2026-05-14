@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/reservation_offset_table.h"
-
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/internal/reservation_offset_table_internal.h"
 
 namespace partition_alloc::internal {
 

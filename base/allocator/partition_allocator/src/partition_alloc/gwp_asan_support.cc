@@ -10,13 +10,13 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/in_slot_metadata.h"
+#include "partition_alloc/internal/partition_page_internal.h"
+#include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_bucket.h"
 #include "partition_alloc/partition_lock.h"
-#include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_root.h"
 
 namespace partition_alloc {
 

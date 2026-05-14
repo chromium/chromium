@@ -63,10 +63,11 @@
 namespace partition_alloc {
 
 class PartitionRoot;
-class ThreadCache;
 struct SchedulerLoopQuarantineStats;
 
 namespace internal {
+
+class ThreadCache;
 
 struct SchedulerLoopQuarantineConfig {
   // Capacity for a branch in bytes.
