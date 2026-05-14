@@ -100,7 +100,8 @@ class Host : public GlicSharingManagerProvider {
         const std::optional<int32_t>& window_id,
         glic::mojom::WebClientHandler::CreateTabCallback callback) = 0;
     // TODO(mcnee): `delegate` appears unused.
-    virtual GlicActorClientSession* BindActorClientSession() = 0;
+    virtual GlicActorClientSession* BindActorClientSession(
+        glic::mojom::WebClient* web_client) = 0;
 
     virtual void FetchZeroStateSuggestions(
         bool is_first_run,

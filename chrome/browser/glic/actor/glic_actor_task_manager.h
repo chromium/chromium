@@ -45,7 +45,10 @@ class GlicActorTaskManager {
   class Delegate {
    public:
     virtual std::optional<std::string> conversation_id() const = 0;
-    virtual base::WeakPtr<actor::ActorTaskDelegate> GetActorTaskDelegate() = 0;
+
+    virtual void OnTabAddedToTask(
+        actor::TaskId task_id,
+        const tabs::TabInterface::Handle& tab_handle) = 0;
   };
   explicit GlicActorTaskManager(Profile* profile,
                                 actor::ActorKeyedService* actor_keyed_service,
@@ -65,7 +68,7 @@ class GlicActorTaskManager {
   base::CallbackListSubscription AddActuatingChangedCallback(
       base::RepeatingCallback<void(bool)> callback);
 
-  GlicActorClientSession* BindSession();
+  GlicActorClientSession* BindSession(glic::mojom::WebClient* web_client);
   void UnbindSession();
 
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();
@@ -88,11 +91,14 @@ class GlicActorTaskManager {
   base::WeakPtrFactory<GlicActorTaskManager> weak_ptr_factory_{this};
 };
 
-class GlicActorClientSession {
+class GlicActorClientSession : public actor::ActorTaskDelegate {
  public:
-  explicit GlicActorClientSession(GlicActorTaskManager* manager);
-  ~GlicActorClientSession();
+  explicit GlicActorClientSession(GlicActorTaskManager* manager,
+                                  glic::mojom::WebClient* web_client);
+  ~GlicActorClientSession() override;
 
+  // Unbinds this session from GlicActorTaskManager. Deletes this.
+  void Unbind();
   bool IsActuating() const;
   void CanActOnWebChanged(bool can_act_on_web);
   void CreateTask(actor::webui::mojom::TaskOptionsPtr options,
@@ -137,6 +143,43 @@ class GlicActorClientSession {
   void JournalRecordFeedback(bool positive, const std::string& reason);
 
   base::WeakPtr<GlicActorClientSession> GetWeakPtr();
+
+  // ActorTaskDelegate:
+  void OnTabAddedToTask(actor::TaskId task_id,
+                        const tabs::TabInterface::Handle& tab_handle) override;
+  void RequestToShowCredentialSelectionDialog(
+      actor::TaskId task_id,
+      const base::flat_map<std::string, gfx::Image>& icons,
+      const std::vector<actor_login::Credential>& credentials,
+      actor::ActorTaskDelegate::CredentialSelectedCallback callback) override;
+  void RequestToShowUserConfirmationDialog(
+      actor::TaskId task_id,
+      const url::Origin& navigation_origin,
+      bool for_blocklisted_origin,
+      actor::ActorTaskDelegate::UserConfirmationDialogCallback callback)
+      override;
+  void RequestToConfirmNavigation(
+      actor::TaskId task_id,
+      const url::Origin& navigation_origin,
+      actor::ActorTaskDelegate::NavigationConfirmationCallback callback)
+      override;
+  void RequestToShowAutofillSuggestionsDialog(
+      actor::TaskId task_id,
+      std::vector<autofill::ActorFormFillingRequest> requests,
+      base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
+      AutofillSuggestionSelectedCallback callback) override;
+  void AutofillSuggestionDialogOnFormPresented(
+      int32_t task_id,
+      actor::webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr
+          params);
+  void AutofillSuggestionDialogOnFormPreviewChanged(
+      int32_t task_id,
+      actor::webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
+          params);
+  void AutofillSuggestionDialogOnFormConfirmed(
+      int32_t task_id,
+      actor::webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr
+          params);
 
  private:
   void PerformActionsFinished(
@@ -185,9 +228,15 @@ class GlicActorClientSession {
   GlicInstanceMetrics& instance_metrics() const;
   Profile& profile() const;
 
+  // Note: Migration in progress to split up this mojo interface. This should
+  // only be used to call actor-specific methods.
+  raw_ptr<glic::mojom::WebClient> web_client_;
   std::unique_ptr<actor::ObservationDelayController> reload_observer_;
   std::vector<std::unique_ptr<actor::TabObservationController>>
       observation_controllers_;
+
+  base::WeakPtr<actor::AutofillSelectionDialogEventHandler>
+      autofill_selection_event_handler_;
 
   // Only attempt to reload a crashed tab once *per task*. Crashes should be
   // rare so if we're getting repeated crashes it's likely being triggered by

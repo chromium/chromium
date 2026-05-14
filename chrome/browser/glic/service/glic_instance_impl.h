@@ -71,7 +71,6 @@ class GlicInstanceImpl : public GlicInstance,
                          public Host::Observer,
                          public GlicSharingManagerProvider,
                          public GlicUiEmbedder::Delegate,
-                         public actor::ActorTaskDelegate,
                          public GlicActorTaskManager::Delegate {
  public:
   class InstanceCoordinatorDelegate {
@@ -192,7 +191,6 @@ class GlicInstanceImpl : public GlicInstance,
   const InstanceId& id() const override;
   void SetIdForRestoration(InstanceId id);
   std::optional<std::string> conversation_id() const override;
-  base::WeakPtr<actor::ActorTaskDelegate> GetActorTaskDelegate() override;
   std::string conversation_title() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
@@ -212,7 +210,8 @@ class GlicInstanceImpl : public GlicInstance,
       bool open_in_background,
       const std::optional<int32_t>& window_id,
       glic::mojom::WebClientHandler::CreateTabCallback callback) override;
-  GlicActorClientSession* BindActorClientSession() override;
+  GlicActorClientSession* BindActorClientSession(
+      glic::mojom::WebClient* web_client) override;
   void FetchZeroStateSuggestions(
       bool is_first_run,
       std::optional<std::vector<std::string>> supported_tools,
@@ -281,31 +280,9 @@ class GlicInstanceImpl : public GlicInstance,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // ActorTaskDelegate:
+  // GlicActorTaskManager::Delegate:
   void OnTabAddedToTask(actor::TaskId task_id,
                         const tabs::TabInterface::Handle& tab_handle) override;
-  void RequestToShowCredentialSelectionDialog(
-      actor::TaskId task_id,
-      const base::flat_map<std::string, gfx::Image>& icons,
-      const std::vector<actor_login::Credential>& credentials,
-      actor::ActorTaskDelegate::CredentialSelectedCallback callback) override;
-  void RequestToShowUserConfirmationDialog(
-      actor::TaskId task_id,
-      const url::Origin& navigation_origin,
-      bool for_blocklisted_origin,
-      actor::ActorTaskDelegate::UserConfirmationDialogCallback callback)
-      override;
-  void RequestToConfirmNavigation(
-      actor::TaskId task_id,
-      const url::Origin& navigation_origin,
-      actor::ActorTaskDelegate::NavigationConfirmationCallback callback)
-      override;
-  void RequestToShowAutofillSuggestionsDialog(
-      actor::TaskId task_id,
-      std::vector<autofill::ActorFormFillingRequest> requests,
-      base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
-      AutofillSuggestionSelectedCallback callback) override;
-
  private:
   struct EmbedderEntry {
     EmbedderEntry();

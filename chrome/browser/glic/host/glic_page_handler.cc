@@ -506,8 +506,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         &GlicWebClientHandler::WebClientDisconnected, base::Unretained(this)));
 
     if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-      actor_client_session_ =
-          host().instance_delegate().BindActorClientSession()->GetWeakPtr();
+      actor_client_session_ = host()
+                                  .instance_delegate()
+                                  .BindActorClientSession(web_client_.get())
+                                  ->GetWeakPtr();
     }
 
     page_metadata_manager_ =
@@ -1880,6 +1882,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (skills_service_) {
       skills_service_->RemoveObserver(this);
     }
+    if (actor_client_session_) {
+      actor_client_session_->Unbind();
+    }
     actor_client_session_ = nullptr;
   }
 
@@ -1995,50 +2000,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       const base::flat_map<std::string, gfx::Image>& icons,
       const std::vector<actor_login::Credential>& credentials,
       actor::ActorTaskDelegate::CredentialSelectedCallback callback) override {
-    auto cred_type_to_mojo = [](actor_login::CredentialType type) {
-      switch (type) {
-        case actor_login::CredentialType::kPassword:
-          return actor::webui::mojom::CredentialType::kPassword;
-        case actor_login::CredentialType::kFederated:
-          return actor::webui::mojom::CredentialType::kFederated;
-      }
-    };
-    auto maybe_account_picture =
-        [](const actor_login::Credential& cred) -> SkBitmap {
-      return cred.federation_detail
-                 ? cred.federation_detail->account_picture.AsBitmap()
-                 : SkBitmap();
-    };
-
-    // Note: mojom::<Type>Ptr is not copyable, meaning it can't be passed to the
-    // argument of base::RepeatingCallbackList::Notify (who makes a copy of the
-    // argument). All of the mojom::<Type>Ptr will be constructed locally before
-    // being passed into the mojom interface.
-    std::vector<actor::webui::mojom::CredentialPtr> mojo_credentials;
-    for (const auto& credential : credentials) {
-      mojo_credentials.push_back(actor::webui::mojom::Credential::New(
-          credential.id.value(), base::UTF16ToUTF8(credential.username),
-          base::UTF16ToUTF8(credential.source_site_or_app),
-          credential.request_origin,
-          base::UTF16ToUTF8(credential.display_origin),
-          cred_type_to_mojo(credential.type),
-          maybe_account_picture(credential)));
+    if (actor_client_session_) {
+      actor_client_session_->RequestToShowCredentialSelectionDialog(
+          task_id, icons, credentials, std::move(callback));
     }
-    base::flat_map<std::string, SkBitmap> mojo_icons;
-    for (const auto& [site_or_app, image] : icons) {
-      CHECK(!image.IsEmpty());
-      mojo_icons.insert({site_or_app, image.AsBitmap()});
-    }
-    auto dialog_request =
-        actor::webui::mojom::SelectCredentialDialogRequest::New(
-            task_id.value(),
-            // TODO(crbug.com/440147814): `show_dialog` should be based on the
-            // user granted permission duration.
-            /*show_dialog=*/true, std::move(mojo_credentials),
-            std::move(mojo_icons));
-
-    web_client_->RequestToShowCredentialSelectionDialog(
-        std::move(dialog_request), std::move(callback));
   }
 
   void RequestToShowUserConfirmationDialog(
@@ -2047,13 +2012,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       bool for_sensitive_origin,
       actor::ActorTaskDelegate::UserConfirmationDialogCallback callback)
       override {
-    actor::webui::mojom::UserConfirmationDialogPayloadPtr payload = nullptr;
-    payload = actor::webui::mojom::UserConfirmationDialogPayload::New(
-        navigation_origin, for_sensitive_origin);
-    web_client_->RequestToShowUserConfirmationDialog(
-        actor::webui::mojom::UserConfirmationDialogRequest::New(
-            std::move(payload)),
-        std::move(callback));
+    if (actor_client_session_) {
+      actor_client_session_->RequestToShowUserConfirmationDialog(
+          task_id, navigation_origin, for_sensitive_origin,
+          std::move(callback));
+    }
   }
 
   void RequestToConfirmNavigation(
@@ -2061,86 +2024,56 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       const url::Origin& navigation_origin,
       actor::ActorTaskDelegate::NavigationConfirmationCallback callback)
       override {
-    web_client_->RequestToConfirmNavigation(
-        actor::webui::mojom::NavigationConfirmationRequest::New(
-            task_id.value(), navigation_origin),
-        std::move(callback));
+    if (actor_client_session_) {
+      actor_client_session_->RequestToConfirmNavigation(
+          task_id, navigation_origin, std::move(callback));
+    }
   }
 
   void RequestToShowAutofillSuggestionsDialog(
       actor::TaskId task_id,
       std::vector<autofill::ActorFormFillingRequest> requests,
       base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
-      actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback
-          on_autofill_suggestions_selected) override {
-    autofill_selection_event_handler_ = std::move(event_handler);
-
-    std::vector<actor::webui::mojom::FormFillingRequestPtr> mojo_requests;
-    for (const auto& request : requests) {
-      auto mojo_request = actor::webui::mojom::FormFillingRequest::New();
-      mojo_request->requested_data =
-          static_cast<int64_t>(request.requested_data);
-      mojo_request->formatted_request_origin =
-          base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
-              request.request_origin,
-              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-      for (const auto& suggestion : request.suggestions) {
-        auto mojo_suggestion = actor::webui::mojom::AutofillSuggestion::New();
-        mojo_suggestion->id = base::NumberToString(suggestion.id.value());
-        mojo_suggestion->title = suggestion.title;
-        mojo_suggestion->details = suggestion.details;
-        if (suggestion.icon) {
-          mojo_suggestion->icon = suggestion.icon->AsBitmap();
-        }
-        mojo_request->suggestions.push_back(std::move(mojo_suggestion));
-      }
-      mojo_requests.push_back(std::move(mojo_request));
+      actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback callback)
+      override {
+    if (actor_client_session_) {
+      actor_client_session_->RequestToShowAutofillSuggestionsDialog(
+          task_id, std::move(requests), std::move(event_handler),
+          std::move(callback));
     }
-
-    auto dialog_request =
-        actor::webui::mojom::SelectAutofillSuggestionsDialogRequest::New(
-            task_id.value(), std::move(mojo_requests));
-
-    web_client_->RequestToShowAutofillSuggestionsDialog(
-        std::move(dialog_request), std::move(on_autofill_suggestions_selected));
   }
 
   void AutofillSuggestionDialogOnFormPresented(
       int32_t task_id,
       actor::webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr
           params) override {
-    if (!autofill_selection_event_handler_) {
+    if (!actor_client_session_) {
       return;
     }
-    if (!autofill_selection_event_handler_->OnFormPresented(
-            std::move(params))) {
-      receiver_.ReportBadMessage(
-          "Tried calling OnFormPresented with incorrect params.");
-    }
+    actor_client_session_->AutofillSuggestionDialogOnFormPresented(
+        task_id, std::move(params));
   }
 
   void AutofillSuggestionDialogOnFormPreviewChanged(
       int32_t task_id,
       actor::webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
           params) override {
-    if (autofill_selection_event_handler_) {
-      autofill_selection_event_handler_->OnFormPreviewChanged(
-          std::move(params));
+    if (!actor_client_session_) {
+      return;
     }
+    actor_client_session_->AutofillSuggestionDialogOnFormPreviewChanged(
+        task_id, std::move(params));
   }
 
   void AutofillSuggestionDialogOnFormConfirmed(
       int32_t task_id,
       actor::webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr
           params) override {
-    if (!autofill_selection_event_handler_) {
+    if (!actor_client_session_) {
       return;
     }
-    if (!autofill_selection_event_handler_->OnFormConfirmed(
-            std::move(params))) {
-      receiver_.ReportBadMessage(
-          "Tried calling OnFormConfirmed with incorrect params.");
-    }
+    actor_client_session_->AutofillSuggestionDialogOnFormConfirmed(
+        task_id, std::move(params));
   }
 
   mojom::SkillPtr GetSkillById(std::string_view skill_id) {
@@ -2223,8 +2156,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
   std::unique_ptr<PageMetadataManager> page_metadata_manager_;
   raw_ptr<skills::SkillsService> skills_service_;
-  base::WeakPtr<actor::AutofillSelectionDialogEventHandler>
-      autofill_selection_event_handler_;
   base::WeakPtr<GlicActorClientSession> actor_client_session_;
   bool floating_panel_can_attach_ = false;
 };
