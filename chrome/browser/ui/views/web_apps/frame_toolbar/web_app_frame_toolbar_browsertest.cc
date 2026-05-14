@@ -3028,12 +3028,24 @@ IN_PROC_BROWSER_TEST_F(
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Helper class to wait for the origin text animation to complete on a web
+// app frame toolbar. Robust against being initialized before or during the
+// animation.
 class OriginTextVisibilityWaiter : public views::ViewObserver {
  public:
-  enum class VisibilityChange { kAppear, kDisappear };
-  explicit OriginTextVisibilityWaiter(WebAppOriginText* origin_text)
-      : origin_text_(origin_text) {
+  OriginTextVisibilityWaiter(WebAppOriginText* origin_text,
+                             const std::u16string& expected_text)
+      : origin_text_(origin_text), expected_text_(expected_text) {
     observation_.Observe(origin_text_);
+    if (origin_text_->GetLastCompletedAnimationTextForTesting() ==
+        expected_text_) {
+      observed_text_ = expected_text_;
+      state_ = State::kDone;
+      future_.SetValue(observed_text_);
+    } else if (origin_text_->GetVisible()) {
+      observed_text_ = origin_text_->GetLabelTextForTesting();
+      state_ = State::kWaitingForDisappear;
+    }
   }
   ~OriginTextVisibilityWaiter() override = default;
 
@@ -3041,52 +3053,39 @@ class OriginTextVisibilityWaiter : public views::ViewObserver {
   void OnViewVisibilityChanged(views::View* view_or_ancestor,
                                views::View* starting_view,
                                bool visible) override {
-    log_.push_back(origin_text_->GetVisible() ? VisibilityChange::kAppear
-                                              : VisibilityChange::kDisappear);
-    if (origin_text_->GetVisible() && observed_text_.empty()) {
-      observed_text_ = origin_text_->GetLabelTextForTesting();
-    }
-    CheckAndMaybeResolve();
-  }
-
-  // Returns true if the animation was correct, false otherwise. Also returns
-  // the observed text.
-  std::tuple<bool, std::u16string> Wait() { return future_.Take(); }
-
-  void WaitForOriginTextAnimation(const std::string& hostname, uint16_t port) {
-    std::u16string expected_origin_text = base::StrCat(
-        {base::ASCIIToUTF16(hostname), u":", base::NumberToString16(port)});
-
-    auto [animated_correctly, observed_text] = Wait();
-    EXPECT_TRUE(animated_correctly);
-    EXPECT_EQ(observed_text, expected_origin_text);
-  }
-
- private:
-  void CheckAndMaybeResolve() {
-    CHECK(!log_.empty());
-    // Expects origin_text_ to become visible then become invisible.
-    std::vector<VisibilityChange> expectation = {
-        VisibilityChange::kAppear,
-        VisibilityChange::kDisappear,
-    };
-    if (log_ == expectation) {
-      future_.SetValue(true, observed_text_);
-      return;
-    }
-    // Fail if log_ isn't a prefix of expectation.
-    for (size_t i = 0; i < log_.size(); ++i) {
-      if (log_[i] != expectation[i]) {
-        future_.SetValue(false, observed_text_);
-        return;
+    if (state_ == State::kWaitingForAppear) {
+      if (origin_text_->GetVisible()) {
+        observed_text_ = origin_text_->GetLabelTextForTesting();
+        state_ = State::kWaitingForDisappear;
+      }
+    } else if (state_ == State::kWaitingForDisappear) {
+      if (!origin_text_->GetVisible()) {
+        state_ = State::kDone;
+        future_.SetValue(observed_text_);
       }
     }
   }
 
+  void WaitForOriginTextAnimation() {
+    EXPECT_TRUE(future_.Wait());
+    std::u16string observed_text = future_.Take();
+    EXPECT_EQ(observed_text, expected_text_);
+  }
+
+ private:
+  // Used to denote the various stages the OriginTextVisibilityWaiter can be in,
+  // set the value of the observed text accordingly.
+  enum class State {
+    kWaitingForAppear,
+    kWaitingForDisappear,
+    kDone,
+  };
+
   const raw_ptr<WebAppOriginText> origin_text_;
+  const std::u16string expected_text_;
+  State state_ = State::kWaitingForAppear;
   std::u16string observed_text_;
-  base::test::TestFuture<bool, std::u16string> future_;
-  std::vector<VisibilityChange> log_;
+  base::test::TestFuture<std::u16string> future_;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
@@ -3101,11 +3100,25 @@ class WebAppFrameToolbarBrowserTest_OriginText
     WebAppToolbarButtonContainer::DisableAnimationForTesting(false);
   }
 
-  void InstallAndLaunchWebApp() {
-    helper()->InstallAndLaunchWebApp(browser(), app_url());
+  std::u16string GetExpectedOriginText(const std::string& hostname) const {
+    return base::StrCat(
+        {base::ASCIIToUTF16(hostname), u":",
+         base::NumberToString16(embedded_https_test_server().port())});
+  }
 
-    // Origin text should show after install and launch.
-    ExpectOriginTextAndAnimation(in_scope_host_);
+  void InstallAndLaunchWebApp() {
+    webapps::AppId app_id =
+        helper()->InstallWebApp(browser()->profile(), app_url());
+    content::TestNavigationObserver navigation_observer(app_url());
+    navigation_observer.StartWatchingNewWebContents();
+    Browser* app_browser =
+        web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+    helper()->SetViewFromAppBrowser(app_browser);
+
+    OriginTextVisibilityWaiter origin_text_waiter(
+        helper()->origin_text_view(), GetExpectedOriginText(in_scope_host_));
+    navigation_observer.WaitForNavigationFinished();
+    origin_text_waiter.WaitForOriginTextAnimation();
   }
 
   void ExpectLastCommittedUrl(const GURL& url) {
@@ -3114,20 +3127,6 @@ class WebAppFrameToolbarBrowserTest_OriginText
                        ->tab_strip_model()
                        ->GetActiveWebContents()
                        ->GetLastCommittedURL());
-  }
-
-  void ExpectOriginTextAndAnimation(const std::string& hostname) {
-    ui_test_utils::WaitForViewVisibility(helper()->app_browser(),
-                                         VIEW_ID_WEB_APP_ORIGIN_TEXT, true);
-    std::u16string expected_origin_text = base::StrCat(
-        {base::ASCIIToUTF16(hostname), u":",
-         base::NumberToString16(embedded_https_test_server().port())});
-    EXPECT_EQ(helper()->app_browser()->app_controller()->GetLaunchFlashText(),
-              expected_origin_text);
-    EXPECT_EQ(helper()->origin_text_view()->GetLabelTextForTesting(),
-              expected_origin_text);
-    ui_test_utils::WaitForViewVisibility(helper()->app_browser(),
-                                         VIEW_ID_WEB_APP_ORIGIN_TEXT, false);
   }
 
   GURL app_url() {
@@ -3140,10 +3139,8 @@ class WebAppFrameToolbarBrowserTest_OriginText
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
-// TODO(crbug.com/381106937): Re-enable this test on linux and ChromeOS.
-// TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       DISABLED_InScopeNavigation) {
+                       InScopeNavigation) {
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if navigating to a URL in scope and with the
@@ -3158,9 +3155,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(nav_url);
 }
 
-// TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       DISABLED_OutOfScopeBarShown) {
+                       OutOfScopeBarShown) {
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if out-of-scope bar is shown after navigation.
@@ -3182,10 +3178,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(app_url());
 }
 
-// TODO(crbug.com/361839153): Causing time out.
-// TODO(crbug.com/376592844): Re-enable this test
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       DISABLED_ThemeColorChange) {
+                       ThemeColorChange) {
 #if defined(MEMORY_SANITIZER)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
@@ -3201,22 +3195,21 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
 
   // Origin text should appear if theme color changes. This could happen when
   // navigating to a page within scope that has a different theme color.
-  OriginTextVisibilityWaiter origin_text_waiter(helper()->origin_text_view());
+  OriginTextVisibilityWaiter origin_text_waiter(
+      helper()->origin_text_view(), GetExpectedOriginText(in_scope_host_));
   const GURL nav_url = embedded_https_test_server().GetURL(
       in_scope_host_, "/web_apps/basic_with_theme_color.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(), nav_url));
   content::AwaitDocumentOnLoadCompleted(web_contents);
   EXPECT_EQ(GetFrameColor(helper()->app_browser()), SK_ColorYELLOW);
-  origin_text_waiter.WaitForOriginTextAnimation(
-      in_scope_host_, embedded_https_test_server().port());
+  origin_text_waiter.WaitForOriginTextAnimation();
   EXPECT_FALSE(
       helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
   ExpectLastCommittedUrl(nav_url);
 }
 
-// TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       DISABLED_OutOfScopeBarWithThemeColorChange) {
+                       OutOfScopeBarWithThemeColorChange) {
 #if defined(MEMORY_SANITIZER)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
@@ -3233,7 +3226,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   // Origin text should show if theme color changes even though out-of-scope bar
   // is shown after navigation.
   {
-    OriginTextVisibilityWaiter origin_text_waiter(helper()->origin_text_view());
+    OriginTextVisibilityWaiter origin_text_waiter(
+        helper()->origin_text_view(), GetExpectedOriginText(in_scope_host_));
     const GURL nav_url = embedded_https_test_server().GetURL(
         out_of_scope_host_, "/web_apps/basic_with_theme_color.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(), nav_url));
@@ -3243,8 +3237,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
     // Existing behavior: origin text should be created with start URL when the
     // out-of-scope bar is shown. Behavior with scope_extensions: origin text
     // should be created with the URL of the page.
-    origin_text_waiter.WaitForOriginTextAnimation(
-        in_scope_host_, embedded_https_test_server().port());
+    origin_text_waiter.WaitForOriginTextAnimation();
     EXPECT_TRUE(
         helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(nav_url);
@@ -3260,9 +3253,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(app_url());
 }
 
-// TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       DISABLED_WebAppOriginTextAccessibleProperties) {
+                       WebAppOriginTextAccessibleProperties) {
 #if defined(MEMORY_SANITIZER)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
@@ -3299,6 +3291,12 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
   static constexpr char in_extended_scope_host_[] = "test.com";
   static constexpr char out_of_extended_scope_host_[] = "test.biz";
 
+  std::u16string GetExpectedOriginText(const std::string& hostname) const {
+    return base::StrCat(
+        {base::ASCIIToUTF16(hostname), u":",
+         base::NumberToString16(embedded_https_test_server().port())});
+  }
+
   WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText() {
     WebAppToolbarButtonContainer::DisableAnimationForTesting(false);
   }
@@ -3326,11 +3324,9 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
   std::string OriginAssociationFileFromAppIdentity(const GURL& app_identity) {
     constexpr char kOriginAssociationTemplate[] = R"(
     {
-      "web_apps": [
-        {
-          "web_app_identity": "$1"
-        }
-      ]
+      "$1": {
+        "scope": "/"
+      }
     })";
     return base::ReplaceStringPlaceholders(kOriginAssociationTemplate,
                                            {app_identity.spec()}, nullptr);
@@ -3356,20 +3352,6 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
                                                "/ssl/blank_page.html");
   }
 
-  void ExpectOriginTextAndAnimation(const std::string& hostname) {
-    ui_test_utils::WaitForViewVisibility(helper()->app_browser(),
-                                         VIEW_ID_WEB_APP_ORIGIN_TEXT, true);
-    std::u16string expected_origin_text = base::StrCat(
-        {base::ASCIIToUTF16(hostname), u":",
-         base::NumberToString16(embedded_https_test_server().port())});
-    EXPECT_EQ(helper()->app_browser()->app_controller()->GetLaunchFlashText(),
-              expected_origin_text);
-    EXPECT_EQ(helper()->origin_text_view()->GetLabelTextForTesting(),
-              expected_origin_text);
-    ui_test_utils::WaitForViewVisibility(helper()->app_browser(),
-                                         VIEW_ID_WEB_APP_ORIGIN_TEXT, false);
-  }
-
   void InstallAndLaunchWebApp() {
     test_origin_association_fetcher_->SetData(
         {{url::Origin::Create(extension_url()),
@@ -3386,11 +3368,19 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
         url::Origin::Create(extension_url()),
         /*has_origin_wildcard*/ false);
     web_app_info->scope_extensions = {std::move(scope_extension)};
-    helper()->InstallAndLaunchCustomWebApp(browser(), std::move(web_app_info),
-                                           app_url());
 
-    // Origin text should show after install and launch.
-    ExpectOriginTextAndAnimation(in_scope_host_);
+    webapps::AppId app_id = web_app::test::InstallWebApp(
+        browser()->profile(), std::move(web_app_info));
+    content::TestNavigationObserver navigation_observer(app_url());
+    navigation_observer.StartWatchingNewWebContents();
+    Browser* app_browser =
+        web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+    helper()->SetViewFromAppBrowser(app_browser);
+
+    OriginTextVisibilityWaiter origin_text_waiter(
+        helper()->origin_text_view(), GetExpectedOriginText(in_scope_host_));
+    navigation_observer.WaitForNavigationFinished();
+    origin_text_waiter.WaitForOriginTextAnimation();
   }
 
  private:
@@ -3401,10 +3391,8 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
-// TODO(crbug.com/371923523): Reenable ExtendedScope* tests when they are more
-// stable.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
-                       DISABLED_ExtendedScope) {
+                       ExtendedScope) {
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -3413,12 +3401,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
   {
     // Navigate to another origin that is within extended scope. Origin text
     // should show as there is a change in origin.
-    OriginTextVisibilityWaiter origin_text_waiter(helper()->origin_text_view());
+    OriginTextVisibilityWaiter origin_text_waiter(
+        helper()->origin_text_view(),
+        GetExpectedOriginText(in_extended_scope_host_));
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(helper()->app_browser(), extension_url()));
     content::AwaitDocumentOnLoadCompleted(web_contents);
-    origin_text_waiter.WaitForOriginTextAnimation(
-        in_extended_scope_host_, embedded_https_test_server().port());
+    origin_text_waiter.WaitForOriginTextAnimation();
     EXPECT_FALSE(
         helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(extension_url());
@@ -3426,12 +3415,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
   {
     // Origin text should show if navigating back to the start url as there is a
     // change in origin.
-    OriginTextVisibilityWaiter origin_text_waiter(helper()->origin_text_view());
+    OriginTextVisibilityWaiter origin_text_waiter(
+        helper()->origin_text_view(), GetExpectedOriginText(in_scope_host_));
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(helper()->app_browser(), app_url()));
     content::AwaitDocumentOnLoadCompleted(web_contents);
-    origin_text_waiter.WaitForOriginTextAnimation(
-        in_scope_host_, embedded_https_test_server().port());
+    origin_text_waiter.WaitForOriginTextAnimation();
     EXPECT_FALSE(
         helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(app_url());
@@ -3439,7 +3428,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
-                       DISABLED_ExtendedScopeToOutOfScope) {
+                       ExtendedScopeToOutOfScope) {
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -3447,12 +3436,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
   content::AwaitDocumentOnLoadCompleted(web_contents);
   {
     // Navigate to another origin that is within extended scope.
-    OriginTextVisibilityWaiter origin_text_waiter(helper()->origin_text_view());
+    OriginTextVisibilityWaiter origin_text_waiter(
+        helper()->origin_text_view(),
+        GetExpectedOriginText(in_extended_scope_host_));
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(helper()->app_browser(), extension_url()));
     content::AwaitDocumentOnLoadCompleted(web_contents);
-    origin_text_waiter.WaitForOriginTextAnimation(
-        in_extended_scope_host_, embedded_https_test_server().port());
+    origin_text_waiter.WaitForOriginTextAnimation();
     EXPECT_FALSE(
         helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(extension_url());
@@ -3471,7 +3461,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
-                       DISABLED_ExtendedScopeThemeColorChange) {
+                       ExtendedScopeThemeColorChange) {
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -3479,12 +3469,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
   content::AwaitDocumentOnLoadCompleted(web_contents);
   {
     // Navigate to another origin that is within extended scope.
-    OriginTextVisibilityWaiter origin_text_waiter(helper()->origin_text_view());
+    OriginTextVisibilityWaiter origin_text_waiter(
+        helper()->origin_text_view(),
+        GetExpectedOriginText(in_extended_scope_host_));
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(helper()->app_browser(), extension_url()));
     content::AwaitDocumentOnLoadCompleted(web_contents);
-    origin_text_waiter.WaitForOriginTextAnimation(
-        in_extended_scope_host_, embedded_https_test_server().port());
+    origin_text_waiter.WaitForOriginTextAnimation();
     EXPECT_FALSE(
         helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(extension_url());
@@ -3493,13 +3484,14 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
     // From extended scope, navigate to another origin out of scope. Origin text
     // should be shown because theme color changes, even though out-of-scope bar
     // is shown.
-    OriginTextVisibilityWaiter origin_text_waiter(helper()->origin_text_view());
+    OriginTextVisibilityWaiter origin_text_waiter(
+        helper()->origin_text_view(),
+        GetExpectedOriginText(out_of_extended_scope_host_));
     const GURL nav_url = embedded_https_test_server().GetURL(
         out_of_extended_scope_host_, "/web_apps/basic_with_theme_color.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(), nav_url));
     content::AwaitDocumentOnLoadCompleted(web_contents);
-    origin_text_waiter.WaitForOriginTextAnimation(
-        out_of_extended_scope_host_, embedded_https_test_server().port());
+    origin_text_waiter.WaitForOriginTextAnimation();
     EXPECT_EQ(GetFrameColor(helper()->app_browser()), SK_ColorYELLOW);
     EXPECT_TRUE(
         helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());

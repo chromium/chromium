@@ -71,7 +71,7 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
   navigation_observer.WaitForNavigationFinished();
 
-  SetViews(app_browser);
+  SetViewFromAppBrowser(app_browser);
   return app_id;
 }
 
@@ -93,7 +93,7 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
       web_app::LaunchWebAppBrowser(browser->profile(), app_id);
   navigation_observer.WaitForNavigationFinished();
 
-  SetViews(app_browser);
+  SetViewFromAppBrowser(app_browser);
   return app_id;
 }
 
@@ -108,14 +108,14 @@ WebAppFrameToolbarTestHelper::InstallAndLaunchIsolatedWebApp(
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           content::WebContents::FromRenderFrameHost(app_frame));
 
-  SetViews(app_browser);
+  SetViewFromAppBrowser(app_browser);
   return url_info;
 }
 
 void WebAppFrameToolbarTestHelper::LaunchWebAppBrowserAndWait(
     Profile* profile,
     const webapps::AppId& app_id) {
-  SetViews(web_app::LaunchWebAppBrowserAndWait(profile, app_id));
+  SetViewFromAppBrowser(web_app::LaunchWebAppBrowserAndWait(profile, app_id));
 }
 
 void WebAppFrameToolbarTestHelper::ReparentWebContentsIntoAppBrowserAndWait(
@@ -130,7 +130,7 @@ void WebAppFrameToolbarTestHelper::ReparentWebContentsIntoAppBrowserAndWait(
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           reparented_contents);
   CHECK(app_browser);
-  SetViews(app_browser);
+  SetViewFromAppBrowser(app_browser);
 }
 
 GURL WebAppFrameToolbarTestHelper::
@@ -359,7 +359,7 @@ Browser* WebAppFrameToolbarTestHelper::app_browser() {
   return app_browser_ ? app_browser_->GetBrowserForMigrationOnly() : nullptr;
 }
 
-void WebAppFrameToolbarTestHelper::SetViews(
+void WebAppFrameToolbarTestHelper::SetViewFromAppBrowser(
     BrowserWindowInterface* app_browser) {
   app_browser_ = app_browser;
   browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);

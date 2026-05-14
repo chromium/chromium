@@ -123,10 +123,9 @@ class WebAppFrameToolbarTestHelper {
   }
   WebAppOriginText* origin_text_view();
   void SetOriginTextLabelForTesting(const std::u16string& label_text);
+  void SetViewFromAppBrowser(BrowserWindowInterface* app_browser);
 
  private:
-  void SetViews(BrowserWindowInterface* app_browser);
-
   raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> app_browser_ =
       nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;

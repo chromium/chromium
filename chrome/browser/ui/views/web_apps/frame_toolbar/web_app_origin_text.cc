@@ -129,6 +129,13 @@ void WebAppOriginText::StartFadeAnimation() {
 void WebAppOriginText::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
   SetVisible(false);
+  last_completed_animation_text_for_testing_ = origin_text_;
+}
+
+void WebAppOriginText::OnLayerAnimationAborted(
+    ui::LayerAnimationSequence* sequence) {
+  SetVisible(false);
+  last_completed_animation_text_for_testing_ = origin_text_;
 }
 
 std::u16string_view WebAppOriginText::GetLabelTextForTesting() const {

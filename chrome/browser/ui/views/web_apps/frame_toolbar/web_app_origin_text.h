@@ -48,11 +48,15 @@ class WebAppOriginText : public views::View,
   // ui::LayerAnimationObserver:
   void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override {}
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
 
   std::u16string_view GetLabelTextForTesting() const;
+
+  std::u16string GetLastCompletedAnimationTextForTesting() const {
+    return last_completed_animation_text_for_testing_;
+  }
 
  private:
   friend class WebAppFrameToolbarTestHelper;
@@ -74,6 +78,9 @@ class WebAppOriginText : public views::View,
   // Disallow animation until the parent view animates for the first time. This
   // helps respect the animation start delay in WebAppToolbarButtonContainer.
   bool allowed_to_animate_ = false;
+
+  // Keep track of the last completed animation text for testing.
+  std::u16string last_completed_animation_text_for_testing_;
 
   // Owned by the views hierarchy.
   raw_ptr<views::Label, DanglingUntriaged> label_ = nullptr;
