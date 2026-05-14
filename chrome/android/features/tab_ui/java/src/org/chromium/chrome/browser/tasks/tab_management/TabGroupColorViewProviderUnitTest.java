@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -50,10 +51,12 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link TabGroupColorViewProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
 public class TabGroupColorViewProviderUnitTest {
     private static final Token REGULAR_TAB_GROUP_ID = new Token(3L, 4L);
     private static final Token INCOGNITO_TAB_GROUP_ID = new Token(5L, 6L);

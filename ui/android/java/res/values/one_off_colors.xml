@@ -99,6 +99,90 @@ found in the LICENSE file.
     <color name="tab_group_card_secondary_color_yellow_light_gm3">#FFF2B4</color>
     <color name="tab_group_card_secondary_color_yellow_dark_gm3">#2F1400</color>
 
+    <!-- Refresh Colors -->
+    <!-- Note: The UX refresh renamed 'yellow' to 'lime' and 'pink' to 'magenta'.
+         The resource names below retain 'yellow' and 'pink' to be consistent with TabGroupColorIds.
+         @see TabGroupColorIds -->
+    <!-- Color Picker Colors -->
+    <color name="tab_group_color_picker_blue_refresh_light">#325CCD</color>
+    <color name="tab_group_color_picker_blue_refresh_dark">#C8D3FF</color>
+    <color name="tab_group_color_picker_cyan_refresh_light">#057C84</color>
+    <color name="tab_group_color_picker_cyan_refresh_dark">#C7FAFF</color>
+    <color name="tab_group_color_picker_green_refresh_light">#1A7736</color>
+    <color name="tab_group_color_picker_green_refresh_dark">#C6FFC7</color>
+    <color name="tab_group_color_picker_grey_refresh_light">#5A5F66</color>
+    <color name="tab_group_color_picker_grey_refresh_dark">#D0D5DD</color>
+    <color name="tab_group_color_picker_yellow_refresh_light">#637505</color>
+    <color name="tab_group_color_picker_yellow_refresh_dark">#EEFFA5</color>
+    <color name="tab_group_color_picker_pink_refresh_light">#CC06AB</color>
+    <color name="tab_group_color_picker_pink_refresh_dark">#FFC3E8</color>
+    <color name="tab_group_color_picker_orange_refresh_light">#CC4E00</color>
+    <color name="tab_group_color_picker_orange_refresh_dark">#FFDEA7</color>
+    <color name="tab_group_color_picker_purple_refresh_light">#7C31E6</color>
+    <color name="tab_group_color_picker_purple_refresh_dark">#E0CBFF</color>
+    <color name="tab_group_color_picker_red_refresh_light">#DF000C</color>
+    <color name="tab_group_color_picker_red_refresh_dark">#FFC7C1</color>
+
+    <!-- Card Colors -->
+    <color name="tab_group_card_color_blue_refresh_light">@color/tab_group_color_picker_blue_refresh_dark</color>
+    <color name="tab_group_card_color_blue_refresh_dark">#003293</color>
+    <color name="tab_group_card_color_cyan_refresh_light">#88E3EB</color>
+    <color name="tab_group_card_color_cyan_refresh_dark">#004347</color>
+    <color name="tab_group_card_color_green_refresh_light">#8FE89A</color>
+    <color name="tab_group_card_color_green_refresh_dark">#004619</color>
+    <color name="tab_group_card_color_grey_refresh_light">@color/tab_group_color_picker_grey_refresh_dark</color>
+    <color name="tab_group_card_color_grey_refresh_dark">#373C42</color>
+    <color name="tab_group_card_color_yellow_refresh_light">#C9DF6B</color>
+    <color name="tab_group_card_color_yellow_refresh_dark">#354000</color>
+    <color name="tab_group_card_color_pink_refresh_light">@color/tab_group_color_picker_pink_refresh_dark</color>
+    <color name="tab_group_card_color_pink_refresh_dark">#72005F</color>
+    <color name="tab_group_card_color_orange_refresh_light">#FFCD71</color>
+    <color name="tab_group_card_color_orange_refresh_dark">#4F3700</color>
+    <color name="tab_group_card_color_purple_refresh_light">@color/tab_group_color_picker_purple_refresh_dark</color>
+    <color name="tab_group_card_color_purple_refresh_dark">#5000A5</color>
+    <color name="tab_group_card_color_red_refresh_light">@color/tab_group_color_picker_red_refresh_dark</color>
+    <color name="tab_group_card_color_red_refresh_dark">#7E0008</color>
+
+    <!-- Text Colors -->
+    <color name="tab_group_text_color_blue_refresh_light">#EFF0FF</color>
+    <color name="tab_group_text_color_blue_refresh_dark">#00164D</color>
+    <color name="tab_group_text_color_cyan_refresh_light">@color/tab_group_color_picker_cyan_refresh_dark</color>
+    <color name="tab_group_text_color_cyan_refresh_dark">#002022</color>
+    <color name="tab_group_text_color_green_refresh_light">@color/tab_group_color_picker_green_refresh_dark</color>
+    <color name="tab_group_text_color_green_refresh_dark">#002108</color>
+    <color name="tab_group_text_color_grey_refresh_light">#EDF1F9</color>
+    <color name="tab_group_text_color_grey_refresh_dark">#171C22</color>
+    <color name="tab_group_text_color_yellow_refresh_light">#E5FB84</color>
+    <color name="tab_group_text_color_yellow_refresh_dark">#181E00</color>
+    <color name="tab_group_text_color_pink_refresh_light">#FFECF4</color>
+    <color name="tab_group_text_color_pink_refresh_dark">#3B0030</color>
+    <color name="tab_group_text_color_orange_refresh_light">#FFEED8</color>
+    <color name="tab_group_text_color_orange_refresh_dark">#271900</color>
+    <color name="tab_group_text_color_purple_refresh_light">#F7EDFF</color>
+    <color name="tab_group_text_color_purple_refresh_dark">#270057</color>
+    <color name="tab_group_text_color_red_refresh_light">#FFEDEA</color>
+    <color name="tab_group_text_color_red_refresh_dark">#410002</color>
+
+    <!-- Placeholder Colors -->
+    <color name="tab_group_placeholder_color_blue_refresh_light">#DBE1FF</color>
+    <color name="tab_group_placeholder_color_blue_refresh_dark">#00297B</color>
+    <color name="tab_group_placeholder_color_cyan_refresh_light">#97F1FA</color>
+    <color name="tab_group_placeholder_color_cyan_refresh_dark">#00363A</color>
+    <color name="tab_group_placeholder_color_green_refresh_light">#9CF7A7</color>
+    <color name="tab_group_placeholder_color_green_refresh_dark">#003914</color>
+    <color name="tab_group_placeholder_color_grey_refresh_light">#DEE3EB</color>
+    <color name="tab_group_placeholder_color_grey_refresh_dark">#2C3137</color>
+    <color name="tab_group_placeholder_color_yellow_refresh_light">#D7ED78</color>
+    <color name="tab_group_placeholder_color_yellow_refresh_dark">#3B3400</color>
+    <color name="tab_group_placeholder_color_pink_refresh_light">#FFD8EE</color>
+    <color name="tab_group_placeholder_color_pink_refresh_dark">#5F005E</color>
+    <color name="tab_group_placeholder_color_orange_refresh_light">@color/tab_group_color_picker_orange_refresh_dark</color>
+    <color name="tab_group_placeholder_color_orange_refresh_dark">#412D00</color>
+    <color name="tab_group_placeholder_color_purple_refresh_light">#ECDCFF</color>
+    <color name="tab_group_placeholder_color_purple_refresh_dark">#42008A</color>
+    <color name="tab_group_placeholder_color_red_refresh_light">#FFDAD6</color>
+    <color name="tab_group_placeholder_color_red_refresh_dark">#690005</color>
+
     <!-- Colors used in Google Pay icon -->
     <color name="google_pay_icon_grey_dark">#3C4043</color>
 

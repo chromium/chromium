@@ -105,6 +105,7 @@ import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -120,6 +121,7 @@ import java.util.function.Supplier;
  * classes hosted insider the coordinator or have to be verified in an integration test.
  */
 @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.FAVICON_DISABLE_HOST_FALLBACK})
+@DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherPaneCoordinatorUnitTest {
 
