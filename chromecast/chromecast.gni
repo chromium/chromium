@@ -44,8 +44,6 @@ declare_args() {
   mixer_in_cast_shell = true
 
 
-  # Set to true for builds targeting ARC.
-  is_android_arc = false
 
 
 
