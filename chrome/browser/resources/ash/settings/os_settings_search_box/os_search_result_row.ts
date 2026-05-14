@@ -570,12 +570,6 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       chrome.metricsPrivate.recordSparseValue(
           'ChromeOS.Settings.SearchResultPersonalizationSelected',
           this.searchResult.searchConceptId);
-      // Record entry point metric to Personalization Hub through Settings
-      // search.
-      chrome.metricsPrivate.recordEnumerationValue(
-          'Ash.Personalization.EntryPoint',
-          loadTimeData.getInteger('settingsSearchEntryPoint'),
-          loadTimeData.getInteger('entryPointEnumSize'));
       return;
     }
 

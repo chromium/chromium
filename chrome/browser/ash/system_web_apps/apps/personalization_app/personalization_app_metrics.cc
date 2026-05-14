@@ -27,11 +27,6 @@ void LogAmbientModeScreenSaverDuration(DurationOption duration_option) {
                                 duration_option);
 }
 
-void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point) {
-  base::UmaHistogramEnumeration(ash::kPersonalizationEntryPointHistogramName,
-                                entry_point);
-}
-
 void LogKeyboardBacklightColor(mojom::BacklightColor backlight_color) {
   base::UmaHistogramEnumeration(
       kPersonalizationKeyboardBacklightColorHistogramName, backlight_color);

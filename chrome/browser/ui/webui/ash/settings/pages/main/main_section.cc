@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/chrome_webui_url_constants.h"
-#include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/check_deref.h"
@@ -194,15 +193,6 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);
-
-  // Add Entry Point resources used for recording entry point metric
-  // to Personalization Hub though Settings search.
-  html_source->AddInteger(
-      "settingsSearchEntryPoint",
-      static_cast<int>(PersonalizationEntryPoint::kSettingsSearch));
-  html_source->AddInteger(
-      "entryPointEnumSize",
-      static_cast<int>(PersonalizationEntryPoint::kMaxValue) + 1);
 
   AddSearchInSettingsStrings(html_source);
   AddChromeOSUserStrings(html_source);

@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/constants/personalization_entry_point.h"
 #include "ash/constants/url_constants.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
@@ -45,7 +44,6 @@
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -438,10 +436,6 @@ void SystemTrayClientImpl::ShowDisplaySettings() {
 }
 
 void SystemTrayClientImpl::ShowDarkModeSettings() {
-  // Record entry point metric to Personalization through Dark Mode Quick
-  // Settings/System Tray.
-  ash::personalization_app::LogPersonalizationEntryPoint(
-      ash::PersonalizationEntryPoint::kSystemTray);
   ash::NewWindowDelegate::GetInstance()->OpenPersonalizationHub();
 }
 

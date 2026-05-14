@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/personalization_entry_point.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -110,10 +109,6 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
   }
 
   void OnKeyboardBacklightColorIconPressed() {
-    // Record entry point metric to Personalization Hub.
-    base::UmaHistogramEnumeration(
-        kPersonalizationEntryPointHistogramName,
-        PersonalizationEntryPoint::kKeyboardBrightnessSlider);
     NewWindowDelegate* primary_delegate = NewWindowDelegate::GetInstance();
     primary_delegate->OpenPersonalizationHub();
     return;

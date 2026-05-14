@@ -31,7 +31,6 @@ component("constants") {
     "generative_ai_country_restrictions.h",
     "geolocation_access_level.h",
     "notifier_catalogs.h",
-    "personalization_entry_point.h",
     "quick_settings_catalogs.h",
     "tray_background_view_catalog.h",
     "url_constants.h",

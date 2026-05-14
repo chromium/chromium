@@ -1902,15 +1902,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4" label="kLightPurple"/>
 </enum>
 
-<enum name="PersonalizationEntryPoint">
-  <int value="0" label="Home Screen"/>
-  <int value="1" label="System Tray"/>
-  <int value="2" label="Launcher search"/>
-  <int value="3" label="Settings"/>
-  <int value="4" label="Settings search"/>
-  <int value="5" label="Keyboard brightness slider"/>
-</enum>
-
 <enum name="PersonalizationKeyboardBacklightColor">
   <int value="0" label="kWallpaper"/>
   <int value="1" label="kWhite"/>
