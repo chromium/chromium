@@ -28,6 +28,7 @@
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/cors/cors_url_loader.h"
+#include "services/network/cors/cors_util.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/network_service.h"
 #include "services/network/prefetch_matching_url_loader_factory.h"
@@ -851,7 +852,9 @@ bool CorsURLLoaderFactory::IsValidRequest(
     return false;
   }
 
-  if (!process_id_.is_browser() &&
+  const bool allow_unsafe_headers = cors::ShouldAllowUnsafeHeaders(
+      *origin_access_list_, request.request_initiator, request.url);
+  if (!process_id_.is_browser() && !allow_unsafe_headers &&
       ContainsForbiddenSecurityHeader(request.headers)) {
     mojo::ReportBadMessage(
         "CorsURLLoaderFactory: Forbidden Sec- header from renderer");
