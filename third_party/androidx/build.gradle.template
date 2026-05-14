@@ -59,6 +59,7 @@ dependencies {
     compileLatest 'androidx.autofill:autofill:+'
     compileLatest 'androidx.biometric:biometric:+'
     compileLatest 'androidx.browser:browser:+'
+    compileLatest 'androidx.car.app:app:+'
     compileLatest 'androidx.cardview:cardview:+'
     compileLatest 'androidx.collection:collection:+'
     compileLatest 'androidx.collection:collection-ktx:+'
