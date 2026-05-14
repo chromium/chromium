@@ -14,10 +14,10 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/tether/tether_service.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -48,8 +48,9 @@ const char kSendGmsCoreNotificationsDisabledDeviceNames[] =
     "sendGmsCoreNotificationsDisabledDeviceNames";
 
 Profile* GetProfileForPrimaryUser() {
-  return ProfileHelper::Get()->GetProfileByUser(
-      user_manager::UserManager::Get()->GetPrimaryUser());
+  return Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(
+          user_manager::UserManager::Get()->GetPrimaryUser()));
 }
 
 bool IsVpnConfigAllowed() {

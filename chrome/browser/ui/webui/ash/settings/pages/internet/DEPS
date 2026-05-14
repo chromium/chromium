@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_list/arc",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/tether",
   "+chrome/browser/chromeos/extensions/vpn_provider",
   "+chrome/browser/profiles/profile.h",
