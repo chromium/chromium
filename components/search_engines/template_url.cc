@@ -29,7 +29,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -714,7 +713,6 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
   // Extract the search term.
   *search_terms =
       SearchTermToString16(source.substr(position.begin, position.len));
-  base::TrimWhitespace(*search_terms, base::TRIM_ALL, search_terms);
   if (search_terms_component) {
     *search_terms_component = search_term_key_location_;
   }

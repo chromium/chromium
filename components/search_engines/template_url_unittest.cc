@@ -1694,10 +1694,6 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromURL) {
   EXPECT_EQ(u"something", result);
 
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
-      GURL("http://google.com/?q=something%20"), search_terms_data_, &result));
-  EXPECT_EQ(u"something", result);
-
-  EXPECT_TRUE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com/?q=something"), search_terms_data_, &result));
   EXPECT_EQ(u"something", result);
 
