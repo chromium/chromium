@@ -101,8 +101,8 @@ interface AiOverlayTools {
       string target_language) => result<mojo_base.mojom.Empty, string>;
 
   // @NON_BLOCKING
-  // Use for tasks taking >1s to process, or to generate images, audio, video,
-  // or long text. Prefer direct voice replies for quick (<1s) tasks.
+  // Use for tasks taking >1s to process, email, or to generate images, audio,
+  // video, or long text. Prefer direct voice replies for quick (<1s) tasks.
   //
   // prompt: The request to send to Gemini in the side panel.
   InvokeGlic(string prompt) => result<string, string>;
