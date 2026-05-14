@@ -96,33 +96,6 @@ if (_is_default_toolchain) {
     }
   }
 
-  # This version of the WebView APK doesn't include WebLayer.
-  # It's used to define the allowlist of resources to be pulled out of language
-  # splits. See |shared_resources_allowlist_target|.
-  standalone_system_webview_apk_tmpl("system_webview_no_weblayer_apk") {
-    apk_name = "SystemWebViewNoWebLayer"
-
-    # Don't include any code to speed up compilation. This is used only for the
-    # resources allowlist.
-    is_64_bit_browser = false
-    include_32_bit_webview = false
-    include_64_bit_webview = false
-    omit_dex = true
-
-    # Adding deps on recycler view in the base WebView APK will end up keeping
-    # the Java in the base APK instead of the WebLayer DFM, even though it is
-    # not needed in the base APK.
-    #
-    # If you hit this check and are adding a dep to //ui/android:ui_java, use
-    # //ui/android:ui_no_recycler_view instead. If you hit this check because
-    # you are adding //third_party/android_deps:android_support_*, use the
-    # androidx version of the dep instead.
-    # TODO(b/165810905): Use per-feature -keep rules in R8 once supported, then
-    # this can be removed.
-    assert_no_deps =
-        [ "//third_party/androidx:androidx_recyclerview_recyclerview_java" ]
-  }
-
   if (android_64bit_target_cpu && !defined(android_app_secondary_abi)) {
     group("system_webview_bundle") {
       deps = [ ":system_webview_64_bundle" ]

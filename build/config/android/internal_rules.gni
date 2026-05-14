@@ -89,8 +89,8 @@ java_library_patterns = [
   "//android_webview/glue:glue",
 ]
 
-# These identify all non-leaf targets that have .build_config.json files. This is the
-# set of patterns that other targets can use to filter out java targets.
+# These identify all non-leaf targets that have .build_config.json files. This
+# is the set of patterns that other targets can use to filter out java targets.
 java_target_patterns = java_library_patterns + java_resource_patterns
 
 _r8_path = "//third_party/r8/cipd/lib/r8.jar"
@@ -127,11 +127,11 @@ foreach(_asm_dep, _asm_deps) {
 rebased_location_rewriter_path =
     rebase_path("$root_build_dir/bin/helper/location_rewriter", root_build_dir)
 
-# Write the target's .build_config.json file. This is a json file that contains a
-# dictionary of information about how to build this target (things that
-# require knowledge about this target's dependencies and cannot be calculated
-# at gn-time). There is a special syntax to add a value in that dictionary to
-# an action/action_foreachs args:
+# Write the target's .build_config.json file. This is a json file that contains
+# a dictionary of information about how to build this target (things that
+# require knowledge about this target's dependencies and cannot be calculated at
+# gn-time). There is a special syntax to add a value in that dictionary to an
+# action/action_foreachs args:
 #   --python-arg=@FileArg($rebased_build_config_path:key0:key1)
 # At runtime, such an arg will be replaced by the value in the build_config.
 # See build/android/gyp/write_build_config.py and
@@ -501,7 +501,8 @@ template("write_build_config") {
             rebase_path(invoker.java_resources_jar, root_build_dir)
       }
       if (defined(invoker.dex_path)) {
-        # Dex path for library targets, or the the intermediate library for apks.
+        # Dex path for library targets, or the the intermediate library for
+        # apks.
         dex_path = rebase_path(invoker.dex_path, root_build_dir)
       }
       if (defined(invoker.final_dex_path)) {
@@ -975,8 +976,8 @@ template("test_runner_script") {
       assert(false, "Invalid test type: $_test_type.")
     }
 
-    # Devil does not reliably work with component builds of its tools.
-    # There's no benefit to them, so fall back to prebuilts for component builds.
+    # Devil does not reliably work with component builds of its tools. There's
+    # no benefit to them, so fall back to prebuilts for component builds.
     # https://crbug.com/1404180
     if (_test_type != "junit" && !is_component_build) {
       executable_args += [ "--use-local-devil-tools" ]
@@ -2034,11 +2035,7 @@ if (enable_java_templates) {
   #
   #   version_name: (optional)
   #
-  #   shared_resources: (optional)
-  #     If true, make all variables in each generated R.java file non-final,
-  #     and provide an onResourcesLoaded() method that can be used to reset
-  #     their package index at load time. Useful when the APK corresponds to
-  #     a library that is loaded at runtime, like system_webview_apk.
+
   #
   #   app_as_shared_lib: (optional)
   #     If true, same effect as shared_resources, but also ensures that the
@@ -2047,18 +2044,7 @@ if (enable_java_templates) {
   #     target (now obsolete) which is both an application and a shared runtime
   #     library that implements the system webview feature.
   #
-  #   shared_resources_allowlist: (optional)
-  #     Path to an R.txt file. If provided, acts similar to shared_resources
-  #     except that it restricts the list of non-final resource variables
-  #     to the list from the input R.txt file. Overrides shared_resources
-  #     when both are specified.
-  #
-  #   shared_resources_allowlist_locales: (optional)
-  #     If shared_resources_allowlist is used, provide an optional list of
-  #     Chromium locale names to determine which localized shared string
-  #     resources to put in the final output, even if aapt_locale_allowlist
-  #     is defined to a smaller subset.
-  #
+
   #   aapt_locale_allowlist: (optional)
   #     Restrict compiled locale-dependent resources to a specific allowlist.
   #     NOTE: This is a list of Chromium locale names, not Android ones.
@@ -2300,9 +2286,6 @@ if (enable_java_templates) {
     # generated resources table is correct. It should be 0x02 for runtime
     # shared libraries, and 0x7f otherwise.
 
-    if (defined(invoker.shared_resources) && invoker.shared_resources) {
-      _args += [ "--shared-resources" ]
-    }
     if (defined(invoker.app_as_shared_lib) && invoker.app_as_shared_lib) {
       _args += [ "--app-as-shared-lib" ]
     }
@@ -2320,18 +2303,6 @@ if (enable_java_templates) {
         "--arsc-package-name",
         invoker.arsc_package_name,
       ]
-    }
-
-    if (defined(invoker.shared_resources_allowlist)) {
-      _inputs += [ invoker.shared_resources_allowlist ]
-      _args += [
-        "--shared-resources-allowlist",
-        rebase_path(invoker.shared_resources_allowlist, root_build_dir),
-      ]
-    }
-    if (defined(invoker.shared_resources_allowlist_locales)) {
-      _args += [ "--shared-resources-allowlist-locales=" +
-                 "${invoker.shared_resources_allowlist_locales}" ]
     }
 
     if (defined(invoker.proguard_file)) {
@@ -2933,9 +2904,9 @@ if (enable_java_templates) {
   # target that includes processor_classes entries (i.e. there is no
   # variable here that can be used for this purpose).
   #
-  # Note also the peculiar use of source_files / target_sources_file. The content
-  # of the source_files list and the source files in target_sources_file file must
-  # match exactly.
+  # Note also the peculiar use of source_files / target_sources_file. The
+  # content of the source_files list and the source files in target_sources_file
+  # file must match exactly.
   #
   # Variables:
   #  main_target_name: Used when extracting srcjars for codesearch.
@@ -2999,7 +2970,8 @@ if (enable_java_templates) {
           _java_srcjars += invoker.srcjars
         }
 
-        # generated_jar_path is an output when use_turbine and an input otherwise.
+        # generated_jar_path is an output when use_turbine and an input
+        # otherwise.
         if (!invoker.use_turbine && defined(invoker.generated_jar_path)) {
           _java_srcjars += [ invoker.generated_jar_path ]
         }
@@ -3055,7 +3027,8 @@ if (enable_java_templates) {
           args += [ "--java-srcjars=$_rebased_java_srcjars" ]
         }
         if (!invoker.use_turbine) {
-          # Error Prone does not run on srcjar, and they are not needed as inputs thanks to Turbine.
+          # Error Prone does not run on srcjar, and they are not needed as
+          # inputs thanks to Turbine.
           _rebased_generated_dir = rebase_path(
                   "$target_gen_dir/${invoker.main_target_name}/generated_java",
                   root_build_dir)
@@ -3542,8 +3515,8 @@ if (enable_java_templates) {
     if (_is_prebuilt) {
       assert(!_has_sources)
     } else {
-      # Allow java_binary to not specify any sources. This is needed when a prebuilt
-      # is needed as a library as well as a binary.
+      # Allow java_binary to not specify any sources. This is needed when a
+      # prebuilt is needed as a library as well as a binary.
       assert(_is_annotation_processor || _is_java_binary || _has_sources)
     }
 
@@ -3569,7 +3542,8 @@ if (enable_java_templates) {
     _build_config_target_name =
         "${_main_target_name}$build_config_target_suffix"
 
-    # The only target that might have no prebuilt and no sources is a java_binary.
+    # The only target that might have no prebuilt and no sources is a
+    # java_binary.
     _build_host_jar = false
     _build_device_jar = false
     if (_is_prebuilt || _has_sources) {
@@ -3617,9 +3591,10 @@ if (enable_java_templates) {
 
       if (_process_jar) {
         if (_build_host_jar) {
-          # Jar files can be needed at runtime (by Robolectric tests or java binaries),
-          # so do not put them under obj/.
-          # TODO(agrieve): I suspect it would be better to use dist_jar for java_binary
+          # Jar files can be needed at runtime (by Robolectric tests or java
+          # binaries), so do not put them under obj/.
+          # TODO(agrieve): I suspect it would be better to use dist_jar for
+          # java_binary
           #     rather than archiving unnecessary .jar files within lib.java.
           _parent_dir = "$root_out_dir/lib.java$_target_dir"
         } else {
@@ -3647,7 +3622,8 @@ if (enable_java_templates) {
         if (defined(invoker.bytecode_rewriter_target)) {
           _processed_jar_path = "$target_out_dir/$target_name.rewritten.jar"
         } else {
-          # Filter directly in compile_java.py when no other processing is required.
+          # Filter directly in compile_java.py when no other processing is
+          # required.
           _processed_jar_path = _javac_jar_path
         }
       }
@@ -3667,11 +3643,11 @@ if (enable_java_templates) {
         }
       }
 
-      # For static libraries, the javac jar output is created at the intermediate
-      # path so that it can be processed by another target and moved to the final
-      # spot that the .build_config.json knows about. Technically this should be done
-      # for the ijar as well, but this is only used for APK targets where
-      # the ijar path isn't actually used.
+      # For static libraries, the javac jar output is created at the
+      # intermediate path so that it can be processed by another target and
+      # moved to the final spot that the .build_config.json knows about.
+      # Technically this should be done for the ijar as well, but this is only
+      # used for APK targets where the ijar path isn't actually used.
       if (_has_sources) {
         _header_jar_path = "$target_out_dir/$_output_name.turbine.jar"
       } else {
@@ -4321,16 +4297,17 @@ if (enable_java_templates) {
           }
 
           if (enable_desugar && default_min_sdk_version < 24) {
-            # Desugaring with D8 requires classpath for default method desugaring (required until API 24).
+            # Desugaring with D8 requires classpath for default method
+            # desugaring (required until API 24).
             build_config = _build_config
             deps += _javac_classpath_deps
           }
 
           is_library = true
 
-          # proguard_configs listed on java_library targets need to be marked
-          # as inputs to at least one target so that "gn analyze" will know
-          # about them. Although this target doesn't use them, it's a convenient spot
+          # proguard_configs listed on java_library targets need to be marked as
+          # inputs to at least one target so that "gn analyze" will know about
+          # them. Although this target doesn't use them, it's a convenient spot
           # to list them.
           # https://crbug.com/827197
           if (compute_inputs_for_analyze && defined(invoker.proguard_configs)) {
@@ -4389,7 +4366,8 @@ if (enable_java_templates) {
         data += [ _processed_jar_path ]
       }
 
-      # Add runtime_deps here since robolectric_binary does not depend on top-level group.
+      # Add runtime_deps here since robolectric_binary does not depend on
+      # top-level group.
       if (defined(invoker.data)) {
         data += invoker.data
       }

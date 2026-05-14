@@ -122,11 +122,11 @@ if (!is_robolectric && enable_java_templates) {
 
   # Declare a target for c-preprocessor-generated java files
   #
-  # NOTE: For generating Java conterparts to enums prefer using the java_cpp_enum
-  #       rule instead.
+  # NOTE: For generating Java counterparts to enums prefer using the
+  # java_cpp_enum rule instead.
   #
-  # This target generates java files using the host C pre-processor. Each file in
-  # sources will be compiled using the C pre-processor. If include_path is
+  # This target generates java files using the host C pre-processor. Each file
+  # in sources will be compiled using the C pre-processor. If include_path is
   # specified, it will be passed (with --I) to the pre-processor.
   #
   # This target will create a single .srcjar. Adding this target to an
@@ -693,8 +693,8 @@ if (!is_robolectric && enable_java_templates) {
   # library or apk and included into a final apk.
   #
   # To include these resources in a library/apk, this target should be listed in
-  # the library's deps. A library/apk will also include any resources used by its
-  # own dependencies.
+  # the library's deps. A library/apk will also include any resources used by
+  # its own dependencies.
   #
   # Variables
   #   sources: List of resource files for this target.
@@ -1016,7 +1016,8 @@ if (!is_robolectric && enable_java_templates) {
           deps += [ "${_lib_dep}__${_group_name}" ]
         }
         if (_group_name == "assetres") {
-          # _other_deps are necessary when generating mergeable_android_manifests.
+          # _other_deps are necessary when generating
+          # mergeable_android_manifests.
           deps += _assetres_deps + _other_deps
         } else if ((_group_name == "host" || _group_name == "header") &&
                    defined(invoker.jar_deps)) {
@@ -1340,7 +1341,8 @@ if (!is_robolectric && enable_java_templates) {
       deps += filter_exclude(_invoker_deps, java_library_patterns)
 
       metadata = {
-        # Allows metadata collection via apk targets that traverse only java deps.
+        # Allows metadata collection via apk targets that traverse only java
+        # deps.
         java_walk_keys = [ ":${_java_binary_target_name}__host" ]
       }
     }
@@ -2059,7 +2061,8 @@ if (!is_robolectric && enable_java_templates) {
     }
   }
 
-  # Creates ProductConfig.java, a file containing product-specific configuration.
+  # Creates ProductConfig.java, a file containing product-specific
+  # configuration.
   #
   # Currently, this includes the list of locales, both in their compressed and
   # uncompressed format, as well as library loading
@@ -2139,17 +2142,13 @@ if (!is_robolectric && enable_java_templates) {
   #     still be included.
   #   resource_values_filter_rules: List of "source_path:name_regex" used to
   #     filter out unwanted values/ resources.
-  #   shared_resources: True if this is a runtime shared library APK, like
-  #     the system_webview_apk target. Ensures that its resources can be
-  #     used by the loading application process.
+
   #   app_as_shared_lib: This is now obsolete. True if this is a regular
   #     application apk that can also serve as a runtime shared library, like
   #     the (obsolete) monochrome_public_apk target. Ensures that the resources
   #     are usable both by the APK running as an application, or by another
   #     process that loads it at runtime.
-  #   shared_resources_allowlist_target: Optional name of a target specifying
-  #     an input R.txt file that lists the resources that can be exported
-  #     by the APK when shared_resources or app_as_shared_lib is defined.
+
   #   uncompress_dex: Store final .dex files uncompressed in the apk.
   #   omit_dex: If true, do not build or include classes.dex.
   #   strip_resource_names: True if resource names should be stripped from the
@@ -2363,11 +2362,6 @@ if (!is_robolectric && enable_java_templates) {
       _resource_ids_provider_dep = invoker.resource_ids_provider_dep
     }
 
-    if (defined(invoker.shared_resources_allowlist_target)) {
-      _shared_resources_allowlist_target =
-          invoker.shared_resources_allowlist_target
-    }
-
     _uses_static_library = defined(invoker.static_library_provider)
 
     # TODO(crbug.com/40585188): Allow incremental installs of bundle modules.
@@ -2418,18 +2412,6 @@ if (!is_robolectric && enable_java_templates) {
 
     _generated_proguard_config = "$_base_path.resources.proguard.txt"
 
-    if (defined(_shared_resources_allowlist_target)) {
-      _allowlist_gen_dir =
-          get_label_info(_shared_resources_allowlist_target, "target_gen_dir")
-      _allowlist_target_name =
-          get_label_info(_shared_resources_allowlist_target, "name")
-      _allowlist_rtxt_path_path =
-          "${_allowlist_gen_dir}/${_allowlist_target_name}" +
-          "__compile_resources_R.txt"
-      _allowlist_deps =
-          "${_shared_resources_allowlist_target}__compile_resources"
-    }
-
     if (_incremental_apk) {
       _incremental_android_manifest =
           "$target_gen_dir/${_template_name}/AndroidManifest.incremental.xml"
@@ -2476,8 +2458,7 @@ if (!is_robolectric && enable_java_templates) {
             "resource_exclusion_exceptions",
             "resource_exclusion_regex",
             "resource_values_filter_rules",
-            "shared_resources",
-            "shared_resources_allowlist_locales",
+
             "uses_split",
           ])
       android_manifest = _android_manifest
@@ -2552,13 +2533,6 @@ if (!is_robolectric && enable_java_templates) {
       # Bundle modules have to reference resources from the base module.
       if (_is_base_module) {
         arsc_output = _arsc_resources_path
-      }
-
-      if (defined(_shared_resources_allowlist_target)) {
-        # Used to ensure that the WebView resources are properly shared
-        # (i.e. are non-final and with package ID 0).
-        shared_resources_allowlist = _allowlist_rtxt_path_path
-        deps += [ _allowlist_deps ]
       }
     }
     _srcjar_deps += [ ":$_compile_resources_target" ]
@@ -2686,7 +2660,8 @@ if (!is_robolectric && enable_java_templates) {
         }
         if (_uses_static_library) {
           if (defined(_use_secondary_abi)) {
-            # Use the library list in TrichromeWebView instead of TrichromeLibrary.
+            # Use the library list in TrichromeWebView instead of
+            # TrichromeLibrary.
             _from_static_library = false
           } else {
             _from_static_library = true
@@ -2976,8 +2951,8 @@ if (!is_robolectric && enable_java_templates) {
           }
         } else {
           if (_min_sdk_version >= default_min_sdk_version) {
-            # Enable dex merging only when min_sdk_version is >= what the library
-            # .dex files were created with.
+            # Enable dex merging only when min_sdk_version is >= what the
+            # library .dex files were created with.
             input_dex_filearg =
                 "@FileArg(${_rebased_build_config}:all_dex_files)"
 
@@ -3318,7 +3293,8 @@ if (!is_robolectric && enable_java_templates) {
           forward_variables_from(invoker.metadata, "*")
         }
 
-        # Allows metadata collection via apk targets that traverse only java deps.
+        # Allows metadata collection via apk targets that traverse only java
+        # deps.
         java_walk_keys = [ ":$_java_target_name" ]
       }
 
@@ -3447,9 +3423,7 @@ if (!is_robolectric && enable_java_templates) {
             "secondary_abi_shared_libraries",
             "secondary_native_lib_placeholders",
             "shared_libraries",
-            "shared_resources",
-            "shared_resources_allowlist_locales",
-            "shared_resources_allowlist_target",
+
             "short_resource_paths",
             "sources",
             "srcjar_deps",
@@ -3504,9 +3478,7 @@ if (!is_robolectric && enable_java_templates) {
       assert(!defined(invoker.base_module_target))
     } else {
       assert(!defined(invoker.app_as_shared_lib))
-      assert(!defined(invoker.shared_resources))
-      assert(!defined(invoker.shared_resources_allowlist_target))
-      assert(!defined(invoker.shared_resources_allowlist_locales))
+
       assert(defined(invoker.base_module_target))
     }
 
@@ -3590,9 +3562,7 @@ if (!is_robolectric && enable_java_templates) {
             "secondary_abi_shared_libraries",
             "secondary_native_lib_placeholders",
             "shared_libraries",
-            "shared_resources",
-            "shared_resources_allowlist_locales",
-            "shared_resources_allowlist_target",
+
             "short_resource_paths",
             "srcjar_deps",
             "static_library_provider",
@@ -4124,8 +4094,8 @@ if (!is_robolectric && enable_java_templates) {
 
   # Compile a protocol buffer to java.
   #
-  # This generates java files from protocol buffers and creates an Android library
-  # containing the classes.
+  # This generates java files from protocol buffers and creates an Android
+  # library containing the classes.
   #
   # Variables
   #   sources (required)
