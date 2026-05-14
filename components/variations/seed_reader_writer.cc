@@ -4,6 +4,8 @@
 
 #include "components/variations/seed_reader_writer.h"
 
+#include <memory>
+
 #include "base/base64.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -299,6 +301,12 @@ std::string GetGeoLevel1Pref(const SeedFieldsPrefs& prefs,
   return "";
 }
 
+// Clears the data field and explicitly deallocates the underlying string
+// buffer. Standard clear_data() might retain the string's capacity for reuse.
+void ClearSeedDataField(StoredSeedInfo& stored_seed_info) {
+  std::unique_ptr<std::string> data(stored_seed_info.release_data());
+}
+
 }  // namespace
 
 const SeedFieldsPrefs kRegularSeedFieldsPrefs = {
@@ -564,7 +572,7 @@ void SeedReaderWriter::StoreRawSeedForTesting(std::string seed_data) {
     seed_writer_->WriteNow(seed_data);
     // Clear the stored seed data in memory so that it is read from the seed
     // file.
-    stored_seed_info_.clear_data();
+    ClearSeedDataField(stored_seed_info_);
   } else {
     local_state_->SetString(fields_prefs_->seed, std::move(seed_data));
   }
@@ -601,7 +609,7 @@ void SeedReaderWriter::AllowToPurgeSeedDataFromMemory() {
       << "AllowToPurgeSeedDataFromMemory() should only be called once.";
   seed_purgeable_from_memory_ = true;
   if (ShouldClearSeedDataFromMemory()) {
-    stored_seed_info_.clear_data();
+    ClearSeedDataField(stored_seed_info_);
   }
 }
 
@@ -693,7 +701,7 @@ bool SeedReaderWriter::ShouldClearSeedDataFromMemory() {
 void SeedReaderWriter::OnSeedWriteComplete(bool write_success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldClearSeedDataFromMemory()) {
-    stored_seed_info_.clear_data();
+    ClearSeedDataField(stored_seed_info_);
   }
 }
 
@@ -757,6 +765,9 @@ void SeedReaderWriter::ScheduleSeedFileClear() {
 
   // Set seed data to an empty string so we keep it in memory and don't read it
   // from disk.
+  // We call ClearSeedDataField() to ensure that the memory allocated for the
+  // seed data is freed.
+  ClearSeedDataField(stored_seed_info_);
   stored_seed_info_.set_data("");
   stored_seed_info_.clear_signature();
   stored_seed_info_.clear_milestone();
