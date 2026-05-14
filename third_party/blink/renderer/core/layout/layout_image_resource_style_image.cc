@@ -73,6 +73,10 @@ scoped_refptr<Image> LayoutImageResourceStyleImage::GetImage(
                                 layout_object_->StyleRef(), size);
 }
 
+bool LayoutImageResourceStyleImage::IsCorsSameOrigin() const {
+  return style_image_->IsCorsSameOrigin();
+}
+
 NaturalSizingInfo LayoutImageResourceStyleImage::GetNaturalDimensions(
     float multiplier) const {
   // Always respect the orientation of opaque origin images to avoid leaking
