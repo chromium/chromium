@@ -74,6 +74,28 @@ public class TraceEventTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
+    public void testEventNameWithEmptyTargetNameAndNoSpace() {
+        TraceEvent.setEventNameFilteringEnabled(false);
+        Assert.assertFalse(TraceEvent.eventNameFilteringEnabled());
+
+        // Input string format:
+        // ">>>>> Finished to (TARGET) {HASH_CODE} TARGET_NAME: WHAT"
+        String realEventName =
+                ">>>>> Finished to (org.chromium.myClass.myMethod) " + "{HASH_CODE}: message";
+
+        // Output string format:
+        // "{TraceEvent.BasicLooperMonitor.LOOPER_TASK_PREFIX} TARGET(TARGET_NAME)"
+        String realEventNameExpected =
+                TraceEvent.BasicLooperMonitor.LOOPER_TASK_PREFIX
+                        + "org.chromium.myClass.myMethod()";
+        Assert.assertEquals(
+                TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName),
+                realEventNameExpected);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
     public void testEventNameFiltered() {
         TraceEvent.setEventNameFilteringEnabled(true);
         Assert.assertTrue(TraceEvent.eventNameFilteringEnabled());

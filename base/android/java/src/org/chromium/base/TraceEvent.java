@@ -131,7 +131,7 @@ public class TraceEvent implements AutoCloseable {
             if (end == -1) {
                 end = logLine.length();
             }
-            return start != -1 ? logLine.substring(start + 2, end) : "";
+            return start != -1 && (end - start) >= 2 ? logLine.substring(start + 2, end) : "";
         }
     }
 
