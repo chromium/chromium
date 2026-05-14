@@ -62,16 +62,11 @@ source_set("process_setup") {
   if (!is_fuchsia) {
     sources += [ "crash_reporter_client.h" ]
 
-    if (use_system_crash_handler) {
-      sources += [ "crash_reporter_system.cc" ]
-      deps += [ "//third_party/crashpad/crashpad/client" ]
-    } else {
-      sources += [ "crash_reporter_builtin.cc" ]
-      deps += [
-        "//chromecast/crash",
-        "//components/crash/core/app",
-      ]
-    }
+    sources += [ "crash_reporter_builtin.cc" ]
+    deps += [
+      "//chromecast/crash",
+      "//components/crash/core/app",
+    ]
   }
 }
 
