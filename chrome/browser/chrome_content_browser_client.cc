@@ -4957,9 +4957,6 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
 
   web_prefs->prefers_default_scrollbar_styles =
       prefs->GetBoolean(prefs::kPrefersDefaultScrollbarStyles);
-#if BUILDFLAG(IS_ANDROID)
-  web_prefs->always_show_context_menu_on_touch = true;
-#endif
 
   if (web_contents->GetVisibleURL().SchemeIs(content::kChromeDevToolsScheme) &&
       base::FeatureList::IsEnabled(::features::kDevToolsAiOriginTrialsApis)) {
