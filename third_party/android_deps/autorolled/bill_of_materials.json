@@ -1502,7 +1502,7 @@
     {
         "name": "material",
         "group": "com.google.android.material",
-        "version": "1.14.0-rc01"
+        "version": "1.14.0"
     },
     {
         "name": "core-common",
