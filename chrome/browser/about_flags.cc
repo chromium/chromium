@@ -1946,21 +1946,37 @@ const FeatureEntry::FeatureParam kOmniboxAimModelPickerAndCanvas[] = {
 const FeatureEntry::FeatureParam kOmniboxAimModelPickerCompact[] = {
     {"show_model_picker", "true"},
     {"compact_fusebox", "true"}};
-const FeatureEntry::FeatureParam kOmniboxAimModelPickerCompactBottomSheet[] = {
-    {"show_model_picker", "true"},
-    {"compact_fusebox", "true"},
-    {"show_bottom_sheet_popup", "true"},
-    {"show_ntp_plus_button", "true"},
-    {"use_ask_hint_for_ntp", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimModelPickerCompactBottomSheet_1[] =
+    {{"show_model_picker", "true"},
+     {"compact_fusebox", "true"},
+     {"show_bottom_sheet_popup", "true"},
+     {"show_ntp_plus_button", "true"},
+     {"use_ask_hint_for_ntp", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimModelPickerCompactBottomSheet_2[] =
+    {{"show_model_picker", "true"},
+     {"compact_fusebox", "true"},
+     {"show_bottom_sheet_popup", "true"},
+     {"show_ntp_plus_button", "true"},
+     {"use_ask_hint_for_ntp", "false"}};
+const FeatureEntry::FeatureParam kOmniboxAimModelPickerCompactBottomSheet_3[] =
+    {{"show_model_picker", "true"},
+     {"compact_fusebox", "true"},
+     {"show_bottom_sheet_popup", "true"},
+     {"show_ntp_plus_button", "false"},
+     {"use_ask_hint_for_ntp", "false"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"Compact", kOmniboxAimCompactFusebox, nullptr},
     {"Original Composeplate", kOmniboxAimOriginalComposeplate, nullptr},
     {"Model Picker & Tools", kOmniboxAimModelPickerAndCanvas, nullptr},
     {"Model Picker Compact", kOmniboxAimModelPickerCompact, nullptr},
-    {"^ + Bottom Sheet", kOmniboxAimModelPickerCompactBottomSheet, nullptr},
+    {"^ + Bottom Sheet (1)", kOmniboxAimModelPickerCompactBottomSheet_1,
+     nullptr},
+    {"^ + Bottom Sheet (2)", kOmniboxAimModelPickerCompactBottomSheet_2,
+     nullptr},
+    {"^ + Bottom Sheet (3)", kOmniboxAimModelPickerCompactBottomSheet_3,
+     nullptr},
 };
-
 const FeatureEntry::FeatureParam kOmniboxMultilineEditFieldForAutocomplete[] = {
     {"wrap_autocomplete_text", "true"}};
 
