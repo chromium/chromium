@@ -70,7 +70,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kAutofillAIEntityEditTableViewId;
-  self.shouldShowDeleteButtonInToolbar = YES;
+  self.shouldShowDeleteButtonInToolbar = NO;
+  self.toolbarItems = @[];
   self.tableView.allowsSelectionDuringEditing = YES;
 
   if (self.mode == AutofillAIEntityEditMode::kCreate) {

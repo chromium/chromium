@@ -321,4 +321,17 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
   EXPECT_FALSE(item.hasValidValueStatus);
 }
 
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestDeleteButtonInToolbarDisabled) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  // Trigger view load.
+  [view_controller view];
+
+  EXPECT_FALSE(view_controller.shouldShowDeleteButtonInToolbar);
+  EXPECT_EQ(0U, view_controller.toolbarItems.count);
+}
+
 }  // namespace
