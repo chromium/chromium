@@ -10,9 +10,11 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/mime_handler/stream_info.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "url/gurl.h"
 
@@ -26,6 +28,9 @@ class WebContents;
 
 namespace extensions {
 
+namespace mime_handler {
+class BeforeUnloadControl;
+}
 class MimeHandlerStreamDelegate;
 class StreamContainer;
 
@@ -336,6 +341,12 @@ class MimeHandlerStreamManager
   void SetStreamContentHostFrameTreeNodeId(
       content::NavigationHandle* navigation_handle);
 
+  // Sets up beforeunload API support for full-page PDF viewers.
+  // TODO(crbug.com/40268279): Currently a no-op. Support the beforeunload API.
+  void SetUpBeforeUnloadControl(
+      mojo::PendingRemote<extensions::mime_handler::BeforeUnloadControl>
+          before_unload_control_remote);
+
   // Stores stream info by embedder host info.
   StreamInfoMap stream_infos_;
 
@@ -349,6 +360,9 @@ class MimeHandlerStreamManager
   // RFHs within it are replaced).
   base::flat_map<content::FrameTreeNodeId, CachedFallbackBody>
       pending_native_fallback_frames_;
+
+  // Needed to avoid use-after-free when setting up beforeunload API support.
+  base::WeakPtrFactory<MimeHandlerStreamManager> weak_factory_{this};
 };
 
 }  // namespace mime_handler
