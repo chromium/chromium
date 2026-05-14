@@ -6,10 +6,10 @@
 
 #include <functional>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/check_deref.h"
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/login_constants.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -15,7 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"

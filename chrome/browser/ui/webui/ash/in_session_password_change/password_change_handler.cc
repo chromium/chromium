@@ -6,9 +6,9 @@
 
 #include <string>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"

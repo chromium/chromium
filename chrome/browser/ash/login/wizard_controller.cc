@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/webui/help_app_ui/help_app_prefs.h"
@@ -53,7 +54,6 @@
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
 #include "chrome/browser/ash/login/fjord_oobe/proto/fjord_oobe_state.pb.h"
 #include "chrome/browser/ash/login/hwid_checker.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"

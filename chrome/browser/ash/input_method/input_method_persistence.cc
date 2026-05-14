@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -11,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

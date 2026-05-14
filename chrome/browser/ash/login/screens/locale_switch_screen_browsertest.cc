@@ -6,12 +6,12 @@
 
 #include <string>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"

@@ -7,9 +7,9 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/check.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
 #include "chrome/browser/ash/login/test/gaia_page_event_waiter.h"
 #include "chrome/browser/ash/login/test/js_checker.h"

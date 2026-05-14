@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_LOGIN_PREF_NAMES_H_
-#define CHROME_BROWSER_ASH_LOGIN_LOGIN_PREF_NAMES_H_
+#ifndef ASH_CONSTANTS_ASH_LOGIN_PREF_NAMES_H_
+#define ASH_CONSTANTS_ASH_LOGIN_PREF_NAMES_H_
 
 namespace ash::prefs {
 
@@ -200,4 +200,4 @@ inline constexpr char kAutoEnrollmentCheckExited[] =
     "AutoEnrollmentCheckExited";
 }  // namespace ash::prefs
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_PREF_NAMES_H_
+#endif  // ASH_CONSTANTS_ASH_LOGIN_PREF_NAMES_H_

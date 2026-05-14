@@ -4,11 +4,11 @@
 
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/callback_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"

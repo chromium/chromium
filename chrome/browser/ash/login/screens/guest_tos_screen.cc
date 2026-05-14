@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/url_constants.h"
 #include "base/check_deref.h"
@@ -11,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"

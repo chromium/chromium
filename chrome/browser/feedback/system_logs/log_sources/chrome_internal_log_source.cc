@@ -47,13 +47,13 @@
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/display/cros_display_config.h"
 #include "ash/shell.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"

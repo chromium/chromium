@@ -4,7 +4,7 @@
 
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 
-#include "chrome/browser/ash/login/login_pref_names.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

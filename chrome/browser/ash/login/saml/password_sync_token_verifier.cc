@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -18,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/prefs/pref_service.h"

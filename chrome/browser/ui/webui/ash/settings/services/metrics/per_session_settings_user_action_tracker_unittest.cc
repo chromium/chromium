@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/per_session_settings_user_action_tracker.h"
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"

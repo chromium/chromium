@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/per_session_settings_user_action_tracker.h"
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/pref_names.h"

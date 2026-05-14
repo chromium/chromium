@@ -7,9 +7,9 @@
 #include <algorithm>
 
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"

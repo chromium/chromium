@@ -27,10 +27,10 @@
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/login/onboarding_user_activity_counter.h"
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/location.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

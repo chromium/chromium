@@ -8,13 +8,13 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/base/locale_util.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/locale_switch_notification.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"

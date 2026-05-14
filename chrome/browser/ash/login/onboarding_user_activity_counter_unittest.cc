@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/onboarding_user_activity_counter.h"
+
 #include <memory>
+
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

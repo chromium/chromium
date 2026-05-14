@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -21,7 +22,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"

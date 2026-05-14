@@ -39,7 +39,6 @@ static_library("login") {
     "login_client_cert_usage_observer.cc",
     "login_client_cert_usage_observer.h",
     "login_constants.h",
-    "login_pref_names.h",
     "login_screen_extensions_storage_cleaner.cc",
     "login_screen_extensions_storage_cleaner.h",
     "login_wizard.h",

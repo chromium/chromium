@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -15,7 +16,6 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_token_provider.h"

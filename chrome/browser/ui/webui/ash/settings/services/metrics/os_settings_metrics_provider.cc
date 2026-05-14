@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/settings_user_action_tracker.h"

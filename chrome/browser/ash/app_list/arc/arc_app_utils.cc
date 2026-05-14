@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/json/json_writer.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"

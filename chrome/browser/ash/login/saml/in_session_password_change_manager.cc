@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/password_change_success_notification.h"
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/login/saml/saml_profile_prefs.h"
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "chrome/browser/ash/login/login_constants.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "components/prefs/pref_registry_simple.h"
 

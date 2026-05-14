@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service_factory.h"
 #include "chrome/browser/ash/login/wizard_controller.h"

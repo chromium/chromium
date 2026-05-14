@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/login_screen.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/login_auth_recorder.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"

@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/login/screens/perks_discovery_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"

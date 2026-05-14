@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/login/screens/display_size_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
