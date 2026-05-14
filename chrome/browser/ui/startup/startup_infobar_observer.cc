@@ -38,9 +38,9 @@ void StartupInfoBarObserver::OnBrowserCreated(BrowserWindowInterface* browser) {
   browser_ = browser;
   browser_collection_observation_.Reset();
 
-  if (browser->GetTabStripModel()->empty()) {
+  if (!browser->GetTabStripModel()->GetActiveWebContents()) {
     // The browser doesn't contain any tabs yet, wait for the first tab to be
-    // inserted.
+    // activated.
     browser_->GetTabStripModel()->AddObserver(this);
     return;
   }
@@ -51,7 +51,7 @@ void StartupInfoBarObserver::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kInserted) {
+  if (!tab_strip_model->GetActiveWebContents()) {
     return;
   }
 

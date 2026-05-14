@@ -111,16 +111,16 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
                             bool is_web_app,
                             bool is_post_crash_launch,
                             bool was_restarted) {
-  if (!browser || !profile || browser->GetTabStripModel()->empty()) {
+  if (!browser || !profile) {
+    return;
+  }
+  auto* web_contents = browser->GetTabStripModel()->GetActiveWebContents();
+  if (!web_contents) {
     return;
   }
 
   // Show the Automation info bar unless it has been disabled by policy.
   bool show_bad_flags_security_warnings = ShouldShowBadFlagsSecurityWarnings();
-
-  content::WebContents* web_contents =
-      browser->GetTabStripModel()->GetActiveWebContents();
-  DCHECK(web_contents);
 
   if (show_bad_flags_security_warnings) {
 #if BUILDFLAG(CHROME_FOR_TESTING)
