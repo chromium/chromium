@@ -143,6 +143,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_CREATOR,
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL,
             InsetConsumerSource.UPLOAD_IMAGE_PREVIEW_DIALOG,
+            InsetConsumerSource.WEBXR_OVERLAY,
             InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR,
             InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM,
             InsetConsumerSource.COUNT
@@ -170,11 +171,12 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             int EDGE_TO_EDGE_CONTROLLER_CREATOR = 4;
             int EDGE_TO_EDGE_CONTROLLER_IMPL = 5;
             int UPLOAD_IMAGE_PREVIEW_DIALOG = 6;
-            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 7;
-            int APP_HEADER_COORDINATOR_BOTTOM = 8;
+            int WEBXR_OVERLAY = 7;
+            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 8;
+            int APP_HEADER_COORDINATOR_BOTTOM = 9;
 
             // Update this whenever a consumer source is added or removed.
-            int COUNT = 9;
+            int COUNT = 10;
         }
     }
 
