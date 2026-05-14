@@ -79,6 +79,7 @@ std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   std::vector<GLImplementationParts> impls;
   if (use_passthrough) {
     impls.emplace_back(ANGLEImplementation::kOpenGLES);
+    impls.emplace_back(ANGLEImplementation::kVulkan);
   } else {
     impls.emplace_back(kGLImplementationEGLGLES2);
   }
