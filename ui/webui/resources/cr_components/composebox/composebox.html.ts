@@ -176,7 +176,7 @@ export function getHtml(this: ComposeboxElement) {
         @speech-received="${this.onSpeechReceived}"
         @recording-stopped="${this.onRecordingStopped}"
         .submitButtonIconType="${this.submitButtonIconType}"
-        exportparts="voice-close-button, voice-details-link, voice-stop-button">
+        exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
     </cr-composebox-voice-search>
   ` : ''}
   ${this.shouldShowSuggestionActivityLink_()
