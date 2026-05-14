@@ -25,6 +25,8 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/async_memory_consumer_registration.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/time/time.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 
@@ -50,7 +52,7 @@ class ShareableFileReference;
 //   (NotifyMemoryItemsUsed).
 // This class can only be interacted with on the IO thread.
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
-    : public base::MemoryPressureListener {
+    : public base::MemoryConsumer {
  public:
   enum class Strategy {
     // We don't have enough memory for this blob.
@@ -209,7 +211,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
   class FileQuotaAllocationTask;
   class MemoryQuotaAllocationTask;
 
-  FRIEND_TEST_ALL_PREFIXES(BlobMemoryControllerTest, OnMemoryPressure);
   // So this (and only this) class can call CalculateBlobStorageLimits().
   friend class content::ChromeBlobStorageContext;
 
@@ -251,8 +252,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
       size_t total_items_size,
       std::pair<FileCreationInfo, int64_t /* avail_disk */> result);
 
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  // MemoryConsumer implementation:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   void GrantMemoryAllocations(
       std::vector<scoped_refptr<ShareableBlobDataItem>>* items,
@@ -316,8 +318,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
   // item to the recent_item_cache_ above.
   std::unordered_set<uint64_t> items_paging_to_file_;
 
-  base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
 
   base::WeakPtrFactory<BlobMemoryController> weak_factory_{this};
 };

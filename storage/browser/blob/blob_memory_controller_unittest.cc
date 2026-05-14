@@ -11,6 +11,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/task_environment.h"
@@ -166,6 +168,7 @@ class BlobMemoryControllerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::optional<base::ScopedDisallowBlocking> disallow_blocking_;
+  base::TestMemoryConsumerRegistry registry_;
 };
 
 TEST_F(BlobMemoryControllerTest, Strategy) {
@@ -1130,6 +1133,14 @@ TEST_F(BlobMemoryControllerTest, OnMemoryPressure) {
   SetTestMemoryLimits(&controller);
   AssertEnoughDiskSpace();
 
+  // Let the async registration complete.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   char kData[1];
   kData[0] = 'e';
 
@@ -1152,13 +1163,26 @@ TEST_F(BlobMemoryControllerTest, OnMemoryPressure) {
   EXPECT_FALSE(file_runner_->HasPendingTask());
   EXPECT_EQ(size_to_load, controller.memory_usage());
 
-  controller.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  // Trigger moderate memory pressure (50% limit) asynchronously.
+  {
+    base::RunLoop run_loop;
+    registry_.NotifyUpdateMemoryLimitAsync(
+        base::kModerateMemoryPressureThreshold, base::DoNothing());
+    registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   EXPECT_TRUE(file_runner_->HasPendingTask());
 
   RunFileThreadTasks();
 
-  base::RunLoop().RunUntilIdle();
+  // Let the eviction complete notification run on the main thread.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   // 2 page files of size |kTestBlobStorageMaxBlobMemorySize *
   // kTestMaxBlobInMemorySpaceUnderPressureRatio| should be evicted with 1

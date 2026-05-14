@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -549,10 +550,13 @@ BlobMemoryController::BlobMemoryController(
       disk_space_function_(&base::SysInfo::AmountOfFreeDiskSpace),
       populated_memory_items_(
           base::LRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kBlobMemoryController,
-          this) {}
+      memory_consumer_registration_(
+          "BlobMemoryController",
+          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
+          this,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
+              kDisabled) {}
 
 BlobMemoryController::~BlobMemoryController() = default;
 
@@ -984,10 +988,11 @@ void BlobMemoryController::OnEvictionComplete(
   MaybeScheduleEvictionUntilSystemHealthy(base::MEMORY_PRESSURE_LEVEL_NONE);
 }
 
-void BlobMemoryController::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
+void BlobMemoryController::OnUpdateMemoryLimit() {}
+
+void BlobMemoryController::OnReleaseMemory() {
   // Nothing to do if no pressure.
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_limit() > base::kModerateMemoryPressureThreshold) {
     return;
   }
 
@@ -996,17 +1001,17 @@ void BlobMemoryController::OnMemoryPressure(
   // Furthermore, scheduling a task to write files to disk risks paging-in
   // memory that was already committed to disk which compounds the problem. Do
   // not take any action on critical memory pressure.
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
     return;
   }
 
-  auto time_from_last_evicion = base::TimeTicks::Now() - last_eviction_time_;
+  auto time_from_last_eviction = base::TimeTicks::Now() - last_eviction_time_;
   if (last_eviction_time_ != base::TimeTicks() &&
-      time_from_last_evicion.InSeconds() < kMinSecondsForPressureEvictions) {
+      time_from_last_eviction.InSeconds() < kMinSecondsForPressureEvictions) {
     return;
   }
 
-  MaybeScheduleEvictionUntilSystemHealthy(memory_pressure_level);
+  MaybeScheduleEvictionUntilSystemHealthy(base::MEMORY_PRESSURE_LEVEL_MODERATE);
 }
 
 FilePath BlobMemoryController::GenerateNextPageFileName() {
