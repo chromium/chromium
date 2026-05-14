@@ -1653,16 +1653,15 @@ public class CustomTabIntentDataProviderTest {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         Network network = Mockito.mock(Network.class);
+        when(connection.extractTargetNetwork(any(), any())).thenReturn(network);
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
         intent.putExtra(
-                CustomTabsIntent.EXTRA_NETWORK,
-                network);
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_UI_TYPE,
-                CustomTabsUiType.NETWORK_BOUND_TAB);
+                CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.NETWORK_BOUND_TAB);
 
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue(dataProvider.hasTargetNetwork());
         assertEquals(CustomTabsUiType.NETWORK_BOUND_TAB, dataProvider.getUiType());
     }
 
@@ -1678,6 +1677,37 @@ public class CustomTabIntentDataProviderTest {
 
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(CustomTabsUiType.DEFAULT, dataProvider.getUiType());
+    }
+
+    @Test
+    public void targetNetwork_strippedWhenCallerLacksPermission() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.extractTargetNetwork(any(), any())).thenReturn(null);
+
+        Network network = Mockito.mock(Network.class);
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.NETWORK_BOUND_TAB);
+
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(dataProvider.hasTargetNetwork());
+        assertEquals(CustomTabsUiType.DEFAULT, dataProvider.getUiType());
+    }
+
+    @Test
+    public void targetNetwork_strippedWhenNoSession() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.extractTargetNetwork(any(), any())).thenReturn(null);
+
+        Network network = Mockito.mock(Network.class);
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
+
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(dataProvider.hasTargetNetwork());
     }
 
     @Test

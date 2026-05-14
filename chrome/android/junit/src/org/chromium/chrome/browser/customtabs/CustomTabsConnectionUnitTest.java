@@ -28,9 +28,13 @@ import static org.chromium.chrome.browser.customtabs.CustomTabsConnection.ON_ACT
 import static org.chromium.chrome.browser.customtabs.CustomTabsConnection.ON_ACTIVITY_LAYOUT_TOP_EXTRA;
 
 import android.app.PendingIntent;
+import android.content.Intent;
+import android.net.Network;
 import android.os.Bundle;
+import android.os.Process;
 
 import androidx.browser.customtabs.CustomTabsCallback;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 import androidx.browser.customtabs.PostMessageServiceConnection;
@@ -196,6 +200,7 @@ public class CustomTabsConnectionUnitTest {
         mConnection.mClientManager.newSession(
                 mSessionHolder,
                 uid,
+                Process.myPid(),
                 null,
                 mPostMessageHandler,
                 mPostMessageServiceConnection,
@@ -226,6 +231,36 @@ public class CustomTabsConnectionUnitTest {
         verify(mCallback)
                 .extraCallback(
                         eq(CustomTabsConnection.OPEN_IN_BROWSER_CALLBACK), any(Bundle.class));
+    }
+
+    @Test
+    public void extractTargetNetwork_hasPermission() {
+        initSession();
+        Network network = mock(Network.class);
+        Intent intent = new Intent();
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
+
+        var app = RuntimeEnvironment.getApplication();
+        shadowOf(app).grantPermissions("android.permission.MAINLINE_NETWORK_STACK");
+
+        assertEquals(network, mConnection.extractTargetNetwork(intent, mSessionHolder));
+    }
+
+    @Test
+    public void extractTargetNetwork_lacksPermission() {
+        initSession();
+        Network network = mock(Network.class);
+        Intent intent = new Intent();
+        intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
+
+        assertNull(mConnection.extractTargetNetwork(intent, mSessionHolder));
+    }
+
+    @Test
+    public void extractTargetNetwork_noNetwork() {
+        initSession();
+        Intent intent = new Intent();
+        assertNull(mConnection.extractTargetNetwork(intent, mSessionHolder));
     }
 
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.

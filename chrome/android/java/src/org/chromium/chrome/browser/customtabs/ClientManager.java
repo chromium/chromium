@@ -205,6 +205,7 @@ class ClientManager {
     /** Per-session values. */
     private static class SessionParams {
         public final int uid;
+        public final int pid;
         private @Nullable BrowserCallbackWrapper mCallback;
         private @Nullable EngagementSignalsCallback mEngagementSignalsCallback;
         public final DisconnectCallback disconnectCallback;
@@ -234,12 +235,14 @@ class ClientManager {
         public SessionParams(
                 Context context,
                 int uid,
+                int pid,
                 BrowserCallbackWrapper callback,
                 DisconnectCallback disconnectCallback,
                 @Nullable PostMessageHandler postMessageHandler,
                 @Nullable PostMessageServiceConnection serviceConnection,
                 @Nullable EngagementSignalsHandler engagementSignalsHandler) {
             this.uid = uid;
+            this.pid = pid;
             mPackageName = getPackageName(context, uid);
             mCallback = callback;
             this.disconnectCallback = disconnectCallback;
@@ -374,6 +377,7 @@ class ClientManager {
     public synchronized boolean newSession(
             SessionHolder<?> session,
             int uid,
+            int pid,
             DisconnectCallback onDisconnect,
             @Nullable PostMessageHandler postMessageHandler,
             @Nullable PostMessageServiceConnection serviceConnection,
@@ -403,6 +407,7 @@ class ClientManager {
                     new SessionParams(
                             ContextUtils.getApplicationContext(),
                             uid,
+                            pid,
                             callbackWrapper,
                             onDisconnect,
                             postMessageHandler,
@@ -709,6 +714,20 @@ class ClientManager {
      */
     public @Nullable String getClientPackageNameForSession(@Nullable SessionHolder<?> session) {
         return callOnSession(session, null, params -> params.getPackageName());
+    }
+
+    /**
+     * @return The UID associated with the client owning the given session.
+     */
+    public int getClientUidForSession(@Nullable SessionHolder<?> session) {
+        return callOnSession(session, -1, params -> params.uid);
+    }
+
+    /**
+     * @return The PID associated with the client owning the given session.
+     */
+    public int getClientPidForSession(@Nullable SessionHolder<?> session) {
+        return callOnSession(session, -1, params -> params.pid);
     }
 
     /**

@@ -25,7 +25,6 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_EN
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX;
-import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_NETWORK;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
 import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
@@ -582,7 +581,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         mKeepAliveServiceIntent = IntentUtils.safeGetParcelableExtra(intent, EXTRA_KEEP_ALIVE);
 
-        mNetwork = IntentUtils.safeGetParcelableExtra(intent, EXTRA_NETWORK);
+        mNetwork = CustomTabsConnection.getInstance().extractTargetNetwork(intent, mSession);
 
         mIsOpenedByChrome = IntentHandler.wasIntentSenderChrome(intent);
 
