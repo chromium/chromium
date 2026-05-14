@@ -1071,6 +1071,7 @@ class CORE_EXPORT Element : public ContainerNode {
                                        FocusDelegation,
                                        SlotAssignmentMode,
                                        CustomElementRegistry*,
+                                       bool waiting_for_scoped_registry,
                                        bool serializable,
                                        bool clonable,
                                        const AtomicString& reference_target);
