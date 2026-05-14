@@ -217,7 +217,7 @@ void ComposeboxHandler::NotifyComposeboxQuerySubmittedWithContext() {
   user_education_interface->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHDesktopRealboxContextualSearchFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ComposeboxHandler::NavigateUrl(const GURL& url) {
