@@ -51,6 +51,9 @@ class MockWebVideoFrameSubmitter : public WebVideoFrameSubmitter {
   MOCK_METHOD1(SetForceSubmit, void(bool));
   MOCK_METHOD1(SetForceBeginFrames, void(bool));
   void DidReceiveFrame() override { ++did_receive_frame_count_; }
+  std::optional<base::TimeTicks> GetExpectedDisplayTime() const override {
+    return std::nullopt;
+  }
 
   int did_receive_frame_count() { return did_receive_frame_count_; }
 

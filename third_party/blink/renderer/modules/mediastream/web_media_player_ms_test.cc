@@ -423,6 +423,7 @@ class MockWebVideoFrameSubmitter : public WebVideoFrameSubmitter {
   MOCK_METHOD1(SetForceSubmit, void(bool));
   MOCK_METHOD1(SetForceBeginFrames, void(bool));
   MOCK_CONST_METHOD0(IsDrivingFrameUpdates, bool());
+  MOCK_CONST_METHOD0(GetExpectedDisplayTime, std::optional<base::TimeTicks>());
 
   void Initialize(cc::VideoFrameProvider* provider,
                   bool is_media_stream) override {

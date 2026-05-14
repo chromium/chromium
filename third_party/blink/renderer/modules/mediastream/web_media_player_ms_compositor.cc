@@ -764,7 +764,10 @@ void WebMediaPlayerMSCompositor::RenderUsingAlgorithm(
     pending_frames_info_.pop_front();
   }
 
-  SetCurrentFrame(std::move(frame), is_copy, deadline_min);
+  const base::TimeTicks expected_display_time =
+      submitter_ ? submitter_->GetExpectedDisplayTime().value_or(deadline_min)
+                 : deadline_min;
+  SetCurrentFrame(std::move(frame), is_copy, expected_display_time);
 }
 
 void WebMediaPlayerMSCompositor::RenderWithoutAlgorithm(
@@ -798,7 +801,11 @@ void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
                         "RenderWithoutAlgorithm Difference From Deadline",
                         "diff_from_deadline_min", diff_from_deadline_min,
                         "diff_from_deadline_max", diff_from_deadline_max);
-    SetCurrentFrame(std::move(frame), is_copy, last_deadline_max_);
+    const base::TimeTicks expected_display_time =
+        submitter_
+            ? submitter_->GetExpectedDisplayTime().value_or(last_deadline_max_)
+            : last_deadline_max_;
+    SetCurrentFrame(std::move(frame), is_copy, expected_display_time);
   }
   if (video_frame_provider_client_)
     video_frame_provider_client_->DidReceiveFrame();

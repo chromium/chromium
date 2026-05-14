@@ -12,14 +12,19 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "cc/layers/video_frame_provider.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_transformation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -33,9 +38,11 @@
 namespace blink {
 namespace {
 
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::Return;
 
 constexpr double ComputeHarmonicFrameRate(
     base::span<const size_t> durations_ms) {
@@ -314,5 +321,206 @@ TEST_F(WebMediaPlayerMSCompositorTest, PeriodicallyEmitsMetrics) {
   EXPECT_EQ(tester.GetTotalSum(kReproductionJitterVideoCaptureHistogramName),
             1 + 5);
 }
+
+class MockWebVideoFrameSubmitter : public WebVideoFrameSubmitter {
+ public:
+  MOCK_METHOD2(Initialize, void(cc::VideoFrameProvider*, bool));
+  MOCK_METHOD0(StartRendering, void());
+  MOCK_METHOD0(StopRendering, void());
+  MOCK_METHOD0(StopUsingProvider, void());
+  MOCK_METHOD0(DidReceiveFrame, void());
+  MOCK_METHOD1(EnableSubmission, void(viz::SurfaceId));
+  MOCK_METHOD1(SetTransform, void(media::VideoTransformation));
+  MOCK_METHOD1(SetIsSurfaceVisible, void(bool));
+  MOCK_METHOD1(SetIsPageVisible, void(bool));
+  MOCK_METHOD1(SetForceSubmit, void(bool));
+  MOCK_METHOD1(SetForceBeginFrames, void(bool));
+  MOCK_CONST_METHOD0(IsDrivingFrameUpdates, bool());
+  MOCK_CONST_METHOD0(GetExpectedDisplayTime, std::optional<base::TimeTicks>());
+};
+
+// Tests that WebMediaPlayerMSCompositor wires GetExpectedDisplayTime() from the
+// submitter into the expected_display_time field of the video frame metadata.
+class WebMediaPlayerMSCompositorSubmitterTest : public testing::Test {
+ public:
+  ~WebMediaPlayerMSCompositorSubmitterTest() override {
+    mock_submitter_ = nullptr;
+    compositor_ = nullptr;
+    WebHeap::CollectAllGarbageForTesting();
+  }
+
+  void Initialize(bool render_with_algorithm) {
+    auto mock_source = std::make_unique<ExtendedMockMediaStreamVideoSource>();
+    mock_source_ptr_ = mock_source.get();
+    source_ = MakeGarbageCollected<MediaStreamSource>(
+        "source_id", MediaStreamSource::kTypeVideo, "source_name",
+        /*remote=*/false, std::move(mock_source));
+    WebMediaStreamTrack web_track = MediaStreamVideoTrack::CreateVideoTrack(
+        mock_source_ptr_, VideoTrackAdapterSettings(),
+        /*noise_reduction=*/std::nullopt, /*is_screencast=*/false,
+        /*min_frame_rate=*/std::nullopt,
+        /*image_capture_device_settings=*/nullptr,
+        /*pan_tilt_zoom_allowed=*/false, base::DoNothing(),
+        /*enabled=*/true);
+    MediaStreamComponent* component = web_track;
+    auto* descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
+        MediaStreamComponentVector{}, MediaStreamComponentVector{component});
+
+    auto submitter =
+        std::make_unique<testing::NiceMock<MockWebVideoFrameSubmitter>>();
+    mock_submitter_ = submitter.get();
+
+    // Wait for compositor thread initialization to complete.
+    base::RunLoop init_loop;
+    EXPECT_CALL(*mock_submitter_, Initialize(_, _))
+        .WillOnce(
+            [&init_loop](cc::VideoFrameProvider*, bool) { init_loop.Quit(); });
+
+    compositor_ = std::make_unique<WebMediaPlayerMSCompositor>(
+        main_thread_, main_thread_, descriptor, std::move(submitter),
+        /*use_surface_layer=*/true, nullptr);
+    if (render_with_algorithm) {
+      compositor_->SetAlgorithmEnabledForTesting(true);
+    }
+    init_loop.Run();
+  }
+
+  scoped_refptr<media::VideoFrame> CreateTestFrame() {
+    return media::VideoFrame::CreateBlackFrame(gfx::Size(8, 8));
+  }
+
+  // Polls the compositor until UpdateCurrentFrame() returns true (a frame is
+  // available that has not been painted yet). Avoids base::test::RunUntil(),
+  // which evaluates the predicate from an on-next-idle callback inside the
+  // sequence manager and can post work in a state where
+  // CheckedLock::AssertNoLockHeldOnCurrentThread() fails on some configurations
+  // (flaky DCHECK on Android x86 bots with MOCK_TIME). Avoids
+  // TaskEnvironment::RunUntilIdle(), which Blink presubmit discourages; use the
+  // same RunLoop drain pattern as elsewhere in this file.
+  bool PollUntilFrameNeedsPaint(base::TimeTicks deadline_min,
+                                base::TimeTicks deadline_max) {
+    constexpr int kMaxRounds = 100;
+    for (int i = 0; i < kMaxRounds; ++i) {
+      base::RunLoop drain;
+      main_thread_->PostTask(FROM_HERE, drain.QuitClosure());
+      drain.Run();
+      if (compositor_->UpdateCurrentFrame(deadline_min, deadline_max)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void TestNulloptFallbackProducesValidExpectedDisplayTime(
+      bool render_with_algorithm) {
+    Initialize(render_with_algorithm);
+
+    EXPECT_CALL(*mock_submitter_, GetExpectedDisplayTime())
+        .WillRepeatedly(Return(std::nullopt));
+
+    if (!render_with_algorithm) {
+      compositor_->EnqueueFrame(CreateTestFrame(), /*is_copy=*/false);
+      base::RunLoop drain;
+      main_thread_->PostTask(FROM_HERE, drain.QuitClosure());
+      drain.Run();
+    } else {
+      compositor_->StartRendering();
+      const base::TimeDelta kStep = base::Milliseconds(16);
+      const base::TimeTicks now = base::TimeTicks::Now();
+      // Poll until rendering has started; the first successful call also primes
+      // the deadline state needed by EnqueueFrame.
+      ASSERT_TRUE(PollUntilFrameNeedsPaint(now, now + kStep));
+      auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(8, 8));
+      frame->metadata().reference_time = now + kStep;
+      compositor_->EnqueueFrame(std::move(frame), /*is_copy=*/false);
+      // Drive a render cycle to pick up the enqueued frame.
+      compositor_->UpdateCurrentFrame(now + kStep, now + kStep * 2);
+    }
+
+    auto metadata = compositor_->GetLastPresentedFrameMetadata();
+    EXPECT_FALSE(metadata->expected_display_time.is_null());
+  }
+
+ protected:
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_{
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting()};
+  raw_ptr<ExtendedMockMediaStreamVideoSource> mock_source_ptr_ = nullptr;
+  Persistent<MediaStreamSource> source_;
+  std::unique_ptr<WebMediaPlayerMSCompositor> compositor_;
+  raw_ptr<testing::NiceMock<MockWebVideoFrameSubmitter>> mock_submitter_ =
+      nullptr;
+};
+
+// The submitter's GetExpectedDisplayTime() estimate must reach the frame
+// metadata when the rendering algorithm is disabled.
+TEST_F(WebMediaPlayerMSCompositorSubmitterTest,
+       ExpectedDisplayTimeFromSubmitterUsedForNoAlgorithmPath) {
+  Initialize(/*render_with_algorithm=*/false);
+
+  const base::TimeTicks adaptive_time =
+      base::TimeTicks() + base::Milliseconds(500);
+  EXPECT_CALL(*mock_submitter_, GetExpectedDisplayTime())
+      .WillRepeatedly(Return(std::optional<base::TimeTicks>(adaptive_time)));
+
+  compositor_->EnqueueFrame(CreateTestFrame(), /*is_copy=*/false);
+  {
+    base::RunLoop drain;
+    main_thread_->PostTask(FROM_HERE, drain.QuitClosure());
+    drain.Run();
+  }
+
+  auto metadata = compositor_->GetLastPresentedFrameMetadata();
+  EXPECT_EQ(metadata->expected_display_time, adaptive_time);
+}
+
+// When GetExpectedDisplayTime() returns nullopt, the compositor must still
+// produce a valid (non-null) expected_display_time in the frame metadata,
+// for both rendering paths.
+TEST_F(WebMediaPlayerMSCompositorSubmitterTest,
+       FallsBackWhenGetExpectedDisplayTimeReturnsNulloptNoAlgorithmPath) {
+  TestNulloptFallbackProducesValidExpectedDisplayTime(
+      /*render_with_algorithm=*/false);
+}
+
+TEST_F(WebMediaPlayerMSCompositorSubmitterTest,
+       FallsBackWhenGetExpectedDisplayTimeReturnsNulloptAlgorithmPath) {
+  TestNulloptFallbackProducesValidExpectedDisplayTime(
+      /*render_with_algorithm=*/true);
+}
+
+// The submitter's GetExpectedDisplayTime() estimate must reach the frame
+// metadata when the rendering algorithm is enabled.
+TEST_F(WebMediaPlayerMSCompositorSubmitterTest,
+       ExpectedDisplayTimeFromSubmitterUsedForAlgorithmPath) {
+  Initialize(/*render_with_algorithm=*/true);
+
+  compositor_->StartRendering();
+
+  const base::TimeDelta kStep = base::Milliseconds(16);
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  // Poll until rendering has started; the first successful call also primes
+  // the deadline state needed by EnqueueFrame.
+  ASSERT_TRUE(PollUntilFrameNeedsPaint(now, now + kStep));
+
+  const base::TimeTicks adaptive_time = now + base::Milliseconds(500);
+  EXPECT_CALL(*mock_submitter_, GetExpectedDisplayTime())
+      .WillRepeatedly(Return(std::optional<base::TimeTicks>(adaptive_time)));
+
+  auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(8, 8));
+  frame->metadata().reference_time = now + kStep;
+  compositor_->EnqueueFrame(std::move(frame), /*is_copy=*/false);
+
+  // Drive a render cycle to pick up the enqueued frame.
+  compositor_->UpdateCurrentFrame(now + kStep, now + kStep * 2);
+
+  auto metadata = compositor_->GetLastPresentedFrameMetadata();
+  ASSERT_NE(metadata, nullptr);
+  EXPECT_EQ(metadata->expected_display_time, adaptive_time);
+}
+
 }  // namespace
 }  // namespace blink

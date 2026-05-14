@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_VIDEO_FRAME_SUBMITTER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_VIDEO_FRAME_SUBMITTER_H_
 
+#include <optional>
+
+#include "base/time/time.h"
 #include "cc/layers/video_frame_provider.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -82,6 +85,11 @@ class BLINK_PLATFORM_EXPORT WebVideoFrameSubmitter
 
   // Set whether frames should always be submitted regardless of visibility.
   virtual void SetForceSubmit(bool) = 0;
+
+  // Returns an adaptive estimate of when the next frame will be displayed,
+  // based on the observed compositor receive to present latency.
+  // Returns std::nullopt if the adaptive estimate isn't available.
+  virtual std::optional<base::TimeTicks> GetExpectedDisplayTime() const = 0;
 };
 
 }  // namespace blink

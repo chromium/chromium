@@ -147,6 +147,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // Gets metadata which is available after kReadyStateHaveMetadata state.
   Metadata GetMetadata();
 
+  void SetAlgorithmEnabledForTesting(bool algorithm_enabled);
+
  private:
   friend class WebMediaPlayerMSTest;
 
@@ -258,7 +260,6 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void StartRenderingInternal();
   void StopRenderingInternal();
 
-  void SetAlgorithmEnabledForTesting(bool algorithm_enabled);
   void RecordFrameDisplayedStats(base::TimeTicks frame_displayed_time);
   void RecordFrameDecodedStats(
       std::optional<base::TimeTicks> frame_received_time,

@@ -70,6 +70,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   void SetIsPageVisible(bool is_visible) override;
   void SetForceBeginFrames(bool force_begin_frames) override;
   void SetForceSubmit(bool) override;
+  std::optional<base::TimeTicks> GetExpectedDisplayTime() const override;
 
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;
@@ -95,6 +96,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
  private:
   friend class VideoFrameSubmitterTest;
+  friend class VideoFrameSubmitterMockTimeTest;
   class FrameSinkBundleProxy;
   struct PendingFrameInfo {
     std::optional<base::TimeTicks> capture_begin_time;
@@ -116,6 +118,16 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // should be requested.
   bool MaybeAcceptContextProvider(
       scoped_refptr<viz::RasterContextProvider> context_provider);
+
+  // Snaps |estimate| to the nearest VSync tick relative to the current phase.
+  // Logic: result = frame_time + (n * interval), where n is the nearest
+  // integer.
+  //
+  // Note: This is relative to the compositor's |frame_time| anchor, not the
+  // system epoch. We use std::llround to snap to the closest boundary (halfway
+  // cases round away from zero). If no valid BeginFrame exists, returns
+  // |estimate|.
+  base::TimeTicks SnapToNearestVsync(base::TimeTicks estimate) const;
 
   // Starts submission and calls UpdateSubmissionState(); which may submit.
   void StartSubmitting();
