@@ -47,6 +47,7 @@ TEST(FourccTest, V4L2PixFmtToV4L2PixFmt) {
   CheckFromV4L2PixFmtAndBack(V4L2_P010);
   CheckFromV4L2PixFmtAndBack(V4L2_MM21);
   CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_ABGR32);
+  CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_BGR32);
   CheckFromV4L2PixFmtAndBack(V4L2_QC08C);
   CheckFromV4L2PixFmtAndBack(V4L2_QC10C);
 }
@@ -84,6 +85,8 @@ TEST(FourccTest, V4L2PixFmtToVideoPixelFormat) {
 
   EXPECT_EQ(PIXEL_FORMAT_ARGB,
             Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_ABGR32)->ToVideoPixelFormat());
+  EXPECT_EQ(PIXEL_FORMAT_XRGB,
+            Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_BGR32)->ToVideoPixelFormat());
   EXPECT_EQ(PIXEL_FORMAT_P010LE,
             Fourcc::FromV4L2PixFmt(ComposeFourcc('P', '0', '1', '0'))
                 ->ToVideoPixelFormat());
@@ -127,6 +130,9 @@ TEST(FourccTest, VideoPixelFormatToV4L2PixFmt) {
   EXPECT_EQ(
       V4L2_PIX_FMT_ABGR32,
       Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_ARGB, true)->ToV4L2PixFmt());
+  EXPECT_EQ(
+      V4L2_PIX_FMT_BGR32,
+      Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_XRGB, true)->ToV4L2PixFmt());
 }
 
 #elif BUILDFLAG(USE_VAAPI)
@@ -195,6 +201,7 @@ TEST(FourccTest, FourccToSinglePlanar) {
   EXPECT_EQ(Fourcc(Fourcc::YU16).ToSinglePlanar(), Fourcc(Fourcc::YU16));
   EXPECT_EQ(Fourcc(Fourcc::YM16).ToSinglePlanar(), Fourcc(Fourcc::YU16));
   EXPECT_EQ(Fourcc(Fourcc::P010).ToSinglePlanar(), Fourcc(Fourcc::P010));
+  EXPECT_EQ(Fourcc(Fourcc::BGR4).ToSinglePlanar(), Fourcc(Fourcc::BGR4));
   EXPECT_EQ(Fourcc(Fourcc::AR24).ToSinglePlanar(), Fourcc(Fourcc::AR24));
   EXPECT_EQ(Fourcc(Fourcc::YM12).ToSinglePlanar(),
             Fourcc(Fourcc::YU12).ToSinglePlanar());

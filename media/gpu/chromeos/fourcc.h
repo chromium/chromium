@@ -100,6 +100,9 @@ class MEDIA_GPU_EXPORT Fourcc {
 
     // Single plane 8-bit little-endian ARGB (bytes in reverse B-G-R-A order).
     AR24 = ComposeFourcc('A', 'R', '2', '4'),
+    // Single plane 8-bit little-endian XRGB (bytes in reverse B-G-R-X order).
+    BGR4 = ComposeFourcc('B', 'G', 'R', '4'),
+
     // V4L2 proprietary format.
     // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-reserved.html
     // Opaque format that can only be scanned out as an overlay or composited by

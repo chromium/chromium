@@ -85,6 +85,7 @@ std::vector<Fourcc> GetPreferredRenderableFourccs(
   // color depth (P010 -> AR24), it should be optimized for zero-copy path in
   // the future.
   renderable_fourccs.emplace_back(Fourcc::AR24);
+  renderable_fourccs.emplace_back(Fourcc::BGR4);
 
   return renderable_fourccs;
 }
