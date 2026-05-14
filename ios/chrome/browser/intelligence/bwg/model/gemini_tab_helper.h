@@ -85,10 +85,6 @@ class GeminiTabHelper : public web::WebStateObserver,
   // Whether Gemini is available for the current web state.
   bool IsGeminiAvailableForWebState();
 
-  // Returns true if the URL is eligible for Gemini (e.g. HTTP/HTTPS and not
-  // blocked for AIM/Search-related reasons).
-  bool IsUrlEligibleForGemini(const GURL& url);
-
   // Gets the client and server IDs for the Gemini session for the associated
   // WebState. server ID is optional because it may not be found or is expired.
   std::string GetClientId();

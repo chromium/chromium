@@ -98,6 +98,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
         std::make_unique<web::FakeWebState>();
     web_state_ = web_state.get();
     web_state->SetBrowserState(profile_);
+    web_state->SetCurrentURL(GURL("chrome://newtab/"));
     GeminiTabHelper::CreateForWebState(web_state.get());
     WebViewProxyTabHelper::CreateForWebState(web_state.get());
     gemini_tab_helper_ = GeminiTabHelper::FromWebState(web_state.get());
@@ -778,7 +779,7 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiAvailabilityChanged) {
   // Navigate to an ineligible site.
   web_state_ = static_cast<web::FakeWebState*>(
       browser_->GetWebStateList()->GetActiveWebState());
-  web_state_->SetCurrentURL(GURL("chrome://settings"));
+  web_state_->SetCurrentURL(GURL("chrome://newtab/"));
 
   // Manually trigger page context updated to simulate navigation finishing.
   gemini_browser_agent_->OnPageContextUpdated(web_state_);

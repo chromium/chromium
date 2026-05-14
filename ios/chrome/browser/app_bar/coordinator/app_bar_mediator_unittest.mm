@@ -759,46 +759,6 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-// Tests that the assistant button state is correctly updated when the Gemini
-// floaty invocation state changes and Gemini is NOT available.
-TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiNotAvailable) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kPageActionMenu, kGeminiCopresence},
-                                       {});
-
-  GeminiBrowserAgent* agent =
-      GeminiBrowserAgent::FromBrowser(regular_browser_.get());
-
-  // Add active WebState with GeminiTabHelper, but an ineligible URL.
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(regular_profile_.get());
-  GeminiTabHelper::CreateForWebState(web_state.get());
-  web_state->SetVisibleURL(GURL("chrome://settings"));
-
-  regular_web_state_list_->InsertWebState(std::move(web_state));
-  regular_web_state_list_->ActivateWebStateAt(0);
-
-  // Expect highlighted to remain NO and enabled to remain NO when floaty is
-  // invoked.
-  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                   highlighted:NO
-                                       enabled:NO]);
-
-  InvokeFloaty(agent, [[GeminiConfiguration alloc] init]);
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
-
-  // Expect highlighted to remain NO and enabled to remain NO when floaty is
-  // dismissed.
-  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                   highlighted:NO
-                                       enabled:NO]);
-
-  agent->DismissFloaty();
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
 // Tests that the assistant button is in the ask state when location is
 // eligible, even if not signed in.
 TEST_F(AppBarMediatorTest, TestAssistantButtonStateAskLocationEligible) {
@@ -842,27 +802,6 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_GeminiAvailable) {
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
                                        enabled:YES]);
-  [mediator_ updateAssistantButton];
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
-// Tests that the assistant button is disabled when Gemini is not available.
-TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_GeminiNotAvailable) {
-  SetLocationEligible(true);
-  SignInAndSetCapability(true);
-
-  // Add active WebState with GeminiTabHelper.
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(regular_profile_.get());
-  GeminiTabHelper::CreateForWebState(web_state.get());
-  web_state->SetVisibleURL(GURL("chrome://settings"));
-
-  regular_web_state_list_->InsertWebState(std::move(web_state));
-  regular_web_state_list_->ActivateWebStateAt(0);
-
-  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                   highlighted:NO
-                                       enabled:NO]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

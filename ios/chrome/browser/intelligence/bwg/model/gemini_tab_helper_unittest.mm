@@ -821,58 +821,98 @@ TEST_F(GeminiTabHelperTest,
   EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
-// Tests that `IsUrlEligibleForGemini` correctly identifies eligible and
-// ineligible URLs based on scheme and specific URL patterns.
-TEST_F(GeminiTabHelperTest, IsUrlEligibleForGemini) {
-  // Valid HTTPS URL
-  GURL valid_https_url("https://www.example.com");
-  EXPECT_TRUE(tab_helper_->IsUrlEligibleForGemini(valid_https_url));
+// Tests `IsGeminiAvailableForWebState` under default configuration (no flags).
+TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_DefaultConfig) {
+  web_state_->SetContentsMimeType("text/html");
 
-  // Valid HTTP URL
-  GURL valid_http_url("http://www.example.com");
-  EXPECT_TRUE(tab_helper_->IsUrlEligibleForGemini(valid_http_url));
+  // Valid HTTPS URL should be available.
+  web_state_->SetCurrentURL(GURL("https://www.example.com"));
+  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 
-  // Invalid scheme (chrome)
-  GURL invalid_chrome_url("chrome://settings");
-  EXPECT_FALSE(tab_helper_->IsUrlEligibleForGemini(invalid_chrome_url));
+  // Valid HTTP URL should be available.
+  web_state_->SetCurrentURL(GURL("http://www.example.com"));
+  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 
-  // Invalid scheme (about)
-  GURL invalid_about_url("about:blank");
-  EXPECT_FALSE(tab_helper_->IsUrlEligibleForGemini(invalid_about_url));
+  // Invalid scheme (chrome) should not be available.
+  web_state_->SetCurrentURL(GURL("chrome://settings"));
+  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
 
-  // AIM URL
-  GURL aim_url("https://www.google.com/search?q=test&udm=50");
-  EXPECT_FALSE(tab_helper_->IsUrlEligibleForGemini(aim_url));
+  // Invalid scheme (about) should not be available.
+  web_state_->SetCurrentURL(GURL("about:blank"));
+  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
 
-  // Google Home Page
-  GURL google_home_url("https://www.google.com");
-  EXPECT_FALSE(tab_helper_->IsUrlEligibleForGemini(google_home_url));
+  // NTP should not be available.
+  web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
+  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
-// Tests that Google Search URLs are ineligible for Gemini when the
-// `GeminiCopresenceSRPCheck` parameter is enabled.
-TEST_F(GeminiTabHelperTest, IsUrlEligibleForGemini_SRPCheck_Enabled) {
+// Tests `IsGeminiAvailableForWebState` under Copresence configuration with SRP
+// Check enabled.
+TEST_F(GeminiTabHelperTest,
+       IsGeminiAvailableForWebState_Copresence_SRPCheckEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{kGeminiCopresence, {{"GeminiCopresenceSRPCheck", "true"}}},
        {kPageActionMenu, {}}},
       {});
 
-  GURL srp_url("https://www.google.com/search?q=test");
-  EXPECT_FALSE(tab_helper_->IsUrlEligibleForGemini(srp_url));
+  web_state_->SetContentsMimeType("text/html");
+
+  // Valid HTTPS URL should be available.
+  web_state_->SetCurrentURL(GURL("https://www.example.com"));
+  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+
+  // NTP should not be available.
+  web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
+  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+
+  // AIM URL should not be available.
+  web_state_->SetCurrentURL(
+      GURL("https://www.google.com/search?q=test&udm=50"));
+  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+
+  // SRP URL (Google Home Page) should not be available since SRP check is
+  // enabled.
+  web_state_->SetCurrentURL(GURL("https://www.google.com"));
+  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+
+  // SRP URL (Google Search) should not be available since SRP check is enabled.
+  web_state_->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
+  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
-// Tests that Google Search URLs are eligible for Gemini when the
-// `GeminiCopresenceSRPCheck` parameter is disabled.
-TEST_F(GeminiTabHelperTest, IsUrlEligibleForGemini_SRPCheck_Disabled) {
+// Tests `IsGeminiAvailableForWebState` under Copresence configuration with SRP
+// Check disabled.
+TEST_F(GeminiTabHelperTest,
+       IsGeminiAvailableForWebState_Copresence_SRPCheckDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{kGeminiCopresence, {{"GeminiCopresenceSRPCheck", "false"}}},
        {kPageActionMenu, {}}},
       {});
 
-  GURL srp_url("https://www.google.com/search?q=test");
-  EXPECT_TRUE(tab_helper_->IsUrlEligibleForGemini(srp_url));
+  web_state_->SetContentsMimeType("text/html");
+
+  // Valid HTTPS URL should be available.
+  web_state_->SetCurrentURL(GURL("https://www.example.com"));
+  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+
+  // NTP should not be available.
+  web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
+  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+
+  // AIM URL should not be available.
+  web_state_->SetCurrentURL(
+      GURL("https://www.google.com/search?q=test&udm=50"));
+  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+
+  // SRP URL (Google Home Page) should be available since SRP check is disabled.
+  web_state_->SetCurrentURL(GURL("https://www.google.com"));
+  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+
+  // SRP URL (Google Search) should be available since SRP check is disabled.
+  web_state_->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
+  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is available for the NTP when the ChromeNextIa feature
@@ -906,14 +946,3 @@ TEST_F(GeminiTabHelperTest,
   EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
-// Tests that `IsUrlEligibleForGemini` correctly identifies NTP URL as eligible
-// when ChromeNextIa feature is enabled.
-TEST_F(GeminiTabHelperTest, IsUrlEligibleForGemini_Ntp_Enabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kChromeNextIa, kPageActionMenu, kComposeboxIOS,
-                            kComposeboxIpad},
-      /*disabled_features=*/{});
-
-  GURL ntp_url(kChromeUINewTabURL);
-  EXPECT_TRUE(tab_helper_->IsUrlEligibleForGemini(ntp_url));
-}

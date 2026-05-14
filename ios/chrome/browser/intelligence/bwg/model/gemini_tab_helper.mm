@@ -319,44 +319,35 @@ void GeminiTabHelper::SetLocationBarBadgeCommandsHandler(
 }
 
 bool GeminiTabHelper::IsGeminiAvailableForWebState() {
+  // With NextIA, all URLs are eligible, including when there's no web state.
+  if (IsChromeNextIaEnabled()) {
+    return true;
+  }
+
   if (!web_state_) {
     return false;
   }
 
   const GURL& url = web_state_->GetVisibleURL();
-  if (IsChromeNextIaEnabled() && IsUrlNtp(url)) {
-    return true;
-  }
 
-  if (IsGeminiCopresenceEnabled() || IsGeminiFloatyAllPagesEnabled()) {
-    if (!IsUrlEligibleForGemini(url)) {
+  bool is_ntp = IsUrlNtp(url);
+  bool is_aim_url = IsAimZeroStateURL(url) || IsAimURL(url);
+  bool is_srp_url = google_util::IsGoogleHomePageUrl(url) ||
+                    google_util::IsGoogleSearchUrl(url);
+
+  // With copresence, AIM and NTP are ineligible, and SRP is conditionally
+  // enabled.
+  if (IsGeminiCopresenceEnabled()) {
+    if (IsGeminiCopresenceSRPCheckEnabled() && is_srp_url) {
       return false;
     }
+    return !is_aim_url && !is_ntp;
   }
 
-  return CanExtractPageContextForWebState(web_state_) ||
-         IsGeminiFloatyAllPagesEnabled();
-}
-
-bool GeminiTabHelper::IsUrlEligibleForGemini(const GURL& url) {
-  if (IsChromeNextIaEnabled() && IsUrlNtp(url)) {
-    return true;
-  }
-
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    return false;
-  }
-
-  if (IsAimZeroStateURL(url) || IsAimURL(url) ||
-      google_util::IsGoogleHomePageUrl(url)) {
-    return false;
-  }
-
-  if (google_util::IsGoogleSearchUrl(url)) {
-    return !IsGeminiCopresenceSRPCheckEnabled();
-  }
-
-  return true;
+  // By default, the NTP is ineligible, and only extractable pages are eligible
+  // (unless `IsGeminiFloatyAllPagesEnabled` is enabled).
+  return !is_ntp && (CanExtractPageContextForWebState(web_state_) ||
+                     IsGeminiFloatyAllPagesEnabled());
 }
 
 #pragma mark - WebStateObserver
@@ -705,8 +696,7 @@ void GeminiTabHelper::OnCanApplyContextualCueingDecision(
 bool GeminiTabHelper::ComputeGeminiEligibility(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
-  // When decision == `kTrue`, then the metadata drives the computation.
-  // Otherwise, eligibility defaults to true.
+  // If the optimization guide decision is not true, default to eligible.
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     return true;
   }
@@ -714,7 +704,8 @@ bool GeminiTabHelper::ComputeGeminiEligibility(
   optimization_guide::OptimizationMetadata mutable_metadata = metadata;
   auto suggestions_metadata = mutable_metadata.ParsedMetadata<
       optimization_guide::proto::GlicZeroStateSuggestionsMetadata>();
-  // Defaults to true for cases where there are no metadata.
+
+  // If no metadata is parsed successfully, default to eligible.
   if (!suggestions_metadata) {
     return true;
   }
