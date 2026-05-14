@@ -851,10 +851,6 @@ GlicInstanceImpl::AddConversationInfoChangedCallback(
   return conversation_info_changed_callback_list_.Add(std::move(callback));
 }
 
-void GlicInstanceImpl::BindTabForTesting(tabs::TabInterface* tab) {
-  BindTab(tab, GlicPinTrigger::kContextMenu, true);
-}
-
 void GlicInstanceImpl::CancelTask() {
   if (actor_task_manager_) {
     actor_task_manager_->CancelTask();
