@@ -1501,16 +1501,25 @@ bool Database::CommitTransaction(InternalApiToken) {
 
 bool Database::BeginTransactionDeprecated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_open()) {
+    return false;
+  }
   return BeginTransaction(InternalApiToken());
 }
 
 bool Database::CommitTransactionDeprecated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_open()) {
+    return false;
+  }
   return CommitTransaction(InternalApiToken());
 }
 
 void Database::RollbackTransactionDeprecated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_open()) {
+    return;
+  }
   RollbackTransaction(InternalApiToken());
 }
 
