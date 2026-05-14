@@ -58,15 +58,12 @@ cast_shared_library("libcast_media_1.0") {
   ]
 }
 
-volume_control_in_media_shlib = !cast_volume_control_in_avsettings
-
 buildflag_header("audio_buildflags") {
   header = "audio_buildflags.h"
 
   flags = [
     "MEDIA_CLOCK_MONOTONIC_RAW=$media_clock_monotonic_raw",
     "SYSTEM_OWNS_VOLUME=$system_owns_volume",
-    "VOLUME_CONTROL_IN_MEDIA_SHLIB=$volume_control_in_media_shlib",
     "MIXER_IN_CAST_SHELL=$mixer_in_cast_shell",
   ]
 }

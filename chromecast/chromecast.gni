@@ -43,9 +43,6 @@ declare_args() {
   # mixer is expected to be running in another process.
   mixer_in_cast_shell = true
 
-  # Set to true on devices where the VolumeControl implementation is in the
-  # libcast_avsettings_1.0.so instead of in libcast_media_1.0.so.
-  cast_volume_control_in_avsettings = false
 
   # Set to true for builds targeting ARC.
   is_android_arc = false
