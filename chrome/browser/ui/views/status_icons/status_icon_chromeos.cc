@@ -8,6 +8,21 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 
+namespace {
+
+bool IsStatusTrayAvailable() {
+  // During browser shutdown, the UI and window manager (`ash::Shell`) are torn
+  // down before global browser features. Specifically, `ash::Shell` is
+  // destroyed in `ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun()`,
+  // whereas components like `GlicBackgroundModeManager` (which holds onto
+  // `StatusIconChromeOS`) are destroyed later during
+  // `BrowserProcessImpl::StartTearDown()`. We must check if `ash::Shell` still
+  // exists before attempting to interact with it.
+  return ash::Shell::HasInstance();
+}
+
+}  // namespace
+
 using TrayIconConfiguration = ash::TrayIconConfiguration;
 
 StatusIconChromeOS::StatusIconChromeOS(int64_t icon_id) : id_(icon_id) {
@@ -66,6 +81,10 @@ void StatusIconChromeOS::OnWillRemoveDisplays(
 }
 
 void StatusIconChromeOS::AddStatusIconForDisplay(int64_t display_id) {
+  if (!IsStatusTrayAvailable()) {
+    return;
+  }
+
   TrayIconConfiguration icon_config;
   PopulateTrayIconConfiguration(icon_config);
 
@@ -83,6 +102,10 @@ void StatusIconChromeOS::PopulateTrayIconConfiguration(
 }
 
 void StatusIconChromeOS::UpdateTrayIconForAllDisplays() {
+  if (!IsStatusTrayAvailable()) {
+    return;
+  }
+
   TrayIconConfiguration icon_config;
   PopulateTrayIconConfiguration(icon_config);
 
@@ -93,6 +116,10 @@ void StatusIconChromeOS::UpdateTrayIconForAllDisplays() {
 
 void StatusIconChromeOS::RemoveTrayIconFromDisplays(
     const display::Displays& displays) {
+  if (!IsStatusTrayAvailable()) {
+    return;
+  }
+
   TrayIconConfiguration icon_config;
   icon_config.id = id_;
 
