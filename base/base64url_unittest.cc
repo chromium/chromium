@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <string_view>
 
+#include "base/check_op.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 using testing::ElementsAreArray;
 using testing::Optional;
@@ -196,6 +198,44 @@ TEST(Base64UrlTest, DecodeDisallowsPaddingOnly) {
       Base64UrlDecode("====", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
 }
 
+void FuzzBase64UrlEncode(std::string_view input,
+                         Base64UrlEncodePolicy encode_policy) {
+  std::string encoded;
+  Base64UrlEncode(input, encode_policy, &encoded);
+
+  // Check decoding of the above gives the original text.
+  std::string decoded;
+  Base64UrlDecodePolicy decode_policy =
+      encode_policy == Base64UrlEncodePolicy::INCLUDE_PADDING
+          ? Base64UrlDecodePolicy::REQUIRE_PADDING
+          : Base64UrlDecodePolicy::DISALLOW_PADDING;
+  CHECK(Base64UrlDecode(encoded, decode_policy, &decoded));
+  CHECK_EQ(decoded, input);
+  // Same result should be when ignoring padding.
+  decoded.clear();
+  CHECK(Base64UrlDecode(encoded, Base64UrlDecodePolicy::IGNORE_PADDING,
+                        &decoded));
+  CHECK_EQ(decoded, input);
+}
+
+FUZZ_TEST(Base64UrlTest, FuzzBase64UrlEncode)
+    .WithDomains(fuzztest::Arbitrary<std::string>(),
+                 fuzztest::ElementOf<Base64UrlEncodePolicy>(
+                     {Base64UrlEncodePolicy::INCLUDE_PADDING,
+                      Base64UrlEncodePolicy::OMIT_PADDING}));
+
+void FuzzBase64UrlDecode(std::string_view input,
+                         Base64UrlDecodePolicy decode_policy) {
+  std::string decoded;
+  std::ignore = Base64UrlDecode(input, decode_policy, &decoded);
+}
+
+FUZZ_TEST(Base64UrlTest, FuzzBase64UrlDecode)
+    .WithDomains(fuzztest::Arbitrary<std::string>(),
+                 fuzztest::ElementOf<Base64UrlDecodePolicy>(
+                     {Base64UrlDecodePolicy::REQUIRE_PADDING,
+                      Base64UrlDecodePolicy::IGNORE_PADDING,
+                      Base64UrlDecodePolicy::DISALLOW_PADDING}));
 }  // namespace
 
 }  // namespace base

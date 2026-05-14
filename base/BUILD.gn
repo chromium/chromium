@@ -3975,7 +3975,11 @@ test("base_unittests") {
     "strings/string_piece_rust_unittest.cc",
   ]
 
-  fuzztests = [ "JSONReaderTest.CanParseAnythingWithoutCrashing" ]
+  fuzztests = [
+    "Base64UrlTest.FuzzBase64UrlDecode",
+    "Base64UrlTest.FuzzBase64UrlEncode",
+    "JSONReaderTest.CanParseAnythingWithoutCrashing",
+  ]
 
   defines = []
   frameworks = []
@@ -4007,6 +4011,7 @@ test("base_unittests") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
     "//third_party/abseil-cpp:test_support",
+    "//third_party/fuzztest",
     "//third_party/icu",
     "//third_party/modp_b64",
 
@@ -6205,11 +6210,6 @@ fuzzer_test("base64_encode_fuzzer") {
     "//base/test:test_support",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
-}
-
-fuzzer_test("base64url_fuzzer") {
-  sources = [ "base64url_fuzzer.cc" ]
-  deps = [ "//base" ]
 }
 
 fuzzer_test("base_json_correctness_fuzzer") {
