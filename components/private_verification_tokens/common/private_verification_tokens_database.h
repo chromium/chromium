@@ -4,15 +4,32 @@
 #ifndef COMPONENTS_PRIVATE_VERIFICATION_TOKENS_COMMON_PRIVATE_VERIFICATION_TOKENS_DATABASE_H_
 #define COMPONENTS_PRIVATE_VERIFICATION_TOKENS_COMMON_PRIVATE_VERIFICATION_TOKENS_DATABASE_H_
 
+#include <map>
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "sql/database.h"
 
 namespace private_verification_tokens {
+
+struct TokenWithId {
+  TokenWithId(int64_t id, PrivateVerificationTokensToken token);
+  TokenWithId(const TokenWithId&);
+  TokenWithId& operator=(const TokenWithId&);
+  TokenWithId(TokenWithId&&);
+  TokenWithId& operator=(TokenWithId&&);
+  ~TokenWithId();
+
+  int64_t id;
+  PrivateVerificationTokensToken token;
+};
 
 // Implements PVT database operations. Database object should be created
 // off-main thread in a sequenced task runner. Constructor detaches the object
@@ -49,6 +66,23 @@ class PrivateVerificationTokensDatabase {
 
   // Get all keys stored.
   std::vector<PrivateVerificationTokensPublicKey> GetKeys();
+
+  // Store given tokens in the database.
+  bool StoreTokens(const std::vector<PrivateVerificationTokensToken>& tokens);
+
+  // Returns a single unredeemed token for the given `etld_plus_one`, or
+  // `std::nullopt` if none exist. Calling this successively without calling
+  // `SetRedeemed()` on the returned token might return the same token.
+  std::optional<TokenWithId> GetToken(const std::string& etld_plus_one);
+
+  // Get one token from each distinct etld_plus_one.
+  std::map<std::string, TokenWithId> GetTokensFromEach();
+
+  // Delete all tokens that are marked as redeemed.
+  bool DeleteRedeemedTokens();
+
+  // Mark token with the given id as redeemed.
+  bool SetRedeemed(int64_t token_id);
 
   const base::FilePath& PathToDatabase() const;
 

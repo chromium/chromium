@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -25,6 +26,37 @@ const int kCurrentVersionNumber = 1;
 static constexpr char kDatabaseTag[] = "PrivateVerificationTokens";
 
 // clang-format off
+static constexpr char kCreateTokensTableSql[] =
+  "CREATE TABLE IF NOT EXISTS tokens("
+      "id INTEGER PRIMARY KEY,"
+      "etld_plus_one TEXT NOT NULL,"
+      "key_id INTEGER NOT NULL,"
+      "expiration INTEGER NOT NULL,"
+      "token BLOB NOT NULL,"
+      "redeemed INTEGER NOT NULL DEFAULT 0,"
+      "version INTEGER NOT NULL)";
+
+static constexpr char kInsertTokenSql[] =
+  "INSERT INTO tokens("
+      "etld_plus_one,key_id,expiration,token,version) "
+      "VALUES(?,?,?,?,?)";
+
+static constexpr char kGetTokenSql[] =
+    "SELECT id,etld_plus_one,key_id,expiration,token,version "
+    "FROM tokens WHERE redeemed = 0 AND etld_plus_one = ?";
+
+static constexpr char kGetAllTokensSql[] =
+    "SELECT id,etld_plus_one,key_id,expiration,token,version "
+    "FROM tokens WHERE redeemed = 0 "
+    "GROUP BY etld_plus_one";
+
+static constexpr char kSetTokenRedeemedSql[] =
+    "UPDATE tokens "
+    "SET redeemed = 1 "
+    "WHERE id = ?";
+
+static constexpr char kDeleteRedeemedTokensSql[] =
+    "DELETE FROM tokens WHERE redeemed = 1";
 
 static constexpr char kCreatePublicKeyTableSql[] =
   "CREATE TABLE IF NOT EXISTS keys("
@@ -56,6 +88,14 @@ static constexpr char kDeleteKeySql[] =
 
 namespace private_verification_tokens {
 
+TokenWithId::TokenWithId(int64_t id, PrivateVerificationTokensToken token)
+    : id(id), token(std::move(token)) {}
+TokenWithId::TokenWithId(const TokenWithId&) = default;
+TokenWithId& TokenWithId::operator=(const TokenWithId&) = default;
+TokenWithId::TokenWithId(TokenWithId&&) = default;
+TokenWithId& TokenWithId::operator=(TokenWithId&&) = default;
+TokenWithId::~TokenWithId() = default;
+
 std::unique_ptr<PrivateVerificationTokensDatabase>
 PrivateVerificationTokensDatabase::Create(base::FilePath path_to_database) {
   if (path_to_database.empty()) {
@@ -83,6 +123,126 @@ const base::FilePath& PrivateVerificationTokensDatabase::PathToDatabase()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return path_to_database_;
+}
+
+bool PrivateVerificationTokensDatabase::StoreTokens(
+    const std::vector<PrivateVerificationTokensToken>& tokens) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return false;
+  }
+
+  sql::Transaction transaction(database_.get());
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kInsertTokenSql));
+  DCHECK(statement.is_valid());
+  for (const auto& token : tokens) {
+    statement.Reset(true);
+    statement.BindString(0, token.etld_plus_one());
+    statement.BindInt64(1, token.key_id());
+    statement.BindInt64(
+        2, token.expiration().ToDeltaSinceWindowsEpoch().InSeconds());
+    statement.BindBlob(3, token.token());
+    statement.BindInt64(4, token.version());
+    if (!statement.Run()) {
+      return false;
+    }
+  }
+
+  return transaction.Commit();
+}
+
+std::optional<TokenWithId> PrivateVerificationTokensDatabase::GetToken(
+    const std::string& etld_plus_one) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return std::nullopt;
+  }
+
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kGetTokenSql));
+  DCHECK(statement.is_valid());
+  statement.BindString(0, etld_plus_one);
+
+  if (statement.Step()) {
+    int64_t id = statement.ColumnInt64(0);
+    std::string etld_plus_one_str = statement.ColumnString(1);
+    uint32_t key_id = static_cast<uint32_t>(statement.ColumnInt64(2));
+    int64_t expiration = statement.ColumnInt64(3);
+    SerializedToken token = statement.ColumnBlobAsVector(4);
+    uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(5));
+
+    return TokenWithId{
+        id,
+        PrivateVerificationTokensToken(
+            std::move(etld_plus_one_str), std::move(token), key_id,
+            base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(expiration)),
+            version)};
+  }
+  if (!statement.Succeeded()) {
+    return std::nullopt;
+  }
+  return std::nullopt;
+}
+
+std::map<std::string, TokenWithId>
+PrivateVerificationTokensDatabase::GetTokensFromEach() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return {};
+  }
+
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kGetAllTokensSql));
+  DCHECK(statement.is_valid());
+
+  std::map<std::string, TokenWithId> tokens;
+  while (statement.Step()) {
+    int64_t id = statement.ColumnInt64(0);
+    std::string etld_plus_one = statement.ColumnString(1);
+    uint32_t key_id = static_cast<uint32_t>(statement.ColumnInt64(2));
+    int64_t expiration = statement.ColumnInt64(3);
+    SerializedToken token = statement.ColumnBlobAsVector(4);
+    uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(5));
+
+    tokens.try_emplace(
+        etld_plus_one, id,
+        PrivateVerificationTokensToken(
+            etld_plus_one, std::move(token), key_id,
+            base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(expiration)),
+            version));
+  }
+  if (!statement.Succeeded()) {
+    return {};
+  }
+  return tokens;
+}
+
+bool PrivateVerificationTokensDatabase::DeleteRedeemedTokens() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return false;
+  }
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteRedeemedTokensSql));
+  DCHECK(statement.is_valid());
+  return statement.Run();
+}
+
+bool PrivateVerificationTokensDatabase::SetRedeemed(int64_t token_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return false;
+  }
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kSetTokenRedeemedSql));
+  DCHECK(statement.is_valid());
+  statement.BindInt64(0, token_id);
+  return statement.Run();
 }
 
 bool PrivateVerificationTokensDatabase::StoreKeys(
@@ -237,7 +397,8 @@ bool PrivateVerificationTokensDatabase::InitializeSchema(bool is_retry) {
 }
 
 bool PrivateVerificationTokensDatabase::CreateSchema() {
-  return database_->Execute(kCreatePublicKeyTableSql);
+  return database_->Execute(kCreatePublicKeyTableSql) &&
+         database_->Execute(kCreateTokensTableSql);
 }
 
 void PrivateVerificationTokensDatabase::DatabaseErrorCallback(

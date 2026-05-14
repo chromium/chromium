@@ -73,7 +73,10 @@ source_set("private_verification_tokens_database") {
     "private_verification_tokens_database.cc",
     "private_verification_tokens_database.h",
   ]
-  public_deps = [ ":private_verification_tokens_public_key" ]
+  public_deps = [
+    ":private_verification_tokens_public_key",
+    ":private_verification_tokens_token",
+  ]
   deps = [
     "//base",
     "//sql",
