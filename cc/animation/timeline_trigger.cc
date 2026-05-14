@@ -12,17 +12,23 @@
 namespace cc {
 
 TimelineTrigger::TimelineTrigger(int id,
+                                 State state,
                                  scoped_refptr<AnimationTimeline> timeline,
                                  Boundaries boundaries)
-    : AnimationTrigger(id), timeline_(timeline), boundaries_(boundaries) {}
+    : AnimationTrigger(id),
+      timeline_(timeline),
+      boundaries_(boundaries),
+      state_(state) {}
 
 TimelineTrigger::~TimelineTrigger() = default;
 
 scoped_refptr<TimelineTrigger> TimelineTrigger::Create(
     int id,
+    State state,
     scoped_refptr<AnimationTimeline> timeline,
     Boundaries boundaries) {
-  return base::WrapRefCounted(new TimelineTrigger(id, timeline, boundaries));
+  return base::WrapRefCounted(
+      new TimelineTrigger(id, state, timeline, boundaries));
 }
 
 scoped_refptr<AnimationTrigger> TimelineTrigger::CreateImplInstance(
@@ -31,7 +37,7 @@ scoped_refptr<AnimationTrigger> TimelineTrigger::CreateImplInstance(
       host_impl.GetScopedRefTimelineById(timeline_.Read(*this)->id());
   CHECK(timeline_impl);
   scoped_refptr<TimelineTrigger> impl_instance =
-      TimelineTrigger::Create(id(), timeline_impl, boundaries_);
+      TimelineTrigger::Create(id(), state_, timeline_impl, boundaries_);
   return impl_instance;
 }
 

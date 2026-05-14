@@ -29,6 +29,7 @@ class CC_ANIMATION_EXPORT TimelineTrigger : public AnimationTrigger {
 
   static scoped_refptr<TimelineTrigger> Create(
       int id,
+      State state,
       scoped_refptr<AnimationTimeline> timeline,
       Boundaries Boundaries);
 
@@ -47,6 +48,7 @@ class CC_ANIMATION_EXPORT TimelineTrigger : public AnimationTrigger {
 
  protected:
   explicit TimelineTrigger(int id,
+                           State state,
                            scoped_refptr<AnimationTimeline> timeline,
                            Boundaries boundaries);
   ~TimelineTrigger() override;

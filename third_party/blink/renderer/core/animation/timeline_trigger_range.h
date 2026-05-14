@@ -19,16 +19,6 @@ class ExecutionContext;
 class Node;
 class ScrollTimeline;
 
-// https://drafts.csswg.org/web-animations-2/#trigger-state
-enum class TimelineTriggerState {
-  // The initial state of the trigger. The trigger has not yet taken any action.
-  kIdle,
-  // The last action taken by the trigger was due to entering the trigger range.
-  kPrimary,
-  // The last action taken by the trigger was due to exiting the exit range.
-  kInverse,
-};
-
 // This class encapsulates a single instance of the configuration that a
 // TimelineTrigger needs to function, i.e. an AnimationTimeline, the boundaries
 // of an activation range and the boundaries of an exit range.
@@ -40,7 +30,7 @@ class CORE_EXPORT TimelineTriggerRange : public ScriptWrappable {
 
  public:
   using Boundary = V8UnionStringOrTimelineRangeOffset;
-  using State = TimelineTriggerState;
+  using State = cc::AnimationTrigger::State;
   using CcBoundaries = cc::TimelineTrigger::Boundaries;
 
   TimelineTriggerRange(AnimationTimeline* timeline,

@@ -53,7 +53,7 @@ TimelineTrigger* TimelineTrigger::Create(
       execution_context, options_list, exception_state));
 }
 
-std::optional<TimelineTriggerState> TimelineTrigger::ComputeState() {
+std::optional<TimelineTrigger::State> TimelineTrigger::ComputeState() {
   return GetRange() ? GetRange()->UpdateState() : std::nullopt;
 }
 
@@ -209,8 +209,8 @@ void TimelineTrigger::CreateCompositorTrigger() {
       host->GetScopedRefTimelineById(cc_timeline->id());
 
   scoped_refptr<cc::TimelineTrigger> cc_trigger = cc::TimelineTrigger::Create(
-      cc::AnimationIdProvider::NextAnimationTriggerId(), scopedref_cc_timeline,
-      *cc_boundaries);
+      cc::AnimationIdProvider::NextAnimationTriggerId(), state_,
+      scopedref_cc_timeline, *cc_boundaries);
   host->AddTrigger(cc_trigger);
 
   compositor_trigger_ =

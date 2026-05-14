@@ -6146,7 +6146,8 @@
       "external/wpt/scroll-animations/animation-trigger/animation-trigger-play.tentative.html",
       "external/wpt/scroll-animations/animation-trigger/animation-trigger-untriggered-animations-exposed.tentative.html",
       "external/wpt/scroll-animations/animation-trigger/animation-trigger-addAnimation.tentative.html",
-      "external/wpt/scroll-animations/animation-trigger/timeline-trigger-source-starts-in-trigger-range.tentative.html"
+      "external/wpt/scroll-animations/animation-trigger/timeline-trigger-source-starts-in-trigger-range.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-animation-target-removed-listener.tentative.html"
     ],
     "args": [
       "--enable-features=CompositorTimelineTrigger",

@@ -356,12 +356,13 @@ TimelineTriggerRange::ComputeTriggerBoundaries(double current_offset,
   return boundaries;
 }
 
-std::optional<TimelineTriggerState> TimelineTriggerRange::UpdateState() {
+std::optional<TimelineTriggerRange::State> TimelineTriggerRange::UpdateState() {
   state_ = ComputeState().value_or(state_);
   return state_;
 }
 
-std::optional<TimelineTriggerState> TimelineTriggerRange::ComputeState() {
+std::optional<TimelineTriggerRange::State>
+TimelineTriggerRange::ComputeState() {
   if (!timeline_ || !timeline_->IsActive()) {
     return std::nullopt;
   }
