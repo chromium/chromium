@@ -1255,6 +1255,11 @@ class COMPONENT_EXPORT(SQL) Database {
   // a rollback instead of a commit.
   bool needs_rollback_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  // IDs for the "COMMIT" and "ROLLBACK" statements. These are created and
+  // cached by `BeginTransaction` and are retrieved and used by `DoRollback`.
+  static constexpr StatementID commit_statement_id_ = SQL_FROM_HERE;
+  static constexpr StatementID rollback_statement_id_ = SQL_FROM_HERE;
+
   // True if database is open with OpenInMemory(), False if database is open
   // with Open().
   bool in_memory_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

@@ -1413,8 +1413,16 @@ bool Database::BeginTransaction(InternalApiToken) {
   if (!transaction_nesting_) {
     needs_rollback_ = false;
 
+    // Create and cache the "COMMIT" and "ROLLBACK" statements right away. If
+    // they can't be created, the transaction cannot be allowed to begin or else
+    // it would be impossible to terminate.
+    if (!GetCachedStatement(commit_statement_id_, "COMMIT")->is_valid() ||
+        !GetCachedStatement(rollback_statement_id_, "ROLLBACK")->is_valid()) {
+      return false;
+    }
+
     Statement begin(GetCachedStatement(SQL_FROM_HERE, "BEGIN TRANSACTION"));
-    if (!begin.Run()) {
+    if (!begin.is_valid() || !begin.Run()) {
       return false;
     }
   }
@@ -1469,7 +1477,10 @@ bool Database::CommitTransaction(InternalApiToken) {
     return false;
   }
 
-  Statement commit(GetCachedStatement(SQL_FROM_HERE, "COMMIT"));
+  Statement commit(GetCachedStatement(commit_statement_id_, "COMMIT"));
+  // A valid "COMMIT" statement was cached by `BeginTransaction`. That statement
+  // is mandatory for keeping SQLite and the application in sync.
+  CHECK(commit.is_valid(), base::NotFatalUntil::M155);
 
   bool succeeded = commit.Run();
   if (!is_open()) {
@@ -2530,7 +2541,10 @@ void Database::ConfigureSqliteDatabaseObject() {
 void Database::DoRollback() {
   TRACE_EVENT0("sql", "Database::DoRollback");
 
-  Statement rollback(GetCachedStatement(SQL_FROM_HERE, "ROLLBACK"));
+  Statement rollback(GetCachedStatement(rollback_statement_id_, "ROLLBACK"));
+  // A valid "ROLLBACK" statement was cached by `BeginTransaction`. That
+  // statement is mandatory for keeping SQLite and the application in sync.
+  CHECK(rollback.is_valid(), base::NotFatalUntil::M155);
 
   rollback.Run();
 

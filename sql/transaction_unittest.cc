@@ -627,6 +627,97 @@ TEST_P(SQLTransactionJournalTypeTest, TransactionRollbackDiskUnusable) {
   EXPECT_EQ(select.ColumnString(0), "original");
 }
 
+class SqliteHardHeapLimitScope {
+ public:
+  explicit SqliteHardHeapLimitScope(int64_t limit)
+      : original_limit_(sqlite3_hard_heap_limit64(limit)) {}
+
+  ~SqliteHardHeapLimitScope() { sqlite3_hard_heap_limit64(original_limit_); }
+
+ private:
+  const int64_t original_limit_;
+};
+
+TEST_F(SQLTransactionTest, TransactionBeginOutOfMemory) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  Transaction transaction(&db);
+
+  bool error_callback_invoked = false;
+  db.set_error_callback(base::BindLambdaForTesting(
+      [&](int sqlite_error, sql::Statement* statement) {
+        error_callback_invoked = true;
+      }));
+
+  // Set a hard heap limit to make SQLite fail allocating memory when parsing
+  // the "BEGIN" statement.
+  SqliteHardHeapLimitScope hard_heap_limit(1);
+  EXPECT_FALSE(transaction.Begin());
+  EXPECT_TRUE(error_callback_invoked);
+}
+
+TEST_F(SQLTransactionTest, TransactionRollbackOutOfMemory) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+
+  bool error_callback_invoked = false;
+  db.set_error_callback(base::BindLambdaForTesting(
+      [&](int sqlite_error, sql::Statement* statement) {
+        error_callback_invoked = true;
+      }));
+
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(key, value)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(key, value) VALUES(1, 'original')"));
+  Transaction transaction(&db);
+  ASSERT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db.Execute("UPDATE rows SET value = 'modified' WHERE key = 1"));
+
+  {
+    // Set a hard heap limit to prevent SQLite from allocating memory. The
+    // rollback still works because the "ROLLBACK" statement was prepared
+    // beforehand.
+    SqliteHardHeapLimitScope hard_heap_limit(1);
+    transaction.Rollback();
+  }
+
+  Statement select(
+      db.GetUniqueStatement("SELECT value FROM rows WHERE key = 1"));
+  ASSERT_TRUE(select.Step());
+  EXPECT_EQ(select.ColumnString(0), "original");
+  EXPECT_FALSE(error_callback_invoked);
+}
+
+TEST_F(SQLTransactionTest, TransactionCommitOutOfMemory) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+
+  bool error_callback_invoked = false;
+  db.set_error_callback(base::BindLambdaForTesting(
+      [&](int sqlite_error, sql::Statement* statement) {
+        error_callback_invoked = true;
+      }));
+
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(key, value)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(key, value) VALUES(1, 'original')"));
+  Transaction transaction(&db);
+  ASSERT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db.Execute("UPDATE rows SET value = 'modified' WHERE key = 1"));
+
+  {
+    // Set a hard heap limit to prevent SQLite from allocating memory. The
+    // commit still works because the "COMMIT" statement was prepared
+    // beforehand.
+    SqliteHardHeapLimitScope hard_heap_limit(1);
+    EXPECT_TRUE(transaction.Commit());
+  }
+
+  Statement select(
+      db.GetUniqueStatement("SELECT value FROM rows WHERE key = 1"));
+  ASSERT_TRUE(select.Step());
+  EXPECT_EQ(select.ColumnString(0), "modified");
+  EXPECT_FALSE(error_callback_invoked);
+}
+
 }  // namespace
 
 }  // namespace sql
