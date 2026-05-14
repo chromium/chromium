@@ -3614,6 +3614,7 @@ test("content_unittests") {
   } else {
     # Non-Android.
     sources += [
+      "../browser/devtools/devtools_refcount_unittest.cc",
       "../browser/devtools/protocol/webauthn_handler_unittest.cc",
       "../browser/host_zoom_map_impl_unittest.cc",
       "../browser/picture_in_picture/document_picture_in_picture_navigation_throttle_unittest.cc",
