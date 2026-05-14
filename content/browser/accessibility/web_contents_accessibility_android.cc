@@ -541,12 +541,25 @@ ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
       ranges_count);
 }
 
-// Selection is not valid if it is cross documents. Also if selection is over
-// multiple nodes, and one or both sides of it are on atomic text fields, it is
-// valid only if the atomic text fields are either completely selected or not
-// selected at all.
+// If `node` is or is under an editable, returns the highest editable parent,
+// otherwise returns null.
+ui::AXNode* GetRootEditable(ui::AXNode* node) {
+  while (node) {
+    if (node->data().IsAtomicTextField() ||
+        node->data().GetBoolAttribute(
+            ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot)) {
+      return node;
+    }
+    node = node->parent();
+  }
+  return node;
+}
+
+// Selection is not valid if it is cross documents, or its start and end have
+// different root editable nodes.
 // These restrictions are primarily validated in `blink::AXSelection::IsValid()`
-// and are based on the behavior in `blink::SelectionAdjuster` class.
+// for atomic text fields and in `blink::AssertUserSelection` in general, and
+// are based on the behavior in `blink::SelectionAdjuster` class.
 bool IsSelectionValid(
     const ui::BrowserAccessibility::AXPosition& start_position,
     const ui::BrowserAccessibility::AXPosition& end_position) {
@@ -561,18 +574,13 @@ bool IsSelectionValid(
     return true;
   }
 
-  if (start_position->GetAnchor()->data().IsAtomicTextField() &&
-      !start_position->AtStartOfAnchor() && !start_position->AtEndOfAnchor()) {
-    return false;
-  }
+  ui::AXNode* start_root_editable =
+      GetRootEditable(start_position->GetAnchor());
+  ui::AXNode* end_root_editable = GetRootEditable(end_position->GetAnchor());
 
-  if (end_position->GetAnchor()->data().IsAtomicTextField() &&
-      !end_position->AtStartOfAnchor() && !end_position->AtEndOfAnchor()) {
-    return false;
-  }
-
-  return true;
+  return start_root_editable == end_root_editable;
 }
+
 }  // anonymous namespace
 
 class WebContentsAccessibilityAndroid::Connector

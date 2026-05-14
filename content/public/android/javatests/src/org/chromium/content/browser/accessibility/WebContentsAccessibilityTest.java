@@ -2973,7 +2973,6 @@ public class WebContentsAccessibilityTest {
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
         int paragraph1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph1");
         int paragraph2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph2");
-        int imageVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "image");
         int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
         int paragraph3Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph3");
 
@@ -3040,6 +3039,9 @@ public class WebContentsAccessibilityTest {
         int input2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "input2");
         int paragraph2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph2");
 
+        int input1Index = 1;
+        int input2Index = 2;
+
         // Selection inside one editable with text offset.
         setAndAssertExtendedSelection(rootVvid, input1Vvid, 1, input1Vvid, 5);
 
@@ -3047,20 +3049,56 @@ public class WebContentsAccessibilityTest {
         setAndAssertExtendedSelection(rootVvid, paragraph1Vvid, 1, paragraph2Vvid, 5);
 
         // Selection from the beginning of one editable to the end of another.
-        // Since the editables are fully selected, this should be supported. Note that since
-        // selection cannot distinguish between after the second editable and before the
-        // second paragraph, the output selection is different from the input.
+        // Since the editables are fully selected, this is supported, but selection positions are
+        // specified using child offset.
+        // TODO(crbug.com/443078007): Update Chrome to Android selection conversion to return the
+        // selection with child indices, here and in below cases.
         setAndAssertExtendedSelection(
-                rootVvid, input1Vvid, 0, input2Vvid, 12, input1Vvid, 0, paragraph2Vvid, 0);
+                rootVvid,
+                rootVvid,
+                input1Index,
+                rootVvid,
+                input2Index + 1,
+                input1Vvid,
+                0,
+                paragraph2Vvid,
+                0);
 
         // Selection from non-editable to the beginning of the editable.
-        setAndAssertExtendedSelection(rootVvid, paragraph1Vvid, 1, input1Vvid, 0);
+        setAndAssertExtendedSelection(
+                rootVvid,
+                paragraph1Vvid,
+                1,
+                rootVvid,
+                input1Index,
+                paragraph1Vvid,
+                1,
+                input1Vvid,
+                0);
 
         // Selection from non-editable to the end of the editable.
-        setAndAssertExtendedSelection(rootVvid, paragraph1Vvid, 1, paragraph2Vvid, 0);
+        setAndAssertExtendedSelection(
+                rootVvid,
+                paragraph1Vvid,
+                1,
+                rootVvid,
+                input2Index + 1,
+                paragraph1Vvid,
+                1,
+                paragraph2Vvid,
+                0);
 
         // Selection from the beginning of the editable to to a non-editable.
-        setAndAssertExtendedSelection(rootVvid, input1Vvid, 0, paragraph2Vvid, 10);
+        setAndAssertExtendedSelection(
+                rootVvid,
+                rootVvid,
+                input1Index,
+                paragraph2Vvid,
+                10,
+                input1Vvid,
+                0,
+                paragraph2Vvid,
+                10);
 
         // Selection from inside one editable to inside another.
         Assert.assertEquals(
@@ -3068,7 +3106,7 @@ public class WebContentsAccessibilityTest {
                 selectTextOnUiThreadAndWaitForSelectionEvent(
                         rootVvid, input1Vvid, 1, input2Vvid, 1));
 
-        // Selection from inside one editable to a non-editable
+        // Selection from inside one editable to a non-editable.
         Assert.assertEquals(
                 false,
                 selectTextOnUiThreadAndWaitForSelectionEvent(
@@ -3102,24 +3140,66 @@ public class WebContentsAccessibilityTest {
                 selectTextOnUiThreadAndWaitForSelectionEvent(rootVvid, p1Vvid, 1, p2Vvid, 5));
     }
 
-    /** Test extended selection on content editable. */
+    /** Test extended selection on contenteditable. */
     @Test
     @SmallTest
     public void testPerformAction_setExtendedSelection_contentEditable() throws Throwable {
         setupTestWithHTML(
                 """
-                <div id="contenteditable" contenteditable>
+                <p id='p1'>Paragraph 1</p>
+                <div id="contenteditable1" contenteditable>
                   <p>Some Text</p>
                   <img src="pipe.jpg" alt="pipe" />
+                </div>
+                <p id='p2'>Paragraph 2</p>
+                <div id="contenteditable2" contenteditable>
+                  <p>Some Text</p>
                 </div>
                 """);
 
         // Find nodes.
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
-        int contenteditableVvid =
-                waitForNodeMatching(sViewIdResourceNameMatcher, "contenteditable");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int contenteditable1Vvid =
+                waitForNodeMatching(sViewIdResourceNameMatcher, "contenteditable1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+        int contenteditable2Vvid =
+                waitForNodeMatching(sViewIdResourceNameMatcher, "contenteditable2");
 
-        setAndAssertExtendedSelection(rootVvid, contenteditableVvid, 0, contenteditableVvid, 5);
+        int contenteditable1Index = 1;
+
+        // From the beginning of a contenteditable to somewhere inside it.
+        setAndAssertExtendedSelection(rootVvid, contenteditable1Vvid, 0, contenteditable1Vvid, 5);
+
+        // From outside a contenteditable to inside it.
+        Assert.assertEquals(
+                false,
+                selectTextOnUiThreadAndWaitForSelectionEvent(
+                        rootVvid, p1Vvid, 1, contenteditable1Vvid, 5));
+
+        // From outside a contenteditable to the beginning of it.
+        // TODO(crbug.com/443078007): Update Chrome to Android selection conversion to return the
+        // selection with child indices.
+        setAndAssertExtendedSelection(
+                rootVvid,
+                p1Vvid,
+                1,
+                rootVvid,
+                contenteditable1Index,
+                p1Vvid,
+                1,
+                contenteditable1Vvid,
+                0);
+
+        // From the end of a contenteditable to outside it.
+        setAndAssertExtendedSelection(
+                rootVvid, rootVvid, contenteditable1Index + 1, p2Vvid, 5, p2Vvid, 0, p2Vvid, 5);
+
+        // From inside one contenteditable to inside another.
+        Assert.assertEquals(
+                false,
+                selectTextOnUiThreadAndWaitForSelectionEvent(
+                        rootVvid, contenteditable1Vvid, 5, contenteditable2Vvid, 5));
     }
 
     /** Test extended selection on a multiline paragraph. */
@@ -3158,7 +3238,6 @@ public class WebContentsAccessibilityTest {
         // Find node.
         int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
 
-        printAccessibilityNodeInfoTree();
         AccessibilityNodeInfoCompat buttonNode = createAccessibilityNodeInfo(buttonVvid);
 
         // TODO(crbug.com/500206508): This should be true. Fix the issue and add the rest
