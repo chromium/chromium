@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskHelper.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskId.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorUtils.java",
     "java/src/org/chromium/chrome/browser/actor/NoOpActorForegroundServiceController.java",
     "java/src/org/chromium/chrome/browser/actor/OffscreenRenderingManager.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinator.java",

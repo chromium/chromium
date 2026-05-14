@@ -144,7 +144,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                 taskId, newState, isActivityVisibleForTask(taskId));
 
         // Any task that is not completed is considered active for the foreground service.
-        if (!isCompletedState(newState)) {
+        if (!ActorUtils.isCompletedState(newState)) {
             mActiveTaskIds.add(taskId);
         } else {
             mActiveTaskIds.remove(taskId);
@@ -160,12 +160,6 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         if (mNotificationService == null) return false;
         ActorTask task = mNotificationService.getTask(taskId);
         return task != null && mServiceController.isActivityVisibleForTabs(task.getTabs());
-    }
-
-    private boolean isCompletedState(@ActorTaskState int state) {
-        return state == ActorTaskState.FINISHED
-                || state == ActorTaskState.FAILED
-                || state == ActorTaskState.CANCELLED;
     }
 
     /** Process the current task state and initiate any needed service actions. */

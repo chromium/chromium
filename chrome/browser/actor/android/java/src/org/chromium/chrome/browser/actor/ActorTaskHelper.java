@@ -55,10 +55,7 @@ public class ActorTaskHelper implements ActorKeyedService.Observer {
         ActorKeyedService service = maybeGetActorService();
         if (service == null) return false;
         for (ActorTask task : service.getActiveTasks()) {
-            int state = task.getState();
-            if (state == ActorTaskState.CREATED
-                    || state == ActorTaskState.ACTING
-                    || state == ActorTaskState.REFLECTING) {
+            if (ActorUtils.isRunningState(task.getState())) {
                 return true;
             }
         }

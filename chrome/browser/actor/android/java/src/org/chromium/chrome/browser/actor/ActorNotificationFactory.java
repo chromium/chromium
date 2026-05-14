@@ -74,12 +74,9 @@ public class ActorNotificationFactory {
                         .setLocalOnly(true)
                         .setSilent(isSilent);
 
-        if (state == ActorTaskState.ACTING
-                || state == ActorTaskState.REFLECTING
-                || state == ActorTaskState.CREATED) {
+        if (ActorUtils.isRunningState(state)) {
             return buildRunningNotification(builder, context, task, notificationId);
-        } else if (state == ActorTaskState.PAUSED_BY_ACTOR
-                || state == ActorTaskState.PAUSED_BY_USER) {
+        } else if (ActorUtils.isPausedState(state)) {
             return buildPausedNotification(builder, context, task, notificationId);
         } else if (state == ActorTaskState.WAITING_ON_USER) {
             return buildUserInputNotification(builder, context, task, notificationId);
@@ -103,12 +100,10 @@ public class ActorNotificationFactory {
     }
 
     private static @NotificationCategory int getNotificationCategory(@ActorTaskState int state) {
-        if (state == ActorTaskState.ACTING
-                || state == ActorTaskState.REFLECTING
-                || state == ActorTaskState.CREATED) {
+        if (ActorUtils.isRunningState(state)) {
             return NotificationCategory.RUNNING;
         }
-        if (state == ActorTaskState.PAUSED_BY_ACTOR || state == ActorTaskState.PAUSED_BY_USER) {
+        if (ActorUtils.isPausedState(state)) {
             return NotificationCategory.PAUSED;
         }
         if (state == ActorTaskState.WAITING_ON_USER) return NotificationCategory.USER_INPUT;
