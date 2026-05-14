@@ -52,6 +52,7 @@
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
 #include "sql/sqlite_result_code.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "sql/test/drive_error_test_vfs.h"
@@ -2981,6 +2982,7 @@ TEST_F(DatabaseDiskFullTest, RazeFailsWhenDiskIsFull) {
   vfs_.set_drive_full(true);
 
   EXPECT_FALSE(db.Raze());
+  EXPECT_THAT(vfs_.errors_produced(), Contains(SqliteErrorCode::kFullDisk));
   EXPECT_THAT(ReadInts(db, "SELECT i FROM foo"), Optional(ElementsAre(42)));
 }
 
