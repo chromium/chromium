@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -36,6 +35,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_PROVIDER;
 import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
 
+import android.annotation.StringRes;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
@@ -2018,7 +2018,6 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
                 modelList, "1 tab", 1, /* isIncognito= */ false);
     }
@@ -2039,8 +2038,56 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, "1 tab", 1, /* isIncognito= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testSubmenuSelection() {
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+        mTabContextMenuCoordinator.showMenu(
+                new RectProvider(new Rect(0, 0, 100, 100)),
+                new AnchorInfo(TAB_ID, List.of(TAB_ID)));
+
+        // Click into "Add to group" submenu.
+        ListItem addToGroupItem =
+                findItemByTitle(
+                        modelList,
+                        mActivity
+                                .getResources()
+                                .getQuantityString(R.plurals.add_tab_to_group_menu_item, 1));
+        assertNotNull("Add to group item should be present", addToGroupItem);
+        addToGroupItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        // Verify that the top item of the submenu is selected.
+        ListView listView =
+                mTabContextMenuCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.tab_group_action_menu_list);
+        assertEquals(
+                "Expected 1st item to be selected after navigating into submenu",
+                0,
+                listView.getSelectedItemPosition());
+
+        // Click back to parent menu.
+        ListItem headerItem = findItemByType(modelList, SUBMENU_HEADER);
+        assertNotNull("Submenu header should be present", headerItem);
+        headerItem.model.get(CLICK_LISTENER).onClick(mView);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify that the top item of the parent menu is selected.
+        assertEquals(
+                "Expected 1st item to be selected after navigating out of submenu",
+                0,
+                listView.getSelectedItemPosition());
+
+        mTabContextMenuCoordinator.destroyMenuForTesting();
     }
 
     @Test
@@ -2052,51 +2099,6 @@ public class TabContextMenuCoordinatorUnitTest {
                 COLLABORATION_ID,
                 /* listViewTouchTracker= */ null);
         verify(mTabUngrouper, times(1)).ungroupTabs(Collections.singletonList(mTab1), true, true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testShareUrl() {
-        mOnItemClickedCallback.onClick(
-                R.id.share_tab,
-                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
-                COLLABORATION_ID,
-                /* listViewTouchTracker= */ null);
-        verify(mShareDelegate, times(1)).share(mTab1, false, TAB_STRIP_CONTEXT_MENU);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testCloseTab_nullListViewTouchTracker() {
-        testCloseTab(/* listViewTouchTracker= */ null, /* shouldAllowUndo= */ true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testCloseTab_clickWithTouch() {
-        long downMotionTime = SystemClock.uptimeMillis();
-        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
-        listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventTestUtils.createTouchMotionInfo(
-                        downMotionTime,
-                        /* eventTime= */ downMotionTime + 50,
-                        MotionEvent.ACTION_UP));
-
-        testCloseTab(listViewTouchTracker, /* shouldAllowUndo= */ true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testCloseTab_clickWithMouse() {
-        long downMotionTime = SystemClock.uptimeMillis();
-        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
-        listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventTestUtils.createMouseMotionInfo(
-                        downMotionTime,
-                        /* eventTime= */ downMotionTime + 50,
-                        MotionEvent.ACTION_UP));
-
-        testCloseTab(listViewTouchTracker, /* shouldAllowUndo= */ false);
     }
 
     @Test
@@ -2154,6 +2156,308 @@ public class TabContextMenuCoordinatorUnitTest {
                         /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
                         /* bringToFront= */ true);
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabLeft() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        String moveLeftTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1);
+        ListItem moveLeftItem = findItemByTitle(modelList, moveLeftTitle);
+        assertNotNull("Move left item should be present", moveLeftItem);
+        moveLeftItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabLeft_firstTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        assertNull(
+                "Did not expect any item to have 'Move left' title",
+                findItemByTitle(
+                        modelList,
+                        mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1)));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabRight() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        String moveRightTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1);
+        ListItem moveRightItem = findItemByTitle(modelList, moveRightTitle);
+        assertNotNull("Move right item should be present", moveRightItem);
+        moveRightItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabRight_lastTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        assertNull(
+                "Did not expect any item to have 'Move right' title",
+                findItemByTitle(
+                        modelList,
+                        mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1)));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabStart_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        String moveRightTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1);
+        ListItem moveRightItem = findItemByTitle(modelList, moveRightTitle);
+        assertNotNull("Move right item should be present", moveRightItem);
+        moveRightItem.model.get(CLICK_LISTENER).onClick(mView);
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabStart_firstTab_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        // In RTL, moving toward the start is "Move right". This option should not be available for
+        // the first tab.
+        assertNull(
+                "Did not expect any item to have 'Move right' title",
+                findItemByTitle(
+                        modelList,
+                        mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1)));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabEnd_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        String moveLeftTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1);
+        ListItem moveLeftItem = findItemByTitle(modelList, moveLeftTitle);
+        assertNotNull("Move left item should be present", moveLeftItem);
+        moveLeftItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabEnd_lastTab_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        // In RTL, moving toward the end is "Move left". This option should not be available for
+        // the last tab.
+        assertNull(
+                "Did not expect any item to have 'Move left' title",
+                findItemByTitle(
+                        modelList,
+                        mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1)));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabLeft_firstUnpinnedTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        assertNull(
+                "Expected no 'Move left' title if tab to the left is pinned",
+                findItemByTitle(
+                        modelList,
+                        mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1)));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabRight_pinnedTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        assertNull(
+                "Did not expect pinned tab menu to have 'Move left' title",
+                findItemByTitle(
+                        modelList,
+                        mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1)));
+        assertNull(
+                "Did not expect pinned tab menu to have 'Move right' title",
+                findItemByTitle(
+                        modelList,
+                        mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1)));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabLeft_unpinnedTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        String moveLeftTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1);
+        ListItem moveLeftItem = findItemByTitle(modelList, moveLeftTitle);
+        assertNotNull("Move left item should be present", moveLeftItem);
+        moveLeftItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabsLeft() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.indexOf(mTab2)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(4);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+
+        String moveLeftTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 2);
+        ListItem moveLeftItem = findItemByTitle(modelList, moveLeftTitle);
+        assertNotNull("Move left item should be present", moveLeftItem);
+        moveLeftItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1))
+                .accept(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)), true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveTabsRight() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.indexOf(mTab2)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(4);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+
+        String moveRightTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 2);
+        ListItem moveRightItem = findItemByTitle(modelList, moveRightTitle);
+        assertNotNull("Move right item should be present", moveRightItem);
+        moveRightItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1))
+                .accept(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)), false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testShareUrl() {
+        mOnItemClickedCallback.onClick(
+                R.id.share_tab,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+        verify(mShareDelegate, times(1)).share(mTab1, false, TAB_STRIP_CONTEXT_MENU);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testDuplicateTab_singleTab() {
+        mOnItemClickedCallback.onClick(
+                R.id.duplicate_tab_menu_id,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
+        verify(mTabModel, times(1)).duplicateTab(mTab1);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testDuplicateTabs_multipleTabs() {
+        doReturn(null).when(mTabModel).duplicateTab(any());
+        mOnItemClickedCallback.onClick(
+                R.id.duplicate_tab_menu_id,
+                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
+        verify(mTabModel, times(1)).duplicateTab(mTab1);
+        verify(mTabModel, times(1)).duplicateTab(mTab2);
     }
 
     @Test
@@ -2259,437 +2563,6 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @Feature("Tab Strip Context Menu")
-    public void testDuplicateTab_singleTab() {
-        mOnItemClickedCallback.onClick(
-                R.id.duplicate_tab_menu_id,
-                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
-                /* collaborationId= */ null,
-                /* listViewTouchTracker= */ null);
-        verify(mTabModel, times(1)).duplicateTab(mTab1);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testDuplicateTabs_multipleTabs() {
-        doReturn(null).when(mTabModel).duplicateTab(any());
-        mOnItemClickedCallback.onClick(
-                R.id.duplicate_tab_menu_id,
-                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
-                /* collaborationId= */ null,
-                /* listViewTouchTracker= */ null);
-        verify(mTabModel, times(1)).duplicateTab(mTab1);
-        verify(mTabModel, times(1)).duplicateTab(mTab2);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_singleTab_closeOtherTabs_featureEnabled() {
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        ListItem closeOtherItem = findItemByMenuId(modelList, R.id.close_other_tabs_menu_id);
-        assertNull(closeOtherItem);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testCloseOtherTabs_singleTab() {
-        mTabModel.addTab(
-                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTabOutsideOfGroup,
-                -1,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND);
-
-        mOnItemClickedCallback.onClick(
-                R.id.close_other_tabs_menu_id,
-                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
-                /* collaborationId= */ null,
-                /* listViewTouchTracker= */ null);
-
-        verify(mTabRemover)
-                .closeTabs(
-                        TabClosureParams.closeTabs(List.of(mTab2, mTabOutsideOfGroup))
-                                .hideTabGroups(true)
-                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
-                                .build(),
-                        /* allowDialog= */ true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
-    })
-    public void testListMenuItems_singleTab_closeTabsToTheRight_lastTab() {
-        mTabModel.addTab(
-                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        assertNull(findItemByMenuId(modelList, R.id.close_tabs_to_the_right_menu_id));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testCloseTabsToTheRight_singleTab() {
-        mTabModel.addTab(
-                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTabOutsideOfGroup,
-                -1,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND);
-
-        mOnItemClickedCallback.onClick(
-                R.id.close_tabs_to_the_right_menu_id,
-                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
-                /* collaborationId= */ null,
-                /* listViewTouchTracker= */ null);
-
-        verify(mTabRemover)
-                .closeTabs(
-                        TabClosureParams.closeTabs(List.of(mTab2, mTabOutsideOfGroup))
-                                .hideTabGroups(true)
-                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
-                                .build(),
-                        /* allowDialog= */ true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
-    })
-    public void testListMenuItems_multipleTabs_closeOtherTabs_featureEnabled() {
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
-
-        ListItem closeOtherItem = findItemByMenuId(modelList, R.id.close_other_tabs_menu_id);
-        assertNull(closeOtherItem);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testCloseOtherTabs_multipleTabs() {
-        mTabModel.addTab(
-                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTabOutsideOfGroup,
-                -1,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND);
-
-        mOnItemClickedCallback.onClick(
-                R.id.close_other_tabs_menu_id,
-                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
-                /* collaborationId= */ null,
-                /* listViewTouchTracker= */ null);
-
-        verify(mTabRemover)
-                .closeTabs(
-                        TabClosureParams.closeTabs(List.of(mTabOutsideOfGroup))
-                                .hideTabGroups(true)
-                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
-                                .build(),
-                        /* allowDialog= */ true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testCloseTabsToTheRight_multipleTabs() {
-        mTabModel.addTab(
-                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTabOutsideOfGroup,
-                -1,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND);
-
-        mOnItemClickedCallback.onClick(
-                R.id.close_tabs_to_the_right_menu_id,
-                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
-                /* collaborationId= */ null,
-                /* listViewTouchTracker= */ null);
-
-        verify(mTabRemover)
-                .closeTabs(
-                        TabClosureParams.closeTabs(List.of(mTabOutsideOfGroup))
-                                .hideTabGroups(true)
-                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
-                                .build(),
-                        /* allowDialog= */ true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabLeft() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        modelList.get(3).model.get(CLICK_LISTENER).onClick(mView);
-
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabLeft_firstTab() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(0);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE)) continue;
-            assertNotEquals(
-                    "Did not expect any item to have 'Move left' title",
-                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
-                    listItem.model.get(TITLE));
-        }
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabRight() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        modelList.get(4).model.get(CLICK_LISTENER).onClick(mView);
-
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), false);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabRight_lastTab() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(2);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE)) continue;
-            assertNotEquals(
-                    "Did not expect any item to have 'Move right' title",
-                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
-                    listItem.model.get(TITLE));
-        }
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabStart_RTL() {
-        LocalizationUtils.setRtlForTesting(true);
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        // In RTL, the item to move toward the start is visually "Move right". It's at the same
-        // position as "Move left" in LTR.
-        modelList.get(3).model.get(CLICK_LISTENER).onClick(mView);
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), false);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabStart_firstTab_RTL() {
-        LocalizationUtils.setRtlForTesting(true);
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(0);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        // In RTL, moving toward the start is "Move right". This option should not be available for
-        // the first tab.
-        for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE)) continue;
-            assertNotEquals(
-                    "Did not expect any item to have 'Move right' title",
-                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
-                    listItem.model.get(TITLE));
-        }
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabEnd_RTL() {
-        LocalizationUtils.setRtlForTesting(true);
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        // In RTL, the item to move toward the end is visually "Move left". It's at the same
-        // position as "Move right" in LTR.
-        modelList.get(4).model.get(CLICK_LISTENER).onClick(mView);
-
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabEnd_lastTab_RTL() {
-        LocalizationUtils.setRtlForTesting(true);
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(2);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        // In RTL, moving toward the end is "Move left". This option should not be available for
-        // the last tab.
-        for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE)) continue;
-            assertNotEquals(
-                    "Did not expect any item to have 'Move left' title",
-                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
-                    listItem.model.get(TITLE));
-        }
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabLeft_firstUnpinnedTab() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE)) continue;
-            assertNotEquals(
-                    "Expected no 'Move left' title if tab to the left is pinned",
-                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
-                    listItem.model.get(TITLE));
-        }
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabRight_pinnedTab() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTab1.getIsPinned()).thenReturn(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(0);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE)) continue;
-            assertNotEquals(
-                    "Did not expect pinned tab menu to have 'Move left' title",
-                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
-                    listItem.model.get(TITLE));
-            assertNotEquals(
-                    "Did not expect pinned tab menu to have 'Move right' title",
-                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
-                    listItem.model.get(TITLE));
-        }
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabLeft_unpinnedTab() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(2);
-        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        modelList.get(3).model.get(CLICK_LISTENER).onClick(mView);
-
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabsLeft() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.indexOf(mTab2)).thenReturn(2);
-        when(mTabModel.getCount()).thenReturn(4);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
-
-        modelList.get(3).model.get(CLICK_LISTENER).onClick(mView);
-
-        verify(mReorderFunction, times(1))
-                .accept(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)), true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveTabsRight() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.indexOf(mTab2)).thenReturn(2);
-        when(mTabModel.getCount()).thenReturn(4);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
-
-        modelList.get(4).model.get(CLICK_LISTENER).onClick(mView);
-
-        verify(mReorderFunction, times(1))
-                .accept(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)), false);
-    }
-
-    @Test
     public void testAreAllTabsMuted_earlyReturn() {
         List<Tab> tabs = List.of(mTab1, mTab2);
 
@@ -2758,12 +2631,45 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseTab_nullListViewTouchTracker() {
+        testCloseTab(/* listViewTouchTracker= */ null, /* shouldAllowUndo= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseTab_clickWithTouch() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                MotionEventTestUtils.createTouchMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
+
+        testCloseTab(listViewTouchTracker, /* shouldAllowUndo= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseTab_clickWithMouse() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                MotionEventTestUtils.createMouseMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
+
+        testCloseTab(listViewTouchTracker, /* shouldAllowUndo= */ false);
+    }
+
+    @Test
     public void testListMenuItems_closeAllTabs() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
         ListItem closeAllTabsItem = findItemByMenuId(modelList, R.id.close_all_tabs_menu_id);
         assertNotNull(closeAllTabsItem);
         assertEquals(R.string.menu_close_all_tabs, closeAllTabsItem.model.get(TITLE_ID));
@@ -2790,7 +2696,6 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
         ListItem closeAllTabsItem =
                 findItemByMenuId(modelList, R.id.close_all_incognito_tabs_menu_id);
         assertNotNull(closeAllTabsItem);
@@ -2812,44 +2717,155 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    public void testSubmenuSelection() {
+    public void testListMenuItems_singleTab_closeOtherTabs_featureEnabled() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-        mTabContextMenuCoordinator.showMenu(
-                new RectProvider(new Rect(0, 0, 100, 100)),
-                new AnchorInfo(TAB_ID, List.of(TAB_ID)));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        // Click into "Add to group" submenu.
-        var addToGroupItem = modelList.get(1);
-        addToGroupItem.model.get(CLICK_LISTENER).onClick(mView);
+        ListItem closeOtherItem = findItemByMenuId(modelList, R.id.close_other_tabs_menu_id);
+        assertNull(closeOtherItem);
+    }
 
-        RobolectricUtil.runAllBackgroundAndUi();
-        // Verify that the top item of the submenu is selected.
-        ListView listView =
-                mTabContextMenuCoordinator
-                        .getContentViewForTesting()
-                        .findViewById(R.id.tab_group_action_menu_list);
-        assertEquals(
-                "Expected 1st item to be selected after navigating into submenu",
-                0,
-                listView.getSelectedItemPosition());
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseOtherTabs_singleTab() {
+        mTabModel.addTab(
+                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                -1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
 
-        // Click back to parent menu.
-        var headerItem = modelList.get(0);
-        headerItem.model.get(CLICK_LISTENER).onClick(mView);
-        RobolectricUtil.runAllBackgroundAndUi();
+        mOnItemClickedCallback.onClick(
+                R.id.close_other_tabs_menu_id,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
 
-        // Verify that the top item of the parent menu is selected.
-        assertEquals(
-                "Expected 1st item to be selected after navigating out of submenu",
-                0,
-                listView.getSelectedItemPosition());
+        verify(mTabRemover)
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(mTab2, mTabOutsideOfGroup))
+                                .hideTabGroups(true)
+                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                .build(),
+                        /* allowDialog= */ true);
+    }
 
-        mTabContextMenuCoordinator.destroyMenuForTesting();
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
+    })
+    public void testListMenuItems_multipleTabs_closeOtherTabs_featureEnabled() {
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+
+        ListItem closeOtherItem = findItemByMenuId(modelList, R.id.close_other_tabs_menu_id);
+        assertNull(closeOtherItem);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseOtherTabs_multipleTabs() {
+        mTabModel.addTab(
+                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                -1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        mOnItemClickedCallback.onClick(
+                R.id.close_other_tabs_menu_id,
+                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
+
+        verify(mTabRemover)
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(mTabOutsideOfGroup))
+                                .hideTabGroups(true)
+                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                .build(),
+                        /* allowDialog= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
+    })
+    public void testListMenuItems_singleTab_closeTabsToTheRight_lastTab() {
+        mTabModel.addTab(
+                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        assertNull(findItemByMenuId(modelList, R.id.close_tabs_to_the_right_menu_id));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseTabsToTheRight_singleTab() {
+        mTabModel.addTab(
+                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                -1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        mOnItemClickedCallback.onClick(
+                R.id.close_tabs_to_the_right_menu_id,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
+
+        verify(mTabRemover)
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(mTab2, mTabOutsideOfGroup))
+                                .hideTabGroups(true)
+                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                .build(),
+                        /* allowDialog= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseTabsToTheRight_multipleTabs() {
+        mTabModel.addTab(
+                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                -1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        mOnItemClickedCallback.onClick(
+                R.id.close_tabs_to_the_right_menu_id,
+                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
+
+        verify(mTabRemover)
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(mTabOutsideOfGroup))
+                                .hideTabGroups(true)
+                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                .build(),
+                        /* allowDialog= */ true);
     }
 
     // --------------------------------------------------------------//
@@ -2862,7 +2878,14 @@ public class TabContextMenuCoordinatorUnitTest {
             int expectedTabCount,
             boolean isIncognito) {
         int modelListSizeBeforeNav = modelList.size();
-        var addToGroupItem = modelList.get(1);
+        ListItem addToGroupItem =
+                findItemByTitle(
+                        modelList,
+                        mActivity
+                                .getResources()
+                                .getQuantityString(
+                                        R.plurals.add_tab_to_group_menu_item, expectedTabCount));
+        assertNotNull("Add to group item should be present", addToGroupItem);
         assertTrue("Expected 'Add to group' item to be enabled", addToGroupItem.model.get(ENABLED));
         var subMenu = addToGroupItem.model.get(SUBMENU_PROVIDER).get();
         assertNotNull("Submenu should be present", subMenu);
@@ -2875,9 +2898,8 @@ public class TabContextMenuCoordinatorUnitTest {
                 "Expected 3 items to be displayed, but was " + getDebugString(modelList),
                 3,
                 modelList.size());
-        ListItem headerItem = modelList.get(0);
-        assertEquals(
-                "Expected 1st submenu item to be a back header", SUBMENU_HEADER, headerItem.type);
+        ListItem headerItem = findItemByType(modelList, SUBMENU_HEADER);
+        assertNotNull("Submenu back header should be present", headerItem);
         assertEquals(
                 "Expected submenu back header to have the same text as submenu parent item",
                 mActivity
@@ -2885,20 +2907,21 @@ public class TabContextMenuCoordinatorUnitTest {
                         .getQuantityString(R.plurals.add_tab_to_group_menu_item, expectedTabCount),
                 headerItem.model.get(TITLE));
         assertTrue("Expected back header to be enabled", headerItem.model.get(ENABLED));
+        ListItem newGroupItem = findItemByTitleId(modelList, R.string.create_new_group_row_title);
+        assertNotNull("New group item should be present in submenu", newGroupItem);
         assertEquals(
-                "Expected 2nd submenu item to have MENU_ITEM type",
+                "Expected submenu item for creating a new group to have MENU_ITEM type",
                 MENU_ITEM,
-                modelList.get(1).type);
+                newGroupItem.type);
+        assertTrue("Expected New Group item to be enabled", newGroupItem.model.get(ENABLED));
+
+        ListItem tabGroupRowItem = findItemByTitle(modelList, expectedTabGroupName);
+        assertNotNull("Tab group row item should be present in submenu", tabGroupRowItem);
         assertEquals(
-                "Expected 2nd submenu item to be New Group",
-                R.string.create_new_group_row_title,
-                modelList.get(1).model.get(TITLE_ID));
-        assertTrue("Expected New Group item to be enabled", modelList.get(1).model.get(ENABLED));
-        assertEquals(
-                "Expected 3rd submenu child to have MENU_ITEM type",
+                "Expected submenu child for existing group to have MENU_ITEM type",
                 MENU_ITEM,
-                modelList.get(2).type);
-        PropertyModel tabGroupRowModel = modelList.get(2).model;
+                tabGroupRowItem.type);
+        PropertyModel tabGroupRowModel = tabGroupRowItem.model;
         assertEquals(
                 "Expected 3rd submenu child to contain the tab group identifier",
                 expectedTabGroupName,
@@ -2947,6 +2970,38 @@ public class TabContextMenuCoordinatorUnitTest {
                 if (item.model.get(ListMenuItemProperties.MENU_ITEM_ID) == menuId) {
                     return item;
                 }
+            }
+        }
+        return null;
+    }
+
+    private @Nullable ListItem findItemByType(ModelList modelList, int type) {
+        for (int i = 0; i < modelList.size(); i++) {
+            ListItem item = modelList.get(i);
+            if (item.type == type) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    private @Nullable ListItem findItemByTitle(ModelList modelList, String title) {
+        for (int i = 0; i < modelList.size(); i++) {
+            ListItem item = modelList.get(i);
+            if (item.model.containsKey(ListMenuItemProperties.TITLE)
+                    && title.equals(item.model.get(ListMenuItemProperties.TITLE))) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    private @Nullable ListItem findItemByTitleId(ModelList modelList, @StringRes int titleId) {
+        for (int i = 0; i < modelList.size(); i++) {
+            ListItem item = modelList.get(i);
+            if (item.model.containsKey(ListMenuItemProperties.TITLE_ID)
+                    && item.model.get(ListMenuItemProperties.TITLE_ID) == titleId) {
+                return item;
             }
         }
         return null;
