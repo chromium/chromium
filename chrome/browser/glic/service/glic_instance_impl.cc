@@ -816,6 +816,10 @@ void GlicInstanceImpl::FocusIfActive() {
   web_contents->Focus();
 }
 
+void GlicInstanceImpl::NotifyActorTaskListRowClicked(int32_t task_id) {
+  host_.NotifyActorTaskListRowClicked(task_id);
+}
+
 void GlicInstanceImpl::GetExperimentalTriggeringUpdates(
     mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
     base::OnceCallback<void(bool)> success_status_callback) {

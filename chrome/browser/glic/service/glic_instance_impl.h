@@ -180,11 +180,12 @@ class GlicInstanceImpl : public GlicInstance,
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
   bool ContextAccessIndicatorEnabled();
   void CloseAllEmbedders();
+  Host& host() override;
 
   // GlicInstance:
-  Host& host() override;
   void SendAdditionalContext(mojom::AdditionalContextPtr context) override;
   void FocusIfActive() override;
+  void NotifyActorTaskListRowClicked(int32_t task_id) override;
   void GetExperimentalTriggeringUpdates(
       mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
       base::OnceCallback<void(bool)> success_status_callback) override;

@@ -98,6 +98,10 @@ class GlicInstance {
   // More specifically, it will focus the active embedder.
   virtual void FocusIfActive() = 0;
 
+  // Notifies the instance that a row in the actor task list bubble was clicked.
+  // TODO(b/512866173): Look into migrating this usage to the invoke API.
+  virtual void NotifyActorTaskListRowClicked(int32_t task_id) = 0;
+
   // Register a handler to observe experimental triggering related updates.
   // The callback informs if the registration operations was successful or not.
   virtual void GetExperimentalTriggeringUpdates(

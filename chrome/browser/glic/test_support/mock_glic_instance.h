@@ -68,6 +68,7 @@ class MockGlicInstance : public GlicInstance {
               (mojom::AdditionalContextPtr),
               (override));
   MOCK_METHOD(void, FocusIfActive, (), (override));
+  MOCK_METHOD(void, NotifyActorTaskListRowClicked, (int32_t), (override));
 
   base::WeakPtr<MockGlicInstance> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
