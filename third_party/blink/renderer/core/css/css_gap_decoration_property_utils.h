@@ -87,13 +87,9 @@ class CORE_EXPORT CSSGapDecorationUtils {
       GapGeometry::ContainerType container_type,
       GridTrackSizingDirection direction);
 
-  // Determines if the segment at `intersection_index` within the gap at
-  // `gap_index` is visible based on `rule_visibility`.
-  static bool IsRuleSegmentVisible(GridTrackSizingDirection track_direction,
-                                   wtf_size_t gap_index,
-                                   wtf_size_t intersection_index,
-                                   RuleVisibilityItems rule_visibility,
-                                   const GapGeometry& gap_geometry);
+  // Determines if a segment with a pre-resolved state is visible.
+  static bool IsRuleSegmentVisible(GapSegmentState state,
+                                   RuleVisibilityItems rule_visibility);
 
   // Returns true if any inset property in the given direction uses
   // `overlap-join`.

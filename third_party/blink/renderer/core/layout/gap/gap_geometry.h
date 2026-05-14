@@ -341,6 +341,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       wtf_size_t primary_index,
       wtf_size_t secondary_index) const;
 
+  const GapSegmentStateRanges* GetGapSegmentStateRangesForGap(
+      GridTrackSizingDirection track_direction,
+      wtf_size_t gap_index) const;
+
   // Determines if a given track at `secondary_index` is covered for gap at
   // `primary_index`. For the given `track_direction`, this function looks up
   // any spanners associated with the gap at `primary_index`. If no spanners
@@ -371,6 +375,12 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       wtf_size_t primary_index,
       wtf_size_t secondary_index,
       const Vector<GapIntersection>& intersections) const;
+
+  // Derives the blocked status for an intersection from precomputed
+  // gap segment states, without querying the ranges.
+  static BlockedStatus BlockedStatusFromGapStates(
+      const Vector<GapIntersection>& intersections,
+      wtf_size_t index);
 
   blink::String ToString(bool verbose = false) const;
 
@@ -439,7 +449,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // 3. The content-end edge
   void GenerateCrossIntersectionListForGrid(
       GridTrackSizingDirection direction,
-      Vector<GapIntersection>& intersections) const;
+      Vector<GapIntersection>& intersections,
+      GapSegmentStateCursor& cursor) const;
 
   // Fills `intersections` for a flex cross gap at `gap_index`, which includes:
   // 1. The gap's start offset
@@ -448,15 +459,18 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   void GenerateCrossIntersectionListForFlex(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections) const;
+      Vector<GapIntersection>& intersections,
+      GapSegmentStateCursor& cursor) const;
 
-  // Fills `intersections` for a multicol cross gap at `gap_index`, which includes:
+  // Fills `intersections` for a multicol cross gap at `gap_index`, which
+  // includes:
   // 1. The start block offset of the cross gap.
   // 2. The offset of any main gaps that intersect this cross gap.
   void GenerateCrossIntersectionListForMulticol(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections) const;
+      Vector<GapIntersection>& intersections,
+      GapSegmentStateCursor& cursor) const;
 
   // Computes the end offset for a flex or multicol cross gap at
   // `cross_gap_index`. The end offset is either:

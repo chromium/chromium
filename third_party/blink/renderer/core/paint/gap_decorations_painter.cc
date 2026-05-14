@@ -31,9 +31,8 @@ bool ShouldMoveIntersectionStartForward(
     const GapGeometry& gap_geometry,
     const Vector<GapIntersection>& intersections) {
   const bool is_rule_segment_visible =
-      CSSGapDecorationUtils::IsRuleSegmentVisible(track_direction, gap_index,
-                                                  start_index, rule_visibility,
-                                                  gap_geometry);
+      CSSGapDecorationUtils::IsRuleSegmentVisible(
+          intersections[start_index].SegmentState(), rule_visibility);
 
   // For flex containers, `start_index` cannot land on an open overlap state
   // i.e. the beginning of an overlap window, because that would start the
@@ -54,8 +53,7 @@ bool ShouldMoveIntersectionStartForward(
   }
 
   const BlockedStatus blocked_status =
-      gap_geometry.GetIntersectionBlockedStatus(track_direction, gap_index,
-                                                start_index, intersections);
+      GapGeometry::BlockedStatusFromGapStates(intersections, start_index);
   // Advance start if the segment it's blocked after or not visible.
   if (blocked_status.HasBlockedStatus(BlockedStatus::kBlockedAfter) ||
       !is_rule_segment_visible) {
@@ -77,9 +75,8 @@ bool ShouldMoveIntersectionEndForward(
     const RuleVisibilityItems rule_visibility,
     const GapGeometry& gap_geometry,
     const Vector<GapIntersection>& intersections) {
-  if (!CSSGapDecorationUtils::IsRuleSegmentVisible(track_direction, gap_index,
-                                                   end_index, rule_visibility,
-                                                   gap_geometry)) {
+  if (!CSSGapDecorationUtils::IsRuleSegmentVisible(
+          intersections[end_index].SegmentState(), rule_visibility)) {
     return false;
   }
 
@@ -88,8 +85,7 @@ bool ShouldMoveIntersectionEndForward(
   }
 
   const BlockedStatus blocked_status =
-      gap_geometry.GetIntersectionBlockedStatus(track_direction, gap_index,
-                                                end_index, intersections);
+      GapGeometry::BlockedStatusFromGapStates(intersections, end_index);
 
   // For `kNormal` rule break, decorations break only at "T"
   // intersections, so we simply check that the intersection isn't blocked
@@ -288,12 +284,15 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     gap_geometry.GenerateIntersectionListForGap(track_direction, gap_index,
                                                 intersections);
 
-    const wtf_size_t last_intersection_index = intersections.size() - 1;
+    const wtf_size_t intersection_count = intersections.size();
+
+    CHECK_GE(intersection_count, 2u);
+    const wtf_size_t last_intersection_index = intersection_count - 1;
     wtf_size_t start = 0;
     while (start < last_intersection_index) {
       wtf_size_t end = start;
       AdjustIntersectionIndexPair(track_direction, start, end,
-                                  intersections.size(), gap_index, rule_break,
+                                  intersection_count, gap_index, rule_break,
                                   rule_visibility, gap_geometry, intersections);
       if (start >= end) {
         // Break because there's no gap segment to paint.

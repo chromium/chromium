@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_GAP_INTERSECTION_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -59,6 +60,9 @@ class CORE_EXPORT GapIntersection {
   GapIntersection() = default;
 
   explicit GapIntersection(LayoutUnit offset) : offset_(offset) {}
+
+  GapIntersection(LayoutUnit offset, GapSegmentState segment_state)
+      : offset_(offset), segment_state_(segment_state) {}
 
   GapIntersection(LayoutUnit offset,
                   OverlapWindowState state,
@@ -125,6 +129,9 @@ class CORE_EXPORT GapIntersection {
     extra_state_->main_gap_index = index;
   }
 
+  const GapSegmentState& SegmentState() const { return segment_state_; }
+  void SetSegmentState(GapSegmentState state) { segment_state_ = state; }
+
  private:
   LayoutUnit offset_;
 
@@ -132,6 +139,9 @@ class CORE_EXPORT GapIntersection {
   // the main gap this intersection originated from and optional overlap window
   // state. Absent for aligned modes such as grid and multicol.
   std::optional<ExtraIntersectionState> extra_state_;
+
+  // Tracks whether this segment is blocked by a spanning item.
+  GapSegmentState segment_state_{GapSegmentState::kNone};
 };
 
 }  // namespace blink

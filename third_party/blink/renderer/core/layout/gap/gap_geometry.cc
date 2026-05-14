@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
@@ -205,6 +206,8 @@ void GapGeometry::GenerateMainIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
     Vector<GapIntersection>& intersections) const {
+  GapSegmentStateCursor cursor(
+      GetGapSegmentStateRangesForGap(direction, gap_index));
   // Multicol spanner main gaps don't correspond to a paintable gap.
   if (GetContainerType() == ContainerType::kMultiColumn) {
     CHECK_EQ(direction, kForRows);
@@ -217,7 +220,7 @@ void GapGeometry::GenerateMainIntersectionList(
 
   LayoutUnit content_start =
       direction == kForColumns ? content_block_start_ : content_inline_start_;
-  intersections.push_back(GapIntersection(content_start));
+  intersections.emplace_back(content_start, cursor.GetNextGapSegmentState());
 
   switch (GetContainerType()) {
     case ContainerType::kGrid:
@@ -229,8 +232,8 @@ void GapGeometry::GenerateMainIntersectionList(
       // cases the cross-gap inline offsets give the interior intersections.
       CHECK_EQ(GetMainDirection(), kForRows);
       for (const auto& cross_gap : GetCrossGaps()) {
-        intersections.push_back(
-            GapIntersection(cross_gap.GetGapOffset().inline_offset));
+        intersections.emplace_back(cross_gap.GetGapOffset().inline_offset,
+                                   cursor.GetNextGapSegmentState());
       }
       break;
     case ContainerType::kFlex:
@@ -240,7 +243,7 @@ void GapGeometry::GenerateMainIntersectionList(
 
   LayoutUnit content_end =
       direction == kForColumns ? content_block_end_ : content_inline_end_;
-  intersections.push_back(GapIntersection(content_end));
+  intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
 }
 
 void GapGeometry::GenerateMainIntersectionListForFlex(
@@ -318,9 +321,9 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
         // augment this intersection in place until we find the actual closing
         // edge, which can only be known when we hit an intersection that does
         // not overlap the current open window.
-        intersections.push_back(GapIntersection(
-            intersection_offset, OverlapWindowState::kWindowClose,
-            is_above_main_gap));
+        intersections.emplace_back(intersection_offset,
+                                   OverlapWindowState::kWindowClose,
+                                   is_above_main_gap);
       } else {
         CHECK(intersections.back().IsOverlapWindowClose());
         // Interiors and possible closing edge of a window: If the current
@@ -341,9 +344,9 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
       // Add the current intersection as a potential overlap window opening. If
       // the next intersection overlaps, this will be confirmed as the open edge
       // of a new overlap window. Otherwise, it will be cleared.
-      intersections.push_back(GapIntersection(intersection_offset,
-                                              OverlapWindowState::kWindowOpen,
-                                              is_above_main_gap));
+      intersections.emplace_back(intersection_offset,
+                                 OverlapWindowState::kWindowOpen,
+                                 is_above_main_gap);
     }
   };
 
@@ -421,25 +424,29 @@ void GapGeometry::GenerateCrossIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
     Vector<GapIntersection>& intersections) const {
+  GapSegmentStateCursor cursor(
+      GetGapSegmentStateRangesForGap(direction, gap_index));
   switch (GetContainerType()) {
     case ContainerType::kGrid: {
-      GenerateCrossIntersectionListForGrid(direction, intersections);
+      GenerateCrossIntersectionListForGrid(direction, intersections, cursor);
       break;
     }
     case ContainerType::kFlex: {
-      GenerateCrossIntersectionListForFlex(direction, gap_index, intersections);
+      GenerateCrossIntersectionListForFlex(direction, gap_index, intersections,
+                                           cursor);
       break;
     }
     case ContainerType::kMultiColumn:
       GenerateCrossIntersectionListForMulticol(direction, gap_index,
-                                               intersections);
+                                               intersections, cursor);
       break;
   }
 }
 
 void GapGeometry::GenerateCrossIntersectionListForGrid(
     GridTrackSizingDirection direction,
-    Vector<GapIntersection>& intersections) const {
+    Vector<GapIntersection>& intersections,
+    GapSegmentStateCursor& cursor) const {
   // For a grid cross gap:
   // - Intersections include:
   // 1. The content-start edge
@@ -450,22 +457,24 @@ void GapGeometry::GenerateCrossIntersectionListForGrid(
   LayoutUnit content_start =
       direction == kForColumns ? content_block_start_ : content_inline_start_;
 
-  intersections.push_back(GapIntersection(content_start));
+  intersections.emplace_back(content_start, cursor.GetNextGapSegmentState());
 
   for (const auto& main_gap : GetMainGaps()) {
-    intersections.push_back(GapIntersection(main_gap.GetGapOffset()));
+    intersections.emplace_back(main_gap.GetGapOffset(),
+                               cursor.GetNextGapSegmentState());
   }
 
   LayoutUnit content_end =
       direction == kForColumns ? content_block_end_ : content_inline_end_;
 
-  intersections.push_back(GapIntersection(content_end));
+  intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
 }
 
 void GapGeometry::GenerateCrossIntersectionListForFlex(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections) const {
+    Vector<GapIntersection>& intersections,
+    GapSegmentStateCursor& cursor) const {
   // For a flex cross gap:
   // - There are exactly two intersections:
   // 1. The gap's start offset
@@ -482,10 +491,11 @@ void GapGeometry::GenerateCrossIntersectionListForFlex(
   LayoutUnit offset = direction == kForColumns
                           ? cross_gap.GetGapOffset().block_offset
                           : cross_gap.GetGapOffset().inline_offset;
-  intersections.push_back(GapIntersection(offset));
+  intersections.emplace_back(offset, cursor.GetNextGapSegmentState());
   LayoutUnit end_offset_for_flex_cross_gap = ComputeEndOffsetForFlexCrossGap(
       gap_index, direction, cross_gap.EndsAtEdge());
-  intersections.push_back(GapIntersection(end_offset_for_flex_cross_gap));
+  intersections.emplace_back(end_offset_for_flex_cross_gap,
+                             cursor.GetNextGapSegmentState());
 
   // Each flex cross gap intersection needs to know which main gap it borders
   // so that `overlap-join` can look up the correct cross-direction decoration
@@ -523,7 +533,8 @@ void GapGeometry::GenerateCrossIntersectionListForFlex(
 void GapGeometry::GenerateCrossIntersectionListForMulticol(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections) const {
+    Vector<GapIntersection>& intersections,
+    GapSegmentStateCursor& cursor) const {
   // For multicol containers, the block offset of the intersections for a
   // `CrossGap` are the following:
   // - The start block offset of the cross gap.
@@ -537,11 +548,12 @@ void GapGeometry::GenerateCrossIntersectionListForMulticol(
   CHECK_LT(gap_index, GetCrossGaps().size());
   const CrossGap cross_gap = GetCrossGaps()[gap_index];
 
-  intersections.push_back(
-      GapIntersection(cross_gap.GetGapOffset().block_offset));
+  intersections.emplace_back(cross_gap.GetGapOffset().block_offset,
+                             cursor.GetNextGapSegmentState());
 
   for (const auto& main_gap : GetMainGaps()) {
-    intersections.push_back(GapIntersection(main_gap.GetGapOffset()));
+    intersections.emplace_back(main_gap.GetGapOffset(),
+                               cursor.GetNextGapSegmentState());
 
     // We mark intersections that are adjacent to spanner main gaps as an
     // "edge". This is so that the inset applies correctly to these
@@ -555,7 +567,8 @@ void GapGeometry::GenerateCrossIntersectionListForMulticol(
     }
   }
 
-  intersections.push_back(GapIntersection(content_block_end_));
+  intersections.emplace_back(content_block_end_,
+                             cursor.GetNextGapSegmentState());
 }
 
 LayoutUnit GapGeometry::ComputeEndOffsetForFlexCrossGap(
@@ -792,11 +805,14 @@ GapSegmentState GapGeometry::GetIntersectionGapSegmentState(
     return GapSegmentState(GapSegmentState::kNone);
   }
 
-  // Binary search to find the range containing secondary_index.
-  // `ranges` is sorted and processed in order at paint time.
-  //
-  // TODO(crbug.com/440123087): Since these are access in order we could
-  // potentially do it through an iterator to make this O(1).
+  // Binary search to find the range containing `secondary_index`.
+  // TODO(crbug.com/440123087): We still need this call for when computing the
+  // cross gap state ranges for certain scenarios (like `overlap-join`). We
+  // potentially can get rid of the binary search here and instead simply call
+  // `BlockedStatusFromGapStates` by using a cursor to compute the status of the
+  // relevant cross gap / intersection pair of each `GapIntersection` object,
+  // similar to what we are doing with the `GapSegmentStateCursor` when
+  // generating the intersection lists.
   auto it = std::lower_bound(
       gap_segment_state_ranges->begin(), gap_segment_state_ranges->end(),
       secondary_index,
@@ -836,6 +852,40 @@ BlockedStatus GapGeometry::GetIntersectionBlockedStatus(
   }
 
   return status;
+}
+
+// static
+BlockedStatus GapGeometry::BlockedStatusFromGapStates(
+    const Vector<GapIntersection>& intersections,
+    wtf_size_t index) {
+  CHECK_LT(index, intersections.size());
+  BlockedStatus status;
+  if (index > 0 && intersections[index - 1].SegmentState().HasGapStatus(
+                       GapSegmentState::kBlocked)) {
+    status.SetBlockedStatus(BlockedStatus::kBlockedBefore);
+  }
+  if (intersections[index].SegmentState().HasGapStatus(
+          GapSegmentState::kBlocked)) {
+    status.SetBlockedStatus(BlockedStatus::kBlockedAfter);
+  }
+  return status;
+}
+
+const GapSegmentStateRanges* GapGeometry::GetGapSegmentStateRangesForGap(
+    GridTrackSizingDirection track_direction,
+    wtf_size_t gap_index) const {
+  if (IsMainDirection(track_direction)) {
+    CHECK_LT(gap_index, main_gaps_.size());
+    if (main_gaps_[gap_index].HasGapSegmentStateRanges()) {
+      return &main_gaps_[gap_index].GetGapSegmentStateRanges();
+    }
+  } else {
+    CHECK_LT(gap_index, cross_gaps_.size());
+    if (cross_gaps_[gap_index].HasGapSegmentStateRanges()) {
+      return &cross_gaps_[gap_index].GetGapSegmentStateRanges();
+    }
+  }
+  return nullptr;
 }
 
 void GapGeometry::AdjustCrossGapsRangesForFragmentation(

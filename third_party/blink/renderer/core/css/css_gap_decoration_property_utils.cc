@@ -229,17 +229,11 @@ RuleVisibilityItems CSSGapDecorationUtils::ResolveRuleVisibilityItemsValue(
 }
 
 bool CSSGapDecorationUtils::IsRuleSegmentVisible(
-    GridTrackSizingDirection track_direction,
-    wtf_size_t gap_index,
-    wtf_size_t intersection_index,
-    RuleVisibilityItems rule_visibility,
-    const GapGeometry& gap_geometry) {
+    GapSegmentState gap_state,
+    RuleVisibilityItems rule_visibility) {
   if (rule_visibility == RuleVisibilityItems::kAll) {
     return true;
   }
-
-  GapSegmentState gap_state = gap_geometry.GetIntersectionGapSegmentState(
-      track_direction, gap_index, intersection_index);
 
   switch (rule_visibility) {
     case RuleVisibilityItems::kAround:
@@ -296,11 +290,13 @@ bool CSSGapDecorationUtils::HasCrossGapSegment(
   const wtf_size_t cross_intersection_index = gap_index + 1;
 
   const bool is_cross_before_visible =
-      IsRuleSegmentVisible(cross_direction, cross_gap_index, gap_index,
-                           cross_rule_visibility, gap_geometry);
+      IsRuleSegmentVisible(gap_geometry.GetIntersectionGapSegmentState(
+                               cross_direction, cross_gap_index, gap_index),
+                           cross_rule_visibility);
   const bool is_cross_after_visible = IsRuleSegmentVisible(
-      cross_direction, cross_gap_index, cross_intersection_index,
-      cross_rule_visibility, gap_geometry);
+      gap_geometry.GetIntersectionGapSegmentState(
+          cross_direction, cross_gap_index, cross_intersection_index),
+      cross_rule_visibility);
 
   const BlockedStatus cross_blocked = gap_geometry.GetIntersectionBlockedStatus(
       cross_direction, cross_gap_index, cross_intersection_index,
