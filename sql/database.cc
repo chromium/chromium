@@ -449,6 +449,9 @@ int Database::WalCheckpointImpl(base::cstring_view db_name,
 
 base::WeakPtr<Database> Database::GetWeakPtr(InternalApiToken) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_open()) {
+    return nullptr;
+  }
   return weak_factory_.GetWeakPtr();
 }
 

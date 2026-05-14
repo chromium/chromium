@@ -8,6 +8,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/drive_error_test_vfs.h"
@@ -29,6 +30,8 @@ class SQLTransactionTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
 };
+
+using SQLTransactionDeathTest = SQLTransactionTest;
 
 // Returns the number of rows in table "foo".
 int CountFoo(Database& db) {
@@ -309,30 +312,127 @@ TEST_F(SQLTransactionTest, TransactionCommitWithActiveTransaction) {
   ASSERT_TRUE(other_transaction.Commit());
 }
 
-TEST_F(SQLTransactionTest, TransactionOnRazedDB) {
+TEST_F(SQLTransactionTest, CreateTransactionOnRazedDB) {
   Database db(test::kTestTag);
   ASSERT_TRUE(db.Open(db_path_));
   ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
   ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(1)"));
+
+  EXPECT_TRUE(db.Raze());
+
+  // Transactions can be created and used normally after `Raze()`.
+  Transaction transaction(&db);
+  EXPECT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
   ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(2)"));
+  EXPECT_TRUE(transaction.Commit());
+
+  Statement select(db.GetUniqueStatement("SELECT id FROM rows"));
+  EXPECT_TRUE(select.Step());
+  EXPECT_EQ(select.ColumnInt(0), 2);
+  EXPECT_FALSE(select.Step());
+}
+
+TEST_F(SQLTransactionTest, BeginOnRazedDB) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(1)"));
+
+  Transaction transaction(&db);
+  EXPECT_TRUE(db.Raze());
+
+  // Transactions still work normally after `Raze()`.
+  EXPECT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(2)"));
+  EXPECT_TRUE(transaction.Commit());
+
+  Statement select(db.GetUniqueStatement("SELECT id FROM rows"));
+  EXPECT_TRUE(select.Step());
+  EXPECT_EQ(select.ColumnInt(0), 2);
+  EXPECT_FALSE(select.Step());
+}
+
+TEST_F(SQLTransactionTest, RollbackOnRazedDB) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(1)"));
 
   Transaction transaction(&db);
   EXPECT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(2)"));
 
-  Statement select(db.GetUniqueStatement("SELECT * FROM rows"));
+  // Raze won't succeed if there is a pending transaction. The pending commit
+  // will succeed to apply the modifications.
+  EXPECT_FALSE(db.Raze());
+  transaction.Rollback();
+
+  Statement select(db.GetUniqueStatement("SELECT id FROM rows"));
   EXPECT_TRUE(select.Step());
+  EXPECT_EQ(select.ColumnInt(0), 1);
+  EXPECT_FALSE(select.Step());
+}
+
+TEST_F(SQLTransactionTest, CommitOnRazedDB) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(1)"));
+
+  Transaction transaction(&db);
+  EXPECT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(2)"));
 
   // Raze won't succeed if there is a pending transaction. The pending commit
   // will succeed to apply the modifications.
   EXPECT_FALSE(db.Raze());
   EXPECT_TRUE(transaction.Commit());
+
+  Statement select(db.GetUniqueStatement("SELECT id FROM rows ORDER BY id"));
+  EXPECT_TRUE(select.Step());
+  EXPECT_EQ(select.ColumnInt(0), 1);
+  EXPECT_TRUE(select.Step());
+  EXPECT_EQ(select.ColumnInt(0), 2);
+  EXPECT_FALSE(select.Step());
 }
 
-TEST_F(SQLTransactionTest, TransactionOnPoisonedDB) {
+TEST_F(SQLTransactionTest, CreateTransactionOnPoisonedDb) {
   Database db(test::kTestTag);
   ASSERT_TRUE(db.Open(db_path_));
   ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
-  ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(1)"));
+
+  db.Poison();
+  Transaction transaction(&db);
+  EXPECT_FALSE(transaction.Begin());
+}
+
+TEST_F(SQLTransactionTest, BeginOnPoisonedDb) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+
+  Transaction transaction(&db);
+  db.Poison();
+  EXPECT_FALSE(transaction.Begin());
+}
+
+TEST_F(SQLTransactionTest, RollbackOnPoisonedDb) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+
+  Transaction transaction(&db);
+  EXPECT_TRUE(transaction.Begin());
+  db.Poison();
+  transaction.Rollback();
+}
+
+TEST_F(SQLTransactionTest, CommitOnPoisonedDb) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
 
   Transaction transaction(&db);
   EXPECT_TRUE(transaction.Begin());
@@ -340,11 +440,41 @@ TEST_F(SQLTransactionTest, TransactionOnPoisonedDB) {
   EXPECT_FALSE(transaction.Commit());
 }
 
-TEST_F(SQLTransactionTest, TransactionOnClosedDB) {
+TEST_F(SQLTransactionTest, CreateTransactionOnClosedDb) {
   Database db(test::kTestTag);
   ASSERT_TRUE(db.Open(db_path_));
   ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
-  ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(1)"));
+
+  db.Close();
+  Transaction transaction(&db);
+  EXPECT_FALSE(transaction.Begin());
+}
+
+TEST_F(SQLTransactionTest, BeginOnClosedDb) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+
+  Transaction transaction(&db);
+  db.Close();
+  EXPECT_FALSE(transaction.Begin());
+}
+
+TEST_F(SQLTransactionTest, RollbackOnClosedDb) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+
+  Transaction transaction(&db);
+  EXPECT_TRUE(transaction.Begin());
+  db.Close();
+  transaction.Rollback();
+}
+
+TEST_F(SQLTransactionTest, CommitOnClosedDb) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
 
   Transaction transaction(&db);
   EXPECT_TRUE(transaction.Begin());
@@ -380,6 +510,16 @@ TEST_F(SQLTransactionTest, CommitOnDestroyedDb) {
   EXPECT_TRUE(db->HasActiveTransactions());
   db.reset();
   ASSERT_FALSE(transaction.Commit());
+}
+
+TEST_F(SQLTransactionDeathTest, CreateTransactionFromNullptr) {
+  EXPECT_CHECK_DEATH(Transaction transaction(nullptr));
+}
+
+TEST_F(SQLTransactionTest, BeginBeforeDbOpen) {
+  Database db(test::kTestTag);
+  Transaction transaction(&db);
+  EXPECT_FALSE(transaction.Begin());
 }
 
 TEST_F(SQLTransactionTest, CloseDbInTransactionCommitErrorCallback) {

@@ -906,7 +906,10 @@ class COMPONENT_EXPORT(SQL) Database {
   // the existence of specific files.
   static base::FilePath SharedMemoryFilePath(const base::FilePath& db_path);
 
-  // Internal state accessed by other classes in //sql.
+  // Returns a `WeakPtr` pointing to this Database instance. The `WeakPtr` is
+  // only valid if the database is open: `GetWeakPtr()` returns `nullptr` if
+  // the database isn't open and all `WeakPtr` returned by `GetWeakPtr()` are
+  // invalidated if the database is closed.
   base::WeakPtr<Database> GetWeakPtr(InternalApiToken);
   sqlite3* db(InternalApiToken) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
