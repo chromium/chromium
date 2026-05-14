@@ -41,7 +41,6 @@ class TestLayoutManager : public views::LayoutManagerBase {
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override {
     views::ProposedLayout layout;
-    layout.host_size = gfx::Size(size_bounds.width().value_or(100), 100);
 
     // Place children at full width, starting from the top of the parent.
     int y = 0;
@@ -50,6 +49,9 @@ class TestLayoutManager : public views::LayoutManagerBase {
                                         gfx::Rect(0, y, 100, 20));
       y += 20;
     }
+
+    // Calculate the total height based on all child layouts.
+    layout.host_size = gfx::Size(size_bounds.width().value_or(100), y);
     return layout;
   }
 };
@@ -82,8 +84,8 @@ class TabCollectionAnimatingLayoutManagerTest
 
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     host_view_ = widget_->SetContentsView(std::make_unique<views::View>());
-    layout_manager_delegate_ =
-        std::make_unique<MockAnimatingLayoutManagerDelegate>();
+    layout_manager_delegate_ = std::make_unique<
+        testing::NiceMock<MockAnimatingLayoutManagerDelegate>>();
     layout_manager_ = host_view_->SetLayoutManager(
         std::make_unique<TabCollectionAnimatingLayoutManager>(
             std::make_unique<TestLayoutManager>(),
@@ -109,6 +111,18 @@ class TabCollectionAnimatingLayoutManagerTest
   }
   views::View* host_view() { return host_view_; }
   views::Widget* widget() { return widget_.get(); }
+
+  // Safely sets the layout manager and updates the raw_ptr. This prevents
+  // dangling pointers during teardown if the layout manager is replaced
+  // mid-test.
+  void SetLayoutManager(
+      std::unique_ptr<TabCollectionAnimatingLayoutManager> layout_manager) {
+    // Explicitly nullify the raw_ptr before the old layout manager is destroyed
+    // by View::SetLayoutManagerImpl(...) to avoid triggering a UAF DanglingPtr
+    // crash
+    layout_manager_ = nullptr;
+    layout_manager_ = host_view_->SetLayoutManager(std::move(layout_manager));
+  }
 
  private:
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
@@ -157,6 +171,60 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest, AddChild) {
   // Add another child, verify it also animates to target bounds.
   const auto* child2 = add_child_and_animate_to_target();
   EXPECT_EQ(child2->bounds(), gfx::Rect(0, 20, 100, 20));
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       PreferredSizeDuringSwapAnimation) {
+  // Use standard duration for frame-by-frame observation.
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Setup the layout manager and initial child views.
+  SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
+      std::make_unique<TestLayoutManager>(), *layout_manager_delegate(),
+      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical,
+      /*animate_host_size=*/true));
+
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  auto* const child1 =
+      host_view()->AddChildView(std::make_unique<views::View>());
+  auto* const child2 =
+      host_view()->AddChildView(std::make_unique<views::View>());
+  widget()->LayoutRootViewIfNecessary();
+
+  // Advance time such that the initial add animation has time to complete.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  const int expected_height = 40;
+
+  // Swap tabs.
+  host_view()->ReorderChildView(child2, 0);
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+
+  // Ensures preferred size remains stable at 40dips during the swap animation.
+  // The animation duration is typically 200ms, so we poll 20 times in 10ms
+  // steps.
+  for (int i = 0; i < 20; ++i) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+
+    ASSERT_TRUE(layout_manager()->is_animating());
+
+    // Verify stability at every frame.
+    EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).height(),
+              expected_height);
+  }
+
+  // Advance time to allow the swap animation to reach its final state.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Verify final state.
+  EXPECT_FALSE(layout_manager()->is_animating());
+  EXPECT_EQ(layout_manager()->GetPreferredSize(host_view()).height(),
+            expected_height);
+  EXPECT_EQ(child2->bounds(), gfx::Rect(0, 0, 100, 20));
+  EXPECT_EQ(child1->bounds(), gfx::Rect(0, 20, 100, 20));
 }
 
 INSTANTIATE_TEST_SUITE_P(

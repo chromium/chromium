@@ -397,8 +397,12 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
   // animation.
   result.host_size = target_layout_.host_size;
 
-  // Reset the previously computed total content height.
-  current_layout_content_height_ = 0;
+  // Update the previously computed total content height. Initialize it to the
+  // interpolated host size height to prevent the layout from shrinking
+  // momentarily when tabs are swapping positions (e.g., reordering tabs).
+  current_layout_content_height_ =
+      gfx::Tween::IntValueBetween(value, starting_layout_.host_size.height(),
+                                  target_layout_.host_size.height());
 
   for (views::View* child_view : host_view()->children()) {
     auto target_it = target_view_layout_map_.find(child_view);
