@@ -338,19 +338,23 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   ~UiEventDispatcherImpl() override = default;
 
   void OnPreTool(const ToolRequest& tr, UiCompleteCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     On<PreToolEventsFn>(tr, std::move(callback));
   }
 
   void OnPostTool(const ToolRequest& tr, UiCompleteCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     On<PostToolEventsFn>(tr, std::move(callback));
   }
 
   void OnActorTaskAsyncChange(const ActorTaskAsyncChange& change,
                               UiCompleteCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     On<ActorTaskAsyncChangeFn>(change, std::move(callback));
   }
 
   void OnActorTaskSyncChange(const ActorTaskSyncChange& change) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     On<ActorTaskSyncChangeFn>(change);
   }
 
@@ -410,6 +414,8 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
                  ActionResultPtr result) {
                 std::move(callback).Run(std::move(result));
                 if (dispatcher) {
+                  DCHECK_CALLED_ON_VALID_SEQUENCE(
+                      dispatcher->sequence_checker_);
                   dispatcher->in_flight_tasks_.erase(task);
                 }
               },
@@ -426,6 +432,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   // Synchronously send events.
   template <absl::Overload V>
   void SendAllEvents(EventSequence<SyncUiEvent> events) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     TRACE_EVENT("actor", "SendAllEvents");
     while (!events.empty()) {
       const SyncUiEvent event = std::move(events.front());

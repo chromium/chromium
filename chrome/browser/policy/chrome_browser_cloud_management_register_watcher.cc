@@ -37,6 +37,8 @@ ChromeBrowserCloudManagementRegisterWatcher::
 
 RegisterResult ChromeBrowserCloudManagementRegisterWatcher::
     WaitUntilCloudPolicyEnrollmentFinished() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   BrowserDMTokenStorage* token_storage = BrowserDMTokenStorage::Get();
 
   if (token_storage->RetrieveEnrollmentToken().empty())
@@ -108,11 +110,13 @@ RegisterResult ChromeBrowserCloudManagementRegisterWatcher::
 }
 
 bool ChromeBrowserCloudManagementRegisterWatcher::IsDialogShowing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return (dialog_ && dialog_->IsShowing()) || run_loop_.running();
 }
 
 void ChromeBrowserCloudManagementRegisterWatcher::
     SetDialogCreationCallbackForTesting(DialogCreationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   test_create_dialog_callback_ = std::move(callback);
 }
 

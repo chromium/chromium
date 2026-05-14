@@ -242,6 +242,7 @@ void ContentAnnotatorService::OnPageEmbeddingsAvailable(content::Page& page) {
 
 ContentAnnotatorService::CacheIterator
 ContentAnnotatorService::GetOrCreateJoinEntry(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CacheIterator it = join_entries_.Get(url);
   if (it != join_entries_.end()) {
     return it;
@@ -257,6 +258,7 @@ ContentAnnotatorService::GetOrCreateJoinEntry(const GURL& url) {
 }
 
 void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!it->second.IsComplete()) {
     return;
   }
@@ -303,6 +305,7 @@ void ContentAnnotatorService::GenerateAnnotations(
     optimization_guide::proto::PageContext page_context,
     history::VisitID visit_id,
     ContentAnnotationsData data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (visit_id == history::kInvalidVisitID) {
     return;
   }
@@ -325,6 +328,7 @@ void ContentAnnotatorService::HandleModelExecutionResult(
     ContentAnnotationsData data,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (visit_id == history::kInvalidVisitID) {
     return;
   }

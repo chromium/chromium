@@ -229,67 +229,57 @@ class CrOSComponentInstaller : public ComponentManagerAsh {
 
   // Registers a component with a dedicated ComponentUpdateService instance.
   void Register(const ComponentConfig& config,
-                base::OnceClosure register_callback)
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+                base::OnceClosure register_callback);
 
   // Installs a component with a dedicated ComponentUpdateService instance.
   void Install(const std::string& name,
                UpdatePolicy update_policy,
                MountPolicy mount_policy,
-               LoadCallback load_callback)
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+               LoadCallback load_callback);
 
   // Calls OnDemandUpdate to install the component right after being registered.
   // |id| is the component id generated from its sha2 hash.
   void StartInstall(const std::string& name,
                     const std::string& id,
                     UpdatePolicy update_policy,
-                    update_client::Callback install_callback)
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+                    update_client::Callback install_callback);
 
   // Calls LoadInternal to load the installed component.
   void FinishInstall(const std::string& name,
                      MountPolicy mount_policy,
                      UpdatePolicy update_policy,
                      LoadCallback load_callback,
-                     update_client::Error error)
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+                     update_client::Error error);
 
   // Internal function to load a component.
-  void LoadInternal(const std::string& name, LoadCallback load_callback)
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+  void LoadInternal(const std::string& name, LoadCallback load_callback);
 
   // Calls load_callback and pass in the parameter |result| (component mount
   // point).
   void FinishLoad(LoadCallback load_callback,
                   const std::string& name,
-                  std::optional<base::FilePath> result)
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+                  std::optional<base::FilePath> result);
 
   // Calls `version_callback` and pass in the parameter `result` (component
   // version).
   void FinishGetVersion(
       base::OnceCallback<void(const base::Version&)> version_callback,
-      std::optional<std::string> result) const
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+      std::optional<std::string> result) const;
 
   // Registers component |configs| to be updated.
-  void RegisterN(const std::vector<ComponentConfig>& configs)
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+  void RegisterN(const std::vector<ComponentConfig>& configs);
 
   // Checks if the current installed component is compatible given a component
   // |name|.
-  bool IsCompatible(const std::string& name) const
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+  bool IsCompatible(const std::string& name) const;
 
   // Posts a task with the response information for |callback|.
   void DispatchLoadCallback(LoadCallback callback,
                             base::FilePath path,
-                            bool success)
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+                            bool success);
+
   // Repeatedly calls DispatchLoadCallback with failure parameters.
-  void DispatchFailedLoads(std::vector<LoadCallback> callbacks)
-      VALID_CONTEXT_REQUIRED(thread_checker_);
+  void DispatchFailedLoads(std::vector<LoadCallback> callbacks);
 
   // Maps from a compatible component name to its info.
   base::flat_map<std::string, CompatibleComponentInfo> compatible_components_

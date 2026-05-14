@@ -41,14 +41,12 @@ class ChromeBrowserCloudManagementRegisterWatcher
   // Blocks until the  chrome browser cloud management enrollment process
   // finishes. Returns the result of enrollment.
   ChromeBrowserCloudManagementController::RegisterResult
-  WaitUntilCloudPolicyEnrollmentFinished()
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  WaitUntilCloudPolicyEnrollmentFinished();
 
   // Returns whether the dialog is being displayed.
-  bool IsDialogShowing() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  bool IsDialogShowing();
 
-  void SetDialogCreationCallbackForTesting(DialogCreationCallback callback)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void SetDialogCreationCallbackForTesting(DialogCreationCallback callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeBrowserCloudManagementRegisterWatcherTest,
