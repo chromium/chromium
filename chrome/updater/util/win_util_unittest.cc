@@ -303,8 +303,17 @@ TEST(WinUtil, EnableProcessHeapMetadataProtection) {
 
 TEST(WinUtil, CreateSecureTempDir) {
   std::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
-  EXPECT_TRUE(temp_dir);
-  EXPECT_TRUE(temp_dir->IsValid());
+  ASSERT_TRUE(temp_dir);
+  ASSERT_TRUE(temp_dir->IsValid());
+
+  base::FilePath expected_parent;
+  if (::IsUserAnAdmin()) {
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SYSTEM_TEMP, &expected_parent));
+  } else {
+    ASSERT_TRUE(base::GetTempDir(&expected_parent));
+  }
+  EXPECT_TRUE(expected_parent.IsParent(temp_dir->GetPath()));
 }
 
 TEST(WinUtil, SignalShutdownEvent) {

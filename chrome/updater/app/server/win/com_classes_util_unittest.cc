@@ -94,6 +94,10 @@ TEST(ComClassesUtil, ValidateInstallerPath) {
   ASSERT_FALSE(ValidateInstallerPath(std::wstring(0x4001, 'a').c_str()));
   ASSERT_EQ(ValidateInstallerPath(L"installerpathisvalid").value().value(),
             L"installerpathisvalid");
+  ASSERT_FALSE(ValidateInstallerPath(L"C:\\temp\\..\\setup.exe"));
+  ASSERT_FALSE(ValidateInstallerPath(L"..\\setup.exe"));
+  ASSERT_FALSE(ValidateInstallerPath(L"C:/temp/../setup.exe"));
+  ASSERT_FALSE(ValidateInstallerPath(L"../setup.exe"));
 }
 
 TEST(ComClassesUtil, ValidateInstallArgs) {

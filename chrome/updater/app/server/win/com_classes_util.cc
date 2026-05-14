@@ -112,9 +112,11 @@ std::optional<base::FilePath> ValidateInstallerPath(
     const wchar_t* installer_path) {
   const std::optional<std::string> installer_path_s =
       ValidateStringEmptyNotOk(installer_path, kMaxStringLen);
-  return installer_path_s ? std::make_optional(base::FilePath(
-                                base::UTF8ToWide(*installer_path_s)))
-                          : std::nullopt;
+  if (!installer_path_s) {
+    return std::nullopt;
+  }
+  const base::FilePath path(base::UTF8ToWide(*installer_path_s));
+  return path.ReferencesParent() ? std::nullopt : std::make_optional(path);
 }
 
 std::optional<std::string> ValidateInstallArgs(const wchar_t* install_args) {

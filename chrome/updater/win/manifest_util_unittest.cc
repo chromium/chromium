@@ -86,6 +86,52 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
             "      }");
 }
 
+TEST(ManifestUtil, ReadInstallCommandFromManifestUnsafePath) {
+  const std::string app_id("{CDABE316-39CD-43BA-8440-6D1E0547AEE6}");
+  const std::wstring manifest_filename(L"OfflineManifest.gup");
+  const std::wstring offline_dir_guid(
+      L"{7B3A5597-DDEA-409B-B900-4C3D2A94A75C}");
+
+  base::FilePath exe_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
+
+  base::ScopedTempDir scoped_offline_base_dir;
+  ASSERT_TRUE(scoped_offline_base_dir.Set(exe_dir.Append(L"Offline")));
+
+  const base::FilePath offline_dir(
+      scoped_offline_base_dir.GetPath().Append(offline_dir_guid));
+  const base::FilePath offline_app_dir(offline_dir.AppendUTF8(app_id));
+  ASSERT_TRUE(base::CreateDirectory(offline_app_dir));
+
+  const std::string manifest_content =
+      "<response protocol=\"3.0\">"
+      " <app appid=\"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}\" status=\"ok\">"
+      "  <updatecheck status=\"ok\">"
+      "   <manifest version=\"1.0\">"
+      "    <actions>"
+      "     <action event=\"install\" run=\"..\\..\\payload.exe\"/>"
+      "    </actions>"
+      "   </manifest>"
+      "  </updatecheck>"
+      " </app>"
+      "</response>";
+  ASSERT_TRUE(
+      base::WriteFile(offline_dir.Append(manifest_filename), manifest_content));
+
+  OfflineManifestSystemRequirements requirements;
+  std::string installer_version;
+  base::FilePath installer_path;
+  std::string install_args;
+  std::string install_data;
+
+  ReadInstallCommandFromManifest(offline_dir_guid, app_id, "verboselogging",
+                                 requirements, installer_version,
+                                 installer_path, install_args, install_data);
+
+  // Should reject traversal path and return empty base::FilePath
+  EXPECT_TRUE(installer_path.empty());
+}
+
 struct ManifestUtilIsArchitectureSupportedTestCase {
   const std::string current_architecture;
   const std::string arch;

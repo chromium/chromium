@@ -136,6 +136,13 @@ void ReadInstallCommandFromManifest(
   installer_version = it->manifest.version;
   installer_path = [&offline_dir, &app_id, &it] {
     const base::FilePath app_dir(offline_dir.AppendUTF8(app_id));
+    const base::FilePath run_path(
+        base::FilePath::FromUTF8Unsafe(it->manifest.run));
+    if (run_path.IsAbsolute() || run_path.ReferencesParent()) {
+      VLOG(1) << "Manifest run path is unsafe (absolute or traversal): "
+              << it->manifest.run;
+      return base::FilePath();
+    }
     const base::FilePath path(app_dir.AppendUTF8(it->manifest.run));
     return base::PathExists(path)
                ? path

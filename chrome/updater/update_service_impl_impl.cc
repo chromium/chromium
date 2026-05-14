@@ -1443,18 +1443,25 @@ void UpdateServiceImplImpl::RunInstallerImpl(
           [](const AppInfo& app_info, const base::FilePath& installer_path,
              const std::string& install_args, const std::string& install_data,
              base::RepeatingCallback<void(const UpdateState&)> state_update) {
+#if BUILDFLAG(IS_WIN)
+            std::optional<base::ScopedTempDir> temp_dir_owner =
+                CreateSecureTempDir();
+            if (!temp_dir_owner) {
+              return InstallerResult(
+                  {.category = update_client::ErrorCategory::kInstall,
+                   .code = kErrorCreatingTempDir,
+                   .extra = HRESULTFromLastError()});
+            }
+            base::ScopedTempDir temp_dir = std::move(*temp_dir_owner);
+#else
             base::ScopedTempDir temp_dir;
             if (!temp_dir.CreateUniqueTempDir()) {
               return InstallerResult(
                   {.category = update_client::ErrorCategory::kInstall,
                    .code = kErrorCreatingTempDir,
-#if BUILDFLAG(IS_WIN)
-                   .extra = HRESULTFromLastError()
-#else
-                   .extra = logging::GetLastSystemErrorCode()
-#endif  // BUILDFLAG(IS_WIN)
-                  });
+                   .extra = logging::GetLastSystemErrorCode()});
             }
+#endif
 
             return RunApplicationInstaller(
                 app_info, installer_path, install_args,
