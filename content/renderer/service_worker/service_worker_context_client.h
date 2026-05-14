@@ -183,7 +183,8 @@ class ServiceWorkerContextClient
                               blink::CrossVariantMojoReceiver<
                                   network::mojom::URLLoaderClientInterfaceBase>
                                   preload_url_loader_client_receiver) override;
-  void RequestTermination(RequestTerminationCallback callback) override;
+  void RequestTermination(uint64_t observed_keepalive_sequence_number,
+                          RequestTerminationCallback callback) override;
   bool ShouldNotifyServiceWorkerOnWebSocketActivity(
       v8::Local<v8::Context> context) override;
   scoped_refptr<blink::WebServiceWorkerFetchContext>

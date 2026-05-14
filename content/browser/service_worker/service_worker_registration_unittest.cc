@@ -94,7 +94,7 @@ void RequestTermination(
     mojo::AssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost>* host) {
   // We can't wait for the callback since Stop() arrives first which severs
   // the connection.
-  (*host)->RequestTermination(base::DoNothing());
+  (*host)->RequestTermination(0, base::DoNothing());
 }
 
 class MockServiceWorkerRegistrationObject

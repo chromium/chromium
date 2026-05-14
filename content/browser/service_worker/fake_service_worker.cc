@@ -253,7 +253,7 @@ void FakeServiceWorker::SetIdleDelay(base::TimeDelta delay) {
   idle_delay_ = delay;
 }
 
-void FakeServiceWorker::AddKeepAlive() {
+void FakeServiceWorker::AddKeepAlive(uint64_t /*keepalive_sequence_number*/) {
   idle_delay_.reset();
 }
 

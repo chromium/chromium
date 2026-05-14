@@ -320,7 +320,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Returns true if the worker will be terminated and the worker should not
   // handle any events dispatched directly from clients (e.g. FetchEvents for
   // subresources).
-  bool OnRequestTermination();
+  bool OnRequestTermination(uint64_t observed_keepalive_sequence_number);
 
   // Schedules an update to be run 'soon'.
   void ScheduleUpdate();
@@ -605,6 +605,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Returns the number of pending external request count of this worker.
   size_t GetExternalRequestCountForTest() const {
     return external_request_uuid_to_request_id_.size();
+  }
+
+  // Returns the latest browser keepalive sequence number for testing.
+  uint64_t GetLatestExternalKeepaliveSequenceNumberForTest() const {
+    return latest_external_keepalive_sequence_number_;
   }
 
   // Returns the amount of time left until the request with the latest
@@ -1216,6 +1221,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // (key, value): (request uuid, request id).
   using RequestUUIDToRequestIDMap = std::map<base::Uuid, int>;
   RequestUUIDToRequestIDMap external_request_uuid_to_request_id_;
+
+  // Monotonically increases for accepted external requests in this worker run.
+  // Resets when the worker stops.
+  uint64_t latest_external_keepalive_sequence_number_ = 0;
 
   // External request infos that were issued before this worker reached RUNNING.
   // Info contains UUID and timeout type.

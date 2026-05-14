@@ -332,8 +332,10 @@ interface ServiceWorker {
   // events are handled.
   SetIdleDelay(mojo_base.mojom.TimeDelta delay);
 
-  // Resets the members for idle timeouts to cancel the idle callback.
-  AddKeepAlive();
+  // Notifies the renderer of an active keepalive. Resets the idle timeout
+  // and provides a `keepalive_sequence_number` to allow the browser to detect
+  // and reject stale idle termination requests.
+  AddKeepAlive(uint64 keepalive_sequence_number);
 
   // Check if the event queue is empty.
   // Schedules idle timeout callback if there is no ongoing event.

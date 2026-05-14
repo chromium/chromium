@@ -251,9 +251,11 @@ void ServiceWorkerGlobalScopeProxy::SetupNavigationPreload(
 }
 
 void ServiceWorkerGlobalScopeProxy::RequestTermination(
+    uint64_t observed_keepalive_sequence_number,
     CrossThreadOnceFunction<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  Client().RequestTermination(ConvertToBaseOnceCallback(std::move(callback)));
+  Client().RequestTermination(observed_keepalive_sequence_number,
+                              ConvertToBaseOnceCallback(std::move(callback)));
 }
 
 bool ServiceWorkerGlobalScopeProxy::

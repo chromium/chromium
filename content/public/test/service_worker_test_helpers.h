@@ -100,6 +100,10 @@ void ResetTickClockToDefaultForAllLiveServiceWorkerVersions(
 // whether the service worker is still running.
 bool TriggerTimeoutAndCheckRunningState(ServiceWorkerContext* context,
                                         int64_t service_worker_version_id);
+bool TriggerTimeoutAndCheckRunningStateWithSequenceNumber(
+    ServiceWorkerContext* context,
+    int64_t service_worker_version_id,
+    uint64_t observed_keepalive_sequence_number);
 
 // Returns whether the worker appears to be in each blink::EmbeddedWorkerStatus.
 bool CheckServiceWorkerIsRunning(ServiceWorkerContext* context,

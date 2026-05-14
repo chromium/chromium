@@ -204,13 +204,15 @@ interface EmbeddedWorkerInstanceClient {
 interface EmbeddedWorkerInstanceHost {
   // Called when the worker requests to be terminated. The worker will request
   // to be terminated when it realizes it has been idle for some time. The
-  // browser doesn't terminate the worker when there are inflight events or
-  // DevTools is attached, and in that case the callback will be called with
-  // false. Note that the browser can terminate the worker at any time even if
-  // RequestTermination() is not called. For example, if the worker thread is
-  // continuously busy and the browser's periodic ping message has been missed,
-  // the browser will terminate the service worker.
-  RequestTermination() => (bool will_be_terminated);
+  // browser doesn't terminate the worker when there are in-flight events,
+  // `observed_keepalive_sequence_number` is stale, or DevTools is attached, and
+  // in that case the callback will be called with false. Note that the browser
+  // can terminate the worker at any time even if RequestTermination() is not
+  // called. For example, if the worker thread is continuously busy and the
+  // browser's periodic ping message has been missed, the browser will terminate
+  // the service worker.
+  RequestTermination(uint64 observed_keepalive_sequence_number)
+      => (bool will_be_terminated);
 
   // Tells the browser process that this service worker used |feature|, for
   // UseCounter purposes. The browser process propagates the feature usage bit

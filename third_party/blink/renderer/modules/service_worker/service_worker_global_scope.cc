@@ -1383,6 +1383,7 @@ void ServiceWorkerGlobalScope::OnIdleTimeout() {
   // the main thread if the worker thread has already terminated.
   To<ServiceWorkerGlobalScopeProxy>(ReportingProxy())
       .RequestTermination(
+          observed_keepalive_sequence_number_,
           CrossThreadBindOnce(&ServiceWorkerGlobalScope::OnRequestedTermination,
                               WrapCrossThreadWeakPersistent(this)));
 }
@@ -2547,10 +2548,12 @@ void ServiceWorkerGlobalScope::SetIdleDelay(base::TimeDelta delay) {
   event_queue_->SetIdleDelay(delay);
 }
 
-void ServiceWorkerGlobalScope::AddKeepAlive() {
+void ServiceWorkerGlobalScope::AddKeepAlive(
+    uint64_t keepalive_sequence_number) {
   DCHECK(IsContextThread());
   DCHECK(event_queue_);
 
+  observed_keepalive_sequence_number_ = keepalive_sequence_number;
   // TODO(richardzh): refactor with RAII pattern, as explained in crbug/1399324
   event_queue_->ResetIdleTimeout();
 }

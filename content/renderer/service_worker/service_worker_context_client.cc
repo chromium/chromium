@@ -562,9 +562,11 @@ void ServiceWorkerContextClient::SetupNavigationPreload(
 }
 
 void ServiceWorkerContextClient::RequestTermination(
+    uint64_t observed_keepalive_sequence_number,
     RequestTerminationCallback callback) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
-  instance_host_->RequestTermination(std::move(callback));
+  instance_host_->RequestTermination(observed_keepalive_sequence_number,
+                                     std::move(callback));
 }
 
 bool ServiceWorkerContextClient::ShouldNotifyServiceWorkerOnWebSocketActivity(

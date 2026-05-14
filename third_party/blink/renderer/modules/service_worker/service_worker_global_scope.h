@@ -30,6 +30,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_GLOBAL_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_GLOBAL_SCOPE_H_
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -547,7 +549,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       DispatchContentDeleteEventCallback callback) override;
   void Ping(PingCallback callback) override;
   void SetIdleDelay(base::TimeDelta delay) override;
-  void AddKeepAlive() override;
+  void AddKeepAlive(uint64_t keepalive_sequence_number) override;
   void ClearKeepAlive() override;
   void AddMessageToConsole(mojom::blink::ConsoleMessageLevel,
                            const String& message) override;
@@ -755,6 +757,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // ServiceWorker event queue where all events are queued before
   // they are dispatched.
   std::unique_ptr<ServiceWorkerEventQueue> event_queue_;
+  uint64_t observed_keepalive_sequence_number_ = 0;
 
   // InitializeGlobalScope() pauses the top level script evaluation when this
   // flag is true.

@@ -307,7 +307,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   void SendStartWorker(blink::mojom::EmbeddedWorkerStartParamsPtr params);
 
   // Implements blink::mojom::EmbeddedWorkerInstanceHost.
-  void RequestTermination(RequestTerminationCallback callback) override;
+  void RequestTermination(uint64_t observed_keepalive_sequence_number,
+                          RequestTerminationCallback callback) override;
   void CountFeature(blink::mojom::WebFeature feature) override;
   void OnReadyForInspection(
       mojo::PendingRemote<blink::mojom::DevToolsAgent>,

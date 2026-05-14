@@ -4,6 +4,7 @@
 
 #include "content/public/test/service_worker_test_helpers.h"
 
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -307,13 +308,24 @@ void ResetTickClockToDefaultForAllLiveServiceWorkerVersions(
 
 bool TriggerTimeoutAndCheckRunningState(ServiceWorkerContext* context,
                                         int64_t service_worker_version_id) {
+  // Use max() to explicitly bypass the stale keepalive check and force the
+  // browser to evaluate the termination request purely based on HasNoWork().
+  return TriggerTimeoutAndCheckRunningStateWithSequenceNumber(
+      context, service_worker_version_id, std::numeric_limits<uint64_t>::max());
+}
+
+bool TriggerTimeoutAndCheckRunningStateWithSequenceNumber(
+    ServiceWorkerContext* context,
+    int64_t service_worker_version_id,
+    uint64_t observed_keepalive_sequence_number) {
   ServiceWorkerVersion* service_worker_version =
       static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
           service_worker_version_id);
   service_worker_version->RunUserTasksForTesting();
 
   // TODO(b/266799118): Investigate the need to call OnRequestTermination()
-  service_worker_version->OnRequestTermination();
+  service_worker_version->OnRequestTermination(
+      observed_keepalive_sequence_number);
   return service_worker_version->running_status() ==
          blink::EmbeddedWorkerStatus::kRunning;
 }

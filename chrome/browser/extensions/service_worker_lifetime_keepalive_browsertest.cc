@@ -655,6 +655,70 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                     .size());
 }
 
+// Tests that the browser ignores stale idle termination requests from the
+// renderer that were sent before the browser started an external request. See
+// https://crbug.com/487746357.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
+                       StaleIdleTerminationIgnoredAfterExternalRequest) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "version": "0.1",
+           "manifest_version": 3,
+           "background": {"service_worker": "background.js"}
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+
+  TestServiceWorkerContextObserver registration_observer(profile());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  const int64_t version_id = registration_observer.WaitForWorkerActivated();
+
+  ProcessManager* process_manager = ProcessManager::Get(profile());
+  ASSERT_TRUE(process_manager);
+  std::vector<WorkerId> worker_ids =
+      process_manager->GetServiceWorkersForExtension(extension->id());
+  ASSERT_EQ(1u, worker_ids.size());
+  WorkerId worker_id = worker_ids[0];
+  EXPECT_EQ(version_id, worker_id.version_id);
+
+  // Ensure no requests are currently pending.
+  EXPECT_EQ(0u, GetExternalRequestCountForWorker(*profile(), *extension));
+
+  // Simulate an Extension API dispatching a message. We create a
+  // `ServiceWorkerKeepalive` to prevent the worker from sleeping.
+  {
+    ServiceWorkerKeepalive keepalive(
+        profile(), worker_id,
+        content::ServiceWorkerExternalRequestTimeoutType::kDefault,
+        Activity::MESSAGE, "stale-idle-termination-test");
+    // The request count goes up, and under the hood, the browser's keepalive
+    // sequence number increments to 1.
+    EXPECT_EQ(1u, GetExternalRequestCountForWorker(*profile(), *extension));
+  }
+
+  // The keepalive goes out of scope and is destroyed. The request count
+  // drops back to 0. The worker is now idle.
+  EXPECT_EQ(0u, GetExternalRequestCountForWorker(*profile(), *extension));
+
+  // Forcefully trigger a termination request as if it came from the renderer.
+  // Crucially, we pass sequence number 0. Simulates the renderer requesting
+  // termination just before it received the keepalive we created earlier.
+  content::ServiceWorkerContext* context = GetServiceWorkerContext();
+  const bool stale_termination_kept_worker_running =
+      content::TriggerTimeoutAndCheckRunningStateWithSequenceNumber(
+          context, version_id, 0);
+
+  // The browser must recognize 0 is stale (since the keepalive above bumped the
+  // browser's internal sequence number to 1). Therefore, it ignores the
+  // termination request and keeps the worker running.
+  EXPECT_TRUE(stale_termination_kept_worker_running);
+  EXPECT_TRUE(content::CheckServiceWorkerIsRunning(context, version_id));
+}
+
 // Tests shutting down the associated browser context while the extension has
 // an active keepalive from a message pipe behaves appropriately.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
