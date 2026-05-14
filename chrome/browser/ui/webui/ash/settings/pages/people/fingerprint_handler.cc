@@ -17,9 +17,9 @@
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/device_service.h"
@@ -60,7 +60,7 @@ base::DictValue GetFingerprintsInfo(
 FingerprintHandler::FingerprintHandler(Profile* profile) : profile_(profile) {
   content::GetDeviceService().BindFingerprint(
       fp_service_.BindNewPipeAndPassReceiver());
-  user_id_ = ProfileHelper::Get()->GetUserIdHashFromProfile(profile);
+  user_id_ = BrowserContextHelper::GetUserIdHashFromBrowserContext(profile);
 }
 
 FingerprintHandler::~FingerprintHandler() = default;
