@@ -358,8 +358,10 @@
   will-change: transform;
 }
 
-:host([energy-effect-animation-enabled_]) #composebox::part(context-menu-entrypoint-icon):active,
-:host([energy-effect-animation-enabled_]) #composebox::part(entrypoint-button):active {
+:host([energy-effect-animation-enabled_]) #composebox::part(context-menu-entrypoint-icon):active:hover,
+:host([energy-effect-animation-enabled_]) #composebox::part(context-menu-entrypoint-icon):active:focus-visible,
+:host([energy-effect-animation-enabled_]) #composebox::part(entrypoint-button):active:hover,
+:host([energy-effect-animation-enabled_]) #composebox::part(entrypoint-button):active:focus-visible {
   --cr-icon-button-icon-size:
     calc(var(--icon-menu-icon-size, 24px) * var(--icon-scale-x));
   --cr-icon-button-transition:
