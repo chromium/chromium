@@ -209,7 +209,7 @@ public class ActorPictureInPictureController
         ActorKeyedService service = maybeGetActorService();
         ActorTask task = (service != null) ? service.getTask(taskId) : null;
 
-        if (task != null && task.isCompleted()) {
+        if (ActorUtils.isCompletedState(newState) || (task != null && task.isCompleted())) {
             stopOffscreenRendering();
             checkAndExitPipIfFinished();
         } else if (shouldEnterPip()) {
@@ -231,12 +231,12 @@ public class ActorPictureInPictureController
 
         if (mExitPipRunnable != null) return;
 
-        Log.i(TAG, "No active tasks remaining. Scheduling PiP exit in 1 hour.");
+        Log.i(TAG, "No active tasks remaining. Scheduling PiP exit in 1 min.");
         mExitPipRunnable =
                 () -> {
                     mExitPipRunnable = null;
                     if (mInActorPiP && !shouldEnterPip()) {
-                        Log.i(TAG, "Exiting PiP after 1 hour delay.");
+                        Log.i(TAG, "Exiting PiP after 1 min delay.");
                         mInActorPiP = false;
                         hideOverlay();
                         mActivity.moveTaskToBack(true);
