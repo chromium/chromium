@@ -123,6 +123,12 @@ public class MinimizedFeatureUtilsUnitTest {
         when(mIntent.getIntExtra(eq(IntentHandler.EXTRA_FEDCM_ID), anyInt())).thenReturn(-1);
         when(mIntentDataProvider.getActivityType()).thenReturn(CUSTOM_TAB);
         assertTrue(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+
+        // False if has target network
+        when(mIntentDataProvider.hasTargetNetwork()).thenReturn(true);
+        assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+        when(mIntentDataProvider.hasTargetNetwork()).thenReturn(false);
+
         // False for Webapps
         when(mIntentDataProvider.getActivityType()).thenReturn(WEBAPP);
         assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));

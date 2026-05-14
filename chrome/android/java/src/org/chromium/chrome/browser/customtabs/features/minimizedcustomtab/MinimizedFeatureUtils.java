@@ -152,6 +152,8 @@ public class MinimizedFeatureUtils {
      */
     public static boolean shouldEnableMinimizedCustomTabs(
             BrowserServicesIntentDataProvider intentDataProvider) {
+        if (intentDataProvider.hasTargetNetwork()) return false;
+
         boolean isWebApp =
                 intentDataProvider.isWebappOrWebApkActivity()
                         || intentDataProvider.isTrustedWebActivity();
