@@ -8,6 +8,7 @@ import 'chrome://resources/cr_components/composebox/contextual_entrypoint_button
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -179,5 +180,27 @@ suite('ContextualEntrypointButton', () => {
 
     // Clean up
     document.body.style.removeProperty('--cr-animations-disabled');
+  });
+
+  test('lensChipShown disables background', async () => {
+    loadTimeData.overrideValues({
+      contextButtonHasBackground: true,
+    });
+
+    const testElement = createEntrypointButton();
+    testElement.inputState = {
+      activeTool: ToolMode.kUnspecified,
+      allModes: [],
+      mode: 0,
+    } as any;
+    testElement.lensChipShown = false;
+    await microtasksFinished();
+
+    assertTrue(testElement.applyContextButtonBackground);
+
+    testElement.lensChipShown = true;
+    await microtasksFinished();
+
+    assertFalse(testElement.applyContextButtonBackground);
   });
 });

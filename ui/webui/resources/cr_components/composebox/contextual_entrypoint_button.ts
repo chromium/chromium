@@ -52,6 +52,7 @@ export class ContextualEntrypointButtonElement extends
       uploadButtonDisabled: {type: Boolean},
       hasPopupFocus: {type: Boolean, reflect: true},
       applyContextButtonBackground: {type: Boolean, reflect: true},
+      lensChipShown: {type: Boolean},
       windowWidthBelowThreshold_: {type: Boolean},
       isOblongShape_: {type: Boolean, reflect: true},
     };
@@ -65,6 +66,7 @@ export class ContextualEntrypointButtonElement extends
   accessor uploadButtonDisabled: boolean = false;
   accessor hasPopupFocus: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
+  accessor lensChipShown: boolean = false;
   protected accessor windowWidthBelowThreshold_: boolean = false;
   protected accessor isOblongShape_: boolean =
       getLoadTimeBoolean('contextButtonShapeIsOblong', false);
@@ -97,11 +99,12 @@ export class ContextualEntrypointButtonElement extends
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('inputState') && this.inputState) {
+    if ((changedProperties.has('inputState') ||
+         changedProperties.has('lensChipShown')) && this.inputState) {
       const inToolMode = this.inputState.activeTool !== ToolMode.kUnspecified;
 
       this.applyContextButtonBackground =
-          this.contextButtonHasBackground_ && !inToolMode;
+          this.contextButtonHasBackground_ && !inToolMode && !this.lensChipShown;
 
       if (this.showContextMenuDescriptionEnabled_) {
         this.showContextMenuDescription = !inToolMode;

@@ -132,6 +132,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       isLensSearchEnabled_: {type: Boolean},
       isLensSearchEligible_: {type: Boolean},
       isAimPopupEligible_: {type: Boolean},
+      isLensChipShown_: {type: Boolean},
       isAimButtonVisible_: {type: Boolean},
       isRecentTabChipEnabled_: {type: Boolean},
       recentTabForChip_: {type: Object},
@@ -159,6 +160,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor webuiOmniboxPopupSelectionControlEnabled_: boolean =
       loadTimeData.getBoolean('webuiOmniboxPopupSelectionControlEnabled');
   protected accessor isLensSearchEligible_: boolean = false;
+  protected accessor isLensChipShown_: boolean = false;
   protected accessor isAimPopupEligible_: boolean = false;
   protected accessor isAimButtonVisible_: boolean = false;
   protected accessor recentTabForChip_: TabInfo|null = null;
@@ -285,6 +287,12 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         changedPrivateProperties.has('result_') ||
         changedPrivateProperties.has('isLensSearchEligible_')) {
       this.showContextEntrypoint_ = this.computeShowContextEntrypoint_();
+    }
+
+    if (changedPrivateProperties.has('isContentSharingEnabled_') ||
+        changedPrivateProperties.has('isLensSearchEligible_')) {
+      this.isLensChipShown_ =
+          this.isContentSharingEnabled_ && this.isLensSearchEligible_;
     }
   }
 

@@ -8,32 +8,15 @@
  * #css_wrapper_metadata_end */
 
 #lensSearch {
-  --cr-button-border-color:
-    var(--color-composebox-lens-search-button-border-color);
-  --cr-button-text-color: var(--composebox-lens-search-button-text-color);
-  --cr-button-disabled-text-color:
-      var(--color-composebox-context-entrypoint-text-disabled);
-  --cr-hover-background-color:
-      var(--color-composebox-lens-button-hover-background);
-  --cr-button-height: 28px;
-
   align-items: center;
-  border-radius: 8px;
-  display: inline-flex;
-  font-size: 12px;
-  justify-content: center;
-  padding: 6px 8px;
-}
-
-#content {
-  align-items: center;
+  background-color:
+    var(--color-composebox-context-entrypoint-hover-background);
+  border: none;
+  color: var(--color-searchbox-results-foreground);
   display: flex;
-  gap: 4px;
+  font-size: 13px;
+  height: var(--cr-icon-button-height, 32px);
   justify-content: center;
-}
-
-#icon {
-  color: var(--composebox-lens-search-icon-color);
-  height: 16px;
-  width: 16px;
+  padding: 8px 12px;
+  border-radius: 100px;
 }
