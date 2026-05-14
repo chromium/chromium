@@ -609,7 +609,9 @@ export class SettingsAppearancePageElement extends
     assert(childViewId === 'fonts');
     const control = this.shadowRoot!.querySelector<HTMLElement>(
         '#customize-fonts-subpage-trigger');
-    assert(control);
+    assert(
+        control,
+        `Failed to find associated control for child '${childViewId}'`);
     return control;
   }
 }

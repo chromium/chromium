@@ -334,7 +334,9 @@ export class SettingsSpellCheckPageElement extends
     assert(childViewId === 'editDictionary');
     const control = this.shadowRoot!.querySelector<HTMLElement>(
         '#spellCheckSubpageTrigger');
-    assert(control);
+    assert(
+        control,
+        `Failed to find associated control for child '${childViewId}'`);
     return control;
   }
 }

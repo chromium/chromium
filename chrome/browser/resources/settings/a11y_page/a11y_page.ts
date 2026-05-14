@@ -250,7 +250,9 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   override getAssociatedControlFor(childViewId: string): HTMLElement {
     assert(childViewId === 'captions');
     const control = this.shadowRoot!.querySelector<HTMLElement>('#captions');
-    assert(control);
+    assert(
+        control,
+        `Failed to find associated control for child '${childViewId}'`);
     return control;
   }
 }

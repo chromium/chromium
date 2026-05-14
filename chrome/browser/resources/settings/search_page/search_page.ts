@@ -192,7 +192,9 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     assert(childViewId === 'searchEngines');
     const control =
         this.shadowRoot!.querySelector<HTMLElement>('#enginesSubpageTrigger');
-    assert(control);
+    assert(
+        control,
+        `Failed to find associated control for child '${childViewId}'`);
     return control;
   }
 }
