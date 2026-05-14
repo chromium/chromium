@@ -3008,17 +3008,15 @@ inline constexpr char kDesktopSharingHubEnabled[] =
 // the same major version, the browser should not attempt to auto-open
 // the page again.
 inline constexpr char kLastWhatsNewVersion[] = "browser.last_whats_new_version";
-#endif
-
 // A boolean indicating whether the Lens Region search feature should be enabled
 // if supported.
 inline constexpr char kLensRegionSearchEnabled[] =
     "policy.lens_region_search_enabled";
-
 // A boolean indicating whether the Lens NTP searchbox feature should be enabled
 // if supported.
 inline constexpr char kLensDesktopNTPSearchEnabled[] =
     "policy.lens_desktop_ntp_search_enabled";
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // A dict mapping the edition name with the major version it was shown.

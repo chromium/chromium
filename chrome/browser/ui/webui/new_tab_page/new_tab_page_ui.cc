@@ -145,6 +145,10 @@
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/new_tab_page/stub_searchbox_handler.h"
+#endif
+
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 #include "chrome/grit/new_tab_shared_resources.h"
 #include "chrome/grit/new_tab_shared_resources_map.h"
@@ -768,6 +772,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 
   source->AddBoolean("composeboxSmartComposeEnabled",
                      ntp_composebox::kShowSmartCompose.Get());
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
   source->AddBoolean("composeboxShowDeepSearchButton",
                      ntp_composebox::IsDeepSearchEnabled(profile));
   source->AddBoolean("composeboxShowCreateImageButton",
@@ -789,8 +795,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   // Action Chips LoadTimeData
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
   bool action_chips_eligible =
       aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
       (aim_eligibility_service->IsDeepSearchEligible() ||
@@ -826,11 +830,16 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddInteger("browserPromoCompletedLimit",
                      browser_completed_promo_limit);
 
+// TODO(b/502297163): Implement for Android.
+#if BUILDFLAG(IS_ANDROID)
+  StubSearchboxHandler::SetupWebUIDataSource(source, profile);
+#else
   source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
       profile, {.enable_voice_search = true,
                 .enable_lens_search = profile->GetPrefs()->GetBoolean(
                     prefs::kLensDesktopNTPSearchEnabled),
                 .session_allows_drag_and_drop = session_allows_drag_and_drop}));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   webui::SetupWebUIDataSource(source, kNewTabPageResources,
                               IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);

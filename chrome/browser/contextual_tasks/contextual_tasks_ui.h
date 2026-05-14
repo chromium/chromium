@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
-#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_auto_suggestion_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
@@ -48,7 +47,7 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "components/user_education/webui/help_bubble_handler.h"  // nogncheck
+#include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"  // nogncheck
 #endif

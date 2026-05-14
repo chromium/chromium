@@ -55,7 +55,6 @@
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/composebox_features.h"
@@ -1093,12 +1092,13 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
 
   auto* entry_point_controller =
       lens::LensOverlayEntryPointController::From(browser_window_interface);
+  bool lens_overlay_enabled =
+      entry_point_controller && entry_point_controller->IsEnabled();
 
   return active_web_contents &&
          (!eligibility_manager ||
           !eligibility_manager->AreEntryPointsEligible()) &&
-         entry_point_controller && entry_point_controller->IsEnabled() &&
-         lens::IsAimM3Enabled(profile_) &&
+         lens::IsAimM3Enabled(profile_) && lens_overlay_enabled &&
          session_handle->GetSubmittedContextTokens().size() == 1 &&
          session_handle->IsTabInContext(
              sessions::SessionTabHelper::IdForTab(active_web_contents));

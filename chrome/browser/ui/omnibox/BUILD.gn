@@ -11,19 +11,12 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 source_set("omnibox") {
   public = [
     "omnibox_controller.h",
-    "omnibox_edit_model.h",
-    "omnibox_next_features.h",
     "omnibox_pedal_implementations.h",
-    "omnibox_popup_state_manager.h",
-    "omnibox_view.h",
   ]
   sources = []
   deps = []
   public_deps = [
     "//base",
-    "//chrome/browser/profiles:profile",
-    "//components/contextual_search:public",
-    "//components/contextual_tasks/public:query_contextualizer",
     "//components/omnibox/browser",
     "//components/search_engines",
   ]
@@ -35,9 +28,13 @@ source_set("omnibox") {
       "chrome_omnibox_navigation_observer.h",
       "clipboard_utils.h",
       "omnibox_context_menu_controller.h",
+      "omnibox_edit_model.h",
+      "omnibox_next_features.h",
+      "omnibox_popup_state_manager.h",
       "omnibox_popup_view.h",
       "omnibox_tab_helper.h",
       "omnibox_theme.h",
+      "omnibox_view.h",
     ]
     public_deps += [
       "//base",
@@ -45,6 +42,8 @@ source_set("omnibox") {
       "//chrome/browser/page_content_annotations:extraction_service",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/common",
+      "//components/contextual_search:public",
+      "//components/contextual_tasks/public:query_contextualizer",
       "//components/infobars/core",
       "//components/omnibox/browser",
       "//components/omnibox/browser:mojo_bindings_shared",
@@ -60,7 +59,6 @@ source_set("omnibox") {
       "//ui/gfx",
       "//ui/gfx/geometry",
       "//ui/menus",
-      "//url",
     ]
   }
 }
@@ -71,11 +69,7 @@ source_set("omnibox") {
 source_set("impl") {
   sources = [
     "omnibox_controller.cc",
-    "omnibox_edit_model.cc",
-    "omnibox_next_features.cc",
     "omnibox_pedal_implementations.cc",
-    "omnibox_popup_state_manager.cc",
-    "omnibox_view.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
@@ -84,41 +78,26 @@ source_set("impl") {
     "//build:branding_buildflags",
     "//chrome/app/vector_icons",
     "//chrome/browser:shell_integration",
-    "//chrome/browser/autocomplete",
-    "//chrome/browser/autocomplete:aim_eligibility_service",
-    "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/bookmarks",
-    "//chrome/browser/contextual_search",
-    "//chrome/browser/contextual_tasks",
-    "//chrome/browser/favicon",
     "//chrome/browser/feedback",
     "//chrome/browser/feedback:feedback_enum",
-    "//chrome/browser/history",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading/prefetch/search_prefetch",
     "//chrome/browser/preloading/prerender",
-    "//chrome/browser/search_engines",
     "//chrome/common",
     "//chrome/common:chrome_features",
-    "//components/bookmarks/browser",
-    "//components/contextual_tasks/public",
-    "//components/favicon/core",
-    "//components/history/core/browser",
-    "//components/navigation_metrics",
     "//components/omnibox/browser",
     "//components/omnibox/browser:vector_icons",
     "//components/omnibox/common",
     "//components/omnibox/resources:omnibox_pedal_synonyms",
     "//components/omnibox/resources:omnibox_pedal_synonyms_grit",
     "//components/prefs",
-    "//components/profile_metrics",
     "//components/search",
-    "//components/search_engines",
-    "//components/sessions",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
     "//components/vector_icons",
   ]
+
   if (!is_android) {
     sources += [
       "ai_mode_page_action_controller.cc",
@@ -127,15 +106,26 @@ source_set("impl") {
       "chrome_omnibox_navigation_observer.cc",
       "clipboard_utils.cc",
       "omnibox_context_menu_controller.cc",
+      "omnibox_edit_model.cc",
+      "omnibox_next_features.cc",
+      "omnibox_popup_state_manager.cc",
       "omnibox_popup_view.cc",
       "omnibox_tab_helper.cc",
+      "omnibox_view.cc",
     ]
     deps += [
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
       "//chrome/browser:primitives",
+      "//chrome/browser/autocomplete",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
+      "//chrome/browser/bitmap_fetcher",
+      "//chrome/browser/contextual_search",
+      "//chrome/browser/contextual_tasks",
       "//chrome/browser/extensions/api/omnibox",
+      "//chrome/browser/favicon",
+      "//chrome/browser/history",
       "//chrome/browser/history_embeddings",
       "//chrome/browser/omnibox",
       "//chrome/browser/predictors",
@@ -143,6 +133,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/omnibox_popup:resources_grit",
       "//chrome/browser/safe_browsing",
+      "//chrome/browser/search_engines",
       "//chrome/browser/ssl",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui/bookmarks",
@@ -159,14 +150,21 @@ source_set("impl") {
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/common",
+      "//components/bookmarks/browser",
       "//components/contextual_search:public",
       "//components/dom_distiller/core",
       "//components/favicon/content",
+      "//components/favicon/core",
+      "//components/history/core/browser",
       "//components/history_embeddings/content",
       "//components/history_embeddings/core",
       "//components/infobars/content",
       "//components/infobars/core",
+      "//components/navigation_metrics",
+      "//components/profile_metrics",
       "//components/resources:components_scaled_resources_grit",
+      "//components/search_engines",
+      "//components/sessions",
       "//content/public/browser",
       "//extensions/buildflags",
       "//net",
@@ -316,9 +314,8 @@ if (!is_android) {
       "//third_party/metrics_proto",
       "//url",
 
-      # This target has a circular dependency against
-      # //chrome/test:browser_tests due to the inclusion of
-      # `chrome/browser/ui/test/test_infobar.h`.
+      # This target has a circular dependency against //chrome/test:browser_tests
+      # due to the inclusion of `chrome/browser/ui/test/test_infobar.h`.
     ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -364,8 +361,7 @@ if (!is_android) {
 
       if (!is_mac) {
         sources += [
-          # TODO(crbug.com/40659953): Re-enable this test when history backend
-          # failures are addressed.
+          # TODO(crbug.com/40659953): Re-enable this test when history backend failures are addressed.
           "omnibox_view_browsertest.cc",
         ]
         deps += [

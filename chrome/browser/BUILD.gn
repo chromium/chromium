@@ -1180,20 +1180,23 @@ source_set("core") {
   }
 
   if (enable_webui_ntp) {
-    deps += [
-      "//chrome/browser/new_tab_page",
-      "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
-    ]
+    deps += [ "//chrome/browser/new_tab_page" ]
   }
 
   if ((!is_android && !is_ios) || enable_webui_ntp) {
-    deps += [
-      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
-      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
-    ]
+    deps += [ "//ui/webui/resources/cr_components/composebox:mojo_bindings" ]
   }
 
-  if (!is_android) {
+  if ((!is_android && !is_ios) || enable_webui_ntp || enable_pdf) {
+    deps += [ "//ui/webui/resources/cr_components/help_bubble:mojo_bindings" ]
+  }
+
+  if (enable_webui_ntp) {
+    deps +=
+        [ "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings" ]
+  }
+
+  if ((!is_android || enable_webui_ntp) && toolkit_views) {
     deps += [ "//chrome/browser/ui/webui/skills" ]
   }
 

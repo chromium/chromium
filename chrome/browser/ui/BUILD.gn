@@ -2083,17 +2083,25 @@ static_library("ui") {
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/cr_components/searchbox",
       "//chrome/browser/ui/webui/cr_components/searchbox:searchbox_impl",
-      "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
-      "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
-      "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings",
       "//chrome/browser/ui/webui/ntp_microsoft_auth:untrusted",
       "//chrome/browser/ui/webui/searchbox",
-      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
-      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     ]
     allow_circular_includes_from += [ "//chrome/browser/ui/search:impl" ]
+    if (is_android) {
+      sources += [
+        "webui/new_tab_page/stub_searchbox_handler.cc",
+        "webui/new_tab_page/stub_searchbox_handler.h",
+      ]
+      deps += [
+        "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
+        "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
+        "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings",
+        "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+        "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+      ]
+    }
   }
   if (enable_devtools_frontend) {
     sources += [
