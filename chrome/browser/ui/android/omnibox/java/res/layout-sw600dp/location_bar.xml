@@ -5,21 +5,11 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <!-- The location bar also know as URL bar -->
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
     <include layout="@layout/location_status"/>
     <include
         android:nextFocusForward="@+id/menu_button"
         layout="@layout/url_bar"/>
-
-    <ViewStub
-    tools:ignore="InconsistentLayout"
-        android:id="@+id/suggestions_container_placeholder"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
 
     <include layout="@layout/url_action_container"/>
     <include layout="@layout/fusebox_layout"/>

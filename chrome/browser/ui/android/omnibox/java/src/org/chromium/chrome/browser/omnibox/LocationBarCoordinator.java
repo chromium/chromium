@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
@@ -135,7 +134,6 @@ public class LocationBarCoordinator
     }
 
     private LocationBarLayout mLocationBarLayout;
-    @Nullable private ViewGroup mLocationBarHolder;
     private @Nullable SubCoordinator mSubCoordinator;
     private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private LocationBarEmbedder mLocationBarEmbedder;
@@ -318,8 +316,7 @@ public class LocationBarCoordinator
         }
 
         if (mLocationBarLayout instanceof LocationBarTablet tabletLayout) {
-            mLocationBarHolder = (ViewGroup) tabletLayout.getParent();
-            tabletLayout.setHolder(mLocationBarHolder);
+            tabletLayout.setHolder((ViewGroup) tabletLayout.getParent());
         }
 
         View alignmentView = mLocationBarLayout.getAlignmentView();
@@ -707,10 +704,6 @@ public class LocationBarCoordinator
 
     @Override
     public View getContainerView() {
-        if (isTabletLayout()) {
-            return assertNonNull(mLocationBarHolder);
-        }
-
         return mLocationBarLayout;
     }
 

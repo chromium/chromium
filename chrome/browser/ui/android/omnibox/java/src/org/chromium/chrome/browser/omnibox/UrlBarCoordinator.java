@@ -420,13 +420,12 @@ public class UrlBarCoordinator
      *     process has completed.
      */
     public void finishReparenting(boolean postReparentingFocus) {
+        mMediator.finishReparenting();
         if (postReparentingFocus) {
             mUrlBar.requestFocus();
         } else {
             mUrlBar.clearFocus();
         }
-        mMediator.finishReparenting();
-        mHasFocus = postReparentingFocus;
     }
 
     /**
