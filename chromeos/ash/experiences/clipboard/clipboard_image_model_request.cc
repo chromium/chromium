@@ -193,9 +193,12 @@ void ClipboardImageModelRequest::Stop(RequestStopReason stop_reason) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   copy_surface_weak_ptr_factory_.InvalidateWeakPtrs();
   timeout_timer_.Stop();
+  request_id_ = base::UnguessableToken();
+  if (web_contents()) {
+    web_contents()->Stop();
+  }
   widget_->Hide();
   deliver_image_model_callback_.Reset();
-  request_id_ = base::UnguessableToken();
   did_stop_loading_ = false;
 
   on_request_finished_callback_.Run();
@@ -241,6 +244,10 @@ void ClipboardImageModelRequest::DidStopLoading() {
   // `DidStopLoading()` can be called multiple times after a paste. We are only
   // interested in the initial load of the data URL.
   if (did_stop_loading_) {
+    return;
+  }
+
+  if (!IsRunningRequest()) {
     return;
   }
 
