@@ -701,18 +701,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private FindsManager mFindsManager;
     private @Nullable Boolean mCanEnableEdgeToEdgeForCustomizedThemeOnPhone;
 
-    private final Supplier<Boolean> mUrlBarVisibleSupplier =
-            () -> {
-                if (isInOverviewMode()) {
-                    return false;
-                }
-                if (isTablet()) {
-                    TabModel model = getCurrentTabModel();
-                    return model != null && model.getCount() != 0;
-                }
-                return true;
-            };
-
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
         mIntentHandlingTimeMs = SystemClock.uptimeMillis();
@@ -3227,8 +3215,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mBookmarkManagerOpenerSupplier,
                 getXrSpaceModeObservableSupplier(),
                 mInactivityTrackerSupplier,
-                getBottomBarHostManager(),
-                mUrlBarVisibleSupplier);
+                getBottomBarHostManager());
     }
 
     @Override

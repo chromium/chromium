@@ -110,21 +110,7 @@ public class KeyboardFocusRowManagerTest {
     @SmallTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
-    public void testSwitchKeyboardFocusRow_onOmnibox() {
-        // Put something in the content view so we can focus on it.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
-
-        // Switch the first time.
-        switchRow();
-        assertOnOmnibox();
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @Feature("KeyboardShortcuts")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288498
     public void testSwitchKeyboardFocusRow_withTabletTabStrip() {
         // Put something in the content view so we can focus on it.
         ChromeTabUtils.newTabFromMenu(
@@ -132,7 +118,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnOmnibox();
+        assertOnToolbar();
 
         // Switch a 2nd time.
         switchRow();
@@ -154,7 +140,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnOmnibox();
+        assertOnToolbar();
 
         // Switch a 2nd time.
         switchRow();
@@ -177,7 +163,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnOmnibox();
+        assertOnToolbar();
 
         // Switch a 2nd time.
         switchRow();
@@ -240,7 +226,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnOmnibox();
+        assertOnToolbar();
 
         // Switch a 2nd time.
         switchRow();
@@ -325,10 +311,10 @@ public class KeyboardFocusRowManagerTest {
                 () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
     }
 
-    private void assertOnOmnibox() {
+    private void assertOnToolbar() {
         assertEquals(
-                "Expected focus to be on omnibox after invocation of keyboard focus row switch",
-                KeyboardFocusRow.OMNIBOX,
+                "Expected focus to be on toolbar after invocation of keyboard focus row switch",
+                KeyboardFocusRow.TOOLBAR,
                 mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
     }
 

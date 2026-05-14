@@ -531,8 +531,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             MonotonicObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             OneshotSupplier<ChromeInactivityTracker> inactivityTrackerSupplier,
-            @Nullable BottomBarHostManager bottomBarHostManager,
-            Supplier<Boolean> urlBarVisibleSupplier) {
+            @Nullable BottomBarHostManager bottomBarHostManager) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -681,8 +680,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         modalDialogManagerSupplier,
                         () -> assumeNonNull(mLayoutManager).getStripLayoutHelperManager(),
                         mTabObscuringHandlerSupplier.get(),
-                        () -> mToolbarManager, // Gets current value of mToolbarManager
-                        urlBarVisibleSupplier);
+                        () -> mToolbarManager // Gets current value of mToolbarManager
+                        );
 
         mInactivityObserver =
                 new InactivityObserver() {
