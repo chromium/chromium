@@ -134,9 +134,9 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainerObserver {
   // Note: This is currently used for WebView initiated prefetches
   // so consideration should be taken if updating the
   // underlying implementation (or its dependencies).
-  bool IsPrefetchDuplicate(
-      const GURL& url,
-      const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint);
+  bool IsPrefetchDuplicate(const GURL& url,
+                           const std::optional<net::HttpNoVarySearchData>&
+                               no_vary_search_hint) const;
 
   // Whether the prefetch attempt for `key` has failed or discarded.
   // Note: the semantics of this method is not super clear and thus is exposed
