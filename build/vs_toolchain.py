@@ -17,7 +17,7 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2026 17.13.4 with 10.0.26100.7705 SDK with ARM64 libraries and UWP support.
+# VS 2026 18 with 10.0.26100.7705 SDK with ARM64 libraries and UWP support.
 # See go/win-toolchain-reference for instructions about how to update the
 # toolchain.
 #
@@ -204,7 +204,10 @@ def _GenerateCandidatePaths(version):
     '2019': ['%ProgramFiles(x86)%', '2019'],
     '2017': ['%ProgramFiles(x86)%', '2017'],
   }
-  MSVC_EDITIONS = ['Enterprise', 'Professional', 'Community', 'Preview', 'BuildTools']
+  MSVC_EDITIONS = [
+    'Enterprise', 'Professional', 'Community', 'Preview', 'Insiders',
+    'BuildTools'
+  ]
   path = os.path.expandvars(MSVC_LOCATION[version][0] +
                             '/Microsoft Visual Studio/%s' % MSVC_LOCATION[version][1])
   if path:
