@@ -73,7 +73,11 @@ namespace glic {
 // Comma separated list of countries to enable Glic, by default, if country
 // filtering is enabled.
 
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kDefaultEnabledCountries[] = "us";
+#else
 constexpr char kDefaultEnabledCountries[] = "us,ca,nz,in";
+#endif
 
 // Feature flag kGlicLocaleFiltering controls whether locale filtering is
 // applied client side. Two finch params are used to control this, both are a
@@ -89,12 +93,16 @@ constexpr char kDefaultEnabledCountries[] = "us,ca,nz,in";
 // Comma separated list of locales to enable Glic, by default, if locale
 // filtering is enabled.
 constexpr char kDefaultEnabledLocales[] =
+#if BUILDFLAG(IS_ANDROID)
+    "en-US"
+#else
     "af,am,bg,bn,ca,cs,da,de,el,es,es-419,et,fi,fil,fr,gu,hi,hr,hu,id,it,ja,kn,"
     "ko,lt,lv,ml,mr,ms,nl,no,pl,pt-BR,pt-PT,ro,ru,sk,sl,sr,sv,sw,ta,te,th,tr,"
     "uk,vi,zh-CN,zh-TW,en-GB,en-US"
 #if BUILDFLAG(IS_CHROMEOS)
     ",eu,gl,is,zu"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ANDROID)
     ;
 
 namespace {
