@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.browser_window;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.role.RoleManager;
-import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION;
@@ -39,7 +38,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
-import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -76,7 +74,6 @@ import java.util.function.Supplier;
 @NullMarked
 final class ChromeAndroidTaskImpl
         implements ChromeAndroidTask,
-                ConfigurationChangedObserver,
                 TopResumedActivityChangedWithNativeObserver,
                 TaskVisibilityListener,
                 ViewTreeObserver.OnGlobalLayoutListener,
@@ -433,8 +430,8 @@ final class ChromeAndroidTaskImpl
     private long mLastActivatedTimeMillis;
     private @Nullable PendingTaskInfo mPendingTaskInfo;
 
-    /** Last Task (window) bounds updated by {@link #onConfigurationChanged(Configuration)}. */
-    private @Nullable Rect mLastBoundsInDpOnConfigChanged;
+    /** Last updated Task (window) bounds. */
+    private @Nullable Rect mLastBoundsInDp;
 
     private @State int mState;
 
@@ -853,9 +850,42 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void onGlobalLayout() {
+        ThreadUtils.assertOnUiThread();
         useActivity(
-                topActivityScopedObjects ->
-                        mWindowStateManager.update(topActivityScopedObjects.mActivity));
+                topActivityScopedObjects -> {
+                    mWindowStateManager.update(topActivityScopedObjects.mActivity);
+
+                    // Check if task bounds have changed.
+                    // Note:
+                    //
+                    // (1) Not all global layout changes include a window bounds change, so we need
+                    // to check whether the bounds have changed.
+                    //
+                    // (2) As of Aug 12, 2025, Android doesn't provide a public API to get the task
+                    // bounds. Therefore, we obtain the new bounds using an Activity API (see
+                    // getCurrentBoundsInPx()).
+                    var display = topActivityScopedObjects.mActivityWindowAndroid.getDisplay();
+                    Rect newBoundsInPx = getCurrentBoundsInPx(topActivityScopedObjects);
+                    Rect newBoundsInDp = convertBoundsInPxToDp(newBoundsInPx, display);
+
+                    if (newBoundsInDp.equals(mLastBoundsInDp)) {
+                        return;
+                    }
+
+                    // Per ChromeAndroidTaskFeature#onTaskBoundsChanged() contract,
+                    // we only notify features of valid bounds changes, excluding the
+                    // initial bounds.
+                    if (mLastBoundsInDp == null) {
+                        mLastBoundsInDp = newBoundsInDp;
+                        return;
+                    }
+
+                    mLastBoundsInDp = newBoundsInDp;
+                    int displayId = display.getDisplayId();
+                    for (var feature : mFeatures.values()) {
+                        feature.onTaskBoundsChanged(displayId, newBoundsInDp, newBoundsInPx);
+                    }
+                });
     }
 
     @Override
@@ -1012,34 +1042,6 @@ final class ChromeAndroidTaskImpl
                     mPendingActionManager.requestAction(PendingAction.SHOW_INACTIVE);
                     mState = State.PENDING_UPDATE;
                     ChromeAndroidTaskTrackerImpl.getInstance().activatePenultimatelyActivatedTask();
-                });
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        ThreadUtils.assertOnUiThread();
-
-        // Note:
-        //
-        // (1) Not all Configuration changes include a window bounds change, so we need to check
-        // whether the bounds have changed.
-        //
-        // (2) As of Aug 12, 2025, Configuration doesn't provide a public API to get the window
-        // bounds. Its "windowConfiguration" field is marked as @TestApi:
-        // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/content/res/Configuration.java;l=417-418;drc=64130047e019cee612a85dde07755efd8f356f12
-        // Therefore, we obtain the new bounds using an Activity API (see
-        // getBoundsInternalLocked()).
-        useActivity(
-                topActivityScopedObjects -> {
-                    var newBoundsInDp = getCurrentBoundsInDp(topActivityScopedObjects);
-                    if (newBoundsInDp.equals(mLastBoundsInDpOnConfigChanged)) {
-                        return;
-                    }
-
-                    mLastBoundsInDpOnConfigChanged = newBoundsInDp;
-                    for (var feature : mFeatures.values()) {
-                        feature.onTaskBoundsChanged(newBoundsInDp);
-                    }
                 });
     }
 

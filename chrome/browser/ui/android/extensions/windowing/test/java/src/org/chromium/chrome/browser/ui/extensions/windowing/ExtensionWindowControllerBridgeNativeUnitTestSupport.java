@@ -56,7 +56,7 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
     private void invokeOnTaskBoundsChanged() {
         mExtensionWindowControllerBridge.onTaskBoundsChanged(
                 // Native code doesn't need the new bounds, so what we pass here doesn't matter.
-                new Rect());
+                0, new Rect(), new Rect());
     }
 
     @CalledByNative

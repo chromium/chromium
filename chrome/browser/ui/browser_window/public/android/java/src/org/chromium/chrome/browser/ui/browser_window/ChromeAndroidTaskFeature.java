@@ -84,13 +84,8 @@ public interface ChromeAndroidTaskFeature {
     /**
      * Called by a {@link ChromeAndroidTask} when the Task (window) bounds are changed.
      *
-     * @param newBoundsInDp The new Task bounds.
-     */
-    // TODO (crbug.com/505171896): Remove this API after downstream is updated.
-    default void onTaskBoundsChanged(Rect newBoundsInDp) {}
-
-    /**
-     * Called by a {@link ChromeAndroidTask} when the Task (window) bounds are changed.
+     * <p>This will _not_ be invoked to notify features of the Task's initial bounds. It will only
+     * be invoked when the Task already has valid bounds and the bounds are changed.
      *
      * @param displayId The ID of the display containing the task.
      * @param newBoundsInDp The new Task bounds, in dp.
