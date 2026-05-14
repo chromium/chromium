@@ -13,7 +13,7 @@ namespace blink {
 
 namespace {
 
-int ComputeUnderlineOffsetAuto(const blink::FontMetrics& font_metrics,
+int ComputeUnderlineOffsetAuto(const UsedFont& font,
                                float text_underline_offset,
                                float text_decoration_thickness,
                                bool is_auto) {
@@ -29,19 +29,22 @@ int ComputeUnderlineOffsetAuto(const blink::FontMetrics& font_metrics,
                   : 0};
 
   // Position underline near the alphabetic baseline.
-  return ClampTo<int>(font_metrics.Ascent() + gap +
-                      roundf(text_underline_offset));
+  return ClampTo<int>(font.PrimaryFont()->GetFontMetrics().Ascent() *
+                          font.ScalingFactor() +
+                      gap + roundf(text_underline_offset));
 }
 
-std::optional<int> ComputeUnderlineOffsetFromFont(
-    const blink::FontMetrics& font_metrics,
-    float text_underline_offset) {
+std::optional<int> ComputeUnderlineOffsetFromFont(const UsedFont& font,
+                                                  float text_underline_offset) {
+  const FontMetrics& font_metrics = font.PrimaryFont()->GetFontMetrics();
   if (!font_metrics.UnderlinePosition()) {
     return std::nullopt;
   }
 
-  return roundf(font_metrics.FloatAscent() + *font_metrics.UnderlinePosition() +
-                text_underline_offset);
+  return roundf(
+      (font_metrics.FloatAscent() + *font_metrics.UnderlinePosition()) *
+          font.ScalingFactor() +
+      text_underline_offset);
 }
 
 }  // namespace
@@ -49,23 +52,26 @@ std::optional<int> ComputeUnderlineOffsetFromFont(
 int TextDecorationOffset::ComputeUnderlineOffsetForUnder(
     const Length& style_underline_offset,
     float computed_font_size,
-    const SimpleFontData* font_data,
+    const UsedFont& font,
     float text_decoration_thickness,
     FontVerticalPositionType position_type) const {
   const ComputedStyle& style = text_style_;
   FontBaseline baseline_type = style.GetFontBaseline();
 
-  LayoutUnit style_underline_offset_pixels = LayoutUnit::FromFloatRound(
-      StyleUnderlineOffsetToPixels(style_underline_offset, computed_font_size));
+  LayoutUnit style_underline_offset_pixels =
+      LayoutUnit::FromFloatRound(StyleUnderlineOffsetToPixels(
+          style_underline_offset, computed_font_size, font.ScalingFactor()));
   if (IsLineOverSide(position_type))
     style_underline_offset_pixels = -style_underline_offset_pixels;
 
+  const auto* font_data = font.PrimaryFont();
   if (!font_data)
     return 0;
   const LayoutUnit offset =
       LayoutUnit::FromFloatRound(
-          font_data->GetFontMetrics().FloatAscent(baseline_type)) -
-      font_data->VerticalPosition(position_type, baseline_type) +
+          (font_data->GetFontMetrics().FloatAscent(baseline_type) -
+           font_data->VerticalPosition(position_type, baseline_type)) *
+          font.ScalingFactor()) +
       style_underline_offset_pixels;
 
   // Compute offset to the farthest position of the decorating box.
@@ -85,32 +91,29 @@ int TextDecorationOffset::ComputeUnderlineOffsetForUnder(
 int TextDecorationOffset::ComputeUnderlineOffset(
     ResolvedUnderlinePosition underline_position,
     float computed_font_size,
-    const SimpleFontData* font_data,
+    const UsedFont& font,
     const Length& style_underline_offset,
     float text_decoration_thickness) const {
-  float style_underline_offset_pixels =
-      StyleUnderlineOffsetToPixels(style_underline_offset, computed_font_size);
-
-  const FontMetrics& font_metrics = font_data->GetFontMetrics();
+  float style_underline_offset_pixels = StyleUnderlineOffsetToPixels(
+      style_underline_offset, computed_font_size, font.ScalingFactor());
 
   switch (underline_position) {
     default:
       NOTREACHED();
     case ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont:
-      return ComputeUnderlineOffsetFromFont(font_metrics,
-                                            style_underline_offset_pixels)
+      return ComputeUnderlineOffsetFromFont(font, style_underline_offset_pixels)
           .value_or(ComputeUnderlineOffsetAuto(
-              font_metrics, style_underline_offset_pixels,
-              text_decoration_thickness, style_underline_offset.IsAuto()));
+              font, style_underline_offset_pixels, text_decoration_thickness,
+              style_underline_offset.IsAuto()));
     case ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto:
-      return ComputeUnderlineOffsetAuto(
-          font_metrics, style_underline_offset_pixels,
-          text_decoration_thickness, style_underline_offset.IsAuto());
+      return ComputeUnderlineOffsetAuto(font, style_underline_offset_pixels,
+                                        text_decoration_thickness,
+                                        style_underline_offset.IsAuto());
     case ResolvedUnderlinePosition::kUnder:
       // Position underline at the under edge of the lowest element's
       // content box.
       return ComputeUnderlineOffsetForUnder(
-          style_underline_offset, computed_font_size, font_data,
+          style_underline_offset, computed_font_size, font,
           text_decoration_thickness,
           FontVerticalPositionType::BottomOfEmHeight);
   }
@@ -119,11 +122,16 @@ int TextDecorationOffset::ComputeUnderlineOffset(
 /* static */
 float TextDecorationOffset::StyleUnderlineOffsetToPixels(
     const Length& style_underline_offset,
-    float font_size) {
+    float computed_font_size,
+    float scaling_factor) {
   if (style_underline_offset.IsAuto()) {
     return 0;
   }
-  return FloatValueForLength(style_underline_offset, font_size);
+  if (style_underline_offset.IsPercent()) {
+    return FloatValueForLength(style_underline_offset,
+                               computed_font_size * scaling_factor);
+  }
+  return FloatValueForLength(style_underline_offset, computed_font_size);
 }
 
 }  // namespace blink

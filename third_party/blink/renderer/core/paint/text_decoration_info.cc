@@ -347,8 +347,7 @@ DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
   }
   float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       decoration.underline_position, decoration.used_font.ComputedSize(),
-      decoration.used_font.PrimaryFont(), line_offset,
-      decoration.resolved_thickness);
+      decoration.used_font, line_offset, decoration.resolved_thickness);
   // The offset is for the decorating box. Convert it for the target text/box.
   paint_underline_offset += decoration.offset_from_decorating_box;
   return ComputeLineData(decoration, TextDecorationLine::kUnderline,
@@ -371,9 +370,8 @@ DecorationGeometry TextDecorationInfo::ComputeOverlineLineData(
   }
   const int paint_overline_offset =
       decoration_offset.ComputeUnderlineOffsetForUnder(
-          line_offset, TargetStyle().ComputedFontSize(),
-          decoration.used_font.PrimaryFont(), decoration.resolved_thickness,
-          position);
+          line_offset, TargetStyle().ComputedFontSize(), decoration.used_font,
+          decoration.resolved_thickness, position);
   return ComputeLineData(decoration, TextDecorationLine::kOverline,
                          paint_overline_offset);
 }
@@ -399,8 +397,7 @@ DecorationGeometry TextDecorationInfo::ComputeSpellingOrGrammarErrorLineData(
   DCHECK(!decoration.HasLineThrough());
   const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       decoration.underline_position, TargetStyle().ComputedFontSize(),
-      decoration.used_font.PrimaryFont(), Length(),
-      decoration.resolved_thickness);
+      decoration.used_font, Length(), decoration.resolved_thickness);
   return ComputeLineData(decoration,
                          decoration.HasSpellingError()
                              ? TextDecorationLine::kSpellingError
