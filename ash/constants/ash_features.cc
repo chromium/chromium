@@ -663,10 +663,6 @@ BASE_FEATURE(kFastPairBleRotation, base::FEATURE_ENABLED_BY_DEFAULT);
 // debug devices to trigger Fast Pair notifications.
 BASE_FEATURE(kFastPairDebugMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using longterm Handshake retry logic for Fast Pair.
-BASE_FEATURE(kFastPairHandshakeLongTermRefactor,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables prototype support for Fast Pair for keyboards.
 BASE_FEATURE(kFastPairKeyboards, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2596,10 +2592,6 @@ bool IsFastPairBleRotationEnabled() {
 
 bool IsFastPairDebugMetadataEnabled() {
   return base::FeatureList::IsEnabled(kFastPairDebugMetadata);
-}
-
-bool IsFastPairHandshakeLongTermRefactorEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairHandshakeLongTermRefactor);
 }
 
 bool IsFastPairKeyboardsEnabled() {

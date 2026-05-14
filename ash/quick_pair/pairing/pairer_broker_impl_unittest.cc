@@ -52,20 +52,11 @@ constexpr char kInitializePairingProcessSubsequent[] =
     "FastPair.SubsequentPairing.Initialization";
 constexpr char kInitializePairingProcessRetroactive[] =
     "FastPair.RetroactivePairing.Initialization";
-constexpr char kInitializePairingProcessFailureReasonInitial[] =
-    "FastPair.InitialPairing.Initialization.FailureReason";
-constexpr char kInitializePairingProcessFailureReasonSubsequent[] =
-    "FastPair.SubsequentPairing.Initialization.FailureReason";
-constexpr char kInitializePairingProcessFailureReasonRetroactive[] =
-    "FastPair.RetroactivePairing.Initialization.FailureReason";
 
 constexpr char kProtocolPairingStepInitial[] =
     "FastPair.InitialPairing.Pairing";
 constexpr char kProtocolPairingStepSubsequent[] =
     "FastPair.SubsequentPairing.Pairing";
-const char kHandshakeEffectiveSuccessRate[] =
-    "FastPair.Handshake.EffectiveSuccessRate";
-const char kHandshakeAttemptCount[] = "FastPair.Handshake.AttemptCount";
 
 class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
  public:
@@ -829,63 +820,6 @@ TEST_F(PairerBrokerImplTest, ReuseHandshake_Retroactive) {
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 kInitializePairingProcessRetroactive,
                 FastPairInitializePairingProcessEvent::kHandshakeReused),
-            1);
-}
-
-TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Initial) {
-  base::test::ScopedFeatureList feature_list{
-      ash::features::kFastPairHandshakeLongTermRefactor};
-  histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
-  histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 0);
-
-  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
-                   /*protocol=*/Protocol::kFastPairInitial);
-  pairer_broker_->PairDevice(device_);
-  InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
-
-  EXPECT_EQ(device_paired_count_, 0);
-  EXPECT_EQ(pair_failure_count_, 1);
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                kInitializePairingProcessFailureReasonInitial,
-                PairFailure::kCreateGattConnection),
-            1);
-}
-
-TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Subsequent) {
-  base::test::ScopedFeatureList feature_list{
-      ash::features::kFastPairHandshakeLongTermRefactor};
-  histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
-  histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 0);
-
-  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
-                   /*protocol=*/Protocol::kFastPairSubsequent);
-  pairer_broker_->PairDevice(device_);
-  InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
-
-  EXPECT_EQ(device_paired_count_, 0);
-  EXPECT_EQ(pair_failure_count_, 1);
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                kInitializePairingProcessFailureReasonSubsequent,
-                PairFailure::kCreateGattConnection),
-            1);
-}
-
-TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Retroactive) {
-  base::test::ScopedFeatureList feature_list{
-      ash::features::kFastPairHandshakeLongTermRefactor};
-  histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
-  histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 0);
-
-  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
-                   /*protocol=*/Protocol::kFastPairRetroactive);
-  pairer_broker_->PairDevice(device_);
-  InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
-
-  EXPECT_EQ(device_paired_count_, 0);
-  EXPECT_EQ(pair_failure_count_, 1);
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                kInitializePairingProcessFailureReasonRetroactive,
-                PairFailure::kCreateGattConnection),
             1);
 }
 

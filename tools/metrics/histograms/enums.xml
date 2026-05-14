@@ -10956,7 +10956,6 @@ from previous Chrome versions.
   <int value="-1039169415" label="LiveTranslate:enabled"/>
   <int value="-1037975779"
       label="ForceSupervisedUserReauthenticationForYouTube:enabled"/>
-  <int value="-1037955654" label="FastPairHandshakeLongTermRefactor:disabled"/>
   <int value="-1037950113"
       label="ResamplingScrollEventsExperimentalPrediction:enabled"/>
   <int value="-1037620891"
@@ -13306,7 +13305,6 @@ from previous Chrome versions.
   <int value="-265765164" label="FeedFollowUiUpdate:disabled"/>
   <int value="-265697837" label="PhoneHub:disabled"/>
   <int value="-265475987" label="NtpWallpaperSearchButton:disabled"/>
-  <int value="-265277473" label="FastPairHandshakeLongTermRefactor:enabled"/>
   <int value="-265074126" label="Prewarm:disabled"/>
   <int value="-265041545" label="WifiConcurrency:enabled"/>
   <int value="-263645996" label="InteractiveWindowCycleList:enabled"/>

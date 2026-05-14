@@ -10662,21 +10662,6 @@
             ]
         }
     ],
-    "FastPairHandshakeLongTermRefactor": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FastPairHandshakeLongTermRefactor"
-                    ]
-                }
-            ]
-        }
-    ],
     "FastPairPWACompanion": [
         {
             "platforms": [

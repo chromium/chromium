@@ -7081,12 +7081,6 @@ inline constexpr char kFaceRetouchOverrideDescription[] =
     "Enables or disables the face retouch feature using the relighting button "
     "in the VC panel.";
 
-inline constexpr char kFastPairHandshakeLongTermRefactorName[] =
-    "Enable Fast Pair Handshake Long Term Refactor";
-inline constexpr char kFastPairHandshakeLongTermRefactorDescription[] =
-    "Enables long term refactored handshake logic for Google Fast Pair "
-    "service.";
-
 inline constexpr char kFastPairKeyboardsName[] = "Enable Fast Pair Keyboards";
 inline constexpr char kFastPairKeyboardsDescription[] =
     "Enables prototype support for Fast Pair for keyboards.";

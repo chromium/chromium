@@ -22,11 +22,7 @@ FastPairHandshakeLookup* FastPairHandshakeLookup::GetInstance() {
     return FakeFastPairHandshakeLookup::GetFakeInstance();
   }
 
-  if (!ash::features::IsFastPairHandshakeLongTermRefactorEnabled()) {
-    return FastPairHandshakeLookupImpl::GetImplInstance();
-  } else {
-    return AsyncFastPairHandshakeLookupImpl::GetAsyncInstance();
-  }
+  return FastPairHandshakeLookupImpl::GetImplInstance();
 }
 
 // static

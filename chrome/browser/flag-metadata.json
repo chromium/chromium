@@ -4609,14 +4609,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "fast-pair-handshake-long-term-refactor",
-    "owners": [
-      "//ash/quick_pair/OWNERS",
-      "jackshira@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "fast-pair-keyboards",
     "owners": [
       "//ash/quick_pair/OWNERS",

@@ -254,11 +254,6 @@ FastPairGattServiceClientImpl::Factory::Create(
   }
   auto gatt_service = base::WrapUnique(new FastPairGattServiceClientImpl(
       device, adapter, std::move(on_initialized_callback)));
-  if (ash::features::IsFastPairHandshakeLongTermRefactorEnabled()) {
-    RecordGattInitializationStep(
-        FastPairGattConnectionSteps::kConnectionStarted);
-    gatt_service->AttemptGattConnection();
-  }
   return gatt_service;
 }
 
@@ -280,13 +275,10 @@ FastPairGattServiceClientImpl::FastPairGattServiceClientImpl(
       adapter_(std::move(adapter)) {
   adapter_observation_.Observe(adapter_.get());
 
-  if (!ash::features::IsFastPairHandshakeLongTermRefactorEnabled()) {
-    CD_LOG(INFO, Feature::FP)
-        << __func__ << ": Starting the GATT connection to device";
-    RecordGattInitializationStep(
-        FastPairGattConnectionSteps::kConnectionStarted);
-    AttemptGattConnection();
-  }
+  CD_LOG(INFO, Feature::FP)
+      << __func__ << ": Starting the GATT connection to device";
+  RecordGattInitializationStep(FastPairGattConnectionSteps::kConnectionStarted);
+  AttemptGattConnection();
 }
 
 FastPairGattServiceClientImpl::~FastPairGattServiceClientImpl() = default;
