@@ -96,13 +96,17 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
       ContextualTasksUiServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
 
+  content::SiteInstance* site = navigation_handle()->GetSourceSiteInstance();
+  bool is_same_site_or_from_ui =
+      site && site->IsSameSiteWithURL(navigation_handle()->GetURL());
   if (ui_service &&
       ui_service->HandleNavigation(
           std::move(url_params), web_contents->GetResponsibleWebContents(),
           /*is_from_embedded_page=*/web_contents !=
                   web_contents->GetResponsibleWebContents() ||
               navigation_handle()->IsGuestViewMainFrame(),
-          /*is_to_new_tab=*/false)) {
+          /*is_to_new_tab=*/false,
+          /*is_same_site_or_from_ui=*/is_same_site_or_from_ui)) {
     return CANCEL;
   }
   return PROCEED;

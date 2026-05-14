@@ -822,11 +822,12 @@ bool ContextualTasksUiService::HandleNavigation(
     content::OpenURLParams url_params,
     content::WebContents* source_contents,
     bool is_from_embedded_page,
-    bool is_to_new_tab) {
+    bool is_to_new_tab,
+    bool is_same_site_or_from_ui) {
   return HandleNavigationImpl(
       std::move(url_params), source_contents,
       tabs::TabInterface::MaybeGetFromContents(source_contents),
-      is_from_embedded_page, is_to_new_tab);
+      is_from_embedded_page, is_to_new_tab, is_same_site_or_from_ui);
 }
 
 void ContextualTasksUiService::GetAccessToken(
@@ -894,7 +895,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     content::WebContents* source_contents,
     tabs::TabInterface* tab,
     bool is_from_embedded_page,
-    bool is_to_new_tab) {
+    bool is_to_new_tab,
+    bool is_same_site_or_from_ui) {
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: HandleNavigationImpl called "
          "for URL: "
@@ -1013,6 +1015,17 @@ bool ContextualTasksUiService::HandleNavigationImpl(
                debug_param_value.contains(kDebugNoCobrowseValue)) {
       should_bypass_interception = true;
       bypass_reason = "debug param";
+    }
+
+    // If the page is to AI and the navigation is not same site, apply a param
+    // to the URL to mark it as untrusted. Likewise, remove it if present and
+    // the navigation is same site.
+    if (!is_same_site_or_from_ui) {
+      url_params.url =
+          net::AppendOrReplaceQueryParameter(url_params.url, "cru", "1");
+    } else {
+      url_params.url = net::AppendOrReplaceQueryParameter(url_params.url, "cru",
+                                                          std::nullopt);
     }
   }
 
