@@ -143,8 +143,8 @@
       forButtonType:ToolbarButtonTypeForward];
   [self.consumer setMenu:[_buttonMenuFactory menuForAssistantButton]
            forButtonType:ToolbarButtonTypeAssistant];
-  /// TODO(crbug.com/493948951): Support context menu for tab grid button in the
-  /// Toolbar (iPad).
+  [self.consumer setMenu:[_buttonMenuFactory menuForTabGridButton]
+           forButtonType:ToolbarButtonTypeTabGrid];
   [self updateConsumerTabCountAndGroupState];
 }
 

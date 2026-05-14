@@ -16,6 +16,9 @@
 // Sets whether the active tab is part of a group, updating the symbol layout.
 @property(nonatomic, assign) BOOL inTabGroup;
 
+// The visible path of the button's icon, used for custom targeted previews.
+- (UIBezierPath*)visiblePath;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUTTONS_TOOLBAR_TAB_GRID_BADGE_BUTTON_H_

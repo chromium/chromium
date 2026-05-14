@@ -80,7 +80,8 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 
 }  // namespace
 
-@interface ToolbarViewController () <TabGroupIndicatorViewDelegate>
+@interface ToolbarViewController () <TabGroupIndicatorViewDelegate,
+                                     UIContextMenuInteractionDelegate>
 @end
 
 @implementation ToolbarViewController {
@@ -497,10 +498,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
       _assistantButton.menu = menu;
       return;
     case ToolbarButtonTypeTabGrid:
-      /// TODO:(crbug.com/493948951): Support this menu when the implementation
-      /// is working.
       _tabGridButtonMenu = menu;
-      _tabGridButton.menu = menu;
       return;
     case ToolbarButtonTypeReload:
     case ToolbarButtonTypeStop:
@@ -680,6 +678,62 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [self updateSeparatorVisibility];
   [self.toolbarHeightDelegate toolbarsHeightChanged];
   [self.mutator tabGroupIndicatorVisibilityUpdated:visible];
+}
+
+#pragma mark - UIContextMenuInteractionDelegate
+
+- (UIContextMenuConfiguration*)contextMenuInteraction:
+                                   (UIContextMenuInteraction*)interaction
+                       configurationForMenuAtLocation:(CGPoint)location {
+  if (interaction.view == _tabGridButton) {
+    UIMenu* menu = _tabGridButtonMenu;
+    if (!menu) {
+      return nil;
+    }
+    return [UIContextMenuConfiguration
+        configurationWithIdentifier:nil
+                    previewProvider:nil
+                     actionProvider:^UIMenu*(
+                         NSArray<UIMenuElement*>* suggestedActions) {
+                       return menu;
+                     }];
+  }
+  return nil;
+}
+
+- (UITargetedPreview*)contextMenuInteraction:
+                          (UIContextMenuInteraction*)interaction
+                               configuration:
+                                   (UIContextMenuConfiguration*)configuration
+       highlightPreviewForItemWithIdentifier:(id<NSCopying>)identifier {
+  UIView* view = interaction.view;
+  if ([view isKindOfClass:[ToolbarTabGridBadgeButton class]]) {
+    ToolbarTabGridBadgeButton* tabGridButton = (ToolbarTabGridBadgeButton*)view;
+    UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
+    parameters.visiblePath = [tabGridButton visiblePath];
+    parameters.backgroundColor = self.view.backgroundColor;
+
+    return [[UITargetedPreview alloc] initWithView:view parameters:parameters];
+  }
+  return nil;
+}
+
+- (UITargetedPreview*)contextMenuInteraction:
+                          (UIContextMenuInteraction*)interaction
+                               configuration:
+                                   (UIContextMenuConfiguration*)configuration
+       dismissalPreviewForItemWithIdentifier:(id<NSCopying>)identifier {
+  UIView* view = interaction.view;
+  if ([view isKindOfClass:[ToolbarTabGridBadgeButton class]]) {
+    ToolbarTabGridBadgeButton* tabGridButton = (ToolbarTabGridBadgeButton*)view;
+    UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
+    parameters.visiblePath = [tabGridButton visiblePath];
+    parameters.shadowPath = [UIBezierPath bezierPath];
+    parameters.backgroundColor = [UIColor clearColor];
+
+    return [[UITargetedPreview alloc] initWithView:view parameters:parameters];
+  }
+  return nil;
 }
 
 #pragma mark - Private
@@ -1010,6 +1064,8 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [_tabGridButton addTarget:self
                      action:@selector(tabGridTouchUp)
            forControlEvents:UIControlEventTouchUpInside];
+  [_tabGridButton
+      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
   _toolsMenuButton = [self.buttonFactory makeToolsMenuButton];
   [_toolsMenuButton addTarget:self
                        action:@selector(toolsMenuButtonTapped)
