@@ -52,6 +52,7 @@ specific_include_rules = {
   ],
   "on_task_locked_session_navigation_throttle_interactive_ui_test.cc": [
       "+chrome/browser/preloading/scoped_prewarm_feature_list.h",
+      "+chrome/browser/ui/browser_finder.h",
   ],
   "on_task_session_manager_browsertest.cc": [
       "+chrome/browser/preloading/scoped_prewarm_feature_list.h",

@@ -273,7 +273,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
   // Checks if the query is the start of an OAuth login. If so, then we want
   // to let these pass.
   if (IsOauthLoginStart(url)) {
-    window_tracker->set_oauth_in_progress(true);
+    window_tracker->set_oauth_in_progress(true, content_browser);
     // Set `should_redirects_pass_` to true in case the Oauth login flow happens
     // in the main tab and not in a popup window. This ensures that we are still
     // letting Oauth login flows to proceed.
@@ -472,7 +472,7 @@ OnTaskLockedSessionNavigationThrottle::WillRedirectRequest() {
     // flow is just started, we tell the window tracker that it is in progress
     // to avoid closing the OAuth login window before it has been completed.
     if (IsOauthLoginStart(navigation_handle()->GetURL())) {
-      window_tracker->set_oauth_in_progress(true);
+      window_tracker->set_oauth_in_progress(true, content_browser);
       return PROCEED;
     }
     if (window_tracker->oauth_in_progress()) {

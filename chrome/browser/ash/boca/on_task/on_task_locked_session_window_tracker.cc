@@ -17,8 +17,10 @@
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/boca/on_task/on_task_pod_controller_impl.h"
@@ -43,6 +45,8 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 
 LockedSessionWindowTracker::LockedSessionWindowTracker(
@@ -105,6 +109,16 @@ void LockedSessionWindowTracker::RefreshUrlBlocklist() {
   on_task_blocklist_->RefreshForUrlBlocklist(browser_->GetActiveWebContents());
 }
 
+void LockedSessionWindowTracker::set_oauth_in_progress(
+    bool in_progress,
+    ash::BrowserDelegate* browser) {
+  oauth_in_progress_ = in_progress;
+  if (in_progress && browser &&
+      browser->GetType() == ash::BrowserType::kAppPopup) {
+    authorized_oauth_browser_ = browser;
+  }
+}
+
 void LockedSessionWindowTracker::MaybeCloseBrowser(
     ash::BrowserDelegate* browser) {
   pending_close_tasks_.erase(browser);
@@ -131,13 +145,15 @@ void LockedSessionWindowTracker::MaybeCloseBrowser(
     // yet. Skip close because it is a managed instance.
     return;
   }
-  if (browser->GetType() == ash::BrowserType::kAppPopup && oauth_in_progress_) {
-    // Oauth popup and oauth is still in progress. Skip close.
+  if (browser->GetType() == ash::BrowserType::kAppPopup && oauth_in_progress_ &&
+      browser == authorized_oauth_browser_) {
+    // Authorized Oauth popup and oauth is still in progress. Skip close.
     return;
   }
 
   bool is_boca_app_instance = ash::IsBrowserForSystemWebApp(
       &browser->GetBrowser(), ash::SystemWebAppType::BOCA);
+
   if (browser_ &&
       !platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser()) &&
       !is_boca_app_instance) {
@@ -222,6 +238,7 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   browser_ = nullptr;
   can_open_new_popup_ = true;
   oauth_in_progress_ = false;
+  authorized_oauth_browser_ = nullptr;
 
   for (auto& observer : observers_) {
     observer.OnWindowTrackerCleanedup();
@@ -367,6 +384,7 @@ void LockedSessionWindowTracker::OnBrowserClosed(
         ->SetAllowWindowStackingWithPinnedWindow(false);
     can_open_new_popup_ = true;
     oauth_in_progress_ = false;
+    authorized_oauth_browser_ = nullptr;
   }
 }
 
@@ -395,7 +413,30 @@ void LockedSessionWindowTracker::OnBrowserActivated(
   if (!browser || !browser_) {
     return;
   }
+
   if (browser != browser_) {
+    if (browser->GetType() == ash::BrowserType::kNormal &&
+        browser != authorized_oauth_browser_ &&
+        platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser())) {
+      aura::Window* const window = browser->GetNativeWindow();
+      if (window) {
+        std::unique_ptr<aura::WindowTracker> tracker =
+            std::make_unique<aura::WindowTracker>();
+        tracker->Add(window);
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(
+                           [](std::unique_ptr<aura::WindowTracker> tracker) {
+                             if (!tracker->windows().empty()) {
+                               aura::Window* w = tracker->windows()[0];
+                               auto* window_state = ash::WindowState::Get(w);
+                               if (window_state) {
+                                 window_state->Minimize();
+                               }
+                             }
+                           },
+                           std::move(tracker)));
+      }
+    }
     for (auto& observer : observers_) {
       observer.OnActiveTabChanged(
           l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS));

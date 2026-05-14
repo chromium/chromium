@@ -9,6 +9,7 @@
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/wm/window_state.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -27,7 +28,8 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -789,13 +791,11 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
       LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
           profile());
   ASSERT_TRUE(window_tracker->CanOpenNewPopup());
-  const size_t original_browser_count =
-      GlobalBrowserCollection::GetInstance()->GetSize();
+  const size_t original_browser_count = chrome::GetTotalBrowserCount();
   Browser* const popup_browser = Browser::Create(Browser::CreateParams(
       Browser::TYPE_APP_POPUP, profile(), /*user_gesture=*/true));
   content::RunAllTasksUntilIdle();
-  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
-            original_browser_count + 1);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
   EXPECT_FALSE(window_tracker->CanOpenNewPopup());
 
   ui_test_utils::BrowserDestroyedObserver popup_closed_observer(popup_browser);
@@ -805,8 +805,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   ui_test_utils::NavigateToURL(&navigate_params);
   popup_closed_observer.Wait();
-  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
-            original_browser_count);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), original_browser_count);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
@@ -855,8 +854,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
         return false;
       }));
 
-  const size_t original_browser_count =
-      GlobalBrowserCollection::GetInstance()->GetSize();
+  const size_t original_browser_count = chrome::GetTotalBrowserCount();
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
           profile());
@@ -874,8 +872,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 
   ui_test_utils::BrowserActivationWaiter popup_activation_waiter(popup_browser);
   popup_activation_waiter.WaitForActivation();
-  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
-            original_browser_count + 1);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
+  EXPECT_FALSE(popup_browser->is_delete_scheduled());
   EXPECT_FALSE(window_tracker->CanOpenNewPopup());
   ASSERT_TRUE(window_tracker->oauth_in_progress());
 
@@ -883,7 +881,185 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   // This is normally done through a redirect with an auto close window query,
   // but we simulate this in the test.
   ui_test_utils::BrowserDestroyedObserver popup_closed_observer(popup_browser);
-  window_tracker->set_oauth_in_progress(false);
+  window_tracker->set_oauth_in_progress(false, nullptr);
+  ui_test_utils::NavigateToURLWithDisposition(
+      popup_browser,
+      embedded_test_server()->GetURL(kTabUrlRedirectHost,
+                                     "/redirect?code=secret"),
+      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  popup_closed_observer.Wait();
+  EXPECT_TRUE(window_tracker->CanOpenNewPopup());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
+                       CloseUnauthorizedPopupsDuringOAuth) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca::OnTaskLockedController::From(boca_app_browser)
+                  ->is_locked_for_on_task());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+
+  // Spawn tab for testing purposes.
+  const GURL url_1 = embedded_test_server()->GetURL(kTabUrl1Host, "/");
+  CreateBackgroundTabAndWait(
+      window_id, url_1, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+  WaitForUrlBlocklistUpdate();
+
+  // Spawn popup and simulate oauth request.
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.GetHost() == kTabUrlRedirectHost) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "chrome/test/data/title2.html", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  const size_t original_browser_count = chrome::GetTotalBrowserCount();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
+          profile());
+  ASSERT_TRUE(window_tracker->CanOpenNewPopup());
+  NavigateParams navigate_params(
+      boca_app_browser,
+      embedded_test_server()->GetURL(kTabUrlRedirectHost,
+                                     "/authenticate?client_id=123"),
+      ui::PAGE_TRANSITION_LINK);
+  navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
+  navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
+  ui_test_utils::NavigateToURL(&navigate_params);
+  Browser* const popup_browser =
+      navigate_params.browser->GetBrowserForMigrationOnly();
+
+  ui_test_utils::BrowserActivationWaiter popup_activation_waiter(popup_browser);
+  popup_activation_waiter.WaitForActivation();
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
+  EXPECT_FALSE(window_tracker->CanOpenNewPopup());
+  ASSERT_TRUE(window_tracker->oauth_in_progress());
+
+  // Spawn a second popup and verify it gets closed because it's not authorized.
+  Browser* const unauthorized_popup = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_APP_POPUP, profile(), /*user_gesture=*/true));
+  ui_test_utils::BrowserDestroyedObserver unauthorized_popup_closed_observer(
+      unauthorized_popup);
+  content::RunAllTasksUntilIdle();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      unauthorized_popup, embedded_test_server()->GetURL(kTabUrl2Host, "/"),
+      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  unauthorized_popup_closed_observer.Wait();
+
+  // The authorized oauth popup should still be open.
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
+  EXPECT_FALSE(popup_browser->is_delete_scheduled());
+
+  // Cleanup authorized popup.
+  ui_test_utils::BrowserDestroyedObserver popup_closed_observer(popup_browser);
+  window_tracker->set_oauth_in_progress(false, nullptr);
+  ui_test_utils::NavigateToURLWithDisposition(
+      popup_browser,
+      embedded_test_server()->GetURL(kTabUrlRedirectHost,
+                                     "/redirect?code=secret"),
+      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  popup_closed_observer.Wait();
+  EXPECT_TRUE(window_tracker->CanOpenNewPopup());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
+                       CloseUnauthorizedRegularWindowsDuringOAuth) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca::OnTaskLockedController::From(boca_app_browser)
+                  ->is_locked_for_on_task());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
+          profile());
+
+  const size_t original_browser_count = chrome::GetTotalBrowserCount();
+  ASSERT_TRUE(window_tracker->CanOpenNewPopup());
+  ASSERT_FALSE(window_tracker->oauth_in_progress());
+
+  // Spawn an authorized oauth popup.
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.GetHost() == kTabUrlRedirectHost) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "chrome/test/data/title2.html", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  NavigateParams navigate_params(
+      boca_app_browser,
+      embedded_test_server()->GetURL(kTabUrlRedirectHost,
+                                     "/authenticate?client_id=123"),
+      ui::PAGE_TRANSITION_LINK);
+  navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
+  navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
+  ui_test_utils::NavigateToURL(&navigate_params);
+  Browser* const popup_browser =
+      navigate_params.browser->GetBrowserForMigrationOnly();
+
+  ui_test_utils::BrowserActivationWaiter popup_activation_waiter(popup_browser);
+  popup_activation_waiter.WaitForActivation();
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
+  EXPECT_FALSE(window_tracker->CanOpenNewPopup());
+  ASSERT_TRUE(window_tracker->oauth_in_progress());
+
+  // Spawn a regular browser window and verify it gets closed because it's not
+  // authorized.
+  Browser* const unauthorized_regular_browser =
+      Browser::Create(Browser::CreateParams(Browser::TYPE_NORMAL, profile(),
+                                            /*user_gesture=*/true));
+  ui_test_utils::BrowserDestroyedObserver destroyed_observer(
+      unauthorized_regular_browser);
+
+  // Wait for it to be minimized by OnBrowserActivated.
+  // We need to ensure activation happens to trigger our logic.
+  unauthorized_regular_browser->window()->Show();
+  unauthorized_regular_browser->window()->Activate();
+  destroyed_observer.Wait();
+
+  // Verify it is closed (total browser count should be original + 1 (SWA +
+  // OAuth popup)).
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
+  EXPECT_FALSE(popup_browser->is_delete_scheduled());
+
+  // Cleanup authorized popup.
+  ui_test_utils::BrowserDestroyedObserver popup_closed_observer(popup_browser);
+  window_tracker->set_oauth_in_progress(false, nullptr);
   ui_test_utils::NavigateToURLWithDisposition(
       popup_browser,
       embedded_test_server()->GetURL(kTabUrlRedirectHost,
@@ -928,7 +1104,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
           profile());
-  window_tracker->set_oauth_in_progress(true);
+  window_tracker->set_oauth_in_progress(true, nullptr);
 
   // Spawn popup and simulate oauth request.
   //
@@ -946,8 +1122,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
         return false;
       }));
 
-  const size_t original_browser_count =
-      GlobalBrowserCollection::GetInstance()->GetSize();
+  const size_t original_browser_count = chrome::GetTotalBrowserCount();
   NavigateParams navigate_params(
       boca_app_browser,
       embedded_test_server()->GetURL(kTabUrlRedirectHost,
@@ -961,15 +1136,15 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 
   ui_test_utils::BrowserActivationWaiter popup_activation_waiter(popup_browser);
   popup_activation_waiter.WaitForActivation();
-  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
-            original_browser_count + 1);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
+  EXPECT_FALSE(popup_browser->is_delete_scheduled());
   EXPECT_FALSE(window_tracker->CanOpenNewPopup());
 
   // The oauth popup in reality should close once the login flow is complete.
   // This is normally done through a redirect with an auto close window query,
   // but we simulate this in the test.
   ui_test_utils::BrowserDestroyedObserver popup_closed_observer(popup_browser);
-  window_tracker->set_oauth_in_progress(false);
+  window_tracker->set_oauth_in_progress(false, nullptr);
   ui_test_utils::NavigateToURLWithDisposition(
       popup_browser,
       embedded_test_server()->GetURL(kTabUrlRedirectHost,

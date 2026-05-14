@@ -95,9 +95,7 @@ class LockedSessionWindowTracker : public KeyedService,
   virtual void set_can_start_navigation_throttle(bool is_ready);
 
   bool oauth_in_progress() { return oauth_in_progress_; }
-  void set_oauth_in_progress(bool in_progress) {
-    oauth_in_progress_ = in_progress;
-  }
+  void set_oauth_in_progress(bool in_progress, ash::BrowserDelegate* browser);
 
   void SetNotificationManagerForTesting(
       std::unique_ptr<ash::boca::OnTaskNotificationsManager>
@@ -145,6 +143,7 @@ class LockedSessionWindowTracker : public KeyedService,
   std::unique_ptr<ash::boca::OnTaskNotificationsManager> notifications_manager_;
   std::unique_ptr<ash::OnTaskPodController> on_task_pod_controller_;
   raw_ptr<ash::BrowserDelegate> browser_ = nullptr;
+  raw_ptr<ash::BrowserDelegate> authorized_oauth_browser_ = nullptr;
   base::ScopedObservation<ash::BrowserController,
                           ash::BrowserController::Observer>
       browser_controller_observation_{this};
