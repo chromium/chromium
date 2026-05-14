@@ -61,6 +61,13 @@ GURL ExtractEndpoint(const GURL& provider,
 CONTENT_EXPORT std::optional<GURL> ComputeWellKnownUrl(const GURL& provider,
                                                        const std::string& path);
 
+// Computes the "web-identity" subdomain well-known URL for `provider`, e.g.
+// https://web-identity.<eTLD+1><path>. Returns std::nullopt if `provider`
+// has no eTLD+1 (e.g. an IP literal) or for localhost.
+CONTENT_EXPORT std::optional<GURL> ComputeWebIdentitySubdomainWellKnownUrl(
+    const GURL& provider,
+    const std::string& path);
+
 // Base class containing some methods for creating fetches in webid APIs.
 class CONTENT_EXPORT NetworkRequestManager {
  public:

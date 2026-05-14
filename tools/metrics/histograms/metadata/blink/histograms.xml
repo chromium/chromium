@@ -2627,6 +2627,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded"
+    enum="BooleanSuccess" expires_after="2027-05-08">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <owner>sureshpotti@microsoft.com</owner>
+  <summary>
+    Recorded once per FedCM well-known discovery attempt when the
+    FedCmWebIdentitySubdomain feature is enabled. True if the
+    https://web-identity.&lt;eTLD+1&gt;/.well-known/web-identity fetch returned
+    a usable response (success ParseStatus and provider_urls.size() &lt;= 1).
+    False if it fell back to the apex
+    https://&lt;eTLD+1&gt;/.well-known/web-identity URL due to fetch failure
+    (network error, malformed JSON, or non-dictionary response) or more than one
+    provider_url.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.WellKnownInvalidDueToClientMetadata"
     enum="BooleanHit" expires_after="2026-08-23">
   <owner>yigu@chromium.org</owner>

@@ -7,11 +7,13 @@
 #include <optional>
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_ref.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/webid/flags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -118,6 +120,29 @@ std::optional<GURL> ComputeWellKnownUrl(const GURL& provider,
   GURL::Replacements replacements;
   replacements.SetPathStr(path);
   return well_known_url.ReplaceComponents(replacements);
+}
+
+std::optional<GURL> ComputeWebIdentitySubdomainWellKnownUrl(
+    const GURL& provider,
+    const std::string& path) {
+  // The subdomain form is only meaningful for hosts that have a registrable
+  // domain. Localhost / test ports / IP literals continue to use the apex
+  // (legacy) URL.
+  if (net::IsLocalhost(provider) || provider.HostIsIPAddress() ||
+      IsPreservePortsForTestingEnabled()) {
+    return std::nullopt;
+  }
+
+  GURL site_url = net::SchemefulSite(provider).GetURL();
+  if (!site_url.is_valid() || site_url.host().empty()) {
+    return std::nullopt;
+  }
+
+  GURL::Replacements replacements;
+  std::string subdomain_host = base::StrCat({"web-identity.", site_url.host()});
+  replacements.SetHostStr(subdomain_host);
+  replacements.SetPathStr(path);
+  return site_url.ReplaceComponents(replacements);
 }
 
 NetworkRequestManager::NetworkRequestManager(

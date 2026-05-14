@@ -659,6 +659,29 @@ TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
                                               kWellKnownPath));
 }
 
+TEST_F(IdpNetworkRequestManagerTest, ComputeWebIdentitySubdomainWellKnownUrl) {
+  // Localhost: subdomain form is not applicable; helper returns nullopt so the
+  // legacy apex URL is used.
+  EXPECT_EQ(std::nullopt,
+            ComputeWebIdentitySubdomainWellKnownUrl(
+                GURL("https://localhost:8000/test/"), kWellKnownPath));
+
+  // Standard registrable-domain provider: subdomain prepended.
+  EXPECT_EQ("https://web-identity.google.com/.well-known/web-identity",
+            ComputeWebIdentitySubdomainWellKnownUrl(
+                GURL("https://www.google.com:8000/test/"), kWellKnownPath));
+
+  // Provider already on a subdomain still uses eTLD+1 with web-identity. label.
+  EXPECT_EQ("https://web-identity.example.com/.well-known/web-identity",
+            ComputeWebIdentitySubdomainWellKnownUrl(
+                GURL("https://idp.example.com/foo"), kWellKnownPath));
+
+  // IP literal: no eTLD+1 -> nullopt.
+  EXPECT_EQ(std::nullopt,
+            ComputeWebIdentitySubdomainWellKnownUrl(
+                GURL("https://192.101.0.1/test/"), kWellKnownPath));
+}
+
 TEST_F(IdpNetworkRequestManagerTest, ParseUsername) {
   const auto* test_accounts_json = R"({
   "accounts" : [
@@ -1882,6 +1905,220 @@ TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingWellKnown) {
   EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_REQUEST_TIMEOUT, fetch_status.response_code);
   EXPECT_EQ(std::set<GURL>{}, wellknown.provider_urls);
+}
+
+// Tests for the FedCmWebIdentitySubdomain flag covering FetchWellKnown()
+// (exercised via SendWellKnownRequestAndWaitForResponse) across the various
+// subdomain-discovery scenarios.
+class IdpNetworkRequestManagerWebIdentitySubdomainTest
+    : public IdpNetworkRequestManagerTest {
+ public:
+  IdpNetworkRequestManagerWebIdentitySubdomainTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFedCmWebIdentitySubdomain);
+  }
+
+ protected:
+  // The subdomain (preferred) and apex (fallback) URLs that the implementation
+  // computes for kTestIdpUrl ("https://idp.test"). The "web-identity" label is
+  // the spec-defined prefix; not arbitrary.
+  static constexpr char kSubdomainWellKnownUrl[] =
+      "https://web-identity.idp.test/.well-known/web-identity";
+
+  // Wires a response for the subdomain URL, then runs FetchWellKnown() through
+  // the existing kTestIdpUrl helper. If `apex_data` is non-null, an apex
+  // response is also wired so the fallback can complete.
+  std::tuple<FetchStatus, IdpNetworkRequestManager::WellKnown>
+  FetchWithSubdomainResponse(const std::string& subdomain_data,
+                             net::HttpStatusCode subdomain_status,
+                             const char* apex_data = nullptr,
+                             net::HttpStatusCode apex_status = net::HTTP_OK) {
+    AddResponse(GURL(kSubdomainWellKnownUrl), subdomain_status,
+                "application/json", subdomain_data);
+    if (apex_data) {
+      AddResponse(GURL(kTestWellKnownUrl), apex_status, "application/json",
+                  apex_data);
+    }
+
+    base::RunLoop run_loop;
+    FetchStatus fetch_status;
+    IdpNetworkRequestManager::WellKnown well_known;
+    auto callback = base::BindLambdaForTesting(
+        [&](FetchStatus status,
+            const IdpNetworkRequestManager::WellKnown& result) {
+          fetch_status = status;
+          well_known = result;
+          run_loop.Quit();
+        });
+    std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+    manager->FetchWellKnown(GURL(kTestIdpUrl), std::move(callback));
+    run_loop.Run();
+    return {fetch_status, well_known};
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Subdomain fetch returns a single provider_urls entry: discovery succeeds
+// without falling back to apex. An apex response is also wired with a
+// *different* payload to prove the subdomain payload (not the apex one) reaches
+// the caller.
+TEST_F(IdpNetworkRequestManagerWebIdentitySubdomainTest,
+       SubdomainSucceedsWithSingleProvider) {
+  auto [fetch_status, well_known] = FetchWithSubdomainResponse(
+      R"({"provider_urls": ["https://idp.test/fedcm.json"]})", net::HTTP_OK,
+      R"({"provider_urls": ["https://idp.test/apex-only.json"]})",
+      net::HTTP_OK);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")},
+            well_known.provider_urls)
+      << "subdomain payload must take precedence over apex payload";
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", true, 1);
+}
+
+// Subdomain fetch returns more than one provider_urls entry: implementation
+// rejects it and falls back to the apex well-known.
+TEST_F(IdpNetworkRequestManagerWebIdentitySubdomainTest,
+       SubdomainRejectedWhenMultipleProviders) {
+  auto [fetch_status, well_known] = FetchWithSubdomainResponse(
+      R"({"provider_urls": ["https://idp.test/a.json",
+                            "https://idp.test/b.json"]})",
+      net::HTTP_OK, R"({"provider_urls": ["https://idp.test/fedcm.json"]})",
+      net::HTTP_OK);
+
+  // The apex result is what reaches the caller.
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")},
+            well_known.provider_urls);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", false, 1);
+}
+
+// Subdomain fetch returns 404: implementation falls back to apex.
+TEST_F(IdpNetworkRequestManagerWebIdentitySubdomainTest,
+       SubdomainHttpErrorFallsBackToApex) {
+  auto [fetch_status, well_known] = FetchWithSubdomainResponse(
+      /*subdomain_data=*/std::string(), net::HTTP_NOT_FOUND,
+      R"({"provider_urls": ["https://idp.test/fedcm.json"]})", net::HTTP_OK);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")},
+            well_known.provider_urls);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", false, 1);
+}
+
+// Subdomain fetch returns malformed JSON: implementation falls back to apex.
+TEST_F(IdpNetworkRequestManagerWebIdentitySubdomainTest,
+       SubdomainMalformedJsonFallsBackToApex) {
+  auto [fetch_status, well_known] = FetchWithSubdomainResponse(
+      "not valid json", net::HTTP_OK,
+      R"({"provider_urls": ["https://idp.test/fedcm.json"]})", net::HTTP_OK);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")},
+            well_known.provider_urls);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", false, 1);
+}
+
+// Subdomain fetch fails AND apex fetch fails: caller observes the apex error.
+TEST_F(IdpNetworkRequestManagerWebIdentitySubdomainTest,
+       SubdomainAndApexBothFail) {
+  auto [fetch_status, well_known] = FetchWithSubdomainResponse(
+      /*subdomain_data=*/std::string(), net::HTTP_NOT_FOUND,
+      /*apex_data=*/"", net::HTTP_REQUEST_TIMEOUT);
+
+  EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_REQUEST_TIMEOUT, fetch_status.response_code);
+  EXPECT_TRUE(well_known.provider_urls.empty());
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", false, 1);
+}
+
+// Subdomain fetch returns valid JSON but with an empty provider_urls list:
+// implementation rejects it (the subdomain contract requires exactly one entry)
+// and falls back to the apex well-known.
+TEST_F(IdpNetworkRequestManagerWebIdentitySubdomainTest,
+       SubdomainEmptyProviderListFallsBackToApex) {
+  auto [fetch_status, well_known] = FetchWithSubdomainResponse(
+      R"({"provider_urls": []})", net::HTTP_OK,
+      R"({"provider_urls": ["https://idp.test/fedcm.json"]})", net::HTTP_OK);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")},
+            well_known.provider_urls);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", false, 1);
+}
+
+// Subdomain fetch returns parseable JSON missing the provider_urls key:
+// implementation rejects it and falls back to the apex well-known.
+TEST_F(IdpNetworkRequestManagerWebIdentitySubdomainTest,
+       SubdomainMissingProviderUrlsFallsBackToApex) {
+  auto [fetch_status, well_known] = FetchWithSubdomainResponse(
+      R"({"unrelated_key": "ignored"})", net::HTTP_OK,
+      R"({"provider_urls": ["https://idp.test/fedcm.json"]})", net::HTTP_OK);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")},
+            well_known.provider_urls);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", false, 1);
+}
+
+// When the flag is enabled but the provider URL has no eTLD+1 (IP literal),
+// no subdomain URL can be computed, so the implementation goes straight to
+// apex without recording the discovery histogram.
+TEST_F(IdpNetworkRequestManagerWebIdentitySubdomainTest,
+       NoSubdomainAttemptedForIpLiteralProvider) {
+  GURL illegal_idp_url("https://192.101.0.1/test/");
+
+  base::RunLoop run_loop;
+  FetchStatus fetch_status;
+  IdpNetworkRequestManager::WellKnown well_known;
+  auto callback = base::BindLambdaForTesting(
+      [&](FetchStatus status,
+          const IdpNetworkRequestManager::WellKnown& result) {
+        fetch_status = status;
+        well_known = result;
+        run_loop.Quit();
+      });
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->FetchWellKnown(illegal_idp_url, std::move(callback));
+  run_loop.Run();
+
+  // ComputeWellKnownUrl() also rejects this URL, so the manager short-circuits
+  // to a synthetic kHttpNotFoundError without issuing any network request.
+  EXPECT_EQ(ParseStatus::kHttpNotFoundError, fetch_status.parse_status);
+  EXPECT_EQ(0, test_url_loader_factory().NumPending())
+      << "no subdomain (or apex) request must be issued for an IP literal IdP";
+  histogram_tester()->ExpectTotalCount(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", 0);
+}
+
+// With the flag *disabled* the manager must not attempt the subdomain URL
+// or record the discovery histogram, even if the provider has a valid eTLD+1.
+// This test deliberately lives in the base fixture (which leaves the feature
+// flag at its default-disabled value) rather than the enabled-flag fixture.
+TEST_F(IdpNetworkRequestManagerTest,
+       FetchWellKnownDoesNotAttemptSubdomainWhenFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kFedCmWebIdentitySubdomain);
+
+  // Only the apex URL is wired; if the implementation tried the subdomain URL
+  // the request would hang and the test would time out.
+  auto [fetch_status, well_known] = SendWellKnownRequestAndWaitForResponse(
+      R"({"provider_urls": ["https://idp.test/fedcm.json"]})");
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")},
+            well_known.provider_urls);
+  histogram_tester()->ExpectTotalCount(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", 0);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingConfig) {

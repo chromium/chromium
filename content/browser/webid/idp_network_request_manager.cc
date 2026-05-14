@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -485,6 +486,22 @@ void OnWellKnownParsed(
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           std::move(well_known));
+}
+
+// Returns true if the subdomain well-known fetch result is acceptable.
+// Falls back to the apex URL when the subdomain fetch failed (non-success
+// ParseStatus from network error, malformed JSON, or non-dictionary
+// response) or provider_urls contains more than one entry.
+bool IsSubdomainWellKnownAcceptable(
+    FetchStatus fetch_status,
+    const IdpNetworkRequestManager::WellKnown& well_known) {
+  if (fetch_status.parse_status != ParseStatus::kSuccess) {
+    return false;
+  }
+  if (well_known.provider_urls.size() > 1u) {
+    return false;
+  }
+  return true;
 }
 
 void OnConfigParsed(const GURL& provider,
@@ -1066,10 +1083,10 @@ IdpNetworkRequestManager::CreateTrafficAnnotation() {
 
 void IdpNetworkRequestManager::FetchWellKnown(const GURL& provider,
                                               FetchWellKnownCallback callback) {
-  std::optional<GURL> well_known_url =
+  std::optional<GURL> apex_well_known_url =
       ComputeWellKnownUrl(provider, kWellKnownPath);
 
-  if (!well_known_url) {
+  if (!apex_well_known_url) {
     // Pass net::HTTP_OK as the |response_code| so we do not add a console error
     // message about a fetch we didn't even attempt.
     FetchStatus fetch_status = {ParseStatus::kHttpNotFoundError, net::HTTP_OK};
@@ -1080,14 +1097,64 @@ void IdpNetworkRequestManager::FetchWellKnown(const GURL& provider,
     return;
   }
 
+  // If FedCmWebIdentitySubdomain is enabled, try the "web-identity." subdomain
+  // first and fall back to the apex URL if the fetch fails, returns a malformed
+  // response, or yields more than one provider_urls entry.
+  if (webid::IsWebIdentitySubdomainEnabled()) {
+    std::optional<GURL> subdomain_well_known_url =
+        ComputeWebIdentitySubdomainWellKnownUrl(provider, kWellKnownPath);
+    if (subdomain_well_known_url) {
+      FetchWellKnownCallback fallback_callback = base::BindOnce(
+          &IdpNetworkRequestManager::OnSubdomainWellKnownAttempted,
+          weak_ptr_factory_.GetWeakPtr(), *apex_well_known_url,
+          std::move(callback));
+      std::unique_ptr<network::ResourceRequest> resource_request =
+          CreateUncredentialedResourceRequest(*subdomain_well_known_url,
+                                              /*send_origin=*/false,
+                                              /*follow_redirects=*/true);
+      DownloadJsonAndParse(
+          std::move(resource_request),
+          /*url_encoded_post_data=*/std::nullopt,
+          base::BindOnce(&OnWellKnownParsed, std::move(fallback_callback),
+                         *subdomain_well_known_url));
+      return;
+    }
+  }
+
   std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateUncredentialedResourceRequest(*well_known_url,
+      CreateUncredentialedResourceRequest(*apex_well_known_url,
                                           /*send_origin=*/false,
                                           /* follow_redirects= */ true);
-  DownloadJsonAndParse(
-      std::move(resource_request),
-      /*url_encoded_post_data=*/std::nullopt,
-      base::BindOnce(&OnWellKnownParsed, std::move(callback), *well_known_url));
+  DownloadJsonAndParse(std::move(resource_request),
+                       /*url_encoded_post_data=*/std::nullopt,
+                       base::BindOnce(&OnWellKnownParsed, std::move(callback),
+                                      *apex_well_known_url));
+}
+
+void IdpNetworkRequestManager::OnSubdomainWellKnownAttempted(
+    const GURL& apex_well_known_url,
+    FetchWellKnownCallback callback,
+    FetchStatus fetch_status,
+    const WellKnown& subdomain_well_known) {
+  if (IsSubdomainWellKnownAcceptable(fetch_status, subdomain_well_known)) {
+    base::UmaHistogramBoolean(
+        "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", true);
+    std::move(callback).Run(fetch_status, subdomain_well_known);
+    return;
+  }
+
+  base::UmaHistogramBoolean(
+      "Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded", false);
+
+  // Fall back to apex.
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      CreateUncredentialedResourceRequest(apex_well_known_url,
+                                          /*send_origin=*/false,
+                                          /*follow_redirects=*/true);
+  DownloadJsonAndParse(std::move(resource_request),
+                       /*url_encoded_post_data=*/std::nullopt,
+                       base::BindOnce(&OnWellKnownParsed, std::move(callback),
+                                      apex_well_known_url));
 }
 
 void IdpNetworkRequestManager::FetchConfig(const GURL& provider,

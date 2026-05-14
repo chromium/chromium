@@ -36,6 +36,10 @@ bool IsWithoutWellKnownEnforcementEnabled() {
       features::kFedCmWithoutWellKnownEnforcement);
 }
 
+bool IsWebIdentitySubdomainEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmWebIdentitySubdomain);
+}
+
 bool IsDigitalCredentialsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }

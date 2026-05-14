@@ -387,6 +387,14 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   // NetworkRequestManager:
   net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() override;
 
+  // Handles the subdomain well-known result when FedCmWebIdentitySubdomain is
+  // enabled. Uses it if valid (success, <= 1 provider URL); otherwise falls
+  // back to `apex_well_known_url`.
+  void OnSubdomainWellKnownAttempted(const GURL& apex_well_known_url,
+                                     FetchWellKnownCallback callback,
+                                     FetchStatus fetch_status,
+                                     const WellKnown& subdomain_well_known);
+
   void FetchImage(const GURL& url, base::OnceClosure callback);
   void FetchCachedAccountImage(const url::Origin& idp_origin,
                                const GURL& url,
