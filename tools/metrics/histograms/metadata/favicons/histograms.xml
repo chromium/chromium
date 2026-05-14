@@ -29,7 +29,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the success rate of favicon requests that have host fallback
     disabled. (e.g. by the FaviconDisableHostFallback experiment). Used to
-    measure regression in find rates compared to the Enabled group.
+    measure regression in find rates compared to the Enabled group. Recorded
+    immediately when the favicon lookup completion callback executes and returns
+    a result.
+  </summary>
+</histogram>
+
+<histogram name="Favicons.AndroidHostFallbackFetchResult.Disabled.OffTheRecord"
+    enum="BooleanSuccess" expires_after="2026-12-31">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the success rate of favicon requests that have host fallback
+    disabled in incognito tabs. (e.g. by the FaviconDisableHostFallback
+    experiment). Used to measure regression in find rates compared to the
+    Enabled group. Recorded immediately when the favicon lookup completion
+    callback executes and returns a result.
   </summary>
 </histogram>
 
@@ -39,7 +54,19 @@ chromium-metrics-reviews@google.com.
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Records the success rate of favicon requests that have host fallback
-    enabled.
+    enabled. Recorded immediately when the favicon lookup completion callback
+    executes and returns a result.
+  </summary>
+</histogram>
+
+<histogram name="Favicons.AndroidHostFallbackFetchResult.Enabled.OffTheRecord"
+    enum="BooleanSuccess" expires_after="2026-12-31">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the success rate of favicon requests that have host fallback enabled
+    in incognito tabs. Recorded immediately when the favicon lookup completion
+    callback executes and returns a result.
   </summary>
 </histogram>
 
