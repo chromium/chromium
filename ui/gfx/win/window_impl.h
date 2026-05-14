@@ -19,6 +19,8 @@ namespace gfx {
 // ProcessWindowMessage is implemented by the BEGIN_MESSAGE_MAP_EX macro.
 class MessageMapInterface {
  public:
+  virtual ~MessageMapInterface() = default;
+
   // Processes one message from the window's message queue.
   virtual BOOL ProcessWindowMessage(HWND window,
                                     UINT message,
@@ -45,7 +47,7 @@ class COMPONENT_EXPORT(GFX) WindowImpl : public MessageMapInterface {
   WindowImpl(const WindowImpl&) = delete;
   WindowImpl& operator=(const WindowImpl&) = delete;
 
-  virtual ~WindowImpl();
+  ~WindowImpl() override;
 
   // Causes all generated windows classes to be unregistered at exit.
   // This can cause result in errors for tests that don't destroy all instances
