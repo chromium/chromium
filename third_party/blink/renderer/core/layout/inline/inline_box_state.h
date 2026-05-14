@@ -152,7 +152,8 @@ struct InlineBoxState {
                           FontHeight& metrics);
 
   static FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
-                                               const Font& font);
+                                               const Font& font,
+                                               float paint_scale);
 
 #if DCHECK_IS_ON()
   void CheckSame(const InlineBoxState&) const;

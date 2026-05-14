@@ -131,7 +131,7 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   text_height = text_metrics.LineHeight();
 
   FontHeight emphasis_marks_outsets =
-      ComputeEmphasisMarkOutsets(styleref, base_font);
+      ComputeEmphasisMarkOutsets(styleref, base_font, paint_scale);
   LayoutUnit line_height = styleref.ComputedLineHeightAsFixed(base_font);
   if (styleref.LineHeight().IsFixed()) {
     if (scale && scale->total_scale != 1.0f) {
@@ -219,13 +219,14 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
 
 FontHeight InlineBoxState::ComputeEmphasisMarkOutsets(
     const ComputedStyle& style,
-    const Font& font) {
+    const Font& font,
+    float paint_scale) {
   if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone) {
     return FontHeight::Empty();
   }
 
-  LayoutUnit emphasis_mark_height =
-      LayoutUnit(font.EmphasisMarkHeight(style.TextEmphasisMarkString()));
+  LayoutUnit emphasis_mark_height = LayoutUnit(
+      font.EmphasisMarkHeight(style.TextEmphasisMarkString()) * paint_scale);
   DCHECK_GE(emphasis_mark_height, LayoutUnit());
   return style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver
              ? FontHeight(emphasis_mark_height, LayoutUnit())
