@@ -103,6 +103,9 @@ export class AudioPlayer {
   }
 
   stop() {
+    if (this.onDone) {
+      this.onDone();
+    }
     for (const source of this.sources) {
       source.disconnect();
       source.stop();
