@@ -182,13 +182,13 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
         std::move(device_cloud_policy_store), std::move(external_data_manager),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         state_keys_broker_.get(), crd_admin_session_controller_->GetDelegate());
-    providers_for_init_.push_back(base::WrapUnique<ConfigurationPolicyProvider>(
-        device_cloud_policy_manager_.get()));
+    providers_for_init_.push_back(
+        base::WrapUnique(device_cloud_policy_manager_.get()));
   }
 
   global_user_cloud_policy_provider_ = new ProxyPolicyProvider();
-  providers_for_init_.push_back(std::unique_ptr<ConfigurationPolicyProvider>(
-      global_user_cloud_policy_provider_));
+  providers_for_init_.push_back(
+      base::WrapUnique(global_user_cloud_policy_provider_.get()));
 }
 
 BrowserPolicyConnectorAsh::~BrowserPolicyConnectorAsh() = default;

@@ -54,8 +54,12 @@ class DemoLoginController
   using ResultCode = DemoSessionMetricsRecorder::DemoAccountRequestResultCode;
 
   // `local_state` must be non-null and must outlive `this`.
-  DemoLoginController(PrefService* local_state,
-                      base::RepeatingClosure auto_login_mgs_callback);
+  // `device_cloud_policy_manager_ash` may be null in unit tests, and must
+  // outlive `this` if non-null
+  DemoLoginController(
+      PrefService* local_state,
+      policy::DeviceCloudPolicyManagerAsh* device_cloud_policy_manager_ash,
+      base::RepeatingClosure auto_login_mgs_callback);
   DemoLoginController(const DemoLoginController&) = delete;
   DemoLoginController& operator=(const DemoLoginController&) = delete;
   ~DemoLoginController() override;
@@ -119,6 +123,8 @@ class DemoLoginController
   void OnPolicyManagerConnectionTimeOut();
 
   const raw_ref<PrefService> local_state_;
+  const raw_ptr<policy::DeviceCloudPolicyManagerAsh>
+      device_cloud_policy_manager_ash_;
 
   // We only allow 1 demo account request at a time.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

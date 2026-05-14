@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -788,15 +789,50 @@ TEST_F(DemoLoginControllerTest, SetupDemoAccountErrorRetriable) {
 
 class DemoLoginControllerCloudPolicyConnectionTest : public testing::Test {
  public:
-  DemoLoginControllerCloudPolicyConnectionTest() {}
+  // DeviceSettingsService and InstallAttribute should outlive BrowserProcess.
+  // In unit tests, TestingBrowserProcess is created before testing::Test and
+  // destroyed after it. To meet the lifetime requirements, this fixture uses
+  // SetUpTestSuite() as a chance to initialize objects before
+  // TestingBrowserProcess is created.
+  //
+  // WARNING: This depends on the fact that this fixture only has a single test
+  // case. Do not add new test cases to this fixture!
+  static void SetUpTestSuite() {
+    CHECK(!test_device_settings_service_);
+    test_device_settings_service_ = new ScopedTestDeviceSettingsService();
+
+    CHECK(!test_install_attributes_);
+    test_install_attributes_ = new ScopedStubInstallAttributes();
+  }
+
+  // See the comment for SetUpTestSuite() above.
+  static void TearDownTestSuite() {
+    CHECK(test_install_attributes_);
+    delete test_install_attributes_;
+    test_install_attributes_ = nullptr;
+
+    CHECK(test_device_settings_service_);
+    delete test_device_settings_service_;
+    test_device_settings_service_ = nullptr;
+  }
+
+  DemoLoginControllerCloudPolicyConnectionTest() {
+    features_.InitAndEnableFeature(features::kDemoModeSignIn);
+  }
   ~DemoLoginControllerCloudPolicyConnectionTest() override = default;
 
   void SetUp() override {
-    features_.InitAndEnableFeature(features::kDemoModeSignIn);
+    task_environment_.emplace(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     DBusThreadManager::Initialize();
-    DeviceSettingsService::Initialize();
+    auto* device_cloud_policy_manager_ash = TestingBrowserProcess::GetGlobal()
+                                                ->platform_part()
+                                                ->browser_policy_connector_ash()
+                                                ->GetDeviceCloudPolicyManager();
+    ASSERT_TRUE(device_cloud_policy_manager_ash);
     demo_login_controller_ = std::make_unique<DemoLoginController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
+        device_cloud_policy_manager_ash,
         base::BindRepeating(&DemoLoginControllerCloudPolicyConnectionTest::
                                 MockConfigureAutoLogin,
                             base::Unretained(this)));
@@ -804,31 +840,39 @@ class DemoLoginControllerCloudPolicyConnectionTest : public testing::Test {
 
   void TearDown() override {
     demo_login_controller_.reset();
-    DeviceSettingsService::Shutdown();
     DBusThreadManager::Shutdown();
+    task_environment_.reset();
   }
 
   void MockConfigureAutoLogin() { is_auto_login_trigger_ = true; }
 
+  // These are created before BrowserProcess and destroyed after BrowserProcess.
+  static ScopedTestDeviceSettingsService* test_device_settings_service_;
+  static ScopedStubInstallAttributes* test_install_attributes_;
+
   base::test::ScopedFeatureList features_;
 
-  // InstallAttributes is created before ThreadPool and destroyed after
-  // ThreadPool.
-  ScopedStubInstallAttributes test_install_attributes_;
-
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::optional<content::BrowserTaskEnvironment> task_environment_;
   std::unique_ptr<DemoLoginController> demo_login_controller_;
   bool is_auto_login_trigger_ = false;
   base::UserActionTester user_action_tester_;
 };
 
+// static
+ScopedTestDeviceSettingsService* DemoLoginControllerCloudPolicyConnectionTest::
+    test_device_settings_service_ = nullptr;
+
+// static
+ScopedStubInstallAttributes*
+    DemoLoginControllerCloudPolicyConnectionTest::test_install_attributes_ =
+        nullptr;
+
 TEST_F(DemoLoginControllerCloudPolicyConnectionTest,
        ConnectPolicyManagerTimeout) {
   EXPECT_EQ(demo_login_controller_->state(),
             DemoLoginController::State::kLoadingAvailibility);
-  task_environment_.FastForwardBy(kConnectPolicyManagerTimeout +
-                                  base::Seconds(1));
+  task_environment_->FastForwardBy(kConnectPolicyManagerTimeout +
+                                   base::Seconds(1));
 
   // Expect cloud policy manager is disconnected:
   auto* policy_manager = g_browser_process->platform_part()
@@ -844,5 +888,9 @@ TEST_F(DemoLoginControllerCloudPolicyConnectionTest,
       user_action_tester_.GetActionCount(kCloudPolicyConnectionTimeoutAction),
       1);
 }
+
+// WARNING: Do not add a new test case to
+// DemoLoginControllerCloudPolicyConnectionTest. See the comment for
+// SetUpTestSuite() for details.
 
 }  // namespace ash

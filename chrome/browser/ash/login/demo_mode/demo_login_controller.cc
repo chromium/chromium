@@ -26,9 +26,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -344,21 +342,6 @@ void RemoveGaiaUsersOnDevice() {
   }
 }
 
-policy::DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() {
-  auto* platform_part = g_browser_process->platform_part();
-  if (!platform_part) {
-    LOG(ERROR) << "platform_part is null.";
-    return nullptr;
-  }
-  auto* policy_connector_ash = platform_part->browser_policy_connector_ash();
-  if (!policy_connector_ash) {
-    LOG(ERROR) << "browser_policy_connector_ash is null.";
-    return nullptr;
-  }
-
-  return policy_connector_ash->GetDeviceCloudPolicyManager();
-}
-
 base::DictValue GetDeviceInfo(PrefService& local_state) {
   // Full ChromeOS version, for example: R127-15919.0.0_stable-channel.
   const std::string version = demo_mode::GetChromeOSVersionString();
@@ -390,25 +373,27 @@ base::DictValue GetDeviceInfo(PrefService& local_state) {
 
 DemoLoginController::DemoLoginController(
     PrefService* local_state,
+    policy::DeviceCloudPolicyManagerAsh* device_cloud_policy_manager_ash,
     base::RepeatingClosure configure_auto_login_callback)
     : local_state_(CHECK_DEREF(local_state)),
+      device_cloud_policy_manager_ash_(device_cloud_policy_manager_ash),
       configure_auto_login_callback_(std::move(configure_auto_login_callback)) {
-  state_ = State::kLoadingAvailibility;
-
-  auto* cloud_policy_manager = GetDeviceCloudPolicyManager();
-  if (!cloud_policy_manager) {
+  if (!device_cloud_policy_manager_ash_) {
     CHECK_IS_TEST();
     state_ = State::kReadyForLoginWithDemoAccount;
     return;
   }
 
-  is_policy_manager_connected_ = cloud_policy_manager->IsConnected();
+  state_ = State::kLoadingAvailibility;
+
+  is_policy_manager_connected_ =
+      device_cloud_policy_manager_ash_->IsConnected();
 
   // Sign in experience relies on DM Token for device verification. DM Token is
   // fetched using policy client, so we need to wait for policy manager to be
   // connected.
   if (!is_policy_manager_connected_) {
-    observation_.Observe(cloud_policy_manager);
+    observation_.Observe(device_cloud_policy_manager_ash_.get());
 
     // `DemoLoginController::OnDeviceCloudPolicyManagerConnected` might not be
     // triggered if there is a network issue.
@@ -728,10 +713,10 @@ std::optional<base::DictValue> DemoLoginController::GetDeviceIdentifier(
     const std::string& login_scope_device_id) {
   // The class member `policy_manager_for_testing_` is set during testing.
   // If it's not set, it means we're not in the testing environment, so we
-  // can get the real policy manager from `policy_connector_ash`.
+  // can get the real policy manager `device_cloud_policy_manager_ash_`.
   policy::CloudPolicyManager* policy_manager =
       policy_manager_for_testing_ ? policy_manager_for_testing_
-                                  : GetDeviceCloudPolicyManager();
+                                  : device_cloud_policy_manager_ash_.get();
 
   if (!policy_manager) {
     LOG(ERROR)

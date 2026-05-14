@@ -269,6 +269,10 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Returns the device policy data or nullptr if it does not exist.
   const enterprise_management::PolicyData* GetDevicePolicy() const;
 
+  // The ConfigurationPolicyProviders created in the constructor are initially
+  // added here, and then pushed to the super class in CreatePolicyProviders().
+  std::vector<std::unique_ptr<ConfigurationPolicyProvider>> providers_for_init_;
+
   // Components of the device cloud policy implementation.
   std::unique_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
   std::unique_ptr<CrdAdminSessionController> crd_admin_session_controller_;
@@ -319,15 +323,10 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // after login.
   // The provider is owned by the base class; this field is just a typed weak
   // pointer to get to the ProxyPolicyProvider at SetUserPolicyDelegate().
-  raw_ptr<ProxyPolicyProvider, DanglingUntriaged>
-      global_user_cloud_policy_provider_ = nullptr;
+  raw_ptr<ProxyPolicyProvider> global_user_cloud_policy_provider_ = nullptr;
 
   std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>
       device_network_configuration_updater_;
-
-  // The ConfigurationPolicyProviders created in the constructor are initially
-  // added here, and then pushed to the super class in CreatePolicyProviders().
-  std::vector<std::unique_ptr<ConfigurationPolicyProvider>> providers_for_init_;
 
   // Manages provisioning of certificates from
   // RequiredClientCertificateForDevice device policy.

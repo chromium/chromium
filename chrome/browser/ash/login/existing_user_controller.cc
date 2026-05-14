@@ -415,6 +415,7 @@ ExistingUserController::ExistingUserController(
     // out in 90s if idle.
     demo_login_controller_ = std::make_unique<ash::DemoLoginController>(
         &local_state_.get(),
+        browser_policy_connector_ash_->GetDeviceCloudPolicyManager(),
         base::BindRepeating(&ExistingUserController::ConfigureAutoLogin,
                             base::Unretained(this)));
   }
