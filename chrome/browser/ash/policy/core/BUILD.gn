@@ -46,7 +46,6 @@ static_library("core") {
     "file_util.h",
     "policy_oauth2_token_fetcher.cc",
     "policy_oauth2_token_fetcher.h",
-    "policy_pref_names.cc",
     "policy_pref_names.h",
     "reporting_user_tracker.cc",
     "reporting_user_tracker.h",
