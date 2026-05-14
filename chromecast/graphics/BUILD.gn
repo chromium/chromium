@@ -39,8 +39,6 @@ cast_source_set("graphics") {
       "gestures/cast_system_gesture_dispatcher.h",
       "gestures/cast_system_gesture_event_handler.cc",
       "gestures/cast_system_gesture_event_handler.h",
-      "gestures/multiple_tap_detector.cc",
-      "gestures/multiple_tap_detector.h",
       "gestures/side_swipe_detector.cc",
       "gestures/side_swipe_detector.h",
     ]
@@ -138,7 +136,6 @@ if (use_aura && !is_cast_audio_only && !is_fuchsia) {
       "cast_views_test.cc",
       "cast_window_manager_aura_test.cc",
       "gestures/cast_system_gesture_dispatcher_test.cc",
-      "gestures/multiple_tap_detector_test.cc",
       "gestures/side_swipe_detector_test.cc",
       "run_all_unittests.cc",
     ]
