@@ -742,7 +742,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'arm64',
-        'os': 'Mac-15',
+        'os': 'Mac-15|Mac-26',
       },
     },
   },
@@ -750,7 +750,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'os': 'Mac-15',
+        'os': 'Mac-15|Mac-26',
       },
     },
   },
