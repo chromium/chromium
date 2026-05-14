@@ -36,7 +36,8 @@ class PatcherImpl : public Patcher {
   explicit PatcherImpl(PatchChromiumFactory::Callback callback)
       : callback_(std::move(callback)) {}
 
-  void PatchPuffPatch(base::File old_file,
+  void PatchPuffPatch(bool is_foreground,
+                      base::File old_file,
                       base::File patch_file,
                       base::File destination_file,
                       PatchCompleteCallback callback) const override {
@@ -52,7 +53,8 @@ class PatcherImpl : public Patcher {
                      std::move(callback));
   }
 
-  void PatchZucchini(base::File old_file,
+  void PatchZucchini(bool is_foreground,
+                     base::File old_file,
                      base::File patch_file,
                      base::File destination_file,
                      PatchCompleteCallback callback) const override {

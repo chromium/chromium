@@ -41,7 +41,8 @@ base::OnceClosure PuffOperation(
           base::File::FLAG_WIN_EXCLUSIVE_WRITE,
       output_hash, puffin::P_OK, patch_file, protocol_request::kEventPuff,
       is_foreground, std::move(callback))
-      ->Operation(base::BindOnce(&Patcher::PatchPuffPatch, patcher));
+      ->Operation(
+          base::BindOnce(&Patcher::PatchPuffPatch, patcher, is_foreground));
   return base::DoNothing();
 }
 

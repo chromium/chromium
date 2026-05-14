@@ -43,8 +43,12 @@ class PatchOperation : public base::RefCountedThreadSafe<PatchOperation> {
   explicit PatchOperation(base::OnceCallback<void(int)> callback)
       : callback_(std::move(callback)) {}
 
-  // Start the helper process and return true if successful.
-  bool StartHelper(UpdaterScope scope) {
+  // Starts the helper process. If `is_foreground` is false, the helper process
+  // is configured to run at background priority (`kBestEffort`). On Windows and
+  // Linux the priority is configured by the parent process. However, due to API
+  // limitations, on macOS the priority is configured by the child process based
+  // on the presence of a command-line flag.
+  bool StartHelper(UpdaterScope scope, bool is_foreground) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     std::optional<base::FilePath> updater_path =
         GetUpdaterExecutablePath(scope);
@@ -54,6 +58,11 @@ class PatchOperation : public base::RefCountedThreadSafe<PatchOperation> {
     }
     base::CommandLine command_line(*updater_path);
     command_line.AppendSwitch(kPatchWorkerSwitch);
+#if BUILDFLAG(IS_MAC)
+    if (!is_foreground) {
+      command_line.AppendSwitch(kPatchWorkerBackgroundPrioritySwitch);
+    }
+#endif
     if (IsSystemInstall(scope)) {
       command_line.AppendSwitch(kSystemSwitch);
     }
@@ -68,6 +77,13 @@ class PatchOperation : public base::RefCountedThreadSafe<PatchOperation> {
       Done(kErrorLaunchingProcess);
       return false;
     }
+
+#if !BUILDFLAG(IS_MAC)
+    if (!is_foreground) {
+      process.SetPriority(base::Process::Priority::kBestEffort);
+    }
+#endif
+
     channel.RemoteProcessLaunchAttempted();
     mojo::ScopedMessagePipeHandle pipe = mojo::OutgoingInvitation::SendIsolated(
         channel.TakeLocalEndpoint(), {}, process.Handle());
@@ -90,10 +106,11 @@ class PatchOperation : public base::RefCountedThreadSafe<PatchOperation> {
   }
 
   void PatchZucchini(UpdaterScope scope,
+                     bool is_foreground,
                      base::File old,
                      base::File patch,
                      base::File out) {
-    if (!StartHelper(scope)) {
+    if (!StartHelper(scope, is_foreground)) {
       return;
     }
     patcher_->PatchFileZucchini(
@@ -104,10 +121,11 @@ class PatchOperation : public base::RefCountedThreadSafe<PatchOperation> {
   }
 
   void PatchPuffPatch(UpdaterScope scope,
+                      bool is_foreground,
                       base::File old,
                       base::File patch,
                       base::File out) {
-    if (!StartHelper(scope)) {
+    if (!StartHelper(scope, is_foreground)) {
       return;
     }
     patcher_->PatchFilePuffPatch(std::move(old), std::move(patch),
@@ -141,22 +159,24 @@ class OutOfProcessPatcher : public update_client::Patcher {
   OutOfProcessPatcher& operator=(const OutOfProcessPatcher&) = delete;
 
   // Overrides for update_client::Patcher.
-  void PatchPuffPatch(base::File old_file,
+  void PatchPuffPatch(bool is_foreground,
+                      base::File old_file,
                       base::File patch_file,
                       base::File destination_file,
                       PatchCompleteCallback callback) const override {
     base::MakeRefCounted<PatchOperation>(std::move(callback))
-        ->PatchPuffPatch(scope_, std::move(old_file), std::move(patch_file),
-                         std::move(destination_file));
+        ->PatchPuffPatch(scope_, is_foreground, std::move(old_file),
+                         std::move(patch_file), std::move(destination_file));
   }
 
-  void PatchZucchini(base::File old_file,
+  void PatchZucchini(bool is_foreground,
+                     base::File old_file,
                      base::File patch_file,
                      base::File destination_file,
                      PatchCompleteCallback callback) const override {
     base::MakeRefCounted<PatchOperation>(std::move(callback))
-        ->PatchZucchini(scope_, std::move(old_file), std::move(patch_file),
-                        std::move(destination_file));
+        ->PatchZucchini(scope_, is_foreground, std::move(old_file),
+                        std::move(patch_file), std::move(destination_file));
   }
 
  private:

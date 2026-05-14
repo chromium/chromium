@@ -8,6 +8,12 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/process/process.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/process/port_provider_mac.h"
+#endif
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -55,6 +61,14 @@ AppPatchWorker::AppPatchWorker() = default;
 AppPatchWorker::~AppPatchWorker() = default;
 
 int AppPatchWorker::Initialize() {
+#if BUILDFLAG(IS_MAC)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::updater::kPatchWorkerBackgroundPrioritySwitch)) {
+    base::SelfPortProvider self_port_provider;
+    base::Process::Current().SetPriority(&self_port_provider,
+                                         base::Process::Priority::kBestEffort);
+  }
+#endif
   return kErrorOk;
 }
 

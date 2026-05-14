@@ -42,7 +42,8 @@ base::OnceClosure ZucchiniOperation(
           base::File::FLAG_CAN_DELETE_ON_CLOSE,
       output_hash, 0, patch_file, protocol_request::kEventZucchini,
       is_foreground, std::move(callback))
-      ->Operation(base::BindOnce(&Patcher::PatchZucchini, patcher));
+      ->Operation(
+          base::BindOnce(&Patcher::PatchZucchini, patcher, is_foreground));
   return base::DoNothing();
 }
 

@@ -100,6 +100,12 @@ inline constexpr char kPatchWorkerSwitch[] = "patch-worker";
 // Run as an unzip worker.
 inline constexpr char kUnzipWorkerSwitch[] = "unzip-worker";
 
+#if BUILDFLAG(IS_MAC)
+// Command line switch to run the patch worker at background priority.
+inline constexpr char kPatchWorkerBackgroundPrioritySwitch[] =
+    "patch-worker-background-priority";
+#endif
+
 // Run as a network worker.
 inline constexpr char kNetWorkerSwitch[] = "net-worker";
 

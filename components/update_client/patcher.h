@@ -21,12 +21,14 @@ class Patcher : public base::RefCountedThreadSafe<Patcher> {
   Patcher(const Patcher&) = delete;
   Patcher& operator=(const Patcher&) = delete;
 
-  virtual void PatchPuffPatch(base::File input_file_path,
+  virtual void PatchPuffPatch(bool is_foreground,
+                              base::File input_file_path,
                               base::File patch_file_path,
                               base::File output_file_path,
                               PatchCompleteCallback callback) const = 0;
 
-  virtual void PatchZucchini(base::File input_file_path,
+  virtual void PatchZucchini(bool is_foreground,
+                             base::File input_file_path,
                              base::File patch_file_path,
                              base::File output_file_path,
                              PatchCompleteCallback callback) const = 0;
