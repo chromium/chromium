@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.createBatch;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -66,6 +67,16 @@ public class ModelTrackingOrchestrator {
                 ActiveTabCache activeTabCache,
                 boolean hasCipherFactory,
                 boolean isAuthoritative);
+    }
+
+    /** Factory for building components keyed by Profile and Collection. */
+    @FunctionalInterface
+    public interface CollectionKeyedFactory<T> {
+        /**
+         * @param profile The profile associated with the collection.
+         * @param collection The {@link TabStripCollection} keyed under the profile.
+         */
+        T build(Profile profile, TabStripCollection collection);
     }
 
     /** The state of the synchronization lifecycle for a specific model. */
@@ -136,6 +147,8 @@ public class ModelTrackingOrchestrator {
     private final TabModelSelector mTabModelSelector;
     private final ActiveTabCache mActiveTabCache;
     private final boolean mIsAuthoritative;
+    private final CollectionKeyedFactory<StorageCollectionSynchronizer> mSynchronizerFactory;
+    private final CollectionKeyedFactory<CollectionSaveForwarder> mSaveForwarderFactory;
     private final Map<Token, Boolean> mGroupIncognitoStatus = new HashMap<>();
     private final IncognitoTabModelObserver mIncognitoTabModelObserver =
             new IncognitoTabModelObserver() {
@@ -217,11 +230,34 @@ public class ModelTrackingOrchestrator {
             ActiveTabCache activeTabCache,
             boolean hasCipherFactory,
             boolean isAuthoritative) {
+        this(
+                windowTag,
+                migrationManager,
+                tabModelSelector,
+                activeTabCache,
+                hasCipherFactory,
+                isAuthoritative,
+                StorageCollectionSynchronizer::new,
+                CollectionSaveForwarder::createForTabStripCollection);
+    }
+
+    @VisibleForTesting
+    ModelTrackingOrchestrator(
+            String windowTag,
+            PersistentStoreMigrationManager migrationManager,
+            TabModelSelector tabModelSelector,
+            ActiveTabCache activeTabCache,
+            boolean hasCipherFactory,
+            boolean isAuthoritative,
+            CollectionKeyedFactory<StorageCollectionSynchronizer> synchronizerFactory,
+            CollectionKeyedFactory<CollectionSaveForwarder> saveForwarderFactory) {
         mWindowTag = windowTag;
         mMigrationManager = migrationManager;
         mTabModelSelector = tabModelSelector;
         mActiveTabCache = activeTabCache;
         mIsAuthoritative = isAuthoritative;
+        mSynchronizerFactory = synchronizerFactory;
+        mSaveForwarderFactory = saveForwarderFactory;
 
         if (hasCipherFactory) {
             mIncognitoSynchronizerManager = new IncognitoSynchronizerManager();
@@ -373,7 +409,7 @@ public class ModelTrackingOrchestrator {
                 return mIncognitoSynchronizer;
             }
             mIncognitoSynchronizer =
-                    new StorageCollectionSynchronizer(
+                    mSynchronizerFactory.build(
                             profileAndCollection.profile, profileAndCollection.collection);
             return mIncognitoSynchronizer;
         }
@@ -382,7 +418,7 @@ public class ModelTrackingOrchestrator {
             return mRegularSynchronizer;
         }
         mRegularSynchronizer =
-                new StorageCollectionSynchronizer(
+                mSynchronizerFactory.build(
                         profileAndCollection.profile, profileAndCollection.collection);
         return mRegularSynchronizer;
     }
@@ -470,11 +506,11 @@ public class ModelTrackingOrchestrator {
         var profileAndCollection = getProfileAndCollection(mTabModelSelector, incognito);
         if (incognito) {
             mIncognitoWindowForwarder =
-                    CollectionSaveForwarder.createForTabStripCollection(
+                    mSaveForwarderFactory.build(
                             profileAndCollection.profile, profileAndCollection.collection);
         } else {
             mRegularWindowForwarder =
-                    CollectionSaveForwarder.createForTabStripCollection(
+                    mSaveForwarderFactory.build(
                             profileAndCollection.profile, profileAndCollection.collection);
         }
         mActiveTabCache.startTracking(incognito);
