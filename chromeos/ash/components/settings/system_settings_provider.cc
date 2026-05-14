@@ -8,29 +8,11 @@
 #include <string_view>
 
 #include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 
 namespace ash {
-namespace {
-// TODO(olsen): PerUserTimeZoneEnabled and FineGrainedTimeZoneDetectionEnabled
-// are duplicated in chrome/browser/ash/system/timezone_util.cc, which
-// is not visible from this package. Try to re-unify these functions by moving
-// timezone_util to src/ash too (out of src/chrome/browser).
-
-bool PerUserTimezoneEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisablePerUserTimezone);
-}
-
-bool FineGrainedTimeZoneDetectionEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableFineGrainedTimeZoneDetection);
-}
-
-}  // namespace
 
 SystemSettingsProvider::SystemSettingsProvider()
     : CrosSettingsProvider(CrosSettingsProvider::NotifyObserversCallback()) {
@@ -52,9 +34,9 @@ void SystemSettingsProvider::Init() {
   timezone_value_ =
       std::make_unique<base::Value>(timezone_settings->GetCurrentTimezoneID());
   per_user_timezone_enabled_value_ =
-      std::make_unique<base::Value>(PerUserTimezoneEnabled());
-  fine_grained_time_zone_enabled_value_ =
-      std::make_unique<base::Value>(FineGrainedTimeZoneDetectionEnabled());
+      std::make_unique<base::Value>(switches::IsPerUserTimezoneEnabled());
+  fine_grained_time_zone_enabled_value_ = std::make_unique<base::Value>(
+      switches::IsFineGrainedTimeZoneDetectionEnabled());
 }
 
 const base::Value* SystemSettingsProvider::Get(std::string_view path) const {

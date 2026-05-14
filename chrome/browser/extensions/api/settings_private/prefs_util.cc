@@ -79,6 +79,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
@@ -163,7 +164,7 @@ bool IsSettingReadOnly(const std::string& pref_name) {
 #if BUILDFLAG(IS_CHROMEOS)
   // System timezone is never directly changeable by the user.
   if (pref_name == ash::kSystemTimezone) {
-    return ash::system::PerUserTimezoneEnabled();
+    return ash::switches::IsPerUserTimezoneEnabled();
   }
   // enable_screen_lock and pin_unlock_autosubmit_enabled
   // must be changed through the quickUnlockPrivate API.

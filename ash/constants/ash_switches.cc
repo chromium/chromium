@@ -1300,4 +1300,14 @@ bool IsCampbellSecretKeyMatched() {
   return key_matched;
 }
 
+bool IsPerUserTimezoneEnabled() {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kDisablePerUserTimezone);
+}
+
+bool IsFineGrainedTimeZoneDetectionEnabled() {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kDisableFineGrainedTimeZoneDetection);
+}
+
 }  // namespace ash::switches

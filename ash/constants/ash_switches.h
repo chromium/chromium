@@ -518,6 +518,14 @@ bool IsScannerUpdateSecretKeyMatched();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 base::AutoReset<bool> SetIgnoreScannerUpdateSecretKeyForTest();
 
+// Returns true if per-user timezone preferences are enabled.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsPerUserTimezoneEnabled();
+
+// Returns true if fine-grained time zone detection is enabled.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsFineGrainedTimeZoneDetectionEnabled();
+
 }  // namespace ash::switches
 
 #endif  // ASH_CONSTANTS_ASH_SWITCHES_H_

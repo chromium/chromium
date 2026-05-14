@@ -271,7 +271,7 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone) {
   VLOG(1) << "Refresh TimeZone: setting timezone to '" << timezone->timeZoneId
           << "'";
 
-  if (PerUserTimezoneEnabled()) {
+  if (ash::switches::IsPerUserTimezoneEnabled()) {
     const user_manager::UserManager* user_manager =
         user_manager::UserManager::Get();
     const user_manager::User* primary_user = user_manager->GetPrimaryUser();
@@ -325,8 +325,10 @@ void UpdateSystemTimezone(Profile* profile) {
         ash::prefs::kSigninScreenTimezone, value);
   }
 
-  if (user_manager->GetPrimaryUser() == user && PerUserTimezoneEnabled())
+  if (user_manager->GetPrimaryUser() == user &&
+      ash::switches::IsPerUserTimezoneEnabled()) {
     SetSystemTimezone(user, value);
+  }
 }
 
 // TODO(b/353580799): Add unit tests for this function.
@@ -380,16 +382,11 @@ void SetSystemAndSigninScreenTimezone(const std::string& timezone) {
   }
 }
 
-bool PerUserTimezoneEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisablePerUserTimezone);
-}
-
 void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id) {
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
 
-  if (!PerUserTimezoneEnabled()) {
+  if (!ash::switches::IsPerUserTimezoneEnabled()) {
     SetSystemTimezone(user, timezone_id);
     return;
   }
@@ -412,11 +409,6 @@ void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id) {
 
   // Time zone UI should be blocked for non-primary users.
   NOTREACHED();
-}
-
-bool FineGrainedTimeZoneDetectionEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableFineGrainedTimeZoneDetection);
 }
 
 }  // namespace system

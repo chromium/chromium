@@ -394,8 +394,9 @@ TimeZoneResolverManager::TimeZoneResolveMethodFromInt(int value) {
   const TimeZoneResolveMethod method =
       static_cast<TimeZoneResolveMethod>(value);
 
-  if (FineGrainedTimeZoneDetectionEnabled())
+  if (ash::switches::IsFineGrainedTimeZoneDetectionEnabled()) {
     return method;
+  }
 
   if (method == TimeZoneResolveMethod::DISABLED)
     return TimeZoneResolveMethod::DISABLED;

@@ -69,14 +69,8 @@ bool SetSystemTimezone(const user_manager::User* user,
 // or when device policies are updated.
 void SetSystemAndSigninScreenTimezone(const std::string& timezone);
 
-// Returns true if per-user timezone preferences are enabled.
-bool PerUserTimezoneEnabled();
-
 // This is called from UI code to apply user-selected time zone.
 void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id);
-
-// Returns true if fine-grained time zone detection is enabled.
-bool FineGrainedTimeZoneDetectionEnabled();
 
 }  // namespace system
 }  // namespace ash

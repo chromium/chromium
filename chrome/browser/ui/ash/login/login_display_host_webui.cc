@@ -332,7 +332,7 @@ void ShowLoginWizardFinish(
 
   // Restore system timezone.
   std::string timezone;
-  if (system::PerUserTimezoneEnabled()) {
+  if (switches::IsPerUserTimezoneEnabled()) {
     timezone = local_state->GetString(ash::prefs::kSigninScreenTimezone);
   }
 

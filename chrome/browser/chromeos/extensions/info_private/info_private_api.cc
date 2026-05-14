@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
@@ -426,7 +427,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   }
 
   if (property_name == kPropertyTimezone) {
-    if (ash::system::PerUserTimezoneEnabled()) {
+    if (ash::switches::IsPerUserTimezoneEnabled()) {
       const PrefService::Preference* timezone =
           ProfileManager::GetPrimaryUserProfile()->GetPrefs()->FindPreference(
               ash::prefs::kUserTimezone);
@@ -467,7 +468,7 @@ base::Value GetSystemProperties(
 }
 
 void SetTimezone(const std::string& value) {
-  if (ash::system::PerUserTimezoneEnabled()) {
+  if (ash::switches::IsPerUserTimezoneEnabled()) {
     ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetString(
         ash::prefs::kUserTimezone, value);
   } else {
