@@ -136,6 +136,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
       },
       isFollowupQuery: {type: Boolean},
+      energyEffectEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
       energyEffectAnimationEnabled: {
         type: Boolean,
         reflect: true,
@@ -149,6 +153,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     };
   }
 
+  accessor energyEffectEnabled: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor isZeroState: boolean = false;
   accessor isFollowupQuery: boolean = false;

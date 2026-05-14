@@ -75,6 +75,8 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
             .closeOnEscape="${false}"
             .clearAllInputsWhenSubmittingQuery="${true}"
             .showVoiceSearch="${true}"
+            .energyEffectEnabled="${this.energyEffectEnabled_}"
+            .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
             @voice-search-action="${this.onComposeVoiceSearchAction_}"
             searchbox-layout-mode="${this.ntpRealboxNextEnabled_ ? 'Compact' : ''}">
         </cr-composebox>
