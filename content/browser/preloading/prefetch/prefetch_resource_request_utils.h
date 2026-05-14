@@ -61,15 +61,12 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase2(
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations_header);
 
-// Returns a tuple of `PrefetchUpdateHeadersParams`s that indicates the header
-// modification upon redirect, to be passed to
-// `PrefetchContainer::UpdateResourceRequest()` and
-// `URLLoader::FollowRedirect()`, respectively.
-// TODO(crbug.com/467177773): Ideally these two should be equal, but currently
-// we are incrementally adding headers to the latter.
-std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
-PrepareRedirectHeadersForPrefetch(const GURL& request_url,
-                                  const PrefetchRequest& prefetch_request);
+// Returns `PrefetchUpdateHeadersParams` that indicates the header modification
+// upon redirect, to be passed to `PrefetchContainer::UpdateResourceRequest()`
+// and `URLLoader::FollowRedirect()`.
+PrefetchUpdateHeadersParams PrepareRedirectHeadersForPrefetch(
+    const GURL& request_url,
+    const PrefetchRequest& prefetch_request);
 
 // Modifies "X-Client-Data" headers of `resource_request` upon redirect. Must be
 // called after `resource_request.url` is updated.

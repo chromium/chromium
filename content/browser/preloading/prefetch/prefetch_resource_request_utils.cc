@@ -490,42 +490,29 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase2(
   return params;
 }
 
-std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
-PrepareRedirectHeadersForPrefetch(const GURL& request_url,
-                                  const PrefetchRequest& prefetch_request) {
+PrefetchUpdateHeadersParams PrepareRedirectHeadersForPrefetch(
+    const GURL& request_url,
+    const PrefetchRequest& prefetch_request) {
   // There are sometimes other headers that are modified during navigation
   // redirects; see `NavigationRequest::OnRedirectChecksComplete` (including
   // some which are added by throttles). These aren't yet supported for
   // prefetch, including browsing topics.
 
-  PrefetchUpdateHeadersParams updates_for_resource_request;
-  PrefetchUpdateHeadersParams updates_for_follow_redirect;
+  PrefetchUpdateHeadersParams update_headers_params;
 
   url::Origin request_url_origin = url::Origin::Create(request_url);
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Purpose`:
-  AddSecPurposeHeader(updates_for_resource_request.modified_headers,
+  AddSecPurposeHeader(update_headers_params.modified_headers,
                       request_url_origin, prefetch_request);
-  if (base::FeatureList::IsEnabled(
-          features::kPrefetchFixHeaderUpdatesOnRedirect)) {
-    AddSecPurposeHeader(updates_for_follow_redirect.modified_headers,
-                        request_url_origin, prefetch_request);
-  }
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Speculation-Tags`:
-  updates_for_resource_request.removed_headers.push_back(
+  update_headers_params.removed_headers.push_back(
       blink::kSecSpeculationTagsHeaderName);
-  AddSpeculationTagsHeader(updates_for_resource_request.modified_headers,
+  AddSpeculationTagsHeader(update_headers_params.modified_headers,
                            request_url_origin, prefetch_request);
-  if (base::FeatureList::IsEnabled(
-          features::kPrefetchFixHeaderUpdatesOnRedirect)) {
-    updates_for_follow_redirect.removed_headers.push_back(
-        blink::kSecSpeculationTagsHeaderName);
-    AddSpeculationTagsHeader(updates_for_follow_redirect.modified_headers,
-                             request_url_origin, prefetch_request);
-  }
 
   // ------------------------------------------------------------------------
   // [2] Embedder headers:
@@ -536,18 +523,14 @@ PrepareRedirectHeadersForPrefetch(const GURL& request_url,
     GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
         request_url, removed_headers, modified_headers,
         modified_cors_exempt_headers);
-    auto add_embedder_headers = [&](PrefetchUpdateHeadersParams& params) {
-      params.removed_headers.reserve(params.removed_headers.size() +
-                                     removed_headers.size());
-      params.removed_headers.insert(params.removed_headers.end(),
-                                    removed_headers.begin(),
-                                    removed_headers.end());
-      params.modified_headers.MergeFrom(modified_headers);
-      params.modified_cors_exempt_headers.MergeFrom(
-          modified_cors_exempt_headers);
-    };
-    add_embedder_headers(updates_for_resource_request);
-    add_embedder_headers(updates_for_follow_redirect);
+    update_headers_params.removed_headers.reserve(
+        update_headers_params.removed_headers.size() + removed_headers.size());
+    update_headers_params.removed_headers.insert(
+        update_headers_params.removed_headers.end(), removed_headers.begin(),
+        removed_headers.end());
+    update_headers_params.modified_headers.MergeFrom(modified_headers);
+    update_headers_params.modified_cors_exempt_headers.MergeFrom(
+        modified_cors_exempt_headers);
   }
 
   // ------------------------------------------------------------------------
@@ -563,26 +546,13 @@ PrepareRedirectHeadersForPrefetch(const GURL& request_url,
   // hints that are appropriate for the redirect.
   if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
     const auto& client_hints = network::GetClientHintToNameMap();
-    updates_for_resource_request.removed_headers.reserve(
-        updates_for_resource_request.removed_headers.size() +
-        client_hints.size());
+    update_headers_params.removed_headers.reserve(
+        update_headers_params.removed_headers.size() + client_hints.size());
     for (const auto& [_, header] : client_hints) {
-      updates_for_resource_request.removed_headers.push_back(header);
+      update_headers_params.removed_headers.push_back(header);
     }
-    AddClientHintsHeaders(updates_for_resource_request.modified_headers,
+    AddClientHintsHeaders(update_headers_params.modified_headers,
                           request_url_origin, prefetch_request);
-
-    if (base::FeatureList::IsEnabled(
-            features::kPrefetchFixHeaderUpdatesOnRedirect)) {
-      updates_for_follow_redirect.removed_headers.reserve(
-          updates_for_follow_redirect.removed_headers.size() +
-          client_hints.size());
-      for (const auto& [_, header] : client_hints) {
-        updates_for_follow_redirect.removed_headers.push_back(header);
-      }
-      AddClientHintsHeaders(updates_for_follow_redirect.modified_headers,
-                            request_url_origin, prefetch_request);
-    }
   }
 
   // ------------------------------------------------------------------------
@@ -590,19 +560,10 @@ PrepareRedirectHeadersForPrefetch(const GURL& request_url,
   // Hints):
   // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
   // override of non-UA Client Hints.
-  {
-    MaybeApplyOverrideForDevtoolsUserAgentHeader(
-        updates_for_resource_request.modified_headers, prefetch_request);
+  MaybeApplyOverrideForDevtoolsUserAgentHeader(
+      update_headers_params.modified_headers, prefetch_request);
 
-    if (base::FeatureList::IsEnabled(
-            features::kPrefetchFixHeaderUpdatesOnRedirect)) {
-      MaybeApplyOverrideForDevtoolsUserAgentHeader(
-          updates_for_follow_redirect.modified_headers, prefetch_request);
-    }
-  }
-
-  return std::make_tuple(std::move(updates_for_resource_request),
-                         std::move(updates_for_follow_redirect));
+  return update_headers_params;
 }
 
 mojo::PendingRemote<network::mojom::DevToolsObserver>

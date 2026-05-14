@@ -91,10 +91,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase);
 CONTENT_EXPORT extern const base::FeatureParam<size_t>
     kPrefetchMultipleActiveSetSizeLimitForBaseValue;
 
-// Kill switch for fixing header modifications upon redirects.
-// TODO(crbug.com/467177773): Remove it after confirming stability.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchFixHeaderUpdatesOnRedirect);
-
 // Force the off-the-main-thread prefetch code path for testing, to anyway
 // increase the test coverage of off-the-main-thread prefetch.
 // https://crbug.com/452389538

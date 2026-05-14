@@ -1287,12 +1287,11 @@ void PrefetchService::OnGotEligibilityForRedirect(
     return;
   }
 
-  auto [updates_for_resource_request, updates_for_follow_redirect] =
-      PrepareRedirectHeadersForPrefetch(redirect_info.new_url,
-                                        prefetch_container->request());
+  auto update_headers_params = PrepareRedirectHeadersForPrefetch(
+      redirect_info.new_url, prefetch_container->request());
 
-  prefetch_container->UpdateResourceRequest(
-      redirect_info, std::move(updates_for_resource_request));
+  prefetch_container->UpdateResourceRequest(redirect_info,
+                                            update_headers_params);
 
   prefetch_container->NotifyPrefetchRequestWillBeSent(&redirect_head);
 
@@ -1315,7 +1314,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
   // Otherwise, follow the redirect in the same streaming URL loader.
   streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
                                        redirect_info, std::move(redirect_head),
-                                       std::move(updates_for_follow_redirect));
+                                       std::move(update_headers_params));
   // Associate the new ResponseReader with the current streaming URL loader.
   streaming_url_loader->SetResponseReader(
       prefetch_container->GetResponseReaderForCurrentPrefetch());
