@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -168,35 +169,11 @@ base::DictValue MakeOverrideManifest() {
 // components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.cc.
 // This is to allow logging of new model installations regardless of which model
 // management scheme is used.
-enum class BaseModel {
-  kUnknown = 0,
-  kXxs = 1,
-  kXs = 2,
-  kV2Nano = 3,
-  kV3Nano = 4,
-  kMaxValue = kV3Nano,
-};
-
-BaseModel ConvertModelNameToEnum(const std::string& model_name) {
-  if (model_name == "v3Nano") {
-    return BaseModel::kV3Nano;
-  } else if (model_name == "v2Nano") {
-    return BaseModel::kV2Nano;
-  } else if (model_name == "XS") {
-    return BaseModel::kXs;
-  } else if (model_name == "XXS") {
-    return BaseModel::kXxs;
-  } else {
-    return BaseModel::kUnknown;
-  }
-}
-
 std::string GetUmaModelNameFromState(OnDeviceModelComponentState* state) {
-  if (!state || state->GetBaseModelSpec().model_name == "v3Nano") {
+  if (!state) {
     return "V3Nano";
-  } else {
-    return "Unknown";
   }
+  return ConvertModelNameToUmaModelName(state->GetBaseModelSpec().model_name);
 }
 
 bool WasOnDeviceModelRecentlyUsed(UsageTracker* usage_tracker,

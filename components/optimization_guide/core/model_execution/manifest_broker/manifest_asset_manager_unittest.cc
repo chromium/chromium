@@ -21,6 +21,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_builder.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -332,10 +333,14 @@ TEST_F(ManifestAssetManagerTest, SimulatesAssetReady) {
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.OnDeviceModel.InstalledModel",
-      0 /*BaseModel::kUnknown*/, 1);
+      static_cast<int>(
+          OnDeviceBaseModel::kUnknown) /*OnDeviceBaseModel::kUnknown*/,
+      1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.OnDeviceModel.NewModelInstalled",
-      0 /*BaseModel::kUnknown*/, 1);
+      static_cast<int>(
+          OnDeviceBaseModel::kUnknown) /*OnDeviceBaseModel::kUnknown*/,
+      1);
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotLogNewInstallExistingComponent) {
@@ -349,7 +354,9 @@ TEST_F(ManifestAssetManagerTest, DoesNotLogNewInstallExistingComponent) {
     EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.OnDeviceModel.NewModelInstalled",
-        0 /*BaseModel::kUnknown*/, 1);
+        static_cast<int>(
+            OnDeviceBaseModel::kUnknown) /*OnDeviceBaseModel::kUnknown*/,
+        1);
     SimulateShutdown();
   }
 
@@ -360,7 +367,9 @@ TEST_F(ManifestAssetManagerTest, DoesNotLogNewInstallExistingComponent) {
     EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.OnDeviceModel.NewModelInstalled",
-        0 /*BaseModel::kUnknown*/, 0);
+        static_cast<int>(
+            OnDeviceBaseModel::kUnknown) /*OnDeviceBaseModel::kUnknown*/,
+        0);
   }
 }
 

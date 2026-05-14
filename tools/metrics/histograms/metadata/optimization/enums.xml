@@ -102,9 +102,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="v3Nano"/>
   <int value="5" label="v3NanoCpu"/>
   <int value="6" label="v3NanoGpu"/>
+  <int value="7" label="Gemma4"/>
+  <int value="8" label="Classifier"/>
+  <int value="9" label="LanguageDetection"/>
+  <int value="10" label="ProofreaderSmallExpert"/>
+  <int value="11" label="SpeechRecognitionSmallExpert"/>
+  <int value="12" label="SummarizerSmallExpert"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.cc:OnDeviceBaseModelEnum) -->
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/on_device_model_names.h:OnDeviceBaseModelEnum) -->
 
 <!-- Use following code to get the hash from the model version.
 import struct

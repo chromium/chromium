@@ -30,6 +30,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -41,41 +42,6 @@ namespace optimization_guide {
 namespace {
 // TTL for disk space evaluation result.
 constexpr base::TimeDelta kDiskSpaceFreshnessThreshold = base::Seconds(10);
-
-// Possible base models. `ManifestAssetManager` does not serve any model earlier
-// than Nano V3, therefore the earlier UMA enums are not listed here.
-// LINT.IfChange(OnDeviceBaseModelEnum)
-enum class BaseModel {
-  kUnknown = 0,
-  kV3NanoCpu = 5,
-  kV3NanoGpu = 6,
-  kMaxValue = kV3NanoGpu,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OnDeviceBaseModelEnum)
-
-BaseModel ConvertComponentKeyToEnum(const std::string& key) {
-  if (key == "nano_v3_component_gpu") {
-    return BaseModel::kV3NanoGpu;
-  } else if (key == "nano_v3_component_cpu") {
-    return BaseModel::kV3NanoCpu;
-  } else {
-    return BaseModel::kUnknown;
-  }
-}
-
-// LINT.IfChange(OnDeviceBaseModelName)
-std::string ConvertComponentKeyToUmaModelName(const std::string& key) {
-  if (key == "nano_v3_component_gpu") {
-    return "V3NanoGpu";
-  } else if (key == "nano_v3_component_cpu") {
-    return "V3NanoCpu";
-  } else if (key == "tinymodel_summarizer_component") {
-    return "TinyModelSummarizer";
-  } else {
-    return "Unknown";
-  }
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/histograms.xml:OnDeviceBaseModelName)
 
 // Delay to give consumers time to unload the model before it's deleted.
 constexpr base::TimeDelta kUninstallDelay = base::Seconds(1);
@@ -631,7 +597,7 @@ void ManifestAssetManager::OnAssetReady(const std::string& public_key,
        context->state() == ComponentState::kOnDemandDownloading);
   context->SetReady(install_dir, version);
 
-  BaseModel model_enum = ConvertComponentKeyToEnum(context->asset_id());
+  OnDeviceBaseModel model_enum = ConvertComponentKeyToEnum(context->asset_id());
   base::UmaHistogramEnumeration(
       "OptimizationGuide.OnDeviceModel.InstalledModel", model_enum);
   if (is_new_installation) {
