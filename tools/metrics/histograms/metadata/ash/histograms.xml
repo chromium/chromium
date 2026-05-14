@@ -8521,28 +8521,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.SystemMenu.PercentageOfWorkAreaHeightCoveredByMenu"
-    units="%" expires_after="2021-12-12">
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The height of the system menu divided by the height of the Ash desktop work
-    area; a value over 100% indicates that a portion of the system menu is not
-    visible to the user. Recorded each time the menu is opened.
-  </summary>
-</histogram>
-
-<histogram name="Ash.SystemMenu.Rows" units="rows" expires_after="2021-12-12">
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The number of user-visible rows in the system menu's default view. Recorded
-    each time the menu is opened.
-  </summary>
-</histogram>
-
 <histogram
     name="Ash.TabDrag.PresentationTime.MaxLatency.{TabletOrClamshellMode}"
     units="ms" expires_after="2027-03-02">
