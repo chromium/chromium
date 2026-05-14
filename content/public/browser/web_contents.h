@@ -1578,9 +1578,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // set to subframes when they are restored (e.g. from BFCache) to the primary
   // frame tree.
   //
-  // SubframeImportance feature is required to set subframe importance to other
-  // than NORMAL.
-  //
   // The subframe_importance must be less than or equal to the
   // main_frame_importance.
   virtual void SetPrimaryPageImportance(

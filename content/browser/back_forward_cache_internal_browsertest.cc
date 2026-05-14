@@ -2249,22 +2249,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
             rfh_a->GetProcess()->GetEffectiveImportance());
 }
 
-class BackForwardCacheInternalSubframeImportanceBrowserTest
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-    feature_list_.InitWithFeatures(
-        /* enabled_features= */ {features::kSubframeImportance},
-        /* disabled_features= */ {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheInternalSubframeImportanceBrowserTest,
+    BackForwardCacheBrowserTest,
     ChildImportanceTestForBackForwardCachedPagesWithSubframeTest) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
 

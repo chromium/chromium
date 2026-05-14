@@ -1402,9 +1402,6 @@ BASE_FEATURE(kAndroidDisplayCursor,
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables setting the importance for subframes in WebContents.
-BASE_FEATURE(kSubframeImportance, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Skips clearing objects on main document ready. Only has an impact
 // when gin java bridge is enabled.
 BASE_FEATURE(kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady,

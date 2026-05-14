@@ -9363,21 +9363,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(mock_handler_speculative.did_receive_event());
 }
 
-class SitePerProcessBrowserTestWithSubframePriority
-    : public SitePerProcessBrowserTest {
- public:
-  SitePerProcessBrowserTestWithSubframePriority() {
-    scoped_feature_list_.InitWithFeatures(
-        /* enabled_features= */ {features::kSubframeImportance},
-        /* disabled_features= */ {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSubframePriority,
-                       TestChildProcessImportance) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
   web_contents()->SetPrimaryPageImportance(ChildProcessImportance::IMPORTANT,
                                            ChildProcessImportance::MODERATE);
 
@@ -15007,9 +14993,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          AndroidInputBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
-INSTANTIATE_TEST_SUITE_P(All,
-                         SitePerProcessBrowserTestWithSubframePriority,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 #endif  // BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,

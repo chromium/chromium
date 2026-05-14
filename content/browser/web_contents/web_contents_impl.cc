@@ -3147,11 +3147,9 @@ void WebContentsImpl::SetPrimaryPageImportance(
   // and the subframes.
   base::android::ScopedServiceBindingBatch scoped_service_binding_batch;
 
-  if (base::FeatureList::IsEnabled(features::kSubframeImportance)) {
-    if (subframe_importance != primary_subframe_importance_) {
-      primary_subframe_importance_ = subframe_importance;
-      ApplyPrimaryPageSubframeImportance();
-    }
+  if (subframe_importance != primary_subframe_importance_) {
+    primary_subframe_importance_ = subframe_importance;
+    ApplyPrimaryPageSubframeImportance();
   }
 
   GetPrimaryMainFrame()->GetRenderWidgetHost()->SetImportance(
@@ -8981,8 +8979,7 @@ void WebContentsImpl::RenderFrameCreated(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSubframeImportance) &&
-      render_frame_host->GetParent() &&
+  if (render_frame_host->GetParent() &&
       render_frame_host->frame_tree()->is_primary()) {
     if (auto* rwh = render_frame_host->GetLocalRenderWidgetHost()) {
       rwh->SetImportance(primary_subframe_importance_);
@@ -12192,9 +12189,7 @@ void WebContentsImpl::NotifyPageBecamePrimary(PageImpl& page) {
   // pages restored from back/forward cache. Note that we don't need to clear
   // importance for non-primary pages because the importance is ignored at
   // RenderWidgetHostImpl::GetPriority() and updated when it becomes inactive.
-  if (base::FeatureList::IsEnabled(features::kSubframeImportance)) {
-    ApplyPrimaryPageSubframeImportance();
-  }
+  ApplyPrimaryPageSubframeImportance();
 #endif
 
   // Clear |save_package_| since the primary page changed.

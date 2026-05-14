@@ -18,7 +18,6 @@
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -335,8 +334,7 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
   if (web_contents) {
     content::ChildProcessImportance subframe_importance =
         content::ChildProcessImportance::NORMAL;
-    if (base::FeatureList::IsEnabled(features::kSubframeImportance) &&
-        importance >= content::ChildProcessImportance::PERCEPTIBLE) {
+    if (importance >= content::ChildProcessImportance::PERCEPTIBLE) {
       if (is_perceptible_importance_supported_) {
         subframe_importance = content::ChildProcessImportance::PERCEPTIBLE;
       } else if (base::FeatureList::IsEnabled(
