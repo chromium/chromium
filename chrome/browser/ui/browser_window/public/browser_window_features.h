@@ -59,6 +59,7 @@ class ContextualTasksCloseButtonController;
 class CookieControlsBubbleCoordinator;
 class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
+class WindowFeatureController;
 class DevtoolsUIController;
 class EmbedderBrowserWindowFeatures;
 class ExtensionInstalledWatcher;
@@ -525,6 +526,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<web_app::AppBrowserController> app_browser_controller_;
 
   std::unique_ptr<BrowserWindowFullscreenController> fullscreen_controller_;
+
+  std::unique_ptr<WindowFeatureController> window_feature_controller_;
 
   std::unique_ptr<BrowserActions> browser_actions_;
 

@@ -165,6 +165,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/browser/ui/webui_browser/zoom_bubble_manager_webui_browser.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -281,6 +282,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<BrowserWindowFullscreenController>(*browser);
 
   browser_actions_ = std::make_unique<BrowserActions>(browser);
+
+  window_feature_controller_ =
+      GetUserDataFactory().CreateInstance<WindowFeatureController>(
+          *browser, fullscreen_controller_.get(), app_browser_controller_.get(),
+          browser->GetType(),
+          browser->GetBrowserForMigrationOnly()->is_trusted_source(),
+          browser->GetUnownedUserDataHost());
 
   browser_command_controller_ =
       std::make_unique<chrome::BrowserCommandController>(browser);

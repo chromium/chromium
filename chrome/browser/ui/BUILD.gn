@@ -832,8 +832,9 @@ static_library("ui") {
   }
 
   if (!is_android && !is_chromeos) {
-    # //chrome/browser/download/bubble:impl sources include UI headers (browser.h,
-    # views/frame/immersive_mode_controller.h, web_applications/app_browser_controller.h).
+    # //chrome/browser/download/bubble:impl sources include UI headers
+    # (browser.h, views/frame/immersive_mode_controller.h,
+    # web_applications/app_browser_controller.h).
     allow_circular_includes_from += [ "//chrome/browser/download/bubble:impl" ]
   }
 
@@ -1588,6 +1589,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
       "//chrome/browser/ui/webui/util:impl",
+      "//chrome/browser/ui/window_feature_controller",
       "//chrome/browser/usb",
       "//chrome/browser/webauthn:local_credential_management",
       "//components/password_manager/core/browser/actor_login:permissions_manager_impl",

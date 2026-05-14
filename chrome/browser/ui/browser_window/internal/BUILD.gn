@@ -120,6 +120,7 @@ source_set("internal") {
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
       "//chrome/browser/ui/webui_browser",
+      "//chrome/browser/ui/window_feature_controller",
       "//chrome/browser/ui/zoom:browser_window_zoom_observer",
       "//components/breadcrumbs/core:status",
       "//components/collaboration/public",

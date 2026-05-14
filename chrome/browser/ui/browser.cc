@@ -155,6 +155,7 @@
 #include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -1365,15 +1366,11 @@ void Browser::ToggleFullscreenModeWithExtension(const GURL& extension_url) {
 }
 
 bool Browser::SupportsWindowFeature(WindowFeature feature) const {
-  bool supports =
-      SupportsWindowFeatureImpl(feature, /*check_can_support=*/false);
-  // Supported features imply CanSupportWindowFeature.
-  DCHECK(!supports || CanSupportWindowFeature(feature));
-  return supports;
+  return WindowFeatureController::From(this)->SupportsWindowFeature(feature);
 }
 
 bool Browser::CanSupportWindowFeature(WindowFeature feature) const {
-  return SupportsWindowFeatureImpl(feature, /*check_can_support=*/true);
+  return WindowFeatureController::From(this)->CanSupportWindowFeature(feature);
 }
 
 void Browser::OpenFile() {
@@ -3477,128 +3474,6 @@ void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
       status_bubbles.front()->SetStatus(
           CoreTabHelper::FromWebContents(selected_contents)->GetStatusText());
     }
-  }
-}
-
-bool Browser::NormalBrowserSupportsWindowFeature(WindowFeature feature,
-                                                 bool check_can_support) const {
-  switch (feature) {
-    case WindowFeature::kFeatureBookmarkBar:
-      return true;
-    case WindowFeature::kFeatureTabStrip:
-    case WindowFeature::kFeatureToolbar:
-    case WindowFeature::kFeatureLocationBar:
-      return check_can_support || !BrowserWindowFullscreenController::From(this)
-                                       ->ShouldHideUIForFullscreen();
-    case WindowFeature::kFeatureTitleBar:
-    case WindowFeature::kFeatureNone:
-      return false;
-  }
-}
-
-bool Browser::PopupBrowserSupportsWindowFeature(WindowFeature feature,
-                                                bool check_can_support) const {
-  switch (feature) {
-    case WindowFeature::kFeatureTitleBar:
-    case WindowFeature::kFeatureLocationBar:
-      return check_can_support ||
-             (!BrowserWindowFullscreenController::From(this)
-                   ->ShouldHideUIForFullscreen() &&
-              !is_trusted_source());
-    case WindowFeature::kFeatureTabStrip:
-    case WindowFeature::kFeatureToolbar:
-    case WindowFeature::kFeatureBookmarkBar:
-    case WindowFeature::kFeatureNone:
-      return false;
-  }
-}
-
-bool Browser::AppPopupBrowserSupportsWindowFeature(
-    WindowFeature feature,
-    bool check_can_support) const {
-  const auto* fullscreen_controller =
-      BrowserWindowFullscreenController::From(this);
-  switch (feature) {
-    case WindowFeature::kFeatureTitleBar:
-      return check_can_support ||
-             !fullscreen_controller->ShouldHideUIForFullscreen();
-    case WindowFeature::kFeatureLocationBar:
-      return app_controller() &&
-             (check_can_support ||
-              !fullscreen_controller->ShouldHideUIForFullscreen());
-    default:
-      return PopupBrowserSupportsWindowFeature(feature, check_can_support);
-  }
-}
-
-bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
-                                              bool check_can_support) const {
-  auto* const app_browser_controller = app_controller();
-  DCHECK(app_browser_controller);
-  const auto* fullscreen_controller =
-      BrowserWindowFullscreenController::From(this);
-  switch (feature) {
-    // Web apps should always support the toolbar, so the title/origin of the
-    // current page can be shown when browsing a url that is not inside the app.
-    // Note: Final determination of whether or not the toolbar is shown is made
-    // by the |AppBrowserController|.
-    // TODO(crbug.com/40639933): Make this control the visibility of Browser
-    // Controls more generally.
-    case WindowFeature::kFeatureToolbar:
-      return true;
-    case WindowFeature::kFeatureTitleBar:
-    // TODO(crbug.com/40639933): Make this control the visibility of
-    // CustomTabBarView.
-    case WindowFeature::kFeatureLocationBar:
-      return check_can_support ||
-             !fullscreen_controller->ShouldHideUIForFullscreen();
-    case WindowFeature::kFeatureTabStrip:
-      // Even when the app has a tab strip, it should be hidden in
-      // fullscreen. This is consistent with the behavior of
-      // NormalBrowserSupportsWindowFeature().
-      return app_browser_controller->has_tab_strip() &&
-             (check_can_support ||
-              !fullscreen_controller->ShouldHideUIForFullscreen());
-    case WindowFeature::kFeatureBookmarkBar:
-    case WindowFeature::kFeatureNone:
-      return false;
-  }
-}
-
-bool Browser::PictureInPictureBrowserSupportsWindowFeature(
-    WindowFeature feature,
-    bool check_can_support) const {
-  switch (feature) {
-    case WindowFeature::kFeatureTitleBar:
-      return true;
-    case WindowFeature::kFeatureLocationBar:
-    case WindowFeature::kFeatureTabStrip:
-    case WindowFeature::kFeatureToolbar:
-    case WindowFeature::kFeatureBookmarkBar:
-    case WindowFeature::kFeatureNone:
-      return false;
-  }
-}
-
-bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
-                                        bool check_can_support) const {
-  switch (type_) {
-    case TYPE_NORMAL:
-      return NormalBrowserSupportsWindowFeature(feature, check_can_support);
-    case TYPE_POPUP:
-      return PopupBrowserSupportsWindowFeature(feature, check_can_support);
-    case TYPE_APP:
-      if (app_controller()) {
-        return AppBrowserSupportsWindowFeature(feature, check_can_support);
-      }
-      // TODO(crbug.com/40639933): Change legacy apps to TYPE_APP_POPUP.
-      return AppPopupBrowserSupportsWindowFeature(feature, check_can_support);
-    case TYPE_DEVTOOLS:
-    case TYPE_APP_POPUP:
-      return AppPopupBrowserSupportsWindowFeature(feature, check_can_support);
-    case TYPE_PICTURE_IN_PICTURE:
-      return PictureInPictureBrowserSupportsWindowFeature(feature,
-                                                          check_can_support);
   }
 }
 
