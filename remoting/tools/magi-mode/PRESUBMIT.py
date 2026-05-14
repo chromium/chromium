@@ -1,7 +1,6 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Presubmit script for magi-mode.
 
 This script enforces structural integrity and formatting for the MAGI protocol
@@ -26,838 +25,759 @@ MAX_MD_FILE_SIZE = 1 * 1024 * 1024  # 1MB
 
 
 def _IsSafePath(input_api, path, root):
-  """Normalizes and validates that a path is within a specific root."""
-  norm_path = input_api.os_path.normpath(path)
-  if norm_path == root:
-    return True
-  return norm_path.startswith(root + input_api.os_path.sep)
+    """Normalizes and validates that a path is within a specific root."""
+    norm_path = input_api.os_path.normpath(path)
+    if norm_path == root:
+        return True
+    return norm_path.startswith(root + input_api.os_path.sep)
 
 
 def CheckMarkdownFiles(input_api, output_api):
-  results = []
-  repo_root = input_api.change.RepositoryRoot()
-  magi_dir = input_api.PresubmitLocalPath()
+    results = []
+    repo_root = input_api.change.RepositoryRoot()
+    magi_dir = input_api.PresubmitLocalPath()
 
-  def FileFilter(affected_file):
-    return input_api.FilterSourceFile(
-        affected_file,
-        files_to_check=(r'.*\.md$',),
-    )
-
-  # 1. Map affected files by absolute path for O(1) lookups.
-  affected_files_map = {
-      f.AbsoluteLocalPath(): f
-      for f in input_api.AffectedFiles(
-          file_filter=FileFilter, include_deletes=True
-      )
-  }
-
-  if not affected_files_map:
-    return []
-
-  # 2. Identify all markdown files in the directory for reachability.
-  all_markdown_files = set()
-  for root, _, files in os.walk(magi_dir):
-    for file in files:
-      if file.endswith('.md'):
-        abs_path = input_api.os_path.normpath(
-            input_api.os_path.join(root, file)
+    def FileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=(r'.*\.md$', ),
         )
-        # Skip files that are currently being deleted.
-        if (
-            abs_path in affected_files_map
-            and affected_files_map[abs_path].Action() == 'D'
-        ):
-          continue
-        all_markdown_files.add(abs_path)
 
-  # 3. Process every file to build the graph and check formatting.
-  # Adjacency list: node (abs path) -> list of connected nodes (abs paths)
-  graph = {node: [] for node in all_markdown_files}
-  checked_existence = {}
+    # 1. Map affected files by absolute path for O(1) lookups.
+    affected_files_map = {
+        f.AbsoluteLocalPath(): f
+        for f in input_api.AffectedFiles(file_filter=FileFilter,
+                                         include_deletes=True)
+    }
 
-  for md_file in all_markdown_files:
-    if input_api.os_path.getsize(md_file) > MAX_MD_FILE_SIZE:
-      results.append(
-          output_api.PresubmitError(
-              f'File {md_file} exceeds max size 1MB (DoS mitigation).'
-          )
-      )
-      continue
+    if not affected_files_map:
+        return []
 
-    is_modified = md_file in affected_files_map
-    content = None
+    # 2. Identify all markdown files in the directory for reachability.
+    all_markdown_files = set()
+    for root, _, files in os.walk(magi_dir):
+        for file in files:
+            if file.endswith('.md'):
+                abs_path = input_api.os_path.normpath(
+                    input_api.os_path.join(root, file))
+                # Skip files that are currently being deleted.
+                if (abs_path in affected_files_map
+                        and affected_files_map[abs_path].Action() == 'D'):
+                    continue
+                all_markdown_files.add(abs_path)
 
-    if is_modified:
-      content = input_api.ReadFile(affected_files_map[md_file])
-    else:
-      try:
-        with open(md_file, 'r', encoding='utf-8') as f:
-          content = f.read()
-      except IOError:
-        continue
+    # 3. Process every file to build the graph and check formatting.
+    # Adjacency list: node (abs path) -> list of connected nodes (abs paths)
+    graph = {node: [] for node in all_markdown_files}
+    checked_existence = {}
 
-    if not content:
-      continue
+    for md_file in all_markdown_files:
+        if input_api.os_path.getsize(md_file) > MAX_MD_FILE_SIZE:
+            results.append(
+                output_api.PresubmitError(
+                    f'File {md_file} exceeds max size 1MB (DoS mitigation).'))
+            continue
 
-    # Scenario 2: Trailing Newlines (Modified files only)
-    if is_modified:
-      if (
-          not content.endswith('\n')
-          or content.endswith(('\n\n', '\r\n\r\n'))
-          or '\r' in content
-      ):
+        is_modified = md_file in affected_files_map
+        content = None
+
+        if is_modified:
+            content = input_api.ReadFile(affected_files_map[md_file])
+        else:
+            try:
+                with open(md_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            except IOError:
+                continue
+
+        if not content:
+            continue
+
+        # Scenario 2: Trailing Newlines (Modified files only)
+        if is_modified:
+            if (not content.endswith('\n') or content.endswith(
+                ('\n\n', '\r\n\r\n')) or '\r' in content):
+                results.append(
+                    output_api.PresubmitError(
+                        f'File {affected_files_map[md_file].LocalPath()} must use '
+                        'Unix line endings (\\n) and end with exactly one newline.'
+                    ))
+
+        lines = content.splitlines(True)
+        in_fenced_block = False
+        in_indented_block = False
+        prev_line_empty = True
+
+        for line_num, line in enumerate(lines, start=1):
+            line_stripped = line.rstrip('\r\n')
+
+            # Fenced code block detection
+            if line_stripped.lstrip().startswith(('```', '~~~')):
+                in_fenced_block = not in_fenced_block
+                continue
+
+            # Indented code block detection
+            if not line_stripped.strip():
+                prev_line_empty = True
+                continue
+
+            if prev_line_empty and (line.startswith('    ')
+                                    or line.startswith('\t')):
+                in_indented_block = True
+            elif not (line.startswith('    ') or line.startswith('\t')):
+                in_indented_block = False
+
+            prev_line_empty = False
+
+            if in_fenced_block or in_indented_block:
+                continue
+
+            # Scenario 1: 80-Character Limit (Modified files only)
+            if is_modified:
+                line_len = len(line_stripped)
+                for match in EXEMPT_TOKENS_RE.finditer(line_stripped):
+                    line_len -= len(match.group(0))
+                if line_len > 80:
+                    results.append(
+                        output_api.PresubmitPromptWarning(
+                            f'Line {line_num} in '
+                            f'{affected_files_map[md_file].LocalPath()} '
+                            f'exceeds 80 characters ({len(line_stripped)} chars):\n'
+                            f'{line_stripped[:40]}... (truncated)'))
+
+            # Scenario 3: Link Extraction & Validation
+            for match in EXEMPT_TOKENS_RE.finditer(line):
+                full_path = None
+                token = match.group(0)
+
+                # Group 1: Absolute src/...
+                if match.group(1):
+                    token = match.group(1).rstrip('.')
+                    full_path = input_api.os_path.normpath(
+                        input_api.os_path.join(repo_root, token[4:]))
+                # Group 3: Relative link
+                elif match.group(3):
+                    token = match.group(3)
+                    full_path = input_api.os_path.normpath(
+                        input_api.os_path.join(
+                            input_api.os_path.dirname(md_file), token))
+
+                if not full_path:
+                    continue
+
+                # Security: Prevent path traversal
+                if not _IsSafePath(input_api, full_path, repo_root):
+                    msg = (f'Line {line_num} in '
+                           f'{input_api.os_path.relpath(md_file, repo_root)} '
+                           f'attempts path traversal: {token}')
+                    if is_modified:
+                        results.append(output_api.PresubmitError(msg))
+                    else:
+                        results.append(output_api.PresubmitPromptWarning(msg))
+                    continue
+
+                # Add to reachability graph (only for local markdown files)
+                if full_path.endswith('.md') and _IsSafePath(
+                        input_api, full_path, magi_dir):
+                    graph[md_file].append(full_path)
+
+                # Existence Check (Validate EVERY link in graph to catch
+                # deletion-breaks)
+                if full_path not in checked_existence:
+                    checked_existence[full_path] = input_api.os_path.exists(
+                        full_path)
+
+                if not checked_existence[full_path]:
+                    is_active = is_modified or full_path in affected_files_map
+                    msg = (f'Line {line_num} in '
+                           f'{input_api.os_path.relpath(md_file, repo_root)} '
+                           f'references a non-existent file: {token}')
+                    if is_active:
+                        results.append(output_api.PresubmitError(msg))
+                    else:
+                        results.append(output_api.PresubmitPromptWarning(msg))
+
+    # Scenario 4: Reachability (BFS from SKILL.md)
+    skill_md_path = input_api.os_path.normpath(
+        input_api.os_path.join(magi_dir, 'SKILL.md'))
+    if skill_md_path not in graph:
         results.append(
             output_api.PresubmitError(
-                f'File {affected_files_map[md_file].LocalPath()} must use '
-                'Unix line endings (\\n) and end with exactly one newline.'
-            )
-        )
+                f'Critical Error: Entry point {skill_md_path} is missing.'))
+        return results
 
-    lines = content.splitlines(True)
-    in_fenced_block = False
-    in_indented_block = False
-    prev_line_empty = True
+    visited = set()
+    queue = collections.deque([skill_md_path])
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            visited.add(node)
+            for neighbor in graph.get(node, []):
+                if neighbor in all_markdown_files and neighbor not in visited:
+                    queue.append(neighbor)
 
-    for line_num, line in enumerate(lines, start=1):
-      line_stripped = line.rstrip('\r\n')
+    for md_file in all_markdown_files:
+        if md_file not in visited:
+            rel_path = input_api.os_path.relpath(md_file, repo_root)
+            is_active_violation = md_file in affected_files_map
 
-      # Fenced code block detection
-      if line_stripped.lstrip().startswith(('```', '~~~')):
-        in_fenced_block = not in_fenced_block
-        continue
+            msg = (f'Unreachable Markdown File: {rel_path} cannot be reached '
+                   'from SKILL.md. Even if it links to another file, it is '
+                   'part of an isolated cycle. Please add a link to it in '
+                   'PERSONAS.md or another connected document.')
 
-      # Indented code block detection
-      if not line_stripped.strip():
-        prev_line_empty = True
-        continue
+            if is_active_violation:
+                results.append(output_api.PresubmitError(msg))
+            else:
+                results.append(output_api.PresubmitPromptWarning(msg))
 
-      if prev_line_empty and (line.startswith('    ') or line.startswith('\t')):
-        in_indented_block = True
-      elif not (line.startswith('    ') or line.startswith('\t')):
-        in_indented_block = False
+    # Scenario 5: Content mandates
+    if skill_md_path in affected_files_map:
+        skill_content = input_api.ReadFile(affected_files_map[skill_md_path])
+        if 'TONE MANDATE (SIGNAL-TO-NOISE):' not in skill_content:
+            results.append(
+                output_api.PresubmitError(
+                    'File SKILL.md must contain the "TONE MANDATE (SIGNAL-TO-NOISE):"'
+                    ' section.'))
+        elif ('Zero Preamble/Postamble' not in skill_content
+              or 'Artifacts Only' not in skill_content):
+            results.append(
+                output_api.PresubmitError(
+                    'File SKILL.md TONE MANDATE must explicitly enforce '
+                    '"Zero Preamble/Postamble" and "Artifacts Only".'))
+        if 'ADD_FAILURE("NOT IMPLEMENTED");' not in skill_content:
+            results.append(
+                output_api.PresubmitError(
+                    'File SKILL.md must contain the TDD mandate requiring '
+                    '"ADD_FAILURE(\\"NOT IMPLEMENTED\\");" in stubbed tests.'))
 
-      prev_line_empty = False
-
-      if in_fenced_block or in_indented_block:
-        continue
-
-      # Scenario 1: 80-Character Limit (Modified files only)
-      if is_modified:
-        line_len = len(line_stripped)
-        for match in EXEMPT_TOKENS_RE.finditer(line_stripped):
-          line_len -= len(match.group(0))
-        if line_len > 80:
-          results.append(
-              output_api.PresubmitPromptWarning(
-                  f'Line {line_num} in '
-                  f'{affected_files_map[md_file].LocalPath()} '
-                  f'exceeds 80 characters ({len(line_stripped)} chars):\n'
-                  f'{line_stripped[:40]}... (truncated)'
-              )
-          )
-
-      # Scenario 3: Link Extraction & Validation
-      for match in EXEMPT_TOKENS_RE.finditer(line):
-        full_path = None
-        token = match.group(0)
-
-        # Group 1: Absolute src/...
-        if match.group(1):
-          token = match.group(1).rstrip('.')
-          full_path = input_api.os_path.normpath(
-              input_api.os_path.join(repo_root, token[4:])
-          )
-        # Group 3: Relative link
-        elif match.group(3):
-          token = match.group(3)
-          full_path = input_api.os_path.normpath(
-              input_api.os_path.join(input_api.os_path.dirname(md_file), token)
-          )
-
-        if not full_path:
-          continue
-
-        # Security: Prevent path traversal
-        if not _IsSafePath(input_api, full_path, repo_root):
-          msg = (
-              f'Line {line_num} in '
-              f'{input_api.os_path.relpath(md_file, repo_root)} '
-              f'attempts path traversal: {token}'
-          )
-          if is_modified:
-            results.append(output_api.PresubmitError(msg))
-          else:
-            results.append(output_api.PresubmitPromptWarning(msg))
-          continue
-
-        # Add to reachability graph (only for local markdown files)
-        if full_path.endswith('.md') and _IsSafePath(
-            input_api, full_path, magi_dir
-        ):
-          graph[md_file].append(full_path)
-
-        # Existence Check (Validate EVERY link in graph to catch
-        # deletion-breaks)
-        if full_path not in checked_existence:
-          checked_existence[full_path] = input_api.os_path.exists(full_path)
-
-        if not checked_existence[full_path]:
-          is_active = is_modified or full_path in affected_files_map
-          msg = (
-              f'Line {line_num} in '
-              f'{input_api.os_path.relpath(md_file, repo_root)} '
-              f'references a non-existent file: {token}'
-          )
-          if is_active:
-            results.append(output_api.PresubmitError(msg))
-          else:
-            results.append(output_api.PresubmitPromptWarning(msg))
-
-  # Scenario 4: Reachability (BFS from SKILL.md)
-  skill_md_path = input_api.os_path.normpath(
-      input_api.os_path.join(magi_dir, 'SKILL.md')
-  )
-  if skill_md_path not in graph:
-    results.append(
-        output_api.PresubmitError(
-            f'Critical Error: Entry point {skill_md_path} is missing.'
-        )
-    )
     return results
-
-  visited = set()
-  queue = collections.deque([skill_md_path])
-  while queue:
-    node = queue.popleft()
-    if node not in visited:
-      visited.add(node)
-      for neighbor in graph.get(node, []):
-        if neighbor in all_markdown_files and neighbor not in visited:
-          queue.append(neighbor)
-
-  for md_file in all_markdown_files:
-    if md_file not in visited:
-      rel_path = input_api.os_path.relpath(md_file, repo_root)
-      is_active_violation = md_file in affected_files_map
-
-      msg = (
-          f'Unreachable Markdown File: {rel_path} cannot be reached '
-          'from SKILL.md. Even if it links to another file, it is '
-          'part of an isolated cycle. Please add a link to it in '
-          'PERSONAS.md or another connected document.'
-      )
-
-      if is_active_violation:
-        results.append(output_api.PresubmitError(msg))
-      else:
-        results.append(output_api.PresubmitPromptWarning(msg))
-
-  # Scenario 5: Content mandates
-  if skill_md_path in affected_files_map:
-    skill_content = input_api.ReadFile(affected_files_map[skill_md_path])
-    if 'TONE MANDATE (SIGNAL-TO-NOISE):' not in skill_content:
-      results.append(
-          output_api.PresubmitError(
-              'File SKILL.md must contain the "TONE MANDATE (SIGNAL-TO-NOISE):"'
-              ' section.'
-          )
-      )
-    elif (
-        'Zero Preamble/Postamble' not in skill_content
-        or 'Artifacts Only' not in skill_content
-    ):
-      results.append(
-          output_api.PresubmitError(
-              'File SKILL.md TONE MANDATE must explicitly enforce '
-              '"Zero Preamble/Postamble" and "Artifacts Only".'
-          )
-      )
-    if 'ADD_FAILURE("NOT IMPLEMENTED");' not in skill_content:
-      results.append(
-          output_api.PresubmitError(
-              'File SKILL.md must contain the TDD mandate requiring '
-              '"ADD_FAILURE(\\"NOT IMPLEMENTED\\");" in stubbed tests.'
-          )
-      )
-
-  return results
 
 
 def CheckJsonFiles(input_api, output_api):
-  import json
+    import json
 
-  results = []
+    results = []
 
-  magi_dir = input_api.PresubmitLocalPath()
-  schema_path = input_api.os_path.join(magi_dir, 'magi_schema.json')
+    magi_dir = input_api.PresubmitLocalPath()
+    schema_path = input_api.os_path.join(magi_dir, 'magi_schema.json')
 
-  affected_files_map = {
-      af.AbsoluteLocalPath(): af
-      for af in input_api.AffectedFiles(include_deletes=False)
-  }
+    affected_files_map = {
+        af.AbsoluteLocalPath(): af
+        for af in input_api.AffectedFiles(include_deletes=False)
+    }
 
-  project_content_cache = {}
-  persona_content_cache = {}
+    project_content_cache = {}
+    persona_content_cache = {}
 
-  schema_content_str = None
-  if schema_path in affected_files_map:
-    schema_content_str = input_api.ReadFile(affected_files_map[schema_path])
+    schema_content_str = None
+    if schema_path in affected_files_map:
+        schema_content_str = input_api.ReadFile(
+            affected_files_map[schema_path])
 
-  if schema_content_str is None:
+    if schema_content_str is None:
+        try:
+            with open(schema_path, 'r', encoding='utf-8') as f:
+                schema_content_str = f.read()
+        except IOError:
+            pass
+
+    if not schema_content_str:
+        return []
+
     try:
-      with open(schema_path, 'r', encoding='utf-8') as f:
-        schema_content_str = f.read()
-    except IOError:
-      pass
-
-  if not schema_content_str:
-    return []
-
-  try:
-    schema = json.loads(schema_content_str)
-  except ValueError as e:
-    results.append(output_api.PresubmitError(f'Invalid magi_schema.json: {e}'))
-    return results
-
-  if not isinstance(schema, dict):
-    results.append(
-        output_api.PresubmitError('magi_schema.json must be a JSON object.')
-    )
-    return results
-
-  state_block_schema = schema.get('definitions', {}).get('StateBlock', {})
-  project_spec_schema = schema.get('definitions', {}).get('ProjectSpec', {})
-  review_feedback_schema = schema.get('definitions', {}).get(
-      'ReviewFeedback', {}
-  )
-  constraints_schema = schema.get('definitions', {}).get('Constraints', {})
-  persona_def_schema = schema.get('definitions', {}).get('PersonaDef', {})
-
-  def FileFilter(affected_file):
-    return input_api.FilterSourceFile(
-        affected_file,
-        files_to_check=(
-            r'.*(state_block|project|review(\..+)?|constraints)'
-            r'\.magi(\.\d+)?\.json$',
-            r'.*personas/.*\.json$',
-        ),
-    )
-
-  for f in input_api.AffectedFiles(
-      file_filter=FileFilter, include_deletes=False
-  ):
-    content_str = input_api.ReadFile(f)
-    if not content_str.strip():
-      continue
-    try:
-      content = json.loads(content_str)
+        schema = json.loads(schema_content_str)
     except ValueError as e:
-      results.append(
-          output_api.PresubmitError(
-              f'File {f.LocalPath()} is not valid JSON: {e}'
-          )
-      )
-      continue
+        results.append(
+            output_api.PresubmitError(f'Invalid magi_schema.json: {e}'))
+        return results
 
-    if not isinstance(content, dict):
-      results.append(
-          output_api.PresubmitError(
-              f'File {f.LocalPath()} must be a JSON object.'
-          )
-      )
-      continue
-
-    filename = input_api.os_path.basename(f.LocalPath())
-    parts = f.LocalPath().replace('\\', '/').split('/')
-    if filename.startswith('state_block'):
-      active_schema = state_block_schema
-    elif filename.startswith('project'):
-      active_schema = project_spec_schema
-    elif filename.startswith('review'):
-      active_schema = review_feedback_schema
-    elif filename.startswith('constraints'):
-      active_schema = constraints_schema
-    elif 'personas' in parts:
-      active_schema = persona_def_schema
-      # Dummy comment to force Gerrit update.
-      # Enforce directory depth limit (max 5 from /personas)
-      # Depth is exactly the index of 'personas' in the reversed list
-      depth = parts[::-1].index('personas')
-      if depth > 5:
+    if not isinstance(schema, dict):
         results.append(
             output_api.PresubmitError(
-                f'File {f.LocalPath()} exceeds maximum persona directory '
-                f'depth of 5 (current depth: {depth})'
-            )
-        )
-    else:
-      continue
+                'magi_schema.json must be a JSON object.'))
+        return results
 
-    required_keys = set(active_schema.get('required', []))
-    properties = active_schema.get('properties', {})
+    state_block_schema = schema.get('definitions', {}).get('StateBlock', {})
+    project_spec_schema = schema.get('definitions', {}).get('ProjectSpec', {})
+    review_feedback_schema = schema.get('definitions',
+                                        {}).get('ReviewFeedback', {})
+    constraints_schema = schema.get('definitions', {}).get('Constraints', {})
+    persona_def_schema = schema.get('definitions', {}).get('PersonaDef', {})
 
-    missing_keys = required_keys - set(content.keys())
-    if missing_keys:
-      results.append(
-          output_api.PresubmitError(
-              f'File {f.LocalPath()} is missing required keys: '
-              f"{', '.join(sorted(missing_keys))}"
-          )
-      )
-
-    # Validating simple type properties of top-level JSON
-    for key, value in content.items():
-      if key in properties:
-        expected_type = properties[key].get('type')
-        if expected_type == 'integer' and type(value) is not int:
-          results.append(
-              output_api.PresubmitError(
-                  f"File {f.LocalPath()} key '{key}' should be integer."
-              )
-          )
-        elif expected_type == 'boolean' and not isinstance(value, bool):
-          results.append(
-              output_api.PresubmitError(
-                  f"File {f.LocalPath()} key '{key}' should be boolean."
-              )
-          )
-        elif expected_type == 'array':
-          if not isinstance(value, list):
-            results.append(
-                output_api.PresubmitError(
-                    f"File {f.LocalPath()} key '{key}' should be array."
-                )
-            )
-          else:
-            items_schema = properties[key].get('items', {})
-            if isinstance(items_schema, dict) and items_schema.get(
-                'type'
-            ) == 'string':
-              for item in value:
-                if not isinstance(item, str):
-                  results.append(
-                      output_api.PresubmitError(
-                          f"File {f.LocalPath()} key '{key}' list contains a "
-                          f"non-string element: {item}"
-                      )
-                  )
-        elif expected_type == 'string' and not isinstance(value, str):
-          results.append(
-              output_api.PresubmitError(
-                  f"File {f.LocalPath()} key '{key}' should be string."
-              )
-          )
-
-        # Generic enum validation
-        expected_enum = properties[key].get('enum')
-        if expected_enum and value not in expected_enum:
-          results.append(
-              output_api.PresubmitError(
-                  f"File {f.LocalPath()} key '{key}' must be one of "
-                  f'{expected_enum}.'
-              )
-          )
-
-    # 3. Checklist Validation (Correctness & Schema)
-    checklist = content.get('checklist')
-    if checklist is not None:
-      if not isinstance(checklist, dict):
-        results.append(
-            output_api.PresubmitError(
-                f'File {f.LocalPath()} key "checklist" must be an object.'
-            )
-        )
-      else:
-        is_persona = active_schema is persona_def_schema
-        for k, v in checklist.items():
-          if is_persona:
-            if not isinstance(v, str):
-              results.append(
-                  output_api.PresubmitError(
-                      f'File {f.LocalPath()} persona checklist key "{k}" '
-                      f'must have a string description, got {type(v).__name__}'
-                  )
-              )
-          else:
-            if not isinstance(v, bool):
-              results.append(
-                  output_api.PresubmitError(
-                      f'File {f.LocalPath()} checklist key "{k}" '
-                      f'must be a boolean, got {type(v).__name__}'
-                  )
-              )
-
-    # 4. Decision Graph Validation
-    review_mode = content.get('review_mode')
-    next_p = content.get('next_phase')
-
-    if filename.startswith('state_block'):
-      if next_p and next_p not in [
-          'CRITIQUE',
-          'SCAFFOLDING',
-          'PREPARATION',
-          'IMPLEMENTATION',
-          'SYNTHESIS',
-          'TRAINING',
-          'DEADLOCK',
-      ]:
-        results.append(
-            output_api.PresubmitError(
-                f'File {f.LocalPath()} has invalid next_phase for '
-                f'state block: {next_p}'
-            )
+    def FileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=(
+                r'.*(state_block|project|review(\..+)?|constraints)'
+                r'\.magi(\.\d+)?\.json$',
+                r'.*personas/.*\.json$',
+            ),
         )
 
-      # Cross-file validation for state_transport
-      state_transport = content.get('state_transport')
-      if state_transport in ('EPHEMERAL', 'EPHEMERAL_WITH_LOGS'):
-        project_file_path = input_api.os_path.join(
-            input_api.os_path.dirname(f.AbsoluteLocalPath()),
-            'project.magi.json',
-        )
-        if project_file_path not in project_content_cache:
-          proj_content_str = None
-          if project_file_path in affected_files_map:
-            proj_content_str = input_api.ReadFile(
-                affected_files_map[project_file_path]
-            )
-
-          if not proj_content_str and input_api.os_path.exists(
-              project_file_path
-          ):
-            try:
-              with open(project_file_path, 'r', encoding='utf-8') as proj_f:
-                proj_content_str = proj_f.read()
-            except IOError:
-              pass
-
-          if proj_content_str:
-            try:
-              project_content_cache[project_file_path] = json.loads(
-                  proj_content_str
-              )
-            except ValueError:
-              pass
-
-        proj_content = project_content_cache.get(project_file_path, {})
-        if proj_content.get('paranoia_mode') is True:
-          results.append(
-              output_api.PresubmitError(
-                  f'File {f.LocalPath()} has state_transport '
-                  f'{state_transport} but project.magi.json has '
-                  'paranoia_mode: true.'
-              )
-          )
-        if (
-            state_transport == 'EPHEMERAL'
-            and proj_content.get('auditability_level') == 'VERBOSE'
-        ):
-          results.append(
-              output_api.PresubmitError(
-                  f'File {f.LocalPath()} has state_transport EPHEMERAL '
-                  'but project.magi.json has auditability_level: VERBOSE. '
-                  'Consider using EPHEMERAL_WITH_LOGS instead.'
-              )
-          )
-
-      # Cross-file validation for checklist union merge
-      personas = content.get('personas')
-      state_checklist = content.get('checklist')
-      if isinstance(personas, list) and isinstance(state_checklist, dict):
-        repo_root = input_api.change.RepositoryRoot()
-        union_checklist_keys = set()
-
-        for persona_path in personas:
-          if not isinstance(persona_path, str):
-            results.append(
-                output_api.PresubmitError(
-                    f'File {f.LocalPath()} personas list contains a non-string '
-                    f'element: {persona_path}'
-                )
-            )
+    for f in input_api.AffectedFiles(file_filter=FileFilter,
+                                     include_deletes=False):
+        content_str = input_api.ReadFile(f)
+        if not content_str.strip():
             continue
-          if persona_path.startswith('src/'):
-            persona_path = persona_path[4:]
-          elif persona_path.startswith('src\\'):
-            persona_path = persona_path[4:]
-
-          abs_persona_path = input_api.os_path.normpath(
-              input_api.os_path.join(repo_root, persona_path)
-          )
-
-          if abs_persona_path not in persona_content_cache:
-            persona_content_str = None
-            is_present = False
-
-            if abs_persona_path in affected_files_map:
-              persona_content_str = input_api.ReadFile(
-                  affected_files_map[abs_persona_path]
-              )
-              is_present = True
-
-            if not is_present:
-              if input_api.os_path.exists(abs_persona_path):
-                try:
-                  with open(abs_persona_path, 'r', encoding='utf-8') as pf:
-                    persona_content_str = pf.read()
-                    is_present = True
-                except IOError:
-                  pass
-            if is_present and persona_content_str:
-              persona_content_cache[abs_persona_path] = persona_content_str
-
-          persona_content_str = persona_content_cache.get(abs_persona_path)
-          is_present = persona_content_str is not None
-
-          if not is_present:
+        try:
+            content = json.loads(content_str)
+        except ValueError as e:
             results.append(
                 output_api.PresubmitError(
-                    f'File {f.LocalPath()} references a non-existent persona '
-                    f'file: {persona_path}'
-                )
-            )
+                    f'File {f.LocalPath()} is not valid JSON: {e}'))
+            continue
 
-          if persona_content_str:
-            try:
-              persona_json = json.loads(persona_content_str)
-              if isinstance(persona_json, dict):
-                persona_checklist = persona_json.get('checklist', {})
-                if isinstance(persona_checklist, dict):
-                  union_checklist_keys.update(persona_checklist.keys())
-            except ValueError:
-              pass
+        if not isinstance(content, dict):
+            results.append(
+                output_api.PresubmitError(
+                    f'File {f.LocalPath()} must be a JSON object.'))
+            continue
 
-        state_checklist_keys = set(state_checklist.keys())
-        missing_in_state = union_checklist_keys - state_checklist_keys
-        extra_in_state = state_checklist_keys - union_checklist_keys
-
-        if missing_in_state:
-          results.append(
-              output_api.PresubmitError(
-                  f'File {f.LocalPath()} checklist is missing keys defined in '
-                  f"selected personas: {', '.join(sorted(missing_in_state))}"
-              )
-          )
-        if extra_in_state:
-          results.append(
-              output_api.PresubmitError(
-                  f'File {f.LocalPath()} checklist contains arbitrary keys not '
-                  f'defined in selected personas: '
-                  f"{', '.join(sorted(extra_in_state))}"
-              )
-          )
-    elif filename.startswith('project'):
-      if next_p and next_p != 'SCAFFOLDING':
-        results.append(
-            output_api.PresubmitError(
-                f'File {f.LocalPath()} must signal next_phase: SCAFFOLDING'
-            )
-        )
-      if 'environment' in content:
-        environment = content['environment']
-        if not isinstance(environment, dict):
-          results.append(
-              output_api.PresubmitError(
-                  f'File {f.LocalPath()} key "environment" must be an object.'
-              )
-          )
+        filename = input_api.os_path.basename(f.LocalPath())
+        parts = f.LocalPath().replace('\\', '/').split('/')
+        if filename.startswith('state_block'):
+            active_schema = state_block_schema
+        elif filename.startswith('project'):
+            active_schema = project_spec_schema
+        elif filename.startswith('review'):
+            active_schema = review_feedback_schema
+        elif filename.startswith('constraints'):
+            active_schema = constraints_schema
+        elif 'personas' in parts:
+            active_schema = persona_def_schema
+            # Dummy comment to force Gerrit update.
+            # Enforce directory depth limit (max 5 from /personas)
+            # Depth is exactly the index of 'personas' in the reversed list
+            depth = parts[::-1].index('personas')
+            if depth > 5:
+                results.append(
+                    output_api.PresubmitError(
+                        f'File {f.LocalPath()} exceeds maximum persona directory '
+                        f'depth of 5 (current depth: {depth})'))
         else:
-          vcs = environment.get('vcs')
-          harness = environment.get('harness')
-          if vcs not in ('GIT', 'JJ'):
-            results.append(
-                output_api.PresubmitError(
-                    f'File {f.LocalPath()} environment.vcs must be GIT or JJ, '
-                    f'got {vcs}'
-                )
-            )
-          if harness not in ('JETSKI', 'GENERIC_CLI'):
-            results.append(
-                output_api.PresubmitError(
-                    f'File {f.LocalPath()} environment.harness must be '
-                    f'JETSKI or GENERIC_CLI, got {harness}'
-                )
-            )
-          repo_type = environment.get('repo_type')
-          output_directory = environment.get('output_directory')
+            continue
 
-          if 'repo_type' not in environment:
-            results.append(
-                output_api.PresubmitError(
-                    f'File {f.LocalPath()} environment is missing required '
-                    f'key "repo_type".'
-                )
-            )
-          elif repo_type not in ('CHROMIUM', 'GOOGLE_INTERNAL'):
-            results.append(
-                output_api.PresubmitError(
-                    f'File {f.LocalPath()} environment.repo_type must be '
-                    f'CHROMIUM or GOOGLE_INTERNAL, got {repo_type}'
-                )
-            )
+        required_keys = set(active_schema.get('required', []))
+        properties = active_schema.get('properties', {})
 
-          if output_directory is not None and not isinstance(
-              output_directory, str
-          ):
+        missing_keys = required_keys - set(content.keys())
+        if missing_keys:
             results.append(
                 output_api.PresubmitError(
-                    f'File {f.LocalPath()} environment.output_directory '
-                    f'must be '
-                    f'a string, got {type(output_directory).__name__}'
-                )
-            )
-    elif filename.startswith('review'):
-      if next_p and next_p != 'ANALYSIS':
-        results.append(
-            output_api.PresubmitError(
-                f'File {f.LocalPath()} must signal next_phase: ANALYSIS'
-            )
-        )
-    elif filename.startswith('constraints'):
-      if review_mode == 'SUPERVISOR':
-        if next_p and next_p not in ['SYNTHESIS', 'TRAINING']:
-          results.append(
-              output_api.PresubmitError(
-                  f'File {f.LocalPath()} (SUPERVISOR) must signal '
-                  f'SYNTHESIS or TRAINING, not {next_p}'
-              )
-          )
-      elif review_mode == 'CONSENSUS':
-        if next_p and next_p != 'TPM_UPDATE':
-          results.append(
-              output_api.PresubmitError(
-                  f'File {f.LocalPath()} (CONSENSUS) must signal '
-                  f'TPM_UPDATE, not {next_p}'
-              )
-          )
+                    f'File {f.LocalPath()} is missing required keys: '
+                    f"{', '.join(sorted(missing_keys))}"))
 
-  return results
+        # Validating simple type properties of top-level JSON
+        for key, value in content.items():
+            if key in properties:
+                expected_type = properties[key].get('type')
+                if expected_type == 'integer' and type(value) is not int:
+                    results.append(
+                        output_api.PresubmitError(
+                            f"File {f.LocalPath()} key '{key}' should be integer."
+                        ))
+                elif expected_type == 'boolean' and not isinstance(
+                        value, bool):
+                    results.append(
+                        output_api.PresubmitError(
+                            f"File {f.LocalPath()} key '{key}' should be boolean."
+                        ))
+                elif expected_type == 'array':
+                    if not isinstance(value, list):
+                        results.append(
+                            output_api.PresubmitError(
+                                f"File {f.LocalPath()} key '{key}' should be array."
+                            ))
+                    else:
+                        items_schema = properties[key].get('items', {})
+                        if isinstance(
+                                items_schema,
+                                dict) and items_schema.get('type') == 'string':
+                            for item in value:
+                                if not isinstance(item, str):
+                                    results.append(
+                                        output_api.PresubmitError(
+                                            f"File {f.LocalPath()} key '{key}' list contains a "
+                                            f"non-string element: {item}"))
+                elif expected_type == 'string' and not isinstance(value, str):
+                    results.append(
+                        output_api.PresubmitError(
+                            f"File {f.LocalPath()} key '{key}' should be string."
+                        ))
+
+                # Generic enum validation
+                expected_enum = properties[key].get('enum')
+                if expected_enum and value not in expected_enum:
+                    results.append(
+                        output_api.PresubmitError(
+                            f"File {f.LocalPath()} key '{key}' must be one of "
+                            f'{expected_enum}.'))
+
+        # 3. Checklist Validation (Correctness & Schema)
+        checklist = content.get('checklist')
+        if checklist is not None:
+            if not isinstance(checklist, dict):
+                results.append(
+                    output_api.PresubmitError(
+                        f'File {f.LocalPath()} key "checklist" must be an object.'
+                    ))
+            else:
+                is_persona = active_schema is persona_def_schema
+                for k, v in checklist.items():
+                    if is_persona:
+                        if not isinstance(v, str):
+                            results.append(
+                                output_api.PresubmitError(
+                                    f'File {f.LocalPath()} persona checklist key "{k}" '
+                                    f'must have a string description, got {type(v).__name__}'
+                                ))
+                    else:
+                        if not isinstance(v, bool):
+                            results.append(
+                                output_api.PresubmitError(
+                                    f'File {f.LocalPath()} checklist key "{k}" '
+                                    f'must be a boolean, got {type(v).__name__}'
+                                ))
+
+        # 4. Decision Graph Validation
+        review_mode = content.get('review_mode')
+        next_p = content.get('next_phase')
+
+        if filename.startswith('state_block'):
+            if next_p and next_p not in [
+                    'CRITIQUE',
+                    'SCAFFOLDING',
+                    'PREPARATION',
+                    'IMPLEMENTATION',
+                    'SYNTHESIS',
+                    'TRAINING',
+                    'DEADLOCK',
+            ]:
+                results.append(
+                    output_api.PresubmitError(
+                        f'File {f.LocalPath()} has invalid next_phase for '
+                        f'state block: {next_p}'))
+
+            # Cross-file validation for state_transport
+            state_transport = content.get('state_transport')
+            if state_transport in ('EPHEMERAL', 'EPHEMERAL_WITH_LOGS'):
+                project_file_path = input_api.os_path.join(
+                    input_api.os_path.dirname(f.AbsoluteLocalPath()),
+                    'project.magi.json',
+                )
+                if project_file_path not in project_content_cache:
+                    proj_content_str = None
+                    if project_file_path in affected_files_map:
+                        proj_content_str = input_api.ReadFile(
+                            affected_files_map[project_file_path])
+
+                    if not proj_content_str and input_api.os_path.exists(
+                            project_file_path):
+                        try:
+                            with open(project_file_path, 'r',
+                                      encoding='utf-8') as proj_f:
+                                proj_content_str = proj_f.read()
+                        except IOError:
+                            pass
+
+                    if proj_content_str:
+                        try:
+                            project_content_cache[
+                                project_file_path] = json.loads(
+                                    proj_content_str)
+                        except ValueError:
+                            pass
+
+                proj_content = project_content_cache.get(project_file_path, {})
+                if proj_content.get('paranoia_mode') is True:
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} has state_transport '
+                            f'{state_transport} but project.magi.json has '
+                            'paranoia_mode: true.'))
+                if (state_transport == 'EPHEMERAL' and
+                        proj_content.get('auditability_level') == 'VERBOSE'):
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} has state_transport EPHEMERAL '
+                            'but project.magi.json has auditability_level: VERBOSE. '
+                            'Consider using EPHEMERAL_WITH_LOGS instead.'))
+
+            # Cross-file validation for checklist union merge
+            personas = content.get('personas')
+            state_checklist = content.get('checklist')
+            if isinstance(personas, list) and isinstance(
+                    state_checklist, dict):
+                repo_root = input_api.change.RepositoryRoot()
+                union_checklist_keys = set()
+
+                for persona_path in personas:
+                    if not isinstance(persona_path, str):
+                        results.append(
+                            output_api.PresubmitError(
+                                f'File {f.LocalPath()} personas list contains a non-string '
+                                f'element: {persona_path}'))
+                        continue
+                    if persona_path.startswith('src/'):
+                        persona_path = persona_path[4:]
+                    elif persona_path.startswith('src\\'):
+                        persona_path = persona_path[4:]
+
+                    abs_persona_path = input_api.os_path.normpath(
+                        input_api.os_path.join(repo_root, persona_path))
+
+                    if abs_persona_path not in persona_content_cache:
+                        persona_content_str = None
+                        is_present = False
+
+                        if abs_persona_path in affected_files_map:
+                            persona_content_str = input_api.ReadFile(
+                                affected_files_map[abs_persona_path])
+                            is_present = True
+
+                        if not is_present:
+                            if input_api.os_path.exists(abs_persona_path):
+                                try:
+                                    with open(abs_persona_path,
+                                              'r',
+                                              encoding='utf-8') as pf:
+                                        persona_content_str = pf.read()
+                                        is_present = True
+                                except IOError:
+                                    pass
+                        if is_present and persona_content_str:
+                            persona_content_cache[
+                                abs_persona_path] = persona_content_str
+
+                    persona_content_str = persona_content_cache.get(
+                        abs_persona_path)
+                    is_present = persona_content_str is not None
+
+                    if not is_present:
+                        results.append(
+                            output_api.PresubmitError(
+                                f'File {f.LocalPath()} references a non-existent persona '
+                                f'file: {persona_path}'))
+
+                    if persona_content_str:
+                        try:
+                            persona_json = json.loads(persona_content_str)
+                            if isinstance(persona_json, dict):
+                                persona_checklist = persona_json.get(
+                                    'checklist', {})
+                                if isinstance(persona_checklist, dict):
+                                    union_checklist_keys.update(
+                                        persona_checklist.keys())
+                        except ValueError:
+                            pass
+
+                state_checklist_keys = set(state_checklist.keys())
+                missing_in_state = union_checklist_keys - state_checklist_keys
+                extra_in_state = state_checklist_keys - union_checklist_keys
+
+                if missing_in_state:
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} checklist is missing keys defined in '
+                            f"selected personas: {', '.join(sorted(missing_in_state))}"
+                        ))
+                if extra_in_state:
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} checklist contains arbitrary keys not '
+                            f'defined in selected personas: '
+                            f"{', '.join(sorted(extra_in_state))}"))
+        elif filename.startswith('project'):
+            if next_p and next_p != 'SCAFFOLDING':
+                results.append(
+                    output_api.PresubmitError(
+                        f'File {f.LocalPath()} must signal next_phase: SCAFFOLDING'
+                    ))
+            if 'environment' in content:
+                environment = content['environment']
+                if not isinstance(environment, dict):
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} key "environment" must be an object.'
+                        ))
+                else:
+                    vcs = environment.get('vcs')
+                    harness = environment.get('harness')
+                    if vcs not in ('GIT', 'JJ'):
+                        results.append(
+                            output_api.PresubmitError(
+                                f'File {f.LocalPath()} environment.vcs must be GIT or JJ, '
+                                f'got {vcs}'))
+                    if harness not in ('JETSKI', 'GENERIC_CLI'):
+                        results.append(
+                            output_api.PresubmitError(
+                                f'File {f.LocalPath()} environment.harness must be '
+                                f'JETSKI or GENERIC_CLI, got {harness}'))
+                    repo_type = environment.get('repo_type')
+                    output_directory = environment.get('output_directory')
+
+                    if 'repo_type' not in environment:
+                        results.append(
+                            output_api.PresubmitError(
+                                f'File {f.LocalPath()} environment is missing required '
+                                f'key "repo_type".'))
+                    elif repo_type not in ('CHROMIUM', 'GOOGLE_INTERNAL'):
+                        results.append(
+                            output_api.PresubmitError(
+                                f'File {f.LocalPath()} environment.repo_type must be '
+                                f'CHROMIUM or GOOGLE_INTERNAL, got {repo_type}'
+                            ))
+
+                    if output_directory is not None and not isinstance(
+                            output_directory, str):
+                        results.append(
+                            output_api.PresubmitError(
+                                f'File {f.LocalPath()} environment.output_directory '
+                                f'must be '
+                                f'a string, got {type(output_directory).__name__}'
+                            ))
+        elif filename.startswith('review'):
+            if next_p and next_p != 'ANALYSIS':
+                results.append(
+                    output_api.PresubmitError(
+                        f'File {f.LocalPath()} must signal next_phase: ANALYSIS'
+                    ))
+        elif filename.startswith('constraints'):
+            if review_mode == 'SUPERVISOR':
+                if next_p and next_p not in ['SYNTHESIS', 'TRAINING']:
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} (SUPERVISOR) must signal '
+                            f'SYNTHESIS or TRAINING, not {next_p}'))
+            elif review_mode == 'CONSENSUS':
+                if next_p and next_p != 'TPM_UPDATE':
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} (CONSENSUS) must signal '
+                            f'TPM_UPDATE, not {next_p}'))
+
+    return results
 
 
 def CheckTestJsonFiles(input_api, output_api):
-  import json
+    import json
 
-  results = []
-  magi_dir = input_api.PresubmitLocalPath()
+    results = []
+    magi_dir = input_api.PresubmitLocalPath()
 
-  def FileFilter(affected_file):
-    return input_api.FilterSourceFile(
-        affected_file,
-        files_to_check=(
-            r".*remoting/tools/magi-mode/tests/"
-            r"magi_phase_.*_tests\.json$",
-        ),
-    )
+    def FileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=(r".*remoting/tools/magi-mode/tests/"
+                            r"magi_phase_.*_tests\.json$", ),
+        )
 
-  for f in input_api.AffectedFiles(
-      file_filter=FileFilter, include_deletes=False):
-    filename = input_api.os_path.basename(f.LocalPath())
-    if filename == "magi_test_schemas.json":
-      continue
+    for f in input_api.AffectedFiles(file_filter=FileFilter,
+                                     include_deletes=False):
+        filename = input_api.os_path.basename(f.LocalPath())
+        if filename == "magi_test_schemas.json":
+            continue
 
-    content_str = input_api.ReadFile(f)
-    if not content_str.strip():
-      continue
+        content_str = input_api.ReadFile(f)
+        if not content_str.strip():
+            continue
 
-    try:
-      content = json.loads(content_str)
-    except ValueError as e:
-      results.append(
-          output_api.PresubmitError(
-              f"File {f.LocalPath()} is not valid JSON: {e}"))
-      continue
+        try:
+            content = json.loads(content_str)
+        except ValueError as e:
+            results.append(
+                output_api.PresubmitError(
+                    f"File {f.LocalPath()} is not valid JSON: {e}"))
+            continue
 
-    if not isinstance(content, dict):
-      results.append(
-          output_api.PresubmitError(
-              f"File {f.LocalPath()} must be a JSON object."))
-      continue
+        if not isinstance(content, dict):
+            results.append(
+                output_api.PresubmitError(
+                    f"File {f.LocalPath()} must be a JSON object."))
+            continue
 
-    required_scenario_keys = ["name", "base_inputs", "cases"]
-    for key in required_scenario_keys:
-      if key not in content:
-        results.append(
-            output_api.PresubmitError(
-                f"File {f.LocalPath()} is missing required key: {key}"))
+        required_scenario_keys = ["name", "base_inputs", "cases"]
+        for key in required_scenario_keys:
+            if key not in content:
+                results.append(
+                    output_api.PresubmitError(
+                        f"File {f.LocalPath()} is missing required key: {key}")
+                )
 
-    cases = content.get("cases", [])
-    if not isinstance(cases, list):
-      results.append(
-          output_api.PresubmitError(
-              f"File {f.LocalPath()} key 'cases' must be an array."))
-      continue
+        cases = content.get("cases", [])
+        if not isinstance(cases, list):
+            results.append(
+                output_api.PresubmitError(
+                    f"File {f.LocalPath()} key 'cases' must be an array."))
+            continue
 
-    for idx, case in enumerate(cases):
-      if not isinstance(case, dict):
-        results.append(
-            output_api.PresubmitError(
-                f"File {f.LocalPath()} case at index {idx} must be an object."
-            ))
-        continue
+        for idx, case in enumerate(cases):
+            if not isinstance(case, dict):
+                results.append(
+                    output_api.PresubmitError(
+                        f"File {f.LocalPath()} case at index {idx} must be an object."
+                    ))
+                continue
 
-      required_case_keys = ["name", "expected_outputs"]
-      for key in required_case_keys:
-        if key not in case:
-          results.append(
-              output_api.PresubmitError(
-                  f"File {f.LocalPath()} case '{case.get('name', idx)}' "
-                  f"is missing required key: {key}"
-              ))
+            required_case_keys = ["name", "expected_outputs"]
+            for key in required_case_keys:
+                if key not in case:
+                    results.append(
+                        output_api.PresubmitError(
+                            f"File {f.LocalPath()} case '{case.get('name', idx)}' "
+                            f"is missing required key: {key}"))
 
-      override_inputs = case.get("override_inputs", {})
-      if not isinstance(override_inputs, dict):
-        results.append(
-            output_api.PresubmitError(
-                f"File {f.LocalPath()} case '{case.get('name', idx)}' "
-                f"key 'override_inputs' must be an object."
-            ))
-        continue
+            override_inputs = case.get("override_inputs", {})
+            if not isinstance(override_inputs, dict):
+                results.append(
+                    output_api.PresubmitError(
+                        f"File {f.LocalPath()} case '{case.get('name', idx)}' "
+                        f"key 'override_inputs' must be an object."))
+                continue
 
-      allowed_overrides = [
-          "project_spec_overrides",
-          "state_block_overrides",
-          "draft_files_overrides",
-          "mock_reviews",
-      ]
-      for key in override_inputs.keys():
-        if key not in allowed_overrides:
-          results.append(
-              output_api.PresubmitError(
-                  f"File {f.LocalPath()} case '{case.get('name', idx)}' "
-                  f"key 'override_inputs' contains invalid property: {key}. "
-                  f"Allowed properties are: {', '.join(allowed_overrides)}"
-              ))
+            allowed_overrides = [
+                "project_spec_overrides",
+                "state_block_overrides",
+                "draft_files_overrides",
+                "mock_reviews",
+            ]
+            for key in override_inputs.keys():
+                if key not in allowed_overrides:
+                    results.append(
+                        output_api.PresubmitError(
+                            f"File {f.LocalPath()} case '{case.get('name', idx)}' "
+                            f"key 'override_inputs' contains invalid property: {key}. "
+                            f"Allowed properties are: {', '.join(allowed_overrides)}"
+                        ))
 
-  return results
+    return results
 
 
 def CheckLogsDirectory(input_api, output_api):
-  results = []
-  for f in input_api.AffectedFiles(include_deletes=False):
-    if '.magi_logs/' in f.LocalPath().replace('\\', '/'):
-      results.append(
-          output_api.PresubmitError(
-              f'File {f.LocalPath()} is in the .magi_logs/ directory, '
-              f'which must be excluded from all CLs.'
-          )
-      )
-  return results
+    results = []
+    for f in input_api.AffectedFiles(include_deletes=False):
+        if '.magi_logs/' in f.LocalPath().replace('\\', '/'):
+            results.append(
+                output_api.PresubmitError(
+                    f'File {f.LocalPath()} is in the .magi_logs/ directory, '
+                    f'which must be excluded from all CLs.'))
+    return results
 
 
 def CheckChangeOnUpload(input_api, output_api):
-  results = []
-  results.extend(CheckMarkdownFiles(input_api, output_api))
-  results.extend(CheckJsonFiles(input_api, output_api))
-  results.extend(CheckTestJsonFiles(input_api, output_api))
-  results.extend(CheckLogsDirectory(input_api, output_api))
-  return results
+    results = []
+    results.extend(CheckMarkdownFiles(input_api, output_api))
+    results.extend(CheckJsonFiles(input_api, output_api))
+    results.extend(CheckTestJsonFiles(input_api, output_api))
+    results.extend(CheckLogsDirectory(input_api, output_api))
+    return results
 
 
 def CheckChangeOnCommit(input_api, output_api):
-  results = []
-  results.extend(CheckMarkdownFiles(input_api, output_api))
-  results.extend(CheckJsonFiles(input_api, output_api))
-  results.extend(CheckTestJsonFiles(input_api, output_api))
-  results.extend(CheckLogsDirectory(input_api, output_api))
-  return results
+    results = []
+    results.extend(CheckMarkdownFiles(input_api, output_api))
+    results.extend(CheckJsonFiles(input_api, output_api))
+    results.extend(CheckTestJsonFiles(input_api, output_api))
+    results.extend(CheckLogsDirectory(input_api, output_api))
+    return results
