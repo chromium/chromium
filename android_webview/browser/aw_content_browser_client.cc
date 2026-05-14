@@ -1313,7 +1313,8 @@ bool AwContentBrowserClient::WillCreateRestrictedCookieManager(
 
   AwProxyingRestrictedCookieManager::CreateAndBind(
       std::move(target_rcm_remote), is_service_worker, process_id, routing_id,
-      std::move(orig_receiver), aw_cookie_access_policy);
+      isolation_info.site_for_cookies(), std::move(orig_receiver),
+      aw_cookie_access_policy);
 
   return false;  // only made a proxy, still need the actual impl to be made.
 }

@@ -131,12 +131,14 @@ class AwProxyingRestrictedCookieManagerTest : public testing::Test {
  protected:
   void CreateProxyOnIOThread(
       mojo::PendingRemote<network::mojom::RestrictedCookieManager> underlying,
-      mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
+      mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
+      const net::SiteForCookies& site_for_cookies = net::SiteForCookies()) {
     AwProxyingRestrictedCookieManager::CreateAndBind(
         std::move(underlying),
         /*is_service_worker=*/false,
         /*process_id=*/0,
-        /*frame_id=*/0, std::move(receiver), &cookie_access_policy_);
+        /*frame_id=*/0, site_for_cookies, std::move(receiver),
+        &cookie_access_policy_);
   }
 
   content::BrowserTaskEnvironment task_environment_;
