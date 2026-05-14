@@ -397,10 +397,7 @@ source_set("policy_specific_browser_tests") {
 
   if (enable_on_device_translation) {
     sources += [ "test/translator_api_policy_browsertest.cc" ]
-    deps += [
-      "//chrome/browser/on_device_translation",
-      "//chrome/browser/on_device_translation:test_support",
-    ]
+    deps += [ "//chrome/browser/on_device_translation:test_support" ]
   }
 }
 

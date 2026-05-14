@@ -41,13 +41,11 @@
 #include "components/on_device_translation/component_manager.h"
 #include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
-#include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/on_device_translation/service/test/test_util.h"
 #include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/service_controller_manager.h"
-#include "components/on_device_translation/test/fake_installer.h"
 #include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -215,11 +213,6 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
     embedded_https_test_server().ServeFilesFromDirectory(test_data_dir);
     ASSERT_TRUE(embedded_https_test_server().Start());
-
-    // Inject the adapter.
-    on_device_translation::ServiceControllerManagerFactory::GetInstance()
-        ->Get(GetBrowserContext())
-        ->SetInstallerForTesting(&adapter_);
   }
 
  protected:
@@ -403,7 +396,6 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
  private:
   base::ScopedTempDir tmp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestInstallerAdapter adapter_;
 };
 
 // Tests the behavior of create() when the library is installed before
@@ -2026,9 +2018,6 @@ class OnDeviceTranslationCrossOriginBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<content::URLLoaderInterceptor> url_loader_interceptor_;
-
- protected:
-  FakeOnDeviceTranslationInstaller fake_installer_{GetTempDir()};
 };
 
 // Tests the behavior of the Translation API in a cross origin iframe.
@@ -2040,7 +2029,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 
   NavigateToTestPage(browser());
   content::RenderFrameHost* iframe =
-      AddIframe(0, browser(), /*permission_policy_enabled=*/false);
+      AddIframe(0, browser(), /*enable_permission_policy=*/false);
 
   // Translation is not available in cross-origin iframes without permission
   // policy.
@@ -2052,22 +2041,17 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
                        ExceedServiceCountLimit) {
   MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.InstallMockTranslateKitComponent();
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
-  fake_installer_.InitNow(base::DoNothing());
-  fake_installer_.InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
-  base::ScopedAllowBlockingForTesting allow_io;
-  CHECK(base::CopyFile(GetMockLibraryPath(), fake_installer_.GetLibraryPath()));
-  auto* manager =
-      ServiceControllerManagerFactory::GetInstance()->Get(browser()->profile());
-  manager->SetInstallerForTesting(&fake_installer_);
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
   NavigateToTestPage(browser());
   size_t i = 0;
   // Until the service count exceeds the limit, the translator can be created,
   // and the translation is successful.
   for (; i < kTranslationAPIMaxServiceCount.Get(); i++) {
     content::RenderFrameHost* iframe =
-        AddIframe(i, browser(), /*permission_policy_enabled=*/true);
+        AddIframe(i, browser(), /*enable_permission_policy=*/true);
     EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
     EXPECT_EQ(TryCanTranslateInIframe(iframe), "available");
   }
@@ -2075,7 +2059,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   // When the service count exceeds the limit, the translator cannot be created,
   // even when the permission policy is still enabled.
   content::RenderFrameHost* iframe =
-      AddIframe(i, browser(), /*permission_policy_enabled=*/true);
+      AddIframe(i, browser(), /*enable_permission_policy=*/true);
   auto console_observer = CreateConsoleObserver(
       "The translation service count exceeded the limitation.");
   EXPECT_EQ(CheckTranslateInIframe(iframe), "NotSupportedError");
@@ -2094,25 +2078,19 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
                        TranslateInIframeIncognitoBrowser) {
   MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.InstallMockTranslateKitComponent();
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
-  fake_installer_.InitNow(base::DoNothing());
-  fake_installer_.InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
-  base::ScopedAllowBlockingForTesting allow_io;
-  CHECK(base::CopyFile(GetMockLibraryPath(), fake_installer_.GetLibraryPath()));
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
 
   Browser* incognito_browser = CreateIncognitoBrowser();
-  auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
-      incognito_browser->profile());
-  manager->SetInstallerForTesting(&fake_installer_);
 
   NavigateToTestPage(incognito_browser);
   content::RenderFrameHost* iframe0 =
-      AddIframe(0, incognito_browser, /*permission_policy_enabled=*/true);
+      AddIframe(0, incognito_browser, /*enable_permission_policy=*/true);
   EXPECT_EQ(CheckTranslateInIframe(iframe0), "en to ja: hello");
 
   content::RenderFrameHost* iframe1 =
-      AddIframe(1, incognito_browser, /*permission_policy_enabled=*/false);
+      AddIframe(1, incognito_browser, /*enable_permission_policy=*/false);
   EXPECT_EQ(CheckTranslateInIframe(iframe1), "NotAllowedError");
 }
 
@@ -2123,21 +2101,15 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
                        TranslateInIframeGuestBrowser) {
   MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.InstallMockTranslateKitComponent();
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
-  fake_installer_.InitNow(base::DoNothing());
-  fake_installer_.InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
-  base::ScopedAllowBlockingForTesting allow_io;
-  CHECK(base::CopyFile(GetMockLibraryPath(), fake_installer_.GetLibraryPath()));
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
 
   Browser* guest_browser = CreateGuestBrowser();
-  auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
-      guest_browser->profile());
-  manager->SetInstallerForTesting(&fake_installer_);
 
   NavigateToTestPage(guest_browser);
   content::RenderFrameHost* iframe =
-      AddIframe(0, guest_browser, /*permission_policy_enabled=*/true);
+      AddIframe(0, guest_browser, /*enable_permission_policy=*/true);
   EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -2180,7 +2152,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   for (size_t i = 0; i < kTranslationAPIMaxServiceCount.Get(); i++) {
     for (auto* target_browser : browsers) {
       content::RenderFrameHost* iframe =
-          AddIframe(i, target_browser, /*permission_policy_enabled=*/true);
+          AddIframe(i, target_browser, /*enable_permission_policy=*/true);
       EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
     }
   }
@@ -2193,7 +2165,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   // cannot be created.
   for (auto* target_browser : browsers) {
     content::RenderFrameHost* iframe = AddIframe(
-        limit_count, target_browser, /*permission_policy_enabled=*/true);
+        limit_count, target_browser, /*enable_permission_policy=*/true);
     iframes.push_back(iframe);
     auto console_observer = CreateConsoleObserver(
         "The translation service count exceeded the limitation.",

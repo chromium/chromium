@@ -43,12 +43,13 @@ std::string ToString(const base::FilePath& path) {
 }
 
 std::vector<base::FilePath> GetLanguagePackInfo(
-    OnDeviceTranslationInstaller* installer,
     std::vector<mojom::OnDeviceTranslationLanguagePackagePtr>& packages) {
   CHECK(packages.empty());
   std::vector<base::FilePath> package_paths;
   for (const auto& it : kLanguagePackComponentConfigMap) {
-    auto file_path = installer->GetLanguagePackPath(it.first);
+    auto file_path =
+        OnDeviceTranslationInstaller::GetInstance()->GetLanguagePackPath(
+            it.first);
     if (!file_path.empty()) {
       packages.push_back(mojom::OnDeviceTranslationLanguagePackage::New(
           std::string(ToLanguageCode(it.second->language1)),
@@ -107,7 +108,7 @@ class OnDeviceTranslationServiceLauncherImpl
     mojo::Remote<mojom::OnDeviceTranslationService> service_remote(
         std::move(remote));
     std::vector<base::FilePath> package_paths =
-        GetLanguagePackInfo(installer, config->packages);
+        GetLanguagePackInfo(config->packages);
     service_remote->SetServiceConfig(std::move(config));
 
     scoped_refptr<base::SequencedTaskRunner> task_runner =

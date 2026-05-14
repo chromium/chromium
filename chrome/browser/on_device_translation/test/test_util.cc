@@ -26,59 +26,6 @@ MockComponentManager::MockComponentManager(const base::FilePath& package_dir)
       mock_component_manager_(ComponentManager::SetForTesting(this)) {}
 
 MockComponentManager::~MockComponentManager() = default;
-
-TestInstallerAdapter::TestInstallerAdapter() = default;
-TestInstallerAdapter::~TestInstallerAdapter() = default;
-
-bool TestInstallerAdapter::IsInit() const {
-  return OnDeviceTranslationInstaller::GetInstance()->IsInit();
-}
-
-std::set<LanguagePackKey> TestInstallerAdapter::RegisteredLanguagePacks()
-    const {
-  return OnDeviceTranslationInstaller::GetInstance()->RegisteredLanguagePacks();
-}
-
-std::set<LanguagePackKey> TestInstallerAdapter::InstalledLanguagePacks() const {
-  return OnDeviceTranslationInstaller::GetInstance()->InstalledLanguagePacks();
-}
-
-base::FilePath TestInstallerAdapter::GetLibraryPath() const {
-  return g_browser_process->local_state()->GetFilePath(
-      prefs::kTranslateKitBinaryPath);
-}
-
-base::FilePath TestInstallerAdapter::GetLanguagePackPath(
-    LanguagePackKey language_pack) const {
-  const LanguagePackComponentConfig* config =
-      kLanguagePackComponentConfigMap.at(language_pack);
-  return g_browser_process->local_state()->GetFilePath(
-      GetComponentPathPrefName(*config));
-}
-
-void TestInstallerAdapter::Init(base::RepeatingClosure on_ready_callback) {
-  ComponentManager::GetInstance().RegisterTranslateKitComponent();
-  on_ready_callback.Run();
-}
-
-void TestInstallerAdapter::InstallLanguagePack(LanguagePackKey language_pack) {
-  ComponentManager::GetInstance().RegisterTranslateKitLanguagePackComponent(
-      language_pack);
-}
-
-void TestInstallerAdapter::UnInstallLanguagePack(
-    LanguagePackKey language_pack) {
-  ComponentManager::GetInstance().UninstallTranslateKitLanguagePackComponent(
-      language_pack);
-}
-
-void TestInstallerAdapter::AddObserver(Observer* observer) {
-  OnDeviceTranslationInstaller::GetInstance()->AddObserver(observer);
-}
-
-void TestInstallerAdapter::RemoveObserver(Observer* observer) {
-  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(observer);
-}
 void MockComponentManager::DoNotExpectCallRegisterTranslateKitComponent() {
   EXPECT_CALL(*this, RegisterTranslateKitComponentImpl()).Times(0);
 }
@@ -132,9 +79,6 @@ void MockComponentManager::InstallComponent(base::FilePath library_path) {
   CHECK(base::CopyFile(library_path, binary_path));
   g_browser_process->local_state()->SetFilePath(prefs::kTranslateKitBinaryPath,
                                                 binary_path);
-  if (on_installation_changed_callback_) {
-    on_installation_changed_callback_.Run();
-  }
 }
 
 void MockComponentManager::InstallMockLanguagePack(
@@ -171,9 +115,6 @@ void MockComponentManager::InstallMockLanguagePack(
       GetRegisteredFlagPrefName(*config), true);
   g_browser_process->local_state()->SetFilePath(
       GetComponentPathPrefName(*config), dict_dir_path);
-  if (on_installation_changed_callback_) {
-    on_installation_changed_callback_.Run();
-  }
 }
 
 void MockComponentManager::InstallMockTranslateKitComponentLater() {

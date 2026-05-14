@@ -31,10 +31,6 @@ class MockComponentManager : public ComponentManager {
   MockComponentManager(const MockComponentManager&) = delete;
   MockComponentManager& operator=(const MockComponentManager&) = delete;
 
-  void SetOnInstallationChangedCallback(base::RepeatingClosure callback) {
-    on_installation_changed_callback_ = std::move(callback);
-  }
-
   // ComponentManager implements:
   MOCK_METHOD(void, RegisterTranslateKitComponentImpl, (), (override));
   MOCK_METHOD(void,
@@ -103,26 +99,7 @@ class MockComponentManager : public ComponentManager {
 
   const base::FilePath package_dir_;
   base::AutoReset<ComponentManager*> mock_component_manager_;
-  base::RepeatingClosure on_installation_changed_callback_;
   base::WeakPtrFactory<MockComponentManager> weak_ptr_factory_{this};
-};
-
-class TestInstallerAdapter : public OnDeviceTranslationInstaller {
- public:
-  TestInstallerAdapter();
-  ~TestInstallerAdapter() override;
-
-  bool IsInit() const override;
-  std::set<LanguagePackKey> RegisteredLanguagePacks() const override;
-  std::set<LanguagePackKey> InstalledLanguagePacks() const override;
-  base::FilePath GetLibraryPath() const override;
-  base::FilePath GetLanguagePackPath(
-      LanguagePackKey language_pack) const override;
-  void Init(base::RepeatingClosure on_ready_callback) override;
-  void InstallLanguagePack(LanguagePackKey language_pack) override;
-  void UnInstallLanguagePack(LanguagePackKey language_pack) override;
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
 };
 
 class MockTranslationManagerImpl : public TranslationManagerImpl {
