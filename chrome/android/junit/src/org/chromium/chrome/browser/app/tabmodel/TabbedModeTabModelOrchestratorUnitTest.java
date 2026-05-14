@@ -42,6 +42,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
@@ -171,6 +173,33 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 SupportedProfileType.MIXED);
         tabPersistentStore = (TabPersistentStoreImpl) orchestrator.getTabPersistentStore();
         tabStatesToMerge = tabPersistentStore.getTabListToMergeTasksForTesting();
+        assertTrue("Should not have any tab state file to merge", tabStatesToMerge.isEmpty());
+    }
+
+    @Test
+    @Feature({"TabPersistentStore"})
+    public void testNoMergeOnStartupIfMigrationAlreadyRan() {
+        // If file migration has already run, no more merging is allowed even if there is no
+        // instance (e.g. all instances are swiped away).
+        assertEquals(0, MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(
+                        ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, true);
+
+        TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
+        orchestrator.createTabModels(
+                mChromeActivity,
+                mModalDialogManager,
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
+                0,
+                SupportedProfileType.MIXED);
+        TabPersistentStoreImpl tabPersistentStore =
+                (TabPersistentStoreImpl) orchestrator.getTabPersistentStore();
+        List<Pair<AsyncTask<DataInputStream>, String>> tabStatesToMerge =
+                tabPersistentStore.getTabListToMergeTasksForTesting();
         assertTrue("Should not have any tab state file to merge", tabStatesToMerge.isEmpty());
     }
 
