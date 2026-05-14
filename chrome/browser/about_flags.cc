@@ -4520,10 +4520,15 @@ const FeatureEntry::FeatureVariation
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 const FeatureEntry::FeatureParam kSearchEngineExplicitChoiceDialogEscapable[] =
     {{"escapable", "true"}};
+const FeatureEntry::FeatureParam
+    kSearchEngineExplicitChoiceDialogShowOncePerSession[] = {
+        {"unlimited_shows", "false"}};
 
 const FeatureEntry::FeatureVariation
     kSearchEngineExplicitChoiceDialogVariations[] = {
         {"Escapable", kSearchEngineExplicitChoiceDialogEscapable, nullptr},
+        {"Show Once Per Session",
+         kSearchEngineExplicitChoiceDialogShowOncePerSession, nullptr},
 };
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
