@@ -543,9 +543,11 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     recordContextualElementClickedMetric(
         this.composeboxSource, 'ClassicPopup', ContextType.DRIVE);
 
-    this.openComposebox_(
-        driveUploads, ToolMode.kUnspecified, ModelMode.kUnspecified,
-        response.error ?? undefined);
+    if (driveUploads.length > 0 || response.error !== null) {
+      this.openComposebox_(
+          driveUploads, ToolMode.kUnspecified, ModelMode.kUnspecified,
+          response.error ?? undefined);
+    }
   }
 
   protected onContextMenuEntrypointClick_() {

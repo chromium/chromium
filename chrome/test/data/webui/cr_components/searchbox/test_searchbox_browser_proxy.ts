@@ -204,6 +204,9 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   onDriveUploadClicked() {
     this.methodCalled('onDriveUploadClicked');
+    if (this.results_.has('onDriveUploadClicked')) {
+      return this.results_.get('onDriveUploadClicked');
+    }
     return Promise.resolve({response: {files: [], error: null}});
   }
 
