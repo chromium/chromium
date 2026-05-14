@@ -151,6 +151,8 @@ class CC_EXPORT LayerImpl {
                            AppendQuadsData* append_quads_data) {}
   virtual void DidDraw(viz::ClientResourceProvider* resource_provider) {}
 
+  virtual bool HasMissingTiles() const;
+
   virtual bool ComputeCheckerboardedNeedsRecord();
 
   // Verify that the resource ids in the quad are valid.

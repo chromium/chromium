@@ -272,17 +272,9 @@ bool PictureLayerImpl::ShouldUpdateApproximatedVisibleContentArea(
 
 bool PictureLayerImpl::ShouldReportTileAsMissing(
     const gfx::Rect& tile_geometry_rect,
-    AppendQuadsCustomSharedData* custom_data) const {
-  // By contract, this data will have been populated via a call to
-  // WillAppendQuads().
-  CHECK(custom_data);
-
-  auto* shared_data =
-      static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data);
-
+    const gfx::Rect& scaled_viewport_for_tile_priority) const {
   // Only report the tile as missing if it's in the viewport.
-  return tile_geometry_rect.Intersects(
-      shared_data->scaled_viewport_for_tile_priority_);
+  return tile_geometry_rect.Intersects(scaled_viewport_for_tile_priority);
 }
 
 void PictureLayerImpl::DidAppendQuad(
@@ -375,15 +367,14 @@ bool PictureLayerImpl::ComputeCheckerboardedNeedsRecord() {
   return false;
 }
 
-std::unique_ptr<AppendQuadsCustomSharedData> PictureLayerImpl::WillAppendQuads(
-    float max_contents_scale) {
+void PictureLayerImpl::WillAppendQuads() {
   set_produced_tile_last_append_quads(false);
+}
 
-  auto custom_data = std::make_unique<AppendQuadsCustomSharedDataImpl>();
-  custom_data->scaled_viewport_for_tile_priority_ = gfx::ScaleToEnclosingRect(
+gfx::Rect PictureLayerImpl::GetScaledViewportForTilePriority(
+    float max_contents_scale) const {
+  return gfx::ScaleToEnclosingRect(
       viewport_rect_for_tile_priority_in_content_space_, max_contents_scale);
-
-  return std::move(custom_data);
 }
 
 bool PictureLayerImpl::UpdateTiles() {

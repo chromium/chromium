@@ -30,13 +30,6 @@
 
 namespace cc {
 
-// Opaque container class that allows subclasses of TileBasedLayerImpl to
-// instantiate data that is shared across all tiles when appending quads.
-class AppendQuadsCustomSharedData {
- public:
-  virtual ~AppendQuadsCustomSharedData() = default;
-};
-
 // Base class for layer impls that manipulate tiles (e.g., PictureLayerImpl
 // and TileDisplayLayerImpl).
 template <typename Tiling>
@@ -72,6 +65,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
     LayerImpl::ResetChangeTracking();
     damage_rect_.SetRect(0, 0, 0, 0);
   }
+  bool HasMissingTiles() const override;
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override {
     return GetScaledEnclosingVisibleRectInTargetSpace(
         GetMaximumContentsScaleForUseInAppendQuads());
@@ -148,8 +142,12 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   // `num_missing_tiles` on the Viz side in the longer term.
   virtual bool ShouldReportTileAsMissing(
       const gfx::Rect& tile_geometry_rect,
-      AppendQuadsCustomSharedData* custom_data) const {
+      const gfx::Rect& scaled_viewport_for_tile_priority) const {
     return false;
+  }
+
+  virtual gfx::Rect GetScaledViewportForTilePriority(float scale) const {
+    return gfx::Rect();
   }
 
   // Invoked after a quad has been appended to allow subclasses to perform any
@@ -171,10 +169,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       const Occlusion& scaled_occlusion) = 0;
 
   // Called just before starting the loop appending quads to allow subclasses to
-  // do any desired setup, including allowing them to create a container for
-  // custom data that should be shared across all tiles when appending quads.
-  virtual std::unique_ptr<AppendQuadsCustomSharedData> WillAppendQuads(
-      float max_contents_scale);
+  // do any desired setup.
+  virtual void WillAppendQuads() {}
 
   virtual gfx::Rect RecordedBounds() const = 0;
 
@@ -196,7 +192,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                          const gfx::Rect& visible_geometry_rect,
                          bool needs_blending,
                          float max_contents_scale,
-                         AppendQuadsCustomSharedData* custom_data);
+                         const gfx::Rect& scaled_viewport_for_tile_priority);
 
   virtual bool IsDirectlyCompositedImage() const = 0;
 
@@ -372,7 +368,9 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   // determine which scales are now unused and can be considered for removal.
   ClearLastAppendQuadsScales();
 
-  auto custom_data = WillAppendQuads(max_contents_scale);
+  WillAppendQuads();
+  const gfx::Rect scaled_viewport_for_tile_priority =
+      GetScaledViewportForTilePriority(max_contents_scale);
 
   const gfx::Rect scaled_recorded_bounds =
       gfx::ScaleToEnclosingRect(RecordedBounds(), max_contents_scale);
@@ -410,11 +408,11 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
     append_quads_data->visible_layer_area +=
         visible_geometry_rect.size().Area64();
 
-    if (!AppendQuadForTile(iter, context, render_pass, append_quads_data,
-                           shared_quad_state, scaled_occlusion,
-                           offset_geometry_rect, offset_visible_geometry_rect,
-                           visible_geometry_rect, needs_blending,
-                           max_contents_scale, custom_data.get())) {
+    if (!AppendQuadForTile(
+            iter, context, render_pass, append_quads_data, shared_quad_state,
+            scaled_occlusion, offset_geometry_rect,
+            offset_visible_geometry_rect, visible_geometry_rect, needs_blending,
+            max_contents_scale, scaled_viewport_for_tile_priority)) {
       missing_tile_count++;
     }
   }
@@ -432,6 +430,63 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
 
   SanityCheckTilingState();
+}
+
+template <typename Tiling>
+bool TileBasedLayerImpl<Tiling>::HasMissingTiles() const {
+  if (is_backdrop_filter_mask()) {
+    return false;
+  }
+  if (solid_color()) {
+    return false;
+  }
+
+  const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
+  const float ideal_scale_key = GetIdealContentsScaleKey();
+  const gfx::Rect scaled_recorded_bounds =
+      gfx::ScaleToEnclosingRect(RecordedBounds(), max_contents_scale);
+
+  const gfx::Size scaled_bounds =
+      gfx::ScaleToCeiledSize(bounds(), max_contents_scale);
+  gfx::Rect scaled_visible_layer_rect =
+      gfx::ScaleToEnclosingRect(visible_layer_rect(), max_contents_scale);
+  scaled_visible_layer_rect.Intersect(gfx::Rect(scaled_bounds));
+
+  if (scaled_visible_layer_rect.IsEmpty()) {
+    return false;
+  }
+
+  const Occlusion scaled_occlusion =
+      draw_properties()
+          .occlusion_in_content_space.GetOcclusionWithGivenDrawTransform(
+              GetScaledDrawTransform(max_contents_scale));
+
+  const gfx::Rect scaled_viewport_for_tile_priority =
+      GetScaledViewportForTilePriority(max_contents_scale);
+
+  for (auto iter = Cover(scaled_visible_layer_rect, max_contents_scale,
+                         ideal_scale_key);
+       iter; ++iter) {
+    const gfx::Rect& geometry_rect = iter.geometry_rect();
+    if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
+      continue;
+    }
+
+    gfx::Rect visible_geometry_rect =
+        scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
+    if (visible_geometry_rect.IsEmpty()) {
+      continue;
+    }
+
+    if (!*iter || !iter->IsReadyToDraw()) {
+      if (ShouldReportTileAsMissing(geometry_rect,
+                                    scaled_viewport_for_tile_priority)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 template <typename Tiling>
@@ -501,7 +556,7 @@ bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
     const gfx::Rect& visible_geometry_rect,
     bool needs_blending,
     float max_contents_scale,
-    AppendQuadsCustomSharedData* custom_data) {
+    const gfx::Rect& scaled_viewport_for_tile_priority) {
   auto* tile = *iter;
   bool has_draw_quad = false;
   if (tile && tile->IsReadyToDraw()) {
@@ -542,8 +597,8 @@ bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
                  offset_visible_geometry_rect, color, false);
     DidAppendQuad(quad, iter, append_quads_data, /*is_checkerboard=*/true);
 
-    return /*tile_produced=*/!ShouldReportTileAsMissing(iter.geometry_rect(),
-                                                        custom_data);
+    return /*tile_produced=*/!ShouldReportTileAsMissing(
+        iter.geometry_rect(), scaled_viewport_for_tile_priority);
   }
 
   if (ShouldUpdateApproximatedVisibleContentArea(iter.resolution())) {
@@ -631,11 +686,6 @@ TileBasedLayerImpl<Tiling>::CalculateCullRectInLayerSpace() const {
   return std::nullopt;
 }
 
-template <typename Tiling>
-std::unique_ptr<AppendQuadsCustomSharedData>
-TileBasedLayerImpl<Tiling>::WillAppendQuads(float max_contents_scale) {
-  return nullptr;
-}
 
 }  // namespace cc
 

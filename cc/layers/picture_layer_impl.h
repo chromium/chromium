@@ -392,20 +392,8 @@ class CC_EXPORT PictureLayerImpl
   TileSizeCalculator tile_size_calculator_{this};
 
  private:
-  class AppendQuadsCustomSharedDataImpl : public AppendQuadsCustomSharedData {
-   public:
-    ~AppendQuadsCustomSharedDataImpl() override = default;
-
-    // Used to ignore missing tiles outside of viewport for tile priority. This
-    // is normally the same as draw viewport but can be independently overridden
-    // by embedders like Android WebView with
-    // SetExternalTilePriorityConstraints.
-    gfx::Rect scaled_viewport_for_tile_priority_;
-  };
-
   // TileBasedLayerImpl:
-  std::unique_ptr<AppendQuadsCustomSharedData> WillAppendQuads(
-      float max_contents_scale) override;
+  void WillAppendQuads() override;
   void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,
       viz::CompositorRenderPass* render_pass,
@@ -422,11 +410,13 @@ class CC_EXPORT PictureLayerImpl
       TileResolution resolution) const override;
   bool ShouldReportTileAsMissing(
       const gfx::Rect& tile_geometry_rect,
-      AppendQuadsCustomSharedData* custom_data) const override;
+      const gfx::Rect& scaled_viewport_for_tile_priority) const override;
   void DidAppendQuad(viz::DrawQuad* quad,
                      const TilingSetCoverageIterator<PictureLayerTiling>& iter,
                      AppendQuadsData* append_quads_data,
                      bool is_checkerboard) override;
+
+  gfx::Rect GetScaledViewportForTilePriority(float scale) const override;
 
  private:
   TilingResolution GetTilingResolutionForDebugBorders(

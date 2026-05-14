@@ -1242,6 +1242,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
             layer->AppendQuads(view_transition_capture_context,
                                view_transition_capture_render_pass, &data);
           }
+        } else if (layer->HasMissingTiles()) {
+          have_missing_animated_tiles |=
+              layer->screen_space_transform_is_animating();
         }
       } else {
         // The only place where enable_compositing_based_throttling is set

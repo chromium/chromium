@@ -300,6 +300,10 @@ bool LayerImpl::WillDraw(DrawMode draw_mode,
   return true;
 }
 
+bool LayerImpl::HasMissingTiles() const {
+  return false;
+}
+
 bool LayerImpl::ComputeCheckerboardedNeedsRecord() {
   return false;
 }
