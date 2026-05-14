@@ -35,38 +35,38 @@ class PaintImage;
 // animations in the compositor.
 //
 // 1) It receives the updated metadata for these images from new recordings
-//    received from the client using UpdateAnimatedImage. The controller tracks
-//    the frame index of an image used on a tree, and advances the animation to
-//    the desired frame each time a new sync tree is created.
+//    received from the delegate using UpdateAnimatedImage. The controller
+//    tracks the frame index of an image used on a tree, and advances the
+//    animation to the desired frame each time a new sync tree is created.
 //
 // 2) An animation is paused if there are no animation drivers
 //    (i.e. PictureLayerImpl's) interested in animating it.
 //
 //  3) An animation is only advanced on the sync tree, which is requested to be
-//     created using the |client| callbacks. This effectively means that
+//     created using the |delegate| callbacks. This effectively means that
 //     the frame of the image used remains consistent throughout the lifetime of
 //     a tree, guaranteeing that the image update is atomic.
 class CC_EXPORT ImageAnimationController {
  public:
-  class CC_EXPORT Client {
+  class CC_EXPORT Delegate {
    public:
-    virtual ~Client() {}
+    virtual ~Delegate() {}
 
-    // Notifies the client that an impl frame is needed to animate an image.
+    // Notifies the delegate that an impl frame is needed to animate an image.
     virtual void RequestBeginFrameForAnimatedImages() = 0;
 
-    // Notifies the client that a sync tree is needed to invalidate the animated
-    // images in this impl frame. This should only be called from within an impl
-    // frame.
+    // Notifies the delegate that a sync tree is needed to invalidate the
+    // animated images in this impl frame. This should only be called from
+    // within an impl frame.
     virtual void RequestInvalidationForAnimatedImages() = 0;
   };
 
-  // |task_runner| is the thread on which the controller is used. The |client|
+  // |task_runner| is the thread on which the controller is used. The |delegate|
   // can only be called on this thread.
   // |enable_image_animation_resync| specifies whether the animation can be
   // reset to the beginning to avoid skipping many frames.
   ImageAnimationController(base::SingleThreadTaskRunner* task_runner,
-                           Client* client,
+                           Delegate* delegate,
                            bool enable_image_animation_resync);
   ~ImageAnimationController();
 
@@ -252,7 +252,7 @@ class CC_EXPORT ImageAnimationController {
   class InvalidationScheduler {
    public:
     InvalidationScheduler(base::SingleThreadTaskRunner* task_runner,
-                          Client* client);
+                          Delegate* delegate);
     ~InvalidationScheduler();
 
     void Schedule(base::TimeTicks animation_time);
@@ -269,9 +269,9 @@ class CC_EXPORT ImageAnimationController {
       kIdle,
       // Task pending to request impl frame.
       kPendingRequestBeginFrame,
-      // Impl frame request pending after request dispatched to client.
+      // Impl frame request pending after request dispatched to delegate.
       kPendingImplFrame,
-      // Sync tree for animation pending after request dispatched to client.
+      // Sync tree for animation pending after request dispatched to delegate.
       kPendingInvalidation,
     };
 
@@ -279,7 +279,7 @@ class CC_EXPORT ImageAnimationController {
     void RequestInvalidation();
 
     raw_ptr<base::SingleThreadTaskRunner> task_runner_;
-    const raw_ptr<Client> client_;
+    const raw_ptr<Delegate> delegate_;
     NowCallback now_callback_for_testing_;
 
     InvalidationState state_ = InvalidationState::kIdle;

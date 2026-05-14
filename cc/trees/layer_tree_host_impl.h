@@ -137,7 +137,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                     public ScrollbarAnimationControllerClient,
                                     public VideoFrameControllerClient,
                                     public MutatorHostDelegate,
-                                    public ImageAnimationController::Client,
+                                    public ImageAnimationController::Delegate,
                                     public CompositorDelegateForInput,
                                     public EventLatencyTracker {
  public:
@@ -205,7 +205,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetNeedsCommit() override;
   base::TimeDelta CurrentFrameInterval() const override;
 
-  // ImageAnimationController::Client implementation.
+  // ImageAnimationController::Delegate implementation.
   void RequestBeginFrameForAnimatedImages() override;
   void RequestInvalidationForAnimatedImages() override;
 

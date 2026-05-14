@@ -41,9 +41,9 @@ base::TimeTicks SnappedTickTimeFromFrameTime(
 
 ImageAnimationController::ImageAnimationController(
     base::SingleThreadTaskRunner* task_runner,
-    Client* client,
+    Delegate* delegate,
     bool enable_image_animation_resync)
-    : scheduler_(task_runner, client),
+    : scheduler_(task_runner, delegate),
       enable_image_animation_resync_(enable_image_animation_resync) {}
 
 ImageAnimationController::~ImageAnimationController() = default;
@@ -556,8 +556,8 @@ size_t ImageAnimationController::AnimationState::NextFrameIndex(
 
 ImageAnimationController::InvalidationScheduler::InvalidationScheduler(
     base::SingleThreadTaskRunner* task_runner,
-    Client* client)
-    : task_runner_(task_runner), client_(client) {
+    Delegate* delegate)
+    : task_runner_(task_runner), delegate_(delegate) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 }
 
@@ -620,7 +620,7 @@ void ImageAnimationController::InvalidationScheduler::RequestBeginFrame() {
   DCHECK_EQ(state_, InvalidationState::kPendingRequestBeginFrame);
 
   state_ = InvalidationState::kPendingImplFrame;
-  client_->RequestBeginFrameForAnimatedImages();
+  delegate_->RequestBeginFrameForAnimatedImages();
 }
 
 void ImageAnimationController::InvalidationScheduler::WillAnimate() {
@@ -660,7 +660,7 @@ void ImageAnimationController::InvalidationScheduler::WillBeginImplFrame(
         // be able to animate at this frame. But that might not be the case if
         // we get a missed BeginFrame. In that case, make a request for the next
         // impl frame.
-        client_->RequestBeginFrameForAnimatedImages();
+        delegate_->RequestBeginFrameForAnimatedImages();
       }
       break;
   }
@@ -679,7 +679,7 @@ void ImageAnimationController::InvalidationScheduler::RequestInvalidation() {
   Cancel();
 
   state_ = InvalidationState::kPendingInvalidation;
-  client_->RequestInvalidationForAnimatedImages();
+  delegate_->RequestInvalidationForAnimatedImages();
 }
 
 }  // namespace cc

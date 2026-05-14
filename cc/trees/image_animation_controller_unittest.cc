@@ -56,7 +56,7 @@ class DelayTrackingTaskRunner : public base::SingleThreadTaskRunner {
 };
 
 class ImageAnimationControllerTest : public testing::Test,
-                                     public ImageAnimationController::Client {
+                                     public ImageAnimationController::Delegate {
  public:
   void SetUp() override {
     task_runner_ = new DelayTrackingTaskRunner(
@@ -140,7 +140,7 @@ class ImageAnimationControllerTest : public testing::Test,
   }
 
  protected:
-  // ImageAnimationController::Client implementation.
+  // ImageAnimationController::Delegate implementation.
   void RequestBeginFrameForAnimatedImages() override { begin_frame_count_++; }
   void RequestInvalidationForAnimatedImages() override {
     invalidation_count_++;
