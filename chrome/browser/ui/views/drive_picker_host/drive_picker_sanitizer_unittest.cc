@@ -39,6 +39,24 @@ TEST_F(DrivePickerSanitizerTest, SanitizeValidDocument) {
   EXPECT_FALSE(sanitized->thumbnail_url.has_value());
 }
 
+TEST_F(DrivePickerSanitizerTest, SanitizeValidFile) {
+  auto file = CreateValidFile();
+  file->type = "file";
+  file->mime_type = "application/zip";
+  file->name = "test.zip";
+  file->resource_key = "valid-key";
+
+  auto sanitized = DrivePickerSanitizer::Sanitize(file);
+
+  ASSERT_TRUE(sanitized.has_value());
+  EXPECT_EQ(sanitized->drive_id, "valid-id_123");
+  EXPECT_EQ(sanitized->mime_type, "application/zip");
+  EXPECT_EQ(sanitized->file_name, "test.zip");
+  EXPECT_EQ(sanitized->size_bytes, 1024u);
+  EXPECT_EQ(sanitized->resource_key, "valid-key");
+  EXPECT_FALSE(sanitized->thumbnail_url.has_value());
+}
+
 TEST_F(DrivePickerSanitizerTest, SanitizeValidPhotoWithThumbnail) {
   auto file = CreateValidFile();
   file->type = "photo";

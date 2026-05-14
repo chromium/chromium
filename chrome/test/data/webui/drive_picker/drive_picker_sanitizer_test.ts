@@ -15,7 +15,7 @@ suite('DrivePickerSanitizerTest', function() {
     RESOURCE_KEY: 'resourceKey',
     THUMBNAIL_URL: 'thumbnailUrl',
   };
-  const allowedTypes = new Set(['document', 'photo', 'video']);
+  const allowedTypes = new Set(['document', 'file', 'photo', 'video']);
 
   test('SanitizesValidDocument', function() {
     const doc = {
@@ -36,6 +36,31 @@ suite('DrivePickerSanitizerTest', function() {
     assertEquals('application/pdf', sanitized.mimeType);
     assertEquals('test.pdf', sanitized.name);
     assertEquals('document', sanitized.type);
+    assertEquals(100n, sanitized.sizeBytes);
+    assertEquals('valid-key', sanitized.resourceKey);
+    // Non-photo types should have null thumbnailUrl even if provided.
+    assertEquals(null, sanitized.thumbnailUrl);
+  });
+
+  test('SanitizesValidFile', function() {
+    const doc = {
+      id: 'valid-id_123',
+      mimeType: 'application/zip',
+      name: 'test.zip',
+      type: 'file',
+      sizeBytes: 100,
+      resourceKey: 'valid-key',
+      thumbnailUrl:
+          'https://lh3.googleusercontent.com/drive-storage/AJQWtBOI_xcNPWAVolLfcNDZGWus_ELL8GP-ZYLdkxOcPlUxsVOMr5jn-i261zxtYVcpA0kZePsVWT2Ghrxdg03aoJYX7t9vlc4ojecNyW7QNrP6muY9-wvmO77SsiXHrwnU2GbRCt2V9NDv62u2R96rpvI=s220',
+    };
+
+    const sanitized = DrivePickerSanitizer.sanitizeDocument(
+        doc as Record<string, unknown>, pickerKeys, allowedTypes);
+
+    assertEquals('valid-id_123', sanitized.id);
+    assertEquals('application/zip', sanitized.mimeType);
+    assertEquals('test.zip', sanitized.name);
+    assertEquals('file', sanitized.type);
     assertEquals(100n, sanitized.sizeBytes);
     assertEquals('valid-key', sanitized.resourceKey);
     // Non-photo types should have null thumbnailUrl even if provided.

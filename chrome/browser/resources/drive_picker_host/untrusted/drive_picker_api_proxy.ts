@@ -193,8 +193,12 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
       RESOURCE_KEY: 'resourceKey',
       THUMBNAIL_URL: 'thumbnailUrl',
     };
+    // Note: 'file' is used as a string literal instead of
+    // google.picker.Type.FILE, because FILE is not defined on
+    // the google.picker.Type JS API object.
     const allowedTypes = new Set([
       google.picker.Type.DOCUMENT,
+      'file',
       google.picker.Type.PHOTO,
       google.picker.Type.VIDEO,
     ]);

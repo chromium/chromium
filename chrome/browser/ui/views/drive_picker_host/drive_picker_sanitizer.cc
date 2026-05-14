@@ -37,7 +37,7 @@ std::optional<SanitizedDriveFileData> DrivePickerSanitizer::Sanitize(
 
   // Validate Type: Only allow known Drive document types.
   if (file->type != "document" && file->type != "photo" &&
-      file->type != "video") {
+      file->type != "video" && file->type != "file") {
     DLOG(WARNING) << "Unsupported file type: " << file->type;
     return std::nullopt;
   }

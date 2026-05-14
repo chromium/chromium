@@ -9,6 +9,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
  */
 export enum DriveFileType {
   DOCUMENT = 'document',
+  FILE = 'file',
   PHOTO = 'photo',
   VIDEO = 'video',
 }
