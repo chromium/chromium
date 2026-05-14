@@ -31,6 +31,11 @@ import java.util.concurrent.TimeUnit;
 /** Manages the scheduling of Safety Hub fetch jobs. */
 @NullMarked
 public class SafetyHubFetchService implements SigninManager.SignInStateObserver, Destroyable {
+    @FunctionalInterface
+    public interface FetchAccountCredentialsCallback {
+        void onResult(boolean needsReschedule);
+    }
+
     interface Observer {
         void accountPasswordCountsChanged();
 
@@ -195,19 +200,19 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * counts for the currently signed-in profile. `onFinishedCallback` is triggered when all calls
      * to GMSCore have returned.
      */
-    void fetchAccountCredentialsCount(Callback<Boolean> onFinishedCallback) {
+    void fetchAccountCredentialsCount(FetchAccountCredentialsCallback onFinishedCallback) {
         // TODO(crbug.com/388789824): Consider letting the fetch fail in the `PasswordFetchService`
         // instead.
         if (!checkConditionsForAccountPasswords()) {
-            onFinishedCallback.onResult(/* needsReschedule */ false);
+            onFinishedCallback.onResult(/* needsReschedule= */ false);
             cancelAccountPasswordsFetchJob();
             return;
         }
 
-        Callback<Boolean> onFinishedFetchCallback =
+        SafetyHubPasswordsFetchService.FetchPasswordsCallback onFinishedFetchCallback =
                 (errorOccurred) -> {
                     notifyAccountPasswordCountsChanged();
-                    onFinishedCallback.onResult(/* needsReschedule */ errorOccurred);
+                    onFinishedCallback.onResult(/* needsReschedule= */ errorOccurred);
                     if (!errorOccurred) {
                         scheduleNextAccountPasswordsFetchJob();
                     }
@@ -227,7 +232,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
             return;
         }
 
-        Callback<Boolean> onFinishedFetchCallback =
+        SafetyHubPasswordsFetchService.FetchPasswordsCallback onFinishedFetchCallback =
                 (errorOccurred) -> notifyLocalPasswordCountsChanged();
 
         mLocalPasswordsFetchService.fetchPasswordsCount(onFinishedFetchCallback);
@@ -246,7 +251,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
             return false;
         }
 
-        Callback<Boolean> onCheckupFinishedCallback =
+        SafetyHubPasswordsFetchService.FetchPasswordsCallback onCheckupFinishedCallback =
                 (errorOccurred) -> notifyAccountPasswordCountsChanged();
 
         return mAccountPasswordsFetchService.runPasswordCheckup(onCheckupFinishedCallback);
@@ -266,7 +271,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
             return false;
         }
 
-        Callback<Boolean> onCheckupFinishedCallback =
+        SafetyHubPasswordsFetchService.FetchPasswordsCallback onCheckupFinishedCallback =
                 (errorOccurred) -> notifyLocalPasswordCountsChanged();
 
         return mLocalPasswordsFetchService.runPasswordCheckup(onCheckupFinishedCallback);

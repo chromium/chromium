@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
-import org.chromium.base.Callback;
+import org.chromium.chrome.browser.safety_hub.SafetyHubFetchService.FetchAccountCredentialsCallback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -52,7 +52,8 @@ public class SafetyHubFetchTaskTest {
         doAnswer(
                         (Answer<Void>)
                                 invocation -> {
-                                    Callback<Boolean> callback = invocation.getArgument(0);
+                                    FetchAccountCredentialsCallback callback =
+                                            invocation.getArgument(0);
                                     callback.onResult(true);
                                     return null;
                                 })

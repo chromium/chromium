@@ -26,7 +26,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -37,6 +36,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.safety_hub.SafetyHubPasswordsFetchService.FetchPasswordsCallback;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -67,7 +67,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
-        @Mock private Callback<Boolean> mTaskFinishedCallback;
+        @Mock private FetchPasswordsCallback mTaskFinishedCallback;
 
         @Parameter(0)
         public boolean hasAccount;
@@ -124,7 +124,7 @@ public class SafetyHubPasswordsFetchServiceTest {
             verify(mPrefService, never()).setInteger(eq(getBreachedPreference()), anyInt());
             verify(mPrefService, never()).setInteger(eq(getWeakPreference()), anyInt());
             verify(mPrefService, never()).setInteger(eq(getReusedPreference()), anyInt());
-            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ true));
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ true));
         }
 
         @Test
@@ -138,7 +138,7 @@ public class SafetyHubPasswordsFetchServiceTest {
             verify(mPrefService, never()).setInteger(eq(getBreachedPreference()), anyInt());
             verify(mPrefService, never()).setInteger(eq(getWeakPreference()), anyInt());
             verify(mPrefService, never()).setInteger(eq(getReusedPreference()), anyInt());
-            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ true));
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ true));
         }
 
         @Test
@@ -158,7 +158,7 @@ public class SafetyHubPasswordsFetchServiceTest {
                     .setInteger(getBreachedPreference(), breachedCredentialsCount);
             verify(mPrefService, times(1))
                     .setInteger(getReusedPreference(), reusedCredentialsCount);
-            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ true));
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ true));
         }
 
         @Test
@@ -179,7 +179,7 @@ public class SafetyHubPasswordsFetchServiceTest {
             verify(mPrefService, times(1)).setInteger(getWeakPreference(), weakCredentialsCount);
             verify(mPrefService, times(1))
                     .setInteger(getReusedPreference(), reusedCredentialsCount);
-            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ false));
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ false));
         }
 
         @Test
@@ -281,7 +281,7 @@ public class SafetyHubPasswordsFetchServiceTest {
         @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
         @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
-        @Mock private Callback<Boolean> mTaskFinishedCallback;
+        @Mock private FetchPasswordsCallback mTaskFinishedCallback;
         @Mock private AccountManagerFacade mMockFacade;
 
         private PrefService mPrefService;

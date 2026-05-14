@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.safety_hub;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -24,6 +23,11 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 public class SafetyHubPasswordsFetchService {
     private static final long CHECKUP_COOL_DOWN_PERIOD_IN_MS =
             60 * TimeUtils.MILLISECONDS_PER_MINUTE;
+
+    @FunctionalInterface
+    public interface FetchPasswordsCallback {
+        void onResult(boolean errorOccurred);
+    }
 
     private final PrefService mPrefService;
     private final PasswordManagerHelper mPasswordManagerHelper;
@@ -70,10 +74,10 @@ public class SafetyHubPasswordsFetchService {
      * counts for `mAccount`. `onFinishedCallback` is triggered when all calls to GMSCore have
      * returned.
      */
-    public void fetchPasswordsCount(Callback<Boolean> onFinishedCallback) {
+    public void fetchPasswordsCount(FetchPasswordsCallback onFinishedCallback) {
         if (!canPerformFetch()) {
             clearPrefs();
-            onFinishedCallback.onResult(/* errorOccurred */ true);
+            onFinishedCallback.onResult(/* errorOccurred= */ true);
             return;
         }
 
@@ -104,23 +108,23 @@ public class SafetyHubPasswordsFetchService {
      * @return {@code true} if the checkup will be performed by GMSCore. Otherwise, returns {@code
      *     false}, e.g. when the last checkup results are within the cool down period.
      */
-    public boolean runPasswordCheckup(Callback<Boolean> onFinishedCallback) {
+    public boolean runPasswordCheckup(FetchPasswordsCallback onFinishedCallback) {
         if (!canPerformFetch()) {
             clearPrefs();
-            onFinishedCallback.onResult(/* errorOccurred */ true);
+            onFinishedCallback.onResult(/* errorOccurred= */ true);
             return false;
         }
 
         boolean inCoolDownPeriod = getTimeSinceLastCheckupInMs() <= CHECKUP_COOL_DOWN_PERIOD_IN_MS;
 
         if (inCoolDownPeriod) {
-            onFinishedCallback.onResult(/* errorOccurred */ false);
+            onFinishedCallback.onResult(/* errorOccurred= */ false);
             return false;
         }
 
         if (noAccountsOnDevice()) {
             clearPrefsIfCheckUpLongAgo();
-            onFinishedCallback.onResult(/* errorOccurred */ true);
+            onFinishedCallback.onResult(/* errorOccurred= */ true);
             return false;
         }
 
@@ -135,7 +139,7 @@ public class SafetyHubPasswordsFetchService {
                 },
                 error -> {
                     clearPrefsIfCheckUpLongAgo();
-                    onFinishedCallback.onResult(/* errorOccurred */ true);
+                    onFinishedCallback.onResult(/* errorOccurred= */ true);
                 });
 
         return true;
@@ -210,7 +214,7 @@ public class SafetyHubPasswordsFetchService {
     }
 
     /** Makes a call to GMSCore to fetch the latest leaked passwords count for `mAccount`. */
-    private void fetchBreachedPasswordsCount(Callback<Boolean> onFinishedCallback) {
+    private void fetchBreachedPasswordsCount(FetchPasswordsCallback onFinishedCallback) {
         mPasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 mAccount,
@@ -227,7 +231,7 @@ public class SafetyHubPasswordsFetchService {
     }
 
     /** Makes a call to GMSCore to fetch the latest weak passwords count for `mAccount`. */
-    private void fetchWeakPasswordsCount(Callback<Boolean> onFinishedCallback) {
+    private void fetchWeakPasswordsCount(FetchPasswordsCallback onFinishedCallback) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)) {
             mWeakPasswordsCountFetched = true;
             onFetchPasswordsFinished(onFinishedCallback);
@@ -250,7 +254,7 @@ public class SafetyHubPasswordsFetchService {
     }
 
     /** Makes a call to GMSCore to fetch the latest reused passwords count for `mAccount`. */
-    private void fetchReusedPasswordsCount(Callback<Boolean> onFinishedCallback) {
+    private void fetchReusedPasswordsCount(FetchPasswordsCallback onFinishedCallback) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)) {
             mReusedPasswordsCountFetched = true;
             onFetchPasswordsFinished(onFinishedCallback);
@@ -276,13 +280,13 @@ public class SafetyHubPasswordsFetchService {
      * Notifies the caller by running the `onFinishedCallback` if all passwords counts have
      * returned.
      */
-    private void onFetchPasswordsFinished(Callback<Boolean> onFinishedCallback) {
+    private void onFetchPasswordsFinished(FetchPasswordsCallback onFinishedCallback) {
         if (!mBreachedPasswordsCountFetched
                 || !mWeakPasswordsCountFetched
                 || !mReusedPasswordsCountFetched) {
             return;
         }
 
-        onFinishedCallback.onResult(/* errorOccurred */ mCredentialCountError);
+        onFinishedCallback.onResult(/* errorOccurred= */ mCredentialCountError);
     }
 }
