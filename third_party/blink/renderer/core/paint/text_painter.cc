@@ -586,13 +586,14 @@ void TextPainter::ClipDecorationLine(
       fragment_paint_info, ink_skip_cjk_handling, graphics_context_.FillFlags(),
       std::make_tuple(upper, upper + stripe_width), text_intercepts);
 
+  const float scale = fragment_paint_info.text_fit_scaling_factor;
   const float dilation =
       std::min(geometry.Thickness(), kDecorationClipMaxDilation);
   for (auto intercept : text_intercepts) {
     gfx::PointF clip_origin(text_origin_);
     gfx::RectF clip_rect(
-        clip_origin + gfx::Vector2dF(intercept.begin_, upper),
-        gfx::SizeF(intercept.end_ - intercept.begin_, stripe_width));
+        clip_origin + gfx::Vector2dF(intercept.begin_ * scale, upper),
+        gfx::SizeF((intercept.end_ - intercept.begin_) * scale, stripe_width));
     // We need to ensure the clip rectangle is covering the full underline
     // extent. For horizontal drawing, using enclosingIntRect would be
     // sufficient, since we can clamp to full device pixels that way. However,
