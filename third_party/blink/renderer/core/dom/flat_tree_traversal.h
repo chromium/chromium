@@ -129,6 +129,11 @@ class CORE_EXPORT FlatTreeTraversal {
   // false. If |other| is |node|, this function returns false.
   static bool IsDescendantOf(const Node& /*node*/, const Node& other);
 
+  // Like |IsDescendantOf|, but also returns true if |node| == |other|.
+  static bool IsInclusiveDescendantOf(const Node& node, const Node& other) {
+    return node == other || IsDescendantOf(node, other);
+  }
+
   static bool Contains(const ContainerNode& container, const Node& node) {
     AssertPrecondition(container);
     AssertPrecondition(node);

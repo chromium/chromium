@@ -120,6 +120,9 @@ class CORE_EXPORT NodeTraversal {
   static bool IsDescendantOf(const Node& node, const Node& other) {
     return node.IsDescendantOf(&other);
   }
+  static bool IsInclusiveDescendantOf(const Node& node, const Node& other) {
+    return node == other || IsDescendantOf(node, other);
+  }
   static Node* FirstChild(const Node& parent) { return parent.firstChild(); }
   static Node* LastChild(const Node& parent) { return parent.lastChild(); }
   static Node* NextSibling(const Node& node) { return node.nextSibling(); }

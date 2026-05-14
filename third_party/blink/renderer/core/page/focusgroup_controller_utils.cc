@@ -745,8 +745,7 @@ bool FocusgroupControllerUtils::ContainsFocusedElement(const Element& element) {
   if (!focused) {
     return false;
   }
-  return focused == &element ||
-         FlatTreeTraversal::IsDescendantOf(*focused, element);
+  return FlatTreeTraversal::IsInclusiveDescendantOf(*focused, element);
 }
 
 const Element*
