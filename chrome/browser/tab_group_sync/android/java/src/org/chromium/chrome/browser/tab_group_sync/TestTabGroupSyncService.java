@@ -102,6 +102,17 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     }
 
     @Override
+    public int getArchivedGroupCount() {
+        int count = 0;
+        for (SavedTabGroup group : mTabGroups) {
+            if (group.archivalTimeMs != null) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
     public void updateLocalTabGroupMapping(
             String syncId, LocalTabGroupId localId, @OpeningSource int openingSource) {}
 

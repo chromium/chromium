@@ -227,6 +227,12 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
+    public void testGetArchivedGroupCount() {
+        int count = mService.getArchivedGroupCount();
+        Assert.assertEquals(1, count);
+    }
+
+    @CalledByNative
     public void testGetDeletedGroupIds() {
         List<LocalTabGroupId> groupIds = mService.getDeletedGroupIds();
         Assert.assertEquals(1, groupIds.size());

@@ -164,6 +164,12 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
+    public int getArchivedGroupCount() {
+        if (mNativePtr == 0) return 0;
+        return TabGroupSyncServiceImplJni.get().getArchivedGroupCount(mNativePtr);
+    }
+
+    @Override
     public void updateLocalTabGroupMapping(
             String syncId, LocalTabGroupId localId, @OpeningSource int openingSource) {
         if (mNativePtr == 0) return;
@@ -377,6 +383,8 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
 
         SavedTabGroup getGroupByLocalGroupId(
                 long nativeTabGroupSyncServiceAndroid, LocalTabGroupId localGroupId);
+
+        int getArchivedGroupCount(long nativeTabGroupSyncServiceAndroid);
 
         Object[] getDeletedGroupIds(long nativeTabGroupSyncServiceAndroid);
 

@@ -88,18 +88,8 @@ public class ArchivedTabCountTracker implements Destroyable {
     }
 
     private int getArchivedTabGroupCount() {
-        int archivedTabGroupCount = 0;
-        if (mTabGroupSyncService != null) {
-            for (String syncId : mTabGroupSyncService.getAllGroupIds()) {
-                SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncId);
-
-                if (savedTabGroup != null && savedTabGroup.archivalTimeMs != null) {
-                    archivedTabGroupCount += 1;
-                }
-            }
-        }
-
-        return archivedTabGroupCount;
+        if (mTabGroupSyncService == null) return 0;
+        return mTabGroupSyncService.getArchivedGroupCount();
     }
 
     @Override

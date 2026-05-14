@@ -322,6 +322,16 @@ ScopedJavaLocalRef<jobject> TabGroupSyncServiceAndroid::GetGroupByLocalGroupId(
   return TabGroupSyncConversionsBridge::CreateGroup(env, group.value());
 }
 
+int32_t TabGroupSyncServiceAndroid::GetArchivedGroupCount(JNIEnv* env) {
+  int count = 0;
+  for (const auto* group : tab_group_sync_service_->ReadAllGroups()) {
+    if (group->archival_time().has_value()) {
+      count++;
+    }
+  }
+  return count;
+}
+
 ScopedJavaLocalRef<jobjectArray> TabGroupSyncServiceAndroid::GetDeletedGroupIds(
     JNIEnv* env) {
   auto group_ids = tab_group_sync_service_->GetDeletedGroupIds();

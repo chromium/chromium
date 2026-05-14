@@ -241,6 +241,13 @@ public interface TabGroupSyncService {
     @Nullable SavedTabGroup getGroup(LocalTabGroupId localGroupId);
 
     /**
+     * Returns the total number of archived tab groups.
+     *
+     * @return The number of archived tab groups.
+     */
+    int getArchivedGroupCount();
+
+    /**
      * Updates the in-memory mapping between sync and local tab group IDs.
      *
      * @param syncId The remote tab group ID.

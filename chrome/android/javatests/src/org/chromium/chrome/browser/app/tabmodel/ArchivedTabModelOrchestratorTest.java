@@ -133,6 +133,20 @@ public class ArchivedTabModelOrchestratorTest {
     public void setUp() throws Exception {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        when(mTabGroupSyncService.getArchivedGroupCount())
+                .thenAnswer(
+                        invocation -> {
+                            TabGroupSyncService service =
+                                    (TabGroupSyncService) invocation.getMock();
+                            int count = 0;
+                            for (String syncId : service.getAllGroupIds()) {
+                                SavedTabGroup group = service.getGroup(syncId);
+                                if (group != null && group.archivalTimeMs != null) {
+                                    count++;
+                                }
+                            }
+                            return count;
+                        });
         when(mTabGroupSyncService.getVersioningMessageController())
                 .thenReturn(mVersioningMessageController);
 

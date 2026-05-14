@@ -314,21 +314,6 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetAllGroups) {
   j_test_->testGetAllGroups(AttachCurrentThread());
 }
 
-TEST_F(TabGroupSyncServiceAndroidTest, GetGroupBySyncId) {
-  auto* env = AttachCurrentThread();
-  auto group1 = test::CreateTestSavedTabGroup();
-  base::Uuid uuid2 = base::Uuid::ParseCaseInsensitive(kTestUuid);
-
-  EXPECT_CALL(tab_group_sync_service_, GetGroup(group1.saved_guid()))
-      .WillOnce(Return(std::make_optional<SavedTabGroup>(group1)));
-  EXPECT_CALL(tab_group_sync_service_, GetGroup(uuid2))
-      .WillOnce(Return(std::nullopt));
-
-  auto j_uuid1 = UuidToJavaString(env, group1.saved_guid());
-  auto j_uuid2 = UuidToJavaString(env, uuid2);
-  j_test_->testGetGroupBySyncId(env, j_uuid1, j_uuid2);
-}
-
 TEST_F(TabGroupSyncServiceAndroidTest, GetGroupByLocalId) {
   auto* env = AttachCurrentThread();
   auto group1 = test::CreateTestSavedTabGroup();
@@ -347,6 +332,15 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetGroupByLocalId) {
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id_2)
           .As<JLocalTabGroupId>();
   j_test_->testGetGroupByLocalId(env, j_local_id_1, j_local_id_2);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, GetArchivedGroupCount) {
+  auto group = test::CreateTestSavedTabGroup();
+  group.SetArchivalTime(base::Time::Now());
+  std::vector<const SavedTabGroup*> expectedGroups = {&group};
+  EXPECT_CALL(tab_group_sync_service_, ReadAllGroups())
+      .WillOnce(Return(expectedGroups));
+  j_test_->testGetArchivedGroupCount(AttachCurrentThread());
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, GetDeletedGroupIds) {
