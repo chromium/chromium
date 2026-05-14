@@ -149,12 +149,12 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
                             content::WebContents* source_contents,
                             tabs::TabInterface* tab,
                             bool is_from_embedded_page,
-                            bool is_to_new_tab,
+                            bool from_can_create_window,
                             bool is_same_site_or_from_ui,
                             bool is_mobile_ua = false) override {
     return ContextualTasksUiService::HandleNavigationImpl(
         std::move(url_params), source_contents, tab, is_from_embedded_page,
-        is_to_new_tab, is_same_site_or_from_ui, is_mobile_ua);
+        from_can_create_window, is_same_site_or_from_ui, is_mobile_ua);
   }
 };
 
@@ -389,7 +389,7 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_ChecksCobrowse) {
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   run_loop.Run();
@@ -413,7 +413,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/false));
 
   run_loop.Run();
@@ -438,7 +438,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   run_loop.Run();
@@ -456,7 +456,8 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true,
       /*is_mobile_ua=*/true));
 }
@@ -479,7 +480,8 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(webui_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true,
       /*is_mobile_ua=*/true));
 
@@ -498,7 +500,7 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_DebugParam) {
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -520,7 +522,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -549,7 +551,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(virtual_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   run_loop.Run();
@@ -566,7 +568,7 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_NcbParam) {
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -594,7 +596,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(virtual_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   run_loop.Run();
@@ -616,7 +618,7 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
-      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
@@ -638,7 +640,7 @@ TEST_F(ContextualTasksUiServiceTest, BrowserUiNavigationFromWebUiIgnored) {
   // like back, forward, and omnibox navigation.
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -660,7 +662,7 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kTestUrl), true), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -680,7 +682,7 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kTestUrl), false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -711,7 +713,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -736,7 +738,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
@@ -754,7 +756,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
@@ -772,7 +774,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_AlreadyViewingUiInTab) {
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
@@ -790,7 +792,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kAiPageUrl), false), web_contents.get(),
-      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -818,7 +820,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -845,7 +847,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_BrowserSignedOut) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -879,7 +881,7 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
-      /*is_to_new_tab=*/false, /*is_same_site_or_from_ui=*/true));
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
 
@@ -909,7 +911,7 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
-      /*is_to_new_tab=*/false, /*is_same_site_or_from_ui=*/true));
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -940,7 +942,7 @@ TEST_F(ContextualTasksUiServiceTest, AllowedHostNavigation_ViewedInTab) {
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
-      /*is_to_new_tab=*/false, /*is_same_site_or_from_ui=*/true));
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -948,12 +950,8 @@ TEST_F(ContextualTasksUiServiceTest, AllowedHostNavigation_ViewedInTab) {
   run_loop.Run();
 }
 
-// If navigation to an allowed host is explicitly to a new tab (e.g.
-// target="_blank"), it should be treated as a thread link instead of navigating
-// the same tab.
-TEST_F(ContextualTasksUiServiceTest,
-       AllowedHostNavigation_ToNewTab_InterceptedAsThreadLink) {
-  GURL navigated_url("https://google.com");
+TEST_F(ContextualTasksUiServiceTest, Navigation_ToNewTab_Allowed) {
+  GURL navigated_url("https://example.com");
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
   ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
@@ -966,15 +964,20 @@ TEST_F(ContextualTasksUiServiceTest,
   tabs::MockTabInterface tab;
   ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _))
-      .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNonThreadNavigationInTab(_, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
-  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
-      CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
+
+  content::Referrer referrer;
+  content::OpenURLParams params(navigated_url, referrer,
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true);
+  EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
+      std::move(params), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
-      /*is_to_new_tab=*/true, /*is_same_site_or_from_ui=*/true));
+      /*from_can_create_window=*/true,
+      /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1006,7 +1009,7 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInTab) {
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
-      /*is_to_new_tab=*/false, /*is_same_site_or_from_ui=*/true));
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1037,7 +1040,7 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
       /*is_from_embedded_page=*/true,
-      /*is_to_new_tab=*/false, /*is_same_site_or_from_ui=*/true));
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
 
@@ -1067,7 +1070,7 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
       /*is_from_embedded_page=*/true,
-      /*is_to_new_tab=*/false, /*is_same_site_or_from_ui=*/true));
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
 
@@ -1252,7 +1255,7 @@ TEST_F(ContextualTasksUiServiceTest, SrpHomepage_Intercepted) {
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
-      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
@@ -1273,7 +1276,8 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepage_InTab_NotIntercepted) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(nav_url, false), web_contents.get(), &tab,
-      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -1300,7 +1304,7 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepage_InSidePanel_Intercepted) {
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
-      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
@@ -1325,7 +1329,7 @@ TEST_F(ContextualTasksUiServiceTest, SrpShoppingMode_InSidePanel_Intercepted) {
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
-      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
@@ -1345,7 +1349,8 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepageThinking_InTab_NotIntercepted) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(nav_url, false), web_contents.get(), &tab,
-      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -1373,7 +1378,7 @@ TEST_F(ContextualTasksUiServiceTest,
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
-      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
@@ -1397,7 +1402,7 @@ TEST_F(ContextualTasksUiServiceTest, LensQuery_Intercepted) {
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
       /*is_from_embedded_page=*/true,
-      /*is_to_new_tab=*/false, /*is_same_site_or_from_ui=*/true));
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
 
@@ -1480,7 +1485,7 @@ TEST_F(ContextualTasksUiServiceTest, ShareUrl_FromEmbeddedPage_Intercepted) {
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
-      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
@@ -1562,7 +1567,7 @@ TEST_F(ContextualTasksUiServiceTest, SignOutNavigation_OpenedInTab) {
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
-      /*is_to_new_tab=*/false, /*is_same_site_or_from_ui=*/true));
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true));
   run_loop.Run();
 }
 
@@ -1627,7 +1632,7 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   // Simulate navigation to the virtual URL.
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(display_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;
@@ -1657,7 +1662,7 @@ TEST_F(ContextualTasksUiServiceTest,
               ui::PageTransition::PAGE_TRANSITION_LINK |
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
       web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   run_loop.Run();
@@ -1680,7 +1685,7 @@ TEST_F(ContextualTasksUiServiceTest,
               ui::PageTransition::PAGE_TRANSITION_TYPED |
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
       web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 }
 
@@ -1753,7 +1758,8 @@ TEST_F(ContextualTasksUiServiceTest,
               ui::PageTransition::PAGE_TRANSITION_LINK |
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
       tab->GetContents(), tab,
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true));
 
   base::RunLoop run_loop;

@@ -4498,8 +4498,9 @@ bool ChromeContentBrowserClient::CanCreateWindow(
         contextual_tasks_ui_service->HandleNavigation(
             std::move(url_params), responsible_web_contents,
             is_from_embedded_page,
-            /*is_to_new_tab=*/true,
-            /*is_same_site_or_from_ui=*/is_same_site_or_from_ui)) {
+            /*from_can_create_window=*/true,
+            /*is_same_site_or_from_ui=*/true,
+            /*is_mobile_ua=*/is_same_site_or_from_ui)) {
       return false;
     }
   }
