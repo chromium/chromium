@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -125,34 +126,58 @@ void SetupCrashpadDirectories() {
 }  // namespace
 
 base::FilePath GetCrashpadDatabasePath() {
+  static const base::NoDestructor<base::FilePath> database_path([]() {
 #if BUILDFLAG(IS_WIN)
-  base::FilePath database_path;
-  base::PathService::Get(base::BasePathKey::DIR_ASSETS, &database_path);
-  return database_path.Append(kChromotingCrashpadDatabasePath);
+    base::FilePath path;
+    base::PathService::Get(base::BasePathKey::DIR_ASSETS, &path);
+    return path.Append(kChromotingCrashpadDatabasePath);
 #elif BUILDFLAG(IS_LINUX)
-  if (getuid() == 0) {
-    return GetDaemonProcessCrashpadDatabasePath();
-  }
-  std::string username = GetUsername();
-  if (username == GetNetworkProcessUsername()) {
-    return GetNetworkProcessCrashpadDatabasePath();
-  }
-  std::optional<std::string> xdg_runtime_dir =
-      base::Environment::Create()->GetVar("XDG_RUNTIME_DIR");
-  if (!xdg_runtime_dir.has_value() || xdg_runtime_dir->empty()) {
-    // $XDG_RUNTIME_DIR may not be available yet on the desktop process (since
-    // it is loaded from systemd in DesktopProcessMain()), but for modern Linux
-    // systems using systemd, it is always /run/user/<uid>.
-    // TODO: crbug.com/475611769 - Make DesktopProcessMain() execve() itself so
-    // that the environment variable is available here.
-    xdg_runtime_dir = base::StringPrintf("/run/user/%u", getuid());
-  }
-  CHECK(base::DirectoryExists(base::FilePath(*xdg_runtime_dir)))
-      << "XDG_RUNTIME_DIR does not exist: " << *xdg_runtime_dir;
-  return base::FilePath(*xdg_runtime_dir).Append("crd_crashpad");
+    if (getuid() == 0) {
+      return GetDaemonProcessCrashpadDatabasePath();
+    }
+    std::string username = GetUsername();
+    if (username == GetNetworkProcessUsername()) {
+      return GetNetworkProcessCrashpadDatabasePath();
+    }
+    std::optional<std::string> xdg_runtime_dir =
+        base::Environment::Create()->GetVar("XDG_RUNTIME_DIR");
+    if (!xdg_runtime_dir.has_value() || xdg_runtime_dir->empty()) {
+      // $XDG_RUNTIME_DIR may not be available yet on the desktop process (since
+      // it is loaded from systemd in DesktopProcessMain()), but for modern
+      // Linux systems using systemd, it is always /run/user/<uid>.
+      // TODO: crbug.com/475611769 - Make DesktopProcessMain() execve() itself
+      // so that the environment variable is available here.
+      xdg_runtime_dir = base::StringPrintf("/run/user/%u", getuid());
+    }
+    base::FilePath xdg_runtime_dir_path(*xdg_runtime_dir);
+    if (base::DirectoryExists(xdg_runtime_dir_path)) {
+      return xdg_runtime_dir_path.Append("crd_crashpad");
+    }
+
+    // Fallback to a unique secure temporary directory if XDG_RUNTIME_DIR is
+    // missing. This is critical to support the early start-host flow before the
+    // user has logged in. Note: Utilizing a dynamic temporary directory per
+    // process session breaks crash report persistence across process restarts,
+    // preventing uploads of previous unhandled crashes. This is an accepted
+    // trade-off to eliminate multi-user collision DoS risks and ensure absolute
+    // protection against CWE-377 pre-creation symlink traversal attacks in
+    // shared /tmp.
+    base::FilePath temp_dir;
+    if (base::GetTempDir(&temp_dir)) {
+      base::FilePath unique_temp_dir;
+      if (base::CreateTemporaryDirInDir(
+              temp_dir, /*prefix=*/FILE_PATH_LITERAL("crd_crashpad."),
+              &unique_temp_dir)) {
+        return unique_temp_dir;
+      }
+    }
+
+    return base::FilePath();
 #else
-  return GetConfigDir().Append(kChromotingCrashpadDatabasePath);
+    return GetConfigDir().Append(kChromotingCrashpadDatabasePath);
 #endif
+  }());
+  return *database_path;
 }
 
 CrashpadDatabaseManager::CrashpadDatabaseManager(Logger& logger)
@@ -282,8 +307,8 @@ void CrashpadDatabaseManager::LogCrashReportInfo(
   logger_->Log("    path: " + report.file_path.value());
 #endif
   logger_->Log("    uuid: " + report.uuid.ToString());
-  logger_->Log("    created: " +
-               TimeFormatHTTP(base::Time::FromTimeT(report.creation_time)));
+  logger_->Log("    created: " + base::TimeFormatHTTP(base::Time::FromTimeT(
+                                     report.creation_time)));
   std::string uploaded = report.uploaded ? "yes" : "no";
   logger_->Log("    uploaded: " + uploaded + " (attempts: " +
                base::NumberToString(report.upload_attempts) + ")");
@@ -372,7 +397,7 @@ bool CrashpadDatabaseManager::CleanupCrashReports(
       }
       // We need to log |uuid| here because only uploaded reports have an |id|.
       logger_->Log("  Deleting crash report: " + report.uuid.ToString() + " (" +
-                   TimeFormatHTTP(created) + ")");
+                   base::TimeFormatHTTP(created) + ")");
       auto status = database_->DeleteReport(report.uuid);
       if (status != crashpad::CrashReportDatabase::OperationStatus::kNoError) {
         logger_->LogError("  Unable to delete old crash report: " +
