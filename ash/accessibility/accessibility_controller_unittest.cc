@@ -1356,6 +1356,16 @@ TEST_F(AccessibilityControllerTest, DisableLargeCursorDoesNotResetSize) {
             48);
 }
 
+TEST_F(AccessibilityControllerTest, CursorColorIsBlackInitially) {
+  EXPECT_EQ(0, prefs()->GetInteger(prefs::kAccessibilityCursorColor));
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kAccessibilityCursorColorEnabled));
+
+  CursorWindowController* cursor_window_controller =
+      Shell::Get()->window_tree_host_manager()->cursor_window_controller();
+  EXPECT_EQ(ui::kDefaultCursorColor,
+            cursor_window_controller->GetCursorColorForTest());
+}
+
 TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
   // Simulate using chrome settings webui to set cursor color, which also turns
   // on the cursor color enabled pref.

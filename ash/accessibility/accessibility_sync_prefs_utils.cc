@@ -58,9 +58,11 @@ std::vector<AccessibilityPrefBatchEntry> GetSyncableAccessibilityPrefsBatch1() {
   // Cursor color.
   v.emplace_back(prefs::kAccessibilityCursorColorEnabled, base::Value(false),
                  ConflictResolutionPolicy::kNone, registration_flags);
-  v.emplace_back(prefs::kAccessibilityCursorColor,
-                 base::Value(static_cast<int>(ui::kDefaultCursorColor)),
-                 ConflictResolutionPolicy::kNone, registration_flags);
+  // Cursor colors are stored as RGB, not ARGB.
+  v.emplace_back(
+      prefs::kAccessibilityCursorColor,
+      base::Value(static_cast<int>(ui::kDefaultCursorColor & 0x00FFFFFF)),
+      ConflictResolutionPolicy::kNone, registration_flags);
 
   // Large cursor.
   v.emplace_back(prefs::kAccessibilityLargeCursorEnabled, base::Value(false),

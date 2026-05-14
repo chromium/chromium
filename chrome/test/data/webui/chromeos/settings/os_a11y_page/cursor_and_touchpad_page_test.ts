@@ -105,7 +105,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     return disableInternalTouchpadSelectElement;
   }
 
-  test('cursor color prefs and dropdown synced', async () => {
+  test('cursor color default black and prefs and dropdown synced', async () => {
     await initPage();
 
     // Make sure cursor color dropdown is black, matching default pref state.
@@ -118,7 +118,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         cursorColorDropdown.shadowRoot!.querySelector('select');
     assert(cursorColorSelectElement);
     assertEquals(
-        'SETTINGS_DROPDOWN_NOT_FOUND_ITEM', cursorColorSelectElement.value);
+        String(DEFAULT_BLACK_CURSOR_COLOR), cursorColorSelectElement.value);
 
     // Turn cursor color to red, and verify pref is also red.
     cursorColorSelectElement.value = String(RED_CURSOR_COLOR);
