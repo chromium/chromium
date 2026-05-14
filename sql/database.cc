@@ -2535,11 +2535,8 @@ void Database::DoRollback() {
 
   rollback.Run();
 
-  // The cache may have been accumulating dirty pages for commit.  Note that in
-  // some cases sql::Transaction can fire rollback after a database is closed.
-  if (is_open()) {
-    ReleaseCacheMemoryIfNeeded(false);
-  }
+  // The cache may have been accumulating dirty pages for commit.
+  ReleaseCacheMemoryIfNeeded(false);
 
   needs_rollback_ = false;
 }

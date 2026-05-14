@@ -84,6 +84,7 @@ static_library("test_support") {
   sources = [
     "test/drive_error_test_vfs.cc",
     "test/drive_error_test_vfs.h",
+    "test/matchers.h",
     "test/scoped_error_expecter.cc",
     "test/scoped_error_expecter.h",
     "test/test_helpers.cc",
@@ -95,6 +96,7 @@ static_library("test_support") {
   public_deps = [ ":sql" ]
   deps = [
     "//base",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/sqlite",
   ]

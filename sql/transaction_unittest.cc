@@ -4,8 +4,11 @@
 
 #include "sql/transaction.h"
 
+#include <stdint.h>
+
 #include <memory>
 
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -14,6 +17,7 @@
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
 #include "sql/test/drive_error_test_vfs.h"
+#include "sql/test/matchers.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +26,11 @@ namespace sql {
 
 namespace {
 
+using ::sql::test::PrimaryErrorIs;
+using ::testing::Bool;
 using ::testing::Contains;
+using ::testing::TestParamInfo;
+using ::testing::WithParamInterface;
 
 class SQLTransactionTest : public testing::Test {
  public:
@@ -37,6 +45,20 @@ class SQLTransactionTest : public testing::Test {
 };
 
 using SQLTransactionDeathTest = SQLTransactionTest;
+
+class SQLTransactionJournalTypeTest : public SQLTransactionTest,
+                                      public WithParamInterface<bool> {
+ protected:
+  static bool WalModeEnabled() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SQLTransactionJournalTypeTest,
+    Bool(),
+    [](const TestParamInfo<SQLTransactionJournalTypeTest::ParamType>& info) {
+      return info.param ? "WALEnabled" : "WALDisabled";
+    });
 
 // Returns the number of rows in table "foo".
 int CountFoo(Database& db) {
@@ -546,6 +568,63 @@ TEST_F(SQLTransactionTest, CloseDbInTransactionCommitErrorCallback) {
   EXPECT_FALSE(transaction.Commit());
   EXPECT_THAT(test_vfs.errors_produced(), Contains(SqliteErrorCode::kFullDisk));
   ASSERT_FALSE(db.is_open());
+}
+
+int64_t GetJournalSize(const base::FilePath& db_path, bool is_wal_mode) {
+  base::FilePath journal_path = is_wal_mode
+                                    ? Database::WriteAheadLogPath(db_path)
+                                    : Database::JournalPath(db_path);
+  return base::GetFileSize(journal_path).value_or(0);
+}
+
+TEST_P(SQLTransactionJournalTypeTest, TransactionRollbackDiskUnusable) {
+  test::DriveErrorTestVfs test_vfs;
+  Database db(
+      DatabaseOptions().set_cache_size(1).set_wal_mode(WalModeEnabled()),
+      test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+
+  db.set_error_callback(base::BindLambdaForTesting(
+      [&](int sqlite_error, sql::Statement* statement) {
+        FAIL() << "Error callback should not have been called";
+      }));
+
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(key, value)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(key, value) VALUES(1, 'original')"));
+
+  Transaction transaction(&db);
+  ASSERT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db.Execute("UPDATE rows SET value = 'modified' WHERE key = 1"));
+
+  // Write more rows until the memory cache is full and SQLite is forced to
+  // write to the journal file.
+  const int64_t start_journal_size = GetJournalSize(db_path_, WalModeEnabled());
+  while (GetJournalSize(db_path_, WalModeEnabled()) == start_journal_size) {
+    ASSERT_TRUE(db.Execute("INSERT INTO rows(key, value) VALUES(42, 'foo')"));
+  }
+
+  // Make the drive unusable, causing file operations to fail with SQLITE_IOERR.
+  // If WAL mode is disabled, the rollback will fail because the journal file
+  // cannot be read to restore the main database file. If WAL mode is enabled,
+  // SQLite just rewind the WAL file leaving the rolled-back data there. No file
+  // IO usually happens. But since lots of data was written in the transaction,
+  // the database page 1 had to be modified to keep track of the new pages
+  // created. The rollback therefore needs to restore page 1 to its original
+  // state. It does so by reading it from the main database file. If this fails
+  // on an SQLITE_IOERR, the rollback aborts.
+  test_vfs.set_drive_unusable(true);
+  transaction.Rollback();
+  test_vfs.set_drive_unusable(false);
+  EXPECT_THAT(test_vfs.errors_produced(),
+              Contains(PrimaryErrorIs(SqliteErrorCode::kIo)));
+
+  // The rollback failed, leaving behind a hot journal. But the database is
+  // still valid. The next time the database is used, the hot journal will be
+  // used to restore the database.
+  Statement select(
+      db.GetUniqueStatement("SELECT value FROM rows WHERE key = 1"));
+  ASSERT_TRUE(select.Step());
+  EXPECT_EQ(select.ColumnString(0), "original");
 }
 
 }  // namespace
