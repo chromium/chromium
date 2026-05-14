@@ -54,17 +54,13 @@ WrappingURLLoaderThrottleProvider::CreateThrottles(
   if (!local_frame_token.has_value()) {
     return throttles;
   }
-  auto* provider =
-      client_->GetUrlRewriteRulesProvider(local_frame_token.value());
-  if (provider) {
-    auto rules = provider->GetCachedRules();
-    if (rules) {
-      throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
-          rules,
-          base::BindRepeating(
-              &WrappingURLLoaderThrottleProvider::Client::IsCorsExemptHeader,
-              base::Unretained(client_))));
-    }
+  auto rules = client_->GetUrlRequestRewriteRules(local_frame_token.value());
+  if (rules) {
+    throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
+        rules,
+        base::BindRepeating(
+            &WrappingURLLoaderThrottleProvider::Client::IsCorsExemptHeader,
+            base::Unretained(client_))));
   }
 
   return throttles;

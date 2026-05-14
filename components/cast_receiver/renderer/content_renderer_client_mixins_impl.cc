@@ -39,12 +39,15 @@ void ContentRendererClientMixinsImpl::RenderFrameCreated(
   new media_control::MediaPlaybackOptions(&render_frame);
 
   // Create the new UrlRewriteRulesProvider.
-  url_rewrite_rules_providers_.emplace(
-      render_frame.GetWebFrame()->GetLocalFrameToken(),
-      std::make_unique<UrlRewriteRulesProvider>(
-          &render_frame,
-          base::BindOnce(&ContentRendererClientMixinsImpl::OnRenderFrameRemoved,
-                         weak_factory_.GetWeakPtr())));
+  auto provider = std::make_unique<UrlRewriteRulesProvider>(
+      &render_frame,
+      base::BindOnce(&ContentRendererClientMixinsImpl::OnRenderFrameRemoved,
+                     weak_factory_.GetWeakPtr()));
+  {
+    base::AutoLock lock(url_rewrite_rules_providers_lock_);
+    url_rewrite_rules_providers_.emplace(
+        render_frame.GetWebFrame()->GetLocalFrameToken(), std::move(provider));
+  }
 }
 
 bool ContentRendererClientMixinsImpl::DeferMediaLoad(
@@ -79,21 +82,29 @@ ContentRendererClientMixinsImpl::ExtendURLLoaderThrottleProvider(
 
 void ContentRendererClientMixinsImpl::OnRenderFrameRemoved(
     const blink::LocalFrameToken& frame_token) {
-  size_t result = url_rewrite_rules_providers_.erase(frame_token);
-  if (result != 1U) {
-    LOG(WARNING)
-        << "Can't find the URL rewrite rules provider for render frame: "
-        << frame_token;
+  std::unique_ptr<UrlRewriteRulesProvider> provider_to_delete;
+  {
+    base::AutoLock lock(url_rewrite_rules_providers_lock_);
+    auto it = url_rewrite_rules_providers_.find(frame_token);
+    if (it != url_rewrite_rules_providers_.end()) {
+      provider_to_delete = std::move(it->second);
+      url_rewrite_rules_providers_.erase(it);
+    } else {
+      LOG(WARNING)
+          << "Can't find the URL rewrite rules provider for render frame: "
+          << frame_token;
+    }
   }
 }
 
-UrlRewriteRulesProvider*
-ContentRendererClientMixinsImpl::GetUrlRewriteRulesProvider(
+scoped_refptr<url_rewrite::UrlRequestRewriteRules>
+ContentRendererClientMixinsImpl::GetUrlRequestRewriteRules(
     const blink::LocalFrameToken& frame_token) {
+  base::AutoLock lock(url_rewrite_rules_providers_lock_);
   auto rules_it = url_rewrite_rules_providers_.find(frame_token);
   return rules_it == url_rewrite_rules_providers_.end()
              ? nullptr
-             : rules_it->second.get();
+             : rules_it->second->GetCachedRules();
 }
 
 bool ContentRendererClientMixinsImpl::IsCorsExemptHeader(

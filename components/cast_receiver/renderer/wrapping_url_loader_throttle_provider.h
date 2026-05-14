@@ -12,7 +12,9 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 
 namespace network {
@@ -21,7 +23,6 @@ struct ResourceRequest;
 
 namespace cast_receiver {
 
-class UrlRewriteRulesProvider;
 
 class WrappingURLLoaderThrottleProvider
     : public blink::URLLoaderThrottleProvider {
@@ -31,10 +32,10 @@ class WrappingURLLoaderThrottleProvider
    public:
     virtual ~Client();
 
-    // Returns the UrlRewriteRulesProvider associated with RenderFrame with id
-    // `frame_token`, or nullptr if no such provider exists.
-    virtual UrlRewriteRulesProvider* GetUrlRewriteRulesProvider(
-        const blink::LocalFrameToken& frame_token) = 0;
+    // Returns the UrlRequestRewriteRules associated with RenderFrame with id
+    // `frame_token`, or nullptr if no such rules exist.
+    virtual scoped_refptr<url_rewrite::UrlRequestRewriteRules>
+    GetUrlRequestRewriteRules(const blink::LocalFrameToken& frame_token) = 0;
 
     // Returns whether |header| is a cors exempt header.
     virtual bool IsCorsExemptHeader(std::string_view header) = 0;

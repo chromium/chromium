@@ -10,9 +10,13 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "components/cast_receiver/renderer/public/content_renderer_client_mixins.h"
 #include "components/cast_receiver/renderer/wrapping_url_loader_throttle_provider.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 
 namespace blink {
 class URLLoaderThrottleProvider;
@@ -62,15 +66,17 @@ class ContentRendererClientMixinsImpl
   void OnRenderFrameRemoved(const blink::LocalFrameToken& frame_token);
 
   // WrappingURLLoaderThrottleProvider::Client implementation.
-  UrlRewriteRulesProvider* GetUrlRewriteRulesProvider(
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules> GetUrlRequestRewriteRules(
       const blink::LocalFrameToken& frame_token) override;
   bool IsCorsExemptHeader(std::string_view header) override;
 
   IsCorsExemptHeadersCallback is_cors_exempt_header_callback_;
 
+  base::Lock url_rewrite_rules_providers_lock_;
   base::flat_map<blink::LocalFrameToken /* frame_token */,
                  std::unique_ptr<UrlRewriteRulesProvider>>
-      url_rewrite_rules_providers_;
+      url_rewrite_rules_providers_
+          GUARDED_BY(url_rewrite_rules_providers_lock_);
 
   base::WeakPtrFactory<ContentRendererClientMixinsImpl> weak_factory_{this};
 };
