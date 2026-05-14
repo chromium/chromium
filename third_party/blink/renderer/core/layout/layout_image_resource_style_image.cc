@@ -47,8 +47,7 @@ LayoutImageResourceStyleImage::~LayoutImageResourceStyleImage() {
 void LayoutImageResourceStyleImage::Initialize(LayoutObject* layout_object) {
   LayoutImageResource::Initialize(layout_object);
 
-  if (style_image_->IsImageResource())
-    cached_image_ = To<StyleFetchedImage>(style_image_.Get())->CachedImage();
+  cached_image_ = style_image_->CachedImage();
 
   style_image_->AddClient(layout_object_);
 }
