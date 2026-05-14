@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/js_messaging/script_message_value_util.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/js_messaging/script_message_dict_value.h"
 #import "ios/web/public/js_messaging/script_message_value.h"
@@ -54,7 +55,8 @@ std::unique_ptr<ScriptMessageValue> ScriptMessageDictValue::Find(
   if (element == nil) {
     return nullptr;
   }
-  return std::make_unique<ScriptMessageValue>(element);
+
+  return CreateScriptMessageValue(element);
 }
 
 std::optional<bool> ScriptMessageDictValue::FindBool(
