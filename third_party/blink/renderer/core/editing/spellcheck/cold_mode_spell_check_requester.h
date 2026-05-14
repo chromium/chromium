@@ -51,6 +51,12 @@ class ColdModeSpellCheckRequester
     fully_checked_root_editables_.erase(&element);
   }
 
+  // Drops the cache of editables that have been fully spell-checked, so the
+  // next cold-mode pass re-visits every editable root from scratch. Use after
+  // a spellcheck custom dictionary change so newly misspelled words get marked
+  // even on editables that the user has not touched.
+  void InvalidateFullyCheckedRoots() { fully_checked_root_editables_.clear(); }
+
   void ElementRemoved(Element* element);
 
   void Trace(Visitor*) const;
