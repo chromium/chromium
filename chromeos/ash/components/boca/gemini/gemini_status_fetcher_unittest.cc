@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -51,7 +52,9 @@ TEST_F(GeminiStatusFetcherTest, GetStatusReturnsSuccessResponse) {
       url_loader_factory_.GetSafeWeakWrapper(), &pref_service_);
 
   url_loader_factory_.AddResponse(
-      kFullUrl, R"({"status": "ENABLEMENT_STATUS_DISABLED"})");
+      kFullUrl,
+      base::ReplaceStringPlaceholders(kGeminiStatusFetchResponseTemplate,
+                                      {kGeminiStateDisabled}, nullptr));
   fetcher->GetStatus(future.GetCallback());
 
   EXPECT_FALSE(future.Get());
@@ -65,8 +68,10 @@ TEST_F(GeminiStatusFetcherTest, ConcurrentGetStatusQueuesCallbacks) {
       kTestGaiaId, identity_test_env_.identity_manager(),
       url_loader_factory_.GetSafeWeakWrapper(), &pref_service_);
 
-  url_loader_factory_.AddResponse(kFullUrl,
-                                  R"({"status": "ENABLEMENT_STATUS_ENABLED"})");
+  url_loader_factory_.AddResponse(
+      kFullUrl,
+      base::ReplaceStringPlaceholders(kGeminiStatusFetchResponseTemplate,
+                                      {kGeminiStateEnabled}, nullptr));
   fetcher->GetStatus(future1.GetCallback());
   fetcher->GetStatus(future2.GetCallback());
 

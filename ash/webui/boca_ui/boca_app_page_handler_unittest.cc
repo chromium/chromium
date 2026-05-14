@@ -3999,7 +3999,8 @@ TEST_F(BocaAppPageHandlerProducerTest, GetGeminiStatusSuccessWhenFetcherValid) {
       "https://schooltools-pa.googleapis.com/v1/users/$1:getGeminiStatus",
       {kGaiaId.ToString()}, nullptr);
   test_url_loader_factory.AddResponse(
-      url, R"({"status": "ENABLEMENT_STATUS_DISABLED"})");
+      url, base::ReplaceStringPlaceholders(kGeminiStatusFetchResponseTemplate,
+                                           {kGeminiStateDisabled}, nullptr));
 
   base::test::TestFuture<bool> future;
   handler->GetGeminiStatus(future.GetCallback());

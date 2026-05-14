@@ -99,9 +99,12 @@ inline constexpr char kStudentStatus[] = "studentStatuses";
 inline constexpr char kStudentStatusState[] = "state";
 inline constexpr char kDeviceStatusState[] = "state";
 inline constexpr char kReceiverConnectionState[] = "receiverConnectionState";
-inline constexpr char kGeminiStatus[] = "status";
-inline constexpr char kGeminiEnabled[] = "ENABLEMENT_STATUS_ENABLED";
-inline constexpr char kGeminiDisabled[] = "ENABLEMENT_STATUS_DISABLED";
+inline constexpr char kGeminiEnablementState[] = "geminiEnablementState";
+inline constexpr char kGeminiStateEnabled[] = "GEMINI_ENABLEMENT_STATE_ENABLED";
+inline constexpr char kGeminiStateDisabled[] =
+    "GEMINI_ENABLEMENT_STATE_DISABLED";
+inline constexpr char kGeminiStatusFetchResponseTemplate[] =
+    R"({"geminiEnablementState": "$1"})";
 inline constexpr char kUrl[] = "url";
 inline constexpr char kTitle[] = "title";
 inline constexpr char kFavIcon[] = "faviconUrl";

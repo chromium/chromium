@@ -45,10 +45,10 @@ void GetGeminiStatusRequest::OnSuccess(std::unique_ptr<base::Value> response) {
     return;
   }
 
-  const auto* status_ptr = response_dict->FindString(kGeminiStatus);
-  if (status_ptr &&
-      (*status_ptr == kGeminiEnabled || *status_ptr == kGeminiDisabled)) {
-    std::move(callback_).Run(*status_ptr == kGeminiEnabled);
+  const auto* status_ptr = response_dict->FindString(kGeminiEnablementState);
+  if (status_ptr && (*status_ptr == kGeminiStateEnabled ||
+                     *status_ptr == kGeminiStateDisabled)) {
+    std::move(callback_).Run(*status_ptr == kGeminiStateEnabled);
     return;
   }
   std::move(callback_).Run(std::nullopt);

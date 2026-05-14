@@ -42,7 +42,7 @@ TEST(GetGeminiStatusRequestTest, OnSuccessEnabled) {
                        }));
 
   base::DictValue response_dict;
-  response_dict.Set(kGeminiStatus, kGeminiEnabled);
+  response_dict.Set(kGeminiEnablementState, kGeminiStateEnabled);
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 
   ASSERT_TRUE(callback_result.has_value());
@@ -58,7 +58,7 @@ TEST(GetGeminiStatusRequestTest, OnSuccessDisabled) {
                        }));
 
   base::DictValue response_dict;
-  response_dict.Set(kGeminiStatus, kGeminiDisabled);
+  response_dict.Set(kGeminiEnablementState, kGeminiStateDisabled);
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 
   ASSERT_TRUE(callback_result.has_value());
@@ -74,7 +74,7 @@ TEST(GetGeminiStatusRequestTest, OnSuccessInvalidValue) {
                        }));
 
   base::DictValue response_dict;
-  response_dict.Set(kGeminiStatus, "INVALID_STATUS_VALUE");
+  response_dict.Set(kGeminiEnablementState, "INVALID_STATUS_VALUE");
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 
   EXPECT_FALSE(callback_result.has_value());
