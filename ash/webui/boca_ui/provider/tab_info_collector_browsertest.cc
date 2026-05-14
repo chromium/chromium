@@ -79,8 +79,7 @@ class TabInfoCollectorConsumerTest : public TabInfoCollectorTest {
         {ash::features::kBoca, ash::features::kBocaConsumer,
          ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
-    tab_info_collector_ =
-        std::make_unique<TabInfoCollector>(/*is_producer=*/false);
+    tab_info_collector_ = TabInfoCollector::Create(/*is_producer=*/false);
     TabInfoCollectorTest::SetUp();
   }
 };
@@ -90,8 +89,7 @@ class TabInfoCollectorProducerTest : public TabInfoCollectorTest {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kBoca, ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
-    tab_info_collector_ = std::make_unique<TabInfoCollector>(
-        /*is_producer=*/true);
+    tab_info_collector_ = TabInfoCollector::Create(/*is_producer=*/true);
     TabInfoCollectorTest::SetUp();
   }
 };

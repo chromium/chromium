@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_ui/boca_app_page_handler.h"
 #include "ash/webui/boca_ui/boca_util.h"
+#include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
@@ -132,7 +133,8 @@ void BocaUI::Create(
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
       std::move(page_handler), std::move(page), web_ui(),
       std::make_unique<ClassroomPageHandlerImpl>(),
-      std::move(content_settings_handler), system_web_app_manager,
+      std::move(content_settings_handler),
+      TabInfoCollector::Create(web_ui(), is_producer_), system_web_app_manager,
       BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
       boca_manager->GetGeminiStatusFetcher(), is_producer_);
   page_handler_impl_->SetSpotlightService(&spotlight_service_);

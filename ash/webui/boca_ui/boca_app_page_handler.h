@@ -56,6 +56,7 @@ class BocaAppHandler : public mojom::PageHandler,
       content::WebUI* webui,
       std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
       std::unique_ptr<ContentSettingsHandler> content_settings_handler,
+      std::unique_ptr<TabInfoCollector> tab_info_collector,
       OnTaskSystemWebAppManager* system_web_app_manager,
       SessionClientImpl* session_client_impl,
       std::unique_ptr<GeminiStatusFetcher> gemini_status_fetcher,
@@ -295,7 +296,7 @@ class BocaAppHandler : public mojom::PageHandler,
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
   std::string base_url_;
-  TabInfoCollector tab_info_collector_;
+  const std::unique_ptr<TabInfoCollector> tab_info_collector_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
   const std::unique_ptr<ContentSettingsHandler> content_settings_handler_;
   // Update session requests should run in sequence to avoid race conditions

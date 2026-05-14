@@ -326,16 +326,17 @@ bool IsValidReceiverId(const std::string& receiver_id) {
 
 BocaAppHandler::BocaAppHandler(
     mojo::PendingReceiver<boca::mojom::PageHandler> receiver,
-    mojo::PendingRemote<boca::mojom::Page> remote,
+    mojo::PendingRemote<mojom::Page> remote,
     content::WebUI* web_ui,
     std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
     std::unique_ptr<ContentSettingsHandler> content_settings_handler,
+    std::unique_ptr<TabInfoCollector> tab_info_collector,
     OnTaskSystemWebAppManager* system_web_app_manager,
     SessionClientImpl* session_client_impl,
     std::unique_ptr<GeminiStatusFetcher> gemini_status_fetcher,
     bool is_producer)
     : is_producer_(is_producer),
-      tab_info_collector_(web_ui, is_producer),
+      tab_info_collector_(std::move(tab_info_collector)),
       class_room_page_handler_(std::move(classroom_client_impl)),
       content_settings_handler_(std::move(content_settings_handler)),
       receiver_(this, std::move(receiver)),
@@ -391,7 +392,7 @@ void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {
 }
 
 std::vector<mojom::WindowPtr> BocaAppHandler::GetWindowTabInfoSync() {
-  return tab_info_collector_.GetWindowTabInfo();
+  return tab_info_collector_->GetWindowTabInfo();
 }
 
 void BocaAppHandler::ListCourses(ListCoursesCallback callback) {

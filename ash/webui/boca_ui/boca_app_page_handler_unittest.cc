@@ -22,6 +22,7 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/content_settings_handler.h"
+#include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -539,6 +540,7 @@ class TestBocaAppHandler : public BocaAppHandler {
       content::WebUI* webui,
       std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
       std::unique_ptr<ContentSettingsHandler> content_settings_handler,
+      std::unique_ptr<TabInfoCollector> tab_info_collector,
       OnTaskSystemWebAppManager* system_web_app_manager,
       SessionClientImpl* session_client_impl,
       std::unique_ptr<GeminiStatusFetcher> gemini_status_fetcher,
@@ -548,6 +550,7 @@ class TestBocaAppHandler : public BocaAppHandler {
                        webui,
                        std::move(classroom_client_impl),
                        std::move(content_settings_handler),
+                       std::move(tab_info_collector),
                        system_web_app_manager,
                        session_client_impl,
                        std::move(gemini_status_fetcher),
@@ -666,6 +669,7 @@ class BocaAppPageHandlerTest : public testing::Test {
         // now. Adding test case for classroom and tab info.
         page_pending_receiver.InitWithNewPipeAndPassRemote(), web_ui_.get(),
         /*classroom_client_impl=*/nullptr, std::move(content_settings_handler),
+        TabInfoCollector::Create(web_ui_.get(), is_producer),
         /*system_web_app_manager=*/nullptr, &session_client_impl_,
         std::move(gemini_status_fetcher), is_producer);
     *fake_page = std::make_unique<FakePage>(std::move(page_pending_receiver));

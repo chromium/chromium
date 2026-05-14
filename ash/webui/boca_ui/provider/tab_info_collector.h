@@ -16,29 +16,22 @@ namespace mojom = ash::boca::mojom;
 namespace ash::boca {
 class TabInfoCollector {
  public:
-  TabInfoCollector(content::WebUI* web_ui, bool is_producer);
-  explicit TabInfoCollector(bool is_producer);
-  TabInfoCollector(const TabInfoCollector&) = delete;
-  TabInfoCollector& operator=(const TabInfoCollector&) = delete;
-  ~TabInfoCollector();
+  static std::unique_ptr<TabInfoCollector> Create(content::WebUI* web_ui,
+                                                  bool is_producer);
+  static std::unique_ptr<TabInfoCollector> Create(bool is_producer);
+
+  virtual ~TabInfoCollector() = default;
 
   // Fetches window tab info based on current boca role synchronously.
-  std::vector<mojom::WindowPtr> GetWindowTabInfo();
+  virtual std::vector<mojom::WindowPtr> GetWindowTabInfo() = 0;
 
   // Fetches window tab info for provided `target_window` synchronously.
-  std::vector<mojom::WindowPtr> GetWindowTabInfoForTarget(
-      aura::Window* target_window);
+  virtual std::vector<mojom::WindowPtr> GetWindowTabInfoForTarget(
+      aura::Window* target_window) = 0;
 
   // Fetches window tab info for all browser windows synchronously.
-  std::vector<mojom::WindowPtr> GetWindowTabInfoForAllBrowserWindows();
-
- private:
-  mojom::TabInfoPtr AshToPageTabInfo(ash::TabInfo tab);
-  void SortWindowList(std::vector<std::vector<ash::TabInfo>>& windows_list);
-  std::vector<mojom::WindowPtr> AshToPageWindows(
-      std::vector<std::vector<ash::TabInfo>> windows);
-  const bool is_producer_;
-  const raw_ptr<content::WebUI> web_ui_;
+  virtual std::vector<mojom::WindowPtr>
+  GetWindowTabInfoForAllBrowserWindows() = 0;
 };
 
 }  // namespace ash::boca
