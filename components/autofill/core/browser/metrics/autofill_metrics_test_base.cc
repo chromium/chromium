@@ -335,7 +335,7 @@ void AutofillMetricsBaseTest::CreateCreditCards(
     bool include_cvc_in_cards) {
   if (include_local_credit_card) {
     CreditCard local_credit_card = test::GetCreditCard();
-    local_credit_card.set_guid("10000000-0000-0000-0000-000000000001");
+    local_credit_card.set_guid(kTestLocalCardId);
     if (include_cvc_in_cards) {
 #if !BUILDFLAG(IS_IOS)
       local_credit_card.set_cvc(u"123");
@@ -346,7 +346,7 @@ void AutofillMetricsBaseTest::CreateCreditCards(
   if (include_masked_server_credit_card) {
     CreditCard masked_server_credit_card(
         CreditCard::RecordType::kMaskedServerCard, "server_id_1");
-    masked_server_credit_card.set_guid("10000000-0000-0000-0000-000000000002");
+    masked_server_credit_card.set_guid(kTestMaskedCardId);
     masked_server_credit_card.set_instrument_id(1);
     masked_server_credit_card.SetNetworkForMaskedCard(kDiscoverCard);
     masked_server_credit_card.SetNumber(u"9424");
