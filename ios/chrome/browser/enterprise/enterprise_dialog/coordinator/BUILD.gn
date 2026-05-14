@@ -11,7 +11,10 @@ source_set("coordinator") {
     "//base",
     "//ios/chrome/browser/enterprise/enterprise_dialog/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/web/public",
   ]
 }
 
