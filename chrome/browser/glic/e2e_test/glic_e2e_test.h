@@ -27,7 +27,6 @@ namespace glic::test {
 // Note: Requires --run-live-tests to run any of the tests.
 class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
  public:
-  GlicE2ETest();
   explicit GlicE2ETest(const std::vector<base::test::FeatureRef>&
                            additional_enabled_features = {},
                        const std::vector<base::test::FeatureRef>&

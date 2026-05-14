@@ -82,22 +82,6 @@ const char kIgnoreCertificateErrorsSPKIListValue[] =
     "PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc=";
 }  // namespace
 
-GlicE2ETest::GlicE2ETest() {
-  // TODO(crbug.com/440578183): ZeroStateSuggestionsV2 is enabled here
-  // due to the associated bug and should be removed here once fixed.
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kGlic,
-                            features::kGlicKeyboardShortcutNewBadge,
-                            features::kGlicRollout, kContextualCueing,
-                            mojom::features::kZeroStateSuggestionsV2},
-      /*disabled_features=*/{
-          syncer::kReplaceSyncPromosWithSignInPromos,
-          // Don't disable glic based on country/locale.
-          features::kGlicCountryFiltering,
-          features::kGlicLocaleFiltering,
-      });
-}
-
 GlicE2ETest::GlicE2ETest(
     const std::vector<base::test::FeatureRef>& additional_enabled_features,
     const std::vector<base::test::FeatureRef>& additional_disabled_features) {
