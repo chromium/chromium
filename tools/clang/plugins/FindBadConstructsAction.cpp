@@ -91,8 +91,6 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.check_span_fields = true;
     } else if (arg == "enable-match-profiling") {
       options_.enable_match_profiling = true;
-    } else if (arg == "check-std-ranges-pipe-operator") {
-      // TODO(crbug.com/505306734): Remove this option entirely.
     } else if (arg == "relax-ctor-checks-for-aggregates") {
       options_.relax_ctor_checks_for_aggregates = true;
     } else {
