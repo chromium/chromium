@@ -49,20 +49,19 @@ float ExtractAverageGroupDelay(AudioChannel* channel,
                                unsigned analysis_fft_size) {
   DCHECK(channel);
 
-  float* impulse_p = channel->MutableData();
-
-  DCHECK_GE(channel->length(), analysis_fft_size);
+  base::span<float> impulse_span =
+      channel->MutableSpan().first(analysis_fft_size);
 
   // Check for power-of-2.
   DCHECK_EQ(1UL << static_cast<unsigned>(log2(analysis_fft_size)),
             analysis_fft_size);
 
   FFTFrame estimation_frame(analysis_fft_size);
-  estimation_frame.DoFFT(impulse_p);
+  estimation_frame.DoFFT(impulse_span);
 
   const float frame_delay =
       ClampTo<float>(estimation_frame.ExtractAverageGroupDelay());
-  estimation_frame.DoInverseFFT(impulse_p);
+  estimation_frame.DoInverseFFT(impulse_span);
 
   return frame_delay;
 }

@@ -275,7 +275,7 @@ void RealtimeAnalyser::DoFFTAnalysis() {
   ApplyWindow(temp_span);
 
   // Do the analysis.
-  analysis_frame_->DoFFT(temp_span.data());
+  analysis_frame_->DoFFT(temp_span);
 
   const AudioFloatArray& real = analysis_frame_->RealData();
   AudioFloatArray& imag = analysis_frame_->ImagData();

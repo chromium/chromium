@@ -182,14 +182,14 @@ void FFTFrame::Cleanup() {
   }
 }
 
-void FFTFrame::DoFFT(const float* data) {
+void FFTFrame::DoFFT(base::span<const float> data_span) {
   DCHECK_EQ(pffft_work_.size(), fft_size_);
 
   PFFFT_Setup* setup = FFTSetupForSize(fft_size_);
   DCHECK(setup);
 
-  pffft_transform_ordered(setup, data, complex_data_.Data(), pffft_work_.Data(),
-                          PFFFT_FORWARD);
+  pffft_transform_ordered(setup, data_span.data(), complex_data_.Data(),
+                          pffft_work_.Data(), PFFFT_FORWARD);
 
   unsigned len = fft_size_ / 2;
 
@@ -203,7 +203,7 @@ void FFTFrame::DoFFT(const float* data) {
   }
 }
 
-void FFTFrame::DoInverseFFT(float* data) {
+void FFTFrame::DoInverseFFT(base::span<float> data_span) {
   DCHECK_EQ(complex_data_.size(), fft_size_);
 
   unsigned len = fft_size_ / 2;
@@ -219,12 +219,12 @@ void FFTFrame::DoInverseFFT(float* data) {
   PFFFT_Setup* setup = FFTSetupForSize(fft_size_);
   DCHECK(setup);
 
-  pffft_transform_ordered(setup, complex_data_.Data(), data, pffft_work_.Data(),
-                          PFFFT_BACKWARD);
+  pffft_transform_ordered(setup, complex_data_.Data(), data_span.data(),
+                          pffft_work_.Data(), PFFFT_BACKWARD);
 
   // The inverse transform needs to be scaled because PFFFT doesn't.
   float scale = 1.0 / fft_size_;
-  vector_math::Vsmul(data, scale, data, fft_size_);
+  vector_math::Vsmul(data_span.data(), scale, data_span.data(), fft_size_);
 }
 
 }  // namespace blink

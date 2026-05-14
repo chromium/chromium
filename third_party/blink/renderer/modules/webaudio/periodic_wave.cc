@@ -477,15 +477,15 @@ bool PeriodicWaveImpl::CreateBandLimitedTables(
     band_limited_tables_.push_back(std::move(table));
 
     // Apply an inverse FFT to generate the time-domain table data.
-    float* data = band_limited_tables_[range_index]->Data();
-    frame.DoInverseFFT(data);
+    base::span<float> data_span = band_limited_tables_[range_index]->as_span();
+    frame.DoInverseFFT(data_span);
 
     // For the first range (which has the highest power), calculate its peak
     // value then compute normalization scale.
     if (!disable_normalization) {
       if (!range_index) {
         float max_value;
-        vector_math::Vmaxmgv(data, &max_value, fft_size);
+        vector_math::Vmaxmgv(data_span.data(), &max_value, fft_size);
 
         if (max_value) {
           normalization_scale = 1.0f / max_value;
@@ -494,7 +494,8 @@ bool PeriodicWaveImpl::CreateBandLimitedTables(
     }
 
     // Apply normalization scale.
-    vector_math::Vsmul(data, normalization_scale, data, fft_size);
+    vector_math::Vsmul(data_span.data(), normalization_scale, data_span.data(),
+                       fft_size);
   }
   return true;
 }

@@ -76,12 +76,12 @@ class PLATFORM_EXPORT FFTFrame final {
 
   // Compute the FFT of |data|, storing the resulting FFT in |real_data_| and
   // |imag_data_|.  |data| MUST have size at least |fft_size_| elements.
-  void DoFFT(const float* data);
+  void DoFFT(base::span<const float> data);
 
   // Compute the inverse FFT using the FFT data in |real_data_| and
   // |imag_data_|.  The inverse is saved in |data|.  |data| MUST have size at
   // least |fft_size_| elements.
-  void DoInverseFFT(float* data);
+  void DoInverseFFT(base::span<float> data);
 
   AudioFloatArray& RealData() { return real_data_; }
   const AudioFloatArray& RealData() const { return real_data_; }
