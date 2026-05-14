@@ -101,6 +101,7 @@
       },
       "required": [
         "checklist",
+        "task_type",
         "goal",
         "target_files",
         "anti_goals",

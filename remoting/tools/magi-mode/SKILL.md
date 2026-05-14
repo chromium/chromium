@@ -219,10 +219,28 @@ next expert.
   covered for both roles. It MUST include the checklist evaluation in its JSON
   output. The Engineering Manager MUST set `next_phase` to `IMPLEMENTATION` for
   `IMPLEMENTATION` tasks, or `CRITIQUE` for `REVIEW` and `AUDIT` tasks.
-- **Checklist Initialization:** The Orchestrator MUST read the `checklist` from
-  every selected persona JSON file, compute the **Union Set** of all checklist
-  keys, and initialize `state_block.magi.json#checklist` with all these keys
-  set to `false`.
+- **State Initialization:** The Orchestrator MUST directly write the initial
+  State Block to `state_block.magi.json` using the schema defined in
+  `magi_schema.json` to prevent invoking a boilerplate agent. The `checklist`
+  field is initialized with the **Union Set** of all checklist keys from every
+  selected persona, set to `false`:
+  ```json
+  {
+    "$schema": "./magi_schema.json#definitions/StateBlock",
+    "checklist": {
+      "[Merged keys from selected personas]": false
+    },
+    "iteration": 1,
+    "stall_count": 0,
+    "active_constraints": [],
+    "resolved_constraints": [],
+    "implementors": ["[Selected Implementors]"],
+    "reviewers": ["[Selected Reviewers]"],
+    "next_phase": "[Determined by task type]",
+    "review_mode": "[SUPERVISOR/CONSENSUS]",
+    "state_transport": "[FILE_IO/EPHEMERAL/EPHEMERAL_WITH_LOGS]"
+  }
+  ```
 - **Review Mode Selection:** The Engineering Manager MUST select the
   `review_mode` (`SUPERVISOR` or `CONSENSUS`) and include it in the initial
   `state_block.magi.json`.
@@ -281,27 +299,7 @@ priority requires it.*
 
 ### 4. The Synthesis Phase
 Once the Domain Experts finish:
-1.  **State Initialization:** The Orchestrator MUST directly write the initial
-    State Block to `state_block.magi.json` using the schema defined in
-    `magi_schema.json` to prevent invoking a boilerplate agent:
-    ```json
-    {
-      "$schema": "./magi_schema.json#definitions/StateBlock",
-      "checklist": {
-        "[Merged keys from selected personas]": false
-      },
-      "iteration": 1,
-      "stall_count": 0,
-      "active_constraints": [],
-      "resolved_constraints": [],
-      "implementors": ["[Selected Implementors]"],
-      "reviewers": ["[Selected Reviewers]"],
-      "next_phase": "CRITIQUE",
-      "review_mode": "[SUPERVISOR/CONSENSUS]",
-      "state_transport": "[FILE_IO/EPHEMERAL/EPHEMERAL_WITH_LOGS]"
-    }
-    ```
-2.  **The Synthesizing Architect:** Read the `[filename].[persona].magi.[N]`
+1.  **The Synthesizing Architect:** Read the `[filename].[persona].magi.[N]`
     drafts and synthesize them into "Draft A" in the original file.
     *   **Conflict Resolution:** The Synthesizing Architect MUST use a surgical
         3-way merge strategy (Base Scaffold + Draft A + Draft B) rather than
@@ -311,8 +309,11 @@ Once the Domain Experts finish:
         build/test suite on "Draft A" and attach the build logs to the
         synthesis report before signaling `next_phase: CRITIQUE`.
 ### 5. The Review Workflow (Consensus Loop vs. Supervisor)
-1.  **Blind Critique:** Push Draft A to the expanded panel of Reviewers
-    selected in Phase 2.
+1.  **Blind Critique:** Push the files to be reviewed to the expanded panel of
+    Reviewers selected in Phase 2.
+    *   For `IMPLEMENTATION` tasks, this is the synthesized "Draft A".
+    *   For `REVIEW` and `AUDIT` tasks, there is no synthesized draft, so the
+        original target files specified in `project.magi.json` MUST be pushed.
     **File I/O:** Output routing depends on `state_transport`:
     *   `FILE_IO`: Save feedback to disk as
         `review.[persona].magi.[iteration].json`.

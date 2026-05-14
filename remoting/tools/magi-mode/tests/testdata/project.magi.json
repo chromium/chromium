@@ -1,5 +1,6 @@
 {
     "checklist": {},
+    "task_type": "IMPLEMENTATION",
     "goal": "Mock goal for testing.",
     "target_files": [
         "testdata/file1.cc"
