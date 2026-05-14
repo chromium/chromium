@@ -54,7 +54,7 @@ void SetOrUpdateResult(const SnapSearchResult& candidate,
   if (result->has_value()) {
     result->value().Union(candidate);
     if (candidate.has_focus_within()) {
-      result->value().set_element_id(candidate.element_id());
+      result->value().set_area(candidate.area());
     }
   } else {
     *result = candidate;
@@ -787,7 +787,6 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
         CanCoverSnapportOnAxis(axis, snapport(), area.rect)) {
       if (std::optional<SnapSearchResult> covering =
               FindCoveringCandidate(area, axis, candidate, intended_position)) {
-        covering->set_has_focus_within(area.has_focus_within);
         covering->set_rect(area.rect);
         if (covering->snap_offset() == intended_position) {
           SetOrUpdateResult(*covering, &covering_intended);
@@ -861,8 +860,7 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
   }
   result.set_axis(axis);
   result.set_rect(area.rect);
-  result.set_has_focus_within(area.has_focus_within);
-  result.set_element_id(area.element_id);
+  result.set_area(&area);
   return result;
 }
 
@@ -1104,14 +1102,14 @@ void SnapContainerData::UpdateSearchAlternative(
     if (candidate_cross_axis_distance < alt_cross_axis_distance ||
         (alt_rect != *candidate_rect && alt_rect.Contains(*candidate_rect))) {
       current_result.set_alternative(
-          candidate_area.element_id, *candidate_rect,
+          &candidate_area, *candidate_rect,
           candidate_cross_axis_aligned_result.snap_offset());
     }
   } else {
     // We did not have an alternative before now, make the current
     // candidate our alternative.
     current_result.set_alternative(
-        candidate_area.element_id, *candidate_rect,
+        &candidate_area, *candidate_rect,
         candidate_cross_axis_aligned_result.snap_offset());
   }
 }
@@ -1128,13 +1126,13 @@ void SnapContainerData::SelectAlternativeIdForSearchResult(
     if (within_snapped_tolerance(
             cross_selection->snap_offset(),
             selection.alternative()->cross_axis_snap_offset)) {
-      selection.set_element_id(selection.alternative()->element_id);
+      selection.set_area(selection.alternative()->area);
     }
   } else {
     if (within_snapped_tolerance(
             std::clamp(cross_current_position, 0.0f, cross_max_position),
             selection.alternative()->cross_axis_snap_offset)) {
-      selection.set_element_id(selection.alternative()->element_id);
+      selection.set_area(selection.alternative()->area);
     }
   }
 }

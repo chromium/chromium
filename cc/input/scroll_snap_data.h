@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/stack_allocated.h"
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -87,6 +88,57 @@ struct ScrollSnapAlign {
   SnapAlignment alignment_inline;
 };
 
+// Snap area is a bounding box that could be snapped to when a scroll happens in
+// its scroll container.
+// This data structure describes the data needed for SnapCoordinator if we want
+// to snap to this snap area.
+struct SnapAreaData {
+  // kInvalidScrollOffset is used to mark that the snap_position on a specific
+  // axis is not applicable, thus should not be considered when snapping on that
+  // axis. This is because the snap area has SnapAlignmentNone on that axis.
+  static const int kInvalidScrollPosition = -1;
+
+  SnapAreaData() {}
+
+  SnapAreaData(const ScrollSnapAlign& align,
+               const gfx::RectF& rec,
+               bool msnap,
+               bool has_focus_within,
+               ElementId id)
+      : scroll_snap_align(align),
+        rect(rec),
+        must_snap(msnap),
+        has_focus_within(has_focus_within),
+        element_id(id) {}
+
+  bool operator==(const SnapAreaData& other) const {
+    return (other.element_id == element_id) &&
+           (other.scroll_snap_align == scroll_snap_align) &&
+           (other.rect == rect) && (other.must_snap == must_snap) &&
+           (other.has_focus_within == has_focus_within);
+  }
+
+  bool operator!=(const SnapAreaData& other) const { return !(*this == other); }
+
+  // Specifies how the snap area should be aligned with its snap container when
+  // snapped. The alignment_inline and alignment_block represent the alignments
+  // on x axis and y axis respectively.
+  ScrollSnapAlign scroll_snap_align;
+
+  // The snap area rect relative to its snap container's boundary
+  gfx::RectF rect;
+
+  // Whether this area has scroll-snap-stop: always.
+  // See https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-stop
+  bool must_snap = false;
+
+  // Whether this area has focus or has a descendant element which has focus.
+  bool has_focus_within = false;
+
+  // ElementId of the corresponding snap area.
+  ElementId element_id;
+};
+
 // This struct represents a snap area that is considered to be a viable
 // alternative to the snap area that was selected for the associated
 // SnapSearchResult.
@@ -97,16 +149,19 @@ struct ScrollSnapAlign {
 // This alternative may be considered to be a better choice if it is also
 // aligned with the SnapSearchResult of the cross axis.
 struct SnapSearchResultAlternative {
-  explicit SnapSearchResultAlternative(const ElementId id,
-                                       gfx::RectF rect,
-                                       float area_cross_axis_snap_offset) {
-    element_id = id;
-    area_rect = rect;
-    cross_axis_snap_offset = area_cross_axis_snap_offset;
-  }
-  // The ElementId of the snap area considered to be a viable alternative to
+  STACK_ALLOCATED();
+
+ public:
+  SnapSearchResultAlternative(const struct SnapAreaData* area,
+                              gfx::RectF rect,
+                              float area_cross_axis_snap_offset)
+      : area(area),
+        area_rect(rect),
+        cross_axis_snap_offset(area_cross_axis_snap_offset) {}
+
+  // The snap area considered to be a viable alternative to
   // the snap area selected for the associated SnapSearchResult.
-  ElementId element_id;
+  const struct SnapAreaData* area = nullptr;
 
   // The rect of the snap area considered to be a viable alternative to
   // the snap area selected for the associated SnapSearchResult relative to
@@ -116,13 +171,15 @@ struct SnapSearchResultAlternative {
   // The offset in the cross axis of the associated SnapSearchResult at which
   // the snapport of the snap container is aligned with the snap area
   // represented by this SnapSearchResultAlternative.
-  float cross_axis_snap_offset;
+  float cross_axis_snap_offset = 0.f;
 };
 
 // This class includes snap offset and visible range needed to perform a snap
 // operation on one axis for a specific area. The data can be used to determine
 // whether this snap area provides a valid snap position for the current scroll.
 class SnapSearchResult {
+  STACK_ALLOCATED();
+
  public:
   SnapSearchResult() {}
   SnapSearchResult(float offset,
@@ -158,16 +215,16 @@ class SnapSearchResult {
                                   0.0f, snapport_max_visible_));
   }
 
-  ElementId element_id() const { return element_id_; }
-  void set_element_id(ElementId id) { element_id_ = id; }
+  const struct SnapAreaData* area() const { return area_; }
+  void set_area(const struct SnapAreaData* area) { area_ = area; }
+
+  ElementId element_id() const {
+    return area_ ? area_->element_id : ElementId();
+  }
 
   std::optional<gfx::RangeF> covered_range() const { return covered_range_; }
   void set_covered_range(const gfx::RangeF& range) { covered_range_ = range; }
-
-  bool has_focus_within() const { return has_focus_within_; }
-  void set_has_focus_within(bool has_focus_within) {
-    has_focus_within_ = has_focus_within;
-  }
+  bool has_focus_within() const { return area_ && area_->has_focus_within; }
 
   SearchAxis axis() const { return axis_; }
   void set_axis(const SearchAxis& axis) { axis_ = axis; }
@@ -184,10 +241,11 @@ class SnapSearchResult {
   std::optional<SnapSearchResultAlternative> alternative() const {
     return alternative_;
   }
-  void set_alternative(const ElementId& id,
+  void set_alternative(const struct SnapAreaData* area,
                        const gfx::RectF& rect,
                        float alt_cross_snap_offset) {
-    alternative_ = SnapSearchResultAlternative(id, rect, alt_cross_snap_offset);
+    alternative_ =
+        SnapSearchResultAlternative(area, rect, alt_cross_snap_offset);
   }
 
  private:
@@ -200,12 +258,8 @@ class SnapSearchResult {
   // for "aligned" snap positions.
   float snap_offset_;
 
-  // The ElementId of the snap area that corresponds to this SnapSearchResult.
-  ElementId element_id_;
-
-  // Whether the snap area generating this result has focus or has a descendant
-  // element which has focus.
-  bool has_focus_within_;
+  // The snap area that corresponds to this SnapSearchResult.
+  const struct SnapAreaData* area_ = nullptr;
 
   // This is set if the validity of this result derives from the fact that the
   // snap area covers the viewport, as described in the spec section on
@@ -235,57 +289,6 @@ class SnapSearchResult {
   // this result. We may end up selecting the alternative if it turns out to
   // also be an aligned candidate in the cross axis.
   std::optional<SnapSearchResultAlternative> alternative_;
-};
-
-// Snap area is a bounding box that could be snapped to when a scroll happens in
-// its scroll container.
-// This data structure describes the data needed for SnapCoordinator if we want
-// to snap to this snap area.
-struct SnapAreaData {
-  // kInvalidScrollOffset is used to mark that the snap_position on a specific
-  // axis is not applicable, thus should not be considered when snapping on that
-  // axis. This is because the snap area has SnapAlignmentNone on that axis.
-  static const int kInvalidScrollPosition = -1;
-
-  SnapAreaData() {}
-
-  SnapAreaData(const ScrollSnapAlign& align,
-               const gfx::RectF& rec,
-               bool msnap,
-               bool has_focus_within,
-               ElementId id)
-      : scroll_snap_align(align),
-        rect(rec),
-        must_snap(msnap),
-        has_focus_within(has_focus_within),
-        element_id(id) {}
-
-  bool operator==(const SnapAreaData& other) const {
-    return (other.element_id == element_id) &&
-           (other.scroll_snap_align == scroll_snap_align) &&
-           (other.rect == rect) && (other.must_snap == must_snap) &&
-           (other.has_focus_within == has_focus_within);
-  }
-
-  bool operator!=(const SnapAreaData& other) const { return !(*this == other); }
-
-  // Specifies how the snap area should be aligned with its snap container when
-  // snapped. The alignment_inline and alignment_block represent the alignments
-  // on x axis and y axis repectively.
-  ScrollSnapAlign scroll_snap_align;
-
-  // The snap area rect relative to its snap container's boundary
-  gfx::RectF rect;
-
-  // Whether this area has scroll-snap-stop: always.
-  // See https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-stop
-  bool must_snap = false;
-
-  // Whether this area has focus or has a descendant element which has focus.
-  bool has_focus_within = false;
-
-  // ElementId of the corresponding snap area.
-  ElementId element_id;
 };
 
 struct CC_EXPORT TargetSnapAreaElementIds {
