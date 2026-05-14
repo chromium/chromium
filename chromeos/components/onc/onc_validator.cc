@@ -1505,6 +1505,21 @@ bool Validator::ValidateCertificate(base::DictValue* result) {
     return false;
   }
 
+  if (onc_source_ == ::onc::ONC_SOURCE_USER_IMPORT &&
+      result->contains(::onc::certificate::kTrustBits)) {
+    path_.push_back(::onc::certificate::kTrustBits);
+    std::ostringstream msg;
+    msg << "Field '" << ::onc::certificate::kTrustBits
+        << "' is prohibited in ONC user imports";
+    AddValidationIssue(error_on_unknown_field_, msg.str());
+    path_.pop_back();
+
+    if (error_on_unknown_field_) {
+      return false;
+    }
+    result->Remove(::onc::certificate::kTrustBits);
+  }
+
   all_required_exist &= RequireField(*result, ::onc::certificate::kType);
 
   if (type == ::onc::certificate::kClient)

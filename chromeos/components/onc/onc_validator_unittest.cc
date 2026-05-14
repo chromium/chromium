@@ -690,4 +690,36 @@ INSTANTIATE_TEST_SUITE_P(
                                  true),
                        ExpectBothNotValid("", ""))));
 
+TEST_F(ONCValidatorTest, UserImportTrustBits) {
+  const char kAttackOnc[] =
+      "{\"Type\":\"UnencryptedConfiguration\",\"NetworkConfigurations\":[],"
+      "\"Certificates\":[{\"GUID\":\"{malicious-ca-guid}\",\"Type\":"
+      "\"Authority\","
+      "\"TrustBits\":[\"Web\"],\"X509\":\"MII\"}]}";
+
+  // In strict mode, the certificate containing prohibited TrustBits is rejected
+  // and dropped from the Certificates list.
+  const char kStrictRepairedOnc[] =
+      "{\"Type\":\"UnencryptedConfiguration\",\"NetworkConfigurations\":[],"
+      "\"Certificates\":[]}";
+
+  // In liberal mode, prohibited TrustBits are stripped from the certificate,
+  // and the remaining certificate is kept.
+  const char kLiberalRepairedOnc[] =
+      "{\"Type\":\"UnencryptedConfiguration\",\"NetworkConfigurations\":[],"
+      "\"Certificates\":[{\"GUID\":\"{malicious-ca-guid}\",\"Type\":"
+      "\"Authority\","
+      "\"X509\":\"MII\"}]}";
+
+  Validate(true, ReadDictionaryFromJson(kAttackOnc).value(),
+           &kToplevelConfigurationSignature, false,
+           ::onc::ONC_SOURCE_USER_IMPORT);
+  ExpectRepairWithWarnings(ReadDictionaryFromJson(kStrictRepairedOnc).value());
+
+  Validate(false, ReadDictionaryFromJson(kAttackOnc).value(),
+           &kToplevelConfigurationSignature, false,
+           ::onc::ONC_SOURCE_USER_IMPORT);
+  ExpectRepairWithWarnings(ReadDictionaryFromJson(kLiberalRepairedOnc).value());
+}
+
 }  // namespace chromeos::onc
