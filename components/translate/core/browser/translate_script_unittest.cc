@@ -64,6 +64,9 @@ class TranslateScriptTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
+  // The translate script.
+  std::unique_ptr<TranslateScript> script_;
+
  private:
   void OnComplete(bool success) {
     // No op.
@@ -74,9 +77,6 @@ class TranslateScriptTest : public testing::Test {
 
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-
-  // The translate script.
-  std::unique_ptr<TranslateScript> script_;
 
   // Factory to create programmatic URL loaders.
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -139,6 +139,82 @@ TEST_F(TranslateScriptTest, CheckScriptParameters) {
   EXPECT_EQ(std::string(TranslateScript::kJavascriptLoaderCallbackQueryValue),
             javascript_loader_callback);
 #endif  // !BUILDFLAG(IS_IOS)
+  script_.reset();
+}
+
+TEST_F(TranslateScriptTest, CheckScriptParameters_SimplifiedHindiDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      translate::kTranslateSimplifiedHindi);
+
+  network::ResourceRequest last_resource_request;
+  GetTestURLLoaderFactory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        last_resource_request = request;
+      }));
+
+  Request();
+
+  GURL url = last_resource_request.url;
+  EXPECT_TRUE(url.is_valid());
+
+  std::string experiment_filter;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      url, TranslateScript::kExperimentFilterQueryName, &experiment_filter));
+  script_.reset();
+}
+
+TEST_F(TranslateScriptTest, CheckScriptParameters_ElementExperimentFeatures) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      translate::kTranslateElementExperimentFeatures, {{"ef", "ests"}});
+
+  network::ResourceRequest last_resource_request;
+  GetTestURLLoaderFactory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        last_resource_request = request;
+      }));
+
+  Request();
+
+  GURL url = last_resource_request.url;
+  EXPECT_TRUE(url.is_valid());
+
+  std::string experiment_filter;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      url, TranslateScript::kExperimentFilterQueryName, &experiment_filter));
+  EXPECT_EQ("ests", experiment_filter);
+  script_.reset();
+}
+
+TEST_F(TranslateScriptTest,
+       CheckScriptParameters_ElementExperimentFeaturesCoexistence) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{translate::kTranslateSimplifiedHindi, {}},
+       {translate::kTranslateElementExperimentFeatures, {{"ef", "ests"}}}},
+      {});
+
+  network::ResourceRequest last_resource_request;
+  GetTestURLLoaderFactory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        last_resource_request = request;
+      }));
+
+  Request();
+
+  GURL url = last_resource_request.url;
+  EXPECT_TRUE(url.is_valid());
+
+  std::string experiment_filter;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      url, TranslateScript::kExperimentFilterQueryName, &experiment_filter));
+
+  // They should coexist dynamically, comma-separated.
+  std::string expected_combined =
+      std::string(TranslateScript::kExperimentFilterQueryValue) + ",ests";
+  EXPECT_EQ(expected_combined, experiment_filter);
+  script_.reset();
 }
 
 TEST_F(TranslateScriptTest, CheckScriptURL) {
@@ -161,6 +237,7 @@ TEST_F(TranslateScriptTest, CheckScriptURL) {
   EXPECT_EQ(expected_url.DeprecatedGetOriginAsURL().spec(),
             url.DeprecatedGetOriginAsURL().spec());
   EXPECT_EQ(expected_url.GetPath(), url.GetPath());
+  script_.reset();
 }
 
 TEST_F(TranslateScriptTest, CheckResponse) {
