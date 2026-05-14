@@ -1,5 +1,9 @@
 <style include="cr-hidden-style sp-shared-style">
   :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
     --back-button-size: 14px;
   }
 
@@ -18,8 +22,13 @@
   sp-heading {
     margin: 8px 14px;
   }
+
+  #scroller {
+    height: 100%;
+    overflow-y: auto;
+  }
 </style>
-<div id="scroller" class="sp-scroller">
+<div id="scroller" class="sp-scroller" scrollable role="list">
   <div class="sp-card">
     <power-bookmarks-list-header hidden$="[[!sectionVisibility_.heading]]"
         active-folder="[[getActiveFolder(activeFolderPath.*)]]"
