@@ -40,7 +40,7 @@
 #import "components/policy/core/browser/configuration_policy_handler_list.h"
 #import "components/policy/core/browser/configuration_policy_handler_parameters.h"
 #import "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
-#import "components/policy/core/browser/incognito/incognito_mode_policy_handler.h"
+#import "components/policy/core/browser/url_list/incognito_mode_policy_handler.h"
 #import "components/policy/core/browser/url_list/url_allowlist_policy_handler.h"
 #import "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
 #import "components/policy/core/common/policy_pref_names.h"

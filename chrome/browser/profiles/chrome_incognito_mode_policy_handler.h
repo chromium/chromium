@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_CHROME_INCOGNITO_MODE_POLICY_HANDLER_H_
 #define CHROME_BROWSER_PROFILES_CHROME_INCOGNITO_MODE_POLICY_HANDLER_H_
 
-#include "components/policy/core/browser/incognito/incognito_mode_policy_handler.h"
+#include "components/policy/core/browser/url_list/incognito_mode_policy_handler.h"
 
 class PrefValueMap;
 

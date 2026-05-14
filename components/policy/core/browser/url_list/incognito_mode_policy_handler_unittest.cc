@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/incognito/incognito_mode_policy_handler.h"
+#include "components/policy/core/browser/url_list/incognito_mode_policy_handler.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
-#include "components/policy/core/browser/incognito/incognito_mode_policy_handler_test.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/browser/url_list/incognito_mode_policy_handler_test.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"

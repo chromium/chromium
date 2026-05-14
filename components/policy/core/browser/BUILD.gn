@@ -76,8 +76,8 @@ source_set("internal") {
 
   if (!is_fuchsia) {
     sources += [
-      "incognito/incognito_mode_policy_handler.cc",
-      "incognito/incognito_mode_policy_handler.h",
+      "url_list/incognito_mode_policy_handler.cc",
+      "url_list/incognito_mode_policy_handler.h",
     ]
   }
 
@@ -177,8 +177,8 @@ static_library("incognito_mode_policy_test_support") {
   sources = []
   if (!is_fuchsia) {
     sources += [
-      "incognito/incognito_mode_policy_handler_test.cc",
-      "incognito/incognito_mode_policy_handler_test.h",
+      "url_list/incognito_mode_policy_handler_test.cc",
+      "url_list/incognito_mode_policy_handler_test.h",
     ]
   }
   deps = [
@@ -231,6 +231,6 @@ source_set("unit_tests") {
   }
 
   if (!is_fuchsia) {
-    sources += [ "incognito/incognito_mode_policy_handler_unittest.cc" ]
+    sources += [ "url_list/incognito_mode_policy_handler_unittest.cc" ]
   }
 }

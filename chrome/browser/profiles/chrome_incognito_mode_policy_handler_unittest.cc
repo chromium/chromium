@@ -8,7 +8,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
-#include "components/policy/core/browser/incognito/incognito_mode_policy_handler_test.h"
+#include "components/policy/core/browser/url_list/incognito_mode_policy_handler_test.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"

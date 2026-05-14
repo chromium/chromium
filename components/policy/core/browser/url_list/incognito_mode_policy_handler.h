@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POLICY_CORE_BROWSER_INCOGNITO_INCOGNITO_MODE_POLICY_HANDLER_H_
-#define COMPONENTS_POLICY_CORE_BROWSER_INCOGNITO_INCOGNITO_MODE_POLICY_HANDLER_H_
+#ifndef COMPONENTS_POLICY_CORE_BROWSER_URL_LIST_INCOGNITO_MODE_POLICY_HANDLER_H_
+#define COMPONENTS_POLICY_CORE_BROWSER_URL_LIST_INCOGNITO_MODE_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -60,4 +60,4 @@ class POLICY_EXPORT IncognitoModePolicyHandler
 
 }  // namespace policy
 
-#endif  // COMPONENTS_POLICY_CORE_BROWSER_INCOGNITO_INCOGNITO_MODE_POLICY_HANDLER_H_
+#endif  // COMPONENTS_POLICY_CORE_BROWSER_URL_LIST_INCOGNITO_MODE_POLICY_HANDLER_H_
