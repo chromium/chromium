@@ -96,30 +96,30 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
 
   private async loadTabStripModel_(observation: TabStripObservation) {
     const tabSnapshot = await this.tabStripService_.getTabs();
-    const tabStrip = tabSnapshot.tabStrip;
-    const processContainer = (container: Container) => {
-      if (!container || !container.children) {
-        return;
-      }
-      container.children.forEach((containerElement: Container) => {
-        if (containerElement.data.tab) {
-          this.addTab(containerElement.data.tab);
-        } else if (containerElement.data.tabGroup) {
-          const group = containerElement.data.tabGroup;
-          this.addGroup(group);
-          processContainer(containerElement);
-        } else {
-          processContainer(containerElement);
-        }
-      });
-    };
-    processContainer(tabStrip);
+    this.processModelContainer_(tabSnapshot.tabStrip);
 
     // Now initial state is processed, start listening to events.
     observation.bind(tabSnapshot.stream.handle);
 
     // The initial data load should contain at least one active tab.
     assert(this.activeTab_ !== '');
+  }
+
+  private processModelContainer_(container: Container) {
+    if (!container || !container.children) {
+      return;
+    }
+    container.children.forEach((containerElement: Container) => {
+      if (containerElement.data.tab) {
+        this.addTab(containerElement.data.tab);
+      } else if (containerElement.data.tabGroup) {
+        const group = containerElement.data.tabGroup;
+        this.addGroup(group);
+        this.processModelContainer_(containerElement);
+      } else {
+        this.processModelContainer_(containerElement);
+      }
+    });
   }
 
   override disconnectedCallback() {
@@ -144,22 +144,31 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (!changedProperties.has('activeTab_' as keyof TabStripElement)) {
-      return;
+    if (changedProperties.has('activeTab_' as keyof TabStripElement)) {
+      this.syncTabActiveStates_();
     }
+  }
 
-    for (let i = 0; i < this.items_.length; ++i) {
-      const item = this.items_[i]!;
+  private syncTabActiveStates_() {
+    let hasChanges = false;
+    const updatedItems = [...this.items_];
+    for (let i = 0; i < updatedItems.length; ++i) {
+      const item = updatedItems[i]!;
       const shouldBeActive = item.id === this.activeTab_;
 
       if (item.type !== 'tab' || item.tabData.isActive === shouldBeActive) {
         continue;
       }
 
-      this.items_[i] = {
+      updatedItems[i] = {
         ...item,
         tabData: {...item.tabData, isActive: shouldBeActive},
       };
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      this.setItems_(updatedItems);
     }
   }
 
@@ -173,15 +182,10 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
     const tag = whichOnDataChangedEvent(onDataChangedEvent);
     switch (tag) {
       case OnDataChangedEventFieldTags.TAB:
-        const tab = onDataChangedEvent.tab!.data;
-        this.updateTab(tab);
-        if (tab.isActive) {
-          this.activeTab_ = tab.id;
-        }
+        this.updateTab(onDataChangedEvent.tab!.data);
         break;
       case OnDataChangedEventFieldTags.TAB_GROUP:
-        const tabGroup = onDataChangedEvent.tabGroup!.data;
-        this.updateTabGroup(tabGroup);
+        this.updateTabGroup(onDataChangedEvent.tabGroup!.data);
         break;
       case OnDataChangedEventFieldTags.SPLIT_TAB:
         throw new Error('unimplemented type: splitTab');
@@ -197,15 +201,17 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
   // End TabStripObserver impl:
 
   private addTab(tab: Tab) {
-    this.items_.push({
-      type: 'tab',
-      id: tab.id,
-      tabData: tab,
-    });
-    this.requestUpdate();
+    this.setItems_([
+      ...this.items_,
+      {
+        type: 'tab',
+        id: tab.id,
+        tabData: tab,
+      },
+    ]);
 
     if (tab.isActive) {
-      this.activeTab_ = tab.id;
+      this.setActiveTab_(tab.id);
     }
 
     this.fire<TabAdded>('tab-added', {
@@ -215,12 +221,14 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
   }
 
   private addGroup(group: TabGroup) {
-    this.items_.push({
-      type: 'group',
-      id: group.id,
-      groupData: group.data,
-    });
-    this.requestUpdate();
+    this.setItems_([
+      ...this.items_,
+      {
+        type: 'group',
+        id: group.id,
+        groupData: group.data,
+      },
+    ]);
   }
 
   protected onTabCloseClick(e: CustomEvent<{id: string}>) {
@@ -228,13 +236,12 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
   }
 
   private activateTab(tabId: NodeId) {
-    const item = this.items_.find(
-        (i): i is TabItem => i.type === 'tab' && i.id === tabId);
+    const item = this.findItem_<TabItem>(tabId, 'tab');
     if (!item) {
       return;
     }
 
-    this.activeTab_ = tabId;
+    this.setActiveTab_(tabId);
     this.tabStripService_.activateTab(tabId);
     this.fire<TabActivated>('tab-activated', item.tabData);
   }
@@ -244,36 +251,31 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
   //}
 
   private updateTabGroup(group: TabGroup) {
-    const index =
-        this.items_.findIndex(i => i.type === 'group' && i.id === group.id);
-    if (index !== -1) {
-      const groupItem = this.items_[index] as TabGroupItem;
-      this.items_[index] = {...groupItem, groupData: group.data};
-      this.requestUpdate();
+    const groupItem = this.findItem_<TabGroupItem>(group.id, 'group');
+    if (groupItem) {
+      this.updateItem_(
+          group.id, 'group', {...groupItem, groupData: group.data});
     }
   }
 
   private updateTab(tab: Tab) {
-    const index =
-        this.items_.findIndex(i => i.type === 'tab' && i.id === tab.id);
-    if (index === -1) {
-      return;
-    }
-
-    this.items_[index] = {
+    const updated = this.updateItem_(tab.id, 'tab', {
       type: 'tab',
       id: tab.id,
       tabData: tab,
-    };
-    // Needed to get the tab element to refresh with the updated data.
-    this.requestUpdate();
-    this.fire<TabUpdated>('tab-updated', tab);
+    });
+
+    if (updated) {
+      if (tab.isActive) {
+        this.setActiveTab_(tab.id);
+      }
+      this.fire<TabUpdated>('tab-updated', tab);
+    }
   }
 
   private removeItem(id: NodeId) {
-    const itemToRemove = this.items_.find(item => item.id === id);
-    this.items_ = this.items_.filter(item => item.id !== id);
-    this.requestUpdate();
+    const itemToRemove = this.findItem_<TabStripItem>(id);
+    this.setItems_(this.items_.filter(item => item.id !== id));
 
     if (itemToRemove && itemToRemove.type === 'tab') {
       this.fire<TabClosed>('tab-closed', id);
@@ -365,8 +367,7 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
 
   private getDraggedElement(): TabElement {
     assert(this.dragInProgress_ && this.draggedTabId);
-    const element = this.shadowRoot.querySelector<TabElement>(
-        `webui-browser-tab#${this.tabIdToDomId(this.draggedTabId)}`);
+    const element = this.getTabElement_(this.draggedTabId);
     assert(element);
     return element;
   }
@@ -392,32 +393,28 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
     const prevItem = this.items_[index - 1];
     if (prevItem && prevItem.type === 'tab') {
       const targetIdx = index - 1;
-      const targetId = this.tabIdToDomId(prevItem.id);
-      const target = this.shadowRoot.querySelector<TabElement>(
-          `webui-browser-tab#${targetId}`);
+      const target = this.getTabElement_(prevItem.id);
       assert(target);
       const targetMidpoint = target.getBoundingClientRect().left +
           (target.getBoundingClientRect().width / 2);
       if (dragElementRect.left < targetMidpoint) {
         [this.items_[index], this.items_[targetIdx]] =
             [this.items_[targetIdx]!, this.items_[index]!];
-        this.items_ = [...this.items_];
+        this.setItems_([...this.items_]);
       }
     }
     // Test for swap backward case.
     const nextItem = this.items_[index + 1];
     if (nextItem && nextItem.type === 'tab') {
       const targetIdx = index + 1;
-      const targetId = this.tabIdToDomId(nextItem.id);
-      const target = this.shadowRoot.querySelector<TabElement>(
-          `webui-browser-tab#${targetId}`);
+      const target = this.getTabElement_(nextItem.id);
       assert(target);
       const targetMidpoint = target.getBoundingClientRect().left +
           (target.getBoundingClientRect().width / 2);
       if (dragElementRect.right > targetMidpoint) {
         [this.items_[index], this.items_[targetIdx]] =
             [this.items_[targetIdx]!, this.items_[index]!];
-        this.items_ = [...this.items_];
+        this.setItems_([...this.items_]);
       }
     }
 
@@ -454,6 +451,49 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
       drag_offset_y: this.outOfBoundsDragY,
     });
     this.closeDragElement();
+  }
+
+  // Utility helpers:
+  private findItemIndex_(id: string, type?: 'tab'|'group'): number {
+    return this.items_.findIndex(
+        item => item.id === id && (!type || item.type === type));
+  }
+
+  private findItem_<T extends TabStripItem>(id: string, type?: T['type']): T
+      |undefined {
+    return this.items_.find(
+               item => item.id === id && (!type || item.type === type)) as T |
+        undefined;
+  }
+
+  private getTabElement_(id: string): TabElement|null {
+    return this.shadowRoot.querySelector<TabElement>(
+        `webui-browser-tab#${this.tabIdToDomId(id)}`);
+  }
+
+  private setActiveTab_(id: string) {
+    this.activeTab_ = id;
+  }
+
+  private setItems_(items: TabStripItem[]) {
+    this.items_ = items;
+  }
+
+  private updateItemAt_(index: number, item: TabStripItem) {
+    const newItems = [...this.items_];
+    newItems[index] = item;
+    this.setItems_(newItems);
+  }
+
+  private updateItem_(id: string, type: 'tab'|'group', newItem: TabStripItem):
+      boolean {
+    const index = this.findItemIndex_(id, type);
+    if (index === -1) {
+      return false;
+    }
+
+    this.updateItemAt_(index, newItem);
+    return true;
   }
 }
 
