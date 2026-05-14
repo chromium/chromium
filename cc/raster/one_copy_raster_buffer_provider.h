@@ -139,6 +139,22 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   StagingBufferPool staging_pool_;
 };
 
+namespace test {
+
+// Use this to disable the log messages recorded for failed attempt to
+// create a shared image in tests.
+class CC_EXPORT ScopedDisableSharedImageCreationLog {
+ public:
+  ScopedDisableSharedImageCreationLog();
+  ScopedDisableSharedImageCreationLog(
+      const ScopedDisableSharedImageCreationLog&) = delete;
+  ScopedDisableSharedImageCreationLog& operator=(
+      const ScopedDisableSharedImageCreationLog&) = delete;
+  ~ScopedDisableSharedImageCreationLog();
+};
+
+}  // namespace test
+
 }  // namespace cc
 
 #endif  // CC_RASTER_ONE_COPY_RASTER_BUFFER_PROVIDER_H_

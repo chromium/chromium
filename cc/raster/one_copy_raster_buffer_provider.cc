@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <atomic>
 #include <utility>
 
 #include "base/debug/alias.h"
@@ -38,6 +39,13 @@
 #include "ui/gl/trace_util.h"
 
 namespace cc {
+
+namespace {
+
+// Use std::atomic as the this can be executed in a impl side thread.
+std::atomic<bool> disable_shared_image_creation_log = false;
+
+}  // namespace
 
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     OneCopyRasterBufferProvider* client,
@@ -279,7 +287,8 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
          "OneCopyRasterStaging"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
     if (!staging_buffer->client_shared_image) {
-      LOG(ERROR) << "Creation of StagingBuffer's SharedImage failed.";
+      LOG_IF(ERROR, !disable_shared_image_creation_log.load())
+          << "Creation of StagingBuffer's SharedImage failed.";
       return false;
     }
   }
@@ -405,4 +414,15 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   return out_sync_token;
 }
 
+namespace test {
+
+ScopedDisableSharedImageCreationLog::ScopedDisableSharedImageCreationLog() {
+  disable_shared_image_creation_log.store(true);
+}
+
+ScopedDisableSharedImageCreationLog::~ScopedDisableSharedImageCreationLog() {
+  disable_shared_image_creation_log.store(false);
+}
+
+}  // namespace test
 }  // namespace cc

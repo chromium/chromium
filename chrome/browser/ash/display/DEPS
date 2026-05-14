@@ -5,6 +5,7 @@ specific_include_rules = {
     "+content/public/test",
   ],
   "display_gpu_crash_browsertest\\.cc": [
-     "+cc/trees",
+     "+cc/raster/one_copy_raster_buffer_provider.h",
+     "+cc/trees/layer_tree_host.h",
   ],
 }

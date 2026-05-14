@@ -5,6 +5,7 @@
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
+#include "cc/raster/one_copy_raster_buffer_provider.h"
 #include "cc/trees/layer_tree_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/gpu_utils.h"
@@ -80,8 +81,8 @@ class TestSurfaceIdObserver : public ui::CompositorObserver {
 
 }  // namespace
 
-// TODO(crbug.com/388451843): Flaky on ChromeOS release.
 IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, DISABLED_CrashInMirror) {
+  cc::test::ScopedDisableSharedImageCreationLog disable;
   display::test::DisplayManagerTestApi test_api(GetDisplayManager());
   test_api.UpdateDisplay("1300x1000,1000x800");
   ASSERT_EQ(2u, GetDisplayManager()->GetNumDisplays());
@@ -119,8 +120,8 @@ IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, DISABLED_CrashInMirror) {
   }
 }
 
-// TODO(crbug.com/483230949): Flaky. Fix and re-enable.
-IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, DISABLED_CrashInUnified) {
+IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, CrashInUnified) {
+  cc::test::ScopedDisableSharedImageCreationLog disable;
   auto* display_manager = GetDisplayManager();
   display_manager->SetUnifiedDesktopEnabled(true);
 
