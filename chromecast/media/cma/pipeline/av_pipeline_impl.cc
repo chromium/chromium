@@ -76,7 +76,10 @@ bool AvPipelineImpl::StartPlayingFrom(
     LOG(INFO) << __FUNCTION__ << " called while in error state";
     return false;
   }
-  DCHECK_EQ(state_, kFlushed);
+  if (state_ != kFlushed) {
+    LOG(ERROR) << __FUNCTION__ << " called in unexpected state " << state_;
+    return false;
+  }
 
   // Buffering related initialization.
   DCHECK(frame_provider_);
