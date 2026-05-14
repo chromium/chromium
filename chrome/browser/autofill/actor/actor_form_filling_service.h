@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_H_
 #define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -37,8 +38,23 @@ class ActorFormFillingService {
   // fill. Multiple trigger fields are supported to allow the actor to indicate
   // that these form sections should be filled with the same data (i.e., that
   // they are part of the same overall form).
-  using FillRequest = std::pair<ActorFormFillingRequest::RequestedData,
-                                std::vector<FieldGlobalId>>;
+  struct FillRequest {
+    FillRequest();
+    FillRequest(ActorFormFillingRequest::RequestedData requested_data,
+                std::vector<FieldGlobalId> trigger_fields,
+                std::string section_label = "");
+    FillRequest(const FillRequest&);
+    FillRequest& operator=(const FillRequest&);
+    FillRequest(FillRequest&&);
+    FillRequest& operator=(FillRequest&&);
+    ~FillRequest();
+
+    ActorFormFillingRequest::RequestedData requested_data;
+    std::vector<FieldGlobalId> trigger_fields;
+    // TODO(crbug.com/502157873): Forward section_label from FillRequest to
+    // ActorFormFillingRequest.
+    std::string section_label;
+  };
 
   // Retrieves Autofill suggestions for a set of fill requests from the actor.
   //

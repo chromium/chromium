@@ -63,7 +63,13 @@ auto EqActorSuggestion(const autofill::ActorSuggestion& expected) {
 auto EqFormFillingRequest(
     RequestedData expected_data,
     const std::vector<autofill::FieldGlobalId>& expected_ids) {
-  return FieldsAre(Eq(expected_data), Eq(expected_ids));
+  return AllOf(
+      Field("requested_data",
+            &autofill::ActorFormFillingService::FillRequest::requested_data,
+            Eq(expected_data)),
+      Field("trigger_fields",
+            &autofill::ActorFormFillingService::FillRequest::trigger_fields,
+            Eq(expected_ids)));
 }
 
 // Helper function that returns a composed matcher for ActorFormFillingRequest.

@@ -125,8 +125,8 @@ mojom::ActionResultPtr AttemptFormFillingTool::TimeOfUseValidation(
                         /*requires_page_stabilization=*/false,
                         "At least one trigger field must be provided.");
     }
-    service_fill_requests_.emplace_back(request.requested_data,
-                                        std::move(field_ids));
+    service_fill_requests_.emplace_back(
+        request.requested_data, std::move(field_ids), request.section_label);
   }
 
   if (service_fill_requests_.empty()) {
@@ -296,7 +296,7 @@ bool AttemptFormFillingTool::OnFormPresented(
 
   form_fill_metrics::RecordOnSuggestionPresentedMetrics(
       /*is_first=*/request_index == 0,
-      service_fill_requests_[request_index].first);
+      service_fill_requests_[request_index].requested_data);
   tool_delegate().GetActorFormFillingService().ScrollToForm(*tab,
                                                             request_index);
   return true;
@@ -343,7 +343,7 @@ bool AttemptFormFillingTool::OnFormConfirmed(
 
   form_fill_metrics::RecordOnSuggestionConfirmedMetrics(
       /*is_last=*/request_index == service_fill_requests_.size() - 1,
-      service_fill_requests_[request_index].first);
+      service_fill_requests_[request_index].requested_data);
   autofill::ActorFormFillingSelection selection;
   selection.selected_suggestion_id = autofill::ActorSuggestionId(id);
   tool_delegate().GetActorFormFillingService().FillForm(

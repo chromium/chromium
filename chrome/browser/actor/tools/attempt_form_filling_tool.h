@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/autofill/actor/actor_form_filling_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
@@ -80,8 +81,7 @@ class AttemptFormFillingTool : public Tool,
   // populated in TimeOfUseValidation and then updated in OnSuggestionsRetrieved
   // to reflect the actual requests returned by the service, which may have
   // been split.
-  std::vector<std::pair<AttemptFormFillingToolRequest::RequestedData,
-                        std::vector<autofill::FieldGlobalId>>>
+  std::vector<autofill::ActorFormFillingService::FillRequest>
       service_fill_requests_;
   base::WeakPtrFactory<AttemptFormFillingTool> weak_factory_{this};
 };

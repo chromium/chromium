@@ -32,7 +32,6 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
     FormFillingRequest& operator=(FormFillingRequest&&);
 
     RequestedData requested_data{};
-    // TODO(crbug.com/502157873): Pass section_label to the tool logic.
     std::string section_label;
     std::vector<PageTarget> trigger_fields;
   };

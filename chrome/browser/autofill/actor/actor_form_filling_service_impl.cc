@@ -465,6 +465,22 @@ ActorFormFillingServiceImpl::FillData::operator=(FillData&&) = default;
 
 ActorFormFillingServiceImpl::FillData::~FillData() = default;
 
+ActorFormFillingService::FillRequest::FillRequest() = default;
+ActorFormFillingService::FillRequest::FillRequest(
+    ActorFormFillingRequest::RequestedData requested_data,
+    std::vector<FieldGlobalId> trigger_fields,
+    std::string section_label)
+    : requested_data(requested_data),
+      trigger_fields(std::move(trigger_fields)),
+      section_label(std::move(section_label)) {}
+ActorFormFillingService::FillRequest::FillRequest(const FillRequest&) = default;
+ActorFormFillingService::FillRequest&
+ActorFormFillingService::FillRequest::operator=(const FillRequest&) = default;
+ActorFormFillingService::FillRequest::FillRequest(FillRequest&&) = default;
+ActorFormFillingService::FillRequest&
+ActorFormFillingService::FillRequest::operator=(FillRequest&&) = default;
+ActorFormFillingService::FillRequest::~FillRequest() = default;
+
 bool ActorFormFillingServiceImpl::FillData::HasPaymentsPayload() const {
   return std::holds_alternative<CreditCard>(filling_payload);
 }
@@ -521,7 +537,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
   // Collect products per form to record metrics.
   base::flat_map<FormGlobalId, base::flat_set<FillingProduct>> products_by_form;
 
-  for (const auto& [requested_data, trigger_fields] : fill_requests) {
+  for (const auto& fill_request : fill_requests) {
     using enum ActorFormFillingRequest::RequestedData;
 
     // A single FillRequest can result in multiple ActorFormFillingRequests
@@ -532,7 +548,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
     };
     std::vector<SubRequest> sub_requests;
 
-    switch (requested_data) {
+    switch (fill_request.requested_data) {
       case kAddress:
       case kShippingAddress:
       case kBillingAddress:
@@ -549,21 +565,22 @@ void ActorFormFillingServiceImpl::GetSuggestions(
           return;
         }
 
-        if (actor::ShouldSplitOutContactInfo(trigger_fields, autofill_manager,
-                                             log_manager)) {
+        if (actor::ShouldSplitOutContactInfo(fill_request.trigger_fields,
+                                             autofill_manager, log_manager)) {
           sub_requests.push_back(
               {kContactInformation, actor::SectionSplitPart::kContactInfo});
           // For the address split part, use the original requested_data type
           // unless it was CONTACT_INFORMATION as that would create a misleading
           // UX (two contact info cards back to back).
           ActorFormFillingRequest::RequestedData address_requested_data =
-              (requested_data == kContactInformation) ? kAddress
-                                                      : requested_data;
+              (fill_request.requested_data == kContactInformation)
+                  ? kAddress
+                  : fill_request.requested_data;
           sub_requests.push_back(
               {address_requested_data, actor::SectionSplitPart::kAddress});
         } else {
           sub_requests.push_back(
-              {requested_data, actor::SectionSplitPart::kNoSplit});
+              {fill_request.requested_data, actor::SectionSplitPart::kNoSplit});
         }
         break;
       }
@@ -601,13 +618,13 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         case kHomeAddress:
         case kWorkAddress:
         case kContactInformation:
-          suggestion_data =
-              GetAddressSuggestions(trigger_fields, autofill_manager,
-                                    log_manager, sub_request.split_part);
+          suggestion_data = GetAddressSuggestions(fill_request.trigger_fields,
+                                                  autofill_manager, log_manager,
+                                                  sub_request.split_part);
           break;
         case kCreditCard:
           suggestion_data = GetCreditCardSuggestions(
-              trigger_fields, autofill_manager, log_manager);
+              fill_request.trigger_fields, autofill_manager, log_manager);
           break;
         default:
           LOG_AF(log_manager)
@@ -628,7 +645,8 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       }
 
       if (const FormStructure* form_structure =
-              autofill_manager.FindCachedFormById(trigger_fields[0])) {
+              autofill_manager.FindCachedFormById(
+                  fill_request.trigger_fields[0])) {
         products_by_form[form_structure->global_id()].insert(
             sub_request.requested_data == kCreditCard
                 ? FillingProduct::kCreditCard
@@ -638,6 +656,8 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       requests.emplace_back();
       requests.back().requested_data = sub_request.requested_data;
       requests.back().request_origin = origin;
+      // TODO(crbug.com/502157873): Forward section_label from FillRequest to
+      // ActorFormFillingRequest.
       requests.back().suggestions.reserve(
           suggestion_data.suggestions_with_fill_data.size());
       suggestion_trigger_field_id_.emplace_back(
