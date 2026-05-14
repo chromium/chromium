@@ -8,8 +8,8 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * Metadata to undo a tab group operation performed by {@link TabGroupModelFilter}. This interface
- * exposes some access to the underlying data to allow the undo snackbar to be displayed correctly.
+ * Metadata to undo a tab group operation performed by {@link TabModel}. This interface exposes some
+ * access to the underlying data to allow the undo snackbar to be displayed correctly.
  */
 @NullMarked
 public interface UndoGroupMetadata {

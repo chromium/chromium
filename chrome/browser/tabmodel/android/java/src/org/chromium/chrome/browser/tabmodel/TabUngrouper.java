@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.List;
 
 /**
- * Handles the ungrouping of tabs for {@link TabGroupModelFilter}.
+ * Handles the ungrouping of tabs for {@link TabModel}.
  *
  * <p>This interface, combined with {@link TabRemover}, facilitates a shared implementation with the
  * ability to show warning dialogs when events may be destructive to tab groups.

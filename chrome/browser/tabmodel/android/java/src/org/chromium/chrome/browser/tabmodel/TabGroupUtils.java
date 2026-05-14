@@ -54,12 +54,12 @@ public class TabGroupUtils {
     /**
      * This method gets the selected tab of the group where {@code tab} is in.
      *
-     * @param filter The filter that owns the {@code tab}.
+     * @param tabModel The tab model that owns the {@code tab}.
      * @param tab The {@link Tab}.
      * @return The selected tab of the group which contains the {@code tab}
      */
-    public static Tab getSelectedTabInGroupForTab(TabGroupModelFilter filter, Tab tab) {
-        return assumeNonNull(filter.getRepresentativeTabAt(filter.representativeIndexOf(tab)));
+    public static Tab getSelectedTabInGroupForTab(TabModel tabModel, Tab tab) {
+        return assumeNonNull(tabModel.getRepresentativeTabAt(tabModel.representativeIndexOf(tab)));
     }
 
     /**
@@ -110,13 +110,13 @@ public class TabGroupUtils {
     /**
      * Regroups the provided list of tabs into a tab group using the given {@link TabGroupMetadata}.
      *
-     * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
+     * @param tabModel The {@link TabModel} to act on.
      * @param tabs The list of tabs to be merged to a group.
      * @param tabGroupMetadata The metadata used to regrouped the tabs.
      * @param shouldApplyCollapse Whether to apply the collapsed state.
      */
     public static void regroupTabs(
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             List<Tab> tabs,
             TabGroupMetadata tabGroupMetadata,
             boolean shouldApplyCollapse) {
@@ -126,18 +126,17 @@ public class TabGroupUtils {
         boolean tabGroupCollapsed = tabGroupMetadata.tabGroupCollapsed;
         int tabGroupColor = tabGroupMetadata.tabGroupColor;
 
-        // 2. Create the local tab group in the current TabGroupModelFilter.
-        tabGroupModelFilter.createTabGroupForTabGroupSync(tabs, tabGroupId);
+        // 2. Create the local tab group in the current TabModel.
+        tabModel.createTabGroupForTabGroupSync(tabs, tabGroupId);
         tabGroupId = tabs.get(0).getTabGroupId();
         assumeNonNull(tabGroupId);
 
         // 3. Apply the tab group attributes (color, collapsed state, and title) using the new
         // rootId.
-        tabGroupModelFilter.setTabGroupColor(tabGroupId, tabGroupColor);
-        tabGroupModelFilter.setTabGroupTitle(tabGroupId, tabGroupTitle);
+        tabModel.setTabGroupColor(tabGroupId, tabGroupColor);
+        tabModel.setTabGroupTitle(tabGroupId, tabGroupTitle);
         if (shouldApplyCollapse) {
-            tabGroupModelFilter.setTabGroupCollapsed(
-                    tabGroupId, tabGroupCollapsed, /* animate= */ false);
+            tabModel.setTabGroupCollapsed(tabGroupId, tabGroupCollapsed, /* animate= */ false);
         }
     }
 
@@ -258,23 +257,23 @@ public class TabGroupUtils {
     /** Creates a new group containing {@param tabs} ({@param tabs} must be non-empty). */
     public static void createNewGroupForTabs(
             List<Tab> tabs,
-            TabGroupModelFilter filter,
+            TabModel tabModel,
             @Nullable TabMovedCallback tabMovedCallback,
             @Nullable TabGroupCreationCallback tabGroupCreationCallback) {
         assert !tabs.isEmpty();
         Tab tab = tabs.get(0);
 
         if (tabs.size() == 1 && tab.getTabGroupId() == null) {
-            filter.createSingleTabGroup(tab);
+            tabModel.createSingleTabGroup(tab);
         } else if (tabs.size() == 1 && tab.getTabGroupId() != null) {
-            filter.getTabUngrouper()
+            tabModel.getTabUngrouper()
                     .ungroupTabs(tabs, /* trailing= */ false, /* allowDialog= */ false);
             if (tabMovedCallback != null) {
                 tabMovedCallback.onTabMoved();
             }
-            filter.createSingleTabGroup(tab);
+            tabModel.createSingleTabGroup(tab);
         } else {
-            filter.mergeListOfTabsToGroup(
+            tabModel.mergeListOfTabsToGroup(
                     tabs, tab, /* notify= */ MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         }
 
@@ -325,14 +324,14 @@ public class TabGroupUtils {
      * Filters the given list of tabs, returning a new list containing only the tabs that are part
      * of a tab group.
      *
-     * @param filter The {@link TabGroupModelFilter} used to find grouped tabs.
+     * @param tabModel The {@link TabModel} used to find grouped tabs.
      * @param tabs The list of {@link Tab}s to filter.
      * @return A new list of {@link Tab}s that are in a tab group.
      */
-    public static List<Tab> getGroupedTabs(TabGroupModelFilter filter, List<Tab> tabs) {
+    public static List<Tab> getGroupedTabs(TabModel tabModel, List<Tab> tabs) {
         List<Tab> groupedTabs = new ArrayList<>();
         for (Tab tab : tabs) {
-            if (filter.isTabInTabGroup(tab)) groupedTabs.add(tab);
+            if (tabModel.isTabInTabGroup(tab)) groupedTabs.add(tab);
         }
         return groupedTabs;
     }

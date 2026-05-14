@@ -55,9 +55,6 @@ public interface TabModelDelegate {
     /** Provides the top level tab manager object for the current scope. */
     TabModel getModel(boolean incognito);
 
-    /** Provides the top level tab group manager object for the current scope. */
-    TabGroupModelFilter getFilter(boolean incognito);
-
     /**
      * Whether all the tabs in the tab model have been restored from disk. If this is false session
      * restore is still ongoing.

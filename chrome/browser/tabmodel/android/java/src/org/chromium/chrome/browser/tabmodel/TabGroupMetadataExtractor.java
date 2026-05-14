@@ -26,7 +26,7 @@ public class TabGroupMetadataExtractor {
      * Extracts the metadata of a given tab group, including tab IDs, URLs, group ID, color, title,
      * collapsed state and shared state.
      *
-     * @param tabGroupModelFilter The tab group model filter to fetch group-level properties.
+     * @param tabModel The tab model to fetch group-level properties.
      * @param groupedTabs The list of tabs that form the group.
      * @param sourceWindowIndex The index of the window that holds the tab group.
      * @param selectedTabId The selected tab ID of the group.
@@ -35,7 +35,7 @@ public class TabGroupMetadataExtractor {
      *     null} if the provided tab group list is empty.
      */
     public static @Nullable TabGroupMetadata extractTabGroupMetadata(
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             List<Tab> groupedTabs,
             int sourceWindowIndex,
             int selectedTabId,
@@ -68,9 +68,9 @@ public class TabGroupMetadataExtractor {
         if (tabGroupId == null) return null;
 
         // 3. Fetch group-level properties using the tab group ID.
-        int tabGroupColor = tabGroupModelFilter.getTabGroupColor(tabGroupId);
-        @Nullable String tabGroupTitle = tabGroupModelFilter.getTabGroupTitle(tabGroupId);
-        boolean tabGroupCollapsed = tabGroupModelFilter.getTabGroupCollapsed(tabGroupId);
+        int tabGroupColor = tabModel.getTabGroupColor(tabGroupId);
+        @Nullable String tabGroupTitle = tabModel.getTabGroupTitle(tabGroupId);
+        boolean tabGroupCollapsed = tabModel.getTabGroupCollapsed(tabGroupId);
 
         // If the tab group is collapsed, do not select any tab within the group.
         if (tabGroupCollapsed) selectedTabId = Tab.INVALID_TAB_ID;

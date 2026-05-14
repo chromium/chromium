@@ -11,8 +11,8 @@ import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Handles removal of {@link Tab} entities from a {@link TabModel} via closure or removal. Also
- * handles the ungrouping of tabs for {@link TabGroupModelFilter}. This interface is intended to be
- * a counterpart of {@link TabCreator}.
+ * handles the ungrouping of tabs for {@link TabModel}. This interface is intended to be a
+ * counterpart of {@link TabCreator}.
  *
  * <p>This interface, combined with {@link TabUngrouper}, facilitates a shared implementation with
  * the ability to show warning dialogs when events may be destructive to tab groups.

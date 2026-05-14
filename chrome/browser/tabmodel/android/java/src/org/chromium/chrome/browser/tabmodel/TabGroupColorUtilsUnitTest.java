@@ -97,7 +97,7 @@ public class TabGroupColorUtilsUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Context mContext;
-    @Mock TabGroupModelFilter mFilter;
+    @Mock TabModel mTabModel;
     @Mock SharedPreferences mSharedPreferences;
     @Mock SharedPreferences.Editor mEditor;
     @Mock SharedPreferences.Editor mPutIntEditor;
@@ -118,7 +118,7 @@ public class TabGroupColorUtilsUnitTest {
                             return TabGroupVisualDataStore.getTabGroupColor(
                                     TAB_GROUP_ID_MAP.get(tabGroupId));
                         })
-                .when(mFilter)
+                .when(mTabModel)
                 .getTabGroupColor(any(Token.class));
         doAnswer(
                         invocation -> {
@@ -128,7 +128,7 @@ public class TabGroupColorUtilsUnitTest {
                                     TAB_GROUP_ID_MAP.get(tabGroupId), color);
                             return null;
                         })
-                .when(mFilter)
+                .when(mTabModel)
                 .setTabGroupColor(any(Token.class), anyInt());
 
         ContextUtils.initApplicationContextForTests(mContext);
@@ -166,7 +166,7 @@ public class TabGroupColorUtilsUnitTest {
         tabGroupIdsSet.add(TAB_GROUP_ID_2);
         tabGroupIdsSet.add(TAB_GROUP_ID_3);
 
-        when(mFilter.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that there is no stored tab group color for these root ids.
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_1), INVALID_COLOR_ID))
                 .thenReturn(INVALID_COLOR_ID);
@@ -175,7 +175,7 @@ public class TabGroupColorUtilsUnitTest {
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_3), INVALID_COLOR_ID))
                 .thenReturn(INVALID_COLOR_ID);
 
-        TabGroupColorUtils.assignTabGroupColorsIfApplicable(mFilter);
+        TabGroupColorUtils.assignTabGroupColorsIfApplicable(mTabModel);
 
         // Test the scenario where no tab groups have colors so the first colors in order are
         // assigned.
@@ -192,14 +192,14 @@ public class TabGroupColorUtilsUnitTest {
         tabGroupIdsSet.add(TAB_GROUP_ID_1);
         tabGroupIdsSet.add(TAB_GROUP_ID_2);
 
-        when(mFilter.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that the first and third colors already exist.
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_1), INVALID_COLOR_ID))
                 .thenReturn(COLOR_1);
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_2), INVALID_COLOR_ID))
                 .thenReturn(COLOR_3);
 
-        assertEquals(COLOR_2, TabGroupColorUtils.getNextSuggestedColorId(mFilter));
+        assertEquals(COLOR_2, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
 
     @Test
@@ -209,7 +209,7 @@ public class TabGroupColorUtilsUnitTest {
         tabGroupIdsSet.add(TAB_GROUP_ID_2);
         tabGroupIdsSet.add(TAB_GROUP_ID_3);
 
-        when(mFilter.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that the first and second colors already exist.
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_1), INVALID_COLOR_ID))
                 .thenReturn(COLOR_1);
@@ -218,7 +218,7 @@ public class TabGroupColorUtilsUnitTest {
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_3), INVALID_COLOR_ID))
                 .thenReturn(COLOR_2);
 
-        assertEquals(COLOR_3, TabGroupColorUtils.getNextSuggestedColorId(mFilter));
+        assertEquals(COLOR_3, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
 
     @Test
@@ -226,12 +226,12 @@ public class TabGroupColorUtilsUnitTest {
         Set<Token> tabGroupIdsSet = new ArraySet<>();
         tabGroupIdsSet.add(TAB_GROUP_ID_1);
 
-        when(mFilter.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that only the second color already exists.
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_1), INVALID_COLOR_ID))
                 .thenReturn(COLOR_2);
 
-        assertEquals(COLOR_1, TabGroupColorUtils.getNextSuggestedColorId(mFilter));
+        assertEquals(COLOR_1, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
 
     @Test
@@ -247,7 +247,7 @@ public class TabGroupColorUtilsUnitTest {
         tabGroupIdsSet.add(TAB_GROUP_ID_8);
         tabGroupIdsSet.add(TAB_GROUP_ID_9);
 
-        when(mFilter.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that all colors are used.
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_1), INVALID_COLOR_ID))
                 .thenReturn(COLOR_1);
@@ -268,7 +268,7 @@ public class TabGroupColorUtilsUnitTest {
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_9), INVALID_COLOR_ID))
                 .thenReturn(COLOR_9);
 
-        assertEquals(COLOR_1, TabGroupColorUtils.getNextSuggestedColorId(mFilter));
+        assertEquals(COLOR_1, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
 
     @Test
@@ -283,7 +283,7 @@ public class TabGroupColorUtilsUnitTest {
         tabGroupIdsSet.add(TAB_GROUP_ID_7);
         tabGroupIdsSet.add(TAB_GROUP_ID_8);
 
-        when(mFilter.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that all colors are used except for COLOR_8.
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_1), INVALID_COLOR_ID))
                 .thenReturn(COLOR_1);
@@ -302,20 +302,20 @@ public class TabGroupColorUtilsUnitTest {
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_8), INVALID_COLOR_ID))
                 .thenReturn(COLOR_9);
 
-        assertEquals(COLOR_8, TabGroupColorUtils.getNextSuggestedColorId(mFilter));
+        assertEquals(COLOR_8, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
 
         // Mock that subsequent addition of the missing color directs the suggestion to COLOR_1.
         tabGroupIdsSet.add(TAB_GROUP_ID_9);
-        when(mFilter.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_9), INVALID_COLOR_ID))
                 .thenReturn(COLOR_8);
-        assertEquals(COLOR_1, TabGroupColorUtils.getNextSuggestedColorId(mFilter));
+        assertEquals(COLOR_1, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
 
         // Mock that subsequent addition of the first color directs the suggestion to COLOR_2.
         tabGroupIdsSet.add(TAB_GROUP_ID_10);
-        when(mFilter.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_10), INVALID_COLOR_ID))
                 .thenReturn(COLOR_1);
-        assertEquals(COLOR_2, TabGroupColorUtils.getNextSuggestedColorId(mFilter));
+        assertEquals(COLOR_2, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
 }

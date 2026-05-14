@@ -27,9 +27,9 @@ public class TabGroupColorUtils {
      * This method assigns a color to all tab groups which do not have an assigned tab color at
      * startup. If a migration for all existing tabs has already been performed, skip this logic.
      *
-     * @param tabGroupModelFilter The {@TabGroupModelFilter} that governs the current tab groups.
+     * @param tabModel The {@link TabModel} that governs the current tab groups.
      */
-    public static void assignTabGroupColorsIfApplicable(TabGroupModelFilter tabGroupModelFilter) {
+    public static void assignTabGroupColorsIfApplicable(TabModel tabModel) {
         // TODO(b/41490324): Consider removing the migration logic when tab group colors are
         // launched. There may be an argument to keep this around in case the color info is somehow
         // lost between startups, in which case this will at least set some default colors up. In
@@ -40,17 +40,17 @@ public class TabGroupColorUtils {
             return;
         }
 
-        Map<Integer, Integer> currentColorCountMap = getCurrentColorCountMap(tabGroupModelFilter);
-        Set<Token> tabGroupIds = tabGroupModelFilter.getAllTabGroupIds();
+        Map<Integer, Integer> currentColorCountMap = getCurrentColorCountMap(tabModel);
+        Set<Token> tabGroupIds = tabModel.getAllTabGroupIds();
 
         // Assign a color to all tab groups that don't have a color.
         for (Token tabGroupId : tabGroupIds) {
-            int colorId = tabGroupModelFilter.getTabGroupColor(tabGroupId);
+            int colorId = tabModel.getTabGroupColor(tabGroupId);
 
             // Retrieve the next suggested colorId if the current tab group does not have a color.
             if (colorId == INVALID_COLOR_ID) {
                 int suggestedColorId = getNextSuggestedColorId(currentColorCountMap);
-                tabGroupModelFilter.setTabGroupColor(tabGroupId, suggestedColorId);
+                tabModel.setTabGroupColor(tabGroupId, suggestedColorId);
                 currentColorCountMap.put(
                         suggestedColorId,
                         assumeNonNull(currentColorCountMap.get(suggestedColorId)) + 1);
@@ -68,12 +68,12 @@ public class TabGroupColorUtils {
      * that appears first in the color list. The suggested color value should be a color id of type
      * {@link TabGroupColorId}.
      *
-     * @param tabGroupModelFilter The {@link TabGroupModelFilter} that governs all tab groups.
+     * @param tabModel The {@link TabModel} that governs all tab groups.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static int getNextSuggestedColorId(TabGroupModelFilter tabGroupModelFilter) {
+    public static int getNextSuggestedColorId(TabModel tabModel) {
         // Generate the currentColorCountMap.
-        Map<Integer, Integer> currentColorCountMap = getCurrentColorCountMap(tabGroupModelFilter);
+        Map<Integer, Integer> currentColorCountMap = getCurrentColorCountMap(tabModel);
         return getNextSuggestedColorId(currentColorCountMap);
     }
 
@@ -93,19 +93,18 @@ public class TabGroupColorUtils {
     }
 
     /** Get a map that indicates the current usage count of each tab group color. */
-    private static Map<Integer, Integer> getCurrentColorCountMap(
-            TabGroupModelFilter tabGroupModelFilter) {
+    private static Map<Integer, Integer> getCurrentColorCountMap(TabModel tabModel) {
         List<Integer> colorList = getTabGroupColorIdList();
         Map<Integer, Integer> colorCountMap = new LinkedHashMap<>(colorList.size());
         for (Integer colorId : colorList) {
             colorCountMap.put(colorId, 0);
         }
 
-        Set<Token> tabGroupIds = tabGroupModelFilter.getAllTabGroupIds();
+        Set<Token> tabGroupIds = tabModel.getAllTabGroupIds();
 
         // Filter all tab groups for ones that already have a color assigned.
         for (Token tabGroupId : tabGroupIds) {
-            int colorId = tabGroupModelFilter.getTabGroupColor(tabGroupId);
+            int colorId = tabModel.getTabGroupColor(tabGroupId);
 
             // If the tab group has a color stored on shared prefs, increment the colorId map count.
             if (colorId != INVALID_COLOR_ID) {
