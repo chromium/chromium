@@ -6,12 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-void FakeLocalPrinter::CancelPrintJob(const std::string& printer_id,
-                                      unsigned int job_id,
-                                      CancelPrintJobCallback callback) {
-  FAIL();
-}
-
 void FakeLocalPrinter::GetPrintServersConfig(
     GetPrintServersConfigCallback callback) {
   FAIL();

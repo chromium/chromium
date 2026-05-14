@@ -204,17 +204,6 @@ void LocalPrinterAsh::OnServerPrintersChanged(
   }
 }
 
-void LocalPrinterAsh::CancelPrintJob(const std::string& printer_id,
-                                     unsigned int job_id,
-                                     CancelPrintJobCallback callback) {
-  Profile* profile = GetProfile();
-  DCHECK(profile);
-  ash::printing::print_management::PrintingManagerFactory::GetForProfile(
-      profile)
-      ->CancelPrintJob(ash::CupsPrintJob::CreateUniqueId(printer_id, job_id),
-                       std::move(callback));
-}
-
 void LocalPrinterAsh::GetPrintServersConfig(
     GetPrintServersConfigCallback callback) {
   Profile* profile = GetProfile();

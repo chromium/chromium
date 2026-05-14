@@ -189,11 +189,6 @@ enum PrintJobSource {
 // printing from Lacros.
 [Uuid="81aea7f5-a52b-4f88-8037-951f3c174f1e"]
 interface LocalPrinter {
-  // Cancels a print job. Forwards to CancelPrintJob() in
-  // chromeos/components/print_management/mojom/printing_manager.mojom.
-  [MinVersion=3]
-  CancelPrintJob@12(string printer_id, uint32 job_id) => (bool attempted);
-
   // Gets print server information.
   GetPrintServersConfig@6() => (PrintServersConfig config);
 

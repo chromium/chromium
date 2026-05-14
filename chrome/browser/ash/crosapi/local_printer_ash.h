@@ -80,9 +80,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
       const std::vector<ash::PrinterDetector::DetectedPrinter>&) override;
 
   // crosapi::mojom::LocalPrinter:
-  void CancelPrintJob(const std::string& printer_id,
-                      unsigned int job_id,
-                      CancelPrintJobCallback callback) override;
   void GetPrintServersConfig(GetPrintServersConfigCallback callback) override;
   void ChoosePrintServers(const std::vector<std::string>& print_server_ids,
                           ChoosePrintServersCallback callback) override;

@@ -9,7 +9,14 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/print_management/printing_manager.h"
+#include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace printing {
 
@@ -58,8 +65,21 @@ InProgressJobsStorageChromeOS::~InProgressJobsStorageChromeOS() = default;
 
 void InProgressJobsStorageChromeOS::Cancel() {
   const auto& [printer_id, job_id] = controllers_.current_context();
-  GetLocalPrinterInterface()->CancelPrintJob(printer_id, job_id,
-                                             base::DoNothing());
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
+    return;
+  }
+  // TODO(crbug.com/479647640): Check if we should use current user instead of
+  // primary user.
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
+  CHECK(profile);
+  ash::printing::print_management::PrintingManagerFactory::GetForProfile(
+      profile)
+      ->CancelPrintJob(ash::CupsPrintJob::CreateUniqueId(printer_id, job_id),
+                       base::DoNothing());
 }
 
 void InProgressJobsStorageChromeOS::OnPrintJobUpdate(

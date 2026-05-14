@@ -260,12 +260,15 @@ if (enable_printing) {
             "web_api/web_printing_utils.cc",
           ]
           deps += [
+            "//chrome/browser/ash/printing/print_management",
             "//chrome/browser/chromeos/printing",
             "//chrome/browser/web_applications",
             "//chrome/common/printing",
+            "//chromeos/ash/components/browser_context_helper",
             "//components/content_settings/browser",
             "//components/content_settings/core/browser",
             "//components/content_settings/core/common",
+            "//components/session_manager/core",
           ]
         }
       }
