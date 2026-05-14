@@ -1786,8 +1786,8 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="Power.SmartCharging.Messages" enum="SmartChargingMessages"
     expires_after="2026-08-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>Type of messages that are reported by smart charging.</summary>
 </histogram>
 
@@ -1892,8 +1892,8 @@ tools/metrics/histograms/metadata/stability/enums.xml
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnAC" units="units"
     expires_after="2026-11-01">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
   <owner>napper@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The number of times that the user adjusted the brightness during a session
     when on AC. Values for this metric are clamped to 10k count, so the last
@@ -1903,9 +1903,9 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
     units="units" expires_after="2026-10-04">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The number of times that the user adjusted the brightness during a session
     when on battery. Values for this metric are clamped to 10k count, so the
@@ -1935,9 +1935,9 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
     expires_after="2026-09-08">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     What happens when UserActivityManager receives a screen dim imminent
     notification. Only applicable to Chrome OS.
@@ -1946,10 +1946,10 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.ModelDim.Result" enum="PowerMLFinalResult"
     expires_after="2026-11-08">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     What happens after screen is dimmed following model instruction. Only
     applicable to Chrome OS.
@@ -1958,10 +1958,10 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
     expires_after="2026-11-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     What happens after screen dim is deferred following model instruction. Only
     applicable to Chrome OS.
@@ -1970,10 +1970,10 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.NonModelDim.Result" enum="PowerMLFinalResult"
     expires_after="2026-11-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     What happens after screen is dimmed by powerd by ignoring the model
     instruction. Only applicable to Chrome OS.
@@ -1993,9 +1993,9 @@ tools/metrics/histograms/metadata/stability/enums.xml
 <histogram name="PowerML.SmartDimComponent.LoadComponentEvent"
     enum="PowerMLSmartDimComponentLoadComponentEvent"
     expires_after="2026-11-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     Records the event (various failures or success) of loading smart dim
     component. Only applicable to Chrome OS.
@@ -2004,9 +2004,9 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.SmartDimComponent.VersionType"
     enum="PowerMLSmartDimComponentVersionType" expires_after="2026-11-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     Records the type of expected version (default, experimental or empty) used
     by smart dim component installer. Only applicable to Chrome OS.
@@ -2015,9 +2015,9 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.SmartDimComponent.WorkerType"
     enum="PowerMLSmartDimComponentWorkerType" expires_after="2026-11-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     Records the worker type that is used by smart dim ml agent to make a
     decision. Only applicable to Chrome OS.
@@ -2026,10 +2026,10 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
     expires_after="2026-10-11">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>pmalani@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The time elapsed between a Smart Dim Inference Request being sent to the ML
     model, and the request being canceled before the result is returned.
@@ -2038,10 +2038,10 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.SmartDimModel.RequestCompleteDuration" units="ms"
     expires_after="2026-07-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>pmalani@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The time elapsed between a Smart Dim Inference Request being sent to the ML
     model and a result being returned.
@@ -2050,10 +2050,10 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.SmartDimModel.Result"
     enum="PowerMLSmartDimModelResult" expires_after="2026-08-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     This is the status code returned by the model when calculating a user
     inactivity score. If it is any value other than 0 (success), then some issue
@@ -2065,10 +2065,10 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PowerML.SmartDimParameter.Result"
     enum="PowerMLSmartDimParameterResult" expires_after="2026-11-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The result of parsing the dim threshold parameter value. Only applicable to
     Chrome OS.

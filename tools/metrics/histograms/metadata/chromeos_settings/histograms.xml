@@ -623,8 +623,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Settings.MagicBoost.Enabled" enum="BooleanToggled"
     expires_after="2026-06-28">
-  <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     Records when users interact with the MagicBoost toggle in the Chrome OS's
     Search and Assistant setting.
@@ -633,8 +633,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Settings.MagicBoost.HelpMeReadEnabled"
     enum="BooleanToggled" expires_after="2026-03-15">
-  <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     Records when users interact with the Help Me Read toggle in the Chrome OS's
     Search and Assistant setting.
@@ -643,8 +643,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Settings.MagicBoost.HelpMeWriteEnabled"
     enum="BooleanToggled" expires_after="2025-08-10">
-  <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     Records when users interact with the Help Me Write toggle in the Chrome OS's
     Search and Assistant setting.

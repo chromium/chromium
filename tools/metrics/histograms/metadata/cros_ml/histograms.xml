@@ -61,8 +61,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.CpuUsageMilliPercent"
     units="1/1000ths of %" expires_after="2026-07-26">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     Fraction of total CPU resources used by ChromeOS ML Service, sampled every 5
     minutes.
@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
     expires_after="2026-10-01">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The result of load handwriting model, which can be OK or some specific
     error. The error code could be logged in machine learning service in chrome
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="MachineLearningService.HandwritingModel.Recognize.Event"
     enum="Boolean" expires_after="2026-08-09">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The result of handwriting recognition, which can be OK or some specific
     error.
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
     enum="MachineLearningServiceLoadModelResultEvent"
     expires_after="2026-10-01">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The error result of LoadModel in cases when the model name could not be
     determined. See MachineLearningService.*.LoadModelResult.Event for the
@@ -227,8 +227,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.MojoConnectionEvent"
     enum="MachineLearningServiceMojoConnectionEvent" expires_after="2026-08-30">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     Events related to the connection and disconnection of the Mojo IPC channel
     between Chrome and the ChromeOS ML Service.
@@ -237,8 +237,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.NumWorkerProcess" units="count"
     expires_after="2026-10-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     Number of worker processes registered in ml-service. Only used in ChromeOS.
     Sampled every 5 minutes.
@@ -247,8 +247,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.PeakTotalMemoryKb" units="KB"
     expires_after="2026-10-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     Peak total (shared and non-shared) memory used by ChromeOS ML Service over
     the last 24 hours. Sampled every 5 minutes, so may miss short-lived spikes.
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="MachineLearningService.ProcessError"
     enum="MachineLearningServiceProcessError" expires_after="2026-09-27">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     Process handling errors of ml-service. Emitted when there is error in
     process handling. For example, &quot;failed to spawning worker process&quot;
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
     enum="MachineLearningServiceReapWorkerProcessErrno"
     expires_after="2026-10-01">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The &quot;errno&quot; of waitpid calls used by ml-service's control process
     to reap the worker processes. This is only recorded when waitpid meets error
@@ -293,8 +293,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.TotalMemoryKb" units="KB"
     expires_after="2026-07-19">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     Total (shared and non-shared) memory used by ChromeOS ML Service, sampled
     every 5 minutes.
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
     name="MachineLearningService.WebPlatformHandwritingModel.GetPrediction.Event"
     enum="Boolean" expires_after="2026-11-01">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The result of Web platform handwriting recognition, which can be either OK
     or Error.
@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
     expires_after="2026-11-01">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The result of load web platform handwriting model, which can be OK or some
     specific error. The error code could be logged in machine learning service
@@ -327,8 +327,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.WorkerProcessAcceptMojoConnectionTime"
     units="microseconds" expires_after="2026-09-20">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The wall time used for the worker process to accept the mojo connection to
     control process in ml-service. Only used in ChromeOS.
@@ -337,8 +337,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.WorkerProcessCleanUpTime"
     units="microseconds" expires_after="2026-09-27">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The wall time used by the control process to reap and cleanup the worker
     processes in ml-service. Only used in ChromeOS.
@@ -347,8 +347,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.WorkerProcessExitStatus"
     units="exit status" expires_after="2026-10-01">
-  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The exit status of the worker processes of ml-service. Only used in Chrome
     OS. This is only emitted when the worker process exits with non-zero status.
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
     enum="MachineLearningServiceCreateGraphExecutorResultEvent"
     expires_after="2026-08-01">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The result of CreateGraphExecutor request for model {ModelName}, which can
     be OK or some specific error.
@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="MachineLearningService.{ModelName}.ExecuteResult.Event"
     enum="MachineLearningServiceExecuteResultEvent" expires_after="2026-08-01">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The result of Execute request for model {ModelName}, which can be OK or some
     specific error.
@@ -385,7 +385,7 @@ chromium-metrics-reviews@google.com.
     enum="MachineLearningServiceLoadModelResultEvent"
     expires_after="2026-07-26">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     The result of LoadModel request for model {ModelName}, which can be OK or
     some specific error. Additional error information may be found in Chrome
@@ -409,7 +409,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="MachineLearningService.{RequestName}.CpuTimeMicrosec"
     units="microseconds" expires_after="2026-09-27">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>
     CPU time (for one CPU core) of {RequestName} request. Reported for all
     users; users without high-resolution clocks will report 0 for short
@@ -421,7 +421,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="MachineLearningService.{RequestName}.TotalMemoryDeltaKb"
     units="KB" expires_after="2026-09-27">
   <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
+  <owner>ml-service-team@google.com</owner>
   <summary>Memory usage increase caused by {RequestName} request.</summary>
   <token key="RequestName" variants="PerformanceMetricsRequestName"/>
 </histogram>
