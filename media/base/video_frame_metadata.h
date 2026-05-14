@@ -16,6 +16,10 @@
 #include "media/gpu/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
+#endif
+
 namespace media {
 
 // A container for information about effects that might be applied to a frame.
@@ -237,6 +241,13 @@ struct MEDIA_EXPORT VideoFrameMetadata {
 
   // Information about any background blur effect applied to the frame.
   std::optional<EffectInfo> background_blur;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Vulkan sampler conversion information for shared images backed by
+  // multiplanar hardware buffers, such as those obtained from MediaCodec
+  // or Camera2 via ImageReader.
+  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+#endif
 };
 
 }  // namespace media

@@ -125,32 +125,18 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     shared_image = input->shared_image()->Export(
         /*with_buffer_handle=*/true);
     sync_token = input->acquire_sync_token();
-#if BUILDFLAG(IS_ANDROID)
-    return media::mojom::VideoFrameData::NewSharedImageData(
-        media::mojom::SharedImageVideoFrameData::New(
-            std::move(shared_image.value()), std::move(sync_token),
-            /*is_mappable=*/true, std::move(input->ycbcr_info())));
-#else
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image.value()), std::move(sync_token),
             /*is_mappable=*/true));
-#endif
   }
 
   if (input->HasSharedImage()) {
     gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
-#if BUILDFLAG(IS_ANDROID)
-    return media::mojom::VideoFrameData::NewSharedImageData(
-        media::mojom::SharedImageVideoFrameData::New(
-            std::move(shared_image), input->acquire_sync_token(),
-            /*is_mappable=*/false, std::move(input->ycbcr_info())));
-#else
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image), input->acquire_sync_token(),
             /*is_mappable=*/false));
-#endif
   }
 
   if (input->storage_type() == media::VideoFrame::STORAGE_OPAQUE) {
@@ -408,14 +394,6 @@ bool StructTraits<media::mojom::VideoFrameDataView,
           media::VideoFrame::ReleaseMailboxCB(), visible_rect, natural_size,
           timestamp);
     }
-
-#if BUILDFLAG(IS_ANDROID)
-    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
-    if (!shared_image_data.ReadYcbcrData(&ycbcr_info)) {
-      return false;
-    }
-    frame->set_ycbcr_info(ycbcr_info);
-#endif
   } else if (data.is_opaque_data()) {
     DCHECK(metadata.tracking_token.has_value());
     frame = media::VideoFrame::WrapTrackingToken(

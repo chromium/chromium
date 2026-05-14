@@ -17,6 +17,10 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
+#endif
+
 namespace intermediate {
 // A type to be used by mojo serialization, because the generated serialization
 // code makes it impossible to map an optional object to a non-optional enum.
@@ -233,6 +237,13 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
                ? intermediate::EffectState::kEnabled
                : intermediate::EffectState::kDisabled;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  static const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
+      const media::VideoFrameMetadata& input) {
+    return input.ycbcr_info;
+  }
+#endif
 
   static bool Read(media::mojom::VideoFrameMetadataDataView input,
                    media::VideoFrameMetadata* output);

@@ -853,7 +853,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  transfer_resource.ycbcr_info = video_frame->ycbcr_info();
+  transfer_resource.ycbcr_info = video_frame->metadata().ycbcr_info;
   transfer_resource.is_backed_by_surface_view =
       video_frame->metadata().in_surface_view;
 #endif

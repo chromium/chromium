@@ -97,6 +97,9 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.frame_sequence.has_value());
   EXPECT_FALSE(metadata_out.source_id.has_value());
   EXPECT_FALSE(metadata_out.background_blur.has_value());
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(metadata_out.ycbcr_info.has_value());
+#endif
 
   EXPECT_EQ(metadata_out.capture_version, media::CaptureVersion());
 }
@@ -159,6 +162,13 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   metadata_in.background_blur = media::EffectInfo{.enabled = true};
 
+#if BUILDFLAG(IS_ANDROID)
+  metadata_in.ycbcr_info = gpu::VulkanYCbCrInfo(
+      /*image_format=*/0, /*external_format=*/2, /*suggested_ycbcr_model=*/3,
+      /*suggested_ycbcr_range=*/1, /*suggested_xchroma_offset=*/0,
+      /*suggested_ychroma_offset=*/1, /*format_features=*/7);
+#endif
+
   metadata_in.capture_version =
       media::CaptureVersion(/*source=*/123, /*sub_capture=*/456);
 
@@ -210,6 +220,23 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.source_id, metadata_out.source_id);
   EXPECT_EQ(metadata_in.background_blur->enabled,
             metadata_out.background_blur->enabled);
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_TRUE(metadata_out.ycbcr_info.has_value());
+  EXPECT_EQ(metadata_in.ycbcr_info->image_format,
+            metadata_out.ycbcr_info->image_format);
+  EXPECT_EQ(metadata_in.ycbcr_info->external_format,
+            metadata_out.ycbcr_info->external_format);
+  EXPECT_EQ(metadata_in.ycbcr_info->suggested_ycbcr_model,
+            metadata_out.ycbcr_info->suggested_ycbcr_model);
+  EXPECT_EQ(metadata_in.ycbcr_info->suggested_ycbcr_range,
+            metadata_out.ycbcr_info->suggested_ycbcr_range);
+  EXPECT_EQ(metadata_in.ycbcr_info->suggested_xchroma_offset,
+            metadata_out.ycbcr_info->suggested_xchroma_offset);
+  EXPECT_EQ(metadata_in.ycbcr_info->suggested_ychroma_offset,
+            metadata_out.ycbcr_info->suggested_ychroma_offset);
+  EXPECT_EQ(metadata_in.ycbcr_info->format_features,
+            metadata_out.ycbcr_info->format_features);
+#endif
 }
 
 }  // namespace media

@@ -441,6 +441,9 @@ struct VideoFrameMetadata {
   uint64? source_id;
 
   EffectState background_blur;
+
+  [EnableIf=is_android]
+  gpu.mojom.VulkanYCbCrInfo? ycbcr_info;
 };
 
 // This defines a mojo transport format for media::VideoFrame.
@@ -500,10 +503,6 @@ struct SharedImageVideoFrameData {
   gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
   bool is_mappable;
-  // |ycbcr_data| is present on Android when the
-  // video is hardware decoded and the display compositor uses Vulkan.
-  [EnableIf=is_android]
-  gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
 };
 
 // An empty structure used for STORAGE_OPAQUE VideoFrame.

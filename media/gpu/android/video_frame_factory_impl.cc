@@ -276,7 +276,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   }
 
   // For Vulkan.
-  frame->set_ycbcr_info(frame_info.ycbcr_info);
+  frame->metadata().ycbcr_info = frame_info.ycbcr_info;
 
   frame->set_color_space(color_space);
   frame->set_hdr_metadata(hdr_metadata);

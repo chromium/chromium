@@ -44,10 +44,6 @@
 #include "base/files/scoped_file.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-#include "gpu/vulkan/vulkan_ycbcr_info.h"
-#endif
-
 class SkPixmap;
 class SkYUVAInfo;
 
@@ -587,17 +583,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     return const_cast<uint8_t*>(data(plane));
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const {
-    return wrapped_frame_ ? wrapped_frame_->ycbcr_info() : ycbcr_info_;
-  }
-
-  // Provide the sampler conversion information for the frame.
-  void set_ycbcr_info(const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
-    ycbcr_info_ = ycbcr_info;
-  }
-#endif
-
   // Returns pointer to the data in the visible region of the frame, if
   // HasDirectCpuAccess() is true. The returned pointer is offset into the plane
   // buffer specified by visible_rect().origin(). Memory is owned by VideoFrame
@@ -859,11 +844,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
-
-#if BUILDFLAG(IS_ANDROID)
-  // Sampler conversion information which is used in vulkan context for android.
-  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
-#endif
 
   // Allocation which makes up |data_| planes for self-allocated frames.
   std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> private_data_;
