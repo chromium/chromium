@@ -172,6 +172,22 @@ public class LocalTabGroupMutationHelperUnitTest {
     }
 
     @Test
+    public void testCreateNewTabGroup_UnsavableUrl() {
+        SavedTabGroup savedTabGroup = createOneSavedTabGroup(null, new Integer[] {null});
+        SavedTabGroupTab savedTab = savedTabGroup.savedTabs.get(0);
+        savedTab.url = UNSYNCABLE_URL_1;
+
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.AUTO_OPENED_FROM_SYNC);
+
+        verify(mTabCreationDelegate)
+                .createBackgroundTab(
+                        eq(TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE),
+                        eq(TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE),
+                        any(),
+                        anyInt());
+    }
+
+    @Test
     public void testUpdateTabGroupUpdatesVisuals() {
         addOneTab();
         SavedTabGroup savedTabGroup =
@@ -224,6 +240,27 @@ public class LocalTabGroupMutationHelperUnitTest {
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
         inOrder.verify(mTabRemover).forceCloseTabs(argThat(params -> params.tabs.size() == 1));
         inOrder.verify(mTabModel).setTabGroupCollapsed(TOKEN_1, true);
+    }
+
+    @Test
+    public void testUpdateTabGroup_AddTabFromSync_UnsavableUrl() {
+        // One local group with one tab syncing.
+        addOneTab();
+
+        // One saved group with two tabs: one mapped, one new with unsavable URL.
+        SavedTabGroup savedTabGroup =
+                createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1, null});
+        SavedTabGroupTab savedTab = savedTabGroup.savedTabs.get(1);
+        savedTab.url = UNSYNCABLE_URL_1;
+
+        mLocalMutationHelper.updateTabGroup(savedTabGroup);
+
+        verify(mTabCreationDelegate)
+                .createBackgroundTab(
+                        eq(TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE),
+                        eq(TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE),
+                        any(),
+                        anyInt());
     }
 
     @Test

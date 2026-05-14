@@ -75,9 +75,14 @@ public class LocalTabGroupMutationHelper {
         List<Tab> tabs = new ArrayList<>();
         for (SavedTabGroupTab savedTab : tabGroup.savedTabs) {
             String title = savedTab.title == null ? UNSET_TAB_GROUP_TITLE : savedTab.title;
+            GURL url = assertNonNull(savedTab.url);
+            if (!TabGroupSyncUtils.isSavableUrl(url)) {
+                title = TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE;
+                url = TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE;
+            }
             Tab newTab =
                     mTabCreationDelegate.createBackgroundTab(
-                            assertNonNull(savedTab.url), title, /* parent= */ null, position++);
+                            url, title, /* parent= */ null, position++);
             assert newTab != null;
             tabs.add(newTab);
             tabIdMappings.put(assertNonNull(savedTab.syncId), newTab.getId());
@@ -220,6 +225,10 @@ public class LocalTabGroupMutationHelper {
     /** Helper method to create a tab with a given URL and add it to the tab group. */
     private Tab createTabAndAddToGroup(
             GURL url, String title, int desiredTabModelIndex, Tab parentTab, Token tabGroupId) {
+        if (!TabGroupSyncUtils.isSavableUrl(url)) {
+            title = TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE;
+            url = TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE;
+        }
         Tab newTab =
                 mTabCreationDelegate.createBackgroundTab(
                         url, title, parentTab, desiredTabModelIndex);
