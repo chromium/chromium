@@ -17,6 +17,11 @@ if (is_android) {
 source_set("vr") {
   public = [ "vr_tab_helper.h" ]
   public_deps = [ "//content/public/browser" ]
+
+  if (enable_vr) {
+    public += [ "chrome_xr_integration_client.h" ]
+    public_deps += [ "//base" ]
+  }
 }
 
 source_set("impl") {
@@ -225,8 +230,8 @@ if (enable_vr) {
     }
   }
 
-  # vr_base contains common dependencies of vr_common and vr_ui. It exists because
-  # vr_ui must not depend on vr_common.
+  # vr_base contains common dependencies of vr_common and vr_ui. It exists
+  # because vr_ui must not depend on vr_common.
   component("vr_base") {
     sources = [
       "browser_ui_interface.h",
@@ -370,7 +375,8 @@ if (enable_vr) {
       "//ui/accessibility:ax_enums_mojo",
       "//ui/gfx:test_support",
 
-      # TODO(mthiesse, crbug.com/41346944): Remove dependency on device/vr:fakes.
+      # TODO(mthiesse, crbug.com/41346944): Remove dependency on
+      # device/vr:fakes.
       "//device/vr:vr_fakes",
 
       # TODO(cjgrant): Figure out why including //ui/android:ui_java here
@@ -430,8 +436,8 @@ if (enable_vr) {
   }
 
   if (!is_android) {
-    # This should only contain that files that are useful if enable_vr = true. For
-    # tests/infrastructure that can be used with enable_vr = false, see
+    # This should only contain that files that are useful if enable_vr = true.
+    # For tests/infrastructure that can be used with enable_vr = false, see
     # //chrome/test:xr_browser_tests_common.
     source_set("xr_browser_tests_vr_required") {
       testonly = true

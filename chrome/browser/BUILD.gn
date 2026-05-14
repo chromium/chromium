@@ -884,6 +884,7 @@ source_set("core") {
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/updates/announcement_notification:impl",
     "//chrome/browser/usb:impl",
+    "//chrome/browser/vr",
     "//chrome/browser/vr:impl",
     "//chrome/browser/webauthn:impl",
   ]
@@ -5842,7 +5843,6 @@ static_library("browser") {
   if (enable_vr) {
     sources += [
       "vr/chrome_xr_integration_client.cc",
-      "vr/chrome_xr_integration_client.h",
       "vr/ui_host/vr_ui_host_impl.cc",
       "vr/ui_host/vr_ui_host_impl.h",
     ]
