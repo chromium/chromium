@@ -94,6 +94,10 @@ class GlicInstance {
   // DEPRECATED: Use the invoke API instead.
   virtual void SendAdditionalContext(mojom::AdditionalContextPtr context) = 0;
 
+  // Focuses the instance if it is active.
+  // More specifically, it will focus the active embedder.
+  virtual void FocusIfActive() = 0;
+
   // Register a handler to observe experimental triggering related updates.
   // The callback informs if the registration operations was successful or not.
   virtual void GetExperimentalTriggeringUpdates(

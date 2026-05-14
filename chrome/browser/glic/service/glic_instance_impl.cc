@@ -805,6 +805,17 @@ void GlicInstanceImpl::SendAdditionalContext(
   host_.NotifyAdditionalContext(std::move(context));
 }
 
+void GlicInstanceImpl::FocusIfActive() {
+  if (!IsActive()) {
+    return;
+  }
+  content::WebContents* web_contents = host_.webui_contents();
+  if (!web_contents) {
+    return;
+  }
+  web_contents->Focus();
+}
+
 void GlicInstanceImpl::GetExperimentalTriggeringUpdates(
     mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
     base::OnceCallback<void(bool)> success_status_callback) {

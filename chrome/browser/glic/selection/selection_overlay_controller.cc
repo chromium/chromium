@@ -564,12 +564,7 @@ void SelectionOverlayController::RenderRegions() {
     instance->SendAdditionalContext(std::move(additional_context));
     instance->OnSelectionAreasChanged(selected_regions_.size());
     instance->OnPolylinePointsChanged(polyline_counts);
-    if (instance->IsActive()) {
-      if (content::WebContents* web_contents =
-              instance->host().webui_contents()) {
-        web_contents->Focus();
-      }
-    }
+    instance->FocusIfActive();
   }
 }
 
