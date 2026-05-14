@@ -87,8 +87,6 @@ export enum VoiceSearchAction {
   QUERY_SUBMITTED = 3,
   SUPPORT_LINK_CLICKED = 4,
   RETRY_BY_TRY_AGAIN_CLICKED = 5,
-  // TODO(b/492216568): Implement UI and metric logging for STOP and RESUME
-  //   actions.
   // TRY_AGAIN_MIC_BUTTON = 6, // Obsolete. Deprecated as of 09/2022.
   STOP_BUTTON_CLICKED = 7,
   RESUME_BUTTON_CLICKED = 8,

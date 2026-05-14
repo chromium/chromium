@@ -115,6 +115,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         value: loadTimeData.getBoolean('composeboxShowContextMenu'),
       },
+      voiceSearchCoherenceEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
       zeroStateSuggestions_: {type: Object},
       inputState_: {
         type: Object,
@@ -175,6 +179,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected accessor isComposeboxFocused_: boolean = false;
   protected accessor showContextMenu_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
+  protected accessor voiceSearchCoherenceEnabled_: boolean =
+      loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
   protected accessor inputState_: InputState|null = null;
   protected accessor showSuggestionsActivityLink_: boolean = false;
   protected accessor inVoiceSearchMode_: boolean = false;
