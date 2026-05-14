@@ -11,6 +11,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui.h"
 #include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
@@ -654,6 +655,9 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
       base::BindRepeating(&BindMetricsReporterService));
 
   registry.ForWebUI<TabSearchUI>().Add<tab_search::mojom::PageHandlerFactory>();
+
+  registry.ForWebUI<glic::GlicExperimentalOptInUI>()
+      .Add<glic::mojom::ExperimentalOptInPageHandler>();
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     registry.ForWebUI<NewTabFooterUI>()

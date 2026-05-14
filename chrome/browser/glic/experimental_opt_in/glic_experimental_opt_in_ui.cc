@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_page_handler.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -70,7 +71,7 @@ bool GlicExperimentalOptInUIConfig::IsWebUIEnabled(
 }
 
 GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIGlicExperimentalOptInHost);
@@ -79,24 +80,32 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
       source, kGlicExperimentalOptInResources,
       IDR_GLIC_EXPERIMENTAL_OPT_IN_EXPERIMENTAL_OPT_IN_HTML);
 
-  auto state = GlicKeyedServiceFactory::GetGlicKeyedService(profile)
-                   ->enabling()
-                   .GetRequiredExperimentalOptIn();
+  required_state_ = GlicKeyedServiceFactory::GetGlicKeyedService(profile)
+                        ->enabling()
+                        .GetRequiredExperimentalOptIn();
 
-  if (state == RequiredExperimentalOptIn::kNotNeeded) {
+  if (required_state_ == RequiredExperimentalOptIn::kNotNeeded) {
     // It's theoretically possible that between the decision by the controller
     // to show the dialog, and when the dialog actually loads and this code
     // executes, opt-in is no longer required (e.g. changing toggle in a
     // different tab). That case should be very rare, and we can fallback to the
     // experimental opt-in.
     // TODO(b/511184397): Add metrics for how often this happens.
-    state = RequiredExperimentalOptIn::kExperimental;
+    required_state_ = RequiredExperimentalOptIn::kExperimental;
   }
 
-  GURL url = GetExperimentalTriggeringOptInURL(profile, state);
+  GURL url = GetExperimentalTriggeringOptInURL(profile, required_state_);
   source->AddString("glicExperimentalTriggeringOptInURL", url.spec());
 }
 
 GlicExperimentalOptInUI::~GlicExperimentalOptInUI() = default;
+
+void GlicExperimentalOptInUI::BindInterface(
+    mojo::PendingReceiver<mojom::ExperimentalOptInPageHandler> receiver) {
+  page_handler_ = std::make_unique<GlicExperimentalOptInPageHandler>(
+      Profile::FromWebUI(web_ui()), required_state_, std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(GlicExperimentalOptInUI)
 
 }  // namespace glic

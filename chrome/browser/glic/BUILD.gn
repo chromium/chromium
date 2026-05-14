@@ -445,6 +445,8 @@ source_set("impl") {
       "experimental_opt_in/glic_experimental_opt_in_controller.h",
       "experimental_opt_in/glic_experimental_opt_in_dialog_view.cc",
       "experimental_opt_in/glic_experimental_opt_in_dialog_view.h",
+      "experimental_opt_in/glic_experimental_opt_in_page_handler.cc",
+      "experimental_opt_in/glic_experimental_opt_in_page_handler.h",
       "experimental_opt_in/glic_experimental_opt_in_ui.cc",
       "experimental_opt_in/glic_experimental_opt_in_ui.h",
       "gemini_experimental_triggering_settings_policy_handler.cc",
@@ -560,6 +562,7 @@ mojom("mojo_bindings") {
   disable_variants = true
 
   sources = [
+    "experimental_opt_in/glic_experimental_opt_in.mojom",
     "host/glic.mojom",
     "host/glic_features.mojom",
     "host/glic_internals.mojom",
