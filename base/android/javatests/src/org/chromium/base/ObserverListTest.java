@@ -180,6 +180,25 @@ public class ObserverListTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
+    public void testIteratorHasNextMultipleTimes() {
+        ObserverList<Integer> observerList = new ObserverList<Integer>();
+        observerList.addObserver(5);
+        observerList.addObserver(10);
+
+        Iterator<Integer> it = observerList.iterator();
+        Assert.assertTrue(it.hasNext());
+        Assert.assertTrue(it.hasNext());
+        Assert.assertEquals(5, (int) it.next());
+        Assert.assertTrue(it.hasNext());
+        Assert.assertTrue(it.hasNext());
+        Assert.assertEquals(10, (int) it.next());
+        Assert.assertFalse(it.hasNext());
+        Assert.assertFalse(it.hasNext());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
     public void testRewindableIterator() {
         ObserverList<Integer> observerList = new ObserverList<Integer>();
         observerList.addObserver(5);
