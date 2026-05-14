@@ -17,6 +17,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "components/cbor/constants.h"
 #include "components/cbor/float_conversions.h"
 
@@ -251,10 +252,6 @@ std::optional<Value> Reader::DecodeToSimpleValueOrFloat(
   CHECK_LE(header.additional_info, 27);
   // Floating point numbers.
   if (header.additional_info > 24) {
-    if (header.additional_info >= 28) {
-      error_code_ = DecoderError::UNSUPPORTED_SIMPLE_VALUE;
-      return std::nullopt;
-    }
     if (!config.allow_floating_point) {
       error_code_ = DecoderError::UNSUPPORTED_FLOATING_POINT_VALUE;
       return std::nullopt;
@@ -321,9 +318,9 @@ std::optional<Value> Reader::ReadStringContent(
     return std::nullopt;
   }
 
-  std::string cbor_string(bytes->begin(), bytes->end());
-  if (base::IsStringUTF8(cbor_string)) {
-    return Value(std::move(cbor_string));
+  if (std::string_view cbor_string_view = base::as_string_view(*bytes);
+      base::IsStringUTF8(cbor_string_view)) {
+    return Value(cbor_string_view);
   }
 
   if (config.allow_invalid_utf8) {
@@ -342,8 +339,7 @@ std::optional<Value> Reader::ReadByteStringContent(
     return std::nullopt;
   }
 
-  std::vector<uint8_t> cbor_byte_string(bytes->begin(), bytes->end());
-  return Value(std::move(cbor_byte_string));
+  return Value(*bytes);
 }
 
 std::optional<Value> Reader::ReadArrayContent(
@@ -434,11 +430,7 @@ std::optional<base::span<const uint8_t>> Reader::ReadBytes(uint64_t num_bytes) {
   // The `uint64_t` => `size_t` conversion below will always succeed
   // because the `if` condition above implies that `num_bytes` fits into a
   // `size_t`.
-  size_t size = base::checked_cast<size_t>(num_bytes);
-
-  const base::span<const uint8_t> ret = rest_.first(size);
-  rest_ = rest_.subspan(size);
-  return ret;
+  return rest_.take_first(base::checked_cast<size_t>(num_bytes));
 }
 
 bool Reader::IsEncodingMinimal(uint8_t additional_bytes, uint64_t uint_data) {
