@@ -1238,6 +1238,10 @@ source_set("core") {
       "//components/rlz",
     ]
   }
+
+  if (is_posix && !is_mac) {
+    deps += [ "//chrome/app:chrome_crash_reporter_client" ]
+  }
 }
 
 # Use a static library here because many test binaries depend on this but don't
@@ -5446,11 +5450,9 @@ static_library("browser") {
   }
 
   if (is_posix && !is_mac) {
-    sources += [
-      "//chrome/app/chrome_crash_reporter_client.cc",
-      "//chrome/app/chrome_crash_reporter_client.h",
-    ]
+    sources += [ "//chrome/app/chrome_crash_reporter_client.cc" ]
     deps += [
+      "//chrome/app:chrome_crash_reporter_client",
       "//components/crash/content/browser",
       "//components/crash/core/app",
       "//components/version_info:generate_version_info",

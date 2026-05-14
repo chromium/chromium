@@ -164,6 +164,10 @@ static_library("chrome_test_launcher") {
       "//chrome/browser/ash/crosapi:test_support",
     ]
   }
+
+  if (is_posix && !is_mac) {
+    deps += [ "//chrome/app:chrome_crash_reporter_client" ]
+  }
 }
 
 # Use a static library here because many test binaries depend on this but don't
@@ -368,6 +372,7 @@ static_library("test_support") {
 
     deps += [
       "base/chromeos/crosier/helper:common",
+      "//chrome/app:chrome_crash_reporter_client",
       "//chromeos/dbus/power:power_manager_proto",
       "//ui/ozone/platform/drm:ui_controls",
     ]
@@ -1571,6 +1576,10 @@ source_set("platform_browser_tests") {
 
     if (is_mac) {
       deps += [ "//chrome/app_shim" ]
+    }
+
+    if (is_posix && !is_mac) {
+      deps += [ "//chrome/app:chrome_crash_reporter_client" ]
     }
   }
 

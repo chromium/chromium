@@ -19,6 +19,20 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+if (is_posix && !is_mac) {
+  # Header-only target so non-:browser targets can include this header
+  # without depending on //chrome/browser:browser. The .cc file remains
+  # in //chrome/browser:browser.
+  source_set("chrome_crash_reporter_client") {
+    public = [ "chrome_crash_reporter_client.h" ]
+    public_deps = [
+      "//base",
+      "//build:buildflag_header_h",
+      "//components/crash/core/app",
+    ]
+  }
+}
+
 # This target is for dependency tracking for the command ID header.
 source_set("command_ids") {
   sources = [ "chrome_command_ids.h" ]
@@ -205,6 +219,10 @@ static_library("test_support") {
       "//chromeos/ash/experiences/arc:arc_base_utils",
       "//chromeos/dbus/constants",
     ]
+  }
+
+  if (is_posix && !is_mac) {
+    deps += [ ":chrome_crash_reporter_client" ]
   }
 
   if (use_ozone) {
