@@ -5,7 +5,6 @@ include_rules = [
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/file_system_provider",
-  "+chrome/browser/ash/profiles/profile_helper.h",
   "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy/profile_policy_connector.h",
@@ -22,6 +21,7 @@ include_rules = [
 specific_include_rules = {
   '.*_(browser|unit)test\\.cc': [
      "+chrome/test",
+     "+chrome/browser/ash/profiles/profile_helper.h",
      "+chrome/browser/ui/browser.h",
      "+chrome/browser/ui/webui/ash/settings/test_support",
   ],

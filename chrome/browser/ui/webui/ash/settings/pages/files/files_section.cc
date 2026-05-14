@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -282,7 +282,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile()));
 
   const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile());
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
   if (user && user->GetAccountId().is_valid()) {
     html_source->AddString(
         "googleDriveSignedInAs",
