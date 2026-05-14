@@ -80,9 +80,19 @@ export class PolicyTableElement extends CustomElement {
     // Clear policies
     const mainContent = this.getRequiredElement('.main');
     const policies = this.shadowRoot!.querySelectorAll('.policy-data');
-    this.getRequiredElement('.header').textContent = this.dataModel.name;
+    const headerEl = this.getRequiredElement('.header');
+    headerEl.textContent = this.dataModel.name;
+    if (this.dataModel.id === 'updater') {
+      const link = document.createElement('a');
+      link.href = 'chrome://updater';
+      link.textContent = '(chrome://updater)';
+      link.classList.add('updater-link');
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      headerEl.appendChild(link);
+    }
     this.getRequiredElement('.id').textContent = this.dataModel.id || null;
-    this.getRequiredElement('.id').hidden = !this.dataModel.id;
+    this.getRequiredElement('.id').hidden = !this.dataModel.isExtension;
     policies.forEach(row => mainContent.removeChild(row));
 
     this.dataModel.policies

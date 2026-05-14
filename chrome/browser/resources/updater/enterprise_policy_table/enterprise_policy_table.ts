@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './enterprise_policy_table_section.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';

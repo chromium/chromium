@@ -30,6 +30,7 @@ suite('EnterprisePolicyTableTest', () => {
     await microtasksFinished();
     assertTrue(!!element.shadowRoot.querySelector('.no-policies'));
     assertEquals(0, element.shadowRoot.querySelectorAll('.section').length);
+    assertTrue(!!element.shadowRoot.querySelector('#view-policies-button'));
 
     element.policies = {
       policiesByName: {},
@@ -102,6 +103,12 @@ suite('EnterprisePolicyTableTest', () => {
 
     const sections = element.shadowRoot.querySelectorAll('.section');
     assertEquals(1, sections.length);
+    const button = element.shadowRoot.querySelector('#view-policies-button');
+    assertTrue(!!button);
+    assertEquals(
+        loadTimeData.getString('viewAllChromePolicies'),
+        button.textContent.trim());
+
     const tableSection =
         sections[0]!.querySelector('enterprise-policy-table-section');
     assertTrue(!!tableSection);

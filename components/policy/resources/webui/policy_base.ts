@@ -227,7 +227,7 @@ export class Page {
             name: value.forSigninScreen ?
                 `${value.name} [${loadTimeData.getString('signinProfile')}]` :
                 value.name,
-            id: value.isExtension ? id : undefined,
+            id: id,
             policies,
             ...(value.precedenceOrder &&
                 {precedenceOrder: value.precedenceOrder}),

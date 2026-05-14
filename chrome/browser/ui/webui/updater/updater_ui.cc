@@ -184,6 +184,7 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"updaterVersion", IDS_UPDATER_UPDATER_VERSION},
       {"versionColumn", IDS_UPDATER_VERSION_COLUMN},
       {"versionLabel", IDS_UPDATER_VERSION_LABEL},
+      {"viewAllChromePolicies", IDS_UPDATER_VIEW_ALL_CHROME_POLICIES},
       {"viewRawDetails", IDS_UPDATER_VIEW_RAW_DETAILS},
   });
 
