@@ -611,8 +611,9 @@ void GlicShareImageHandler::ShareComplete(ShareImageResult result) {
       }
 
       // If we're using the invoke API, then the context has already been sent.
-      service_->SendAdditionalContext(tab_handle_,
-                                      std::move(additional_context_));
+      if (auto* instance = service_->GetInstanceForTab(tab)) {
+        instance->SendAdditionalContext(std::move(additional_context_));
+      }
     }
   } else if (result != ShareImageResult::kFailedClipboardPastePolicy &&
              result != ShareImageResult::kFailedClipboardCopyPolicy) {

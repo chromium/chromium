@@ -3488,8 +3488,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testAdditionalContext) {
 
   context->parts = std::move(parts);
 
-  GetService()->SendAdditionalContext(tabs::TabHandle(GetTabId(web_contents)),
-                                      std::move(context));
+  auto* tab = tabs::TabInterface::GetFromContents(web_contents);
+  ASSERT_TRUE(tab);
+  auto* instance = GetService()->GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  instance->SendAdditionalContext(std::move(context));
 
   // Continue the JS test to verify the additional context is received.
   ContinueJsTest();

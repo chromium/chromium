@@ -63,6 +63,10 @@ class MockGlicInstance : public GlicInstance {
                base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(Host&, host, (), (override));
+  MOCK_METHOD(void,
+              SendAdditionalContext,
+              (mojom::AdditionalContextPtr),
+              (override));
 
   base::WeakPtr<MockGlicInstance> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

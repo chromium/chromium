@@ -876,7 +876,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContext) {
   ASSERT_TRUE(content::NavigateToURL(
       GetTabListInterface()->GetActiveTab()->GetContents(),
       embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
-  ASSERT_OK(OpenGlicForActiveTab());
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ExecuteJsTest();
 
   // The JS test is now paused.
@@ -934,9 +934,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContext) {
       glic::mojom::AdditionalContextPart::NewRegion(
           glic::mojom::CapturedRegion::NewRect(gfx::Rect(10, 20, 30, 40))));
 
-  service()->SendAdditionalContext(
-      GetTabListInterface()->GetActiveTab()->GetHandle(),
-      std::move(additional_context));
+  instance->SendAdditionalContext(std::move(additional_context));
 
   ContinueJsTest();
 }
@@ -947,7 +945,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContextQueued) {
       embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
 
   ToggleGlicForActiveTab(/*prevent_close=*/true);
-  ASSERT_TRUE(GetOnlyGlicInstance());
+  auto* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
 
   glic::mojom::AdditionalContextPtr additional_context =
       glic::mojom::AdditionalContext::New();
@@ -960,9 +959,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContextQueued) {
       glic::mojom::AdditionalContextPart::NewData(glic::mojom::ContextData::New(
           "text/plain", mojo_base::BigBuffer(data))));
 
-  service()->SendAdditionalContext(
-      GetTabListInterface()->GetActiveTab()->GetHandle(),
-      std::move(additional_context));
+  instance->SendAdditionalContext(std::move(additional_context));
 
   ASSERT_OK(WaitForGlicOpen());
 

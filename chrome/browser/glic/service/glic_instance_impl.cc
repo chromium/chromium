@@ -800,6 +800,11 @@ Host& GlicInstanceImpl::host() {
   return host_;
 }
 
+void GlicInstanceImpl::SendAdditionalContext(
+    mojom::AdditionalContextPtr context) {
+  host_.NotifyAdditionalContext(std::move(context));
+}
+
 void GlicInstanceImpl::GetExperimentalTriggeringUpdates(
     mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
     base::OnceCallback<void(bool)> success_status_callback) {

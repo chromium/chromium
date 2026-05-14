@@ -183,6 +183,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // GlicInstance:
   Host& host() override;
+  void SendAdditionalContext(mojom::AdditionalContextPtr context) override;
   void GetExperimentalTriggeringUpdates(
       mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
       base::OnceCallback<void(bool)> success_status_callback) override;

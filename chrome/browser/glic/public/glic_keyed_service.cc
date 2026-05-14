@@ -563,20 +563,6 @@ GlicInstance* GlicKeyedService::GetInstanceForActiveTab(
   return instance_coordinator().GetInstanceForTab(tab_list->GetActiveTab());
 }
 
-void GlicKeyedService::SendAdditionalContext(
-    tabs::TabHandle tab_handle,
-    mojom::AdditionalContextPtr context) {
-  auto* tab = tab_handle.Get();
-  if (!tab) {
-    return;
-  }
-  auto* instance = instance_coordinator().GetInstanceForTab(tab);
-  if (!instance) {
-    return;
-  }
-  instance->host().NotifyAdditionalContext(std::move(context));
-}
-
 void GlicKeyedService::Close(
     content::RenderFrameHost* outermost_render_frame_host) {
   instance_coordinator().CloseInstanceWithFrame(outermost_render_frame_host);

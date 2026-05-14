@@ -561,8 +561,7 @@ void SelectionOverlayController::RenderRegions() {
   if (GlicInstance* instance = service->GetInstanceForTab(tab_)) {
     mojom::AdditionalContextPtr additional_context =
         CreateAdditionalContext(std::move(captured_regions));
-    service->SendAdditionalContext(tab_->GetHandle(),
-                                   std::move(additional_context));
+    instance->SendAdditionalContext(std::move(additional_context));
     instance->OnSelectionAreasChanged(selected_regions_.size());
     instance->OnPolylinePointsChanged(polyline_counts);
     if (instance->IsActive()) {
@@ -572,7 +571,6 @@ void SelectionOverlayController::RenderRegions() {
       }
     }
   }
-
 }
 
 glic::mojom::AdditionalContextPtr

@@ -90,6 +90,10 @@ class GlicInstance {
   // DEPRECATED - Use specific GlicInstance methods instead.
   virtual Host& host() = 0;
 
+  // Sends additional context to the instance.
+  // DEPRECATED: Use the invoke API instead.
+  virtual void SendAdditionalContext(mojom::AdditionalContextPtr context) = 0;
+
   // Register a handler to observe experimental triggering related updates.
   // The callback informs if the registration operations was successful or not.
   virtual void GetExperimentalTriggeringUpdates(

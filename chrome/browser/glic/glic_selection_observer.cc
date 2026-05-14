@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
@@ -499,10 +500,10 @@ void GlicSelectionObserver::UpdateSelectionState(
     }
 
     if (has_sent_selection_context_ && glic_keyed_service_) {
-      if (glic_keyed_service_->GetInstanceForTab(tab_interface)) {
+      if (auto* instance =
+              glic_keyed_service_->GetInstanceForTab(tab_interface)) {
         // TODO(b/508916357): Use the invoke API.
-        glic_keyed_service_->SendAdditionalContext(
-            tab_interface->GetHandle(),
+        instance->SendAdditionalContext(
             CreateAdditionalContext(web_contents(), u""));
       }
       has_sent_selection_context_ = false;
@@ -528,9 +529,11 @@ void GlicSelectionObserver::UpdateSelectionState(
     }
 
     // TODO(b/508916357): Use the invoke API.
-    glic_keyed_service_->SendAdditionalContext(
-        tab_interface->GetHandle(),
-        CreateAdditionalContext(web_contents(), selected_text));
+    if (auto* instance =
+            glic_keyed_service_->GetInstanceForTab(tab_interface)) {
+      instance->SendAdditionalContext(
+          CreateAdditionalContext(web_contents(), selected_text));
+    }
     has_sent_selection_context_ = true;
   } else {
     if (!features::kGlicSelectionPromptUpdatesOnly.Get()) {

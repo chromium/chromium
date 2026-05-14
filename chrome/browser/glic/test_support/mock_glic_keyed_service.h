@@ -39,10 +39,6 @@ class MockGlicKeyedService : public GlicKeyedService {
               GetInstanceForTab,
               (tabs::TabInterface*),
               (override));
-  MOCK_METHOD(void,
-              SendAdditionalContext,
-              (tabs::TabHandle, mojom::AdditionalContextPtr),
-              (override));
   MOCK_METHOD(bool,
               IsPanelShowingForBrowser,
               (const BrowserWindowInterface&),
