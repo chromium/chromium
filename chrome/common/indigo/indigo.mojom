@@ -33,6 +33,12 @@ interface IndigoAgent {
   // `window.indigo.setup()`. Has no effect if the content script hasn't been
   // injected, or it hasn't registered by calling `window.indigo.setup()`.
   Invoke() => ();
+
+  // Resets the Indigo feature on the page. This will rely on the content
+  // script having already been injected and having invoked
+  // `window.indigo.setup()`. Has no effect if the content script hasn't been
+  // injected, or it hasn't registered by calling `window.indigo.setup()`.
+  Reset() => ();
 };
 
 // Renderer -> browser interface for the Indigo Onboarding Dialog.

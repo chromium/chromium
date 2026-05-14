@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/indigo/indigo.mojom.h"
@@ -35,6 +36,9 @@ class IndigoAgentHost : public content::PageUserData<IndigoAgentHost>,
   // Returns false if no script is configured via the command line.
   bool Invoke();
 
+  // Resets the Indigo feature on the page.
+  void Reset();
+
   // chrome::mojom::IndigoAgentHost:
   void StartImageReplacement(
       mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
@@ -60,8 +64,8 @@ class IndigoAgentHost : public content::PageUserData<IndigoAgentHost>,
   mojo::AssociatedRemote<chrome::mojom::IndigoAgent> agent_;
   InjectionState injection_state_ = InjectionState::kNotInjected;
 
-  // Number of times Invoke() was called while injection was in progress.
-  int pending_invoke_count_ = 0;
+  enum class PendingOperation { kInvoke, kReset };
+  std::vector<PendingOperation> pending_operations_;
 
   PAGE_USER_DATA_KEY_DECL();
 

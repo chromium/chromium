@@ -83,6 +83,33 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
         invoke_function->Call(isolate, context, content_agent, 0, nullptr);
   }
 
+  void CallResetCallback(v8::Isolate* isolate) {
+    if (context_.IsEmpty()) {
+      LOG(WARNING) << "Indigo context is empty.";
+      return;
+    }
+    v8::HandleScope handle_scope(isolate);
+    v8::Local<v8::Context> context = context_.Get(isolate);
+    v8::Context::Scope context_scope(context);
+    v8::MicrotasksScope microtasks_scope(context,
+                                         v8::MicrotasksScope::kRunMicrotasks);
+    gin::TryCatch try_catch(isolate);
+    try_catch.SetVerbose(true);
+    v8::Local<v8::Value> content_agent = content_agent_.Get(isolate);
+    if (content_agent.IsEmpty() || !content_agent->IsObject()) {
+      LOG(WARNING) << "Indigo content agent is empty or not an object.";
+      return;
+    }
+    gin::Dictionary content_agent_dict(isolate, content_agent.As<v8::Object>());
+    v8::Local<v8::Function> reset_function;
+    if (!content_agent_dict.Get("reset", &reset_function)) {
+      LOG(WARNING) << "Indigo content agent does not have a reset function.";
+      return;
+    }
+    std::ignore =
+        reset_function->Call(isolate, context, content_agent, 0, nullptr);
+  }
+
  private:
   void Setup(gin::Arguments* args, v8::Local<v8::Value> content_agent) {
     context_.Reset(args->isolate(), args->GetHolderCreationContext());
@@ -200,6 +227,13 @@ void IndigoAgent::InjectScript(
 void IndigoAgent::Invoke(base::OnceClosure done) {
   if (indigo_context_) {
     indigo_context_->CallInvokeCallback(GetIsolate());
+  }
+  std::move(done).Run();
+}
+
+void IndigoAgent::Reset(base::OnceClosure done) {
+  if (indigo_context_) {
+    indigo_context_->CallResetCallback(GetIsolate());
   }
   std::move(done).Run();
 }
