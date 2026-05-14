@@ -15,6 +15,10 @@
 #include "base/android/android_info.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/shortcut_mapping_pref_delegate.h"
 #endif
@@ -494,7 +498,8 @@ BASE_FEATURE(kGlassFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGlassFrameEnabled() {
 #if BUILDFLAG(IS_MAC)
-  return base::FeatureList::IsEnabled(kGlassFrame);
+  return base::mac::MacOSMajorVersion() >= 26 &&
+         base::FeatureList::IsEnabled(kGlassFrame);
 #else
   return false;
 #endif

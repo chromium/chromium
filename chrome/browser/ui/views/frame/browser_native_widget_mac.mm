@@ -668,55 +668,49 @@ void BrowserNativeWidgetMac::UpdateBackground() {
     return;
   }
 
-  auto color_scheme = browser_view_->GetNativeTheme()->preferred_color_scheme();
-  auto theme_color =
-      browser_view_->GetColorProvider()->GetColor(ui::kColorFrameActive);
+  if (@available(macOS 26.0, *)) {
+    auto color_scheme =
+        browser_view_->GetNativeTheme()->preferred_color_scheme();
+    auto theme_color =
+        browser_view_->GetColorProvider()->GetColor(ui::kColorFrameActive);
 
-  if (background_view_ && last_preferred_color_scheme_ == color_scheme &&
-      last_theme_color_ == theme_color) {
-    return;
+    if (background_view_ && last_preferred_color_scheme_ == color_scheme &&
+        last_theme_color_ == theme_color) {
+      return;
+    }
+
+    last_preferred_color_scheme_ = color_scheme;
+    last_theme_color_ = theme_color;
+
+    if (background_view_) {
+      [background_view_ removeFromSuperview];
+    }
+    background_view_ = nil;
+
+    NSWindow* ns_window = GetNSWindowHost()->GetInProcessNSWindow();
+    if (!ns_window) {
+      return;
+    }
+
+    NSView* content_view = [ns_window contentView];
+
+    NSGlassEffectView* glass_view =
+        [[NSGlassEffectView alloc] initWithFrame:content_view.bounds];
+    glass_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    glass_view.style = NSGlassEffectViewStyleRegular;
+
+    CGFloat r = SkColorGetR(theme_color) / 255.0;
+    CGFloat g = SkColorGetG(theme_color) / 255.0;
+    CGFloat b = SkColorGetB(theme_color) / 255.0;
+
+    glass_view.tintColor = [NSColor colorWithSRGBRed:r
+                                               green:g
+                                                blue:b
+                                               alpha:0.55];
+
+    background_view_ = glass_view;
+    [content_view addSubview:background_view_
+                  positioned:NSWindowBelow
+                  relativeTo:nil];
   }
-
-  last_preferred_color_scheme_ = color_scheme;
-  last_theme_color_ = theme_color;
-
-  if (background_view_) {
-    [background_view_ removeFromSuperview];
-  }
-  background_view_ = nil;
-
-  NSWindow* ns_window = GetNSWindowHost()->GetInProcessNSWindow();
-  if (!ns_window) {
-    return;
-  }
-
-  NSView* content_view = [ns_window contentView];
-
-  NSVisualEffectView* effect_view =
-      [[NSVisualEffectView alloc] initWithFrame:content_view.bounds];
-  effect_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-
-  const bool is_dark_mode =
-      color_scheme == ui::NativeTheme::PreferredColorScheme::kDark;
-  effect_view.material = is_dark_mode ? NSVisualEffectMaterialSelection
-                                      : NSVisualEffectMaterialSidebar;
-  effect_view.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-  effect_view.state = NSVisualEffectStateActive;
-
-  CGFloat r = SkColorGetR(theme_color) / 255.0;
-  CGFloat g = SkColorGetG(theme_color) / 255.0;
-  CGFloat b = SkColorGetB(theme_color) / 255.0;
-
-  NSView* tint_layer = [[NSView alloc] initWithFrame:effect_view.bounds];
-  tint_layer.wantsLayer = YES;
-  tint_layer.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-  tint_layer.layer.backgroundColor =
-      [NSColor colorWithSRGBRed:r green:g blue:b alpha:0.4].CGColor;
-
-  [effect_view addSubview:tint_layer];
-
-  background_view_ = effect_view;
-  [content_view addSubview:background_view_
-                positioned:NSWindowBelow
-                relativeTo:nil];
 }
