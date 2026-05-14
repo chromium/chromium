@@ -1931,9 +1931,9 @@ void LayerTreeHostImpl::SetMemoryPolicy(const ManagedMemoryPolicy& policy) {
 
   SetMemoryPolicyImpl(policy);
 
-  // This is short term solution to synchronously drop tile resources when
-  // using synchronous compositing to avoid memory usage regression.
-  // TODO(boliu): crbug.com/499004 to track removing this.
+  // Synchronously drop tile resources when using synchronous compositing to
+  // avoid memory usage regression.  Otherwise, they may never be cleaned up
+  // because there may be no further begin frames after setting policy to 0.
   if (!policy.bytes_limit_when_visible && resource_pool_ &&
       settings_.using_synchronous_renderer_compositor) {
     ReleaseTileResources();
