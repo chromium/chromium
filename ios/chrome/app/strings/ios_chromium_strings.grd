@@ -756,6 +756,9 @@ Things to consider:
       <message name="IDS_IOS_MINI_MAP_URL_FOOTER_STRING" desc="The text of the footer string displayed at the bottom of the native preview for maps links [iOS only].">
         Chromium uses Google Maps to give you directions and local info on maps links
       </message>
+      <message name="IDS_IOS_NEW_IA_PROMO_IPH_GEMINI_TITLE" desc="Title for the second in-product help bubble suggesting Gemini built-in. [Length: unlimited] [iOS only]">
+        Gemini in Chromium
+      </message>
       <message name="IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
         Payment methods and addresses won’t be encrypted. Browsing history from Chromium won’t sync.
 

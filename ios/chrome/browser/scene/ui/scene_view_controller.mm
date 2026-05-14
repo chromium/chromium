@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -792,13 +793,14 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
 
   BubbleViewControllerPresenter* presenter =
       [[BubbleViewControllerPresenter alloc]
-               initWithText:subtitle
-                      title:title
-             arrowDirection:arrowDirection
-                  alignment:BubbleAlignmentCenter
-                 bubbleType:bubbleType
-            pageControlPage:BubblePageControlPageNone
-          dismissalCallback:callback];
+                   initWithText:subtitle
+                          title:title
+                 arrowDirection:arrowDirection
+                      alignment:BubbleAlignmentCenter
+                     bubbleType:bubbleType
+                pageControlPage:BubblePageControlPageNone
+          customNextButtonTitle:l10n_util::GetNSString(IDS_CONTINUE)
+              dismissalCallback:callback];
   presenter.dismissalTimerDisabled = geminiEligible;
 
   UIView* anchorView =
@@ -846,7 +848,7 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
                       alignment:BubbleAlignmentTopOrLeading
                      bubbleType:BubbleViewTypeRichWithNext
                 pageControlPage:BubblePageControlPageNone
-          customNextButtonTitle:l10n_util::GetNSString(IDS_CLOSE)
+          customNextButtonTitle:l10n_util::GetNSString(IDS_DONE)
               dismissalCallback:callback];
   presenter.dismissalTimerDisabled = YES;
 
