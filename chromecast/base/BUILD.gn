@@ -47,8 +47,7 @@ cast_source_set("base") {
     "cast_features_internal.cc",
     "cast_paths.cc",
     "cast_paths.h",
-    "cast_resource.cc",
-    "cast_resource.h",
+
     "error_codes.cc",
     "error_codes.h",
     "hash_util.cc",
