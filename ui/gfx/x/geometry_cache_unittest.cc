@@ -161,4 +161,24 @@ TEST(GeometryCacheTest, NestedWindows) {
       new_child_bounds + gfx::Vector2d(parent_bounds.x(), parent_bounds.y()));
 }
 
+TEST(GeometryCacheTest, DestroyInCallback) {
+  Connection* connection = Connection::Get();
+  ScopedWindow window(connection, connection->default_root(),
+                      gfx::Rect(12, 34, 56, 78));
+
+  std::unique_ptr<GeometryCache> geometry_cache;
+  auto bounds_changed_callback =
+      [](std::unique_ptr<GeometryCache>* geometry_cache_ptr,
+         const std::optional<gfx::Rect>& old_bounds,
+         const gfx::Rect& new_bounds) { geometry_cache_ptr->reset(); };
+
+  geometry_cache = std::make_unique<GeometryCache>(
+      connection, window.id(),
+      base::BindRepeating(bounds_changed_callback, &geometry_cache));
+
+  // This will trigger the callback via DispatchNow() and then return.
+  // If there's a UAF, this should crash or trigger ASAN.
+  geometry_cache->GetBoundsPx();
+}
+
 }  // namespace x11
