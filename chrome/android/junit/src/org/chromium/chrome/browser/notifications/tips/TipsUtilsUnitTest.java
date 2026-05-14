@@ -5,26 +5,41 @@
 package org.chromium.chrome.browser.notifications.tips;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TipsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TipsUtilsUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private SharedPreferencesManager mSharedPreferences;
+
     private Activity mActivity;
 
     @Before
@@ -353,5 +368,87 @@ public class TipsUtilsUnitTest {
         assertEquals(
                 R.drawable.view_list_normal_item_background,
                 TipsUtils.getDetailStepBackground(/* stepIndex= */ 1, /* stepCount= */ 3));
+    }
+
+    @SmallTest
+    @Test
+    public void testShouldShowTipsOptInPromo_AllConditionsMet() {
+        assertTrue(
+                TipsUtils.shouldShowTipsOptInPromo(
+                        /* notificationsEnabled= */ false,
+                        mSharedPreferences,
+                        /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
+                                TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
+    }
+
+    @SmallTest
+    @Test
+    public void testShouldShowTipsOptInPromo_NotificationsEnabled() {
+        assertFalse(
+                TipsUtils.shouldShowTipsOptInPromo(
+                        /* notificationsEnabled= */ true,
+                        mSharedPreferences,
+                        /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
+                                TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
+    }
+
+    @SmallTest
+    @Test
+    public void testShouldShowTipsOptInPromo_AlreadyAccepted() {
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false))
+                .thenReturn(true);
+
+        assertFalse(
+                TipsUtils.shouldShowTipsOptInPromo(
+                        /* notificationsEnabled= */ false,
+                        mSharedPreferences,
+                        /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
+                                TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
+    }
+
+    @SmallTest
+    @Test
+    public void testShouldShowTipsOptInPromo_MaxCountReached() {
+        when(mSharedPreferences.readInt(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0))
+                .thenReturn(TipsUtils.getMaxTipsOptInPromoShowCount());
+
+        assertFalse(
+                TipsUtils.shouldShowTipsOptInPromo(
+                        /* notificationsEnabled= */ false,
+                        mSharedPreferences,
+                        /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
+                                TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
+    }
+
+    @SmallTest
+    @Test
+    public void testShouldShowTipsOptInPromo_CooldownNotPassed() {
+        when(mSharedPreferences.readLong(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP,
+                        0))
+                .thenReturn(
+                        System.currentTimeMillis()
+                                - TimeUnit.DAYS.toMillis(
+                                        TipsUtils.getTipsOptInPromoCooldownDays() - 1));
+
+        assertFalse(
+                TipsUtils.shouldShowTipsOptInPromo(
+                        /* notificationsEnabled= */ false,
+                        mSharedPreferences,
+                        /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
+                                TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
+    }
+
+    @SmallTest
+    @Test
+    public void testShouldShowTipsOptInPromo_TimeSinceBackgroundedTooShort() {
+        assertFalse(
+                TipsUtils.shouldShowTipsOptInPromo(
+                        /* notificationsEnabled= */ false,
+                        mSharedPreferences,
+                        /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
+                                TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO - 1)));
     }
 }

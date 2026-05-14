@@ -13,7 +13,9 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.notifications.tips.TipsUtils.LOGO_IMAGE_MAX_WIDTH_RATIO;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -51,13 +53,14 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
 /** Unit tests for {@link TipsOptInCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures("CacheNotificationsEnabled")
+@EnableFeatures(NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED)
 public class TipsOptInCoordinatorUnitTest {
     private static final int NARROW_SCREEN_WIDTH_DP = 300;
     private static final int WIDE_SCREEN_WIDTH_DP = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
@@ -78,12 +81,16 @@ public class TipsOptInCoordinatorUnitTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
         mTipsOptInCoordinator =
-                new TipsOptInCoordinator(mActivity, mBottomSheetController, mSnackbarManager);
+                new TipsOptInCoordinator(
+                        mActivity,
+                        mBottomSheetController,
+                        mSnackbarManager,
+                        mSharedPreferenceManager);
         mView = mTipsOptInCoordinator.getViewForTesting();
         verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         mBottomSheetContent = mTipsOptInCoordinator.getBottomSheetContentForTesting();
-        mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
     }
 
     @SmallTest
@@ -100,14 +107,44 @@ public class TipsOptInCoordinatorUnitTest {
                         "Notifications.Tips.OptInPromo.EventType",
                         TipsOptInCoordinator.OptInPromoEventType.SHOWN);
 
-        assertFalse(
-                mSharedPreferenceManager.readBoolean(TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN, false));
+        assertEquals(
+                -1,
+                mSharedPreferenceManager.readInt(TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, -1));
+        assertEquals(
+                -1L,
+                mSharedPreferenceManager.readLong(
+                        TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP, -1L));
+
         mTipsOptInCoordinator.showBottomSheet();
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
+
+        assertEquals(
+                1,
+                mSharedPreferenceManager.readInt(TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, -1));
         assertTrue(
-                mSharedPreferenceManager.readBoolean(TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN, false));
+                mSharedPreferenceManager.readLong(
+                                TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP, -1L)
+                        > 0);
+
+        // Verify shown pref is still false.
+        assertFalse(
+                mSharedPreferenceManager.readBoolean(
+                        TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false));
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testPositiveButtonClick() {
+        assertFalse(
+                mSharedPreferenceManager.readBoolean(
+                        TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false));
+
+        mView.findViewById(R.id.opt_in_positive_button).performClick();
+
+        assertTrue(
+                mSharedPreferenceManager.readBoolean(
+                        TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false));
     }
 
     @Test

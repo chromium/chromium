@@ -90,6 +90,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.TabTearing.MaxInstancesFailureCount",
                 "Chrome.TabTearing.MaxInstancesFailureStartTimeMs",
                 "Chrome.TipsNotifications.ChannelEnabled",
+                "Chrome.TipsNotifications.OptInShown",
                 "Chrome.UMA.OnPreCreateCounter",
                 "Chrome.UMA.OnResumeCounter",
                 "Chrome.VideoTutorials.ShareUrls",

@@ -1883,6 +1883,14 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     ANDROID_TIPS_NOTIFICATIONS, "reset_feature_tip_shown", false);
 
+    public static final IntCachedFeatureParam sAndroidTipsNotificationsV2CooldownDays =
+            newIntCachedFeatureParam(
+                    ANDROID_TIPS_NOTIFICATIONS_V2, "tips_opt_in_promo_cooldown_days", 7);
+
+    public static final IntCachedFeatureParam sAndroidTipsNotificationsV2MaxShowCount =
+            newIntCachedFeatureParam(
+                    ANDROID_TIPS_NOTIFICATIONS_V2, "max_tips_opt_in_promo_show_count", 2);
+
     /** All {@link CachedFeatureParam}s of features in this FeatureList */
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
@@ -1906,6 +1914,8 @@ public abstract class ChromeFeatureList {
                     sAndroidThemeResourceProviderForceLight,
                     sAndroidTipsNotificationsAlwaysShowOptInPromo,
                     sAndroidTipsNotificationsResetFeatureTipShown,
+                    sAndroidTipsNotificationsV2CooldownDays,
+                    sAndroidTipsNotificationsV2MaxShowCount,
                     sBackgroundThreadPoolFieldTrialConfig,
                     sCctAdaptiveButtonContextualOnly,
                     sCctAdaptiveButtonDefaultVariant,

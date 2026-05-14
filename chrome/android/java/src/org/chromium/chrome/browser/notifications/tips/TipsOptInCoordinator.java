@@ -16,6 +16,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -25,7 +26,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -92,6 +92,7 @@ public class TipsOptInCoordinator {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final SnackbarManager mSnackbarManager;
+    private final SharedPreferencesManager mSharedPreferences;
     private final TipsOptInSheetContent mSheetContent;
     private final View mContentView;
     private @TipsOptInUserInteraction int mUserInteractionType;
@@ -102,14 +103,17 @@ public class TipsOptInCoordinator {
      * @param context The Android {@link Context}.
      * @param bottomSheetController The system {@link BottomSheetController}.
      * @param snackbarManager The system {@link SnackbarManager}.
+     * @param sharedPreferences The {@link SharedPreferencesManager} to use.
      */
     public TipsOptInCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager,
+            SharedPreferencesManager sharedPreferences) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mSnackbarManager = snackbarManager;
+        mSharedPreferences = sharedPreferences;
         mUserInteractionType = TipsOptInUserInteraction.DISMISSED;
 
         mContentView =
@@ -137,9 +141,18 @@ public class TipsOptInCoordinator {
     public void showBottomSheet() {
         mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
 
-        // Mark that the promo has been shown.
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN, true);
+        // Increment the show count.
+        int currentCount =
+                mSharedPreferences.readInt(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0);
+        mSharedPreferences.writeInt(
+                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, currentCount + 1);
+
+        // Record the current timestamp.
+        mSharedPreferences.writeLong(
+                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP,
+                System.currentTimeMillis());
+
         recordOptInPromoEventType(OptInPromoEventType.SHOWN);
     }
 
@@ -168,6 +181,8 @@ public class TipsOptInCoordinator {
     @VisibleForTesting
     void onOptInAccepted() {
         mUserInteractionType = TipsOptInUserInteraction.ACCEPTED;
+        mSharedPreferences.writeBoolean(
+                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, true);
         TipsUtils.isTipsChannelCreated(
                 (channelExists) -> {
                     if (!channelExists) {

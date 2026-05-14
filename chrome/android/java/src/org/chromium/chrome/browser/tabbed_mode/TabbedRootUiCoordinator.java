@@ -286,7 +286,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -1622,38 +1621,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void maybeShowTipsOptInPromo(long timeSinceLastBackgroundedMs) {
-        // Only trigger the promo if the user has been 4 hours inactive and has not seen the promo
-        // before. The notifications toggle cannot enabled, or a testing param is enabled. The time
-        // limit ensures that the promo only shows on a cold startup, defined as the app being
-        // backgrounded by 4 hours or more and opening on an NTP to avoid clashes with other promos.
-        if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()
-                && TipsUtils.isSupportedDeviceType()) {
-            TipsUtils.areTipsNotificationsEnabled(
-                    (enabled) -> {
-                        if ((!enabled
-                                        && !ChromeSharedPreferences.getInstance()
-                                                .readBoolean(
-                                                        ChromePreferenceKeys
-                                                                .TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN,
-                                                        false)
-                                        && timeSinceLastBackgroundedMs > TimeUnit.HOURS.toMillis(4))
-                                || TipsUtils.shouldAlwaysShowOptInPromo()) {
-                            if (mActivity == null
-                                    || mActivity.isFinishing()
-                                    || mActivity.isDestroyed()) {
-                                return;
-                            }
-                            var bottomSheetController = getBottomSheetController();
-                            assert bottomSheetController != null;
-                            mTipsOptInCoordinator =
-                                    new TipsOptInCoordinator(
-                                            mActivity,
-                                            bottomSheetController,
-                                            mSnackbarManagerSupplier.asNonNull().get());
-                            mTipsOptInCoordinator.showBottomSheet();
-                        }
-                    });
-        }
+        var bottomSheetController = getBottomSheetController();
+        assert bottomSheetController != null;
+        TipsUtils.maybeShowTipsOptInPromo(
+                mActivity,
+                bottomSheetController,
+                mSnackbarManagerSupplier.asNonNull().get(),
+                ChromeSharedPreferences.getInstance(),
+                timeSinceLastBackgroundedMs,
+                (coordinator) -> mTipsOptInCoordinator = coordinator);
     }
 
     private void maybeShowGlicPromo() {
