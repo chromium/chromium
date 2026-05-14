@@ -252,6 +252,9 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
       _selectWillShowKeyboard = YES;
       return YES;
     }
+    // Reset `_selectWillShowKeyboard` to NO. If a previous press was
+    // cancelled, the flag could remain YES.
+    _selectWillShowKeyboard = NO;
   } else if (type == blink::WebInputEvent::Type::kKeyUp) {
     if (_selectWillShowKeyboard) {
       _selectWillShowKeyboard = NO;
