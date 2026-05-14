@@ -198,6 +198,11 @@ RpcDemuxerStreamHandler::MessageProcessor::MessageProcessor(
 
 RpcDemuxerStreamHandler::MessageProcessor::~MessageProcessor() = default;
 
+void RpcDemuxerStreamHandler::MessageProcessor::ProcessMessage(
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
+  process_message_cb_.Run(remote_handle(), std::move(message));
+}
+
 bool RpcDemuxerStreamHandler::MessageProcessor::OnRpcInitializeCallback(
     std::optional<media::AudioDecoderConfig> audio_config,
     std::optional<media::VideoDecoderConfig> video_config) {
@@ -307,7 +312,8 @@ void RpcDemuxerStreamHandler::MessageProcessor::OnNoBuffersAvailable() {
 
   task_runner_->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(process_message_cb_, remote_handle(), std::move(message)),
+      base::BindOnce(&MessageProcessor::ProcessMessage,
+                     weak_factory_.GetWeakPtr(), std::move(message)),
       remaining_time);
   last_request_time_ = now + remaining_time;
 

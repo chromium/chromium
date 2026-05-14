@@ -97,6 +97,7 @@ class RpcDemuxerStreamHandler
                      Type type);
     ~MessageProcessor() override;
 
+    void ProcessMessage(std::unique_ptr<openscreen::cast::RpcMessage> message);
     bool OnRpcInitializeCallback(
         std::optional<media::AudioDecoderConfig> audio_config,
         std::optional<media::VideoDecoderConfig> video_config);
