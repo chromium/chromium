@@ -15,6 +15,7 @@
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
@@ -26,6 +27,8 @@
 #include "components/history/core/test/test_history_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -587,6 +590,86 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest,
   EXPECT_TRUE(callback.was_run());
 
   CheckSiteUnfamiliar(navigation_handle);
+}
+
+TEST_F(SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest,
+       HistogramLoggedOnDefaultSearchEngine) {
+  TemplateURLServiceFactoryTestUtil factory_util{profile()};
+  factory_util.VerifyLoad();
+
+  TemplateURLData data;
+  data.SetShortName(u"example.com");
+  data.SetKeyword(u"example.com");
+  data.SetURL("https://www.example.com/search?q={searchTerms}");
+  TemplateURL* template_url =
+      factory_util.model()->Add(std::make_unique<TemplateURL>(data));
+  factory_util.model()->SetUserSelectedDefaultSearchProvider(template_url);
+
+  // Search URL without deferral.
+  {
+    GURL kSearchUrl("https://www.example.com/search?q=test2");
+    safe_browsing_database_manager_->SetUrlOnHighConfidenceAllowlist(
+        GURL("https://www.example.com"));
+    content::MockNavigationHandle navigation_handle(kSearchUrl, main_rfh());
+    base::HistogramTester histogram_tester;
+    SiteFamiliarityProcessSelectionDeferringCondition condition(
+        navigation_handle);
+
+    // Complete the history fetch.
+    raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
+        static_cast<ManualCallbackEmptyHistoryService*>(history_service());
+    mock_history_service->RunNextCallback();
+
+    base::MockCallback<base::OnceClosure> mock_callback;
+    EXPECT_CALL(mock_callback, Run()).Times(0);
+
+    // Proceed with process selection without deferral.
+    EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kProceed,
+              condition.OnWillSelectFinalProcess(mock_callback.Get()));
+
+    histogram_tester.ExpectUniqueSample(
+        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, false,
+        1);
+  }
+
+  // Search URL with deferral.
+  {
+    GURL kSearchUrl("https://www.example.com/search?q=test");
+    content::MockNavigationHandle navigation_handle(kSearchUrl, main_rfh());
+    base::HistogramTester histogram_tester;
+    SiteFamiliarityProcessSelectionDeferringCondition condition(
+        navigation_handle);
+
+    EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
+              condition.OnWillSelectFinalProcess(base::OnceClosure()));
+    histogram_tester.ExpectUniqueSample(
+        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, true,
+        1);
+  }
+
+  // Non-search page on DSE's origin.
+  {
+    GURL kHomepageUrl("https://www.example.com/");
+    content::MockNavigationHandle navigation_handle(kHomepageUrl, main_rfh());
+    base::HistogramTester histogram_tester;
+    SiteFamiliarityProcessSelectionDeferringCondition condition(
+        navigation_handle);
+    condition.OnWillSelectFinalProcess(base::OnceClosure());
+    histogram_tester.ExpectTotalCount(
+        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, 0);
+  }
+
+  // Site unrelated to DSE.
+  {
+    GURL kUnrelatedUrl("https://www.unrelated.com/");
+    content::MockNavigationHandle navigation_handle(kUnrelatedUrl, main_rfh());
+    base::HistogramTester histogram_tester;
+    SiteFamiliarityProcessSelectionDeferringCondition condition(
+        navigation_handle);
+    condition.OnWillSelectFinalProcess(base::OnceClosure());
+    histogram_tester.ExpectTotalCount(
+        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, 0);
+  }
 }
 
 }  // namespace site_protection

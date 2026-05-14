@@ -18,6 +18,10 @@
 
 namespace site_protection {
 
+inline constexpr char
+    kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram[] =
+        "SafeBrowsing.SiteFamiliarity.DeferNavigation.DefaultSearchEngine";
+
 // ProcessSelectionDeferringCondition which defers process-selection till the
 // site's familiarity is computed.
 class SiteFamiliarityProcessSelectionDeferringCondition
@@ -39,6 +43,10 @@ class SiteFamiliarityProcessSelectionDeferringCondition
 
   // Sets the verdict on the NavigationHandle.
   void SetVerdictOnHandle();
+
+  // Returns true if the navigation is to the default search engine's search
+  // results page.
+  bool IsDefaultSearchEngineNavigation();
 
   SiteFamiliarityFetcher fetcher_;
   std::optional<SiteFamiliarityFetcher::Verdict> verdict_;
