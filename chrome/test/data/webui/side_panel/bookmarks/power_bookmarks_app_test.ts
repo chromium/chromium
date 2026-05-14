@@ -207,7 +207,8 @@ suite('General', () => {
               .map((el: HTMLElement) => el.id));
     });
 
-    test('RebuildsKeyboardNavigationOnRemoved', async () => {
+    // TODO(crbug.com/489813344): Flaky test.
+    test.skip('RebuildsKeyboardNavigationOnRemoved', async () => {
       await flushTasks();
       powerBookmarksApp.$.bookmarksList
           .flushNavigationElementsDebouncerForTesting();
@@ -242,7 +243,8 @@ suite('General', () => {
               .map((el: HTMLElement) => el.id));
     });
 
-    test('RebuildsKeyboardNavigationFiltered', async () => {
+    // TODO(crbug.com/489813344): Flaky test.
+    test.skip('RebuildsKeyboardNavigationFiltered', async () => {
       await flushTasks();
       powerBookmarksApp.$.bookmarksList
           .flushNavigationElementsDebouncerForTesting();
@@ -334,7 +336,8 @@ suite('General', () => {
       assertEquals('3', bookmarks[3]!.id);
     });
 
-    test('FiltersBookmarks', async () => {
+    // TODO(crbug.com/489813344): Flaky test.
+    test.skip('FiltersBookmarks', async () => {
       await openBookmark('5');
       await performSearch('bookmark');
 
