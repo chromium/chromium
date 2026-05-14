@@ -5,12 +5,15 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/controller_client.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 
 namespace chrome_browser_interstitials {
 
@@ -81,6 +84,32 @@ bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab) {
 
 HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab) {
   if (!IsShowingInterstitial(tab)) {
+    // Check if it's a dialog.
+    auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(tab);
+    if (tab_interface) {
+      auto* controller = AskBeforeHttpDialogController::From(tab_interface);
+      if (controller && controller->HasOpenDialog()) {
+        auto reason = controller->GetInterstitialReasonForTesting();
+        switch (reason) {
+          case security_interstitials::https_only_mode::InterstitialReason::
+              kSiteEngagementHeuristic:
+            return HFMInterstitialType::kSiteEngagement;
+          case security_interstitials::https_only_mode::InterstitialReason::
+              kTypicallySecureUserHeuristic:
+            return HFMInterstitialType::kTypicallySecure;
+          case security_interstitials::https_only_mode::InterstitialReason::
+              kIncognito:
+            return HFMInterstitialType::kIncognito;
+          case security_interstitials::https_only_mode::InterstitialReason::
+              kPref:
+          case security_interstitials::https_only_mode::InterstitialReason::
+              kBalanced:
+            return HFMInterstitialType::kStandard;
+          default:
+            return HFMInterstitialType::kStandard;
+        }
+      }
+    }
     return HFMInterstitialType::kNone;
   }
   if (IsInterstitialDisplayingText(
@@ -102,6 +131,41 @@ HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab) {
     return HFMInterstitialType::kStandard;
   }
   return HFMInterstitialType::kNone;
+}
+
+void ProceedThroughHttpsFirstModeInterstitial(content::WebContents* tab) {
+  auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(tab);
+  if (tab_interface) {
+    auto* controller = AskBeforeHttpDialogController::From(tab_interface);
+    if (controller && controller->HasOpenDialog()) {
+      content::TestNavigationObserver nav_observer(tab, 1);
+      controller->ProceedForTesting();
+      nav_observer.Wait();
+      return;
+    }
+  }
+  content::TestNavigationObserver nav_observer(tab, 1);
+  std::string javascript = "window.certificateErrorPageController.proceed();";
+  ASSERT_TRUE(content::ExecJs(tab, javascript));
+  nav_observer.Wait();
+}
+
+void DontProceedThroughHttpsFirstModeInterstitial(content::WebContents* tab) {
+  auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(tab);
+  if (tab_interface) {
+    auto* controller = AskBeforeHttpDialogController::From(tab_interface);
+    if (controller && controller->HasOpenDialog()) {
+      content::TestNavigationObserver nav_observer(tab, 1);
+      controller->CancelForTesting();
+      nav_observer.Wait();
+      return;
+    }
+  }
+  content::TestNavigationObserver nav_observer(tab, 1);
+  std::string javascript =
+      "window.certificateErrorPageController.dontProceed();";
+  ASSERT_TRUE(content::ExecJs(tab, javascript));
+  nav_observer.Wait();
 }
 
 }  // namespace chrome_browser_interstitials

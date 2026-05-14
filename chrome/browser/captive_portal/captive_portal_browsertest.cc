@@ -1805,10 +1805,8 @@ void CaptivePortalBrowserTest::Login(Browser* captive_portal_browser,
   // HTTPS-First Mode is enabled in Incognito windows by default.)
   if (chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
           login_tab)) {
-    content::TestNavigationObserver nav_observer(login_tab, 1);
-    std::string javascript = "window.certificateErrorPageController.proceed();";
-    ASSERT_TRUE(content::ExecJs(login_tab, javascript));
-    nav_observer.Wait();
+    chrome_browser_interstitials::ProceedThroughHttpsFirstModeInterstitial(
+        login_tab);
   }
 
   // Trigger a navigation.

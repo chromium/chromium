@@ -75,6 +75,12 @@ bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab);
 // `tab`. If no HFM interstitial is being displayed, returns kNone.
 HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab);
 
+// Simulates the user proceeding through an HFM interstitial.
+void ProceedThroughHttpsFirstModeInterstitial(content::WebContents* tab);
+
+// Simulates the user not proceeding through an HFM interstitial.
+void DontProceedThroughHttpsFirstModeInterstitial(content::WebContents* tab);
+
 }  // namespace chrome_browser_interstitials
 
 #endif  // CHROME_BROWSER_INTERSTITIALS_SECURITY_INTERSTITIAL_PAGE_TEST_UTILS_H_

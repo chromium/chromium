@@ -301,6 +301,25 @@ void AskBeforeHttpDialogController::CloseDialogWidget(
 }
 #endif
 
+void AskBeforeHttpDialogController::ProceedForTesting() {
+  OnContinueButtonClicked(request_url_);
+}
+
+void AskBeforeHttpDialogController::CancelForTesting() {
+  OnGoBackButtonClicked();
+}
+
+security_interstitials::https_only_mode::InterstitialReason
+AskBeforeHttpDialogController::GetInterstitialReasonForTesting() const {
+  return warning_reason_;
+}
+
+void AskBeforeHttpDialogController::ClickLearnMoreForTesting() {
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), base::TimeTicks(), 0, 0);
+  OnHelpCenterLinkClicked(dummy_event);
+}
+
 void AskBeforeHttpDialogController::OnDialogDestroying() {
 #if BUILDFLAG(IS_ANDROID)
   current_dialog_model_ = nullptr;
@@ -426,11 +445,11 @@ AskBeforeHttpDialogController::CreateDialogModel(const GURL& request_url) {
       interstitial_state =
           ComputeInterstitialState(web_contents(), request_url);
 
-  AddAskBeforeHttpDialogText(
-      builder,
+  warning_reason_ =
       security_interstitials::https_only_mode::GetInterstitialReason(
-          interstitial_state),
-      link);
+          interstitial_state);
+
+  AddAskBeforeHttpDialogText(builder, warning_reason_, link);
   return builder.Build();
 }
 
