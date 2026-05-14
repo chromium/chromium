@@ -17,6 +17,7 @@
   --cr-hover-background-color: var(
     --color-composebox-context-entrypoint-hover-background
   );
+  --cr-action-menu-overflow: visible;
 }
 
 .suggestion-container {
@@ -156,4 +157,81 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.share-tabs-container {
+  position: relative;
+}
+
+.share-tabs-arrow {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.share-tabs-flyout {
+  background-color: var(--cr-menu-background-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+  inset-inline-start: 100%;
+  margin-inline-start: 4px;
+  min-height: 144px;
+  max-height: 540px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+  position: absolute;
+  scrollbar-width: thin;
+  top: 0;
+  width: 320px;
+  z-index: 1;
+}
+
+.share-tabs-flyout::-webkit-scrollbar {
+  width: 4px;
+}
+
+.share-tabs-flyout[hidden] {
+  display: none;
+}
+
+.share-tabs-flyout .dropdown-item {
+  box-sizing: border-box;
+  max-width: none;
+  width: 100%;
+}
+
+.tab-title-group {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tab-title-group .tab-title {
+  min-width: 0;
+}
+
+.recent-tabs-suffix {
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  font-family: var(--cr-composebox-context-menu-font-family, inherit);
+  font-size: 12px;
+  font-weight: 400;
+  height: 20px;
+  justify-content: flex-end;
+  line-height: var(--cr-composebox-context-menu-line-height, 18px);
+  white-space: nowrap;
+  width: 72px;
+}
+
+.share-tabs-check {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  flex-shrink: 0;
+  margin-inline-start: auto;
 }

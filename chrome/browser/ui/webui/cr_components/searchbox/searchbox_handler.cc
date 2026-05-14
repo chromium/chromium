@@ -406,6 +406,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
       {"addImage", IDS_NTP_COMPOSE_ADD_IMAGE},
       {"addDriveFile", IDS_NTP_COMPOSE_ADD_DRIVE},
       {"addTab", IDS_NTP_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE},
+      {"shareTabs", IDS_NTP_COMPOSEBOX_SHARE_TABS},
+      {"recentTabsSuffix", IDS_NTP_COMPOSEBOX_RECENT_TAB_SUFFIX},
       {"dismissButton", IDS_NTP_DISMISS},
       {"lensSearchLabel", IDS_WEBUI_OMNIBOX_COMPOSE_LENS_OVERLAY},
       {"searchboxComposeButtonText", IDS_NTP_COMPOSE_ENTRYPOINT},

@@ -27,38 +27,87 @@ export function getHtml(this: ContextualActionMenuElement) {
       <hr/>
     ` : ''}
     ${this.tabSuggestions?.length > 0 && this.isBrowserTabAllowed_() ? html`
-      ${this.showContextMenuHeaders_ ? html`<h4 id="tabHeader">${
-          this.getInputTypeLabel_(InputType.kBrowserTab)}</h4>` : ''}
-      ${this.tabSuggestions.map((tab, index) => html`
-        <div class="suggestion-container">
-          <button class="dropdown-item"
-              role="${this.enableMultiTabSelection_ ? 'menuitemcheckbox' : 'menuitem'}"
-              aria-checked="${this.enableMultiTabSelection_ && this.disabledTabIds.has(tab.tabId)}"
-              title="${tab.title}" data-index="${index}"
-              aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
-                  tab.title}"
-              ?disabled="${this.isTabDisabled_(tab)}"
-              @pointerenter="${this.onTabPointerenter_}"
-              @click="${this.onTabClick_}">
-            <cr-composebox-tab-favicon .url="${tab.url}">
-            </cr-composebox-tab-favicon>
-            <span class="tab-title">${tab.title}</span>
-            ${this.enableMultiTabSelection_ ? html`
-              ${this.disabledTabIds.has(tab.tabId) ? html`
-                <cr-icon class="multi-tab-icon"
-                    icon="composebox:checkCircle" id="multi-tab-check"></cr-icon>
-              ` : html`
-                <cr-icon class="multi-tab-icon"
-                    icon="composebox:addCircle" id="multi-tab-add"></cr-icon>
-              `}
-            ` : ''}
+      ${this.contextManagementInComposeboxEnabled_ ? html`
+        <div class="share-tabs-container">
+          <button id="shareTabsTrigger" class="dropdown-item"
+              role="menuitem"
+              aria-popup="menu"
+              aria-expanded="${this.shareTabsFlyoutOpen_}"
+              @pointerenter="${this.onShareTabsRowPointerenter_}"
+              @pointerleave="${this.onShareTabsRowPointerleave_}">
+            <cr-icon icon="composebox:shareTabs"></cr-icon>
+            <span class="tab-title">${this.i18n('shareTabs')}</span>
+            <cr-icon class="share-tabs-arrow" icon="cr:chevron_right"></cr-icon>
           </button>
-          ${this.shouldShowTabPreview_() ? html`
-            <img class="tab-preview" .src="${this.tabPreviewUrl_}">
-          ` : ''}
+          <div class="share-tabs-flyout" role="menu"
+              ?hidden="${!this.shareTabsFlyoutOpen_}"
+              @pointerenter="${this.onShareTabsFlyoutPointerenter_}"
+              @pointerleave="${this.onShareTabsFlyoutPointerleave_}">
+            ${this.tabSuggestions.map((tab, index) => html`
+              <div class="suggestion-container">
+                <button class="dropdown-item"
+                    role="${this.isMultiTabSelectionEnabledForShareTabsMode_() ?
+                        'menuitemcheckbox' : 'menuitem'}"
+                    aria-checked="${this.isMultiTabSelectionEnabledForShareTabsMode_() &&
+                        this.disabledTabIds.has(tab.tabId)}"
+                    title="${tab.title}" data-index="${index}"
+                    aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
+                        tab.title}"
+                    ?disabled="${this.isTabDisabled_(tab)}"
+                    @click="${this.onTabClick_}">
+                <cr-composebox-tab-favicon .url="${tab.url}">
+                </cr-composebox-tab-favicon>
+                <span class="tab-title-group">
+                  <span class="tab-title">${tab.title}</span>
+                  ${index === 0 ? html`
+                    <span class="recent-tabs-suffix">${
+                        this.i18n('recentTabsSuffix')}</span>
+                  ` : ''}
+                </span>
+                ${this.isMultiTabSelectionEnabledForShareTabsMode_() &&
+                    this.disabledTabIds.has(tab.tabId) ? html`
+                  <cr-icon class="share-tabs-check" icon="cr:check"></cr-icon>
+                ` : ''}
+                </button>
+              </div>
+            `)}
+          </div>
         </div>
-      `)}
-      <hr/>
+        <hr/>
+      ` : html`
+        ${this.showContextMenuHeaders_ ? html`<h4 id="tabHeader">${
+            this.getInputTypeLabel_(InputType.kBrowserTab)}</h4>` : ''}
+        ${this.tabSuggestions.map((tab, index) => html`
+          <div class="suggestion-container">
+            <button class="dropdown-item"
+                role="${this.enableMultiTabSelection_ ? 'menuitemcheckbox' : 'menuitem'}"
+                aria-checked="${this.enableMultiTabSelection_ && this.disabledTabIds.has(tab.tabId)}"
+                title="${tab.title}" data-index="${index}"
+                aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
+                    tab.title}"
+                ?disabled="${this.isTabDisabled_(tab)}"
+                @pointerenter="${this.onTabPointerenter_}"
+                @click="${this.onTabClick_}">
+              <cr-composebox-tab-favicon .url="${tab.url}">
+              </cr-composebox-tab-favicon>
+              <span class="tab-title">${tab.title}</span>
+              ${this.enableMultiTabSelection_ ? html`
+                ${this.disabledTabIds.has(tab.tabId) ? html`
+                  <cr-icon class="multi-tab-icon"
+                      icon="composebox:checkCircle" id="multi-tab-check"></cr-icon>
+                ` : html`
+                  <cr-icon class="multi-tab-icon"
+                      icon="composebox:addCircle" id="multi-tab-add"></cr-icon>
+                `}
+              ` : ''}
+            </button>
+            ${this.shouldShowTabPreview_() ? html`
+              <img class="tab-preview" .src="${this.tabPreviewUrl_}">
+            ` : ''}
+          </div>
+        `)}
+        <hr/>
+      `}
     `: ''}
     ${this.isImageUploadAllowed_() ? html`
       <button id="imageUpload" class="dropdown-item" role="menuitem"
