@@ -22,6 +22,7 @@ include_rules = [
   "+chrome/browser/policy/chrome_policy_conversions_client.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/ash/system",
+  "+chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h",
   "+chrome/browser/ui/webui/ash/cellular_setup",
   "+chrome/browser/ui/webui/ash/internet",
   "+chrome/common",
