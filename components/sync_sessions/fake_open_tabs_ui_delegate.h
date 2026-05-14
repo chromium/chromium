@@ -44,33 +44,13 @@ class FakeOpenTabsUIDelegate : public OpenTabsUIDelegate {
 
   bool GetLocalSession(const SyncedSession** local) override;
 
-  SyncedSession* local_session() { return local_session_.get(); }
-
-  SyncedSession* SetLocalSession(std::unique_ptr<SyncedSession> local_session);
-
   // Creates a new SyncedSession with the given tag and modified time, and
   // takes ownership of it. Returns a pointer to the created session.
-  SyncedSession* AddForeignSession(
-      const std::string& tag,
-      base::Time modified_time = base::Time::Now());
-
-  // Takes ownership of a pre-constructed SyncedSession. Returns a pointer to
-  // the added session.
-  SyncedSession* AddForeignSession(std::unique_ptr<SyncedSession> session);
-
-  sessions::SessionTab* AddTabToLocalSession(
-      const GURL& url = GURL(),
-      const SessionID& tab_id = SessionID::NewUnique());
-  sessions::SessionTab* AddTabToForeignSession(
-      const std::string& session_tag,
-      const GURL& url = GURL(),
-      const SessionID& tab_id = SessionID::NewUnique());
+  SyncedSession* AddForeignSession(const std::string& tag,
+                                   base::Time modified_time);
 
  private:
-  SyncedSession* FindForeignSession(const std::string& tag);
-
   std::vector<std::unique_ptr<SyncedSession>> foreign_sessions_;
-  std::unique_ptr<SyncedSession> local_session_;
 };
 
 }  // namespace sync_sessions
