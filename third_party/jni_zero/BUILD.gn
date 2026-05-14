@@ -26,7 +26,6 @@ generate_jar_jni("system_jni") {
   classes = [
     "android/os/Process.class",
     "java/lang/Boolean.class",
-    "java/lang/ClassLoader.class",
     "java/lang/Integer.class",
     "java/lang/Float.class",
     "java/lang/Double.class",
@@ -44,7 +43,10 @@ generate_jar_jni("system_jni") {
 }
 
 generate_jar_jni("system_jni_unchecked_exceptions") {
-  classes = [ "java/nio/ByteBuffer.class" ]
+  classes = [
+    "java/lang/ClassLoader.class",
+    "java/nio/ByteBuffer.class",
+  ]
   visibility = [ ":*" ]
   unchecked_exceptions = true
 }

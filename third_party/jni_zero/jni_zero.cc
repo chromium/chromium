@@ -13,7 +13,7 @@
 #include "third_party/jni_zero/jni_methods.h"
 #include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/logging.h"
-#include "third_party/jni_zero/system_jni/ClassLoader_jni.h"
+#include "third_party/jni_zero/system_jni_unchecked_exceptions/ClassLoader_jni.h"
 
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
