@@ -1163,7 +1163,7 @@ public class AutofillProfilesFragmentTest {
                 new EntityInstanceWithLabels(
                         "guid2",
                         passportType,
-                        /*entityName*/ "Passport",
+                        /* entityInstanceLabel= */ "Passport",
                         /* entityInstanceSubLabel= */ "Germany",
                         /* storedInWallet= */ false,
                         /* walletEntityUrl= */ null);

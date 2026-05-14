@@ -151,7 +151,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
-                        /* contextualPageActionControllerSupplier */ () -> null,
+                        /* contextualPageActionControllerSupplier= */ () -> null,
                         /* hasClientPackage= */ false,
                         /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
@@ -220,7 +220,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
-                        /* contextualPageActionControllerSupplier */ () -> null,
+                        /* contextualPageActionControllerSupplier= */ () -> null,
                         /* hasClientPackage= */ false,
                         /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
@@ -260,7 +260,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
-                        /* contextualPageActionControllerSupplier */ () -> null,
+                        /* contextualPageActionControllerSupplier= */ () -> null,
                         /* hasClientPackage= */ false,
                         /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();

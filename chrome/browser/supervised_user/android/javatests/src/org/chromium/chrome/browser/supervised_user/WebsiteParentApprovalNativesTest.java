@@ -195,12 +195,13 @@ public class WebsiteParentApprovalNativesTest {
     public void cancelApprovalRequestIfOneAlreadyInProgress() {
         mockParentAuthDelegateRequestLocalAuthResponse(true);
         mTabbedActivityTestRule.loadUrl(mBlockedUrl);
+        int[] expectedValues = {
+            0, // Approved
+            2, // Canceled
+        };
         var histograms =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                "FamilyLinkUser.LocalWebApprovalResult",
-                                /* values...= */ 0,
-                                /* Cancelled */ 2)
+                        .expectIntRecords("FamilyLinkUser.LocalWebApprovalResult", expectedValues)
                         .build();
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);

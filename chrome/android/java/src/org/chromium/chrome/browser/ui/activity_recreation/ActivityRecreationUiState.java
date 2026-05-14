@@ -73,8 +73,8 @@ final class ActivityRecreationUiState implements Parcelable {
                 /* urlBarEditText= */ in.readString(),
                 /* isKeyboardShown= */ in.readInt() == 1,
                 /* isTabSwitcherShown= */ in.readInt() == 1,
-                /* mIsPointerLocked */ in.readInt() == 1,
-                /* mIsKeyboardLocked */ in.readInt() == 1);
+                /* isPointerLocked= */ in.readInt() == 1,
+                /* isKeyboardLocked= */ in.readInt() == 1);
     }
 
     /** Implements {@link Parcelable} */

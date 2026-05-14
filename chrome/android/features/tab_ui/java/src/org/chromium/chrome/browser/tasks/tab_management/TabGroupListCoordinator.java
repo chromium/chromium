@@ -145,7 +145,7 @@ public class TabGroupListCoordinator {
         mTabListFaviconProvider =
                 new TabListFaviconProvider(
                         context,
-                        /* isTabStrip */ false,
+                        /* isTabStrip= */ false,
                         R.dimen.default_favicon_corner_radius,
                         TabFavicon::getBitmap);
         FaviconResolver faviconResolver =

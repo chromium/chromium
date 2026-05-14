@@ -141,7 +141,7 @@ public class BookmarkBarIphControllerTest {
         when(mChildBookmarkItem.isFolder()).thenReturn(false);
 
         // Simulate a user adding a new bookmark.
-        mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser */ true);
+        mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser= */ true);
         verifyIphCommand();
     }
 
@@ -159,7 +159,7 @@ public class BookmarkBarIphControllerTest {
         when(mChildBookmarkItem.isFolder()).thenReturn(false);
 
         // Simulate a bookmark being added by sync.
-        mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser */ false);
+        mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser= */ false);
 
         // Verify the IPH was not shown.
         verify(mUserEducationHelper, never()).requestShowIph(any());

@@ -312,7 +312,7 @@ public class StripTabHoverCardView extends FrameLayout {
                         mThumbnailView.updateThumbnailPlaceholder(
                                 hoveredTab.isIncognito(),
                                 /* isSelected= */ false,
-                                /* colorId */ null);
+                                /* colorId= */ null);
                     }
                     mThumbnailView.setVisibility(VISIBLE);
                 });

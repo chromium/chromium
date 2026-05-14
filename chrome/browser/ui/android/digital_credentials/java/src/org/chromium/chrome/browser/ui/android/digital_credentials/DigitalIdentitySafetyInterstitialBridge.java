@@ -75,7 +75,7 @@ public class DigitalIdentitySafetyInterstitialBridge {
         mController.show(
                 modalDialogManager,
                 interstitialType,
-                (/*DialogDismissalCause*/ Integer dismissalCause) -> {
+                (/* DialogDismissalCause= */ Integer dismissalCause) -> {
                     RecordHistogram.recordEnumeratedHistogram(
                             "Blink.DigitalIdentityRequest.InterstitialClosedReason",
                             closedReasonFromDismissalCause(dismissalCause),

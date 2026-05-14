@@ -143,8 +143,8 @@ public class BookmarkSaveFlowMediatorUnitTest {
                         false,
                         0,
                         false,
-                        0, /* isAccountBookmark */
-                        true);
+                        0,
+                        /* isAccountBookmark= */ true);
         Mockito.doReturn(accountBookmarkItem).when(mModel).getBookmarkById(Mockito.any());
         Mockito.doReturn("title").when(mModel).getBookmarkTitle(Mockito.any());
 

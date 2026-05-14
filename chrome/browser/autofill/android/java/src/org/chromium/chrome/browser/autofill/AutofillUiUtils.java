@@ -584,8 +584,8 @@ public class AutofillUiUtils {
         inlineTitleIcon.setBounds(
                 /* left= */ 0,
                 /* top= */ 0,
-                /* right */ (int) (scaleFactor * inlineTitleIcon.getIntrinsicWidth()),
-                /* bottom */ (int) (scaleFactor * inlineTitleIcon.getIntrinsicHeight()));
+                /* right= */ (int) (scaleFactor * inlineTitleIcon.getIntrinsicWidth()),
+                /* bottom= */ (int) (scaleFactor * inlineTitleIcon.getIntrinsicHeight()));
         titleWithLogo.setSpan(
                 new ImageSpan(inlineTitleIcon, ImageSpan.ALIGN_CENTER),
                 /* start= */ 0,

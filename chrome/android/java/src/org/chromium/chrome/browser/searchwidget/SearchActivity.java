@@ -335,7 +335,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* backKeyBehavior= */ this,
                         /* pageInfoAction= */ (tab, pageInfoHighlight) -> {},
                         this::bringTabGroupToFront,
-                        /*omniboxUma*/ (url, transition, isNtp) -> {},
+                        /* omniboxUma= */ (url, transition, isNtp) -> {},
                         /* bookmarkState= */ (url) -> false,
                         VoiceToolbarButtonController::isToolbarMicEnabled,
                         new OmniboxActionDelegateImpl(
@@ -381,7 +381,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         new LocationBarEmbedder() {},
                         mLocationBarUiOverrides,
                         findViewById(R.id.control_container),
-                        /* bottomWindowPaddingSupplier */ () -> 0,
+                        /* bottomWindowPaddingSupplier= */ () -> 0,
                         /* onLongClickListener= */ null,
                         /* browserControlsStateProvider= */ null,
                         /* isToolbarPositionCustomizationEnabled= */ false,

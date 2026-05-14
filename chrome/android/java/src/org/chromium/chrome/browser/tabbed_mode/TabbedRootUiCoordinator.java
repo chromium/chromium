@@ -1490,7 +1490,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mAppMenuCoordinator.getAppMenuHandler(),
                         mActivityTabProvider.asObservable(),
                         mReadAloudControllerSupplier,
-                        /* showAppMenuTextBubble */ true);
+                        /* showAppMenuTextBubble= */ true);
         mReadLaterIphController =
                 new ReadLaterIphController(
                         mActivity,
@@ -1539,7 +1539,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             profile,
                             menuButtonView,
                             mAppMenuCoordinator.getAppMenuHandler(),
-                            /* isBrowserApp */ true);
+                            /* isBrowserApp= */ true);
             if (ChromeFeatureList.sGestureUserEducationBackSwipe.isEnabled()
                     && !DeviceInfo.isAutomotive()
                     && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
@@ -1873,7 +1873,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     createContextualTasksFuseboxConfig(contentView);
             ContextMenuPopulatorFactory contextMenuPopulatorFactory =
                     new ChromeContextMenuPopulatorFactory(
-                            /* itemDelegate */ null,
+                            /* itemDelegate= */ null,
                             mShareDelegateSupplier,
                             ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW,
                             /* customContentActions= */ Collections.emptyList());
@@ -2011,7 +2011,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 assert mLayoutManager != null;
                 TabSwitcherUtils.navigateToTabSwitcher(
                         mLayoutManager,
-                        /* animate */ false,
+                        /* animate= */ false,
                         () -> {
                             var tabSwitcher = mTabSwitcherSupplier.get();
                             assert tabSwitcher != null;

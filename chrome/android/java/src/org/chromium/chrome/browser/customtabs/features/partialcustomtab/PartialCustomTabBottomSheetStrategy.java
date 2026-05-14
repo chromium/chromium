@@ -597,7 +597,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     private void updateDragBarVisibility() {
         updateDragBarVisibility(
-                /*dragHandlebarVisibility*/ isFixedHeight() ? View.GONE : View.VISIBLE);
+                /* dragHandlebarVisibility= */ isFixedHeight() ? View.GONE : View.VISIBLE);
     }
 
     @Override

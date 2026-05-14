@@ -440,7 +440,7 @@ public class NotificationContentDetectionManager {
             sWarningNotificationAttributesByOrigin.put(
                     notificationOrigin,
                     new SuspiciousNotificationWarningDetailsForOrigin(
-                            /* mWarningNotificationId */ notificationId,
+                            /* warningNotificationId= */ notificationId,
                             new HashMap<String, WarningNotificationWrapperAttributes>()));
         }
         sWarningNotificationAttributesByOrigin

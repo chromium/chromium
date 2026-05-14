@@ -106,7 +106,7 @@ public class TitleBitmapFactory {
                 context,
                 mGroupTextPaint,
                 R.style.TextAppearance_TextSmall_Primary,
-                /* applyFontFamily */ true,
+                /* applyFontFamily= */ true,
                 /* applyTextSize= */ true,
                 /* applyTextColor= */ false);
         mGroupTextPaint.setFakeBoldText(fakeBoldText);

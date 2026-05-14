@@ -45,8 +45,8 @@ public class TabCardThemeUtilUnitTest {
                 TabCardThemeUtil.getTitleTextColor(
                         mContext,
                         /* isIncognito= */ false,
-                        /* isSelected= */ true, /* colorId */
-                        null);
+                        /* isSelected= */ true,
+                        /* colorId= */ null);
         @ColorInt
         int actualSelected =
                 TabCardThemeUtil.getChromeOwnedFaviconTintColor(
@@ -61,8 +61,8 @@ public class TabCardThemeUtilUnitTest {
                 TabCardThemeUtil.getTitleTextColor(
                         mContext,
                         /* isIncognito= */ false,
-                        /* isSelected= */ false, /* colorId */
-                        null);
+                        /* isSelected= */ false,
+                        /* colorId= */ null);
         @ColorInt
         int actualUnselected =
                 TabCardThemeUtil.getChromeOwnedFaviconTintColor(
@@ -81,8 +81,8 @@ public class TabCardThemeUtilUnitTest {
                 TabCardThemeUtil.getTitleTextColor(
                         mContext,
                         /* isIncognito= */ false,
-                        /* isSelected= */ true, /* colorId */
-                        null);
+                        /* isSelected= */ true,
+                        /* colorId= */ null);
         assertEquals(
                 "Selected title text color for non-incognito is incorrect.",
                 expectedColor,
@@ -95,8 +95,8 @@ public class TabCardThemeUtilUnitTest {
                 TabCardThemeUtil.getTitleTextColor(
                         mContext,
                         /* isIncognito= */ true,
-                        /* isSelected= */ true, /* colorId */
-                        null);
+                        /* isSelected= */ true,
+                        /* colorId= */ null);
         assertEquals(
                 "Selected title text color for incognito is incorrect.",
                 expectedIncognitoColor,
@@ -133,8 +133,8 @@ public class TabCardThemeUtilUnitTest {
                 TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                         mContext,
                         /* isIncognito= */ false,
-                        /* isSelected= */ true, /* colorId */
-                        null);
+                        /* isSelected= */ true,
+                        /* colorId= */ null);
         assertEquals("Selected placeholder color is incorrect.", expectedColor, actualColor);
 
         @ColorInt
@@ -145,8 +145,8 @@ public class TabCardThemeUtilUnitTest {
                 TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                         mContext,
                         /* isIncognito= */ true,
-                        /* isSelected= */ true, /* colorId */
-                        null);
+                        /* isSelected= */ true,
+                        /* colorId= */ null);
         assertEquals(
                 "Selected incognito placeholder color is incorrect.",
                 expectedIncognitoColor,
@@ -179,8 +179,8 @@ public class TabCardThemeUtilUnitTest {
                 TabCardThemeUtil.getCardViewBackgroundColor(
                         mContext,
                         /* isIncognito= */ false,
-                        /* isSelected= */ true, /* colorId */
-                        null);
+                        /* isSelected= */ true,
+                        /* colorId= */ null);
         assertEquals("Selected background color is incorrect.", expectedColor, actualColor);
 
         @ColorInt
@@ -191,8 +191,8 @@ public class TabCardThemeUtilUnitTest {
                 TabCardThemeUtil.getCardViewBackgroundColor(
                         mContext,
                         /* isIncognito= */ true,
-                        /* isSelected= */ true, /* colorId */
-                        null);
+                        /* isSelected= */ true,
+                        /* colorId= */ null);
         assertEquals(
                 "Selected incognito background color is incorrect.",
                 expectedIncognitoColor,

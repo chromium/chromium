@@ -1280,7 +1280,7 @@ class TabListMediator implements TabListNotificationHandler {
                             TabUiUtils.closeTabGroup(
                                     tabModel,
                                     tabId,
-                                    /* tabClosingSource */ TabClosingSource.UNKNOWN,
+                                    /* tabClosingSource= */ TabClosingSource.UNKNOWN,
                                     /* allowUndo= */ true,
                                     /* hideTabGroups= */ true,
                                     getOnMaybeTabClosedCallback(tabId));

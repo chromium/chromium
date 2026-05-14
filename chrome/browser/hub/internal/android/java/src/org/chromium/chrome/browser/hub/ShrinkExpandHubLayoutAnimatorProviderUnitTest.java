@@ -571,7 +571,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
         ShrinkExpandAnimationData data =
                 ShrinkExpandAnimationData.createHubNewTabAnimationData(
-                        /* initialRect */ new Rect(100, 0, 101, 1),
+                        /* initialRect= */ new Rect(100, 0, 101, 1),
                         /* finalRect= */ new Rect(10, 15, WIDTH - 10, HEIGHT - 15),
                         /* cornerRadius= */ 0,
                         /* useFallbackAnimation= */ false);

@@ -93,7 +93,7 @@ public class NewTabPageUtilUnitTest {
         int mvtContainerTopMargin = resources.getDimensionPixelSize(R.dimen.ntp_section_top_margin);
 
         testUpdateTilesLayoutTopMargin_shouldShowLogoImpl(
-                /* isTablet*/ false, mvtContainerTopMargin);
+                /* isTablet= */ false, mvtContainerTopMargin);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class NewTabPageUtilUnitTest {
         int mvtContainerTopMargin = resources.getDimensionPixelSize(R.dimen.ntp_section_top_margin);
 
         testUpdateTilesLayoutTopMargin_shouldShowLogoImpl(
-                /* isTablet*/ true, mvtContainerTopMargin);
+                /* isTablet= */ true, mvtContainerTopMargin);
     }
 
     private void testUpdateTilesLayoutTopMargin_shouldShowLogoImpl(
@@ -121,7 +121,7 @@ public class NewTabPageUtilUnitTest {
                 resources.getDimensionPixelSize(R.dimen.tile_layout_no_logo_top_margin);
 
         testUpdateTilesLayoutTopMargin_shouldNotShowLogoImpl(
-                /* isTablet*/ false, tileLayoutNoLogoTopMargin);
+                /* isTablet= */ false, tileLayoutNoLogoTopMargin);
     }
 
     @Test
@@ -131,7 +131,7 @@ public class NewTabPageUtilUnitTest {
                 resources.getDimensionPixelSize(R.dimen.ntp_section_top_margin);
 
         testUpdateTilesLayoutTopMargin_shouldNotShowLogoImpl(
-                /* isTablet*/ true, expectedTileLayoutTopMargin);
+                /* isTablet= */ true, expectedTileLayoutTopMargin);
     }
 
     private void testUpdateTilesLayoutTopMargin_shouldNotShowLogoImpl(

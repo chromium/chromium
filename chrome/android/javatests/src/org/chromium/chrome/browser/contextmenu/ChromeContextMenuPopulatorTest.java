@@ -2258,7 +2258,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         /* nativePtr= */ 0,
-                        /* menuModelBridge */ mMenuModelBridge,
+                        /* menuModelBridge= */ mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
                         /* pageUrl= */ GURL.emptyGURL(),

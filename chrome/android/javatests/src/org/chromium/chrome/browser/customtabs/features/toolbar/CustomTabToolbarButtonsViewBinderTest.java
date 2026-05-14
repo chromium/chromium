@@ -114,7 +114,7 @@ public class CustomTabToolbarButtonsViewBinderTest {
                                     /* omniboxEnabled= */ false,
                                     /* titleVisible= */ false,
                                     /* isIncognito= */ false,
-                                    /* tint */ ThemeUtils.getThemedToolbarIconTint(
+                                    /* tint= */ ThemeUtils.getThemedToolbarIconTint(
                                             mActivity, APP_DEFAULT));
 
                     // The view binder uses this tag to get the model.

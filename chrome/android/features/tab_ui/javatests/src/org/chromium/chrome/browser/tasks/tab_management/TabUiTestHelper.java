@@ -802,7 +802,7 @@ public class TabUiTestHelper {
                         holder.getContext(),
                         /* isIncognito= */ false,
                         /* isSelected= */ true,
-                        /* colorId */ null);
+                        /* colorId= */ null);
         return actualColor == selectedColor;
     }
 

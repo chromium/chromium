@@ -98,8 +98,8 @@ public class NavigationObserverUnitTest {
                 NavigationHandle.createForTesting(
                         new GURL("unused"),
                         /* isInPrimaryMainFrame= */ true,
-                        /*isSameDocument*/ false,
-                        /*isRendererInitiated*/ false,
+                        /* isSameDocument= */ false,
+                        /* isRendererInitiated= */ false,
                         transition,
                         /* hasUserGesture= */ false,
                         /* isReload= */ false);
@@ -276,8 +276,8 @@ public class NavigationObserverUnitTest {
                 NavigationHandle.createForTesting(
                         mTestUrl,
                         /* isInPrimaryMainFrame= */ true,
-                        /*isSameDocument*/ false,
-                        /*isRendererInitiated*/ false,
+                        /* isSameDocument= */ false,
+                        /* isRendererInitiated= */ false,
                         PageTransition.LINK,
                         /* hasUserGesture= */ false,
                         /* isReload= */ false);

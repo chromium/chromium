@@ -113,8 +113,8 @@ public class WebSigninLoadingDialogTest {
                     mCoordinator.initializeWebSigninAndRedirect(
                             mActivityTestRule.getActivityTab(),
                             "test@gmail.com",
-                            /* continueUrl */ new GURL("https://continue.url"),
-                            /* initialTabURL */ new GURL("about:blank"));
+                            /* continueUrl= */ new GURL("https://continue.url"),
+                            /* initialTabURL= */ new GURL("about:blank"));
                 });
 
         onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
@@ -134,8 +134,8 @@ public class WebSigninLoadingDialogTest {
                     mCoordinator.initializeWebSigninAndRedirect(
                             mActivityTestRule.getActivityTab(),
                             "test@gmail.com",
-                            /* continueUrl */ new GURL("https://continue.url"),
-                            /* initialTabURL */ new GURL("about:blank"));
+                            /* continueUrl= */ new GURL("https://continue.url"),
+                            /* initialTabURL= */ new GURL("about:blank"));
                 });
 
         onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
@@ -181,8 +181,8 @@ public class WebSigninLoadingDialogTest {
                     mCoordinator.initializeWebSigninAndRedirect(
                             mActivityTestRule.getActivityTab(),
                             "test@gmail.com",
-                            /* continueUrl */ new GURL("https://continue.url"),
-                            /* initialTabURL */ new GURL("about:blank"));
+                            /* continueUrl= */ new GURL("https://continue.url"),
+                            /* initialTabURL= */ new GURL("about:blank"));
                     mCoordinator.showDialog();
                 });
 
@@ -218,8 +218,8 @@ public class WebSigninLoadingDialogTest {
                     mCoordinator.initializeWebSigninAndRedirect(
                             mActivityTestRule.getActivityTab(),
                             "test@gmail.com",
-                            /* continueURL */ new GURL("https://continue.url"),
-                            /* initialTabURL */ new GURL("about:blank"));
+                            /* continueUrl= */ new GURL("https://continue.url"),
+                            /* initialTabURL= */ new GURL("about:blank"));
                     // Result returns before timer fires.
                     mCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
                 });
@@ -270,8 +270,8 @@ public class WebSigninLoadingDialogTest {
                     mCoordinator.initializeWebSigninAndRedirect(
                             mActivityTestRule.getActivityTab(),
                             "test@gmail.com",
-                            /* continueUrl */ new GURL("https://continue.url"),
-                            /* initialTabURL */ new GURL("about:blank"));
+                            /* continueUrl= */ new GURL("https://continue.url"),
+                            /* initialTabURL= */ new GURL("about:blank"));
                 });
 
         onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));

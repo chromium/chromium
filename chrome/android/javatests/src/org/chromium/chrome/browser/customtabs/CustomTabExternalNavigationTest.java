@@ -310,10 +310,10 @@ public class CustomTabExternalNavigationTest {
         ExternalNavigationParams params1 =
                 new ExternalNavigationParams.Builder(
                                 insideVerifiedOriginUrl,
-                                /* isIncognito */ false,
-                                /* referrer */ GURL.emptyGURL(),
-                                /* pageTransition */ 0,
-                                /* isRedirect */ false)
+                                /* isIncognito= */ false,
+                                /* referrer= */ GURL.emptyGURL(),
+                                /* pageTransition= */ 0,
+                                /* isRedirect= */ false)
                         .setRedirectHandler(RedirectHandler.create())
                         .setIsTabInPWA(false)
                         .setIsInitialNavigationInFrame(true)
@@ -324,10 +324,10 @@ public class CustomTabExternalNavigationTest {
         ExternalNavigationParams params2 =
                 new ExternalNavigationParams.Builder(
                                 outsideVerifiedOriginUrl,
-                                /* isIncognito */ false,
-                                /* referrer */ GURL.emptyGURL(),
-                                /* pageTransition */ 0,
-                                /* isRedirect */ false)
+                                /* isIncognito= */ false,
+                                /* referrer= */ GURL.emptyGURL(),
+                                /* pageTransition= */ 0,
+                                /* isRedirect= */ false)
                         .setRedirectHandler(RedirectHandler.create())
                         .setIsTabInPWA(true)
                         .setIsInitialNavigationInFrame(true)
@@ -339,10 +339,10 @@ public class CustomTabExternalNavigationTest {
         ExternalNavigationParams params3 =
                 new ExternalNavigationParams.Builder(
                                 insideVerifiedOriginUrl,
-                                /* isIncognito */ false,
-                                /* referrer */ GURL.emptyGURL(),
-                                /* pageTransition */ 0,
-                                /* isRedirect */ false)
+                                /* isIncognito= */ false,
+                                /* referrer= */ GURL.emptyGURL(),
+                                /* pageTransition= */ 0,
+                                /* isRedirect= */ false)
                         .setRedirectHandler(RedirectHandler.create())
                         .setIsTabInPWA(true)
                         .setIsInitialNavigationInFrame(true)

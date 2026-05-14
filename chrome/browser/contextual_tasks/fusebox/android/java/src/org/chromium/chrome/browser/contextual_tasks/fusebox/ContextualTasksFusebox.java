@@ -97,7 +97,7 @@ public class ContextualTasksFusebox {
                         anchorView,
                         profileSupplier,
                         mDataProvider,
-                        /* actionModeCallback */ null,
+                        /* actionModeCallback= */ null,
                         windowAndroid,
                         /* activityTabSupplier= */ ObservableSuppliers.alwaysNull(),
                         windowAndroid::getModalDialogManager,

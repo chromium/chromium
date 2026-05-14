@@ -606,25 +606,25 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testMoveTabsToOtherWindow_regularTabs_noEligibleWindow_createsNewWindow() {
         doTestMoveTabsToOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ false, /* eligibleOtherWindowExists= */ false);
+                /* isIncognito= */ false, /* eligibleOtherWindowExists= */ false);
     }
 
     @Test
     public void testMoveTabsToOtherWindow_regularTabs_showsDialog() {
         doTestMoveTabsToOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ false, /* eligibleOtherWindowExists= */ true);
+                /* isIncognito= */ false, /* eligibleOtherWindowExists= */ true);
     }
 
     @Test
     public void testMoveTabsToOtherWindow_incognitoTabs_noEligibleWindow_createsNewWindow() {
         doTestMoveTabsToOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ true, /* eligibleOtherWindowExists= */ false);
+                /* isIncognito= */ true, /* eligibleOtherWindowExists= */ false);
     }
 
     @Test
     public void testMoveTabsToOtherWindow_incognitoTabs_showsDialog() {
         doTestMoveTabsToOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ true, /* eligibleOtherWindowExists= */ true);
+                /* isIncognito= */ true, /* eligibleOtherWindowExists= */ true);
     }
 
     @Test
@@ -793,31 +793,31 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testMoveTabGroupToOtherWindow_regularTabs_noEligibleWindow_createsNewWindow() {
         doTestMoveTabGroupToOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ false, /* eligibleOtherWindowExists= */ false);
+                /* isIncognito= */ false, /* eligibleOtherWindowExists= */ false);
     }
 
     @Test
     public void testMoveTabGroupToOtherWindow_regularTabs_showsDialog() {
         doTestMoveTabGroupToOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ false, /* eligibleOtherWindowExists= */ true);
+                /* isIncognito= */ false, /* eligibleOtherWindowExists= */ true);
     }
 
     @Test
     public void testMoveTabGroupToOtherWindow_incognitoTabs_noEligibleWindow_createsNewWindow() {
         doTestMoveTabGroupToOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ true, /* eligibleOtherWindowExists= */ false);
+                /* isIncognito= */ true, /* eligibleOtherWindowExists= */ false);
     }
 
     @Test
     public void testMoveTabGroupToOtherWindow_incognitoTabs_showsDialog() {
         doTestMoveTabGroupToOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ true, /* eligibleOtherWindowExists= */ true);
+                /* isIncognito= */ true, /* eligibleOtherWindowExists= */ true);
     }
 
     @Test
     public void testOpenUrlInOtherWindow_regularTab_showsDialog() {
         doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ false,
+                /* isIncognito= */ false,
                 /* preferNew= */ false,
                 /* atInstanceLimit= */ false,
                 /* numOtherEligibleWindows= */ 2);
@@ -826,7 +826,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testOpenUrlInOtherWindow_regularTab_opensOtherWindow() {
         doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ false,
+                /* isIncognito= */ false,
                 /* preferNew= */ false,
                 /* atInstanceLimit= */ false,
                 /* numOtherEligibleWindows= */ 1);
@@ -835,7 +835,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testOpenUrlInOtherWindow_regularTab_noEligibleWindow_createsNewWindow() {
         doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ false,
+                /* isIncognito= */ false,
                 /* preferNew= */ false,
                 /* atInstanceLimit= */ false,
                 /* numOtherEligibleWindows= */ 0);
@@ -844,7 +844,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testOpenUrlInOtherWindow_regularTab_preferNew_createsNewWindow() {
         doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ false,
+                /* isIncognito= */ false,
                 /* preferNew= */ true,
                 /* atInstanceLimit= */ false,
                 /* numOtherEligibleWindows= */ 1);
@@ -853,7 +853,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testOpenUrlInOtherWindow_regularTab_preferNew_showsMessageAtInstanceLimit() {
         doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
-                /* isIncognito*/ false,
+                /* isIncognito= */ false,
                 /* preferNew= */ true,
                 /* atInstanceLimit= */ true,
                 /* numOtherEligibleWindows= */ 1);
@@ -862,7 +862,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testOpenUrlInOtherWindow_incognitoTab_opensInOtherIncognitoWindow() {
         doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
-                /* isSourceIncognito*/ true,
+                /* isIncognito= */ true,
                 /* preferNew= */ false,
                 /* atInstanceLimit= */ false,
                 /* numOtherEligibleWindows= */ 1);
@@ -871,7 +871,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testOpenUrlInOtherWindow_incognitoTab_noEligibleWindow_createsNewWindow() {
         doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
-                /* isSourceIncognito*/ true,
+                /* isIncognito= */ true,
                 /* preferNew= */ false,
                 /* atInstanceLimit= */ false,
                 /* numOtherEligibleWindows= */ 0);
@@ -880,7 +880,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testOpenUrlInOtherWindow_incognitoTab_preferNew_createsNewWindow() {
         doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
-                /* isSourceIncognito*/ true,
+                /* isIncognito= */ true,
                 /* preferNew= */ true,
                 /* atInstanceLimit= */ false,
                 /* numOtherEligibleWindows= */ 1);
@@ -889,7 +889,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testOpenUrlInOtherWindow_incognitoTab_preferNew_showsMessageAtInstanceLimit() {
         doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
-                /* isSourceIncognito*/ true,
+                /* isIncognito= */ true,
                 /* preferNew= */ true,
                 /* atInstanceLimit= */ true,
                 /* numOtherEligibleWindows= */ 1);

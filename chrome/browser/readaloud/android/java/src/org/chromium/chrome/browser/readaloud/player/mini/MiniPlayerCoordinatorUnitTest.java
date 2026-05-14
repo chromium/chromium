@@ -40,8 +40,8 @@ import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MiniPlayerCoordinator}. */
@@ -126,8 +126,8 @@ public class MiniPlayerCoordinatorUnitTest {
 
     @Test
     public void testOnShown_requestingIph() {
-        // if there's no container to anchor IPH against, don't request it.
-        mCoordinator.onShown(/*container*/ null);
+        // If there's no container to anchor IPH against, don't request it.
+        mCoordinator.onShown(/* iphAnchorView= */ null);
         verify(mUserEducationHelper, never()).requestShowIph(any(IphCommand.class));
 
         mCoordinator.onShown(mView);

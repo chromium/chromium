@@ -36,7 +36,7 @@ public class SettingsNavigationImplTest {
                 mSettingsNavigationImpl.createSettingsIntent(
                         mContext,
                         SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS,
-                        /* fragmentArgs */ null);
+                        /* fragmentArgs= */ null);
         assertEquals(
                 intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
                 FinancialAccountsManagementFragment.class.getName());
@@ -48,7 +48,7 @@ public class SettingsNavigationImplTest {
                 mSettingsNavigationImpl.createSettingsIntent(
                         mContext,
                         SettingsNavigation.SettingsFragment.NON_CARD_PAYMENT_METHODS,
-                        /* fragmentArgs */ null);
+                        /* fragmentArgs= */ null);
         assertEquals(
                 intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
                 NonCardPaymentMethodsManagementFragment.class.getName());

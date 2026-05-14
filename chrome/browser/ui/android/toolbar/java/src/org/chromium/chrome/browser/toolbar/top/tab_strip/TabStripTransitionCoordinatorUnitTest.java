@@ -474,7 +474,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     public void showTabStripWhileTabObscured_DesktopWindow() {
         // Assume that the tab strip is initially hidden by a fade transition.
         setUpTabStripTransitionCoordinator(
-                /* isInDesktopWindow */ true, NARROW_DESKTOP_WINDOW_WIDTH);
+                /* isInDesktopWindow= */ true, NARROW_DESKTOP_WINDOW_WIDTH);
 
         // Simulate obscuring the tab.
         mTabObscuringHandler.obscure(Target.TAB_CONTENT);

@@ -1880,7 +1880,7 @@ public class StripLayoutHelper
             mQueuedIphList.add(
                     () ->
                             attemptToShowTabStripIph(
-                                    /* groupTitle */ null,
+                                    /* groupTitle= */ null,
                                     stripTab,
                                     IphType.TAB_TEARING_XR,
                                     /* enableSnoozeMode= */ true));

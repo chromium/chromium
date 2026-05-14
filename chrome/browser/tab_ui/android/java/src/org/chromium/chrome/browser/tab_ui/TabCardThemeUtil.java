@@ -244,6 +244,6 @@ public class TabCardThemeUtil {
      */
     public static ColorStateList getToggleActionButtonBackgroundTintList(
             Context context, boolean isIncognito, boolean isSelected) {
-        return getActionButtonTintList(context, isIncognito, isSelected, /* colorId */ null);
+        return getActionButtonTintList(context, isIncognito, isSelected, /* colorId= */ null);
     }
 }

@@ -107,13 +107,13 @@ class OptionsMenuSheetContent extends MenuSheetContent {
                 Item.VOICE,
                 R.drawable.voice_selection_24,
                 res.getString(R.string.readaloud_voice_menu_title),
-                /* header */ null,
+                /* header= */ null,
                 MenuItem.Action.EXPAND);
         mOptionsMenu.addItem(
                 Item.HIGHLIGHT,
                 R.drawable.format_ink_highlighter_24,
                 res.getString(R.string.readaloud_highlight_toggle_name),
-                /*header*/ null,
+                /* header= */ null,
                 MenuItem.Action.TOGGLE);
         mOptionsMenu.setItemClickHandler(this::onOptionsMenuClick);
         mOptionsMenu.addOnLayoutChangeListener(this::onOptionsMenuLayoutChange);
