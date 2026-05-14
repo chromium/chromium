@@ -275,6 +275,7 @@ class LocationBarMediator
     private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
             ObservableSuppliers.createNullable();
     private @Nullable Callback<ColorStateList> mOptionalButtonColorChangeCallback;
+    private boolean mMiniOriginMode;
 
     /*package */ LocationBarMediator(
             Context context,
@@ -1378,6 +1379,11 @@ class LocationBarMediator
         mShouldShowLensButtonWhenUnfocused = shouldShow;
     }
 
+    /* package */ void setMiniOriginMode(boolean active) {
+        mMiniOriginMode = active;
+        updateBackButtonVisibility();
+    }
+
     /* package */ void setShouldShowMicButtonWhenUnfocusedForTesting(boolean shouldShow) {
         assert mIsTablet;
         mShouldShowMicButtonWhenUnfocused = shouldShow;
@@ -1758,6 +1764,7 @@ class LocationBarMediator
         boolean showBackButton =
                 ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
                         && ToolbarVariationUtils.shouldBackButtonBeInOmnibox()
+                        && !mMiniOriginMode
                         && !mUrlHasFocus
                         && !isNtp;
         mLocationBarLayout.setBackButtonVisibility(showBackButton);

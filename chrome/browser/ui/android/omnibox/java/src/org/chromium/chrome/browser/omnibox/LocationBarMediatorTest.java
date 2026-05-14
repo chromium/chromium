@@ -2785,6 +2785,18 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testUpdateBackButtonVisibility_hiddenInMiniOriginMode() {
+        mMediator.setMiniOriginMode(true);
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateBackButtonVisibility();
+        verify(mLocationBarLayout).setBackButtonVisibility(false);
+
+        mMediator.setMiniOriginMode(false);
+        verify(mLocationBarLayout).setBackButtonVisibility(true);
+    }
+
+    @Test
     public void testOnSuggestionsChanged_triggersScrimVisibility() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);

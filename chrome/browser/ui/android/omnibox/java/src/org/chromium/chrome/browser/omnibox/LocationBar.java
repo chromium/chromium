@@ -109,6 +109,12 @@ public interface LocationBar {
      */
     default void setShowStatusIconForSecureOrigins(boolean showStatusIconForSecureOrigins) {}
 
+    /**
+     * Sets whether the location bar is in mini origin mode. In this mode, certain UI elements are
+     * hidden or modified.
+     */
+    default void setMiniOriginMode(boolean active) {}
+
     /** Gets the height of the url bar view contained by the location bar. */
     default float getUrlBarHeight() {
         return 0;

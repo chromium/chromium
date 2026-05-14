@@ -170,6 +170,8 @@ public class LocationBarCoordinator
     private @Nullable UrlFocusChangeListener mOptionalButtonUrlFocusChangeListener;
 
     private boolean mNativeInitialized;
+    private boolean mDefaultBoundsEllipsis;
+    private boolean mMiniOriginMode;
 
     /**
      * Creates {@link LocationBarCoordinator} and its subcoordinator: {@link
@@ -509,6 +511,7 @@ public class LocationBarCoordinator
                 pageClassification != PageClassification.ANDROID_HUB_VALUE
                         && pageClassification != PageClassification.OTHER_ON_CCT_VALUE
                         && pageClassification != PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
+        mDefaultBoundsEllipsis = enableBoundsEllipsis;
         mUrlCoordinator.setBoundsEllipsisEnabled(enableBoundsEllipsis);
     }
 
@@ -754,6 +757,14 @@ public class LocationBarCoordinator
     @Override
     public void setShowStatusIconForSecureOrigins(boolean showStatusIconForSecureOrigins) {
         mStatusCoordinator.setShowStatusIconForSecureOrigins(showStatusIconForSecureOrigins);
+    }
+
+    @Override
+    public void setMiniOriginMode(boolean active) {
+        mMiniOriginMode = active;
+        mUrlCoordinator.setBoundsEllipsisEnabled(active ? false : mDefaultBoundsEllipsis);
+        updateOptionalButtonState();
+        mLocationBarMediator.setMiniOriginMode(active);
     }
 
     @Override
@@ -1332,6 +1343,11 @@ public class LocationBarCoordinator
         mUrlCoordinator = urlCoordinator;
     }
 
+    /** Set an instance of UrlBar for testing. */
+    void setUrlBarForTesting(View urlBar) {
+        mUrlBar = urlBar;
+    }
+
     /** Set an instance of LocationBarLayout for testing. */
     void setLocationBarLayoutForTesting(LocationBarLayout locationBarLayout) {
         mLocationBarLayout = locationBarLayout;
@@ -1340,6 +1356,17 @@ public class LocationBarCoordinator
     /** Set an instance of LocationBarEmbedder for testing. */
     void setLocationBarEmbedderForTesting(LocationBarEmbedder locationBarEmbedder) {
         mLocationBarEmbedder = locationBarEmbedder;
+    }
+
+    /** Set an instance of OptionalButtonCoordinator for testing. */
+    void setOptionalButtonCoordinatorForTesting(
+            OptionalButtonCoordinator optionalButtonCoordinator) {
+        mOptionalButtonCoordinator = optionalButtonCoordinator;
+    }
+
+    /** Set an instance of LocationBarMediator for testing. */
+    void setLocationBarMediatorForTesting(LocationBarMediator mediator) {
+        mLocationBarMediator = mediator;
     }
 
     /** Set the value of mCurrentFuseboxState for testing. */
@@ -1439,6 +1466,7 @@ public class LocationBarCoordinator
         if (!ToolbarVariationUtils.shouldModifyToolbarButtons(
                         mLocationBarLayout.getContext(), isNtp)
                 || mLocationBarMediator.isUrlBarFocused()
+                || mMiniOriginMode
                 || mOptionalButtonData == null) {
             mOptionalButtonCoordinator.hideButton();
         } else {

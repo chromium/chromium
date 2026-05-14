@@ -142,6 +142,7 @@ public class MiniOriginBarControllerTest {
 
         verify(mLocationBar).setShowOriginOnly(true);
         verify(mLocationBar).setUrlBarUsesSmallText(true);
+        verify(mLocationBar).setMiniOriginMode(true);
         verify(mLocationBarView).setLayoutParams(mLayoutParamsCaptor.capture());
         assertEquals(Gravity.CENTER_VERTICAL, mLayoutParamsCaptor.getValue().gravity);
         assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, mLayoutParamsCaptor.getValue().width);
@@ -157,6 +158,7 @@ public class MiniOriginBarControllerTest {
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         verify(mLocationBar).setShowOriginOnly(false);
         verify(mLocationBar).setUrlBarUsesSmallText(false);
+        verify(mLocationBar).setMiniOriginMode(false);
         assertEquals(LayoutParams.WRAP_CONTENT, mControlContainerLayoutParams.height);
         assertEquals(Gravity.TOP, mLocationBarLayoutParams.gravity);
         assertEquals(MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
