@@ -372,7 +372,7 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
     base::RepeatingCallback<void(bool)> on_pin_toggled,
     base::RepeatingClosure on_dismiss)
     : BubbleDialogDelegate(nullptr,
-                           views::BubbleBorder::TOP_LEFT,
+                           views::BubbleBorder::BOTTOM_RIGHT,
                            views::BubbleBorder::STANDARD_SHADOW,
                            /*autosize=*/true),
       original_anchor_rect_(anchor_rect),
@@ -448,7 +448,7 @@ void GlicSelectionWidgetDelegate::UpdatePosition() {
     // The pill has a BubbleBorder with a STANDARD_SHADOW. This shadow adds
     // a large invisible inset (typically ~24px). We must subtract this inset
     // so the visual top of the pill aligns with our target. We also subtract
-    // the default 4px arrow gap added by BubbleDialogDelegate for TOP_LEFT.
+    // the default 4px arrow gap added by BubbleDialogDelegate for BOTTOM_RIGHT.
     int top_inset = 0;
     if (auto* contents_view = GetContentsView()) {
       if (!contents_view->children().empty()) {
@@ -465,37 +465,7 @@ void GlicSelectionWidgetDelegate::UpdatePosition() {
     SetAnchorRect(gfx::Rect(pinned_x, pinned_y, 0, 0));
   } else {
     // Unpinned: anchored inline near selection.
-    int ask_gemini_width = 120;
-    if (auto* contents_view = GetContentsView()) {
-      if (!contents_view->children().empty()) {
-        auto* ask_pill = contents_view->children()[0].get();
-        if (!ask_pill->children().empty()) {
-          ask_gemini_width =
-              ask_pill->children()[0]->GetPreferredSize().width();
-        }
-      }
-    }
-    gfx::Rect adjusted_anchor = original_anchor_rect_;
-    int overlap = 4 + ask_gemini_width / 2;
-    int target_x = std::max(original_anchor_rect_.x(),
-                            original_anchor_rect_.right() - overlap);
-
-    // TODO(crbug.com/507481568): Handle cases where the widget spills off the
-    // bottom of the window, and use RTL code (see ui/gfx/text_utils.h) to flip
-    // the layout when needed.
-    if (!window_bounds_.IsEmpty()) {
-      constexpr int kWindowEdgePadding = 16;
-      target_x = std::max(target_x, window_bounds_.x() + kWindowEdgePadding);
-      if (target_x + total_width >
-          window_bounds_.right() - kWindowEdgePadding) {
-        target_x = window_bounds_.right() - total_width - kWindowEdgePadding;
-      }
-    }
-
-    adjusted_anchor.set_x(target_x);
-    adjusted_anchor.set_width(0);
-    adjusted_anchor.Inset(gfx::Insets::TLBR(0, 0, -8, 0));
-    SetAnchorRect(adjusted_anchor);
+    SetAnchorRect(original_anchor_rect_);
   }
 }
 

@@ -6465,8 +6465,7 @@ const std::optional<gfx::Rect> WebContentsImpl::GetTextSelectionBounds(
     if (view && root_view) {
       const auto* region = text_input_manager_->GetSelectionRegion(view);
       if (region) {
-        gfx::Rect bounds =
-            gfx::RectBetweenSelectionBounds(region->anchor, region->focus);
+        gfx::Rect bounds = region->bounding_box;
         if (!bounds.IsEmpty()) {
           gfx::Point origin = bounds.origin();
           origin += root_view->GetViewBounds().OffsetFromOrigin();
