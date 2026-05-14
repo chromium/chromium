@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -713,8 +714,8 @@ void HTMLDialogElement::SetFocusForDialog() {
 bool HTMLDialogElement::DispatchToggleEvents(bool opening,
                                              Element* source,
                                              bool asModal) {
-  String old_state = opening ? "closed" : "open";
-  String new_state = opening ? "open" : "closed";
+  String old_state = opening ? keywords::kClosed : keywords::kOpen;
+  String new_state = opening ? keywords::kOpen : keywords::kClosed;
 
   if (DispatchEvent(*ToggleEvent::Create(
           event_type_names::kBeforetoggle,

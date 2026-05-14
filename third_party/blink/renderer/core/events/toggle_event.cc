@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -24,9 +25,9 @@ ToggleEvent::ToggleEvent(const AtomicString& type,
       old_state_(old_state),
       new_state_(new_state),
       source_(source) {
-  DCHECK(old_state == "closed" || old_state == "open")
+  DCHECK(old_state == keywords::kClosed || old_state == keywords::kOpen)
       << " old_state should be \"closed\" or \"open\". Was: " << old_state;
-  DCHECK(new_state == "closed" || new_state == "open")
+  DCHECK(new_state == keywords::kClosed || new_state == keywords::kOpen)
       << " new_state should be \"closed\" or \"open\". Was: " << new_state;
 }
 

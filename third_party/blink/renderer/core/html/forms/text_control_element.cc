@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
@@ -710,13 +711,12 @@ unsigned TextControlElement::selectionEnd() const {
 
 static const AtomicString& DirectionString(
     TextFieldSelectionDirection direction) {
-  DEFINE_STATIC_LOCAL(const AtomicString, none, ("none"));
   DEFINE_STATIC_LOCAL(const AtomicString, forward, ("forward"));
   DEFINE_STATIC_LOCAL(const AtomicString, backward, ("backward"));
 
   switch (direction) {
     case kSelectionHasNoDirection:
-      return none;
+      return keywords::kNone;
     case kSelectionHasForwardDirection:
       return forward;
     case kSelectionHasBackwardDirection:

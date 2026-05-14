@@ -277,13 +277,12 @@ int ComputeAutocapitalizeFlags(const Element* element) {
 
   int flags = 0;
 
-  DEFINE_STATIC_LOCAL(const AtomicString, none, ("none"));
   DEFINE_STATIC_LOCAL(const AtomicString, characters, ("characters"));
   DEFINE_STATIC_LOCAL(const AtomicString, words, ("words"));
   DEFINE_STATIC_LOCAL(const AtomicString, sentences, ("sentences"));
 
   const AtomicString& autocapitalize = html_element->autocapitalize();
-  if (autocapitalize == none) {
+  if (autocapitalize == keywords::kNone) {
     flags |= kWebTextInputFlagAutocapitalizeNone;
   } else if (autocapitalize == characters) {
     flags |= kWebTextInputFlagAutocapitalizeCharacters;

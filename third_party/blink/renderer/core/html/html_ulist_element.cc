@@ -57,7 +57,7 @@ void HTMLUListElement::CollectStyleForPresentationAttribute(
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType,
           *MakeGarbageCollected<CSSCustomIdentValue>(keywords::kSquare));
-    } else if (EqualIgnoringAsciiCase(value, "none")) {
+    } else if (EqualIgnoringAsciiCase(value, keywords::kNone)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType, CSSValueID::kNone);
     }

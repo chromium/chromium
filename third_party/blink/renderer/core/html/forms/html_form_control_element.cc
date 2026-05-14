@@ -411,9 +411,9 @@ HTMLFormControlElement::popoverTargetElement() {
   PopoverTriggerAction action = PopoverTriggerAction::kToggle;
   auto action_value =
       getAttribute(html_names::kPopovertargetactionAttr).ToAsciiLower();
-  if (action_value == "show") {
+  if (action_value == keywords::kShow) {
     action = PopoverTriggerAction::kShow;
-  } else if (action_value == "hide") {
+  } else if (action_value == keywords::kHide) {
     action = PopoverTriggerAction::kHide;
   }
   return PopoverTargetElement{.popover = target_popover, .action = action};

@@ -1634,11 +1634,11 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   // Fire the "opening" beforetoggle event.
   auto* event = ToggleEvent::Create(
       event_type_names::kBeforetoggle, Event::Cancelable::kYes,
-      /*old_state*/ "closed", /*new_state*/ "open", invoker);
+      /*old_state*/ keywords::kClosed, /*new_state*/ keywords::kOpen, invoker);
   CHECK(!event->bubbles());
   CHECK(event->cancelable());
-  CHECK_EQ(event->oldState(), "closed");
-  CHECK_EQ(event->newState(), "open");
+  CHECK_EQ(event->oldState(), keywords::kClosed);
+  CHECK_EQ(event->newState(), keywords::kOpen);
   event->SetTarget(this);
   if (DispatchEvent(*event) != DispatchEventResult::kNotCanceled) {
     return;
@@ -1857,13 +1857,14 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   }
 
   // Queue the "opening" toggle event.
-  String old_state = "closed";
+  String old_state = keywords::kClosed;
   if (popoverOpen()) {
     if (GetPopoverData()->hasPendingToggleEventTask()) {
       // There's already a queued 'toggle' event. Cancel it and fire a new one
       // keeping the original value for old_state.
-      old_state = GetPopoverData()->pendingToggleEventStartedClosed() ? "closed"
-                                                                      : "open";
+      old_state = GetPopoverData()->pendingToggleEventStartedClosed()
+                      ? keywords::kClosed
+                      : keywords::kOpen;
       GetPopoverData()->cancelPendingToggleEventTask();
     } else {
       GetPopoverData()->setPendingToggleEventStartedClosed(true);
@@ -1871,8 +1872,8 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   }
   ToggleEvent* after_event = ToggleEvent::Create(
       event_type_names::kToggle, Event::Cancelable::kNo, old_state,
-      /*new_state*/ "open", invoker);
-  CHECK_EQ(after_event->newState(), "open");
+      /*new_state*/ keywords::kOpen, invoker);
+  CHECK_EQ(after_event->newState(), keywords::kOpen);
   CHECK_EQ(after_event->oldState(), old_state);
   CHECK(!after_event->bubbles());
   CHECK(!after_event->cancelable());
@@ -2224,11 +2225,11 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
     // Fire the "closing" beforetoggle event.
     auto* event = ToggleEvent::Create(
         event_type_names::kBeforetoggle, Event::Cancelable::kNo,
-        /*old_state*/ "open", /*new_state*/ "closed", invoker);
+        /*old_state*/ keywords::kOpen, /*new_state*/ keywords::kClosed, invoker);
     CHECK(!event->bubbles());
     CHECK(!event->cancelable());
-    CHECK_EQ(event->oldState(), "open");
-    CHECK_EQ(event->newState(), "closed");
+    CHECK_EQ(event->oldState(), keywords::kOpen);
+    CHECK_EQ(event->newState(), keywords::kClosed);
     event->SetTarget(this);
     auto result = DispatchEvent(*event);
     if (result != DispatchEventResult::kNotCanceled) {
@@ -2281,20 +2282,21 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
     }
 
     // Queue the "closing" toggle event.
-    String old_state = "open";
+    String old_state = keywords::kOpen;
     if (GetPopoverData()->hasPendingToggleEventTask()) {
       // There's already a queued 'toggle' event. Cancel it and fire a new one
       // keeping the original value for old_state.
-      old_state = GetPopoverData()->pendingToggleEventStartedClosed() ? "closed"
-                                                                      : "open";
+      old_state = GetPopoverData()->pendingToggleEventStartedClosed()
+                      ? keywords::kClosed
+                      : keywords::kOpen;
       GetPopoverData()->cancelPendingToggleEventTask();
     } else {
       GetPopoverData()->setPendingToggleEventStartedClosed(false);
     }
     ToggleEvent* after_event = ToggleEvent::Create(
         event_type_names::kToggle, Event::Cancelable::kNo, old_state,
-        /*new_state*/ "closed", invoker);
-    CHECK_EQ(after_event->newState(), "closed");
+        /*new_state*/ keywords::kClosed, invoker);
+    CHECK_EQ(after_event->newState(), keywords::kClosed);
     CHECK_EQ(after_event->oldState(), old_state);
     CHECK(!after_event->bubbles());
     CHECK(!after_event->cancelable());
@@ -3293,7 +3295,6 @@ CommandEventType HTMLElement::GetCommandEventType(
 }
 
 const AtomicString& HTMLElement::autocapitalize() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, kNone, ("none"));
   DEFINE_STATIC_LOCAL(const AtomicString, kCharacters, ("characters"));
   DEFINE_STATIC_LOCAL(const AtomicString, kWords, ("words"));
   DEFINE_STATIC_LOCAL(const AtomicString, kSentences, ("sentences"));
@@ -3302,9 +3303,9 @@ const AtomicString& HTMLElement::autocapitalize() const {
   if (value.empty())
     return g_empty_atom;
 
-  if (EqualIgnoringAsciiCase(value, kNone) ||
+  if (EqualIgnoringAsciiCase(value, keywords::kNone) ||
       EqualIgnoringAsciiCase(value, keywords::kOff)) {
-    return kNone;
+    return keywords::kNone;
   }
   if (EqualIgnoringAsciiCase(value, kCharacters)) {
     return kCharacters;
@@ -3442,7 +3443,6 @@ void HTMLElement::setTranslate(bool enable) {
 static inline const AtomicString& ToValidDirValue(const AtomicString& value) {
   DEFINE_STATIC_LOCAL(const AtomicString, ltr_value, ("ltr"));
   DEFINE_STATIC_LOCAL(const AtomicString, rtl_value, ("rtl"));
-  DEFINE_STATIC_LOCAL(const AtomicString, auto_value, ("auto"));
 
   if (EqualIgnoringAsciiCase(value, ltr_value)) {
     return ltr_value;
@@ -3450,8 +3450,8 @@ static inline const AtomicString& ToValidDirValue(const AtomicString& value) {
   if (EqualIgnoringAsciiCase(value, rtl_value)) {
     return rtl_value;
   }
-  if (EqualIgnoringAsciiCase(value, auto_value)) {
-    return auto_value;
+  if (EqualIgnoringAsciiCase(value, keywords::kAuto)) {
+    return keywords::kAuto;
   }
   return g_null_atom;
 }

@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -442,7 +443,7 @@ void HTMLTableElement::ParseAttribute(
         params.new_value, border_top, border_right, border_bottom, border_left);
   } else if (name == html_names::kRulesAttr) {
     rules_attr_ = kUnsetRules;
-    if (EqualIgnoringAsciiCase(params.new_value, "none")) {
+    if (EqualIgnoringAsciiCase(params.new_value, keywords::kNone)) {
       rules_attr_ = kNoneRules;
     } else if (EqualIgnoringAsciiCase(params.new_value, "groups")) {
       rules_attr_ = kGroupsRules;

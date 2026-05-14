@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/image_loader.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
@@ -24,9 +25,9 @@ Image::ImageDecodingMode ImageElementBase::ParseImageDecodingMode(
     return Image::kUnspecifiedDecode;
 
   const auto& value = async_attr_value.ToAsciiLower();
-  if (value == "async")
+  if (value == keywords::kAsync)
     return Image::kAsyncDecode;
-  if (value == "sync")
+  if (value == keywords::kSync)
     return Image::kSyncDecode;
   return Image::kUnspecifiedDecode;
 }

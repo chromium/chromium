@@ -99,6 +99,7 @@
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/layout/layout_media.h"
 #include "third_party/blink/renderer/core/loader/lazy_media_helper.h"
@@ -309,11 +310,11 @@ bool CanLoadURL(const KURL& url, const String& content_type_str) {
 String PreloadTypeToString(WebMediaPlayer::Preload preload_type) {
   switch (preload_type) {
     case WebMediaPlayer::kPreloadNone:
-      return "none";
+      return keywords::kNone;
     case WebMediaPlayer::kPreloadMetaData:
       return "metadata";
     case WebMediaPlayer::kPreloadAuto:
-      return "auto";
+      return keywords::kAuto;
   }
 
   NOTREACHED();
@@ -3004,7 +3005,7 @@ bool HTMLMediaElement::HasMediaSources() const {
 
 WebMediaPlayer::Preload HTMLMediaElement::PreloadType() const {
   const AtomicString& preload = FastGetAttribute(html_names::kPreloadAttr);
-  if (EqualIgnoringAsciiCase(preload, "none")) {
+  if (EqualIgnoringAsciiCase(preload, keywords::kNone)) {
     UseCounter::Count(GetDocument(), WebFeature::kHTMLMediaElementPreloadNone);
     return WebMediaPlayer::kPreloadNone;
   }
@@ -3024,7 +3025,7 @@ WebMediaPlayer::Preload HTMLMediaElement::PreloadType() const {
 
   // Per HTML spec, "The empty string ... maps to the Automatic state."
   // https://html.spec.whatwg.org/C/#attr-media-preload
-  if (EqualIgnoringAsciiCase(preload, "auto") ||
+  if (EqualIgnoringAsciiCase(preload, keywords::kAuto) ||
       EqualIgnoringAsciiCase(preload, "")) {
     UseCounter::Count(GetDocument(), WebFeature::kHTMLMediaElementPreloadAuto);
     return WebMediaPlayer::kPreloadAuto;

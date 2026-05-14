@@ -82,7 +82,7 @@ void HTMLLIElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kTypeAttr) {
-    if (EqualIgnoringAsciiCase(value, "none")) {
+    if (EqualIgnoringAsciiCase(value, keywords::kNone)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType, CSSValueID::kNone);
     } else {

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
@@ -176,7 +177,7 @@ std::optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
   if (op == keywords::kUninitialized) {
     return kDragOperationEvery;
   }
-  if (op == "none")
+  if (op == keywords::kNone)
     return kDragOperationNone;
   if (op == "copy")
     return kDragOperationCopy;
@@ -304,7 +305,7 @@ void DataTransfer::setDropEffect(const AtomicString& effect) {
 
   // The attribute must ignore any attempts to set it to a value other than
   // none, copy, link, and move.
-  if (effect != "none" && effect != "copy" && effect != "link" &&
+  if (effect != keywords::kNone && effect != "copy" && effect != "link" &&
       effect != "move")
     return;
 

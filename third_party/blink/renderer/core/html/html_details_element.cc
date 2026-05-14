@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/html_summary_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -168,8 +169,8 @@ void HTMLDetailsElement::ParseAttribute(
       return;
 
     // Dispatch toggle event asynchronously.
-    String old_state = is_open_ ? "closed" : "open";
-    String new_state = is_open_ ? "open" : "closed";
+    String old_state = is_open_ ? keywords::kClosed : keywords::kOpen;
+    String new_state = is_open_ ? keywords::kOpen : keywords::kClosed;
     if (pending_toggle_event_) {
       old_state = pending_toggle_event_->oldState();
     }
