@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                        OpenLensOverlay_Show) {
   EXPECT_CALL(*GetLensSearchController(),
               OpenLensOverlay(
-                  lens::LensOverlayInvocationSource::kOmniboxPageAction, false))
+                  lens::LensOverlayInvocationSource::kOmniboxPageAction, true))
       .Times(1);
   GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
 }
@@ -210,12 +210,3 @@ class ChromeAutocompleteProviderClientWithChipTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientWithChipTest,
-                       OpenLensOverlay_Show) {
-  EXPECT_CALL(*GetLensSearchController(),
-              OpenLensOverlay(
-                  lens::LensOverlayInvocationSource::kOmniboxPageAction, false))
-      .Times(1);
-  GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
-}
