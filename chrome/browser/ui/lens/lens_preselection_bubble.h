@@ -9,9 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/lens/overlay_base_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -42,10 +44,10 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
       tabs::TabHandle tab_handle,
       views::View* anchor_view,
       bool offline,
-      bool show_cancel_button,
       ui::ColorId bubble_background_color,
       const gfx::VectorIcon* icon,
-      std::optional<ui::ColorId> cancel_button_color,
+      std::optional<OverlayBaseController::CancelButtonConfig>
+          cancel_button_config,
       ExitClickedCallback exit_clicked_callback,
       base::OnceClosure on_cancel_callback);
   ~LensPreselectionBubble() override;
@@ -86,18 +88,17 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<views::ImageButton> more_info_button_ = nullptr;
   // Button shown in bubble to close lens overlay. Only shown in offline state.
   raw_ptr<views::MdTextButton> exit_button_ = nullptr;
-  // Whether to show cancel button.
-  const bool show_cancel_button_;
   // Button shown in bubble to cancel selection.
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
-  // Color for cancel button text and border.
-  const std::optional<ui::ColorId> cancel_button_color_;
   // Whether user is offline.
   bool offline_ = false;
   // Background color of the bubble.
   const ui::ColorId bubble_background_color_;
   // The icon to display. Must be non-null.
   const raw_ptr<const gfx::VectorIcon> icon_;
+  // Configuration for the cancel button.
+  const std::optional<OverlayBaseController::CancelButtonConfig>
+      cancel_button_config_;
   // Callback for exit button which closes the lens overlay.
   ExitClickedCallback exit_clicked_callback_;
   // Model for the more info menu.

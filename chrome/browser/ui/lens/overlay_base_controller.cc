@@ -848,9 +848,9 @@ void OverlayBaseController::ShowPreselectionBubble() {
     preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<lens::LensPreselectionBubble>(
             tab_->GetHandle(), preselection_widget_anchor_,
-            net::NetworkChangeNotifier::IsOffline(), config.show_cancel_button,
+            net::NetworkChangeNotifier::IsOffline(),
             config.bubble_background_color, config.icon,
-            config.cancel_button_color,
+            config.cancel_button_config,
             /*exit_clicked_callback=*/
             base::BindRepeating(&OverlayBaseController::RequestSyncClose,
                                 weak_factory_.GetWeakPtr(),

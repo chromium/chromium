@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
@@ -239,15 +240,22 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Notification that the tab was foregrounded.
   virtual void NotifyTabWillEnterBackground() = 0;
 
-  struct PreselectionUIConfig {
-    int message_string_id = -1;
-    bool show_cancel_button = false;
-    // Only read if show_cancel_button is true.
-    std::optional<ui::ColorId> cancel_button_color = std::nullopt;
-    ui::ColorId bubble_background_color = ui::kUiColorsLast;
-    raw_ptr<const gfx::VectorIcon> icon = nullptr;
+ public:
+  // Public as used by LensPreselectionBubble.
+  struct CancelButtonConfig {
+    ui::ColorId color;
+    gfx::Insets padding;
+    gfx::Insets bubble_margins;
   };
 
+  struct PreselectionUIConfig {
+    int message_string_id = -1;
+    ui::ColorId bubble_background_color = ui::kUiColorsLast;
+    raw_ptr<const gfx::VectorIcon> icon = nullptr;
+    std::optional<CancelButtonConfig> cancel_button_config;
+  };
+
+ protected:
   // Returns the resources for the preselection bubble.
   virtual PreselectionUIConfig GetPreselectionBubbleConfig() = 0;
 
