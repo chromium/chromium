@@ -4554,21 +4554,10 @@ void HTMLMediaElement::SetShouldDelayLoadEvent(bool should_delay) {
            << base::ToString(should_delay) << ")";
 
   should_delay_load_event_ = should_delay;
-  if (should_delay) {
+  if (should_delay)
     GetDocument().IncrementLoadEventDelayCount();
-  } else if (async_event_queue_->HasPendingEvents()) {
-    // When releasing the delay, if media element events (e.g. loadstart) are
-    // already queued but not yet dispatched, defer the document-level
-    // decrement until after they fire. The kDOMManipulation timer used by
-    // Document::CheckLoadEventSoon() would otherwise race ahead of
-    // kMediaElementEvent tasks, causing window.onload to fire before loadstart.
-    GetDocument()
-        .GetTaskRunner(TaskType::kMediaElementEvent)
-        ->PostTask(FROM_HERE, BindOnce(&Document::DecrementLoadEventDelayCount,
-                                       WrapWeakPersistent(&GetDocument())));
-  } else {
+  else
     GetDocument().DecrementLoadEventDelayCount();
-  }
 }
 
 MediaControls* HTMLMediaElement::GetMediaControls() const {
