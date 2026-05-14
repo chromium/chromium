@@ -50,11 +50,7 @@ declare_args() {
   # Set to true for builds targeting ARC.
   is_android_arc = false
 
-  if (is_android) {
-    # Set to true to get logcat from a remote service
-    # If false, will only get the logs of the app.
-    use_remote_service_logcat = false
-  }
+
 
 
   # unified flag to pick monotonic_clock OR monotonic_clock_raw
