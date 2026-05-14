@@ -246,6 +246,10 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
 
   void CheckDuration();
 
+  void CheckConfig(const VideoDecoderConfig& config);
+
+  void EnforceMaxCanvasSizeForFuzzing(const gfx::Size& size);
+
   // Return the media start time from |demuxer_|.
   base::TimeDelta GetStartTime();
 

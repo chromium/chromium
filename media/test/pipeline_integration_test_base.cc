@@ -75,9 +75,14 @@ using ::testing::SaveArg;
 
 namespace media {
 
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
 namespace {
 
+// In order to avoid fuzzing bot timeouts, we set a maximum canvas size of
+// roughly half of our actual limit since the fuzzer bots may run with as little
+// as 2GB of memory.
+static const constexpr uint64_t kMaxFuzzerCanvas = (1 << 28) - 1;
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
 class TestDataSourceFactory : public DataSource::Factory {
  public:
   ~TestDataSourceFactory() override = default;
@@ -101,10 +106,9 @@ class TestDataSourceFactory : public DataSource::Factory {
   }
 };
 
-}  // namespace
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
-static std::vector<std::unique_ptr<VideoDecoder>> CreateVideoDecodersForTest(
+std::vector<std::unique_ptr<VideoDecoder>> CreateVideoDecodersForTest(
     MediaLog* media_log,
     CreateVideoDecodersCB prepend_video_decoders_cb) {
   std::vector<std::unique_ptr<VideoDecoder>> video_decoders;
@@ -130,7 +134,7 @@ static std::vector<std::unique_ptr<VideoDecoder>> CreateVideoDecodersForTest(
   return video_decoders;
 }
 
-static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
+std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
     MediaLog* media_log,
     const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
     CreateAudioDecodersCB prepend_audio_decoders_cb) {
@@ -157,6 +161,8 @@ static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
 #endif
   return audio_decoders;
 }
+
+}  // namespace
 
 const char kNullVideoHash[] =
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
@@ -361,7 +367,10 @@ PipelineStatus PipelineIntegrationTestBase::StartInternal(
         .WillRepeatedly(
             Invoke(this, &PipelineIntegrationTestBase::CheckDuration));
   }
-  EXPECT_CALL(*this, OnVideoNaturalSizeChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoNaturalSizeChange(_))
+      .Times(AnyNumber())
+      .WillRepeatedly(Invoke(
+          this, &PipelineIntegrationTestBase::EnforceMaxCanvasSizeForFuzzing));
   EXPECT_CALL(*this, OnVideoOpacityChange(_)).WillRepeatedly(Return());
   EXPECT_CALL(*this, OnVideoFrameRateChange(_)).Times(AnyNumber());
   EXPECT_CALL(*this, OnAudioPipelineInfoChange(_)).Times(AnyNumber());
@@ -384,7 +393,9 @@ PipelineStatus PipelineIntegrationTestBase::StartInternal(
   // In practice, this doesn't happen for FFmpegDemuxer, but it's allowed for
   // SRC= demuxers in general.
   EXPECT_CALL(*this, OnAudioConfigChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnVideoConfigChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoConfigChange(_))
+      .Times(AnyNumber())
+      .WillRepeatedly(Invoke(this, &PipelineIntegrationTestBase::CheckConfig));
 
   base::RunLoop run_loop;
   pipeline_->Start(
@@ -761,7 +772,10 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
       .WillRepeatedly(SaveArg<0>(&metadata_));
   EXPECT_CALL(*this, OnBufferingStateChange(_, _)).Times(AnyNumber());
   EXPECT_CALL(*this, OnDurationChange()).Times(AnyNumber());
-  EXPECT_CALL(*this, OnVideoNaturalSizeChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoNaturalSizeChange(_))
+      .Times(AnyNumber())
+      .WillRepeatedly(Invoke(
+          this, &PipelineIntegrationTestBase::EnforceMaxCanvasSizeForFuzzing));
   EXPECT_CALL(*this, OnVideoOpacityChange(_)).Times(AtMost(1));
   EXPECT_CALL(*this, OnVideoFrameRateChange(_)).Times(AnyNumber());
   EXPECT_CALL(*this, OnAudioPipelineInfoChange(_)).Times(AnyNumber());
@@ -778,7 +792,9 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
   // Config change tests should set more specific expectations about the number
   // of calls.
   EXPECT_CALL(*this, OnAudioConfigChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnVideoConfigChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoConfigChange(_))
+      .Times(AnyNumber())
+      .WillRepeatedly(Invoke(this, &PipelineIntegrationTestBase::CheckConfig));
 
   if (encrypted_media) {
     EXPECT_CALL(*this, DecryptorAttached(true));
@@ -852,4 +868,18 @@ void PipelineIntegrationTestBase::RunUntilQuitOrEndedOrError(
   RunUntilQuitOrError(run_loop);
 }
 
+void PipelineIntegrationTestBase::CheckConfig(
+    const VideoDecoderConfig& config) {
+  EnforceMaxCanvasSizeForFuzzing(config.coded_size());
+}
+
+void PipelineIntegrationTestBase::EnforceMaxCanvasSizeForFuzzing(
+    const gfx::Size& size) {
+  if (fuzzing_ && size.Area64() > kMaxFuzzerCanvas) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PipelineIntegrationTestBase::FailTest,
+                                  base::Unretained(this),
+                                  PIPELINE_ERROR_INITIALIZATION_FAILED));
+  }
+}
 }  // namespace media
