@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/fit_text.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
@@ -133,18 +134,10 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   FontHeight emphasis_marks_outsets =
       ComputeEmphasisMarkOutsets(styleref, base_font, paint_scale);
   LayoutUnit line_height = styleref.ComputedLineHeightAsFixed(base_font);
-  if (styleref.LineHeight().IsFixed()) {
-    if (scale && scale->total_scale != 1.0f) {
-      line_height *= scale->total_scale;
-    }
-    // When the line-height is fixed,
-    //  - Should we apply the maximum scaling factor in the line?
-    //  - When the text shrinks, this behavior is questionable.  Non-text
-    //    items may overflow.
-  } else {
-    if (paint_scale != 1.0f) {
-      line_height *= paint_scale;
-    }
+  if (!styleref.LineHeight().IsFixed() && paint_scale != 1.0f) {
+    line_height *= paint_scale;
+    // Note that styleref.LineHeight() for <percentage> is not kPerecnt type,
+    // so <percentage> line-height is not scaled.
   }
   FontHeight leading_space = CalculateLeadingSpace(line_height, text_metrics);
   if (emphasis_marks_outsets.IsEmpty()) {
@@ -338,7 +331,9 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
 
   // Initialize the box state for the line box.
   InlineBoxState& line_box_state = LineBoxState();
-  if (line_box_state.style != &line_style) {
+  if (line_box_state.style != &line_style ||
+      (line_style.TextFit().Type() != FitTextType::kNone &&
+       line_style.TextFit().Target() != FitTextTarget::kConsistent)) {
     line_box_state.ResetStyle(line_style, node.IsSvgText(),
                               *node.GetLayoutBox());
 
