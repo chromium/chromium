@@ -430,18 +430,17 @@ const base::Feature* FetchIPHFeatureFromEnum(
     return NO;
   }
 
-  base::optional_ref<const autofill::EntityInstance> entity =
-      autofill::GetEntityInstance(self.profile, formSuggestion.payload);
-  if (!entity.has_value()) {
-    return NO;
-  }
-
   // Filling entities will unconditionally call
   // ChromeAutofillClientIOS::HideAutofillSuggestions once the filling is
-  // completed. This process is synchronous for local entities, but asynchronous
-  // for wallet server private passes.
-  return autofill::IsMaskedStorageSupported(entity->type(),
-                                            entity->record_type());
+  // completed. This process is asynchronous if the payload requires a server
+  // fetch (e.g., retrieving a masked entity from Google Wallet).
+  autofill::Suggestion::Payload payload = formSuggestion.payload;
+  if (const auto* ai_payload =
+          std::get_if<autofill::Suggestion::AutofillAiPayload>(&payload)) {
+    return ai_payload->requires_server_fetch;
+  }
+
+  return NO;
 }
 
 #pragma mark - FallbackCoordinatorDelegate
