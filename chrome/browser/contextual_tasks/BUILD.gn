@@ -610,6 +610,7 @@ source_set("interactive_ui_tests") {
       ":ui",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/contextual_search",
+      "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
     ]
   }
 }
