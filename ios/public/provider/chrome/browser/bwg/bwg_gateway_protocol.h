@@ -11,6 +11,7 @@
 @protocol GeminiActuationDelegate;
 @protocol GeminiPageStateChangeDelegate;
 @protocol GeminiCameraDelegate;
+@protocol GeminiConsentProviderDelegate;
 @protocol GeminiSessionDelegate;
 @protocol GeminiSuggestionDelegate;
 @protocol GeminiTabPickerDelegate;
@@ -21,6 +22,8 @@
 // Handlers for BWG protocols.
 @property(nonatomic, weak) id<GeminiActuationDelegate> actuationHandler;
 @property(nonatomic, weak) id<GeminiCameraDelegate> cameraHandler;
+@property(nonatomic, weak) id<GeminiConsentProviderDelegate>
+    consentProviderHandler;
 @property(nonatomic, weak) id<BWGLinkOpeningDelegate> linkOpeningHandler;
 @property(nonatomic, weak) id<GeminiPageStateChangeDelegate>
     pageStateChangeHandler;
