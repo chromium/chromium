@@ -34,10 +34,6 @@ class AwVariationsServiceClient : public variations::VariationsServiceClient {
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
-  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
-      PrefService* local_state) override;
-  void RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
-      PrefService* local_state) override;
   version_info::Channel GetChannel() override;
 };
 

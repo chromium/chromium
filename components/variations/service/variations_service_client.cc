@@ -99,4 +99,9 @@ void VariationsServiceClient::ExitWithMessage(const std::string& message) {
   exit(1);
 }
 
+std::optional<base::flat_set<std::string>>
+VariationsServiceClient::GetAllProfilesKeys(PrefService* local_state) {
+  return std::nullopt;
+}
+
 }  // namespace variations

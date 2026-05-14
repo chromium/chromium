@@ -16,13 +16,11 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "components/enterprise/browser/groups/groups_prefs.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "components/variations/service/variations_service_client.h"
-#include "components/variations/service/variations_service_utils.h"
 #include "components/variations/synthetic_trials.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -110,21 +108,9 @@ bool ChromeVariationsServiceClient::IsEnterprise() {
 #endif
 }
 
-// Remove any profiles from variations prefs that no longer exist in the
-// ProfileAttributesStorage source-of-truth.
-void ChromeVariationsServiceClient::
-    RemoveGoogleGroupsFromPrefsForDeletedProfiles(PrefService* local_state) {
-  variations::RemovePrefsForDeletedProfiles(
-      local_state, variations::prefs::kVariationsGoogleGroups,
-      ProfileAttributesStorage::GetAllProfilesKeys(local_state));
-}
-
-void ChromeVariationsServiceClient::
-    RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
-        PrefService* local_state) {
-  variations::RemovePrefsForDeletedProfiles(
-      local_state, enterprise_groups::kEnterpriseGroupsProfilePref,
-      ProfileAttributesStorage::GetAllProfilesKeys(local_state));
+std::optional<base::flat_set<std::string>>
+ChromeVariationsServiceClient::GetAllProfilesKeys(PrefService* local_state) {
+  return ProfileAttributesStorage::GetAllProfilesKeys(local_state);
 }
 
 version_info::Channel ChromeVariationsServiceClient::GetChannel() {

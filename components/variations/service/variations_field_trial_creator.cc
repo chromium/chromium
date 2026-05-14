@@ -9,11 +9,14 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -37,6 +40,7 @@
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
@@ -638,7 +642,8 @@ bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(bool is_safe_seed) {
 
 base::flat_set<std::string>
 VariationsFieldTrialCreator::GetEnterpriseGroupsFromPrefs() {
-  client_->RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(local_state());
+  RemovePrefsForDeletedProfiles(
+      enterprise_groups::kEnterpriseGroupsProfilePref);
 
   base::flat_set<std::string> groups = base::flat_set<std::string>();
   AddGroupsFromList(
@@ -662,7 +667,7 @@ VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs() {
   // reason it is currently done here is simply to allow a safer gradual
   // rollout of the initial feature, as this code is only run if there is at
   // least one study that filters by Google group membership.
-  client_->RemoveGoogleGroupsFromPrefsForDeletedProfiles(local_state());
+  RemovePrefsForDeletedProfiles(prefs::kVariationsGoogleGroups);
 
   base::flat_set<uint64_t> groups = base::flat_set<uint64_t>();
 
@@ -855,6 +860,32 @@ void VariationsFieldTrialCreator::LoadSeedFromJsonFile(
 
 VariationsSeedStore* VariationsFieldTrialCreator::GetSeedStore() {
   return seed_store_.get();
+}
+
+void VariationsFieldTrialCreator::RemovePrefsForDeletedProfiles(
+    std::string_view pref_name) {
+  std::optional<base::flat_set<std::string>> existing_profiles =
+      client_->GetAllProfilesKeys(local_state());
+  if (!existing_profiles.has_value()) {
+    return;
+  }
+
+  // Get the current value of the local state dict.
+  const base::DictValue& cached_variations_profiles =
+      local_state()->GetDict(pref_name);
+  std::vector<std::string> variations_profiles_to_delete;
+  for (const auto&& [profile_key, unused_value] : cached_variations_profiles) {
+    if (!existing_profiles->contains(profile_key)) {
+      variations_profiles_to_delete.push_back(profile_key);
+    }
+  }
+
+  ScopedDictPrefUpdate variations_prefs_update(local_state(), pref_name);
+  std::ranges::for_each(
+      variations_profiles_to_delete,
+      [&variations_prefs_update](const std::string& profile_key) {
+        variations_prefs_update->Remove(profile_key);
+      });
 }
 
 }  // namespace variations

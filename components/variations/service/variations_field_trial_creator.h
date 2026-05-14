@@ -314,6 +314,12 @@ class VariationsFieldTrialCreator {
   // Returns the seed store. Virtual for testing.
   virtual VariationsSeedStore* GetSeedStore();
 
+  // Removes entries from the dictionary specified by |pref_name| in Local State
+  // for any keys that are not present in client_->GetAllProfilesKeys(). This
+  // is used to clean up variations prefs for deleted profiles on platforms
+  // that support multiple profiles.
+  void RemovePrefsForDeletedProfiles(std::string_view pref_name);
+
   PrefService* local_state() { return seed_store_->local_state(); }
   const PrefService* local_state() const { return seed_store_->local_state(); }
 

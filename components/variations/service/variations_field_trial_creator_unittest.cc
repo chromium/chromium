@@ -316,10 +316,6 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     return true;
   }
   bool IsEnterprise() override { return false; }
-  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
-      PrefService* local_state) override {}
-  void RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
-      PrefService* local_state) override {}
 
  private:
   // VariationsServiceClient:
@@ -332,12 +328,8 @@ class TestVariationsServiceClient : public VariationsServiceClient {
 
 class MockVariationsServiceClient : public TestVariationsServiceClient {
  public:
-  MOCK_METHOD(void,
-              RemoveGoogleGroupsFromPrefsForDeletedProfiles,
-              (PrefService*),
-              (override));
-  MOCK_METHOD(void,
-              RemoveEnterpriseGroupsFromPrefsForDeletedProfiles,
+  MOCK_METHOD(std::optional<base::flat_set<std::string>>,
+              GetAllProfilesKeys,
               (PrefService*),
               (override));
   MOCK_METHOD(Study::FormFactor, GetCurrentFormFactor, (), (override));
@@ -1701,9 +1693,20 @@ TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsClearsDeletedProfiles) {
       local_state(), &variations_service_client, &safe_seed_manager,
       user_data_dir_path());
 
-  EXPECT_CALL(variations_service_client,
-              RemoveGoogleGroupsFromPrefsForDeletedProfiles(local_state()));
-  field_trial_creator.GetGoogleGroupsFromPrefs();
+  base::DictValue google_groups_dict;
+  google_groups_dict.Set("Profile 1", base::ListValue().Append("123"));
+  google_groups_dict.Set("Profile 2", base::ListValue().Append("456"));
+  local_state()->SetDict(prefs::kVariationsGoogleGroups,
+                         std::move(google_groups_dict));
+
+  EXPECT_CALL(variations_service_client, GetAllProfilesKeys(local_state()))
+      .WillOnce(Return(base::flat_set<std::string>({"Profile 2"})));
+  EXPECT_EQ(field_trial_creator.GetGoogleGroupsFromPrefs(),
+            base::flat_set<uint64_t>({456}));
+  EXPECT_THAT(local_state()
+                  ->GetDict(prefs::kVariationsGoogleGroups)
+                  .FindList("Profile 1"),
+              ::testing::IsNull());
 }
 
 TEST_F(FieldTrialCreatorTest, GetEnterpriseGroupsFromPrefsWhenPrefNotPresent) {
@@ -1813,9 +1816,20 @@ TEST_F(FieldTrialCreatorTest,
       local_state(), &variations_service_client, &safe_seed_manager,
       user_data_dir_path());
 
-  EXPECT_CALL(variations_service_client,
-              RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(local_state()));
-  field_trial_creator.GetEnterpriseGroupsFromPrefs();
+  base::DictValue enterprise_groups_dict;
+  enterprise_groups_dict.Set("Profile 1", base::ListValue().Append("123"));
+  enterprise_groups_dict.Set("Profile 2", base::ListValue().Append("456"));
+  local_state()->SetDict(enterprise_groups::kEnterpriseGroupsProfilePref,
+                         std::move(enterprise_groups_dict));
+
+  EXPECT_CALL(variations_service_client, GetAllProfilesKeys(local_state()))
+      .WillOnce(Return(base::flat_set<std::string>({"Profile 2"})));
+  EXPECT_EQ(field_trial_creator.GetEnterpriseGroupsFromPrefs(),
+            base::flat_set<std::string>({"456"}));
+  EXPECT_THAT(local_state()
+                  ->GetDict(enterprise_groups::kEnterpriseGroupsProfilePref)
+                  .FindList("Profile 1"),
+              ::testing::IsNull());
 }
 
 struct SeedWithLimitedLayerTestParams {

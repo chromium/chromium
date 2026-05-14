@@ -36,9 +36,7 @@ class ChromeVariationsServiceClient
   std::unique_ptr<variations::SeedResponse>
   TakeSeedFromNativeVariationsSeedStore() override;
   bool IsEnterprise() override;
-  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
-      PrefService* local_state) override;
-  void RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+  std::optional<base::flat_set<std::string>> GetAllProfilesKeys(
       PrefService* local_state) override;
 
  private:

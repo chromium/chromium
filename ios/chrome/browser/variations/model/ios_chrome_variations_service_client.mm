@@ -8,9 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/version.h"
-#import "components/enterprise/browser/groups/groups_prefs.h"
 #import "components/variations/seed_response.h"
-#import "components/variations/service/variations_service_utils.h"
 #import "components/variations/synthetic_trials.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -69,16 +67,9 @@ bool IOSChromeVariationsServiceClient::IsEnterprise() {
            policyConnector->HasMachineLevelPolicies()));
 }
 
-// Nothing to do, as iOS doesn't support multiple profiles.
-void IOSChromeVariationsServiceClient::
-    RemoveGoogleGroupsFromPrefsForDeletedProfiles(PrefService* local_state) {}
-
-void IOSChromeVariationsServiceClient::
-    RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
-        PrefService* local_state) {
-  variations::RemovePrefsForDeletedProfiles(
-      local_state, enterprise_groups::kEnterpriseGroupsProfilePref,
-      ProfileAttributesStorageIOS::GetAllProfileNames(local_state));
+std::optional<base::flat_set<std::string>>
+IOSChromeVariationsServiceClient::GetAllProfilesKeys(PrefService* local_state) {
+  return ProfileAttributesStorageIOS::GetAllProfileNames(local_state);
 }
 
 version_info::Channel IOSChromeVariationsServiceClient::GetChannel() {

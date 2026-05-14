@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_VARIATIONS_SERVICE_VARIATIONS_SERVICE_CLIENT_H_
 #define COMPONENTS_VARIATIONS_SERVICE_VARIATIONS_SERVICE_CLIENT_H_
 
+#include <memory>
+#include <optional>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
@@ -82,19 +85,11 @@ class VariationsServiceClient {
   // non finch-filtered study to analyze the finch-filtered launch potential.
   virtual bool IsEnterprise() = 0;
 
-  // Removes stored Google Groups variations information for deleted profiles.
-  // Must be called at startup, prior to the variations Google Groups being
-  // read.
-  // This is a no-op on platforms that do not support multiple profiles.
-  virtual void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
-      PrefService* local_state) = 0;
-
-  // Removes stored enterprise groups variations information for deleted
-  // profiles. Must be called at startup, prior to the variations enterprise
-  // groups being read.
-  // This is a no-op on platforms that do not support multiple profiles.
-  virtual void RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
-      PrefService* local_state) = 0;
+  // Returns the keys for all the profiles.
+  // Returns std::nullopt if the platform does not support multiple profiles,
+  // which is the default implementation.
+  virtual std::optional<base::flat_set<std::string>> GetAllProfilesKeys(
+      PrefService* local_state);
 
  private:
   // Gets the channel of the embedder. But all variations callers should use

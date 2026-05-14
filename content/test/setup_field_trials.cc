@@ -61,9 +61,6 @@ class VariationServiceClient : public variations::VariationsServiceClient {
   bool OverridesRestrictParameter(std::string*) final { return false; }
   base::FilePath GetVariationsSeedFileDir() final { return user_data_dir_; }
   bool IsEnterprise() final { return false; }
-  // Profiles aren't supported, so nothing to do here.
-  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(PrefService*) final {}
-  void RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(PrefService*) final {}
 
  private:
   base::FilePath user_data_dir_;
