@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -49,6 +50,7 @@ GlicKeyedServiceFactory::GlicKeyedServiceFactory()
   DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
                 GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
 GlicKeyedServiceFactory::~GlicKeyedServiceFactory() = default;
