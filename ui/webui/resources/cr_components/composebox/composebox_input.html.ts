@@ -26,12 +26,13 @@ export function getHtml(this: ComposeboxInputElement) {
             part="input"
             .value="${this.input}"
             @click="${this.onInputClick_}"
+            @keydown="${this.onInputKeydown_}"
             @keyup="${this.onInputKeyup_}"
             @input="${this.onInputInput_}"
             @focusin="${this.onInputFocusin_}"
             @focus="${this.onInputFocus_}"
             @blur="${this.onInputBlur_}"></textarea>
-          ${this.smartComposeInlineHint ? html`
+          ${this.showSmartComposeInlineHint_() ? html`
             <div id="smartCompose" part="smart-compose">
               <!-- Comments in between spans to eliminate spacing between
                    spans -->
