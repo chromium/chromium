@@ -107,7 +107,7 @@ class PipewireAudioInjector::Core {
 
   std::unique_ptr<FifoBufferReader> audio_reader_;
 
-  // Flag to defer `JitterBuffer::Clear()` from PipeWire's main thread to the
+  // Flag to defer `audio_reader_->Clear()` from PipeWire's main thread to the
   // real-time processing thread (`HandleStreamProcess`) to ensure
   // thread-safety.
   std::atomic<bool> pending_clear_{false};
@@ -450,7 +450,7 @@ bool PipewireAudioInjector::Start(base::WeakPtr<Delegate> delegate) {
 }
 
 void PipewireAudioInjector::SetSampleInfo(const protocol::AudioSampleInfo& info,
-                                          base::OnceClosure done) {
+                                          OnInfoSet done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Clear the incoming buffer to discard stale samples in the old format.
@@ -467,7 +467,8 @@ void PipewireAudioInjector::SetSampleInfo(const protocol::AudioSampleInfo& info,
   if (core_) {
     core_->SetFormatReady(format_ready_);
     base::OnceClosure wrapped_done =
-        done ? base::BindPostTaskToCurrentDefault(std::move(done))
+        done ? base::BindPostTaskToCurrentDefault(
+                   base::BindOnce(std::move(done), format_ready_))
              : base::DoNothing();
     core_->ClearBuffer(std::move(wrapped_done));
   } else {
@@ -475,10 +476,7 @@ void PipewireAudioInjector::SetSampleInfo(const protocol::AudioSampleInfo& info,
       audio_reader_->Clear();
     }
     if (done) {
-      // TODO: crbug.com/509659010 - Add a parameter to the done callback to
-      // indicate whether the injector supports the new format, so that the
-      // writer can stop writing.
-      std::move(done).Run();
+      std::move(done).Run(format_ready_);
     }
   }
 }

@@ -379,9 +379,10 @@ void DesktopSessionProxy::OnDesktopSessionAgentStarted(
   }
 
   if (pending_audio_sample_info_) {
-    base::OnceClosure done = pending_audio_format_ack_callback_
-                                 ? std::move(pending_audio_format_ack_callback_)
-                                 : base::DoNothing();
+    base::OnceCallback<void(bool)> done =
+        pending_audio_format_ack_callback_
+            ? std::move(pending_audio_format_ack_callback_)
+            : base::DoNothing();
     desktop_session_control_->SetAudioInjectorSampleInfo(
         *pending_audio_sample_info_, std::move(done));
     pending_audio_sample_info_.reset();
@@ -600,13 +601,13 @@ void DesktopSessionProxy::DoStartAudioInjector() {
 
 void DesktopSessionProxy::SetAudioInjectorSampleInfo(
     const protocol::AudioSampleInfo& info,
-    base::OnceClosure done) {
+    base::OnceCallback<void(bool)> done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (desktop_session_control_) {
     desktop_session_control_->SetAudioInjectorSampleInfo(info, std::move(done));
   } else {
     if (pending_audio_format_ack_callback_) {
-      std::move(pending_audio_format_ack_callback_).Run();
+      std::move(pending_audio_format_ack_callback_).Run(false);
     }
     pending_audio_sample_info_ = info;
     pending_audio_format_ack_callback_ = std::move(done);

@@ -505,17 +505,12 @@ interface DesktopSessionControl {
   SetHostCursorRenderedByClient();
 
   // Starts the audio injector device.
-  // TODO: crbug.com/509659010 - make `audio_reader` not optional once SPSC
-  // rollout is complete.
-  StartAudioInjector(IpcFifoBufferReader? audio_reader);
+  StartAudioInjector(IpcFifoBufferReader audio_reader);
 
-  // Injects an audio packet into the audio injector device.
-  // TODO: crbug.com/509659010 - remove InjectAudioPacket once SPSC rollout is
-  // complete.
-  InjectAudioPacket(AudioPacket packet);
-
-  // Sets the sample rate and channels for the SPSC audio injector.
-  SetAudioInjectorSampleInfo(AudioSampleInfo info) => ();
+  // Sets the sample rate and channels for the SPSC audio injector. If `success`
+  // is false, audio data will no longer be written to the buffer until the
+  // sample info changes again.
+  SetAudioInjectorSampleInfo(AudioSampleInfo info) => (bool success);
 };
 
 struct CreateVideoCapturerResult {

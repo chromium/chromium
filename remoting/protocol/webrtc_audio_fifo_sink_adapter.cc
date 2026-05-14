@@ -92,8 +92,12 @@ void WebrtcAudioFifoSinkAdapter::OnData(const void* audio_data,
   audio_writer_->Write(data_span);
 }
 
-void WebrtcAudioFifoSinkAdapter::OnFormatAcknowledged(uint32_t sequence) {
+void WebrtcAudioFifoSinkAdapter::OnFormatAcknowledged(uint32_t sequence,
+                                                      bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!success) {
+    return;
+  }
   // Prevent out-of-order asynchronous acknowledgments (e.g., due to Mojo
   // IPC queueing) from retroactively downgrading the latest sequence state.
   // Also safely handles unsigned sequence index wrap-around modularly.

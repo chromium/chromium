@@ -22,6 +22,8 @@ struct AudioSampleInfo;
 // input device.
 class AudioInjector {
  public:
+  using OnInfoSet = base::OnceCallback<void(bool success)>;
+
   // Returns true if the current platform supports audio injection.
   // Note: For multi-process host, returning true only means that the platform
   // supports audio injection. The AudioInjector class itself may only
@@ -48,9 +50,11 @@ class AudioInjector {
 
   // Sets the sample rate and channels for the injected audio stream. When this
   // method is called, the writer will stop writing to the buffer until `done`
-  // is called, then it will start writing samples in the new format.
+  // is called. If `done` is called with true, writing resumes with samples in
+  // the new format. If called with false, writing remains paused until a
+  // supported format is set.
   virtual void SetSampleInfo(const protocol::AudioSampleInfo& info,
-                             base::OnceClosure done) = 0;
+                             OnInfoSet done) = 0;
 
   virtual base::WeakPtr<AudioInjector> GetWeakPtr() = 0;
 

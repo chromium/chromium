@@ -180,8 +180,9 @@ class ClientSession : public protocol::HostStub,
   void OnIncomingDataChannel(
       const std::string& channel_name,
       std::unique_ptr<protocol::MessagePipe> pipe) override;
-  void OnIncomingAudioFormatChanged(const protocol::AudioSampleInfo& info,
-                                    base::OnceClosure done) override;
+  void OnIncomingAudioFormatChanged(
+      const protocol::AudioSampleInfo& info,
+      base::OnceCallback<void(bool)> done) override;
 
   // ClientSessionControl interface.
   const std::string& client_jid() const override;
@@ -398,7 +399,7 @@ class ClientSession : public protocol::HostStub,
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::optional<protocol::AudioSampleInfo> pending_audio_sample_info_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::OnceClosure pending_audio_format_ack_callback_
+  base::OnceCallback<void(bool)> pending_audio_format_ack_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The set of all capabilities supported by the client.

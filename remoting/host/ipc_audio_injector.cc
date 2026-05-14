@@ -29,7 +29,7 @@ bool IpcAudioInjector::Start(base::WeakPtr<Delegate> delegate) {
 }
 
 void IpcAudioInjector::SetSampleInfo(const protocol::AudioSampleInfo& info,
-                                     base::OnceClosure done) {
+                                     OnInfoSet done) {
   desktop_session_proxy_->SetAudioInjectorSampleInfo(info, std::move(done));
 }
 

@@ -31,7 +31,7 @@ class IpcAudioInjector : public AudioInjector {
   // AudioInjector implementation.
   bool Start(base::WeakPtr<Delegate> delegate) override;
   void SetSampleInfo(const protocol::AudioSampleInfo& info,
-                     base::OnceClosure done) override;
+                     OnInfoSet done) override;
 
   base::WeakPtr<AudioInjector> GetWeakPtr() override;
 

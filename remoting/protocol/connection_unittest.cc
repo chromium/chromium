@@ -22,7 +22,7 @@
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/fifo_buffer.h"
-#include "remoting/base/in_memory_fifo_buffer.h"
+#include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
@@ -691,10 +691,9 @@ TEST_F(ConnectionTest, WebrtcAudioFifoPlayoutBinding) {
   Connect();
 
   // 1. Instantiate SPSC pipe.
-  std::unique_ptr<InMemoryFifoBufferWriter> writer;
-  std::unique_ptr<InMemoryFifoBufferReader> reader;
-  ASSERT_TRUE(
-      CreateInMemoryFifoBuffer(kDefaultFifoBufferCapacity, writer, reader));
+  std::unique_ptr<IpcFifoBufferWriter> writer;
+  std::unique_ptr<IpcFifoBufferReader> reader;
+  ASSERT_TRUE(CreateIpcFifoBuffer(kDefaultFifoBufferCapacity, writer, reader));
 
   // 2. Bind the SPSC writer to WebrtcConnectionToClient.
   host_connection_->SetAudioWriter(std::move(writer));
@@ -718,7 +717,7 @@ TEST_F(ConnectionTest, WebrtcAudioFifoPlayoutBinding) {
 
   // 5. Inject a frame to trigger format handshake.
   EXPECT_CALL(host_event_handler_, OnIncomingAudioFormatChanged(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>());
+      .WillOnce(base::test::RunOnceCallback<1>(true));
   std::vector<uint8_t> data = {1, 2, 3, 4};
   source->sinks()[0]->OnData(data.data(), 16, 48000, 2, 1);
 

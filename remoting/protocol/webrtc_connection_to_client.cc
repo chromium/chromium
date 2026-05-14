@@ -310,13 +310,13 @@ void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamRemoved(
 
 void WebrtcConnectionToClient::OnIncomingAudioFormatChanged(
     const AudioSampleInfo& info,
-    base::OnceClosure acknowledgment_callback) {
+    base::OnceCallback<void(bool)> acknowledgment_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (event_handler_) {
     event_handler_->OnIncomingAudioFormatChanged(
         info, std::move(acknowledgment_callback));
   } else {
-    std::move(acknowledgment_callback).Run();
+    std::move(acknowledgment_callback).Run(false);
   }
 }
 

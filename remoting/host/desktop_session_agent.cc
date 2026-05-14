@@ -610,7 +610,7 @@ void DesktopSessionAgent::StartAudioInjector(
     return;
   }
   if (pending_audio_sample_info_) {
-    base::OnceClosure done =
+    base::OnceCallback<void(bool)> done =
         pending_audio_sample_info_callback_
             ? std::move(pending_audio_sample_info_callback_)
             : base::DoNothing();
@@ -621,11 +621,6 @@ void DesktopSessionAgent::StartAudioInjector(
   audio_injector_->Start(weak_factory_.GetWeakPtr());
 }
 
-void DesktopSessionAgent::InjectAudioPacket(std::unique_ptr<AudioPacket>) {
-  // TODO: crbug.com/509659010 - Remove InjectAudioPacket from the Mojo
-  // interface once legacy clients are rolled off.
-}
-
 void DesktopSessionAgent::SetAudioInjectorSampleInfo(
     const protocol::AudioSampleInfo& info,
     SetAudioInjectorSampleInfoCallback callback) {
@@ -634,7 +629,7 @@ void DesktopSessionAgent::SetAudioInjectorSampleInfo(
     audio_injector_->SetSampleInfo(info, std::move(callback));
   } else {
     if (pending_audio_sample_info_callback_) {
-      std::move(pending_audio_sample_info_callback_).Run();
+      std::move(pending_audio_sample_info_callback_).Run(false);
     }
     pending_audio_sample_info_ = info;
     pending_audio_sample_info_callback_ = std::move(callback);

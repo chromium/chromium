@@ -157,10 +157,11 @@ class FakeDesktopSessionAgent : public mojom::DesktopSessionControl {
   void SetHostCursorRenderedByClient() override;
   void StartAudioInjector(
       std::unique_ptr<IpcFifoBufferReader> audio_reader) override {}
-  void InjectAudioPacket(std::unique_ptr<AudioPacket> packet) override {}
   void SetAudioInjectorSampleInfo(
       const protocol::AudioSampleInfo& info,
-      SetAudioInjectorSampleInfoCallback callback) override {}
+      SetAudioInjectorSampleInfoCallback callback) override {
+    std::move(callback).Run(true);
+  }
 
   // Binds the pending DesktopSessionControl receiver to |receiver_|.
   void Bind(

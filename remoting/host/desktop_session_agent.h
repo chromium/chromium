@@ -154,8 +154,6 @@ class DesktopSessionAgent
   void SetHostCursorRenderedByClient() override;
   void StartAudioInjector(
       std::unique_ptr<IpcFifoBufferReader> audio_reader) override;
-  void InjectAudioPacket(
-      std::unique_ptr<remoting::AudioPacket> packet) override;
   void SetAudioInjectorSampleInfo(
       const protocol::AudioSampleInfo& info,
       SetAudioInjectorSampleInfoCallback callback) override;

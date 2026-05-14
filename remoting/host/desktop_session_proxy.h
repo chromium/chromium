@@ -170,7 +170,7 @@ class DesktopSessionProxy
   // APIs used to implement the AudioInjector interface.
   void StartAudioInjector(std::unique_ptr<IpcFifoBufferReader> audio_reader);
   void SetAudioInjectorSampleInfo(const protocol::AudioSampleInfo& info,
-                                  base::OnceClosure done);
+                                  base::OnceCallback<void(bool)> done);
 
   // API used to implement the ActionExecutor interface.
   void ExecuteAction(const protocol::ActionRequest& request);
@@ -359,7 +359,7 @@ class DesktopSessionProxy
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::optional<protocol::AudioSampleInfo> pending_audio_sample_info_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::OnceClosure pending_audio_format_ack_callback_
+  base::OnceCallback<void(bool)> pending_audio_format_ack_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

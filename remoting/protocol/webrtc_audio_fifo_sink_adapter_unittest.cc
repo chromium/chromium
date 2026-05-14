@@ -11,7 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "remoting/base/fifo_buffer.h"
-#include "remoting/base/in_memory_fifo_buffer.h"
+#include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/fake_webrtc_audio_classes.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,16 +38,16 @@ class WebrtcAudioFifoSinkAdapterTest : public testing::Test {
   }
 
   void OnFormatChanged(const AudioSampleInfo& info,
-                       base::OnceClosure acknowledgment_callback) {
+                       base::OnceCallback<void(bool)> acknowledgment_callback) {
     format_changed_calls_.push_back(info);
     pending_acknowledgments_.push_back(std::move(acknowledgment_callback));
     format_changed_future_.SetValue();
   }
 
-  void AcknowledgeFormat(size_t index = 0) {
+  void AcknowledgeFormat(size_t index = 0, bool success = true) {
     ASSERT_LT(index, pending_acknowledgments_.size());
     ASSERT_TRUE(pending_acknowledgments_[index]);
-    std::move(pending_acknowledgments_[index]).Run();
+    std::move(pending_acknowledgments_[index]).Run(success);
   }
 
  protected:
@@ -58,14 +58,14 @@ class WebrtcAudioFifoSinkAdapterTest : public testing::Test {
 
   std::unique_ptr<WebrtcAudioFifoSinkAdapter> adapter_;
   std::vector<AudioSampleInfo> format_changed_calls_;
-  std::vector<base::OnceClosure> pending_acknowledgments_;
+  std::vector<base::OnceCallback<void(bool)>> pending_acknowledgments_;
   base::test::TestFuture<void> format_changed_future_;
 };
 
 TEST_F(WebrtcAudioFifoSinkAdapterTest, PlayoutAndFormatHandshake) {
-  std::unique_ptr<InMemoryFifoBufferWriter> writer;
-  std::unique_ptr<InMemoryFifoBufferReader> reader;
-  ASSERT_TRUE(CreateInMemoryFifoBuffer(1024, writer, reader));
+  std::unique_ptr<IpcFifoBufferWriter> writer;
+  std::unique_ptr<IpcFifoBufferReader> reader;
+  ASSERT_TRUE(CreateIpcFifoBuffer(1024, writer, reader));
 
   CreateAdapter(std::move(writer));
 
@@ -100,9 +100,9 @@ TEST_F(WebrtcAudioFifoSinkAdapterTest, PlayoutAndFormatHandshake) {
 }
 
 TEST_F(WebrtcAudioFifoSinkAdapterTest, PlayoutFormatOscillationHandshake) {
-  std::unique_ptr<InMemoryFifoBufferWriter> writer;
-  std::unique_ptr<InMemoryFifoBufferReader> reader;
-  ASSERT_TRUE(CreateInMemoryFifoBuffer(1024, writer, reader));
+  std::unique_ptr<IpcFifoBufferWriter> writer;
+  std::unique_ptr<IpcFifoBufferReader> reader;
+  ASSERT_TRUE(CreateIpcFifoBuffer(1024, writer, reader));
 
   CreateAdapter(std::move(writer));
 
@@ -141,10 +141,31 @@ TEST_F(WebrtcAudioFifoSinkAdapterTest, PlayoutFormatOscillationHandshake) {
   EXPECT_EQ(reader->GetBufferedBytes(), 8u);
 }
 
+TEST_F(WebrtcAudioFifoSinkAdapterTest, FormatHandshakeFailsRemainsPaused) {
+  std::unique_ptr<IpcFifoBufferWriter> writer;
+  std::unique_ptr<IpcFifoBufferReader> reader;
+  ASSERT_TRUE(CreateIpcFifoBuffer(1024, writer, reader));
+
+  CreateAdapter(std::move(writer));
+
+  // 1. Inject first frame (triggers format handshake).
+  std::vector<uint8_t> data = {1, 2, 3, 4, 5, 6, 7, 8};
+  adapter_->OnData(data.data(), 16, 48000, 2, 2);
+  EXPECT_TRUE(format_changed_future_.Wait());
+
+  // 2. Acknowledge format with success = false.
+  AcknowledgeFormat(0, false);
+  EXPECT_EQ(reader->GetBufferedBytes(), 0u);
+
+  // 3. Inject data after failed handshake (must still be dropped).
+  adapter_->OnData(data.data(), 16, 48000, 2, 2);
+  EXPECT_EQ(reader->GetBufferedBytes(), 0u);
+}
+
 TEST_F(WebrtcAudioFifoSinkAdapterTest, SetTrackHotSwapsTrackOnTheFly) {
-  std::unique_ptr<InMemoryFifoBufferWriter> writer;
-  std::unique_ptr<InMemoryFifoBufferReader> reader;
-  ASSERT_TRUE(CreateInMemoryFifoBuffer(1024, writer, reader));
+  std::unique_ptr<IpcFifoBufferWriter> writer;
+  std::unique_ptr<IpcFifoBufferReader> reader;
+  ASSERT_TRUE(CreateIpcFifoBuffer(1024, writer, reader));
 
   CreateAdapter(std::move(writer));
 

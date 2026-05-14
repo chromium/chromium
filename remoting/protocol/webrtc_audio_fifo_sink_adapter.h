@@ -36,10 +36,12 @@ class WebrtcAudioFifoSinkAdapter : public webrtc::AudioTrackSinkInterface {
  public:
   // Callback triggered when the incoming playout format changes.
   // The adapter will pause SPSC writing and drop frames until the callback
-  // invokes the acknowledgment closure.
-  using FormatChangedCallback =
-      base::RepeatingCallback<void(const AudioSampleInfo& info,
-                                   base::OnceClosure acknowledgment_callback)>;
+  // invokes the acknowledgment callback. If the acknowledgment callback is
+  // called with false, WebrtcAudioFifoSinkAdapter will stop writing data until
+  // the playout format changes again.
+  using FormatChangedCallback = base::RepeatingCallback<void(
+      const AudioSampleInfo& info,
+      base::OnceCallback<void(bool)> acknowledgment_callback)>;
 
   // `format_changed_cb` is guaranteed to be invoked on the sequence where
   // this adapter was constructed.
@@ -68,7 +70,7 @@ class WebrtcAudioFifoSinkAdapter : public webrtc::AudioTrackSinkInterface {
 
  private:
   // Resumes SPSC writing once the new format is acknowledged by the consumer.
-  void OnFormatAcknowledged(uint32_t sequence);
+  void OnFormatAcknowledged(uint32_t sequence, bool success);
 
   // Intermediate format changed notifier running on the main thread to avoid
   // thread-safety issues with weak pointers on WebRTC's audio thread.

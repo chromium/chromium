@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/source_location.h"
 #include "remoting/protocol/message_pipe.h"
@@ -77,8 +78,9 @@ class ConnectionToClient {
                                        std::unique_ptr<MessagePipe> pipe) = 0;
 
     // Called when the format of the incoming audio stream changes.
-    virtual void OnIncomingAudioFormatChanged(const AudioSampleInfo& info,
-                                              base::OnceClosure done) = 0;
+    virtual void OnIncomingAudioFormatChanged(
+        const AudioSampleInfo& info,
+        base::OnceCallback<void(bool)> done) = 0;
 
    protected:
     virtual ~EventHandler() = default;

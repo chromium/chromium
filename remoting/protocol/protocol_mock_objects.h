@@ -12,6 +12,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -110,7 +111,7 @@ class MockConnectionToClientEventHandler
               (override));
   MOCK_METHOD(void,
               OnIncomingAudioFormatChanged,
-              (const AudioSampleInfo&, base::OnceClosure),
+              (const AudioSampleInfo&, base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
               OnIncomingDataChannelPtr,

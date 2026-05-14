@@ -123,8 +123,9 @@ class WebrtcConnectionToClient : public ConnectionToClient,
 
   std::unique_ptr<WebrtcAudioFifoSinkAdapter> audio_fifo_sink_adapter_;
 
-  void OnIncomingAudioFormatChanged(const AudioSampleInfo& info,
-                                    base::OnceClosure acknowledgment_callback);
+  void OnIncomingAudioFormatChanged(
+      const AudioSampleInfo& info,
+      base::OnceCallback<void(bool)> acknowledgment_callback);
 
   void BindAudioFifoSinkAdapter();
 
