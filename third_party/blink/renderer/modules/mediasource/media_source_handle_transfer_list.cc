@@ -10,7 +10,8 @@
 namespace blink {
 
 // static
-const void* const MediaSourceHandleTransferList::kTransferListKey = nullptr;
+const void* const MediaSourceHandleTransferList::kTransferListKey =
+    &MediaSourceHandleTransferList::kTransferListKey;
 
 MediaSourceHandleTransferList::MediaSourceHandleTransferList() = default;
 

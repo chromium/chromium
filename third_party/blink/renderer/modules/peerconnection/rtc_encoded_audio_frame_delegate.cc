@@ -28,7 +28,8 @@ namespace blink {
 static constexpr char kRTCEncodedAudioFrameDetachKey[] = "RTCEncodedAudioFrame";
 static constexpr int kAcceptableCaptureTimeDeltaMs = 1;
 
-const void* RTCEncodedAudioFramesAttachment::kAttachmentKey;
+const void* const RTCEncodedAudioFramesAttachment::kAttachmentKey =
+    &RTCEncodedAudioFramesAttachment::kAttachmentKey;
 
 RTCEncodedAudioFrameDelegate::RTCEncodedAudioFrameDelegate(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame,

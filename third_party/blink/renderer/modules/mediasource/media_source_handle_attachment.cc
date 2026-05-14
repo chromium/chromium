@@ -7,7 +7,8 @@
 namespace blink {
 
 // static
-const void* const MediaSourceHandleAttachment::kAttachmentKey = nullptr;
+const void* const MediaSourceHandleAttachment::kAttachmentKey =
+    &MediaSourceHandleAttachment::kAttachmentKey;
 
 MediaSourceHandleAttachment::MediaSourceHandleAttachment() = default;
 

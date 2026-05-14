@@ -8,7 +8,8 @@
 
 namespace blink {
 
-const void* const AudioDataTransferList::kTransferListKey = nullptr;
+const void* const AudioDataTransferList::kTransferListKey =
+    &AudioDataTransferList::kTransferListKey;
 
 void AudioDataTransferList::FinalizeTransfer(ExceptionState& exception_state) {
   for (AudioData* audio_data : audio_data_collection)

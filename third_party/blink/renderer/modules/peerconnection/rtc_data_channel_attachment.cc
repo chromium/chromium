@@ -6,6 +6,7 @@
 
 namespace blink {
 
-const void* const RTCDataChannelAttachment::kAttachmentKey = nullptr;
+const void* const RTCDataChannelAttachment::kAttachmentKey =
+    &RTCDataChannelAttachment::kAttachmentKey;
 
 }  // namespace blink

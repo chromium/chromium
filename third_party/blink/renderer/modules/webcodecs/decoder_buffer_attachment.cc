@@ -6,6 +6,7 @@
 
 namespace blink {
 
-const void* const DecoderBufferAttachment::kAttachmentKey = nullptr;
+const void* const DecoderBufferAttachment::kAttachmentKey =
+    &DecoderBufferAttachment::kAttachmentKey;
 
 }  // namespace blink

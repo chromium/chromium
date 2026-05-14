@@ -8,7 +8,8 @@
 
 namespace blink {
 
-const void* const RTCDataChannelTransferList::kTransferListKey = nullptr;
+const void* const RTCDataChannelTransferList::kTransferListKey =
+    &RTCDataChannelTransferList::kTransferListKey;
 
 void RTCDataChannelTransferList::Trace(Visitor* visitor) const {
   visitor->Trace(data_channel_collection);

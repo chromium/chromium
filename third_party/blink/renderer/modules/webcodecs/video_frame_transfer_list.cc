@@ -8,7 +8,8 @@
 
 namespace blink {
 
-const void* const VideoFrameTransferList::kTransferListKey = nullptr;
+const void* const VideoFrameTransferList::kTransferListKey =
+    &VideoFrameTransferList::kTransferListKey;
 
 void VideoFrameTransferList::FinalizeTransfer(ExceptionState& exception_state) {
   for (VideoFrame* frame : video_frames)
