@@ -307,16 +307,6 @@ bool UserHasAnyLocalAuthFactors(const UserContext& context) {
           context.GetAuthFactorsData().FindPinFactor() != nullptr);
 }
 
-// Whether the user has setup a PIN as a secondary factor or not.
-// A PIN is considered a secondary factor, when a user has a PIN and an online
-// password.
-bool UserHasPinAsSecondaryFactor(const UserContext& context) {
-  bool has_pin = context.GetAuthFactorsData().FindPinFactor() != nullptr;
-  bool has_online_password =
-      context.GetAuthFactorsData().FindOnlinePasswordFactor() != nullptr;
-  return has_pin && has_online_password;
-}
-
 }  // namespace
 
 // Utility class used to wait for a Public Session policy to be available if
@@ -830,11 +820,6 @@ bool ExistingUserController::MaybeShowRemoveLocalAuthFactorsScreen(
     return false;
   }
 
-  if (!user_context.GetAccountId().is_valid()) {
-    LOG(ERROR) << "Invalid AccountId detected";
-    return false;
-  }
-
   user_manager::KnownUser known_user(
       user_manager::UserManager::Get()->GetLocalState());
   if (user_context.GetAuthFlow() == UserContext::AUTH_FLOW_GAIA_WITH_SAML ||
@@ -842,14 +827,8 @@ bool ExistingUserController::MaybeShowRemoveLocalAuthFactorsScreen(
     return false;
   }
 
-  if (!known_user.GetIsEnterpriseManaged(user_context.GetAccountId())) {
-    return false;
-  }
-
-  // If PIN is setup as a secondary factor, we should not remove it, as it may
-  // have been setup by the QuickUnlock policy.
-  if (UserHasPinAsSecondaryFactor(user_context)) {
-    return false;
+  if (!user_context.GetAccountId().is_valid()) {
+    LOG(ERROR) << "Invalid AccountId detected";
   }
   // Only check for policy after the check for auth mode and auth flow,
   // otherwise we might end up calling an auth policy connector in offline login
