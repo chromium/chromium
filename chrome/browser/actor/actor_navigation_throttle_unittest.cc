@@ -228,5 +228,83 @@ TEST_F(ActorNavigationThrottleTest,
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
 }
 
+TEST_F(ActorNavigationThrottleTest, UserConfirmedLeave_Proceed) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  NavigateAndCommit(GURL("https://site.com"));
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://another-site.com"), main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PAGE_TRANSITION_TYPED);
+  handle.set_initiator_origin(url::Origin::Create(GURL("https://site.com")));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  // 1. First check should DEFER because it's a user UI navigation and delegate
+  // says defer.
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle.WillStartRequest().action());
+  EXPECT_TRUE(test_delegate.confirm_navigation_called());
+
+  bool resume_called = false;
+  throttle.set_resume_callback_for_testing(
+      base::BindLambdaForTesting([&]() { resume_called = true; }));
+
+  // 2. Simulate user clicking "Leave".
+  test_delegate.RespondToNavigation(true);
+  EXPECT_TRUE(resume_called);
+
+  // 3. Stop the task (removes it from active tasks list).
+  service->StopTask(task_id, ActorTask::StoppedReason::kUserNavigatedAway);
+  ASSERT_EQ(nullptr, service->GetTask(task_id));
+
+  // 4. Verify that subsequent checks (like a redirect) PROCEED because of the
+  // flag.
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle.WillRedirectRequest().action());
+}
+
+TEST_F(ActorNavigationThrottleTest, PlainAutoToplevel_Proceed) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(GURL("https://site.com"));
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  // Plain AUTO_TOPLEVEL navigation (representing Glic navigation or non-UI
+  // action)
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://another-site.com"), main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  handle.set_initiator_origin(url::Origin::Create(GURL("https://site.com")));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  // Should PROCEED immediately without prompting the user!
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle.WillStartRequest().action());
+  EXPECT_FALSE(test_delegate.confirm_navigation_called());
+}
+
 }  // namespace
 }  // namespace actor

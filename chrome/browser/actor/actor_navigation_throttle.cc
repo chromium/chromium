@@ -198,10 +198,20 @@ void ActorNavigationThrottle::OnUserLeaveDialogDecision(bool may_continue) {
                 JournalDetailsBuilder()
                     .Add("navigate", "User allowed navigation (Leaving task)")
                     .Build());
-    Resume();
+
+    // Mark the fact that the user confirmed to leave so the throttle doesn't
+    // trigger this again during resume.
+    was_user_confirmed_leave_ = true;
+
+    // Stop the task BEFORE resuming the navigation. This ensures that the task
+    // is fully cleaned up and Java receives the "clear UI" signal while the
+    // page is still active, preventing any post-resume cleanup from killing the
+    // navigation or missing the UI cleanup signal due to page unloading.
     if (auto* service = ActorKeyedService::Get(GetProfile())) {
       service->StopTask(task_id_, ActorTask::StoppedReason::kUserNavigatedAway);
     }
+
+    Resume();
     return;
   }
   // User refused to leave (stayed). Cancel navigation, do NOT fail tool.
@@ -220,6 +230,15 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   actor::ActorTask* task =
       ActorKeyedService::Get(GetProfile())->GetTask(task_id_);
   if (!task) {
+    if (was_user_confirmed_leave_) {
+      journal.Log(
+          navigation_url, task_id_, "NavThrottle",
+          JournalDetailsBuilder()
+              .Add("navigate", "User allowed navigation (Task cancelled)")
+              .Build());
+      return content::NavigationThrottle::PROCEED;
+    }
+
     journal.Log(navigation_url, task_id_, "NavThrottle",
                 JournalDetailsBuilder().AddError("TaskWentAway").Build());
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
@@ -239,10 +258,21 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     // background navigations (which do not carry these user UI transition
     // qualifiers) to proceed without prompting.
     ::ui::PageTransition transition = navigation_handle()->GetPageTransition();
+    // We explicitly list the transition types to intercept. We cannot use
+    // !::ui::PageTransitionIsWebTriggerable(transition) here because that
+    // would also include PAGE_TRANSITION_AUTO_TOPLEVEL (which is
+    // browser-initiated). Since Actor's own programmatic navigations use
+    // AUTO_TOPLEVEL, using !IsWebTriggerable would cause Actor's own
+    // navigations to be intercepted and deferred!
     // TODO(crbug.com/500826418): Consider ignoring same-origin/same-site
     // navigations here since they are less disruptive to active tasks.
     bool is_user_ui_navigation =
-        !::ui::PageTransitionIsWebTriggerable(transition) ||
+        ::ui::PageTransitionCoreTypeIs(transition,
+                                       ::ui::PAGE_TRANSITION_TYPED) ||
+        ::ui::PageTransitionCoreTypeIs(transition,
+                                       ::ui::PAGE_TRANSITION_GENERATED) ||
+        ::ui::PageTransitionCoreTypeIs(transition,
+                                       ::ui::PAGE_TRANSITION_AUTO_BOOKMARK) ||
         (transition & ::ui::PAGE_TRANSITION_HOME_PAGE);
 
     if (!is_user_ui_navigation) {

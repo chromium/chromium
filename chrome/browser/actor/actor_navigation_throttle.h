@@ -93,6 +93,11 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
   TaskId task_id_;
   base::WeakPtr<ExecutionEngine> execution_engine_;
 
+  // This flag is set to true when the user confirms navigation away from the
+  // current page. It's used to prevent the throttle from deferring the
+  // navigation again.
+  bool was_user_confirmed_leave_ = false;
+
   base::WeakPtrFactory<ActorNavigationThrottle> weak_factory_{this};
 };
 
