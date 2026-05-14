@@ -4,72 +4,58 @@
 
 #include "content/browser/preloading/prefetch/prefetch_container_async_observer.h"
 
-#include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 
 namespace content {
 
-// static
-std::unique_ptr<PrefetchContainerAsyncObserver>
-PrefetchContainerAsyncObserver::Create(
-    std::unique_ptr<PrefetchContainerObserver> observer) {
-  if (!observer) {
-    return nullptr;
-  }
-  return base::WrapUnique(
-      new PrefetchContainerAsyncObserver(std::move(observer)));
-}
+PrefetchContainerAsyncObserverBase::PrefetchContainerAsyncObserverBase() =
+    default;
 
-PrefetchContainerAsyncObserver::PrefetchContainerAsyncObserver(
-    std::unique_ptr<PrefetchContainerObserver> observer)
-    : observer_(std::move(observer)) {
-  CHECK(observer_);
-}
+PrefetchContainerAsyncObserverBase::~PrefetchContainerAsyncObserverBase() =
+    default;
 
-PrefetchContainerAsyncObserver::~PrefetchContainerAsyncObserver() = default;
-
-void PrefetchContainerAsyncObserver::OnWillBeDestroyed(
+void PrefetchContainerAsyncObserverBase::OnWillBeDestroyed(
     const PrefetchContainer& prefetch_container) {}
 
-void PrefetchContainerAsyncObserver::OnGotInitialEligibility(
+void PrefetchContainerAsyncObserverBase::OnGotInitialEligibility(
     const PrefetchContainer& prefetch_container) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&PrefetchContainerAsyncObserver::Dispatch,
+      base::BindOnce(&PrefetchContainerAsyncObserverBase::Dispatch,
                      weak_factory_.GetWeakPtr(),
                      &PrefetchContainerObserver::OnGotInitialEligibility,
                      prefetch_container.GetWeakPtr()));
 }
 
-void PrefetchContainerAsyncObserver::OnDeterminedHead(
+void PrefetchContainerAsyncObserverBase::OnDeterminedHead(
     const PrefetchContainer& prefetch_container) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&PrefetchContainerAsyncObserver::Dispatch,
+      FROM_HERE, base::BindOnce(&PrefetchContainerAsyncObserverBase::Dispatch,
                                 weak_factory_.GetWeakPtr(),
                                 &PrefetchContainerObserver::OnDeterminedHead,
                                 prefetch_container.GetWeakPtr()));
 }
 
-void PrefetchContainerAsyncObserver::OnPrefetchCompletedOrFailed(
+void PrefetchContainerAsyncObserverBase::OnPrefetchCompletedOrFailed(
     const PrefetchContainer& prefetch_container) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&PrefetchContainerAsyncObserver::Dispatch,
+      base::BindOnce(&PrefetchContainerAsyncObserverBase::Dispatch,
                      weak_factory_.GetWeakPtr(),
                      &PrefetchContainerObserver::OnPrefetchCompletedOrFailed,
                      prefetch_container.GetWeakPtr()));
 }
 
-void PrefetchContainerAsyncObserver::Dispatch(
+void PrefetchContainerAsyncObserverBase::Dispatch(
     void (PrefetchContainerObserver::*method)(const PrefetchContainer&),
     base::WeakPtr<const PrefetchContainer> prefetch_container) {
   if (!prefetch_container) {
     // `prefetch_container` has been destroyed during the async hop. Do nothing.
     return;
   }
-  (observer_.get()->*method)(*prefetch_container);
+  (GetUnderlyingObserver().*method)(*prefetch_container);
 }
 
 }  // namespace content

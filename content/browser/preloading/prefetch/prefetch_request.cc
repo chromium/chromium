@@ -35,7 +35,7 @@ std::unique_ptr<PrefetchContainerObserver> CreateStatusListenerObserver(
           std::move(request_status_listener));
   if (base::FeatureList::IsEnabled(
           features::kPrefetchRequestStatusListenerAsync)) {
-    return PrefetchContainerAsyncObserver::Create(std::move(observer));
+    return PrefetchContainerAsyncObserver<>::Create(std::move(observer));
   }
   return observer;
 }
