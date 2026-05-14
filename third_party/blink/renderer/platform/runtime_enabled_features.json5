@@ -1977,7 +1977,7 @@
     {
       // crbug.com/417306102
       name: "CssTextFit",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/417306102

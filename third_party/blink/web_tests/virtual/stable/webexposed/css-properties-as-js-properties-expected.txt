@@ -526,6 +526,7 @@ textEmphasis
 textEmphasisColor
 textEmphasisPosition
 textEmphasisStyle
+textFit
 textIndent
 textJustify
 textOrientation
