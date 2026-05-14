@@ -38,8 +38,8 @@ class MockCastMetricsHelper : public CastMetricsHelper {
   MOCK_METHOD2(LogTimeToBufferAv,
                void(BufferingType buffering_type, base::TimeDelta time));
   MOCK_CONST_METHOD2(GetMetricsNameWithAppName,
-                     std::string(const std::string& prefix,
-                                 const std::string& suffix));
+                     std::string(std::string_view prefix,
+                                 std::string_view suffix));
   MOCK_METHOD1(SetMetricsSink, void(MetricsSink* delegate));
   MOCK_METHOD1(SetRecordActionCallback, void(RecordActionCallback callback));
 };

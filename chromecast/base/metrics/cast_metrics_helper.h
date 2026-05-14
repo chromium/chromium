@@ -61,12 +61,11 @@ class CastMetricsHelper {
   // Decodes action_name/app_id/session_id/sdk_version from metrics name.
   // Return false if the metrics name is not generated from
   // EncodeAppInfoIntoMetricsName() with correct format.
-  static bool DecodeAppInfoFromMetricsName(
-      const std::string& metrics_name,
-      std::string* action_name,
-      std::string* app_id,
-      std::string* session_id,
-      std::string* sdk_version);
+  static bool DecodeAppInfoFromMetricsName(std::string_view metrics_name,
+                                           std::string* action_name,
+                                           std::string* app_id,
+                                           std::string* session_id,
+                                           std::string* sdk_version);
 
   static CastMetricsHelper* GetInstance();
 
@@ -119,9 +118,8 @@ class CastMetricsHelper {
                                  base::TimeDelta time);
 
   // Returns metrics name with app name between prefix and suffix.
-  virtual std::string GetMetricsNameWithAppName(
-      const std::string& prefix,
-      const std::string& suffix) const;
+  virtual std::string GetMetricsNameWithAppName(std::string_view prefix,
+                                                std::string_view suffix) const;
 
   // Provides a MetricsSink instance to delegate UMA event logging.
   // Once the delegate interface is set, CastMetricsHelper will not log UMA
@@ -139,11 +137,10 @@ class CastMetricsHelper {
   void SetDummySessionIdForTesting();
 
  private:
-  static std::string EncodeAppInfoIntoMetricsName(
-      const std::string& action_name,
-      const std::string& app_id,
-      const std::string& session_id,
-      const std::string& sdk_version);
+  static std::string EncodeAppInfoIntoMetricsName(std::string_view action_name,
+                                                  std::string_view app_id,
+                                                  std::string_view session_id,
+                                                  std::string_view sdk_version);
 
   friend class base::NoDestructor<CastMetricsHelper>;
   friend class CastMetricsHelperTest;
