@@ -6,9 +6,7 @@
 
 namespace metrics::features {
 
-BASE_FEATURE(kWebiumMetricsMapping,
-             "WebiumMetricsMapping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebiumMetricsMapping, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(std::string,
                    kWebiumMetricsMappingConfig,

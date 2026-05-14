@@ -24,7 +24,6 @@ BASE_FEATURE(kAccessibilityAriaInvalidAndErrorMessage,
 // When enabled, Android events will include more metadata about the incoming
 // events.
 BASE_FEATURE(kAccessibilityExpandEventMetadata,
-             "AccessibilityExpandEventMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the full accessibility tree will be exposed for non-atomic

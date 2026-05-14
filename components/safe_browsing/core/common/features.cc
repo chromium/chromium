@@ -368,9 +368,7 @@ constexpr base::FeatureParam<int> kNotificationTelemetrySwbPollingInterval{
     &kNotificationTelemetrySwb, "NotificationTelemetrySwbPollingInterval",
     /*default_value=*/60};
 
-BASE_FEATURE(kProactivePasswordProtection,
-             "ProactivePasswordProtection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProactivePasswordProtection, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<double> kCsdProactivePasswordProtectionSampleRate{
     &kProactivePasswordProtection, "CsdProactivePasswordProtectionSampleRate",
     0.0};

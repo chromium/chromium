@@ -808,7 +808,6 @@ BASE_FEATURE(kDrainSpdySessionSynchronouslyOnRemoteEndpointDisconnect,
 BASE_FEATURE(kLogicalClearHttpCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSQLitePersistentCookieStoreEarlyInit,
-             "SQLitePersistentCookieStoreEarlyInit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kSQLitePersistentCookieStoreEarlyInitCheckDisk{
