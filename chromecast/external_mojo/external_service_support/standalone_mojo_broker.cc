@@ -14,7 +14,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chromecast/external_mojo/external_service_support/external_connector_impl.h"
 #include "chromecast/external_mojo/external_service_support/process_setup.h"
-#include "chromecast/external_mojo/external_service_support/tracing_client.h"
 #include "chromecast/external_mojo/public/cpp/common.h"
 #include "chromecast/external_mojo/public/cpp/external_mojo_broker.h"
 #include "mojo/core/embedder/embedder.h"
@@ -43,11 +42,6 @@ int main(int argc, char** argv) {
   chromecast::external_mojo::ExternalMojoBroker broker(
       chromecast::external_mojo::GetBrokerPath());
 
-  chromecast::external_service_support::ExternalConnectorImpl tracing_connector(
-      broker.CreateConnector());
-  auto tracing_client =
-      chromecast::external_service_support::TracingClient::Create(
-          &tracing_connector);
 
   run_loop.Run();
   base::ThreadPoolInstance::Get()->Shutdown();

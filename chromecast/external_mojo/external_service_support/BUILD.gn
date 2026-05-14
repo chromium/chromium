@@ -75,43 +75,6 @@ source_set("process_setup") {
   }
 }
 
-source_set("tracing_client_hdr") {
-  sources = [ "tracing_client.h" ]
-}
-
-source_set("tracing_client_dummy") {
-  sources = [
-    "tracing_client_dummy.cc",
-    "tracing_client_dummy.h",
-  ]
-  deps = [ ":tracing_client_hdr" ]
-}
-
-source_set("perfetto_tracing_client") {
-  sources = [ "perfetto_tracing_client.cc" ]
-  public = [ "perfetto_tracing_client.h" ]
-  deps = [
-    ":external_service",
-    ":tracing_client_hdr",
-    "//base",
-    "//chromecast:chromecast_buildflags",
-    "//mojo/public/cpp/bindings",
-    "//services/tracing:lib",
-    "//services/tracing/public/cpp",
-    "//services/tracing/public/cpp:traced_process",
-    "//services/tracing/public/mojom",
-    "//third_party/perfetto:libperfetto",
-  ]
-}
-
-group("tracing_client") {
-  public_deps = [ ":tracing_client_hdr" ]
-  if (enable_perfetto_tracing) {
-    public_deps += [ ":perfetto_tracing_client" ]
-  } else {
-    public_deps += [ ":tracing_client_dummy" ]
-  }
-}
 
 source_set("service_process") {
   sources = [ "service_process.h" ]
@@ -122,7 +85,6 @@ source_set("standalone_service_main") {
   deps = [
     ":external_service",
     ":process_setup",
-    ":tracing_client",
     "//base",
     "//chromecast/base:chromecast_switches",
     "//chromecast/external_mojo/public/cpp:common",
@@ -161,7 +123,6 @@ executable("standalone_mojo_broker") {
   deps = [
     ":external_service",
     ":process_setup",
-    ":tracing_client",
     "//base",
     "//chromecast/external_mojo/public/cpp:common",
     "//chromecast/external_mojo/public/cpp:external_mojo_broker",

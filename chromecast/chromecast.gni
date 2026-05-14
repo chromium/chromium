@@ -82,8 +82,6 @@ declare_args() {
   # within cast_shell.
   enable_external_mojo_services = is_linux || is_chromeos || is_android
 
-  # Support using system perfetto tracing
-  enable_perfetto_tracing = false
 
   # Recording happens at this sample rate. Must be 16000, 48000 or 96000 Hz.
   audio_input_sample_rate = 16000
