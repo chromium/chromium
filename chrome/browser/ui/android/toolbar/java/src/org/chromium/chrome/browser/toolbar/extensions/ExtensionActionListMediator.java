@@ -540,6 +540,10 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
 
+        if (!(mActionState instanceof ActionState.Idle)) {
+            return;
+        }
+
         HoverCardState state = action.getHoverCardState();
         RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
 

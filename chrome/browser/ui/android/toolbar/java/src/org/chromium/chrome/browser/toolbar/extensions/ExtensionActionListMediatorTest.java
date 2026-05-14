@@ -629,6 +629,43 @@ public class ExtensionActionListMediatorTest {
         verify(action, never()).getHoverCardState();
     }
 
+    @Test
+    public void testHoverCard_DoesNotShowWhenStateNotIdle() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+
+        mMediator.reconcileActionItems();
+        ListItem item = mModels.get(0);
+        View.OnHoverListener listener =
+                item.model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER);
+
+        ExtensionAction action = mock(ExtensionAction.class);
+        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        when(action.getHoverCardState()).thenReturn(state);
+        doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
+
+        View anchorView = new View(activity);
+        when(mRecyclerViewDelegate.getButtonViewForId(ACTION1_ID)).thenReturn(anchorView);
+
+        // Trigger hover enter to start timer.
+        MotionEvent enterEvent = mock(MotionEvent.class);
+        when(enterEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
+        listener.onHover(anchorView, enterEvent);
+
+        // Verify card not shown yet.
+        verify(action, never()).getHoverCardState();
+
+        // Simulate a popup request to immediately move out of the Idle state without side effects.
+        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION1_ID, 123L);
+
+        // Advance timer.
+        shadowOf(Looper.getMainLooper())
+                .idleFor(ViewConfiguration.getLongPressTimeout(), TimeUnit.MILLISECONDS);
+
+        // Verify hover card was not shown.
+        verify(action, never()).getHoverCardState();
+    }
+
     private static Bitmap createSimpleIcon(int color) {
         Bitmap bitmap = Bitmap.createBitmap(12, 12, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
