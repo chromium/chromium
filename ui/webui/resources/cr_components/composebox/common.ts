@@ -399,6 +399,9 @@ export function recordInputTypeShown(
     case InputType.kBrowserTab:
       contextType = ContextType.TAB;
       break;
+    case InputType.kDrive:
+      contextType = ContextType.DRIVE;
+      break;
     default:
       break;
   }

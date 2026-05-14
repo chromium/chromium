@@ -278,6 +278,10 @@ std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(
       input_types.push_back(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
       continue;
     }
+    if (file_info.input_data && file_info.input_data->drive_id.has_value()) {
+      input_types.push_back(omnibox::InputType::INPUT_TYPE_DRIVE);
+      continue;
+    }
     switch (file_info.mime_type) {
       case lens::MimeType::kImage:
         input_types.push_back(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
