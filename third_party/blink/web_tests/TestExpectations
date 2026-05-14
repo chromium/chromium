@@ -5080,9 +5080,6 @@ crbug.com/1359409 [ Mac12 ] http/tests/media/video-preload-metadata.html [ Pass 
 
 crbug.com/716320 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success-and-failure.https.html [ Failure Timeout ]
 
-# Fails when run under --disable-site-isolation-trials.
-crbug.com/1317079 [ Linux ] external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html [ Failure Pass ]
-
 # Test output varies depending on the bot. A single expectation file doesn't
 # work.
 
