@@ -671,6 +671,7 @@
   {
     "prefix": "dark-mode-default",
     "owners": [
+      "pnevase@microsoft.com",
       "peconn@chromium.org",
       "pdr@chromium.org"
     ],
@@ -686,7 +687,7 @@
     "args": [
       "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true"
     ],
-    "expires": "Jul 1, 2026"
+    "expires": "Jul 1, 2027"
   },
   {
     "prefix": "dbsc-enabled",
