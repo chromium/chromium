@@ -295,6 +295,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Failed Invalid Display Id"/>
   <int value="2" label="Failed Create Displaylink"/>
   <int value="3" label="Failed Register Callback"/>
+  <int value="4" label="Success Forced Update"/>
+  <int value="5" label="Failed Forced Update Create Displaylink"/>
 </enum>
 
 <enum name="DisplayResolution">

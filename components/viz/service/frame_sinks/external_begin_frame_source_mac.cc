@@ -41,7 +41,9 @@ enum class DisplayLinkResult {
   kFailedInvalidDisplayId = 1,
   kFailedCreateDisplayLink = 2,
   kFailedRegisterCallback = 3,
-  kMaxValue = kFailedRegisterCallback,
+  kSuccessForcedUpdate = 4,
+  kFailedForcedUpdateCreateDisplayLink = 5,
+  kMaxValue = kFailedForcedUpdateCreateDisplayLink,
 };
 
 void RecordDisplayLinkCreateStatus(DisplayLinkResult result) {
@@ -171,12 +173,17 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
                                         min_refresh_interval_);
     }
 
-    RecordDisplayLinkCreateStatus(DisplayLinkResult::kSuccess);
+    DisplayLinkResult display_link_result =
+        force_update ? DisplayLinkResult::kSuccessForcedUpdate
+                     : DisplayLinkResult::kSuccess;
+    RecordDisplayLinkCreateStatus(display_link_result);
   } else {
     DisplayLinkResult display_link_result =
         display_id == display::kInvalidDisplayId
             ? DisplayLinkResult::kFailedInvalidDisplayId
-            : DisplayLinkResult::kFailedCreateDisplayLink;
+            : (force_update
+                   ? DisplayLinkResult::kFailedForcedUpdateCreateDisplayLink
+                   : DisplayLinkResult::kFailedCreateDisplayLink);
     RecordDisplayLinkCreateStatus(display_link_result);
 
     DLOG(ERROR) << "Fail to create DisplayLinkMac with DisplayID: "
