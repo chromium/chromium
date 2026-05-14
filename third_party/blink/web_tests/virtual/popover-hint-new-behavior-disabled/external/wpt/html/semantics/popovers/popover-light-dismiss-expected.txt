@@ -8,7 +8,7 @@ Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Err
   assert_array_equals: hiding p24 does not fire event lengths differ, expected array ["show p23", "hide p22"] length 2, got ["show p23", "hide p22", "show p24"] length 3
 [FAIL] Nested showPopover
   assert_array_equals: Nested showPopover should not fire event for its HideAllPopoversUntil lengths differ, expected array ["show p27", "hide p26"] length 2, got ["show p27", "hide p26", "show p28", "show p27"] length 4
-[FAIL] Light dismissing from within an auto popover should not hide a hint whose topmost popover ancestor is not hidden
+[FAIL] Test "hint stack parent" behavior
   assert_true: p35 should be open expected true got false
 [FAIL] Opening a new auto popover should hide all hint popovers, even in the nested case
   assert_false: expected false got true

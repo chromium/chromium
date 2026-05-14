@@ -2771,7 +2771,6 @@ void HTMLElement::HidePopoversForLightDismiss(const HTMLElement* target_popover,
   }
   if (clicked_on_hint) {
     if (hint_parent) {
-      document.SetPopoverHintStackParent(nullptr);
       HideAllPopoversUntil(
           hint_parent, document, HidePopoverFocusBehavior::kNone,
           HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
