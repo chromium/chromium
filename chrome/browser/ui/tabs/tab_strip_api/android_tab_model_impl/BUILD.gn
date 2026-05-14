@@ -52,6 +52,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/tabs/tab_strip_api:impl",
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
+    "//chrome/browser/ui/tabs/tab_strip_api/testing",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",

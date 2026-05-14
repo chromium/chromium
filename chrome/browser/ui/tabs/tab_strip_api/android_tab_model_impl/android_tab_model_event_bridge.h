@@ -48,10 +48,17 @@ class AndroidTabModelEventBridge : public EventBridge,
   void OnTabGroupVisualsChanged(tab_groups::TabGroupId group_id) override;
 
   // TabCollectionObserver:
+  // NOTE: Be VERY careful about the TabHandles from this observation. Android
+  // TabCollection uses a "shadow" or wrapper TabHandles to deal with ownership
+  // issues. Any TabHandle received from TabCollection MUST be exchanged to
+  // AndroidTab* before usage.
   void OnChildMoved(const tabs::TabCollection::Position& to_position,
                     const NodeData& node_data) override;
 
  private:
+  // Exchanges a tab collection's TabHandle to an AndroidTab.
+  TabAndroid* ToAndroidTab(tabs::TabHandle tab_collection_handle) const;
+
   void HandleSelectionAndActivationChange();
   void Notify(events::Event event) const;
 

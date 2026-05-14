@@ -143,7 +143,8 @@ void AndroidTabModelEventBridge::OnChildMoved(
   auto event = mojom::OnNodeMovedEvent::New();
 
   if (std::holds_alternative<tabs::TabHandle>(node_data.handle)) {
-    tabs::TabHandle tab_handle = std::get<tabs::TabHandle>(node_data.handle);
+    tabs::TabHandle tab_handle =
+        ToAndroidTab(std::get<tabs::TabHandle>(node_data.handle))->GetHandle();
     event->id = NodeId::FromTabHandle(tab_handle);
   } else {
     tabs::TabCollection::Handle collection_handle =
@@ -212,6 +213,16 @@ void AndroidTabModelEventBridge::OnTabGroupVisualsChanged(
   auto group_change = mojom::TabGroupChange::New();
   group_change->data = data_or_error.value()->get_tab_group().Clone();
   Notify(mojom::OnDataChangedEvent::NewTabGroup(std::move(group_change)));
+}
+
+TabAndroid* AndroidTabModelEventBridge::ToAndroidTab(
+    tabs::TabHandle tab_collection_handle) const {
+  if (auto* shadow = tab_collection_handle.Get()) {
+    // This is the magic that retrieves the underlying AndroidTab.
+    // For more details, check the TabInterfaceAndroid class.
+    return static_cast<TabAndroid*>(shadow->GetWeakPtr().get());
+  }
+  return nullptr;
 }
 
 }  // namespace tabs_api

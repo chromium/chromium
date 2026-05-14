@@ -6,6 +6,7 @@ source_set("testing") {
   testonly = true
 
   sources = [
+    "event_matchers.h",
     "injector.cc",
     "injector.h",
     "toy_tab_context_menu_adapter.cc",
@@ -29,6 +30,8 @@ source_set("testing") {
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
     "//chrome/browser/ui/tabs/tab_strip_api/aggregation",
     "//chrome/browser/ui/tabs/tab_strip_api/types",
+    "//components/browser_apis/tab_strip:mojom",
+    "//testing/gmock",
     "//url",
   ]
 }
