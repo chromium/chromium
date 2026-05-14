@@ -57,7 +57,6 @@ build_webui("build") {
     "utils.ts",
     "utils/clip_path.ts",
     "web_view_type.ts",
-    "window_manager.ts",
   ]
 
   if (!is_android) {
@@ -66,6 +65,7 @@ build_webui("build") {
       "onboarding_tooltip.ts",
       "composebox.html.ts",
       "composebox.ts",
+      "window_manager.ts",
     ]
   }
 

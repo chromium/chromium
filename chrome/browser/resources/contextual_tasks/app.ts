@@ -45,7 +45,9 @@ import {PostMessageHandler} from './post_message_handler.js';
 import type {Rect} from './post_message_handler.js';
 import {getNonOccludedClipPath} from './utils/clip_path.js';
 import {recordAction} from './utils.js';
+// <if expr="not is_android">
 import {WindowManager} from './window_manager.js';
+// </if>
 
 declare global {
   interface HTMLElementEventMap {
@@ -559,8 +561,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
 
+    // <if expr="not is_android">
     // Handle newwindow events with mock webviews.
     new WindowManager(this.$.threadFrame);
+    // </if>
 
     // Check if the URL that loaded this page has a task attached to it. If it
     // does, we'll use the tasks URL to load the embedded page.

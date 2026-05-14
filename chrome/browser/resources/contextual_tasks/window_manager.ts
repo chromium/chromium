@@ -6,6 +6,8 @@ import type {WebViewType} from './web_view_type.js';
 
 interface WebViewWithPartition extends chrome.webviewTag.WebView {
   partition: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 }
 
 export class WindowManager {
@@ -13,7 +15,7 @@ export class WindowManager {
 
   constructor(private mainWebview: WebViewType) {
     this.mainWebview.addEventListener('newwindow', (e: Event) => {
-      this.onNewWindow(e as unknown as chrome.webviewTag.NewWindowEvent);
+      this.onNewWindow(e as chrome.webviewTag.NewWindowEvent);
     });
   }
 
@@ -27,7 +29,7 @@ export class WindowManager {
         WebViewWithPartition;
     newWebview.partition = 'persist:contextual-tasks';
 
-    e.window.attach(newWebview as unknown as {[key: string]: void});
+    e.window.attach(newWebview);
 
     newWebview.addEventListener('close', () => {
       this.mockWebviews.delete(newWebview);
