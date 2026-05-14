@@ -641,6 +641,13 @@ const mojom::CreateContextOptions& WebNNContextImpl::options() const {
 }
 
 void WebNNContextImpl::OnLost(const std::string& reason) {
+  if (!mojo_task_runner()->RunsTasksInCurrentSequence()) {
+    mojo_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebNNContextImpl::OnLost, AsWeakPtr(), reason));
+    return;
+  }
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ResetMojoReceiver(reason);
   OnDisconnect();
