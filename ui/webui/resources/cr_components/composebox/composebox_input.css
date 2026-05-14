@@ -223,19 +223,17 @@
 
 #tabChip {
   align-items: center;
-  border: 1px solid var(--color-composebox-type-ahead-chip);
-  border-radius: 8px;
-  box-sizing: border-box;
-  color: var(--color-composebox-type-ahead-chip);
+  background-color: var(--color-composebox-type-ahead-chip);
+  border-radius: 4px;
+  color: var(--color-composebox-type-ahead);
   display: inline-flex;
-  font-size: 12px;
-  font-weight: 700;
-  height: 24px;
+  font-size: 8px;
+  font-weight: 500;
+  height: 14px;
   justify-content: center;
-  line-height: 18px;
   margin-inline-start: 4px;
-  padding: 0;
-  width: 38px;
+  vertical-align: middle;
+  width: 24px;
 }
 
 :host-context([expanding_]) #input,

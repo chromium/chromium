@@ -40,8 +40,8 @@
   --color-composebox-pdf-chip-icon-background: rgba(219, 69, 55, 1);
   --color-composebox-pdf-chip-icon-border: rgba(255, 255, 255, 1);
   --color-composebox-suggestion-activity: rgba(86, 89, 94, 1);
-  --color-composebox-type-ahead: rgba(117, 117, 117, 1);
-  --color-composebox-type-ahead-chip: rgba(117, 117, 117, 1);
+  --color-composebox-type-ahead: #56595e;
+  --color-composebox-type-ahead-chip: #f0f2f5;
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
   --color-composebox-voice-button-hover-background: rgba(31, 31, 31, 0.06);
   --color-composebox-lens-active-background: rgba(225, 227, 232, 1);
@@ -235,8 +235,8 @@
   --color-composebox-loading-end: rgba(77, 81, 86, 1);
   --color-composebox-loading-start: rgba(60, 64, 67, 1);
   --color-composebox-suggestion-activity: rgba(86, 89, 94, 1);
-  --color-composebox-type-ahead: rgba(199, 199, 199, 1);
-  --color-composebox-type-ahead-chip: rgba(199, 199, 199, 1);
+  --color-composebox-type-ahead: #a0a2ab;
+  --color-composebox-type-ahead-chip: #4e5059;
   --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
   --color-composebox-lens-active-background: rgba(42, 43, 54, 1);
   --color-composebox-zero-state-suggestions-background-hovered:
