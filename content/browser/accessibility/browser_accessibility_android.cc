@@ -2260,24 +2260,25 @@ void BrowserAccessibilityAndroid::GetLineBoundaries(
   // If this is a static text node, get the line boundaries from the
   // inline text boxes if possible.
   if (GetRole() == ax::mojom::Role::kStaticText) {
-    int last_y = 0;
-    bool is_first = true;
+    BrowserAccessibilityAndroid* previous_child = nullptr;
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
       BrowserAccessibilityAndroid* child =
           static_cast<BrowserAccessibilityAndroid*>(it.get());
       CHECK_EQ(ax::mojom::Role::kInlineTextBox, child->GetRole());
-      // TODO(dmazzoni): replace this with a proper API to determine
-      // if two inline text boxes are on the same line. http://crbug.com/421771
-      int y = child->GetClippedRootFrameBoundsRect().y();
-      if (is_first) {
-        is_first = false;
+      if (!previous_child) {
         line_starts->push_back(offset);
-      } else if (y != last_y) {
-        line_ends->push_back(offset);
-        line_starts->push_back(offset);
+      } else {
+        // Having no next-on-line link from Blink indicates a line break.
+        bool is_line_break =
+            previous_child->GetIntAttribute(
+                ax::mojom::IntAttribute::kNextOnLineId) != child->GetId();
+        if (is_line_break) {
+          line_ends->push_back(offset);
+          line_starts->push_back(offset);
+        }
       }
       offset += child->GetTextContentLengthUTF16();
-      last_y = y;
+      previous_child = child;
     }
     line_ends->push_back(offset);
     return;
