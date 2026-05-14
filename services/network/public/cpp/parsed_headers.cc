@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy_parser.h"
 #include "services/network/public/cpp/cross_origin_opener_policy_parser.h"
+#include "services/network/public/cpp/declarative_performance_observer_parser.h"
 #include "services/network/public/cpp/document_isolation_policy_parser.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/fence_event_reporting_parser.h"
@@ -170,6 +171,16 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
 
   parsed_headers->allow_cross_origin_event_reporting =
       ParseAllowCrossOriginEventReportingFromHeader(*headers);
+
+  if (base::FeatureList::IsEnabled(
+          network::features::kDeclarativePerformanceObserver)) {
+    if (std::optional<std::string> performance_observer_header =
+            headers->GetNormalizedHeader("Performance-Observer")) {
+      parsed_headers->declarative_performance_observer_policy =
+          ParseDeclarativePerformanceObserverPolicy(
+              *performance_observer_header);
+    }
+  }
 
   return parsed_headers;
 }

@@ -656,6 +656,7 @@ mojom("url_loader_base") {
     "cross_origin_embedder_policy.mojom",
     "cross_origin_opener_policy.mojom",
     "data_pipe_getter.mojom",
+    "declarative_performance_observer.mojom",
     "device_bound_sessions.mojom",
     "devtools_observer.mojom",
     "document_isolation_policy.mojom",

@@ -76,6 +76,7 @@
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/declarative_performance_observer.mojom-forward.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -438,6 +439,8 @@ class CONTENT_EXPORT NavigationRequest
   const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&
   GetLCPPNavigationHint() override;
   const net::HttpResponseHeaders* GetResponseHeaders() override;
+  const network::mojom::DeclarativePerformanceObserverPolicy*
+  GetDeclarativePerformanceObserverPolicy() override;
   net::HttpConnectionInfo GetConnectionInfo() override;
   const std::optional<net::SSLInfo>& GetSSLInfo() override;
   const std::optional<net::AuthChallengeInfo>& GetAuthChallengeInfo() override;

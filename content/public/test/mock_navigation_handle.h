@@ -191,6 +191,8 @@ class MockNavigationHandle : public NavigationHandle {
   const net::HttpResponseHeaders* GetResponseHeaders() override {
     return response_headers_.get();
   }
+  MOCK_METHOD0(GetDeclarativePerformanceObserverPolicy,
+               const network::mojom::DeclarativePerformanceObserverPolicy*());
   MOCK_METHOD1(
       SetLCPPNavigationHint,
       void(blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr));

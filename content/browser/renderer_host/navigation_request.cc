@@ -9502,6 +9502,15 @@ const net::HttpResponseHeaders* NavigationRequest::GetResponseHeaders() {
   return response_head_.get() ? response_head_->headers.get() : nullptr;
 }
 
+const network::mojom::DeclarativePerformanceObserverPolicy*
+NavigationRequest::GetDeclarativePerformanceObserverPolicy() {
+  if (!response_head_.get() || !response_head_->parsed_headers) {
+    return nullptr;
+  }
+  return response_head_->parsed_headers->declarative_performance_observer_policy
+      .get();
+}
+
 mojom::DidCommitProvisionalLoadParamsPtr
 NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   // Use the DidCommitProvisionalLoadParams last used to commit the frame being

@@ -418,7 +418,8 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
           ? std::make_optional(ConvertToBlink(in->content_language.value()))
           : std::nullopt,
       ConvertToBlink(in->no_vary_search_with_parse_error),
-      in->observe_browsing_topics, in->allow_cross_origin_event_reporting);
+      in->observe_browsing_topics, in->allow_cross_origin_event_reporting,
+      /*declarative_performance_observer_policy=*/nullptr);
 }
 
 }  // namespace mojom

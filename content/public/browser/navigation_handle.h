@@ -34,6 +34,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_connection_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/declarative_performance_observer.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
@@ -554,6 +555,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // redirect). The headers returned should not be modified, as modifications
   // will not be reflected in the network stack.
   virtual const net::HttpResponseHeaders* GetResponseHeaders() = 0;
+
+  // Returns the parsed Declarative Performance Observer policy for the request,
+  // or nullptr if it hasn't been received yet.
+  virtual const network::mojom::DeclarativePerformanceObserverPolicy*
+  GetDeclarativePerformanceObserverPolicy() = 0;
 
   // Returns the connection info for the request, the default value is
   // HttpConnectionInfo::kUNKNOWN if there hasn't been a response (or redirect)

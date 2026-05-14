@@ -1,0 +1,59 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// The type of performance entry to be observed.
+// This maps to the PerformanceEntry.entryType in Blink.
+enum PerformanceEntryType {
+  // Maps to "navigation" entry type.
+  kNavigation,
+  // Maps to "mark" entry type (user timing).
+  kMark,
+  // Maps to "visibility-state" entry type.
+  kVisibilityState,
+};
+
+// Represents the parsed Performance-Observer HTTP header policy.
+// Controls which performance events are captured and where they are reported.
+// https://github.com/explainers-by-googlers/declarative-performance-observer
+struct DeclarativePerformanceObserverPolicy {
+  // The name of the endpoint group where the reports should be sent.
+  // This must match a endpoint name defined in the `Reporting-Endpoints` header
+  // of the same response. The name is an ASCII string.
+  //
+  // This is defined by the website developer in the
+  // `Declarative-Performance-Observer` header (via the `report-to` parameter).
+  // It is used by the browser's reporting service to look up the target URL
+  // for uploading the collected performance reports.
+  //
+  // If this is null, it means no reporting endpoint was specified.
+  // In this case, the receiver will not report any performance entries.
+  //
+  // If this is an empty string, it means an empty endpoint name was specified
+  // (e.g., `report-to=""`). While an empty string can be parsed as an HTTP
+  // Structured Header string, it is invalid as a reporting endpoint name.
+  // The receiver will not report any performance entries as well.
+  string? reporting_endpoint;
+
+  // The specific types of performance events to collect.
+  // Using an enum array ensures strict type safety and prevents
+  // arbitrary or malformed strings from being passed via IPC.
+  array<PerformanceEntryType> entry_types;
+
+  // Allowlist of user-defined performance.mark() event names to collect.
+  //
+  // If this is null (not specified in the header), all performance.mark()
+  // events will be collected (if `PerformanceEntryType::kMark` is present in
+  // `entry_types`).
+  //
+  // If this is an empty array, no performance.mark() events will be collected.
+  //
+  // If this is a non-empty array, only performance.mark() events with names
+  // matching one of the strings in the array will be collected.
+  array<string>? include_user_timing;
+
+  // Indicates if early navigation failures should be persisted.
+  bool capture_early_failures;
+};
