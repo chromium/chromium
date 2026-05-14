@@ -838,6 +838,13 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
                     itemType:ItemTypeAutofillAddressSwitch];
   [self setWalletPromoButtonItemEnabled:!self.tableView.editing];
   [self updatedToolbarForEditState];
+
+  for (NSIndexPath* indexPath in self.tableView.indexPathsForVisibleRows) {
+    UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    if (cell) {
+      [self updateOpacityAndInteractionForCell:cell atIndexPath:indexPath];
+    }
+  }
 }
 
 // Override.
@@ -876,25 +883,14 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
 - (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
            editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
-    AutofillAIEntityItem* aiItem =
-        base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
-    return aiItem.isServerWalletItem ? UITableViewCellEditingStyleNone
-                                     : UITableViewCellEditingStyleDelete;
-  }
-  return UITableViewCellEditingStyleDelete;
+  return [self isServerWalletItemAtIndexPath:indexPath]
+             ? UITableViewCellEditingStyleNone
+             : UITableViewCellEditingStyleDelete;
 }
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
-    AutofillAIEntityItem* aiItem =
-        base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
-    return !aiItem.isServerWalletItem;
-  }
-  return YES;
+  return ![self isServerWalletItemAtIndexPath:indexPath];
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -1056,18 +1052,13 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (_settingsAreDismissed) {
+  if (_settingsAreDismissed || [self isServerWalletItemAtIndexPath:indexPath]) {
     return NO;
   }
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
-    AutofillAIEntityItem* aiItem =
-        base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
-    return !aiItem.isServerWalletItem;
-  }
-
-  return [item isKindOfClass:[AutofillProfileItem class]];
+  return [item isKindOfClass:[AutofillProfileItem class]] ||
+         [item isKindOfClass:[AutofillAIEntityItem class]];
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -1088,6 +1079,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   selectedBackgroundView.backgroundColor =
       [UIColor colorNamed:kTertiaryBackgroundColor];
   cell.selectedBackgroundView = selectedBackgroundView;
+
+  [self updateOpacityAndInteractionForCell:cell atIndexPath:indexPath];
 
   return cell;
 }
@@ -1326,6 +1319,29 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 }
 
 #pragma mark - Private
+
+// Returns YES if the item at the given `indexPath` represents a server-side
+// Wallet entity.
+- (BOOL)isServerWalletItemAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
+    AutofillAIEntityItem* aiItem =
+        base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
+    return aiItem.isServerWalletItem;
+  }
+  return NO;
+}
+
+// Updates the opacity and interaction state of the given `cell` based on
+// whether it represents a server wallet entity and the table's editing state.
+- (void)updateOpacityAndInteractionForCell:(UITableViewCell*)cell
+                               atIndexPath:(NSIndexPath*)indexPath {
+  BOOL shouldDisable =
+      [self isServerWalletItemAtIndexPath:indexPath] && self.tableView.editing;
+
+  cell.contentView.alpha = shouldDisable ? 0.5 : 1.0;
+  cell.userInteractionEnabled = !shouldDisable;
+}
 
 - (void)dismissDeletionSheet {
   [_deletionSheetCoordinator stop];
