@@ -13,6 +13,8 @@ source_set("buttons") {
     "toolbar_button_visibility.h",
     "toolbar_buttons_utils.h",
     "toolbar_buttons_utils.mm",
+    "toolbar_tab_grid_badge_button.h",
+    "toolbar_tab_grid_badge_button.mm",
   ]
   public_deps = [ "//ios/chrome/common/ui/elements" ]
   deps = [

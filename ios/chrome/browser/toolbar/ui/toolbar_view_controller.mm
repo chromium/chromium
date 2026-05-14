@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_tab_grid_badge_button.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
@@ -92,7 +93,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   ToolbarButton* _shareButton;
   ToolbarButton* _assistantButton;
   UIMenu* _assistantButtonMenu;
-  ToolbarButton* _tabGridButton;
+  ToolbarTabGridBadgeButton* _tabGridButton;
   UIMenu* _tabGridButtonMenu;
   ToolbarButton* _toolsMenuButton;
 
@@ -469,6 +470,14 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [self updateToolbarVisibility];
   /// TODO(crbug.com/508170459): The location bar should be initially hidden on
   /// the NTP, until the fakebox is swiped up out of view.
+}
+
+- (void)updateTabCount:(NSUInteger)tabCount {
+  _tabGridButton.tabCount = tabCount;
+}
+
+- (void)setInTabGroup:(BOOL)inTabGroup {
+  _tabGridButton.inTabGroup = inTabGroup;
 }
 
 - (void)setMenu:(UIMenu*)menu forButtonType:(ToolbarButtonType)buttonType {

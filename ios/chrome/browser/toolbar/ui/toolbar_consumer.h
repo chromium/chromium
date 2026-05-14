@@ -56,6 +56,12 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
 // Hides the banner promo view.
 - (void)hideBannerPromo;
 
+// Sets the tab count to display.
+- (void)updateTabCount:(NSUInteger)tabCount;
+
+// Sets whether the active web state is inside a tab group.
+- (void)setInTabGroup:(BOOL)inTabGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_CONSUMER_H_

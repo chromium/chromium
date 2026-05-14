@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class ToolbarButton;
+@class ToolbarTabGridBadgeButton;
 
 // Factory for creating toolbar buttons.
 @interface ToolbarButtonFactory : NSObject
@@ -36,7 +37,7 @@
 - (ToolbarButton*)makeShareButton;
 
 // Creates a tab grid button.
-- (ToolbarButton*)makeTabGridButton;
+- (ToolbarTabGridBadgeButton*)makeTabGridButton;
 
 // Creates an assistant button.
 - (ToolbarButton*)makeAssistantButton;

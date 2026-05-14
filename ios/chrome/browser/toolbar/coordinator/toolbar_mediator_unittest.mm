@@ -8,6 +8,8 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/tab_groups/tab_group_id.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/banner_promo/model/fake_default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
@@ -91,6 +93,8 @@ class ToolbarMediatorTest : public PlatformTest,
     mediator_.settingsHandler = settings_handler_;
 
     consumer_ = OCMProtocolMock(@protocol(ToolbarConsumer));
+    OCMStub([consumer_ updateTabCount:0]).ignoringNonObjectArgs();
+    OCMStub([consumer_ setInTabGroup:NO]).ignoringNonObjectArgs();
     [mediator_ setConsumer:consumer_];
   }
 
@@ -135,6 +139,72 @@ class ToolbarMediatorTest : public PlatformTest,
   id settings_handler_;
   raw_ptr<web::FakeNavigationManager> fake_navigation_manager_;
 };
+
+// Tests that inserting web states updates the consumer tab count.
+TEST_P(ToolbarMediatorTest, TestTabCountAndGroupUpdates) {
+  id local_consumer = OCMProtocolMock(@protocol(ToolbarConsumer));
+  [mediator_ setConsumer:local_consumer];
+
+  OCMExpect([local_consumer updateTabCount:1]);
+  OCMExpect([local_consumer setInTabGroup:NO]);
+
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+
+  // Group the active tab.
+  OCMExpect([local_consumer updateTabCount:1]);
+  OCMExpect([local_consumer setInTabGroup:YES]);
+
+  browser_->GetWebStateList()->CreateGroup(
+      {0},
+      tab_groups::TabGroupVisualData(u"Group",
+                                     tab_groups::TabGroupColorId::kBlue),
+      tab_groups::TabGroupId::GenerateNew());
+
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+
+  // Add a second web state, NOT in the group. Active tab is still index 0
+  // (grouped). Since active tab is grouped and group count is still 1,
+  // updateTabCount should be called with 1!
+  OCMExpect([local_consumer updateTabCount:1]);
+  OCMExpect([local_consumer setInTabGroup:YES]);
+
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(1));
+
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+
+  // Now, add the second web state to the group. Group range count increases
+  // to 2. The tab count should update to 2!
+  OCMExpect([local_consumer updateTabCount:2]);
+  OCMExpect([local_consumer setInTabGroup:YES]);
+
+  const TabGroup* group = browser_->GetWebStateList()->GetGroupOfWebStateAt(0);
+  browser_->GetWebStateList()->MoveToGroup({1}, group);
+
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+
+  // Now, insert a third web state, activate it. It is NOT in a group.
+  // Active tab is index 2. Total count is 3.
+  OCMExpect([local_consumer updateTabCount:3]);
+  OCMExpect([local_consumer setInTabGroup:NO]);
+
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(2).Activate());
+
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+
+  // Finally, select the grouped active tab again (index 0).
+  // Since index 0 is grouped, tab count should return the group count: 2!
+  OCMExpect([local_consumer updateTabCount:2]);
+  OCMExpect([local_consumer setInTabGroup:YES]);
+
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
+
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+}
 
 // Tests that selecting a web state updates the consumer.
 TEST_P(ToolbarMediatorTest, TestWebStateSelectionUpdatesConsumer) {

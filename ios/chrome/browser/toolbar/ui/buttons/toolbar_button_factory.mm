@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_tab_grid_badge_button.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -122,9 +123,10 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
   return button;
 }
 
-- (ToolbarButton*)makeTabGridButton {
-  ToolbarButton* button = [self toolbarButtonForImageNamed:kSquareNumberSymbol
-                                              defaultImage:NO];
+- (ToolbarTabGridBadgeButton*)makeTabGridButton {
+  ToolbarTabGridBadgeButton* button =
+      [[ToolbarTabGridBadgeButton alloc] initWithImageLoader:nil
+                                                   incognito:_incognito];
   button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
   button.accessibilityIdentifier = kToolbarTabGridButtonIdentifier;
   return button;

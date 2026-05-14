@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
@@ -143,6 +145,7 @@
            forButtonType:ToolbarButtonTypeAssistant];
   /// TODO(crbug.com/493948951): Support context menu for tab grid button in the
   /// Toolbar (iPad).
+  [self updateConsumerTabCountAndGroupState];
 }
 
 - (void)disconnect {
@@ -305,6 +308,8 @@
                        status:(const WebStateListStatus&)status {
   if (status.active_web_state_change() && status.new_active_web_state) {
     [self updateConsumerWithWebState:status.new_active_web_state];
+  } else {
+    [self updateConsumerTabCountAndGroupState];
   }
 }
 
@@ -422,6 +427,23 @@
         .keyboardVisible;
   }
   return NO;
+}
+
+// Updates the consumer tab state.
+- (void)updateConsumerTabCountAndGroupState {
+  if (_webStateList) {
+    const TabGroup* group = GetGroupForActiveWebState(_webStateList);
+    if (group) {
+      [self.consumer updateTabCount:group->range().count()];
+      [self.consumer setInTabGroup:YES];
+    } else {
+      [self.consumer updateTabCount:_webStateList->count()];
+      [self.consumer setInTabGroup:NO];
+    }
+  } else {
+    [self.consumer updateTabCount:0];
+    [self.consumer setInTabGroup:NO];
+  }
 }
 
 @end
