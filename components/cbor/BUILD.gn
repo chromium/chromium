@@ -50,6 +50,7 @@ fuzzer_test("reader_fuzzer") {
   deps = [
     ":cbor",
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpus = "reader_fuzzer_corpus/"
   libfuzzer_options = [ "max_len=65535" ]

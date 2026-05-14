@@ -2,43 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cbor/reader.h"  // nogncheck
+#include "components/cbor/reader.h"
 
 #include <stdint.h>
 
-#include <algorithm>
+#include <optional>
+#include <vector>
 
-#include "base/compiler_specific.h"
-#include "components/cbor/writer.h"  // nogncheck
+#include "base/check.h"
+#include "base/containers/span.h"
+#include "components/cbor/writer.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace cbor {
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  std::vector<uint8_t> input(data, UNSAFE_TODO(data + size));
-
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> input) {
   std::optional<Value> cbor = Reader::Read(input);
   if (cbor.has_value()) {
     std::optional<std::vector<uint8_t>> serialized_cbor =
         Writer::Write(cbor.value());
     CHECK(serialized_cbor.has_value());
-    if (serialized_cbor.has_value()) {
-      CHECK(serialized_cbor.value().size() == input.size());
-      UNSAFE_TODO(CHECK(memcmp(serialized_cbor.value().data(), input.data(),
-                               input.size()) == 0));
-    }
+    // This can only be reached if the input was canonical, which means that it
+    // must exactly match the re-serialized output.
+    CHECK(serialized_cbor.value() == input);
   }
 
   Reader::Config config;
   config.allow_and_canonicalize_out_of_order_keys = true;
-  std::optional<Value> cbor_1 = Reader::Read(input, config);
 
+  std::optional<Value> cbor_1 = Reader::Read(input, config);
   if (cbor_1.has_value()) {
     std::optional<std::vector<uint8_t>> serialized_cbor =
         Writer::Write(cbor_1.value());
     CHECK(serialized_cbor.has_value());
-    if (serialized_cbor.has_value()) {
-      CHECK(serialized_cbor.value().size() == input.size());
-    }
+    // Reordering the keys shouldn't affect the serialized size.
+    CHECK(serialized_cbor.value().size() == input.size());
   }
 
   return 0;
