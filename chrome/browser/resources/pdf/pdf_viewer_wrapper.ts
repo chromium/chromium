@@ -84,7 +84,6 @@ export {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
 export type {PdfViewerPrivateProxy} from './pdf_viewer_private_proxy.js';
 // </if>
 // <if expr="enable_pdf_ink2">
-export type {GetTextInfoResult} from './pdf_viewer_private_proxy.js';
 export {hexToColor} from './pdf_viewer_utils.js';
 // </if>
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';

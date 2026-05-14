@@ -25,6 +25,7 @@ export function setupTextBoxTest() {
 export function getTestAnnotation(textBoxRect: TextBoxRect): TextAnnotation {
   return {
     id: 0,
+    mojoTextInfo: new ArrayBuffer(0),
     pageIndex: 0,
     text: 'Hello World',
     textAttributes: {
@@ -123,7 +124,6 @@ export function verifyFinishTextAnnotationMessage(
     ...expectedAnnotation,
     isEdited: expectedIsEdited,
     isUser: true,
-    mojoTextInfo: new ArrayBuffer(0),
     newTypefaces: [],
     pdfZoom: expectedPdfZoom,
   };

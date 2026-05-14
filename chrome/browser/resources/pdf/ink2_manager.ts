@@ -8,7 +8,6 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {AnnotationBrush, Color, Point, TextAnnotation, TextAnnotationMessageData, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
-import type {GetTextInfoResult} from './pdf_viewer_private_proxy.js';
 import {UndoRedoStack} from './undo_redo_stack.js';
 import type {Viewport, ViewportRect} from './viewport.js';
 
@@ -109,7 +108,6 @@ export function convertRotatedCoordinates(
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
   private stack_ = new UndoRedoStack(this);
-  private originalTextAnnotation_: TextAnnotation|null = null;
 
   constructor() {
     super();
@@ -214,7 +212,6 @@ export class Ink2Manager extends EventTarget {
 
     // Is the click in an existing box?
     let existing = null;
-    this.originalTextAnnotation_ = null;
     // Get the annotations for the current page.
     const annotationsMap = this.annotations_.get(page);
     const annotations =
@@ -228,11 +225,9 @@ export class Ink2Manager extends EventTarget {
           location.y >= screenBox.locationY &&
           location.y <= (screenBox.locationY + screenBox.height)) {
         // Don't update the original. Create a new object and update its
-        // rectangle to use the computed screen coordinates. Set isUser since
-        // this is triggered by a user action, and isn't undo/redo.
+        // rectangle to use the computed screen coordinates.
         existing = structuredClone(annotation);
         existing.textBoxRect = screenBox;
-        this.originalTextAnnotation_ = structuredClone(annotation);
         break;
       }
     }
@@ -271,6 +266,7 @@ export class Ink2Manager extends EventTarget {
     this.pageIndex_ = page;
     const annotation: TextAnnotation = existing ? existing : {
       id: this.nextAnnotationId_,
+      mojoTextInfo: new ArrayBuffer(0),
       pageIndex: page,
       text: '',
       textAttributes: structuredClone(this.attributes_),
@@ -545,7 +541,9 @@ export class Ink2Manager extends EventTarget {
     };
   }
 
-  private updateStoredAnnotation_(annotation: TextAnnotation) {
+  // Returns the previous version of the annotation, or null if it is new.
+  private updateStoredAnnotation_(annotation: TextAnnotation): TextAnnotation
+      |null {
     let pageAnnotations = this.annotations_.get(annotation.pageIndex);
     if (!pageAnnotations) {
       // Adding a new annotation, on a page that doesn't have any existing ones.
@@ -554,12 +552,14 @@ export class Ink2Manager extends EventTarget {
       this.annotations_.set(annotation.pageIndex, pageAnnotations);
     }
 
-    if (pageAnnotations.has(annotation.id) && annotation.text === '') {
+    const previous = pageAnnotations.get(annotation.id);
+    if (annotation.text === '') {
       // Delete an existing annotation.
-      pageAnnotations.delete(annotation.id);
+      assert(pageAnnotations.delete(annotation.id));
     } else {
       pageAnnotations.set(annotation.id, annotation);
     }
+    return previous || null;
   }
 
   /**
@@ -568,13 +568,12 @@ export class Ink2Manager extends EventTarget {
    */
   commitTextAnnotation(
       annotation: TextAnnotation, isEdited: boolean,
-      textInfo: GetTextInfoResult) {
+      newTypefaces: chrome.pdfViewerPrivate.Typeface[]) {
     annotation.textBoxRect = this.screenToPageCoordinates_(
         annotation.pageIndex, annotation.textBoxRect);
 
     if (isEdited) {
-      this.updateStoredAnnotation_(annotation);
-      const before = this.originalTextAnnotation_;
+      const before = this.updateStoredAnnotation_(annotation);
       const after = annotation.text === '' ? null : structuredClone(annotation);
       if (before !== null || after !== null) {
         this.stack_.push({
@@ -590,13 +589,11 @@ export class Ink2Manager extends EventTarget {
       ...annotation,
       isEdited,
       isUser: true,
-      mojoTextInfo: textInfo.mojoTextInfo,
-      newTypefaces: textInfo.typefaces,
+      newTypefaces,
       pdfZoom: this.viewport_.getZoom(),
     };
     this.pluginController_.finishTextAnnotation(messageData);
     this.existingAnnotationAttributes_ = null;
-    this.originalTextAnnotation_ = null;
   }
 
   textBoxFocused(textBoxRect: TextBoxRect) {
@@ -710,7 +707,6 @@ export class Ink2Manager extends EventTarget {
       ...annotation,
       isEdited: true,
       isUser: false,
-      mojoTextInfo: new ArrayBuffer(0),
       newTypefaces: [],
       pdfZoom: this.viewport_.getZoom(),
     };

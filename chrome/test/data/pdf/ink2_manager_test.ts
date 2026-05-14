@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotationBrush, GetTextInfoResult, TextAnnotation, TextAnnotationMessageData, TextAttributes, TextBoxInit, UndoRedoStateChangedDetail, ViewportParams} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, TextAnnotation, TextAnnotationMessageData, TextAttributes, TextBoxInit, UndoRedoStateChangedDetail, ViewportParams} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PluginController, PluginControllerEventType, TextAlignment, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -15,6 +15,7 @@ const manager = Ink2Manager.getInstance();
 function getTestAnnotation(id: number): TextAnnotation {
   return {
     id: id,
+    mojoTextInfo: new ArrayBuffer(0),
     pageIndex: 0,
     text: 'Hello World',
     textAttributes: {
@@ -42,16 +43,8 @@ function getTestAnnotationMessageData(id: number): TextAnnotationMessageData {
     ...getTestAnnotation(id),
     isEdited: false,
     isUser: true,
-    mojoTextInfo: new ArrayBuffer(0),
     newTypefaces: [],
     pdfZoom: 1.0,
-  };
-}
-
-function getDummyTextInfo(): GetTextInfoResult {
-  return {
-    mojoTextInfo: new ArrayBuffer(0),
-    typefaces: [],
   };
 }
 
@@ -263,8 +256,7 @@ chrome.test.runTests([
 
     // Simulate committing the annotation when the init event is received.
     // This is what ink-text-box does in production.
-    manager.commitTextAnnotation(
-        testAnnotation1ScreenCoords, true, getDummyTextInfo());
+    manager.commitTextAnnotation(testAnnotation1ScreenCoords, true, []);
 
     // Confirm that the finish annotation message is sent with the correct
     // parameters.
@@ -641,14 +633,14 @@ chrome.test.runTests([
       // and we want to reuse this below.
       annotationPageCoords.isEdited = true;
       const editedAnnot = structuredClone(annotationScreenCoords);
-      manager.commitTextAnnotation(editedAnnot, true, getDummyTextInfo());
+      manager.commitTextAnnotation(editedAnnot, true, []);
       verifyFinishTextAnnotationMessage(annotationPageCoords);
       mockPlugin.clearMessages();
 
       // Committing with edited = false should fire an unmodified event.
       annotationPageCoords.isEdited = false;
       const uneditedAnnot = structuredClone(annotationScreenCoords);
-      manager.commitTextAnnotation(uneditedAnnot, false, getDummyTextInfo());
+      manager.commitTextAnnotation(uneditedAnnot, false, []);
       verifyFinishTextAnnotationMessage(annotationPageCoords);
       mockPlugin.clearMessages();
     }
@@ -672,8 +664,7 @@ chrome.test.runTests([
     testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
     // Delete to clear state.
     annotationScreenCoords.text = '';
-    manager.commitTextAnnotation(
-        annotationScreenCoords, true, getDummyTextInfo());
+    manager.commitTextAnnotation(annotationScreenCoords, true, []);
     mockPlugin.clearMessages();
 
     // 180 degrees
@@ -690,8 +681,7 @@ chrome.test.runTests([
     testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
     // Delete to clear state.
     annotationScreenCoords.text = '';
-    manager.commitTextAnnotation(
-        annotationScreenCoords, true, getDummyTextInfo());
+    manager.commitTextAnnotation(annotationScreenCoords, true, []);
     mockPlugin.clearMessages();
 
     // 90 degrees CW
@@ -708,8 +698,7 @@ chrome.test.runTests([
     testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
     // Delete to clear state.
     annotationScreenCoords.text = '';
-    manager.commitTextAnnotation(
-        annotationScreenCoords, true, getDummyTextInfo());
+    manager.commitTextAnnotation(annotationScreenCoords, true, []);
     mockPlugin.clearMessages();
 
     // Normal orientation (0 degrees).
@@ -1025,14 +1014,14 @@ chrome.test.runTests([
 
     // 2. Commit text annotation (edited) - adds to the stack
     const testAnnotation = getTestAnnotation(0);
-    manager.commitTextAnnotation(testAnnotation, true, getDummyTextInfo());
+    manager.commitTextAnnotation(testAnnotation, true, []);
     assertStackState(true, false, true);
 
     // 3. Commit a text annotation with no edits. This should not impact
     //    the undo/redo stack or fire an event.
     lastState = null;
     const testAnnotation2 = getTestAnnotation(1);
-    manager.commitTextAnnotation(testAnnotation2, false, getDummyTextInfo());
+    manager.commitTextAnnotation(testAnnotation2, false, []);
     // Since it wasn't edited, no 'undo-redo-state-changed' event should have
     // fired.
     chrome.test.assertTrue(lastState === null);
@@ -1136,7 +1125,7 @@ chrome.test.runTests([
     annot0.text = 'Hello';
 
     // Commit creation
-    manager.commitTextAnnotation(annot0, true, getDummyTextInfo());
+    manager.commitTextAnnotation(annot0, true, []);
     // New message is from the user.
     verifyFinishTextAnnotationMessage(0, 'Hello', true);
     assertAnnotationExists(0, true, 'Hello');
@@ -1164,7 +1153,7 @@ chrome.test.runTests([
     annot0Edit.text = 'World';
 
     // Commit modification, which is from the user.
-    manager.commitTextAnnotation(annot0Edit, true, getDummyTextInfo());
+    manager.commitTextAnnotation(annot0Edit, true, []);
     verifyFinishTextAnnotationMessage(0, 'World', true);
     assertAnnotationExists(0, true, 'World');
 
@@ -1188,7 +1177,7 @@ chrome.test.runTests([
     // Empty text deletes the annotation, and matches what ink-text-box does
     // when "Delete" is pressed.
     annot0Delete.text = '';
-    manager.commitTextAnnotation(annot0Delete, true, getDummyTextInfo());
+    manager.commitTextAnnotation(annot0Delete, true, []);
     verifyFinishTextAnnotationMessage(0, '', true);
     assertAnnotationExists(0, false);
 

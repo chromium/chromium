@@ -332,6 +332,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
               // Notify the backend.
               const annotation: TextAnnotation = {
                 id: this.id_,
+                mojoTextInfo: result.mojoTextInfo,
                 pageIndex: this.pageIndex_,
                 text: this.textValue_,
                 textAttributes: this.attributes_,
@@ -344,7 +345,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
                 textOrientation: this.textOrientation_,
               };
               Ink2Manager.getInstance().commitTextAnnotation(
-                  annotation, isEdited, result);
+                  annotation, isEdited, result.typefaces);
             })
             .catch(e => {
               console.error('Error committing text annotation:', e);

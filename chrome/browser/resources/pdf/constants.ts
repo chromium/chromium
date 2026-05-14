@@ -34,6 +34,9 @@ export interface AnnotationBrush {
 
 export interface TextAnnotation {
   id: number;
+  // Stored because the backend requires it to be re-sent with every update.
+  // Not used by frontend code.
+  mojoTextInfo: ArrayBuffer;
   pageIndex: number;
   text: string;
   textAttributes: TextAttributes;
@@ -50,7 +53,6 @@ export interface TextAnnotation {
 export interface TextAnnotationMessageData extends TextAnnotation {
   isEdited: boolean;
   isUser: boolean;
-  mojoTextInfo: ArrayBuffer;
   // Serialized SkTypeface font data that the backend needs. Only contains
   // fonts that the backend has never seen before.
   newTypefaces: Typeface[];
