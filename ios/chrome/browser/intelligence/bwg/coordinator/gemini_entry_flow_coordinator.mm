@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
@@ -239,18 +238,8 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
     return;
   }
 
-  // All checks passed — start the Gemini session.
-  [self startGeminiSession];
+  // All checks passed.
   [self finishWithResult:kGeminiEntryFlowResultSuccess];
-}
-
-// Starts the Gemini session via the GeminiBrowserAgent.
-- (void)startGeminiSession {
-  GeminiBrowserAgent* geminiBrowserAgent =
-      GeminiBrowserAgent::FromBrowser(self.browser);
-  if (geminiBrowserAgent) {
-    geminiBrowserAgent->StartGeminiFlow(self.baseViewController, _startupState);
-  }
 }
 
 // Shows an ineligibility snackbar if showSnackbarOnCompletion is set.
