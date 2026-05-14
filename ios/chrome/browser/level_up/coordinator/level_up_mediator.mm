@@ -8,4 +8,16 @@
 
 @implementation LevelUpMediator
 
+- (void)setConsumer:(id<LevelUpConsumer>)consumer {
+  _consumer = consumer;
+
+  int level = 1;
+  int completedTasks = 3;
+  int totalTasks = 4;
+
+  [self.consumer setLevel:level
+      completedTasksForLevel:completedTasks
+          totalTasksForLevel:totalTasks];
+}
+
 @end

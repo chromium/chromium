@@ -4,13 +4,33 @@
 
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
 
+#import "ios/chrome/browser/level_up/ui/level_up_progress_view.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@implementation LevelUpViewController
+namespace {
+
+// Margin for the progress card inside the view.
+const CGFloat kCardMargin = 16.0;
+
+}  // namespace
+
+@implementation LevelUpViewController {
+  // Subview displaying the task progress indicator card.
+  LevelUpProgressView* _progressView;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _progressView = [[LevelUpProgressView alloc] init];
+    _progressView.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+  return self;
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -42,6 +62,29 @@
           forControlEvents:UIControlEventTouchUpInside];
   self.navigationItem.rightBarButtonItem =
       [[UIBarButtonItem alloc] initWithCustomView:dismissButton];
+
+  [self.view addSubview:_progressView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_progressView.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+                       constant:kCardMargin],
+    [_progressView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
+                                                constant:kCardMargin],
+    [_progressView.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor
+                       constant:-kCardMargin],
+  ]];
+}
+
+#pragma mark - LevelUpConsumer
+
+- (void)setLevel:(NSInteger)level
+    completedTasksForLevel:(NSInteger)completedTasksForLevel
+        totalTasksForLevel:(NSInteger)totalTasksForLevel {
+  [_progressView setLevel:level
+      completedTasksForLevel:completedTasksForLevel
+          totalTasksForLevel:totalTasksForLevel];
 }
 
 #pragma mark - Private

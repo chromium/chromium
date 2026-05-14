@@ -5,6 +5,8 @@
 source_set("ui") {
   sources = [
     "level_up_consumer.h",
+    "level_up_progress_view.h",
+    "level_up_progress_view.mm",
     "level_up_view_controller.h",
     "level_up_view_controller.mm",
   ]
@@ -13,8 +15,10 @@ source_set("ui") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements/gradient",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 
