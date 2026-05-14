@@ -280,6 +280,8 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("webaudio").SetTags("audio"),
     perfetto::Category("webengine.fidl"),
     perfetto::Category("WebCore"),
+    perfetto::Category("webkit").SetDescription(
+        "Events that track usage of WebKit APIs on iOS."),
     perfetto::Category("webnn"),
     perfetto::Category("webrtc").SetTags("audio", "video"),
     perfetto::Category("webrtc_stats"),
