@@ -1429,7 +1429,7 @@ TEST_F(AccessibilitySelectionTest,
   }
 }
 
-TEST_F(AccessibilitySelectionTest, BoundarySelectionInTextField) {
+TEST_F(AccessibilitySelectionTest, InvalidSelectionInTextField) {
   SetBodyInnerHTML(R"HTML(
       <p id="before">Before text field.</p>
       <input id="input" value="Inside text field.">
@@ -1463,23 +1463,20 @@ TEST_F(AccessibilitySelectionTest, BoundarySelectionInTextField) {
     ax_selection.Select();
   }
 
-  // This selection crosses a user agent shadow tree boundary, but it's valid
-  // because the text position is at a boundary and can be converted to a tree
-  // position.
+  // Invalid selection because it crosses a user agent shadow tree boundary.
   AXSelection::Builder builder(GetAXObjectCache());
   AXSelection ax_selection =
       builder.SetAnchor(AXPosition::CreatePositionInTextObject(*ax_input, 0))
           .SetFocus(AXPosition::CreatePositionBeforeObject(*ax_after))
           .Build();
 
-  EXPECT_TRUE(ax_selection.IsValid());
+  EXPECT_FALSE(ax_selection.IsValid());
 
-  // The selection in the light DOM should change.
-  EXPECT_TRUE(ax_selection.Select());
+  // The selection in the light DOM should remain unchanged.
   const SelectionInDOMTree dom_selection = Selection().GetSelectionInDOMTree();
   EXPECT_EQ(GetDocument().body(), dom_selection.Anchor().AnchorNode());
-  EXPECT_EQ(3, dom_selection.Anchor().OffsetInContainerNode());
-  EXPECT_EQ(GetElementById("input"),
+  EXPECT_EQ(1, dom_selection.Anchor().OffsetInContainerNode());
+  EXPECT_EQ(GetElementById("before"),
             dom_selection.Anchor().ComputeNodeAfterPosition());
   EXPECT_EQ(GetDocument().body(), dom_selection.Focus().AnchorNode());
   EXPECT_EQ(5, dom_selection.Focus().OffsetInContainerNode());
@@ -1694,7 +1691,7 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
   }
 }
 
-TEST_F(AccessibilitySelectionTest, BoundarySelectionInTextarea) {
+TEST_F(AccessibilitySelectionTest, InvalidSelectionInTextarea) {
   SetBodyInnerHTML(R"HTML(
       <p id="before">Before textarea field.</p>
       <textarea id="textarea">
@@ -1732,23 +1729,20 @@ TEST_F(AccessibilitySelectionTest, BoundarySelectionInTextarea) {
     ax_selection.Select();
   }
 
-  // This selection crosses a user agent shadow tree boundary, but it's valid
-  // because the text position is at a boundary and can be converted to a tree
-  // position.
+  // Invalid selection because it crosses a user agent shadow tree boundary.
   AXSelection::Builder builder(GetAXObjectCache());
   AXSelection ax_selection =
       builder.SetAnchor(AXPosition::CreatePositionInTextObject(*ax_textarea, 0))
           .SetFocus(AXPosition::CreatePositionBeforeObject(*ax_after))
           .Build();
 
-  EXPECT_TRUE(ax_selection.IsValid());
+  EXPECT_FALSE(ax_selection.IsValid());
 
-  // The selection in the light DOM should change.
-  EXPECT_TRUE(ax_selection.Select());
+  // The selection in the light DOM should remain unchanged.
   const SelectionInDOMTree dom_selection = Selection().GetSelectionInDOMTree();
   EXPECT_EQ(GetDocument().body(), dom_selection.Anchor().AnchorNode());
-  EXPECT_EQ(3, dom_selection.Anchor().OffsetInContainerNode());
-  EXPECT_EQ(GetElementById("textarea"),
+  EXPECT_EQ(1, dom_selection.Anchor().OffsetInContainerNode());
+  EXPECT_EQ(GetElementById("before"),
             dom_selection.Anchor().ComputeNodeAfterPosition());
   EXPECT_EQ(GetDocument().body(), dom_selection.Focus().AnchorNode());
   EXPECT_EQ(5, dom_selection.Focus().OffsetInContainerNode());
