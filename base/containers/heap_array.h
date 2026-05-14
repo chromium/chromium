@@ -167,12 +167,17 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
   ALWAYS_INLINE base::span<T> as_span() LIFETIME_BOUND {
     // SAFETY: `size_` is the number of elements in the `data_` allocation` at
     // all times.
-    return UNSAFE_BUFFERS(base::span<T>(data_.get(), size_));
+    // `base::unchecked`: Using a Checked Span here appears to impact
+    // Speedometer3 performance.
+    return UNSAFE_BUFFERS(base::span<T>(base::unchecked, data_.get(), size_));
   }
   ALWAYS_INLINE base::span<const T> as_span() const LIFETIME_BOUND {
     // SAFETY: `size_` is the number of elements in the `data_` allocation` at
     // all times.
-    return UNSAFE_BUFFERS(base::span<const T>(data_.get(), size_));
+    // `base::unchecked`: Using a Checked Span here appears to impact
+    // Speedometer3 performance.
+    return UNSAFE_BUFFERS(
+        base::span<const T>(base::unchecked, data_.get(), size_));
   }
 
   // Convenience method to copy the contents of a span<> into the entire array.
@@ -232,7 +237,9 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     T* leaked = dropped.data_.release();
     // SAFETY: The `size_` is the number of elements in the allocation in
     // `data_` at all times, which is renamed as `leaked` here.
-    return UNSAFE_BUFFERS(span(leaked, dropped.size_));
+    // `base::unchecked`: Using a Checked Span here appears to impact
+    // Speedometer3 performance.
+    return UNSAFE_BUFFERS(span(base::unchecked, leaked, dropped.size_));
   }
 
   // Allows construction of a smaller HeapArray from an existing HeapArray w/o
