@@ -596,9 +596,9 @@ BubbleDialogDelegate* BubbleDialogDelegate::AsBubbleDialogDelegate() {
 std::unique_ptr<FrameView> BubbleDialogDelegate::CreateFrameView(
     Widget* widget) {
   const FrameMargins& margin = frame_margins();
-  auto frame = std::make_unique<BubbleDialogFrameView>(margin.title.value());
+  auto frame = std::make_unique<BubbleDialogFrameView>(margin.title);
 
-  frame->SetFootnoteMargins(margin.footnote.value());
+  frame->SetFootnoteMargins(margin.footnote);
   frame->SetFootnoteView(DisownFootnoteView());
 
   std::unique_ptr<BubbleBorder> border =

@@ -93,12 +93,9 @@ DialogDelegate::Params::~Params() = default;
 // DialogDelegate:
 
 DialogDelegate::DialogDelegate() {
-  LayoutProvider* const layout_provider = LayoutProvider::Get();
-  if (layout_provider) {
+  if (auto* const layout_provider = LayoutProvider::Get()) {
     set_frame_margins({
-        .contents = gfx::Insets(),
         .title = layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE),
-        .footnote = gfx::Insets(),
     });
   }
 
@@ -380,14 +377,13 @@ std::unique_ptr<FrameView> DialogDelegate::CreateDialogFrameView(
   std::unique_ptr<views::BubbleFrameView> frame;
 
   if (delegate) {
-    const FrameMargins& margin = delegate->frame_margins();
-    frame =
-        std::make_unique<BubbleFrameView>(margin.title.value(), gfx::Insets());
+    const FrameMargins& margins = delegate->frame_margins();
+    frame = std::make_unique<BubbleFrameView>(margins.title, gfx::Insets());
     if (delegate->GetParams().round_corners) {
       border->set_rounded_corners(
           gfx::RoundedCornersF(delegate->GetCornerRadius()));
     }
-    frame->SetFootnoteMargins(margin.footnote.value());
+    frame->SetFootnoteMargins(margins.footnote);
     frame->SetFootnoteView(delegate->DisownFootnoteView());
   } else {
     LayoutProvider* provider = LayoutProvider::Get();
@@ -644,7 +640,7 @@ std::unique_ptr<View> DialogDelegate::DisownFootnoteView() {
   return std::move(footnote_view_);
 }
 
-void DialogDelegate::set_frame_margins(const FrameMargins& margins) {
+void DialogDelegate::set_frame_margins(const FrameMarginsParams& margins) {
   if (margins.contents) {
     margins_.contents = margins.contents.value();
   }
