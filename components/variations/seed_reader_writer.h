@@ -31,8 +31,8 @@ class EntropyProviders;
 // Trial and group names for the seed file experiment.
 const char kSeedFileTrial[] = "SeedFileTrial";
 const char kDefaultGroup[] = "Default";
-const char kControlGroup[] = "Control_V10";
-const char kSeedFilesGroup[] = "SeedFiles_V10";
+const char kControlGroup[] = "Control_V11";
+const char kSeedFilesGroup[] = "SeedFiles_V11";
 
 // A sentinel value that may be stored as the latest variations seed value in
 // to indicate that the latest seed is identical to the safe seed. Used to avoid
