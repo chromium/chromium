@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -54,7 +55,14 @@ FrameSensorProviderProxy::FrameSensorProviderProxy(
     RenderFrameHost* render_frame_host)
     : DocumentUserData<FrameSensorProviderProxy>(render_frame_host) {}
 
-FrameSensorProviderProxy::~FrameSensorProviderProxy() = default;
+FrameSensorProviderProxy::~FrameSensorProviderProxy() {
+  if (permission_subscription_id_) {
+    auto* permission_controller =
+        render_frame_host().GetBrowserContext()->GetPermissionController();
+    permission_controller->UnsubscribeFromPermissionResultChange(
+        permission_subscription_id_);
+  }
+}
 
 void FrameSensorProviderProxy::Bind(
     mojo::PendingReceiver<blink::mojom::WebSensorProvider> receiver) {
@@ -108,10 +116,32 @@ void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
     scoped_observation_.Observe(web_contents_sensor_provider);
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kSeverSensorConnectionsOnPermissionRevocation) &&
+      !permission_subscription_id_) {
+    permission_subscription_id_ =
+        permission_controller->SubscribeToPermissionResultChange(
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    blink::PermissionType::SENSORS),
+            nullptr, &render_frame_host(),
+            render_frame_host().GetLastCommittedOrigin().GetURL(),
+            /*should_include_device_status=*/false,
+            base::BindRepeating(&FrameSensorProviderProxy::OnPermissionChanged,
+                                weak_factory_.GetWeakPtr()));
+  }
+
+  mojo::PendingRemote<device::mojom::SensorConnectionWatcher> watcher;
+  if (base::FeatureList::IsEnabled(
+          features::kSeverSensorConnectionsOnPermissionRevocation)) {
+    watcher_receivers_.Add(this, watcher.InitWithNewPipeAndPassReceiver());
+  }
+
   web_contents_sensor_provider->GetSensor(
-      type, base::BindOnce(&FrameSensorProviderProxy::OnHardwareCheckCompleted,
-                           weak_factory_.GetWeakPtr(), permission_status,
-                           has_valid_gesture, std::move(callback)));
+      type, std::move(watcher),
+      base::BindOnce(&FrameSensorProviderProxy::OnHardwareCheckCompleted,
+                     weak_factory_.GetWeakPtr(), permission_status,
+                     has_valid_gesture, std::move(callback)));
 }
 
 void FrameSensorProviderProxy::OnHardwareCheckCompleted(
@@ -160,6 +190,13 @@ void FrameSensorProviderProxy::OnPermissionRequestCompleted(
 
   std::move(callback).Run(device::mojom::SensorCreationResult::SUCCESS,
                           std::move(params));
+}
+
+void FrameSensorProviderProxy::OnPermissionChanged(
+    PermissionResult permission_result) {
+  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
+    watcher_receivers_.Clear();
+  }
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(FrameSensorProviderProxy);

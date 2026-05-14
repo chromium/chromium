@@ -6,13 +6,25 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "services/device/generic_sensor/sensor_provider_impl.h"
+
 namespace device {
 
-SensorImpl::SensorImpl(scoped_refptr<PlatformSensor> sensor)
+SensorImpl::SensorImpl(
+    scoped_refptr<PlatformSensor> sensor,
+    mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+    SensorProviderImpl* provider)
     : sensor_(std::move(sensor)),
       reading_notification_enabled_(true),
-      suspended_(false) {
+      suspended_(false),
+      provider_(provider) {
   sensor_->AddClient(this);
+  if (watcher.is_valid()) {
+    watcher_.Bind(std::move(watcher));
+    watcher_.set_disconnect_handler(base::BindOnce(
+        &SensorProviderImpl::RemoveSensor, base::Unretained(provider_), this));
+  }
 }
 
 SensorImpl::~SensorImpl() {

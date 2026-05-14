@@ -10,10 +10,12 @@
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/sensor.mojom-shared.h"
+#include "services/device/public/mojom/sensor.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom.h"
 
@@ -24,7 +26,8 @@ namespace content {
 class FrameSensorProviderProxy final
     : public blink::mojom::WebSensorProvider,
       public WebContentsSensorProviderProxy::Observer,
-      public DocumentUserData<FrameSensorProviderProxy> {
+      public DocumentUserData<FrameSensorProviderProxy>,
+      public device::mojom::SensorConnectionWatcher {
  public:
   FrameSensorProviderProxy(const FrameSensorProviderProxy&) = delete;
   FrameSensorProviderProxy& operator=(const FrameSensorProviderProxy&) = delete;
@@ -55,11 +58,16 @@ class FrameSensorProviderProxy final
                                     GetSensorCallback callback,
                                     PermissionResult permission_result);
 
+  void OnPermissionChanged(PermissionResult permission_result);
+
   mojo::ReceiverSet<blink::mojom::WebSensorProvider> receiver_set_;
 
   base::ScopedObservation<WebContentsSensorProviderProxy,
                           WebContentsSensorProviderProxy::Observer>
       scoped_observation_{this};
+
+  mojo::ReceiverSet<device::mojom::SensorConnectionWatcher> watcher_receivers_;
+  PermissionController::SubscriptionId permission_subscription_id_;
 
   base::WeakPtrFactory<FrameSensorProviderProxy> weak_factory_{this};
 

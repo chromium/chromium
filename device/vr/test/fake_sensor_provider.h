@@ -24,7 +24,9 @@ class DEVICE_VR_EXPORT FakeXRSensorProvider : public mojom::SensorProvider {
   void CallCallback(mojom::SensorInitParamsPtr param);
 
   // device::mojom::SensorProvider overrides.
-  void GetSensor(mojom::SensorType type, GetSensorCallback callback) override;
+  void GetSensor(mojom::SensorType type,
+                 mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+                 GetSensorCallback callback) override;
   void CreateVirtualSensor(
       mojom::SensorType type,
       mojom::VirtualSensorMetadataPtr metadata,

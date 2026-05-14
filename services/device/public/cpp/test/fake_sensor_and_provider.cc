@@ -45,9 +45,15 @@ bool WaiterHelper::WaitInternal() {
   return event_received_;
 }
 
-FakeSensor::FakeSensor(mojom::SensorType sensor_type,
-                       SensorReadingSharedBuffer* buffer)
-    : sensor_type_(sensor_type), buffer_(buffer) {}
+FakeSensor::FakeSensor(
+    mojom::SensorType sensor_type,
+    SensorReadingSharedBuffer* buffer,
+    mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher)
+    : sensor_type_(sensor_type), buffer_(buffer) {
+  if (watcher.is_valid()) {
+    watcher_.Bind(std::move(watcher));
+  }
+}
 
 FakeSensor::~FakeSensor() = default;
 
@@ -128,8 +134,10 @@ FakeSensorProvider::FakeSensorProvider() = default;
 
 FakeSensorProvider::~FakeSensorProvider() = default;
 
-void FakeSensorProvider::GetSensor(mojom::SensorType type,
-                                   GetSensorCallback callback) {
+void FakeSensorProvider::GetSensor(
+    mojom::SensorType type,
+    mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+    GetSensorCallback callback) {
   if (!CreateSharedBufferIfNeeded()) {
     std::move(callback).Run(mojom::SensorCreationResult::ERROR_NOT_AVAILABLE,
                             nullptr);
@@ -148,7 +156,7 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
     case mojom::SensorType::AMBIENT_LIGHT:
       if (ambient_light_sensor_is_available_) {
         sensor = std::make_unique<FakeSensor>(mojom::SensorType::AMBIENT_LIGHT,
-                                              buffer);
+                                              buffer, std::move(watcher));
         ambient_light_sensor_ = sensor.get();
         ambient_light_sensor_->SetReading(ambient_light_sensor_reading_);
       }
@@ -156,7 +164,7 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
     case mojom::SensorType::ACCELEROMETER:
       if (accelerometer_is_available_) {
         sensor = std::make_unique<FakeSensor>(mojom::SensorType::ACCELEROMETER,
-                                              buffer);
+                                              buffer, std::move(watcher));
         accelerometer_ = sensor.get();
         accelerometer_->SetReading(accelerometer_reading_);
       }
@@ -164,7 +172,7 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
     case mojom::SensorType::LINEAR_ACCELERATION:
       if (linear_acceleration_sensor_is_available_) {
         sensor = std::make_unique<FakeSensor>(
-            mojom::SensorType::LINEAR_ACCELERATION, buffer);
+            mojom::SensorType::LINEAR_ACCELERATION, buffer, std::move(watcher));
         linear_acceleration_sensor_ = sensor.get();
         linear_acceleration_sensor_->SetReading(
             linear_acceleration_sensor_reading_);
@@ -172,16 +180,16 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
       break;
     case mojom::SensorType::GRAVITY:
       if (gravity_sensor_is_available_) {
-        sensor =
-            std::make_unique<FakeSensor>(mojom::SensorType::GRAVITY, buffer);
+        sensor = std::make_unique<FakeSensor>(mojom::SensorType::GRAVITY,
+                                              buffer, std::move(watcher));
         gravity_sensor_ = sensor.get();
         gravity_sensor_->SetReading(gravity_sensor_reading_);
       }
       break;
     case mojom::SensorType::GYROSCOPE:
       if (gyroscope_is_available_) {
-        sensor =
-            std::make_unique<FakeSensor>(mojom::SensorType::GYROSCOPE, buffer);
+        sensor = std::make_unique<FakeSensor>(mojom::SensorType::GYROSCOPE,
+                                              buffer, std::move(watcher));
         gyroscope_ = sensor.get();
         gyroscope_->SetReading(gyroscope_reading_);
       }
@@ -189,7 +197,8 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
     case mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
       if (relative_orientation_sensor_is_available_) {
         sensor = std::make_unique<FakeSensor>(
-            mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES, buffer);
+            mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES, buffer,
+            std::move(watcher));
         relative_orientation_sensor_ = sensor.get();
         relative_orientation_sensor_->SetReading(
             relative_orientation_sensor_reading_);
@@ -198,7 +207,8 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
     case mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
       if (absolute_orientation_sensor_is_available_) {
         sensor = std::make_unique<FakeSensor>(
-            mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES, buffer);
+            mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES, buffer,
+            std::move(watcher));
         absolute_orientation_sensor_ = sensor.get();
         absolute_orientation_sensor_->SetReading(
             absolute_orientation_sensor_reading_);

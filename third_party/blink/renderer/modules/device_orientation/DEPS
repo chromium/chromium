@@ -15,3 +15,9 @@ include_rules = [
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/permissions",
 ]
+
+specific_include_rules = {
+  ".+unittest\.cc": [
+    "+third_party/blink/renderer/modules/sensor/sensor_test_utils.h",
+  ],
+}

@@ -62,7 +62,7 @@ VROrientationDevice::VROrientationDevice(mojom::SensorProvider* sensor_provider,
     : VRDeviceBase(mojom::XRDeviceId::ORIENTATION_DEVICE_ID),
       ready_callback_(std::move(ready_callback)) {
   DVLOG(2) << __func__;
-  sensor_provider->GetSensor(kOrientationSensorType,
+  sensor_provider->GetSensor(kOrientationSensorType, mojo::NullRemote(),
                              base::BindOnce(&VROrientationDevice::SensorReady,
                                             base::Unretained(this)));
 

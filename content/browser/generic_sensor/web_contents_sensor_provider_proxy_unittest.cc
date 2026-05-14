@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -48,6 +49,25 @@ class TestPermissionManager : public MockPermissionManager {
     std::move(callback).Run(
         {PermissionResult(blink::mojom::PermissionStatus::GRANTED,
                           PermissionStatusSource::UNSPECIFIED)});
+  }
+
+  void NotifyPermissionChange(blink::PermissionType permission,
+                              blink::mojom::PermissionStatus status) {
+    if (!subscriptions()) {
+      return;
+    }
+    for (content::PermissionController::SubscriptionsMap::iterator iter(
+             subscriptions());
+         !iter.IsAtEnd(); iter.Advance()) {
+      content::PermissionResultSubscription* subscription =
+          iter.GetCurrentValue();
+      if (blink::PermissionDescriptorToPermissionType(
+              subscription->permission_descriptor) == permission) {
+        subscription->callback.Run(
+            PermissionResult(status, PermissionStatusSource::UNSPECIFIED),
+            /*device_status_changed=*/false);
+      }
+    }
   }
 };
 
@@ -92,6 +112,10 @@ class WebContentsSensorProviderProxyTest
     fake_sensor_provider_ = std::move(fake_sensor_provider);
   }
 
+  device::FakeSensorProvider* fake_sensor_provider() const {
+    return fake_sensor_provider_.get();
+  }
+
  private:
   void BindSensorProviderReceiver(
       mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
@@ -111,10 +135,13 @@ class InterceptingFakeSensorProvider : public device::FakeSensorProvider {
       base::OnceClosure interception_callback)
       : interception_callback_(std::move(interception_callback)) {}
 
-  void GetSensor(device::mojom::SensorType type,
-                 GetSensorCallback callback) override {
+  void GetSensor(
+      device::mojom::SensorType type,
+      mojo::PendingRemote<device::mojom::SensorConnectionWatcher> watcher,
+      GetSensorCallback callback) override {
     std::move(interception_callback_).Run();
-    device::FakeSensorProvider::GetSensor(type, std::move(callback));
+    device::FakeSensorProvider::GetSensor(type, std::move(watcher),
+                                          std::move(callback));
   }
 
  private:
@@ -150,6 +177,41 @@ TEST_F(WebContentsSensorProviderProxyTest,
                         device::mojom::SensorInitParamsPtr) {
         ADD_FAILURE() << "Reached GetSensor() callback unexpectedly";
       }));
+  run_loop.Run();
+}
+
+TEST_F(WebContentsSensorProviderProxyTest,
+       PermissionRevocationTearsDownConnection) {
+  mojo::Remote<blink::mojom::WebSensorProvider> provider;
+  contents()->GetPrimaryMainFrame()->GetSensorProvider(
+      provider.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      get_sensor_future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, get_sensor_future.GetCallback());
+  auto [result, params] = get_sensor_future.Take();
+  EXPECT_EQ(device::mojom::SensorCreationResult::SUCCESS, result);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensorProvider* fake_provider = fake_sensor_provider();
+  ASSERT_TRUE(fake_provider);
+  device::FakeSensor* fake_sensor = fake_provider->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+
+  base::RunLoop run_loop;
+  fake_sensor->SetWatcherDisconnectCallback(run_loop.QuitClosure());
+
+  // Trigger permission revocation.
+  TestPermissionManager* permission_manager =
+      static_cast<TestPermissionManager*>(
+          browser_context()->GetPermissionControllerDelegate());
+  ASSERT_TRUE(permission_manager);
+  permission_manager->NotifyPermissionChange(
+      blink::PermissionType::SENSORS, blink::mojom::PermissionStatus::DENIED);
+
   run_loop.Run();
 }
 

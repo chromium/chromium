@@ -99,3 +99,8 @@ interface SensorClient {
   // ReportingMode::ON_CHANGE).
   SensorReadingChanged();
 };
+
+// Interface used to observe the connection lifetime. Closing this interface
+// is a way to revoke a pre-existing sensor connection; for example, during
+// permission revocation.
+interface SensorConnectionWatcher {};

@@ -27,8 +27,10 @@ void FakeXRSensorProvider::Bind(
   receiver_.Bind(std::move(receiver));
 }
 
-void FakeXRSensorProvider::GetSensor(mojom::SensorType type,
-                                     GetSensorCallback callback) {
+void FakeXRSensorProvider::GetSensor(
+    mojom::SensorType type,
+    mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+    GetSensorCallback callback) {
   callback_ = std::move(callback);
 }
 

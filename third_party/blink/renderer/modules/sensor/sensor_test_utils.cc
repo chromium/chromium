@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -41,6 +42,29 @@ class SyncEventListener final : public NativeEventListener {
 
 }  // namespace
 
+// FakeWebSensorProvider
+
+FakeWebSensorProvider::FakeWebSensorProvider() {
+  mojo::PendingRemote<device::mojom::blink::SensorProvider> pending_remote;
+  sensor_provider_.Bind(
+      ToCrossVariantMojoType(pending_remote.InitWithNewPipeAndPassReceiver()));
+  sensor_provider_remote_.Bind(std::move(pending_remote));
+}
+
+FakeWebSensorProvider::~FakeWebSensorProvider() = default;
+
+void FakeWebSensorProvider::Bind(
+    mojo::PendingReceiver<mojom::blink::WebSensorProvider> receiver) {
+  receiver_.Bind(std::move(receiver));
+}
+
+void FakeWebSensorProvider::GetSensor(device::mojom::blink::SensorType type,
+                                      bool user_gesture,
+                                      GetSensorCallback callback) {
+  sensor_provider_remote_->GetSensor(type, mojo::NullRemote(),
+                                     std::move(callback));
+}
+
 // SensorTestContext
 
 SensorTestContext::SensorTestContext()
@@ -69,8 +93,9 @@ ScriptState* SensorTestContext::GetScriptState() const {
 
 void SensorTestContext::BindSensorProviderRequest(
     mojo::ScopedMessagePipeHandle handle) {
-  sensor_provider_.Bind(
-      mojo::PendingReceiver<device::mojom::SensorProvider>(std::move(handle)));
+  fake_web_sensor_provider_.Bind(
+      mojo::PendingReceiver<mojom::blink::WebSensorProvider>(
+          std::move(handle)));
 }
 
 // SensorTestUtils

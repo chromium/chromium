@@ -38,7 +38,9 @@ class WaiterHelper {
 
 class FakeSensor : public mojom::Sensor {
  public:
-  FakeSensor(mojom::SensorType sensor_type, SensorReadingSharedBuffer* buffer);
+  FakeSensor(mojom::SensorType sensor_type,
+             SensorReadingSharedBuffer* buffer,
+             mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher);
 
   FakeSensor(const FakeSensor&) = delete;
   FakeSensor& operator=(const FakeSensor&) = delete;
@@ -67,6 +69,12 @@ class FakeSensor : public mojom::Sensor {
 
   bool WaitForSuspend(bool suspend);
 
+  void SetWatcherDisconnectCallback(base::OnceClosure callback) {
+    if (watcher_.is_bound()) {
+      watcher_.set_disconnect_handler(std::move(callback));
+    }
+  }
+
  private:
   void SensorReadingChanged();
 
@@ -78,6 +86,7 @@ class FakeSensor : public mojom::Sensor {
   WaiterHelper suspend_waiter_;
   WaiterHelper resume_waiter_;
   base::OnceCallback<void()> suspend_callback_;
+  mojo::Remote<mojom::SensorConnectionWatcher> watcher_;
 };
 
 class FakeSensorProvider : public mojom::SensorProvider {
@@ -89,8 +98,10 @@ class FakeSensorProvider : public mojom::SensorProvider {
 
   ~FakeSensorProvider() override;
 
-  // mojom::sensorProvider:
-  void GetSensor(mojom::SensorType type, GetSensorCallback callback) override;
+  // mojom::SensorProvider:
+  void GetSensor(mojom::SensorType type,
+                 mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+                 GetSensorCallback callback) override;
   void CreateVirtualSensor(
       mojom::SensorType type,
       mojom::VirtualSensorMetadataPtr metadata,
@@ -179,6 +190,8 @@ class FakeSensorProvider : public mojom::SensorProvider {
   bool WaitForLinearAccelerationSensorSuspend(bool suspend);
   bool WaitForGravitySensorSuspend(bool suspend);
   bool WaitForGyroscopeSuspend(bool suspend);
+
+  FakeSensor* accelerometer() const { return accelerometer_; }
 
  private:
   bool CreateSharedBufferIfNeeded();

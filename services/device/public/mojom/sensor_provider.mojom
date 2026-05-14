@@ -93,8 +93,13 @@ interface SensorProvider {
   //          SensorCreationResult describing the failure reason.
   // |init_params| on success will contain the SensorInitParams describing
   //               the sensor, contains null on failure.
-  GetSensor(SensorType type) => (SensorCreationResult result,
-                                 SensorInitParams? init_params);
+  // |watcher| is used to monitor the connection. When the watcher pipe is
+  //           closed, the device service will destroy the sensor and terminate
+  //           the data stream. Can be null if the caller does not need to
+  //           sever the connection on permission revocation.
+  GetSensor(SensorType type,
+            pending_remote<SensorConnectionWatcher>? watcher)
+      => (SensorCreationResult result, SensorInitParams? init_params);
 
   // Creates a new virtual sensor of a given |type|, or fails if one already
   // exists.

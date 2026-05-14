@@ -11,8 +11,11 @@
 #include "base/numerics/angle_conversions.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
+#include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -23,6 +26,7 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_acceleration.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_rotation_rate.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_entry.h"
+#include "third_party/blink/renderer/modules/sensor/sensor_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -90,12 +94,12 @@ class DeviceMotionEventPumpTest : public testing::Test {
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
 
-    mojo::PendingRemote<device::mojom::SensorProvider> sensor_provider;
-    sensor_provider_.Bind(sensor_provider.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<mojom::blink::WebSensorProvider> sensor_provider;
+    fake_sensor_provider_.Bind(
+        sensor_provider.InitWithNewPipeAndPassReceiver());
     auto* motion_pump =
         MakeGarbageCollected<DeviceMotionEventPump>(page_holder_->GetFrame());
-    motion_pump->SetSensorProviderForTesting(
-        ToCrossVariantMojoType(std::move(sensor_provider)));
+    motion_pump->SetSensorProviderForTesting(std::move(sensor_provider));
 
     controller_ = MakeGarbageCollected<MockDeviceMotionController>(
         motion_pump, *page_holder_->GetFrame().DomWindow());
@@ -134,14 +138,16 @@ class DeviceMotionEventPumpTest : public testing::Test {
 
   MockDeviceMotionController* controller() { return controller_.Get(); }
 
-  FakeSensorProvider* sensor_provider() { return &sensor_provider_; }
+  FakeSensorProvider* sensor_provider() {
+    return fake_sensor_provider_.sensor_provider();
+  }
 
  private:
   test::TaskEnvironment task_environment_;
   Persistent<MockDeviceMotionController> controller_;
   std::unique_ptr<DummyPageHolder> page_holder_;
 
-  FakeSensorProvider sensor_provider_;
+  FakeWebSensorProvider fake_sensor_provider_;
 };
 
 TEST_F(DeviceMotionEventPumpTest, AllSensorsAreActive) {

@@ -16,6 +16,10 @@ BASE_FEATURE(kGenericSensorExtraClasses, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSensorsAllowAskBlockPermissionModel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables severing sensor connections on permission revocation.
+BASE_FEATURE(kSeverSensorConnectionsOnPermissionRevocation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Expose serial port logical connection state and dispatch connection events
 // for Bluetooth serial ports when the Bluetooth device connection state
 // changes.

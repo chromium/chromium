@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -19,6 +20,7 @@ namespace device {
 class PlatformSensorProvider;
 class PlatformSensor;
 class VirtualPlatformSensorProvider;
+class SensorImpl;
 
 // Implementation of SensorProvider mojo interface. Owns an instance of
 // PlatformSensorProvider to create platform specific instances of
@@ -35,13 +37,17 @@ class SensorProviderImpl final : public mojom::SensorProvider {
 
   void Bind(mojo::PendingReceiver<mojom::SensorProvider> receiver);
 
+  void RemoveSensor(SensorImpl* sensor);
+
   size_t GetVirtualProviderCountForTesting() const;
   const VirtualPlatformSensorProvider* GetLastVirtualSensorProviderForTesting()
       const;
 
  private:
   // mojom::SensorProvider implementation.
-  void GetSensor(mojom::SensorType type, GetSensorCallback callback) override;
+  void GetSensor(mojom::SensorType type,
+                 mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+                 GetSensorCallback callback) override;
   void CreateVirtualSensor(mojom::SensorType type,
                            mojom::VirtualSensorMetadataPtr metadata,
                            CreateVirtualSensorCallback callback) override;
@@ -55,17 +61,21 @@ class SensorProviderImpl final : public mojom::SensorProvider {
       GetVirtualSensorInformationCallback callback) override;
 
   // Helper callback method to return created sensors.
-  void SensorCreated(base::ReadOnlySharedMemoryRegion cloned_region,
-                     GetSensorCallback callback,
-                     scoped_refptr<PlatformSensor> sensor);
+  void SensorCreated(
+      base::ReadOnlySharedMemoryRegion cloned_region,
+      mojo::PendingRemote<mojom::SensorConnectionWatcher> watcher,
+      GetSensorCallback callback,
+      scoped_refptr<PlatformSensor> sensor);
 
   void OnReceiverDisconnected();
+  void OnSensorDisconnected();
 
   std::unique_ptr<PlatformSensorProvider> provider_;
   std::map<mojo::ReceiverId, std::unique_ptr<VirtualPlatformSensorProvider>>
       virtual_providers_;
   mojo::ReceiverSet<mojom::SensorProvider> receivers_;
-  mojo::UniqueReceiverSet<mojom::Sensor> sensor_receivers_;
+  mojo::UniqueReceiverSet<mojom::Sensor, SensorImpl*> sensor_receivers_;
+  base::flat_map<SensorImpl*, mojo::ReceiverId> sensor_to_receiver_id_;
   base::WeakPtrFactory<SensorProviderImpl> weak_ptr_factory_{this};
 };
 

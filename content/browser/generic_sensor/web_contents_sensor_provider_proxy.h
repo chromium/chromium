@@ -44,8 +44,10 @@ class CONTENT_EXPORT WebContentsSensorProviderProxy final
 
   static WebContentsSensorProviderProxy* GetOrCreate(WebContents*);
 
-  void GetSensor(device::mojom::SensorType type,
-                 device::mojom::SensorProvider::GetSensorCallback callback);
+  void GetSensor(
+      device::mojom::SensorType type,
+      mojo::PendingRemote<device::mojom::SensorConnectionWatcher> watcher,
+      device::mojom::SensorProvider::GetSensorCallback callback);
 
   // Attempts to create and return a ScopedVirtualSensorForDevTools instance of
   // a given |type| if one does not exist (and therefore a |type| virtual
