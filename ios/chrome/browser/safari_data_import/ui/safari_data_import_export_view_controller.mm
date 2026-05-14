@@ -57,21 +57,22 @@ UIView* GetInstructionsView() {
 /// Text provider for the animated promo.
 NSDictionary<NSString*, NSString*>* GetTextProvider() {
   return @{
-    @"safari" : l10n_util::GetNSString(IDS_IOS_SAFARI),
-    @"page-1-title" : l10n_util::GetNSString(
+    @"chapter-01.title" : l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_1_TITLE),
-    @"page-2-item-import" : l10n_util::GetNSString(
+    @"chapter-02.item-import" : l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_IMPORT),
-    @"page-2-item-export" : l10n_util::GetNSString(
+    @"chapter-02.item-export" : l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_EXPORT),
-    @"page-2-item-clear" : l10n_util::GetNSString(
+    @"chapter-02.item-clear" : l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_CLEAR_DATA),
-    @"page-3-title" : l10n_util::GetNSString(
+    @"chapter-03.title-1" : l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_3_TITLE),
-    @"page-3-button" : l10n_util::GetNSString(
+    @"chapter-03.button" : l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_3_BUTTON),
-    @"page-4-title" : l10n_util::GetNSString(
+    @"chapter-03.title-2" : l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_4_TITLE),
+    @"chapter-01.safari" : l10n_util::GetNSString(IDS_IOS_SAFARI),
+    @"chapter-02.safari" : l10n_util::GetNSString(IDS_IOS_SAFARI),
   };
 }
 
