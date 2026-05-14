@@ -91,6 +91,8 @@ void Character::ApplyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicodeSet,
 }
 
 bool Character::IsUprightInMixedVertical(UChar32 character) {
+  // https://drafts.csswg.org/css-writing-modes-3/#vertical-orientations
+  // We should assume U, Tu, and Tr as "upright".
   return u_getIntPropertyValue(character,
                                UProperty::UCHAR_VERTICAL_ORIENTATION) !=
          UVerticalOrientation::U_VO_ROTATED;
