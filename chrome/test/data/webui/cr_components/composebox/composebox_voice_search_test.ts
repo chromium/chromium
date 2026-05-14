@@ -661,6 +661,72 @@ suite('ComposeboxVoiceSearch', () => {
       });
 
   test(
+      'Submits the voice transcript directly on submit click while recording',
+      async () => {
+        const voiceTranscript = 'voice query';
+
+        // Enable flag and set up the component.
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        composeboxElement = document.createElement('cr-composebox');
+        composeboxElement.showVoiceSearch = true;
+        document.body.appendChild(composeboxElement);
+        await microtasksFinished();
+
+        // Open voice search.
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        assertTrue(!!voiceSearchButton, 'Voice search button should exist');
+        voiceSearchButton.click();
+        await microtasksFinished();
+
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+        const mockVoiceSearch =
+            voiceSearchElement as unknown as MockComposeboxVoiceSearch;
+
+        // Simulate speech recognition result (user is speaking).
+        const speechRes = createResults(1);
+        Object.assign(
+            speechRes.results[0]![0]!,
+            {confidence: 1, transcript: voiceTranscript});
+        mockSpeechRecognition.onresult!(speechRes);
+        await microtasksFinished();
+
+        const submitButton =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#submitButton');
+        assertTrue(!!submitButton, 'Inner submit button should exist');
+
+        // Simulate clicking the inner submit button.
+        searchboxHandler.resetResolver('submitQuery');
+        submitButton.dispatchEvent(new CustomEvent('submit-click'));
+        await microtasksFinished();
+
+        // Verify the voice search engine successfully stopped automatically.
+        assertFalse(
+            mockSpeechRecognition.voiceSearchInProgress,
+            'Voice search should stop automatically after submitting');
+
+        // 7. Verify the submitted query exactly matches the voice transcript.
+        assertEquals(1, searchboxHandler.getCallCount('submitQuery'));
+        const submitArgs = await searchboxHandler.whenCalled('submitQuery');
+        assertEquals(voiceTranscript, submitArgs[0]);
+
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.QUERY_SUBMITTED),
+            'QUERY_SUBMITTED metric should be recorded');
+
+        //  Cleanup.
+        mockVoiceSearch.state_ = -1;
+        mockVoiceSearch.voiceRecognition_.abort();
+        await microtasksFinished();
+      });
+
+  test(
       'Records STOP_BUTTON_CLICKED action and fires event on stop click',
       async () => {
         loadTimeData.overrideValues({

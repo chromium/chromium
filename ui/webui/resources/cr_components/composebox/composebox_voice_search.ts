@@ -299,7 +299,7 @@ export class ComposeboxVoiceSearchElement extends
     e.preventDefault();
     e.stopPropagation();
 
-    this.onFinalResult_(this.transcript_);
+    this.onFinalResult_(this.transcript_, /*forceSubmit=*/ true);
   }
 
   private onIdleTimeout_() {
@@ -554,11 +554,11 @@ export class ComposeboxVoiceSearchElement extends
     this.resetState_();
   }
 
-  private onFinalResult_(result: string) {
+  private onFinalResult_(result: string, forceSubmit: boolean = false) {
     if (!result) {
       return;
     }
-    if (!this.autosubmitEnabled) {
+    if (!this.autosubmitEnabled && !forceSubmit) {
       this.fire('recording-stopped', this.transcript_);
       this.voiceModeEndCleanup_();
       return;
