@@ -1421,8 +1421,7 @@ bool IsFullscreenNextIAEnabled() {
       self.toolbarCoordinator.secondaryToolbarViewController.view;
   self.secondaryToolbarAppBarBottomConstraint =
       [toolbarView.bottomAnchor constraintEqualToAnchor:appBar.topAnchor];
-  self.secondaryToolbarAppBarBottomConstraint.active =
-      (self.layoutState.appBarPosition == AppBarPosition::kBottom);
+  [self updateSecondaryToolbarBottomConstraint];
 }
 
 // Adds constraints to the primary and secondary toolbars, anchoring them to the
@@ -2177,15 +2176,17 @@ bool IsFullscreenNextIAEnabled() {
 // Updates the bottom constraint of the secondary toolbar depending on the
 // AppBar's position.
 - (void)updateSecondaryToolbarBottomConstraint {
-  if (!self.view.window) {
-    return;
-  }
-
   BOOL shouldUseAppBar =
-      (self.layoutState.appBarPosition == AppBarPosition::kBottom);
+      (self.layoutState.appBarPosition == AppBarPosition::kBottom) &&
+      (self.secondaryToolbarAppBarBottomConstraint != nil);
 
-  self.secondaryToolbarAppBarBottomConstraint.active = shouldUseAppBar;
-  self.secondaryToolbarRegularBottomConstraint.active = !shouldUseAppBar;
+  if (shouldUseAppBar) {
+    self.secondaryToolbarRegularBottomConstraint.active = NO;
+    self.secondaryToolbarAppBarBottomConstraint.active = YES;
+  } else {
+    self.secondaryToolbarAppBarBottomConstraint.active = NO;
+    self.secondaryToolbarRegularBottomConstraint.active = YES;
+  }
 }
 
 // Returns the height difference between the fully expanded and fully collapsed
