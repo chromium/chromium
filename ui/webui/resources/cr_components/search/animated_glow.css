@@ -694,3 +694,11 @@
 :host(:not([in-voice-search-mode])) #recordingWave {
   display: none;
 }
+
+/* Overlay that goes over any of the above effects
+ * (background, etc.) */
+#fullContainerOverlay {
+  block-size: 100%;
+  display: flex;
+  inline-size: 100%;
+}
