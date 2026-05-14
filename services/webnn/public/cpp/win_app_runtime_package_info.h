@@ -17,9 +17,9 @@
 
 namespace webnn {
 
-// The product ID of "MicrosoftCorporationII.WinAppRuntime.Main.1.8" package in
+// The product ID of "MicrosoftCorporationII.WinAppRuntime.Main.2" package in
 // Microsoft Store.
-inline constexpr base::wcstring_view kWinAppRuntimeProductId = L"9PLJQ12FQ3CV";
+inline constexpr base::wcstring_view kWinAppRuntimeProductId = L"9NRZT3Q9R3DL";
 
 inline constexpr auto kWinAppRuntimeSupportedMinVersion =
     base::win::Version::WIN11_24H2;

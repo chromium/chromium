@@ -13,7 +13,7 @@
  * The maximum length of the Config Key is 1024
  *
  * The string format of a SessionOptions Config Value is defined individually for each Config.
- * The maximum length of the Config Value is 2048
+ * The maximum length of the Config Value is 8192
  */
 
 // Key for disable PrePacking,
@@ -374,10 +374,21 @@ static const char* const kOrtSessionOptionsEpContextModelExternalInitializersFil
 // - "1": Gemm FastMath mode is enabled.
 static const char* const kOrtSessionOptionsMlasGemmFastMathArm64Bfloat16 = "mlas.enable_gemm_fastmath_arm64_bfloat16";
 
+// Use LUT (Lookup Table) based GEMM for quantized models when available.
+// Option values:
+// - "0": Do not use LUT based GEMM. [DEFAULT]
+// - "1": Use LUT based GEMM when available.
+static const char* const kOrtSessionOptionsMlasLutGemm = "mlas.use_lut_gemm";
+
 // When converting DQ + MatMul -> MatMulNBits, the accuracy level of the MatMulNBits is controlled by this option.
 // Refer to MatMulNBits op schema for more details.
 // If not provided, default is 4.
 static const char* const kOrtSessionOptionsQDQMatMulNBitsAccuracyLevel = "session.qdq_matmulnbits_accuracy_level";
+
+// Enable the DQ->MatMulNBits fusion graph transformer.
+// "0": disabled (default). "1": enabled.
+// This is typically set automatically by InferenceSession when the NvTensorRTRTX EP is registered.
+static const char* const kOrtSessionOptionsEnableDQMatMulNBitsFusion = "session.enable_dq_matmulnbits_fusion";
 
 // THIS OPTION IS NOT A REGULAR SESSION OPTION SINCE IT CAN BE MODIFIED AT ANY TIME
 // Meant to be used with SetEpDynamicOptions
@@ -408,3 +419,18 @@ static const char* const kOrtSessionOptionsDisableModelCompile = "session.disabl
 // Note: UNSUPPORTED models always fail regardless of this setting.
 static const char* const kOrtSessionOptionsFailOnSuboptimalCompiledModel =
     "session.fail_on_suboptimal_compiled_model";
+
+// THIS OPTION IS NOT A REGULAR SESSION OPTION SINCE IT CAN BE MODIFIED AT ANY TIME
+// Meant to be used with SetEpDynamicOptions
+// options for HTP performance mode: "burst", "balanced", "default", "high_performance",
+// "high_power_saver", "low_balanced", "extreme_power_saver", "low_power_saver", "power_saver",
+// "sustained_high_performance". Default to "default".
+static const char* const kOrtEpDynamicOptionsQnnHtpPerformanceMode = "ep.dynamic.qnn_htp_performance_mode";
+
+// Enables the session to record information about the subgraphs/nodes assigned to execution providers.
+// When enabled, an application may call Session_GetEpGraphAssignmentInfo() to retrieve the information.
+//
+// Option values:
+// - "0": Recording of EP graph assignment information is disabled. [DEFAULT]
+// - "1": Recording of EP graph assignment information is enabled.
+static const char* const kOrtSessionOptionsRecordEpGraphAssignmentInfo = "session.record_ep_graph_assignment_info";

@@ -1,8 +1,8 @@
 Name: Headers for WindowsAppsSDK
 Short Name: windows_app_sdk_headers
 URL: https://github.com/microsoft/WindowsAppSDK
-Version: 1.8.1
-Revision: c4f951addb693bae1084085f126fa8c392e2787d
+Version: 2.0.1
+Revision: 3e1905de7f390ea4bf4c16205341b2b7bd15de30
 Update Mechanism: Manual
 License: MIT
 License File: src/LICENSE

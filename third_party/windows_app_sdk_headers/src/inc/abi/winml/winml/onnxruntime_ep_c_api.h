@@ -3,6 +3,13 @@
 
 // Do not include this file directly. Please include "onnxruntime_c_api.h" instead.
 
+#if defined(__DOXYGEN__)
+// When running a Doxygen build, include onnxruntime_c_api.h. Doxygen expects header files to be self-contained.
+#include "onnxruntime_c_api.h"
+#else
+// In normal usage, do not include onnxruntime_c_api.h. This file is explicitly included in onnxruntime_c_api.h.
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,7 +24,75 @@ ORT_RUNTIME_CLASS(DataTransferImpl);
 ORT_RUNTIME_CLASS(SyncNotificationImpl);
 ORT_RUNTIME_CLASS(SyncStreamImpl);
 
-// struct that an EP implements for IDataTransfer to copy between devices it uses and CPU
+ORT_RUNTIME_CLASS(ExternalResourceImporterImpl);
+
+/** \brief Base struct for imported external memory handles.
+ *
+ * EPs derive from this struct to add EP-specific fields (e.g., CUdeviceptr for CUDA).
+ * EP is responsible for creating and releasing instances of the derived type.
+ *
+ * Example derived type for CUDA EP:
+ * \code
+ * struct MyCudaExternalMemoryHandle : OrtExternalMemoryHandle {
+ *   CUexternalMemory ext_memory;
+ *   CUdeviceptr mapped_ptr;
+ *   bool is_dedicated;
+ * };
+ * \endcode
+ *
+ * \since Version 1.24.
+ */
+struct OrtExternalMemoryHandle {
+  uint32_t version;                        ///< Must be ORT_API_VERSION
+  const OrtEpDevice* ep_device;            ///< EP device that created this handle
+  OrtExternalMemoryDescriptor descriptor;  ///< External memory descriptor
+
+  /** \brief Release callback for this handle. EP sets this to its release function.
+   *
+   * ORT calls this when ReleaseExternalMemoryHandle is invoked. The EP's callback
+   * should cast the handle to its derived type and delete it.
+   */
+  void(ORT_API_CALL* Release)(_In_ OrtExternalMemoryHandle* handle);
+};
+
+/** \brief Base struct for imported external semaphore handles.
+ *
+ * EPs derive from this struct to add EP-specific fields (e.g., CUexternalSemaphore for CUDA).
+ * EP is responsible for creating and releasing instances of the derived type.
+ *
+ * Example derived type for CUDA EP:
+ * \code
+ * struct MyCudaExternalSemaphoreHandle : OrtExternalSemaphoreHandle {
+ *   CUexternalSemaphore ext_semaphore;
+ * };
+ * \endcode
+ *
+ * \since Version 1.24.
+ */
+struct OrtExternalSemaphoreHandle {
+  uint32_t version;                           ///< Must be ORT_API_VERSION
+  const OrtEpDevice* ep_device;               ///< EP device that created this handle
+  OrtExternalSemaphoreDescriptor descriptor;  ///< External semaphore descriptor
+
+  /** \brief Release callback for this handle. EP sets this to its release function.
+   *
+   * ORT calls this when ReleaseExternalSemaphoreHandle is invoked. The EP's callback
+   * should cast the handle to its derived type and delete it.
+   */
+  void(ORT_API_CALL* Release)(_In_ OrtExternalSemaphoreHandle* handle);
+};
+
+// Opaque types for kernel-based EPs
+ORT_RUNTIME_CLASS(KernelRegistry);
+ORT_RUNTIME_CLASS(KernelDefBuilder);
+ORT_RUNTIME_CLASS(KernelDef);
+ORT_RUNTIME_CLASS(DataType);  // combination of ONNXType (e.g., Tensor, Map, Sequence) and ONNXTensorElementDataType
+ORT_RUNTIME_CLASS(SharedPrePackedWeightCache);
+
+/** \brief Struct that an EP implements for IDataTransfer to copy between devices it uses and CPU.
+ *
+ * \since Version 1.23.
+ */
 struct OrtDataTransferImpl {
   uint32_t ort_version_supported;  ///< Must be initialized to ORT_API_VERSION
 
@@ -96,7 +171,7 @@ struct OrtSyncNotificationImpl {
   /** \brief Wait for a device to device operation to complete.
    *
    * \param[in] this_ptr Pointer to the OrtSyncNotificationImpl instance.
-   * \param[in] stream The OrtSyncStream instance that will wait on this notification to be activated.
+   * \param[in] consumer_stream The OrtSyncStream instance that will wait on this notification to be activated.
    *
    * \since Version 1.23.
    */
@@ -172,6 +247,180 @@ struct OrtSyncStreamImpl {
    * \since Version 1.23.
    */
   ORT_API2_STATUS(OnSessionRunEnd, _In_ OrtSyncStreamImpl* this_ptr);
+};
+
+/** \brief Struct that an EP implements for external resource import (memory + semaphore import).
+ *
+ * This capability object provides methods for importing external GPU memory and semaphores
+ * for zero-copy import. EPs that support D3D12, CUDA, HIP, or Vulkan external resource APIs
+ * can implement this interface.
+ *
+ * \since Version 1.24.
+ */
+struct OrtExternalResourceImporterImpl {
+  uint32_t ort_version_supported;  ///< Must be initialized to ORT_API_VERSION
+
+  // Memory operations (stream-independent)
+
+  /** \brief Check if the implementation can import external memory of the given handle type.
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   * \param[in] handle_type The type of external memory handle to check.
+   * \return True if the handle type is supported.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(bool, CanImportMemory,
+            _In_ const OrtExternalResourceImporterImpl* this_ptr,
+            _In_ OrtExternalMemoryHandleType handle_type);
+
+  /** \brief Import external memory.
+   *
+   * The EP creates a derived type of OrtExternalMemoryHandle and returns a pointer to the base.
+   * EP is responsible for the lifetime of the handle (release via ReleaseMemory).
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   * \param[in] desc Descriptor containing the external memory handle and properties.
+   * \param[out] out_handle Output parameter set to the created OrtExternalMemoryHandle (EP's derived type).
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(ImportMemory,
+                  _In_ OrtExternalResourceImporterImpl* this_ptr,
+                  _In_ const OrtExternalMemoryDescriptor* desc,
+                  _Outptr_ OrtExternalMemoryHandle** out_handle);
+
+  /** \brief Release an imported external memory handle.
+   *
+   * The EP deletes its derived type instance.
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   * \param[in] handle The OrtExternalMemoryHandle to release (EP casts to its derived type).
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(void, ReleaseMemory,
+            _In_ OrtExternalResourceImporterImpl* this_ptr,
+            _In_ OrtExternalMemoryHandle* handle);
+
+  /** \brief Create a tensor backed by imported external memory.
+   *
+   * The created tensor is a view over the imported memory and does not copy data.
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   * \param[in] mem_handle The imported external memory handle (EP casts to its derived type).
+   * \param[in] tensor_desc Descriptor specifying tensor element type, shape, and optional offset.
+   * \param[out] out_tensor Output parameter set to the created OrtValue containing the tensor.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(CreateTensorFromMemory,
+                  _In_ OrtExternalResourceImporterImpl* this_ptr,
+                  _In_ const OrtExternalMemoryHandle* mem_handle,
+                  _In_ const OrtExternalTensorDescriptor* tensor_desc,
+                  _Outptr_ OrtValue** out_tensor);
+
+  // Semaphore operations (require stream)
+
+  /** \brief Check if the implementation can import external semaphores of the given type.
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   * \param[in] type The type of external semaphore to check.
+   * \return True if the semaphore type is supported.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(bool, CanImportSemaphore,
+            _In_ const OrtExternalResourceImporterImpl* this_ptr,
+            _In_ OrtExternalSemaphoreType type);
+
+  /** \brief Import an external semaphore.
+   *
+   * The EP creates a derived type of OrtExternalSemaphoreHandle and returns a pointer to the base.
+   * EP is responsible for the lifetime of the handle (release via ReleaseSemaphore).
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   * \param[in] desc Descriptor containing the external semaphore handle and type.
+   * \param[out] out_handle Output parameter set to the created OrtExternalSemaphoreHandle (EP's derived type).
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(ImportSemaphore,
+                  _In_ OrtExternalResourceImporterImpl* this_ptr,
+                  _In_ const OrtExternalSemaphoreDescriptor* desc,
+                  _Outptr_ OrtExternalSemaphoreHandle** out_handle);
+
+  /** \brief Release an imported external semaphore handle.
+   *
+   * The EP deletes its derived type instance.
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   * \param[in] handle The OrtExternalSemaphoreHandle to release (EP casts to its derived type).
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(void, ReleaseSemaphore,
+            _In_ OrtExternalResourceImporterImpl* this_ptr,
+            _In_ OrtExternalSemaphoreHandle* handle);
+
+  /** \brief Wait on an external semaphore on the EP's stream.
+   *
+   * Inserts a wait operation into the EP's stream that blocks until the semaphore
+   * reaches the specified value.
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   * \param[in] handle The imported external semaphore (EP casts to its derived type).
+   * \param[in] stream The OrtSyncStream to wait on.
+   * \param[in] value The fence/semaphore value to wait for.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(WaitSemaphore,
+                  _In_ OrtExternalResourceImporterImpl* this_ptr,
+                  _In_ OrtExternalSemaphoreHandle* handle,
+                  _In_ OrtSyncStream* stream,
+                  _In_ uint64_t value);
+
+  /** \brief Signal an external semaphore from the EP's stream.
+   *
+   * Inserts a signal operation into the EP's stream that sets the semaphore
+   * to the specified value when reached.
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   * \param[in] handle The imported external semaphore (EP casts to its derived type).
+   * \param[in] stream The OrtSyncStream to signal from.
+   * \param[in] value The fence/semaphore value to signal.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(SignalSemaphore,
+                  _In_ OrtExternalResourceImporterImpl* this_ptr,
+                  _In_ OrtExternalSemaphoreHandle* handle,
+                  _In_ OrtSyncStream* stream,
+                  _In_ uint64_t value);
+
+  // Release the capability object itself
+
+  /** \brief Release the OrtExternalResourceImporterImpl instance.
+   *
+   * This is called by ORT when the OrtExternalResourceImporterImpl instance is no longer needed.
+   * The implementation should release any resources held by the instance.
+   *
+   * \param[in] this_ptr Pointer to the OrtExternalResourceImporterImpl instance.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(void, Release, _In_ OrtExternalResourceImporterImpl* this_ptr);
 };
 
 struct OrtNodeFusionOptions;
@@ -264,6 +513,241 @@ struct OrtNodeComputeInfo {
   void(ORT_API_CALL* ReleaseState)(_In_ OrtNodeComputeInfo* this_ptr, _Frees_ptr_opt_ void* compute_state);
 };
 
+struct OrtKernelImpl;
+typedef struct OrtKernelImpl OrtKernelImpl;
+
+/**
+ * \brief Contains functions that an OrtEp implements to specify the computation for an operator kernel.
+ * \since Version 1.24.
+ */
+struct OrtKernelImpl {
+  uint32_t ort_version_supported;  ///< Must be initialized to ORT_API_VERSION
+  uint32_t flags;                  ///< EP must initialize to 0. Used internally by ORT.
+
+  /** \brief Computation function called to execute the kernel on an EP.
+   *
+   * \note Implementation of this function is required.
+   *
+   * \param[in] this_ptr The OrtKernelImpl instance.
+   * \param[in] context The OrtKernelContext instance that provides access to the inputs and outputs.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(Compute, _In_ OrtKernelImpl* this_ptr, _In_ OrtKernelContext* context);
+
+  /** \brief Called by ORT to release the OrtKernelImpl instance and its resources.
+   *
+   * \note Implementation of this function is required.
+   *
+   * \param[in] this_ptr The OrtKernelImpl instance.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(void, Release, _In_ OrtKernelImpl* this_ptr);
+
+  /** \brief Optional function to pre-pack a constant tensor (i.e., a weight) to the kernel's preferred data layout.
+   *
+   * For example, a Conv kernel can define this function to pack input W to the channel-last data layout
+   * before inference.
+   *
+   * Pre-packing can operate in three different modes: no pre-packing mode, sharing mode, and non-sharing mode.
+   *    1) No pre-packing mode: The kernel can forgo any weight pre-packing for the given `input_index` by setting
+   *                            `is_packed` to false and returning a successful OrtStatus. In this mode, the kernel's
+   *                            OrtKernelImpl::SetSharedPrePackedWeight() function is not called for that specific
+   *                            `input_index`.
+   *    2) Sharing mode: Sharing is allowed if the `prepacked_weight_cache` argument is not NULL and the EP stores
+   *                     weight data in CPU-accessible memory. In this case, the kernel can optionally choose
+   *                     to share the packed weight with other kernels that use the same weight
+   *                     (compared by content hash). To do so, the kernel must allocate the packed weight with the
+   *                     provided `allocator`, then it stores the packed weight data into `prepacked_weight_cache`
+   *                     via SharedPrePackedWeightCache_StoreWeightData(), sets `is_packed` to true, and returns a
+   *                     successful OrtStatus. ORT will subsequently call OrtKernelImpl::SetSharedPrePackedWeight()
+   *                     to provide this kernel with the actual shared weight data, whose memory location could
+   *                     differ (i.e., if shared data was allocated by a previously processed kernel).
+   *    3) Non-sharing mode: In non-sharing mode, the `prepacked_weight_cache` argument is ignored. In this mode,
+   *                         the implementation allocates the packed data with the provided `allocator`, sets
+   *                         `is_packed` to true, and returns a successful OrtStatus. The kernel is ultimately
+   *                         responsible for releasing the packed data for the weight with `allocator`.
+   *                         ORT may release the original (unpacked) weight, which must not be accessed in
+   *                         OrtKernelImpl::Compute(). Note that in this mode, the kernel's
+   *                         OrtKernelImpl::SetSharedPrePackedWeight() function is not called by ORT for that specific
+   *                         `input_index`.
+   *
+   * \note This function is based on the internal OpKernel::PrePack() virtual function used within ORT.
+   *
+   * \param[in] this_ptr The OrtKernelImpl instance.
+   * \param[in] tensor The OrtValue instance representing the constant tensor (weight). Do not cache in the kernel.
+   * \param[in] input_index The input index of the tensor in this kernel.
+   * \param[in] allocator Allocator for allocating the pre-packed data. Its use is required in sharing mode and
+   *                      recommended, but not required, in the non-sharing mode. This will be an allocator set by
+   *                      the application for the session/environment (e.g., via CreateAndRegisterAllocator[V2]
+   *                      or RegisterAllocator), or an allocator on the OrtEpDevice (read-only or default) otherwise.
+   *                      The allocator remains valid throughout the lifetime of the OrtKernelImpl instance.
+   * \param[in] prepacked_weight_cache May be NULL. If not NULL, the kernel may choose to share a packed weight by
+   *                                   first storing it in the OrtSharedPrePackedWeightCache instance and then
+   *                                   receiving the actual shared weight data in the call to
+   *                                   OrtKernelImpl::SetSharedPrePackedWeight(). See the above description for
+   *                                   "sharing mode".
+   * \param[out] is_packed Output parameter that the implementation sets to true if the kernel packed the tensor data.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \note Implementation of this function is optional. If not implemented (set to NULL), ORT assumes the kernel
+   *       does not pre-pack weight data (i.e., `is_packed` defaults to false).
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(PrePackWeight, _In_ OrtKernelImpl* this_ptr, _In_ const OrtValue* tensor,
+                  _In_ int input_index, _Inout_ OrtAllocator* allocator,
+                  _In_opt_ OrtSharedPrePackedWeightCache* prepacked_weight_cache, _Out_ bool* is_packed);
+
+  /** \brief Optional function that receives data for a shared pre-packed weight from ORT.
+   *
+   * ORT calls this function after calling OrtKernelImpl::PrePackWeight for a specific `input_index` if:
+   *   - OrtKernelImpl::PrePackWeight set the output parameter `is_packed` to true.
+   *   - OrtKernelImpl::PrePackWeight stored weight data to share into the provided OrtSharedPrePackedWeightCache
+   *     parameter (`prepacked_weight_cache`) via the API SharedPrePackedWeightCache_StoreWeightData.
+   *
+   * Refer to the description of the "sharing-mode" in the documentation for OrtKernelImpl::PrePackWeight().
+   *
+   * \note ORT will not call this function for an `input_index` that a previous call to
+   *       OrtKernelImpl::PrePackWeight() did not elect to pre-pack and share.
+   *
+   * \note This function is based on the internal OpKernel::UseSharedPrePackedBuffers() virtual function used
+   *       within ORT.
+   *
+   * \param[in] this_ptr The OrtKernelImpl instance.
+   * \param[in] buffer_data_ptrs An array of buffer data pointers that collectively hold the pre-packed data for a
+   *                             single shared weight. The buffers are provided in the same order and with the same
+   *                             contents (in a potentially different memory location) as the buffers
+   *                             passed into SharedPrePackedWeightCache_StoreWeightData() within the
+   *                             OrtKernelImpl::PrePackWeight() call for the same `input_index`.
+   * \param[in] buffer_data_sizes An array of buffer byte sizes, one per element in `buffer_data_ptrs`.
+   * \param[in] num_buffers The number of buffers used to store the data for the shared pre-packed weight.
+   *                        Specifies the number of elements in the `buffer_data_ptrs` and `buffer_data_sizes` arrays.
+   * \param[in] input_index The input index of the tensor in this kernel. This index identifies the identity of
+   *                        the weight.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \note Implementation of this function is generally optional. It is only required if OrtKernelImpl::PrePack()
+   *       elects to share pre-packed weights.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(SetSharedPrePackedWeight, _In_ OrtKernelImpl* this_ptr,
+                  _In_reads_(num_buffers) const void* const* buffer_data_ptrs,
+                  _In_reads_(num_buffers) const size_t* buffer_data_sizes,
+                  _In_ size_t num_buffers, _In_ int input_index);
+};
+
+/** \brief Type definition for a function that creates an OrtKernelImpl instance for an operator kernel.
+ *
+ * \param[in] kernel_create_func_state Opaque state initially provided by the EP that registered the kernel.
+ *                                     Refer to OrtEpApi::KernelRegistry_AddKernel(). May be null.
+ * \param[in] info The OrtKernelInfo instance that provides access to the kernel's input and output characteristics.
+ * \param[out] kernel_out Output parameter set to the new OrtKernelImpl instance. On success, ownership of this
+ *                        OrtKernelImpl instance transfers to ORT, which will call OrtKernelImpl::Release() to
+ *                        release the instance when it is no longer used.
+ *
+ * \snippet{doc} snippets.dox OrtStatus Return Value
+ *
+ * \since Version 1.24.
+ */
+typedef OrtStatus*(ORT_API_CALL* OrtKernelCreateFunc)(_In_ void* kernel_create_func_state,
+                                                      _In_ const OrtKernelInfo* info,
+                                                      _Outptr_result_maybenull_ OrtKernelImpl** kernel_out);
+
+struct OrtLoopKernelHelper;
+typedef struct OrtLoopKernelHelper OrtLoopKernelHelper;
+
+/**
+ * \brief Contains helper functions for a Loop OrtKernelImpl created via OrtEpApi::CreateLoopKernel.
+ * \since Version 1.24.
+ */
+struct OrtLoopKernelHelper {
+  uint32_t ort_version_supported;  ///< Must be initialized to ORT_API_VERSION
+
+  /** \brief Called by ORT to release the OrtLoopKernelHelper instance and its resources.
+   *
+   * \param[in] this_ptr The OrtLoopKernelHelper instance.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(void, Release, _In_ OrtLoopKernelHelper* this_ptr);
+
+  /** \brief Helper function that concatenates OrtValue instances from each loop iteration into a single
+   *         pre-allocated output buffer.
+   *
+   * \note Implementing this function is required for all Loop opset versions.
+   *
+   * \param[in] this_ptr The OrtLoopKernelHelper instance.
+   * \param[in] stream_handle Optional native stream handle that enables asynchronous operations. May be NULL.
+   * \param[in] per_iteration_outputs Array of OrtValue instances from each iteration. All OrtValue elements have the
+   *                                  same shape.
+   * \param[in] num_per_iteration_outputs The number of OrtValue* elements in the `per_iteration_outputs` array.
+   * \param[out] output The pre-allocated output buffer. Memory is allocated on the device for the EP running the
+   *                    Loop node.
+   * \param[in] output_size_in_bytes The size in bytes of the `output` buffer. It is guaranteed to be large enough
+   *                                 to hold the concatenated data of each element in `per_iteration_outputs`.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(ConcatOutput, _In_ OrtLoopKernelHelper* this_ptr, _In_opt_ void* stream_handle,
+                  _In_reads_(num_per_iteration_outputs) const OrtValue* const* per_iteration_outputs,
+                  _In_ size_t num_per_iteration_outputs, _Out_writes_bytes_all_(output_size_in_bytes) void* output,
+                  _In_ size_t output_size_in_bytes);
+};
+
+struct OrtScanKernelHelper;
+typedef struct OrtScanKernelHelper OrtScanKernelHelper;
+
+/**
+ * \brief Contains helper functions for a Scan OrtKernelImpl created via OrtEpApi::CreateScanKernel.
+ * \since Version 1.24.
+ */
+struct OrtScanKernelHelper {
+  uint32_t ort_version_supported;  ///< Must be initialized to ORT_API_VERSION
+
+  /** \brief Called by ORT to release the OrtScanKernelHelper instance and its resources.
+   *
+   * \param[in] this_ptr The OrtScanKernelHelper instance.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(void, Release, _In_ OrtScanKernelHelper* this_ptr);
+
+  /** \brief Helper function that transposes an OrtValue instance during execution of a Scan kernel.
+   *
+   * \note Called for Scan (opset >= 9) when the 'scan_input_axes' or 'scan_output_axes' attributes contain
+   *       non-zero values. Implementing this function is required for Scan opset versions >= 9.
+   *
+   * \param[in] this_ptr The OrtScanKernelHelper instance.
+   * \param[in] permutation An array of integers that defines how the input tensor's axes should be permuted.
+   * \param[in] num_permutation_elems The number of integer elements in the `permutation` array.
+   * \param[in] input The input OrtValue tensor to transpose.
+   * \param[in] stream An optional OrtSyncStream instance to be used for asynchronous operations. May be NULL.
+   * \param[out] output The pre-allocated output OrtValue instance into which to store the results of the
+   *                    transpose operation. Must not be released as it is owned by ORT.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(Transpose, _In_ OrtScanKernelHelper* this_ptr,
+                  _In_reads_(num_permutation_elems) const size_t* permutation, _In_ size_t num_permutation_elems,
+                  _In_ const OrtValue* input, _In_opt_ OrtSyncStream* stream, _Inout_ OrtValue* output);
+};
+
+/**
+ * \brief The OrtEpApi struct provides functions that are relevant to the implementation of an execution provider.
+ *
+ * \since Version 1.22.
+ */
 struct OrtEpApi {
   /** \brief Create an OrtEpDevice for the EP and an OrtHardwareDevice.
    * \param[in] ep_factory Execution provider factory that is creating the instance.
@@ -465,6 +949,501 @@ struct OrtEpApi {
    */
   ORT_API_T(uint64_t, GetSyncIdForLastWaitOnSyncStream,
             _In_ const OrtSyncStream* producer_stream, _In_ const OrtSyncStream* consumer_stream);
+
+  /** \brief Create an OrtHardwareDevice.
+   *
+   * \note Called within OrtEpFactory::GetSupportedDevices to create a new hardware device (e.g., virtual).
+   *
+   * \param[in] type The hardware device type.
+   * \param[in] vendor_id The hardware device's vendor identifier.
+   * \param[in] device_id The hardware device's identifier.
+   * \param[in] vendor_name The hardware device's vendor name as a null-terminated string. Copied by ORT.
+   * \param[in] metadata Optional OrtKeyValuePairs instance for hardware device metadata that may be queried by
+   *                     applications via OrtApi::GetEpDevices().
+   *                     Refer to onnxruntime_ep_device_ep_metadata_keys.h for common OrtHardwareDevice metadata keys.
+   * \param[out] hardware_device Output parameter set to the new OrtHardwareDevice instance that is created.
+   *                             Must be release with ReleaseHardwareDevice().
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(CreateHardwareDevice, _In_ OrtHardwareDeviceType type,
+                  _In_ uint32_t vendor_id,
+                  _In_ uint32_t device_id,
+                  _In_ const char* vendor_name,
+                  _In_opt_ const OrtKeyValuePairs* metadata,
+                  _Out_ OrtHardwareDevice** hardware_device);
+
+  ORT_CLASS_RELEASE(HardwareDevice);
+
+  /** \brief Creates an empty kernel registry. A kernel registry contains kernel creation information for
+   * every operator kernel supported by an EP.
+   *
+   * \remarks Refer to OrtEp::GetKernelRegistry, which returns an EP's kernel registry to ORT.
+   *
+   * \param[out] kernel_registry Output parameter set to the new OrtKernelRegistry instance.
+   *                             Must be released with OrtEpApi::ReleaseKernelRegistry.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(CreateKernelRegistry, _Outptr_ OrtKernelRegistry** kernel_registry);
+
+  ORT_CLASS_RELEASE(KernelRegistry);
+
+  /** \brief Adds kernel creation information for a supported operator kernel to the given kernel registry.
+   *
+   * \remarks Refer to OrtEp::GetKernelRegistry, which returns an EP's kernel registry to ORT.
+   *
+   * \param[in] kernel_registry The OrtKernelRegistry instance.
+   * \param[in] kernel_def The kernel definition, which includes operator type, version, EP name, type constraints, etc.
+   * \param[in] kernel_create_func Function that creates an instance of the operator kernel as a OrtKernelImpl instance.
+   * \param[in] kernel_create_func_state Custom state passed to the kernel creation function. Can be null.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelRegistry_AddKernel, _In_ OrtKernelRegistry* kernel_registry,
+                  _In_ const OrtKernelDef* kernel_def, _In_ OrtKernelCreateFunc kernel_create_func,
+                  _In_ void* kernel_create_func_state);
+
+  /** \brief Creates a kernel definition builder used to create instances of OrtKernelDef.
+   *
+   * \param[out] kernel_def_builder_out Output parameter set to the new OrtKernelDefBuilder instance.
+   *                                    Must be released with OrtEpApi::ReleaseKernelDefBuilder().
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(CreateKernelDefBuilder, _Outptr_ OrtKernelDefBuilder** kernel_def_builder_out);
+
+  ORT_CLASS_RELEASE(KernelDefBuilder);
+
+  /** \brief Sets the kernel's operator type.
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[in] op_type A null-terminated string representing the operator type.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_SetOperatorType, _In_ OrtKernelDefBuilder* kernel_def_builder,
+                  _In_ const char* op_type);
+
+  /** \brief Sets the kernel's domain.
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[in] domain A null-terminated string representing the operator's domain.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_SetDomain, _In_ OrtKernelDefBuilder* kernel_def_builder, _In_ const char* domain);
+
+  /** \brief Sets the kernel's opset version range that is supported.
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[in] since_version_start The starting opset version that is supported.
+   * \param[in] since_version_end The ending opset version (inclusive) that is supported.
+   *                              Can be set equal to the starting version to indicate that only one
+   *                              version is supported.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_SetSinceVersion, _In_ OrtKernelDefBuilder* kernel_def_builder,
+                  _In_ int since_version_start, _In_ int since_version_end);
+
+  /** \brief Sets the name of the kernel's intended execution provider.
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[in] ep_name A null-terminated string representing the execution provider's name.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_SetExecutionProvider, _In_ OrtKernelDefBuilder* kernel_def_builder,
+                  _In_ const char* ep_name);
+
+  /** \brief Sets the memory type for a kernel input.
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[in] input_index The index of the input.
+   * \param[in] mem_type The input's memory type.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_SetInputMemType, _In_ OrtKernelDefBuilder* kernel_def_builder,
+                  _In_ size_t input_index, _In_ OrtMemType mem_type);
+
+  /** \brief Sets the memory type for a kernel output.
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[in] output_index The index of the output.
+   * \param[in] mem_type The output's memory type.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_SetOutputMemType, _In_ OrtKernelDefBuilder* kernel_def_builder,
+                  _In_ size_t output_index, _In_ OrtMemType mem_type);
+
+  /** \brief Adds type constraints for a kernel argument represented as a string (e.g., "T").
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[in] arg_name A null-terminated string representing the argument to constrain (e.g., "T").
+   * \param[in] types Array of OrtDataType instances representing allowed types for the argument.
+   *                  Must contain `num_types` elements.
+   * \param[in] num_types The number of OrtDataType elements in the `types` array.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_AddTypeConstraint, _In_ OrtKernelDefBuilder* kernel_def_builder,
+                  _In_ const char* arg_name, _In_reads_(num_types) const OrtDataType* const* types,
+                  _In_ size_t num_types);
+
+  /** \brief Adds aliases for the given input and output pairs.
+   *
+   * \note Used for operators like Identity and Reshape to allow ORT to reuse the input buffer for the output
+   *       without modification.
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[in] input_indices Array of input indices. Array must contain `num_io_indices` elements.
+   * \param[in] output_indices Array of output indices. Each output index is aliased with a corresponding
+   *                           input index in `input_indices`. Array must contain `num_io_indices` elements.
+   * \param[in] num_io_indices The number of input/output index pairs to alias.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_AddInputOutputAliases, _In_ OrtKernelDefBuilder* kernel_def_builder,
+                  _In_reads_(num_io_indices) int const* input_indices,
+                  _In_reads_(num_io_indices) int const* output_indices,
+                  _In_ size_t num_io_indices);
+
+  /** \brief Adds mutable aliases for the given input and output pairs.
+   *
+   * \note Allows ORT to reuse and *modify* an input buffer (in-place) for the output buffer.
+   *       This is also known as "MayInplace" within the ORT codebase.
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[in] input_indices Array of input indices. Array must contain `num_io_indices` elements.
+   * \param[in] output_indices Array of output indices. Each output index is aliased with a corresponding
+   *                           input index in `input_indices`. Array must contain `num_io_indices` elements.
+   * \param[in] num_io_indices The number of input/output index pairs to alias.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_AddInputOutputMutableAliases, _In_ OrtKernelDefBuilder* kernel_def_builder,
+                  _In_reads_(num_io_indices) int const* input_indices,
+                  _In_reads_(num_io_indices) int const* output_indices,
+                  _In_ size_t num_io_indices);
+
+  /** \brief Creates a OrtKernelDef instance from the given kernel definition builder.
+   *
+   * \param[in] kernel_def_builder The OrtKernelDefBuilder instance.
+   * \param[out] kernel_def_out The new OrtKernelDef instance.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDefBuilder_Build, _In_ OrtKernelDefBuilder* kernel_def_builder,
+                  _Outptr_ OrtKernelDef** kernel_def_out);
+
+  ORT_CLASS_RELEASE(KernelDef);
+
+  /** \brief Returns the operator type from the kernel definition.
+   *
+   * \param[in] kernel_def The OrtKernelDef instance.
+   * \return A null-terminated string representing the operator type.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(const char*, KernelDef_GetOperatorType, _In_ const OrtKernelDef* kernel_def);
+
+  /** \brief Returns the operator's domain from the kernel definition.
+   *
+   * \param[in] kernel_def The OrtKernelDef instance.
+   * \return A null-terminated string representing the operator's domain.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(const char*, KernelDef_GetDomain, _In_ const OrtKernelDef* kernel_def);
+
+  /** \brief Gets the kernel's opset version range that is supported.
+   *
+   * \param[in] kernel_def The OrtKernelDef instance.
+   * \param[out] start_version Output parameter set to the starting opset version that is supported.
+   * \param[out] end_version Output parameter set to the ending opset version (inclusive) that is supported.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDef_GetSinceVersion, _In_ const OrtKernelDef* kernel_def,
+                  _Out_ int* start_version, _Out_ int* end_version);
+
+  /** \brief Returns the name of the kernel's intended execution provider.
+   *
+   * \param[in] kernel_def The OrtKernelDef instance.
+   * \return A null-terminated string representing the name of the execution provider.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API_T(const char*, KernelDef_GetExecutionProvider, _In_ const OrtKernelDef* kernel_def);
+
+  /** \brief Gets the memory type for a kernel input.
+   *
+   * \param[in] kernel_def The OrtKernelDef instance.
+   * \param[in] input_index The index of the input.
+   * \param[out] mem_type Output parameter set to the input's memory type.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDef_GetInputMemType, _In_ const OrtKernelDef* kernel_def,
+                  _In_ size_t input_index, _Out_ OrtMemType* mem_type);
+
+  /** \brief Gets the memory type for a kernel output.
+   *
+   * \param[in] kernel_def The OrtKernelDef instance.
+   * \param[in] output_index The index of the output.
+   * \param[out] mem_type Output parameter set to the output's memory type.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(KernelDef_GetOutputMemType, _In_ const OrtKernelDef* kernel_def,
+                  _In_ size_t output_index, _Out_ OrtMemType* mem_type);
+
+  /** \brief Gets the OrtDataType that represents the data type for a tensor of the given element type.
+   *
+   * \param[in] elem_type The tensor's element type.
+   * \param[out] out Output parameter set to the OrtDataType. Owned by ORT and must not be released.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(GetTensorDataType, _In_ ONNXTensorElementDataType elem_type,
+                  _Outptr_ const OrtDataType** out);
+
+  /** \brief Gets the kernel definition for a given node, if any exists for the calling execution provider.
+   *
+   * Used within OrtEp::GetCapability() to get the registered kernel definition for the given node.
+   * The kernel definition is set to NULL if there is no registered kernel definition for the node
+   * and execution provider.
+   *
+   * \param[in] graph_support_info The OrtEpGraphSupportInfo instance to query.
+   * \param[in] node The node for which to look up a kernel definition.
+   * \param[out] out_kernel_def Output parameter set to the OrtKernelDef or NULL.
+   *                            Owned by ORT and must not be released.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(EpGraphSupportInfo_LookUpKernel, _In_ OrtEpGraphSupportInfo* graph_support_info,
+                  _In_ const OrtNode* node, _Outptr_result_maybenull_ const OrtKernelDef** out_kernel_def);
+
+  /** \brief Sets one or more data buffers that collectively hold the pre-packed data for a single shared weight.
+   *
+   * \note Used within the implementation of OrtKernelImpl::PrePackWeight() when the kernel wants to share pre-packed
+   *       weight data with other kernels. The buffer data MUST be allocated with the OrtAllocator provided to
+   *       OrtKernelImpl::PrePack.
+   *
+   * \note Ownership of weight data transfers to the OrtSharedPrePackedWeightCache instance on success.
+   *       If this function returns an error status, the caller retains ownership of the weight data.
+   *
+   * \note Subsequent calls with the same OrtSharedPrePackedWeightCache instance release and replace the old data.
+   *
+   * \param[in] prepacked_weight_cache The OrtSharedPrePackedWeightCache instance.
+   * \param[in] buffer_data_ptrs An array of buffer data pointers that collectively hold the pre-packed data for a
+   *                             single shared weight. Note that sometimes a single weight may have multiple pre-packed
+   *                             buffers and it is up to the kernel implementation to determine how to split the data
+   *                             into multiple buffers (if desired).
+   * \param[in] buffer_data_sizes An array of buffer byte sizes, one per element in `buffer_data_ptrs`.
+   * \param[in] num_buffers The number of buffers used to store the data for the shared pre-packed weight.
+   *                        Specifies the number of elements in the `buffer_data_ptrs` and `buffer_data_sizes` arrays.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(SharedPrePackedWeightCache_StoreWeightData,
+                  _In_ OrtSharedPrePackedWeightCache* prepacked_weight_cache,
+                  _In_reads_(num_buffers) void** buffer_data_ptrs, _In_reads_(num_buffers) size_t* buffer_data_sizes,
+                  _In_ size_t num_buffers);
+
+  /** \brief Get the OrtEp instance to which the node is assigned from the OrtKernelInfo.
+   *
+   * \note Used within OrtKernelImpl implementations to obtain a reference to the OrtEp.
+   *
+   * \param[in] info The ::OrtKernelInfo instance.
+   * \param[out] ep Output parameter set to the OrtEp instance associated with the OrtKernelInfo.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   * \since Version 1.24
+   */
+  ORT_API2_STATUS(KernelInfo_GetEp, _In_ const OrtKernelInfo* info, _Outptr_ const OrtEp** ep);
+
+  /** \brief Set the details of an OrtDeviceEpIncompatibilityDetails instance.
+   *
+   * Used by execution provider factories to set incompatibility details in their
+   * GetHardwareDeviceIncompatibilityDetails implementation. ORT creates and initializes the object
+   * before passing it to the EP, so calling this function is optional. The EP uses this function
+   * to set incompatibility information when the device is not compatible.
+   *
+   * \param[in,out] details The OrtDeviceEpIncompatibilityDetails instance to update.
+   * \param[in] reasons_bitmask Bitmask of OrtDeviceEpIncompatibilityReason values. (0 = no incompatibility).
+   * \param[in] error_code Optional EP-specific error code (0 = no error).
+   * \param[in] notes Optional human-readable notes. Can be null.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(DeviceEpIncompatibilityDetails_SetDetails, _Inout_ OrtDeviceEpIncompatibilityDetails* details,
+                  _In_ uint32_t reasons_bitmask,
+                  _In_ int32_t error_code,
+                  _In_opt_z_ const char* notes);
+
+  /** \brief Creates an OrtKernelImpl instance for an If operator.
+   *
+   * Control flow operators require access to ORT session internals to orchestrate subgraph operations.
+   * This function allows an EP to create a properly configured OrtKernelImpl with access to ORT internals that
+   * the EP can add to its kernel registry.
+   *
+   * An EP is required to create an OrtKernelDef that keeps input[0] ('cond') on the CPU (i.e., OrtMemTypeCPUInput)
+   * as this input is used by CPU logic. The output should remain on the device (i.e., OrtMemTypeDefault), which is
+   * the default setting, to avoid copying to/from CPU.
+   *
+   * Example kernel definition (CXX API):
+   *     Ort::KernelDef kernel_def = Ort::KernelDefBuilder()
+   *                                     .SetDomain("").SetOperatorType("If").SetSinceVersion(21, 22)
+   *                                     .SetExecutionProvider("MyEp")
+   *                                     .SetInputMemType(0, OrtMemTypeCPUInput) // 'cond' on CPU
+   *                                     .SetOutputMemType(0, OrtMemTypeDefault) // output on EP device
+   *                                     .AddTypeConstraint("B", ...)
+   *                                     .AddTypeConstraint("V", ...).Build();
+   *
+   * \param[in] kernel_info The ::OrtKernelInfo instance for an If node. This function returns error ORT_FAIL
+   *                        if the opset version specified by `kernel_info` is unsupported.
+   * \param[out] kernel_out Output parameter set to the OrtKernelImpl instance for the If node.
+   *                        Must be released via ::ReleaseKernelImpl, unless ownership is transferred
+   *                        to ORT (see OrtKernelCreateFunc and ::KernelRegistry_AddKernel()).
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   * \since Version 1.24
+   */
+  ORT_API2_STATUS(CreateIfKernel, _In_ const OrtKernelInfo* kernel_info, _Outptr_ OrtKernelImpl** kernel_out);
+
+  /** \brief Creates an OrtKernelImpl instance for a Loop operator.
+   *
+   * Control flow operators require access to ORT session internals to orchestrate subgraph operations.
+   * This function allows an EP to create a properly configured OrtKernelImpl with access to ORT internals that
+   * the EP can add to its kernel registry.
+   *
+   * An EP is required to create an OrtKernelDef that keeps input[0] ('M') and input[1] ('cond') on the CPU
+   * (i.e., OrtMemTypeCPUInput) as these inputs are used by CPU logic. Input[2] ('v_initial') and the output should
+   * remain on the device (i.e., OrtMemTypeDefault), which is the default setting, to avoid copying to/from CPU.
+   *
+   * Example kernel definition (CXX API):
+   *     Ort::KernelDef kernel_def = Ort::KernelDefBuilder()
+   *                                     .SetDomain("").SetOperatorType("Loop").SetSinceVersion(21, 22)
+   *                                     .SetExecutionProvider("MyEp")
+   *                                     .SetInputMemType(0, OrtMemTypeCPUInput) // 'M' on CPU
+   *                                     .SetInputMemType(1, OrtMemTypeCPUInput) // 'cond' on CPU
+   *                                     .SetInputMemType(2, OrtMemTypeDefault) // 'v_initial' on EP device
+   *                                     .SetOutputMemType(0, OrtMemTypeDefault) // output on EP device
+   *                                     .AddTypeConstraint("I", ...)
+   *                                     .AddTypeConstraint("B", ...)
+   *                                     .AddTypeConstraint("V", ...).Build();
+   *
+   * \param[in] kernel_info The ::OrtKernelInfo instance for a Loop node. This function returns error ORT_FAIL
+   *                        if the opset version specified by `kernel_info` is unsupported.
+   * \param[in] helper A OrtLoopKernelHelper instance that contains helper functions that ORT calls during kernel
+   *                   execution to operate on tensors allocated with the EP's device memory.
+   *                   ORT will call OrtLoopKernelHelper::Release() to release the helper and its resources.
+   * \param[out] kernel_out Output parameter set to the OrtKernelImpl instance for the Loop node.
+   *                        Must be released via ::ReleaseKernelImpl, unless ownership is transferred
+   *                        to ORT (see OrtKernelCreateFunc and ::KernelRegistry_AddKernel()).
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   * \since Version 1.24
+   */
+  ORT_API2_STATUS(CreateLoopKernel, _In_ const OrtKernelInfo* kernel_info, _In_ OrtLoopKernelHelper* helper,
+                  _Outptr_ OrtKernelImpl** kernel_out);
+
+  /** \brief Creates an OrtKernelImpl instance for a Scan operator. Does not support opset versions older than 9.
+   *
+   * Control flow operators require access to ORT session internals to orchestrate subgraph operations.
+   * This function allows an EP to create a properly configured OrtKernelImpl with access to ORT internals that
+   * the EP can add to its kernel registry.
+   *
+   * It is recommended that an EP create an OrtKernelDef that keeps the inputs and outputs on the EP's
+   * device (i.e., OrtMemTypeDefault), which is the default setting, to avoid copying to/from CPU.
+   *
+   * Example kernel definition (CXX API):
+   *     Ort::KernelDef kernel_def = Ort::KernelDefBuilder()
+   *                                     .SetDomain("").SetOperatorType("Scan").SetSinceVersion(21, 22)
+   *                                     .SetExecutionProvider("MyEp")
+   *                                     .SetInputMemType(0, OrtMemTypeDefault) // input[0] on EP device
+   *                                     .SetOutputMemType(0, OrtMemTypeDefault) // output[0] on EP device
+   *                                     .AddTypeConstraint("V", ...).Build();
+   *
+   * \param[in] kernel_info The ::OrtKernelInfo instance for a Scan node. This function returns error ORT_FAIL
+   *                        if the opset version specified by `kernel_info` is unsupported.
+   * \param[in] helper A OrtScanKernelHelper instance that contains helper functions that ORT calls during kernel
+   *                   execution to operate on tensors allocated with the EP's device memory.
+   *                   ORT will call OrtScanKernelHelper::Release() to release the helper and its resources.
+   * \param[out] kernel_out Output parameter set to the OrtKernelImpl instance for the Scan node.
+   *                        Must be released via ::ReleaseKernelImpl, unless ownership is transferred
+   *                        to ORT (see OrtKernelCreateFunc and ::KernelRegistry_AddKernel()).
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   * \since Version 1.24
+   */
+  ORT_API2_STATUS(CreateScanKernel, _In_ const OrtKernelInfo* kernel_info, _In_ OrtScanKernelHelper* helper,
+                  _Outptr_ OrtKernelImpl** kernel_out);
+
+  ORT_CLASS_RELEASE(KernelImpl);
+
+  /** \brief Gets a new OrtKeyValuePairs instance containing a copy of all configuration entries set on the environment.
+   *
+   * \note An application provides environment-level configuration options for execution provider libraries by
+   *       using keys with the prefix 'ep_factory.\\<ep_name\\>.'. Ex: the key 'ep_factory.my_ep.some_ep_key' represents
+   *       a key named 'some_ep_key' that is meant to be consumed by an execution provider named 'my_ep'. Refer to
+   *       the specific execution provider's documentation for valid keys and values.
+   *
+   * \note Refer to onnxruntime_env_config_keys.h for common configuration entry keys and their supported values.
+   *
+   * \param[out] config_entries Output parameter set to the OrtKeyValuePairs instance containing all configuration entries.
+   *                 Must be released via OrtApi::ReleaseKeyValuePairs.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   * \since Version 1.24
+   */
+  ORT_API2_STATUS(GetEnvConfigEntries, _Outptr_ OrtKeyValuePairs** config_entries);
 };
 
 /**
@@ -561,6 +1540,9 @@ struct OrtEp {
    *       graphs are only valid for the duration of the call to Compile. Any graph/node/input/output
    *       names that are needed by the OrtNodeComputeInfo functions must be copied and stored by the OrtEp.
    *
+   * \note As of version 1.24, implementation of this function is optional if the EP does not compile nodes and
+   *       uses a kernel registry instead.
+   *
    * \since Version 1.23.
    */
   ORT_API2_STATUS(Compile, _In_ OrtEp* this_ptr, _In_ const OrtGraph** graphs,
@@ -573,6 +1555,9 @@ struct OrtEp {
    * \param[in] this_ptr The OrtEp instance.
    * \param[inout] node_compute_infos The OrtNodeComputeInfo instances to release.
    * \param[in] num_node_compute_infos The number of OrtNodeComputeInfo instances.
+   *
+   * \note As of version 1.24, implementation of this function is optional if the EP does not compile nodes and
+   *       uses a kernel registry instead.
    *
    * \since Version 1.23.
    */
@@ -726,6 +1711,36 @@ struct OrtEp {
    */
   ORT_API_T(const char*, GetCompiledModelCompatibilityInfo, _In_ OrtEp* this_ptr,
             _In_ const OrtGraph* graph);
+
+  /** \brief Gets the execution provider's kernel registry, if any.
+   *
+   * A kernel registry contains kernel creation information for operator kernels supported by an EP.
+   *
+   * \param[in] this_ptr The OrtEp instance.
+   * \param[out] kernel_registry Output parameter set to the EP's kernel registry, which must remain valid throughout
+   *                             the lifetime of the EP. Can be NULL if the EP doesn't use a kernel registry.
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \note Implementation of this function is optional. If set to NULL, ORT assumes the EP compiles nodes.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(GetKernelRegistry, _In_ OrtEp* this_ptr,
+                  _Outptr_result_maybenull_ const OrtKernelRegistry** kernel_registry);
+
+  /** \brief Gets whether the execution provider supports concurrent run calls made on the session.
+   *
+   * \param[in] this_ptr The OrtEp instance.
+   * \param[out] is_supported Whether concurrent runs are supported.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \note Implementation of this function is optional and it may be set to NULL.
+   *       If not implemented, ORT assumes that concurrent runs are supported.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(IsConcurrentRunSupported, _In_ OrtEp* this_ptr, _Outptr_ bool* is_supported);
 };
 
 /** \brief The function signature that ORT will call to create OrtEpFactory instances.
@@ -981,6 +1996,115 @@ struct OrtEpFactory {
                   _In_ const OrtMemoryDevice* memory_device,
                   _In_opt_ const OrtKeyValuePairs* stream_options,
                   _Outptr_ OrtSyncStreamImpl** stream);
+
+  /** \brief Check for known incompatibility reasons between a hardware device and this execution provider.
+   *
+   * This function allows an execution provider to check if a specific hardware device is compatible
+   * with the execution provider. The EP can set specific incompatibility reasons via the
+   * OrtDeviceEpIncompatibilityDetails parameter using OrtEpApi::DeviceEpIncompatibilityDetails_SetDetails.
+   *
+   * \param[in] this_ptr The OrtEpFactory instance.
+   * \param[in] hw The hardware device to check for incompatibility.
+   * \param[in,out] details Pre-allocated incompatibility details object created and initialized by ORT.
+   *                        The EP can use OrtEpApi::DeviceEpIncompatibilityDetails_SetDetails to set
+   *                        incompatibility information. If the device is compatible, the EP can
+   *                        leave the object unchanged (it defaults to no incompatibility).
+   *
+   * \note Implementation of this function is optional.
+   *       If not implemented, ORT will assume the device is compatible with this EP.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(GetHardwareDeviceIncompatibilityDetails, _In_ OrtEpFactory* this_ptr,
+                  _In_ const OrtHardwareDevice* hw,
+                  _Inout_ OrtDeviceEpIncompatibilityDetails* details);
+
+  /** \brief Create an OrtExternalResourceImporterImpl for external resource import.
+   *
+   * This is used to create an external resource importer that enables zero-copy import of
+   * external GPU memory (e.g., D3D12 shared resources) and synchronization primitives
+   * (e.g., D3D12 timeline fences).
+   *
+   * EPs that support external resource import (via CUDA, HIP, Vulkan, or D3D12 APIs) can
+   * implement this to allow applications to share GPU resources without copies.
+   *
+   * \param[in] this_ptr The OrtEpFactory instance.
+   * \param[in] ep_device The OrtEpDevice to create the external resource importer for.
+   * \param[out] out_importer The created OrtExternalResourceImporterImpl instance.
+   *                          Set to nullptr if external resource import is not supported.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \note Implementation of this function is optional.
+   *       An EP factory should only implement this if it supports external resource import.
+   *       If not implemented or not supported, return ORT_NOT_IMPLEMENTED or set out_importer to nullptr.
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(CreateExternalResourceImporterForDevice, _In_ OrtEpFactory* this_ptr,
+                  _In_ const OrtEpDevice* ep_device,
+                  _Outptr_result_maybenull_ OrtExternalResourceImporterImpl** out_importer);
+
+  /** \brief Returns the number of OrtCustomOpDomains that this factory provides.
+   *
+   * \param[in] this_ptr The OrtEpFactory instance.
+   * \param[out] num_domains Output parameter set to the number of provided OrtCustomOpDomain instances.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(GetNumCustomOpDomains, _In_ OrtEpFactory* this_ptr, _Out_ size_t* num_domains);
+
+  /** \brief Gets the EP-specific OrtCustomOpDomains.
+   *
+   * This function is used when running inference on a model that contains EP-specific custom operations.
+   *
+   * Workflow:
+   * 1. The EP factory implements this function to supply a list of OrtCustomOpDomain instances.
+   * 2. The application either 1) calls SessionOptionsAppendExecutionProvider_V2() with an OrtEpDevice containing
+   *    the plugin EP's factory or 2) enables auto ep selection.
+   * 3. 1) SessionOptionsAppendExecutionProvider_V2() appends the provided OrtCustomOpDomains to the
+   *    session options or 2) ORT registers the OrtCustomOpDomains provided by the EP devices
+   *    that could be potentially selected.
+   *
+   * As a result, any session created from these session options will have these custom op domains registered
+   * in ORT, ensuring that the custom ops are properly recognized and validated when the model is loaded.
+   *
+   * Plugin EPs can provide two types of custom ops:
+   *  1. A full OrtCustomOp with a concrete kernel implementation
+   *    - A Plugin EP can supply an OrtCustomOp and a corresponding CustomKernel::Compute() implementation.
+   *    - In GetCapability(), it calls EpGraphSupportInfo_AddSingleNode() to inform ORT
+   *      that the custom node should NOT be fused or compiled. Instead, ORT should invoke
+   *      the custom node's Compute() function at runtime.
+   *
+   *  2. A "placeholder" OrtCustomOp with an empty kernel implementation
+   *    - A compile-based Plugin EP can supply an OrtCustomOp whose CustomKernel::Compute()
+   *      does nothing. The purpose is to satisfy model validation during model loading by
+   *      registering the custom op as a valid operator in the session.
+   *    - In GetCapability(), the EP should call EpGraphSupportInfo_AddNodesToFuse() to
+   *      notify ORT that this custom node should be fused and compiled by the EP.
+   *    - In Compile(), the EP executes its compiled bits to perform inference for
+   *      the fused custom node.
+   *
+   * Note: The OrtCustomOpDomain instances must be valid while any session is using them.
+           EP factory has the responsibility to release OrtCustomOpDomain instances it creates. It happens
+   *       automatically if using the C++ Ort::CustomOpDomain class.
+   *
+   * \param[in] this_ptr The OrtEpFactory instance.
+   * \param[out] domains Array of `num_domains` elements pre-allocated by ORT that should be filled with
+                         OrtCustomOpDomain instances created by the EP. The `num_domains` is the value returned by
+                         GetNumCustomOpDomains().
+   * \param[in] num_domains The size of the `domains` array pre-allocated by ORT.
+   *
+   * \snippet{doc} snippets.dox OrtStatus Return Value
+   *
+   * \since Version 1.24.
+   */
+  ORT_API2_STATUS(GetCustomOpDomains, _In_ OrtEpFactory* this_ptr,
+                  _Out_writes_all_(num_domains) OrtCustomOpDomain** domains, _In_ size_t num_domains);
 };
 
 #ifdef __cplusplus

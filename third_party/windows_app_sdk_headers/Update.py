@@ -20,9 +20,9 @@ windows_app_sdk_headers = [
 headers = [version_info_header] + windows_app_sdk_headers
 
 # The target revision of WindowsAppSDK
-revision = "c4f951addb693bae1084085f126fa8c392e2787d"
+revision = "3e1905de7f390ea4bf4c16205341b2b7bd15de30"
 # The target version of WindowsAppSDK
-version = "1.8.1"
+version = "2.0.1"
 
 base_url = "https://raw.githubusercontent.com/microsoft/WindowsAppSDK"
 # Source URL for the current revision of WindowsAppSDK headers

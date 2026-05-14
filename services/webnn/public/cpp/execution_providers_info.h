@@ -86,7 +86,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                 {
                     .Major = 1,
                     .Minor = 8,
-                    .Build = 35,
+                    .Build = 53,
                     .Revision = 0,
                 },
             .vendor_id = 0x1002,
@@ -99,9 +99,9 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
         {
             .min_package_version =
                 {
-                    .Major = 1,
-                    .Minor = 8,
-                    .Build = 14,
+                    .Major = 0,
+                    .Minor = 0,
+                    .Build = 26,
                     .Revision = 0,
                 },
             .vendor_id = 0x10de,
@@ -171,9 +171,9 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
         {
             .min_package_version =
                 {
-                    .Major = 1,
-                    .Minor = 8,
-                    .Build = 13,
+                    .Major = 2,
+                    .Minor = 2420,
+                    .Build = 40,
                     .Revision = 0,
                 },
             .vendor_id = 0x4d4f4351,
@@ -188,7 +188,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                 {
                     .Major = 1,
                     .Minor = 8,
-                    .Build = 31,
+                    .Build = 57,
                     .Revision = 0,
                 },
             .vendor_id = 0x1022,
