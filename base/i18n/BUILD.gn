@@ -2,22 +2,45 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/rust/rust_static_library.gni")
+
 source_set("base_i18n_export") {
   public = [ "base_i18n_export.h" ]
+}
+
+rust_static_library("i18n_icu_bridge_ffi") {
+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+  crate_root = "internal/icu_bridge.rs"
+  sources = [ "internal/icu_bridge.rs" ]
+  cxx_bindings = [ "internal/icu_bridge.rs" ]
+  visibility = [
+    ":*",
+    "//base:i18n",
+  ]
+  deps = [
+    "//third_party/rust/icu_locale/v2:lib",
+    "//third_party/rust/icu_locale_core/v2:lib",
+    "//third_party/rust/log/v0_4:lib",
+  ]
 }
 
 source_set("language_code") {
   sources = [
     "language_code.cc",
     "language_code.h",
+    "language_code_builder.cc",
+    "language_code_builder.h",
   ]
 
   defines = [ "BASE_I18N_IMPLEMENTATION" ]
 
   public_deps = [ ":base_i18n_export" ]
-  deps = [ "//base" ]
+  deps = [
+    ":i18n_icu_bridge_ffi",
+    "//base",
+  ]
   visibility = [
     ":*",
-    "//base:i18n",
+    "//base:*",
   ]
 }

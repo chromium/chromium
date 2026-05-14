@@ -242,6 +242,7 @@ dependencies = [
  "hostname",
  "icu_casemap",
  "icu_experimental",
+ "icu_locale",
  "icu_locale_core",
  "icu_normalizer",
  "icu_properties",

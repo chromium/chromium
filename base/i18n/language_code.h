@@ -9,19 +9,16 @@
 #include <array>
 #include <compare>
 #include <cstdint>
-#include <functional>
 #include <optional>
 #include <ostream>
 #include <string_view>
-#include <type_traits>
 
 #include "base/check.h"
 #include "base/i18n/base_i18n_export.h"
 
 namespace base {
 
-class LanguageCodeBuilder;
-
+class BASE_I18N_EXPORT LanguageCodeBuilder;
 // A type-safe wrapper for BCP47 language codes (locales).
 //
 // Supported Format Specification:

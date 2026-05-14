@@ -95,6 +95,11 @@ version = "0.5.0"
 default-features = false
 features = ["compiled_data"]
 
+[dependencies.icu_locale]
+version = "2.2.0"
+default-features = false
+features = ["compiled_data"]
+
 [dependencies.icu_locale_core]
 version = "2.2.0"
 default-features = false

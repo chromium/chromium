@@ -3655,6 +3655,7 @@ test("base_unittests") {
     "i18n/file_util_icu_unittest.cc",
     "i18n/icu_string_conversions_unittest.cc",
     "i18n/icu_util_unittest.cc",
+    "i18n/language_code_unittest.cc",
     "i18n/message_formatter_unittest.cc",
     "i18n/number_formatting_unittest.cc",
     "i18n/rtl_unittest.cc",
