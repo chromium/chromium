@@ -13,7 +13,8 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:importantForAccessibility="yes">
 
     <ImageView
         android:id="@+id/start_icon"

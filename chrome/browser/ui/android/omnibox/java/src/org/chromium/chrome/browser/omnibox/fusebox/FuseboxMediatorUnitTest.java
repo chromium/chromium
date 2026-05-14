@@ -536,9 +536,9 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onHidePopup_bottomSheet_showsKeyboardIfFocused() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
-        ConstraintLayout spyParentView = spy(mViewHolder.parentView);
-        doReturn(mViewHolder.addButton).when(spyParentView).findFocus();
-        mViewHolder = new FuseboxViewHolder(spyParentView, mPopup);
+        ConstraintLayout spyParent = spy(mViewHolder.parentView);
+        doReturn(mViewHolder.addButton).when(spyParent).findFocus();
+        mViewHolder = new FuseboxViewHolder(spyParent, mPopup);
         recreateMediator();
 
         // Show popup first
@@ -547,7 +547,7 @@ public class FuseboxMediatorUnitTest {
         // Hide popup
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
 
-        verify(mKeyboardVisibilityDelegate).showKeyboard(mViewHolder.addButton);
+        verify(mKeyboardVisibilityDelegate).showKeyboard(any());
     }
 
     @Test

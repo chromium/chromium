@@ -10,6 +10,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -85,55 +86,67 @@ public class FuseboxPopupUnitTest {
     }
 
     @Test
-    public void testFocusFirstViewForAccessibility_focusableChild() {
-        View v = mViewGroup.getChildAt(0);
+    public void testFocusFirstViewForAccessibility_traversalOrder_firstEligibleChildSelected() {
+        View attachmentContainer = mViewGroup.getChildAt(0);
+        View competingChild = mViewGroup.getChildAt(1);
 
-        v.setVisibility(View.VISIBLE);
-        v.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-        v.setAccessibilityDelegate(mAccessibilityDelegate);
+        attachmentContainer.setVisibility(View.VISIBLE);
+        competingChild.setVisibility(View.VISIBLE);
+        competingChild.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        competingChild.setAccessibilityDelegate(mAccessibilityDelegate);
+
+        View cameraButton = mContentView.findViewById(R.id.fusebox_camera_button);
+        cameraButton.setVisibility(View.VISIBLE);
+        cameraButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        cameraButton.setAccessibilityDelegate(mAccessibilityDelegate);
 
         mFuseboxPopup.focusFirstViewForAccessibility();
 
         verify(mAccessibilityDelegate, atLeastOnce())
-                .sendAccessibilityEvent(v, AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                .sendAccessibilityEvent(cameraButton, AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        verify(mAccessibilityDelegate, never())
+                .sendAccessibilityEvent(competingChild, AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     @Test
-    public void testFocusFirstViewForAccessibility_unimportantChild() {
-        View v1 = mViewGroup.getChildAt(0);
-        View v2 = mViewGroup.getChildAt(1);
+    public void testFocusFirstViewForAccessibility_traversalOrder_skipsHiddenContainers() {
+        View attachmentContainer = mViewGroup.getChildAt(0);
+        View fallbackChild = mViewGroup.getChildAt(1);
 
-        v1.setVisibility(View.VISIBLE);
-        v1.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        v1.setAccessibilityDelegate(mAccessibilityDelegate);
+        // Setting container to GONE causes recursive traversal to skip its entire subtree.
+        attachmentContainer.setVisibility(View.GONE);
 
-        v2.setVisibility(View.VISIBLE);
-        v2.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-        v2.setAccessibilityDelegate(mAccessibilityDelegate);
+        fallbackChild.setVisibility(View.VISIBLE);
+        fallbackChild.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        fallbackChild.setAccessibilityDelegate(mAccessibilityDelegate);
 
         mFuseboxPopup.focusFirstViewForAccessibility();
 
         verify(mAccessibilityDelegate, atLeastOnce())
-                .sendAccessibilityEvent(v2, AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                .sendAccessibilityEvent(fallbackChild, AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     @Test
-    public void testFocusFirstViewForAccessibility_invisibleChild() {
-        View v1 = mViewGroup.getChildAt(0);
-        View v2 = mViewGroup.getChildAt(1);
+    public void testFocusFirstViewForAccessibility_traversalOrder_skipsUnimportantViews() {
+        View attachmentContainer = mViewGroup.getChildAt(0);
+        View fallbackChild1 = mViewGroup.getChildAt(1);
+        View fallbackChild2 = mViewGroup.getChildAt(2);
 
-        v1.setVisibility(View.GONE);
-        v1.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-        v1.setAccessibilityDelegate(mAccessibilityDelegate);
+        // Setting container to GONE causes recursive traversal to skip its entire subtree.
+        attachmentContainer.setVisibility(View.GONE);
 
-        v2.setVisibility(View.VISIBLE);
-        v2.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-        v2.setAccessibilityDelegate(mAccessibilityDelegate);
+        fallbackChild1.setVisibility(View.VISIBLE);
+        fallbackChild1.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        fallbackChild1.setAccessibilityDelegate(mAccessibilityDelegate);
+
+        fallbackChild2.setVisibility(View.VISIBLE);
+        fallbackChild2.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        fallbackChild2.setAccessibilityDelegate(mAccessibilityDelegate);
 
         mFuseboxPopup.focusFirstViewForAccessibility();
 
         verify(mAccessibilityDelegate, atLeastOnce())
-                .sendAccessibilityEvent(v2, AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                .sendAccessibilityEvent(fallbackChild2, AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     @Test

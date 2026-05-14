@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
@@ -266,22 +267,30 @@ class FuseboxPopup {
      * <p>TODO(crbug.com/470324794): This isn't right. Figure out why AnchoredPopupWindow won't
      * focus views for us.
      */
+    @SuppressWarnings("AccessibilityFocus")
     void focusFirstViewForAccessibility() {
-        View viewForAccessibility = null;
-        for (int viewIndex = 0; viewIndex < mViewGroup.getChildCount(); viewIndex++) {
-            var view = mViewGroup.getChildAt(viewIndex);
-
-            if (view.getVisibility() == View.VISIBLE && view.isImportantForAccessibility()) {
-                viewForAccessibility = view;
-                break;
-            }
-        }
-
+        View viewForAccessibility = findFirstViewForAccessibility(mViewGroup);
         if (viewForAccessibility == null) return;
 
         // Move focus to the view, emitting event.
         viewForAccessibility.requestFocus();
         viewForAccessibility.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        viewForAccessibility.performAccessibilityAction(
+                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+    }
+
+    private @Nullable View findFirstViewForAccessibility(View view) {
+        if (view.getVisibility() != View.VISIBLE) return null;
+        if (view.isImportantForAccessibility()) return view;
+
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View result = findFirstViewForAccessibility(viewGroup.getChildAt(i));
+                if (result != null) return result;
+            }
+        }
+        return null;
     }
 
     /** Dismiss the popup window. */
