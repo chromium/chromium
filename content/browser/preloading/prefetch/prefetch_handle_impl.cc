@@ -10,19 +10,21 @@
 
 namespace content {
 
-class PrefetchHandleImpl::PrefetchContainerObserver final
-    : public content::PrefetchContainerObserver {
+class PrefetchHandleImpl::PrefetchContainerObserverForCallback final
+    : public PrefetchContainerObserver {
  public:
-  PrefetchContainerObserver();
-  ~PrefetchContainerObserver() override;
+  PrefetchContainerObserverForCallback() = default;
+  ~PrefetchContainerObserverForCallback() override = default;
 
   // Not movable nor copyable.
-  PrefetchContainerObserver(PrefetchContainerObserver&& other) = delete;
-  PrefetchContainerObserver& operator=(PrefetchContainerObserver&& other) =
-      delete;
-  PrefetchContainerObserver(const PrefetchContainerObserver&) = delete;
-  PrefetchContainerObserver& operator=(const PrefetchContainerObserver&) =
-      delete;
+  PrefetchContainerObserverForCallback(
+      PrefetchContainerObserverForCallback&& other) = delete;
+  PrefetchContainerObserverForCallback& operator=(
+      PrefetchContainerObserverForCallback&& other) = delete;
+  PrefetchContainerObserverForCallback(
+      const PrefetchContainerObserverForCallback&) = delete;
+  PrefetchContainerObserverForCallback& operator=(
+      const PrefetchContainerObserverForCallback&) = delete;
 
   void SetOnPrefetchHeadReceivedCallback(
       base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
@@ -33,7 +35,7 @@ class PrefetchHandleImpl::PrefetchContainerObserver final
                const std::optional<int>& response_code)>
           on_prefetch_completed_or_failed);
 
-  // Implements `content::PrefetchContainerObserver`.
+  // Implements `PrefetchContainerObserver`.
   void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override;
   void OnGotInitialEligibility(
       const PrefetchContainer& prefetch_container) override;
@@ -50,20 +52,14 @@ class PrefetchHandleImpl::PrefetchContainerObserver final
       on_prefetch_completed_or_failed_;
 };
 
-PrefetchHandleImpl::PrefetchContainerObserver::PrefetchContainerObserver() =
-    default;
-
-PrefetchHandleImpl::PrefetchContainerObserver::~PrefetchContainerObserver() =
-    default;
-
-void PrefetchHandleImpl::PrefetchContainerObserver::
+void PrefetchHandleImpl::PrefetchContainerObserverForCallback::
     SetOnPrefetchHeadReceivedCallback(
         base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
             on_prefetch_head_received) {
   on_prefetch_head_received_ = std::move(on_prefetch_head_received);
 }
 
-void PrefetchHandleImpl::PrefetchContainerObserver::
+void PrefetchHandleImpl::PrefetchContainerObserverForCallback::
     SetOnPrefetchCompletedOrFailedCallback(
         base::RepeatingCallback<
             void(const network::URLLoaderCompletionStatus& completion_status,
@@ -72,13 +68,13 @@ void PrefetchHandleImpl::PrefetchContainerObserver::
   on_prefetch_completed_or_failed_ = std::move(on_prefetch_completed_or_failed);
 }
 
-void PrefetchHandleImpl::PrefetchContainerObserver::OnWillBeDestroyed(
-    const PrefetchContainer& prefetch_container) {}
+void PrefetchHandleImpl::PrefetchContainerObserverForCallback::
+    OnWillBeDestroyed(const PrefetchContainer& prefetch_container) {}
 
-void PrefetchHandleImpl::PrefetchContainerObserver::OnGotInitialEligibility(
-    const PrefetchContainer& prefetch_container) {}
+void PrefetchHandleImpl::PrefetchContainerObserverForCallback::
+    OnGotInitialEligibility(const PrefetchContainer& prefetch_container) {}
 
-void PrefetchHandleImpl::PrefetchContainerObserver::OnDeterminedHead(
+void PrefetchHandleImpl::PrefetchContainerObserverForCallback::OnDeterminedHead(
     const PrefetchContainer& prefetch_container) {
   if (on_prefetch_head_received_) {
     // This condition will be used in a callback provided in the future.
@@ -95,8 +91,8 @@ void PrefetchHandleImpl::PrefetchContainerObserver::OnDeterminedHead(
   }
 }
 
-void PrefetchHandleImpl::PrefetchContainerObserver::OnPrefetchCompletedOrFailed(
-    const PrefetchContainer& prefetch_container) {
+void PrefetchHandleImpl::PrefetchContainerObserverForCallback::
+    OnPrefetchCompletedOrFailed(const PrefetchContainer& prefetch_container) {
   // `IsDecoy()` check is added to preserve the existing behavior.
   // https://crbug.com/400761083
   if (prefetch_container.IsDecoy()) {
@@ -115,7 +111,7 @@ PrefetchHandleImpl::PrefetchHandleImpl(
     : prefetch_service_(std::move(prefetch_service)),
       prefetch_container_(std::move(prefetch_container)),
       prefetch_container_observer_(
-          std::make_unique<PrefetchHandleImpl::PrefetchContainerObserver>()) {
+          std::make_unique<PrefetchContainerObserverForCallback>()) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefetch_service_);
   // Note that `prefetch_container_` can be nullptr.

@@ -43,11 +43,12 @@ class PrefetchHandleImpl final : public PrefetchHandle {
       PrefetchStatus prefetch_status_on_release_started_prefetch);
 
  private:
-  class PrefetchContainerObserver;
+  class PrefetchContainerObserverForCallback;
 
   base::WeakPtr<PrefetchService> prefetch_service_;
   base::WeakPtr<PrefetchContainer> prefetch_container_;
-  std::unique_ptr<PrefetchContainerObserver> prefetch_container_observer_;
+  std::unique_ptr<PrefetchContainerObserverForCallback>
+      prefetch_container_observer_;
   std::optional<PrefetchStatus> prefetch_status_on_release_started_prefetch_;
 };
 
