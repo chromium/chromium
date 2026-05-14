@@ -35,7 +35,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/switches.h"
 #include "extensions/renderer/extension_throttle_manager.h"
 #endif
@@ -54,7 +54,7 @@
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 std::unique_ptr<extensions::ExtensionThrottleManager>
 CreateExtensionThrottleManager() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -204,7 +204,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
     }
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!extension_throttle_manager_) {
     extension_throttle_manager_ = CreateExtensionThrottleManager();
   }

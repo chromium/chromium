@@ -3,27 +3,21 @@
 // found in the LICENSE file.
 
 /**
- * Returns a promise that resolves to whether the request was successfully
- * made. This will throw an error if the request finishes with any status
- * other than 503.
- * @return {Promise<bool>}
+ * Returns whether the request was successfully made. Throws an error if the
+ * request finishes with any status other than 503.
+ * @return {bool}
  */
-function canMakeRequest(url) {
-  return new Promise(function(resolve, reject) {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-      if (this.status === 503) {
-        resolve(true);
-      } else {
-        reject('Unexpected status: ' + this.status);
-      }
-    };
-    xhr.onerror = function() {
-      resolve(false);
-    };
-    xhr.open('GET', url, /*async=*/ true);
-    xhr.send();
-  });
+async function canMakeRequest(url) {
+  try {
+    const response = await fetch(url);
+    if (response.status === 503) {
+      return true;
+    } else {
+      throw new Error('Unexpected status: ' + response.status);
+    }
+  } catch (e) {
+    return false;
+  }
 }
 
 async function runTest(url, requestsToMake, expectedFailRequestNum) {

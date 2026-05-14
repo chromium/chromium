@@ -1,9 +1,15 @@
 {
-  "name": "Extension tests which issue XHRs from the background page.",
+  "name": "Extension tests which issue fetches from the service worker.",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
-  "permissions": ["webRequest", "<all_urls>"]
+  "permissions": [
+    "webRequest"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ]
 }

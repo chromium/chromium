@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/result_catcher.h"
 #include "net/base/backoff_entry.h"
@@ -22,6 +23,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -33,8 +36,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
   if (base::StartsWith(request.relative_url, "/redirect",
                        base::CompareCase::SENSITIVE)) {
-    std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-        new net::test_server::BasicHttpResponse());
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_FOUND);
     http_response->set_content("Redirecting...");
     http_response->set_content_type("text/plain");
@@ -46,8 +49,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   if (base::StartsWith(request.relative_url, "/test_throttle",
                        base::CompareCase::SENSITIVE)) {
-    std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-        new net::test_server::BasicHttpResponse());
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_SERVICE_UNAVAILABLE);
     http_response->set_content("The server is overloaded right now.");
     http_response->set_content_type("text/plain");
@@ -59,8 +62,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Unhandled requests result in the Embedded test server sending a 404.
   return nullptr;
 }
-
-}  // namespace
 
 class ExtensionURLLoaderThrottleBrowserTest : public ExtensionBrowserTest {
  public:
@@ -80,6 +81,12 @@ class ExtensionURLLoaderThrottleBrowserTest : public ExtensionBrowserTest {
     ASSERT_TRUE(extension_);
   }
 
+  void TearDownOnMainThread() override {
+    // The underlying extension is deleted when the profile is destroyed.
+    extension_ = nullptr;
+    ExtensionBrowserTest::TearDownOnMainThread();
+  }
+
   void RunTest(const std::string& file_path,
                const std::string& request_url,
                const std::string& expected_throttled_request_num) {
@@ -97,7 +104,7 @@ class ExtensionURLLoaderThrottleBrowserTest : public ExtensionBrowserTest {
   }
 
  private:
-  raw_ptr<const Extension, DanglingUntriaged> extension_;
+  raw_ptr<const Extension> extension_;
 };
 
 class ExtensionURLLoaderThrottleWithSplitCacheBrowserTest
@@ -116,10 +123,16 @@ class ExtensionURLLoaderThrottleWithSplitCacheBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/469417243): Flaky on desktop Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ThrottleRequest DISABLED_ThrottleRequest
+#else
+#define MAYBE_ThrottleRequest ThrottleRequest
+#endif
 // Tests that if the same URL is requested repeatedly by an extension, it will
 // eventually be throttled.
 IN_PROC_BROWSER_TEST_P(ExtensionURLLoaderThrottleWithSplitCacheBrowserTest,
-                       ThrottleRequest) {
+                       MAYBE_ThrottleRequest) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&HandleRequest, false, false));
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -254,4 +267,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionURLLoaderThrottleCommandLineBrowserTest,
               ""));
 }
 
+}  // namespace
 }  // namespace extensions
