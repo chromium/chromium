@@ -145,14 +145,6 @@ bool ShouldRedactContent(proto::RedactionDecision redaction_decision) {
   }
 }
 
-// Returns whether or not a given form control node should have its content
-// redacted (irrespective of the reason).
-bool ShouldRedactContent(
-    const optimization_guide::proto::FormControlData& form_control_data) {
-  return form_control_data.has_redaction_decision() &&
-         ShouldRedactContent(form_control_data.redaction_decision());
-}
-
 optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
     blink::mojom::AIPageContentClickabilityReason reason) {
   switch (reason) {
@@ -650,9 +642,10 @@ optimization_guide::proto::RedactionDecision ConvertRedactionDecision(
 
 void ConvertFormControlData(
     const blink::mojom::AIPageContentFormControlData& mojom_form_control_data,
-    blink::mojom::AIPageContentRedactionDecision redaction_decision,
     const std::optional<AutofillFieldMetadata>& autofill_metadata,
-    optimization_guide::proto::FormControlData* proto_form_control_data) {
+    optimization_guide::proto::ContentAttributes* proto_attributes) {
+  optimization_guide::proto::FormControlData* proto_form_control_data =
+      proto_attributes->mutable_form_control_data();
   proto_form_control_data->set_form_control_type(
       ConvertFormControlType(mojom_form_control_data.form_control_type));
   proto_form_control_data->set_is_checked(mojom_form_control_data.is_checked);
@@ -680,11 +673,6 @@ void ConvertFormControlData(
     }
     proto_select_option->set_is_selected(select_option->is_selected);
   }
-  // Set the deprecated proto field for compatibility. The canonical redaction
-  // decision now lives on `ContentAttributes.redaction_decision`.
-  // TODO(crbug.com/480135178): Remove when consumers are migrated.
-  proto_form_control_data->set_redaction_decision(
-      ConvertRedactionDecision(redaction_decision));
 
   // Incorporate any information received from Autofill.
   if (autofill_metadata) {
@@ -697,7 +685,7 @@ void ConvertFormControlData(
     // one, use the Autofill decision when its feature gate is enabled.
     //
     // TODO(b/454611037): Handle <select> related data as well.
-    if (proto_form_control_data->redaction_decision() ==
+    if (proto_attributes->redaction_decision() ==
             proto::REDACTION_DECISION_NO_REDACTION_NECESSARY &&
         IsAutofillRedactionReasonEnabled(autofill_metadata->redaction_reason)) {
       proto::RedactionDecision autofill_redaction_decision =
@@ -705,16 +693,20 @@ void ConvertFormControlData(
               *proto_form_control_data, autofill_metadata->redaction_reason);
       if (autofill_redaction_decision !=
           proto::REDACTION_DECISION_NO_REDACTION_NECESSARY) {
-        proto_form_control_data->set_redaction_decision(
-            autofill_redaction_decision);
+        proto_attributes->set_redaction_decision(autofill_redaction_decision);
 
-        if (ShouldRedactContent(
-                proto_form_control_data->redaction_decision())) {
+        if (ShouldRedactContent(proto_attributes->redaction_decision())) {
           proto_form_control_data->clear_field_value();
         }
       }
     }
   }
+
+  // Set the deprecated proto field for compatibility. The canonical redaction
+  // decision now lives on `ContentAttributes.redaction_decision`.
+  // TODO(crbug.com/480135178): Remove when consumers are migrated.
+  proto_form_control_data->set_redaction_decision(
+      proto_attributes->redaction_decision());
 }
 
 void ConvertTableData(
@@ -843,9 +835,8 @@ base::expected<void, std::string> ConvertAttributes(
     }
     ConvertFormControlData(
         *mojom_attributes.form_control_data,
-        mojom_attributes.redaction_decision,
         GetAutofillFieldData(source_frame_token, session, *proto_attributes),
-        proto_attributes->mutable_form_control_data());
+        proto_attributes);
   } else if (mojom_attributes.table_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kTable) {
@@ -1196,8 +1187,7 @@ class Converter {
     // form control data.
     const optimization_guide::proto::ContentAttributes& proto_attributes =
         proto_node->content_attributes();
-    if (proto_attributes.has_form_control_data() &&
-        ShouldRedactContent(proto_attributes.form_control_data())) {
+    if (ShouldRedactContent(proto_attributes.redaction_decision())) {
       return base::ok();
     }
 
@@ -1330,8 +1320,7 @@ class Converter {
       const blink::mojom::AIPageContentAttributes& mojom_attributes,
       const optimization_guide::proto::ContentAttributes& proto_attributes) {
     if (proto_attributes.has_form_control_data()) {
-      const auto redaction_decision =
-          proto_attributes.form_control_data().redaction_decision();
+      const auto redaction_decision = proto_attributes.redaction_decision();
       const bool should_collect_sensitive_payment =
           options_->include_sensitive_payments_for_redaction &&
           redaction_decision ==
@@ -1387,16 +1376,17 @@ class Converter {
         proto_attributes.set_common_ancestor_dom_node_id(
             *mojom_attributes.dom_node_id);
       }
+      proto_attributes.set_redaction_decision(
+          ConvertRedactionDecision(mojom_attributes.redaction_decision));
       ConvertFormControlData(
           *mojom_attributes.form_control_data,
-          mojom_attributes.redaction_decision,
           GetAutofillFieldData(frame_token, session_, proto_attributes),
-          proto_attributes.mutable_form_control_data());
+          &proto_attributes);
       MaybeAddSensitivePaymentOrOtpData(mojom_attributes, proto_attributes);
 
       // If the node is redacted, do not walk children. This is consistent with
       // the behavior in `ConvertNode()`.
-      if (ShouldRedactContent(proto_attributes.form_control_data())) {
+      if (ShouldRedactContent(proto_attributes.redaction_decision())) {
         return;
       }
     }

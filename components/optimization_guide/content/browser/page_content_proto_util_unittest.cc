@@ -2386,16 +2386,20 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
       ConvertFormControlDataWithAutofill(std::move(form_control_node));
 
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  const auto& form_control_data_proto = page_content.proto.root_node()
-                                            .children_nodes(0)
-                                            .content_attributes()
-                                            .form_control_data();
+  const auto& content_attributes_proto =
+      page_content.proto.root_node().children_nodes(0).content_attributes();
+  const auto& form_control_data_proto =
+      content_attributes_proto.form_control_data();
   if (ShouldEnableCreditCardRedaction()) {
     EXPECT_EQ(form_control_data_proto.redaction_decision(),
+              proto::REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+    EXPECT_EQ(content_attributes_proto.redaction_decision(),
               proto::REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
     EXPECT_TRUE(form_control_data_proto.field_value().empty());
   } else {
     EXPECT_EQ(form_control_data_proto.redaction_decision(),
+              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+    EXPECT_EQ(content_attributes_proto.redaction_decision(),
               proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
     EXPECT_EQ(form_control_data_proto.field_value(), "4111111111111111");
   }
@@ -2415,15 +2419,19 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
       ConvertFormControlDataWithAutofill(std::move(form_control_node));
 
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  const auto& form_control_data_proto = page_content.proto.root_node()
-                                            .children_nodes(0)
-                                            .content_attributes()
-                                            .form_control_data();
+  const auto& content_attributes_proto =
+      page_content.proto.root_node().children_nodes(0).content_attributes();
+  const auto& form_control_data_proto =
+      content_attributes_proto.form_control_data();
   if (ShouldEnableCreditCardRedaction()) {
     EXPECT_EQ(form_control_data_proto.redaction_decision(),
               proto::REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD);
+    EXPECT_EQ(content_attributes_proto.redaction_decision(),
+              proto::REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD);
   } else {
     EXPECT_EQ(form_control_data_proto.redaction_decision(),
+              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+    EXPECT_EQ(content_attributes_proto.redaction_decision(),
               proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
   }
   EXPECT_TRUE(form_control_data_proto.field_value().empty());
@@ -2445,16 +2453,20 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
       AutofillFieldRedactionReason::kShouldRedactForOtp);
 
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  const auto& form_control_data_proto = page_content.proto.root_node()
-                                            .children_nodes(0)
-                                            .content_attributes()
-                                            .form_control_data();
+  const auto& content_attributes_proto =
+      page_content.proto.root_node().children_nodes(0).content_attributes();
+  const auto& form_control_data_proto =
+      content_attributes_proto.form_control_data();
   if (ShouldEnableOtpRedaction()) {
     EXPECT_EQ(form_control_data_proto.redaction_decision(),
+              proto::REDACTION_DECISION_REDACTED_IS_OTP);
+    EXPECT_EQ(content_attributes_proto.redaction_decision(),
               proto::REDACTION_DECISION_REDACTED_IS_OTP);
     EXPECT_TRUE(form_control_data_proto.field_value().empty());
   } else {
     EXPECT_EQ(form_control_data_proto.redaction_decision(),
+              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+    EXPECT_EQ(content_attributes_proto.redaction_decision(),
               proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
     EXPECT_EQ(form_control_data_proto.field_value(), "123456");
   }
@@ -2475,15 +2487,19 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
       AutofillFieldRedactionReason::kShouldRedactForOtp);
 
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  const auto& form_control_data_proto = page_content.proto.root_node()
-                                            .children_nodes(0)
-                                            .content_attributes()
-                                            .form_control_data();
+  const auto& content_attributes_proto =
+      page_content.proto.root_node().children_nodes(0).content_attributes();
+  const auto& form_control_data_proto =
+      content_attributes_proto.form_control_data();
   if (ShouldEnableOtpRedaction()) {
     EXPECT_EQ(form_control_data_proto.redaction_decision(),
               proto::REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD);
+    EXPECT_EQ(content_attributes_proto.redaction_decision(),
+              proto::REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD);
   } else {
     EXPECT_EQ(form_control_data_proto.redaction_decision(),
+              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+    EXPECT_EQ(content_attributes_proto.redaction_decision(),
               proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
   }
   EXPECT_TRUE(form_control_data_proto.field_value().empty());
@@ -2515,8 +2531,12 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
     // Child text under redacted OTP fields must be removed so no OTP-adjacent
     // sensitive strings leak.
     EXPECT_EQ(form_control_node_proto.children_nodes_size(), 0);
+    EXPECT_EQ(form_control_node_proto.content_attributes().redaction_decision(),
+              proto::REDACTION_DECISION_REDACTED_IS_OTP);
   } else {
     EXPECT_EQ(form_control_node_proto.children_nodes_size(), 1);
+    EXPECT_EQ(form_control_node_proto.content_attributes().redaction_decision(),
+              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
   }
 }
 
@@ -2600,8 +2620,12 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
 
   if (ShouldEnableCreditCardRedaction()) {
     EXPECT_EQ(form_control_node_proto.children_nodes_size(), 0);
+    EXPECT_EQ(form_control_node_proto.content_attributes().redaction_decision(),
+              proto::REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
   } else {
     EXPECT_EQ(form_control_node_proto.children_nodes_size(), 1);
+    EXPECT_EQ(form_control_node_proto.content_attributes().redaction_decision(),
+              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
   }
 }
 
