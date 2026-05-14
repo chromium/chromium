@@ -52,9 +52,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const GridPlacementData& placement_data,
       const GridLayoutData& layout_data,
       const ComputedStyle& grid_lanes_style,
-      const BoxStrut& borders,
-      const LogicalSize& border_box_size,
-      GridItemData* out_of_flow_item);
+      const LogicalRect& padding_box_rect,
+      GridItemData* item);
 
   // Builds the sizing collection for the given `track_direction`. For the
   // stacking axis this is a no-op. For the grid axis, this builds virtual items

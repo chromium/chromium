@@ -815,6 +815,11 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
   const auto default_containing_block_size =
       ShrinkLogicalSize(total_fragment_size, BorderScrollbarPadding());
 
+  const auto border_scrollbar = Borders() + Scrollbar();
+  const LogicalRect padding_box_rect = {
+      border_scrollbar.StartOffset(),
+      ShrinkLogicalSize(total_fragment_size, border_scrollbar)};
+
   for (LayoutBox* oof_child : oof_children) {
     GridItemData* out_of_flow_item = MakeGarbageCollected<GridItemData>(
         BlockNode(oof_child), container_style);
@@ -829,8 +834,8 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
     if ((node.IsAbsoluteContainer() && position == EPosition::kAbsolute) ||
         (node.IsFixedContainer() && position == EPosition::kFixed)) {
       containing_block_rect.emplace(ComputeOutOfFlowItemContainingRect(
-          placement_data, layout_data, container_style,
-          container_builder_.Borders(), total_fragment_size, out_of_flow_item));
+          placement_data, layout_data, container_style, padding_box_rect,
+          out_of_flow_item));
     }
 
     LogicalStaticPosition static_pos;
@@ -2267,36 +2272,46 @@ LogicalRect GridLanesLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
     const GridPlacementData& placement_data,
     const GridLayoutData& layout_data,
     const ComputedStyle& grid_lanes_style,
-    const BoxStrut& borders,
-    const LogicalSize& border_box_size,
-    GridItemData* out_of_flow_item) {
-  DCHECK(out_of_flow_item && out_of_flow_item->IsOutOfFlow());
+    const LogicalRect& padding_box_rect,
+    GridItemData* item) {
+  DCHECK(item && item->IsOutOfFlow());
   const bool is_for_columns =
       grid_lanes_style.GridLanesTrackSizingDirection() == kForColumns;
 
-  out_of_flow_item->ComputeOutOfFlowItemPlacement(
+  item->ComputeOutOfFlowItemPlacement(
       is_for_columns ? layout_data.Columns() : layout_data.Rows(),
       placement_data, grid_lanes_style);
-  LogicalRect containing_rect;
+
+  LogicalRect rect = padding_box_rect;
+
+  const auto& placement =
+      is_for_columns ? item->column_placement : item->row_placement;
   const auto& track_collection =
       is_for_columns ? layout_data.Columns() : layout_data.Rows();
+  if (placement.range_index.begin != kNotFound) {
+    DCHECK_NE(placement.offset_in_range.begin, kNotFound);
+    const LayoutUnit offset =
+        TrackStartOffset(track_collection, placement.range_index.begin,
+                         placement.offset_in_range.begin);
+    if (is_for_columns) {
+      rect.ShiftInlineStartEdgeTo(offset);
+    } else {
+      rect.ShiftBlockStartEdgeTo(offset);
+    }
+  }
+  if (placement.range_index.end != kNotFound) {
+    DCHECK_NE(placement.offset_in_range.end, kNotFound);
+    const LayoutUnit offset =
+        TrackEndOffset(track_collection, placement.range_index.end,
+                       placement.offset_in_range.end);
+    if (is_for_columns) {
+      rect.ShiftInlineEndEdgeTo(offset);
+    } else {
+      rect.ShiftBlockEndEdgeTo(offset);
+    }
+  }
 
-  // Compute the containing rect for out-of-flow items in grid-lanes:
-  // - Grid axis: Use normal grid placement
-  // - Stacking axis: Ignore grid placement and use the full container size,
-  // since items flow and stack naturally in this direction and OOF items should
-  // have access to the entire space.
-  ComputeOutOfFlowOffsetAndSize(
-      *out_of_flow_item, track_collection, borders, border_box_size,
-      &containing_rect.offset.inline_offset, &containing_rect.size.inline_size,
-      /*is_grid_lanes_axis=*/!is_for_columns);
-
-  ComputeOutOfFlowOffsetAndSize(
-      *out_of_flow_item, track_collection, borders, border_box_size,
-      &containing_rect.offset.block_offset, &containing_rect.size.block_size,
-      /*is_grid_lanes_axis=*/is_for_columns);
-
-  return containing_rect;
+  return rect;
 }
 
 }  // namespace blink

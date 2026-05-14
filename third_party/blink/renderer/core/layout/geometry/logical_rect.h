@@ -12,6 +12,8 @@
 
 namespace blink {
 
+struct BoxStrut;
+
 // LogicalRect is the position and size of a rect (typically a fragment)
 // relative to the parent in the logical coordinate system.
 // For more information about physical and logical coordinate systems, see:
@@ -89,6 +91,7 @@ struct CORE_EXPORT LogicalRect {
     size.block_size += block_start + block_end;
   }
 
+  void Contract(const BoxStrut&);
   void ContractEdges(LayoutUnit block_start,
                      LayoutUnit inline_end,
                      LayoutUnit block_end,

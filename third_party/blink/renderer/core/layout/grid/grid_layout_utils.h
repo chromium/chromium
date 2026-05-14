@@ -87,19 +87,13 @@ wtf_size_t CalculateAutomaticRepetitions(
 
 // Common out-of-flow positioning utilities shared between grid and grid-lanes.
 
-// Computes the start offset and size for an out-of-flow item in a single
-// direction (either inline or block).
-//
-// `is_grid_lanes_axis` indicates whether this is for gid lane's stacking axis,
-// which ignores grid placement and uses the full container size.
-void ComputeOutOfFlowOffsetAndSize(
-    const GridItemData& out_of_flow_item,
-    const GridLayoutTrackCollection& track_collection,
-    const BoxStrut& borders,
-    const LogicalSize& border_box_size,
-    LayoutUnit* start_offset,
-    LayoutUnit* size,
-    bool is_grid_lanes_axis = false);
+// Computes the start/end offset for an out-of-flow item in a single direction.
+LayoutUnit TrackStartOffset(const GridLayoutTrackCollection& track_collection,
+                            const wtf_size_t range_index,
+                            const wtf_size_t offset_in_range);
+LayoutUnit TrackEndOffset(const GridLayoutTrackCollection& track_collection,
+                          const wtf_size_t range_index,
+                          const wtf_size_t offset_in_range);
 
 // Computes alignment offset for out-of-flow items.
 void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,

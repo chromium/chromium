@@ -2553,6 +2553,11 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
   const auto default_containing_block_size =
       ShrinkLogicalSize(total_fragment_size, BorderScrollbarPadding());
 
+  const auto border_scrollbar = Borders() + Scrollbar();
+  const LogicalRect padding_box_rect = {
+      border_scrollbar.StartOffset(),
+      ShrinkLogicalSize(total_fragment_size, border_scrollbar)};
+
   for (LayoutBox* oof_child : oofs) {
     GridItemData* out_of_flow_item = MakeGarbageCollected<GridItemData>(
         BlockNode(oof_child), container_style);
@@ -2566,8 +2571,8 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
     if ((is_absolute_container && position == EPosition::kAbsolute) ||
         (is_fixed_container && position == EPosition::kFixed)) {
       containing_block_rect.emplace(ComputeOutOfFlowItemContainingRect(
-          placement_data, layout_data, container_style,
-          container_builder_.Borders(), total_fragment_size, out_of_flow_item));
+          placement_data, layout_data, container_style, padding_box_rect,
+          out_of_flow_item));
     }
 
     LogicalStaticPosition static_pos;
@@ -2664,27 +2669,51 @@ LogicalRect GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
     const GridPlacementData& placement_data,
     const GridLayoutData& layout_data,
     const ComputedStyle& grid_style,
-    const BoxStrut& borders,
-    const LogicalSize& border_box_size,
-    GridItemData* out_of_flow_item) {
-  DCHECK(out_of_flow_item && out_of_flow_item->IsOutOfFlow());
+    const LogicalRect& padding_box_rect,
+    GridItemData* item) {
+  DCHECK(item && item->IsOutOfFlow());
 
-  out_of_flow_item->ComputeOutOfFlowItemPlacement(layout_data.Columns(),
-                                                  placement_data, grid_style);
-  out_of_flow_item->ComputeOutOfFlowItemPlacement(layout_data.Rows(),
-                                                  placement_data, grid_style);
+  item->ComputeOutOfFlowItemPlacement(layout_data.Columns(), placement_data,
+                                      grid_style);
+  item->ComputeOutOfFlowItemPlacement(layout_data.Rows(), placement_data,
+                                      grid_style);
 
-  LogicalRect containing_rect;
+  LogicalRect rect = padding_box_rect;
+  {
+    const auto& placement = item->column_placement;
+    const auto& track_collection = layout_data.Columns();
+    if (placement.range_index.begin != kNotFound) {
+      DCHECK_NE(placement.offset_in_range.begin, kNotFound);
+      rect.ShiftInlineStartEdgeTo(
+          TrackStartOffset(track_collection, placement.range_index.begin,
+                           placement.offset_in_range.begin));
+    }
+    if (placement.range_index.end != kNotFound) {
+      DCHECK_NE(placement.offset_in_range.end, kNotFound);
+      rect.ShiftInlineEndEdgeTo(TrackEndOffset(track_collection,
+                                               placement.range_index.end,
+                                               placement.offset_in_range.end));
+    }
+  }
 
-  ComputeOutOfFlowOffsetAndSize(
-      *out_of_flow_item, layout_data.Columns(), borders, border_box_size,
-      &containing_rect.offset.inline_offset, &containing_rect.size.inline_size);
+  {
+    const auto& placement = item->row_placement;
+    const auto& track_collection = layout_data.Rows();
+    if (placement.range_index.begin != kNotFound) {
+      DCHECK_NE(placement.offset_in_range.begin, kNotFound);
+      rect.ShiftBlockStartEdgeTo(
+          TrackStartOffset(track_collection, placement.range_index.begin,
+                           placement.offset_in_range.begin));
+    }
+    if (placement.range_index.end != kNotFound) {
+      DCHECK_NE(placement.offset_in_range.end, kNotFound);
+      rect.ShiftBlockEndEdgeTo(TrackEndOffset(track_collection,
+                                              placement.range_index.end,
+                                              placement.offset_in_range.end));
+    }
+  }
 
-  ComputeOutOfFlowOffsetAndSize(
-      *out_of_flow_item, layout_data.Rows(), borders, border_box_size,
-      &containing_rect.offset.block_offset, &containing_rect.size.block_size);
-
-  return containing_rect;
+  return rect;
 }
 
 }  // namespace blink

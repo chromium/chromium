@@ -791,10 +791,10 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
            !node_style.GridRowEnd().IsAuto();
   };
 
-  auto GridAreaContainingBlockInfo =
-      [&](const LayoutBox& containing_box, const GridLayoutData& layout_data,
-          const BoxStrut& borders,
-          const LogicalSize& size) -> OutOfFlowLayoutPart::ContainingBlockInfo {
+  auto GridAreaContainingBlockInfo = [&](const LayoutBox& containing_box,
+                                         const GridLayoutData& layout_data,
+                                         const LogicalRect& padding_box_rect)
+      -> OutOfFlowLayoutPart::ContainingBlockInfo {
     DCHECK(containing_box.IsLayoutGrid() || containing_box.IsLayoutGridLanes());
 
     const auto& style = containing_box.StyleRef();
@@ -805,11 +805,11 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
     if (containing_box.IsLayoutGrid()) {
       rect = GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
           To<LayoutGrid>(containing_box).CachedPlacementData(), layout_data,
-          style, borders, size, item);
+          style, padding_box_rect, item);
     } else {
       rect = GridLanesLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
           To<LayoutGridLanes>(containing_box).CachedPlacementData(),
-          layout_data, style, borders, size, item);
+          layout_data, style, padding_box_rect, item);
     }
 
     return {.writing_direction = style.GetWritingDirection(),
@@ -845,32 +845,33 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
 
       const auto writing_direction =
           containing_block->StyleRef().GetWritingDirection();
-      LogicalSize size = ToLogicalSize(containing_block_fragment->Size(),
-                                       writing_direction.GetWritingMode());
-      size.block_size = BoxTotalBlockSize(*To<LayoutBox>(containing_block));
+      LogicalRect padding_box_rect;
+      padding_box_rect.size = ToLogicalSize(containing_block_fragment->Size(),
+                                            writing_direction.GetWritingMode());
+      padding_box_rect.size.block_size =
+          BoxTotalBlockSize(*To<LayoutBox>(containing_block));
 
       // TODO(1079031): This should eventually include scrollbar and border.
-      BoxStrut border = To<PhysicalBoxFragment>(containing_block_fragment)
-                            ->Borders()
-                            .ConvertToLogical(writing_direction);
+      padding_box_rect.Contract(
+          To<PhysicalBoxFragment>(containing_block_fragment)
+              ->Borders()
+              .ConvertToLogical(writing_direction));
 
       // TODO(yanlingwang): Add support for grid-lanes fragmentation.
       if (is_placed_within_grid_area) {
         return GridAreaContainingBlockInfo(
             *To<LayoutGrid>(containing_block),
-            *To<LayoutGrid>(containing_block)->LayoutData(), border, size);
+            *To<LayoutGrid>(containing_block)->LayoutData(), padding_box_rect);
       }
 
-      LogicalSize content_size = ShrinkLogicalSize(size, border);
-      LogicalOffset container_offset =
-          LogicalOffset(border.inline_start, border.block_start);
-      container_offset += fragmentainer_descendant.containing_block.Offset();
+      padding_box_rect.offset +=
+          fragmentainer_descendant.containing_block.Offset();
 
       ContainingBlockInfo containing_block_info{
           writing_direction,
           containing_block_fragment->IsScrollContainer(),
           containing_block_fragment->IsHiddenForPaint(),
-          LogicalRect(container_offset, content_size),
+          padding_box_rect,
           std::nullopt,
           fragmentainer_descendant.containing_block.RelativeOffset()};
 
@@ -881,11 +882,9 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
   }
 
   if (IsPlacedWithinGridOrGridLanesArea(container_object)) {
-    return GridAreaContainingBlockInfo(
-        *To<LayoutBox>(container_object),
-        container_builder_->GetGridLayoutData(), container_builder_->Borders(),
-        {container_builder_->InlineSize(),
-         container_builder_->FragmentBlockSize()});
+    return GridAreaContainingBlockInfo(*To<LayoutBox>(container_object),
+                                       container_builder_->GetGridLayoutData(),
+                                       default_containing_block_.rect);
   }
 
   if (node_style.GetPosition() == EPosition::kFixed &&

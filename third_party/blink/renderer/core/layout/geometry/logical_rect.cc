@@ -24,6 +24,11 @@ inline LogicalOffset Max(LogicalOffset a, LogicalOffset b) {
 
 }  // namespace
 
+void LogicalRect::Contract(const BoxStrut& strut) {
+  ExpandEdges(-strut.block_start, -strut.inline_end, -strut.block_end,
+              -strut.inline_start);
+}
+
 void LogicalRect::Unite(const LogicalRect& other) {
   if (other.IsEmpty())
     return;

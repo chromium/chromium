@@ -45,9 +45,8 @@ class CORE_EXPORT GridLayoutAlgorithm
       const GridPlacementData& placement_data,
       const GridLayoutData& layout_data,
       const ComputedStyle& grid_style,
-      const BoxStrut& borders,
-      const LogicalSize& border_box_size,
-      GridItemData* out_of_flow_item);
+      const LogicalRect& padding_box_rect,
+      GridItemData* item);
 
   GridLineResolver BuildGridLineResolver(
       const GridArea& subgrid_area = GridArea(),

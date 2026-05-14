@@ -410,6 +410,8 @@ LayoutUnit TrackOffset(const GridLayoutTrackCollection& track_collection,
   return track_offset;
 }
 
+}  // namespace
+
 LayoutUnit TrackStartOffset(const GridLayoutTrackCollection& track_collection,
                             const wtf_size_t range_index,
                             const wtf_size_t offset_in_range) {
@@ -459,67 +461,6 @@ LayoutUnit TrackEndOffset(const GridLayoutTrackCollection& track_collection,
   DCHECK_GT(offset_in_range, 0u);
   return TrackOffset</* snap_to_end_of_track */ true>(
       track_collection, range_index, offset_in_range);
-}
-
-}  // namespace
-
-void ComputeOutOfFlowOffsetAndSize(
-    const GridItemData& out_of_flow_item,
-    const GridLayoutTrackCollection& track_collection,
-    const BoxStrut& borders,
-    const LogicalSize& border_box_size,
-    LayoutUnit* start_offset,
-    LayoutUnit* size,
-    bool is_grid_lanes_axis) {
-  DCHECK(start_offset && size && out_of_flow_item.IsOutOfFlow());
-  OutOfFlowItemPlacement item_placement;
-  LayoutUnit end_offset;
-
-  // For the normal grid axis, determine axis from track collection direction.
-  // For the grid-lanes stacking axis, invert the direction to get the stacking
-  // axis.
-  const bool is_for_columns = is_grid_lanes_axis
-                                  ? track_collection.Direction() == kForRows
-                                  : track_collection.Direction() == kForColumns;
-
-  // The default padding box value for `size` is used for out of flow items in
-  // which both the start line and end line are defined as 'auto'.
-  if (is_for_columns) {
-    item_placement = out_of_flow_item.column_placement;
-    *start_offset = borders.inline_start;
-    end_offset = border_box_size.inline_size - borders.inline_end;
-  } else {
-    item_placement = out_of_flow_item.row_placement;
-    *start_offset = borders.block_start;
-    end_offset = border_box_size.block_size - borders.block_end;
-  }
-
-  // For the grid-lanes stacking axis, ignore grid placement and use border
-  // edges. If the start line is defined, the size will be calculated by
-  // subtracting the offset at `start_index`; otherwise, use the computed border
-  // start.
-  if (!is_grid_lanes_axis && item_placement.range_index.begin != kNotFound) {
-    DCHECK_NE(item_placement.offset_in_range.begin, kNotFound);
-
-    *start_offset =
-        TrackStartOffset(track_collection, item_placement.range_index.begin,
-                         item_placement.offset_in_range.begin);
-  }
-
-  // If the end line is defined, the offset (which can be the offset at the
-  // start index or the start border) and the added grid gap after the spanned
-  // tracks are subtracted from the offset at the end index.
-  if (!is_grid_lanes_axis && item_placement.range_index.end != kNotFound) {
-    DCHECK_NE(item_placement.offset_in_range.end, kNotFound);
-
-    end_offset =
-        TrackEndOffset(track_collection, item_placement.range_index.end,
-                       item_placement.offset_in_range.end);
-  }
-
-  // `start_offset` can be greater than `end_offset` if the used track sizes or
-  // gutter size saturated the set offsets of the track collection.
-  *size = (end_offset - *start_offset).ClampNegativeToZero();
 }
 
 void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
