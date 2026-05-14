@@ -24,6 +24,9 @@ script_test("webui_resources_tools_python_unittests") {
 
     # Needed for eslint_ts_test.EslintTsTest.testSuccess
     "//tools/typescript/tsconfig_base.json",
+
+    # Needed for Lit template formatter tests.
+    "//buildtools/",
   ]
   data_deps = [
     "//tools/code_cache_generator",

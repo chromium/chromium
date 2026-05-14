@@ -8,11 +8,19 @@ webui_sources = set([
     'minify_js.py',
     'rollup_plugin.mjs',
     'stylelint.py',
+    'lit_template_formatter/html_utils.js',
+    'lit_template_formatter/format_html.js',
+    'lit_template_formatter/format_expressions.js',
+    'lit_template_formatter/lit_template_formatter_test.js',
+    'lit_template_formatter/main.js',
+    'lit_template_formatter/process_lit_template.js',
+    'lit_template_formatter/serialize_html.js',
 ])
 
 webui_tests = set([
     'bundle_js_test.py',
     'generate_grd_test.py',
+    'lit_template_formatter_test.py',
     'minify_js_test.py',
     'stylelint_test.py',
 ])
