@@ -48,4 +48,81 @@ TEST(CompilerHardeningDeathTest, ArrayOutOfBounds) {
   EXPECT_DEATH_IF_SUPPORTED(UNSAFE_BUFFERS(b[idx] = 0), "");
 }
 
+enum class MyEnum {
+  kOne = 1,
+  kTwo = 2,
+  kThree = 3,
+  kFour = 4,
+};
+
+// Likely to be compiled into a lookup table.
+NOINLINE int GetIntFromMyEnumLookupTable(MyEnum val) {
+  switch (val) {
+    case MyEnum::kOne:
+      return 1;
+    case MyEnum::kTwo:
+      return 2;
+    case MyEnum::kThree:
+      return 3;
+    case MyEnum::kFour:
+      return 4;
+  }
+}
+
+// Testing UBSan's `-fsanitize=return`.
+TEST(CompilerHardeningDeathTest, Return) {
+  // Health check: expected `case`s.
+  EXPECT_EQ(GetIntFromMyEnumLookupTable(MyEnum::kOne), 1);
+  EXPECT_EQ(GetIntFromMyEnumLookupTable(MyEnum::kTwo), 2);
+
+  // Invalid `MyEnum` may not hit the existing `return`s in `GetIntFromMyEnum`
+  // and triggers UB. Should be caught by `-fsanitize=return`.
+  MyEnum invalid_minus = static_cast<MyEnum>(-1);
+  EXPECT_DEATH_IF_SUPPORTED(GetIntFromMyEnumLookupTable(invalid_minus), "");
+  MyEnum invalid_five = static_cast<MyEnum>(5);
+  EXPECT_DEATH_IF_SUPPORTED(GetIntFromMyEnumLookupTable(invalid_five), "");
+}
+
+NOINLINE int FuncOne() {
+  return 1;
+}
+NOINLINE int FuncTwo() {
+  return 2;
+}
+NOINLINE int FuncThree() {
+  return 3;
+}
+NOINLINE int FuncFour() {
+  return 4;
+}
+
+// Likely to be compiled into a jump table.
+NOINLINE int GetIntFromMyEnumJumpTable(MyEnum val) {
+  // Need to have 4 "clusters" to make this a jump table.
+  switch (val) {
+    case MyEnum::kOne:
+      return FuncOne();
+    case MyEnum::kTwo:
+      return FuncTwo();
+    case MyEnum::kThree:
+      return FuncThree();
+    case MyEnum::kFour:
+      return FuncFour();
+  }
+}
+
+// Testing UBSan's `-fsanitize=return`.
+TEST(CompilerHardeningDeathTest, ReturnJumpTable) {
+  // Health check: expected `case`s.
+  EXPECT_EQ(GetIntFromMyEnumJumpTable(MyEnum::kOne), 1);
+  EXPECT_EQ(GetIntFromMyEnumJumpTable(MyEnum::kTwo), 2);
+
+  // Invalid `MyEnum` may not hit the existing `return`s in `GetIntFromMyEnum`
+  // and triggers UB. Should be caught by `-fsanitize=return`.
+  MyEnum invalid_minus = static_cast<MyEnum>(-1);
+  EXPECT_DEATH_IF_SUPPORTED(GetIntFromMyEnumJumpTable(invalid_minus), "");
+  MyEnum invalid_five = static_cast<MyEnum>(5);
+  EXPECT_DEATH_IF_SUPPORTED(GetIntFromMyEnumJumpTable(invalid_five), "");
+}
+
 }  // namespace
