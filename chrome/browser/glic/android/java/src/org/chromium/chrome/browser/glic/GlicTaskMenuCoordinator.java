@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -198,22 +199,28 @@ public class GlicTaskMenuCoordinator {
             modelList.add(builder.build());
         }
 
-        // Divider
-        modelList.add(BasicListMenu.buildMenuDivider(false));
+        if (shouldShowAskGemini()) {
+            // Divider
+            modelList.add(BasicListMenu.buildMenuDivider(false));
 
-        // Ask Gemini
-        modelList.add(
-                new ListItemBuilder()
-                        .withTitleRes(R.string.glic_button_entrypoint_ask_gemini_label)
-                        .withStartIconRes(R.drawable.ic_spark_24dp)
-                        .withIsIncognito(false)
-                        .withClickListener(
-                                v -> {
-                                    mToggleGlicCallback.onClick(/* preventClose= */ false);
-                                    dismiss();
-                                })
-                        .build());
+            // Ask Gemini
+            modelList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.glic_button_entrypoint_ask_gemini_label)
+                            .withStartIconRes(R.drawable.ic_spark_24dp)
+                            .withIsIncognito(false)
+                            .withClickListener(
+                                    v -> {
+                                        mToggleGlicCallback.onClick(/* preventClose= */ false);
+                                        dismiss();
+                                    })
+                            .build());
+        }
         return modelList;
+    }
+
+    private boolean shouldShowAskGemini() {
+        return !AndroidSidePanelEnabledFn.isEnabled();
     }
 
     private void switchToActuatingTab(Set<Integer> tabs) {

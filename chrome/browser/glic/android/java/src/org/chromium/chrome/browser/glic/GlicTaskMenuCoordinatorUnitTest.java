@@ -24,7 +24,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -40,6 +43,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.UNIT_TESTS)
+@DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
 public class GlicTaskMenuCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -48,26 +52,42 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
     private Context mContext;
     private GlicTaskMenuCoordinator mCoordinator;
+    private List<ActorTask> mTasks;
 
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.getApplication();
         mCoordinator =
                 new GlicTaskMenuCoordinator(mContext, () -> mTabModelSelector, mToggleGlicCallback);
-    }
 
-    @Test
-    public void testBuildModelList_WithActiveTasks() {
         ActorTask task1 = mock(ActorTask.class);
         doReturn("Task One").when(task1).getTitle();
         ActorTask task2 = mock(ActorTask.class);
         doReturn("Task Two").when(task2).getTitle();
+        mTasks = Arrays.asList(task1, task2);
+    }
 
-        List<ActorTask> tasks = Arrays.asList(task1, task2);
-        ModelList modelList = mCoordinator.buildModelList(tasks);
+    @Test
+    public void testBuildModelList_WithActiveTasks() {
+        ModelList modelList = mCoordinator.buildModelList(mTasks);
 
         // 2 tasks + 1 divider + 1 Ask Gemini = 4 items total
         assertEquals(4, modelList.size());
+
+        ListItem item1 = modelList.get(0);
+        assertEquals("Task One", item1.model.get(ListMenuItemProperties.TITLE));
+
+        ListItem item2 = modelList.get(1);
+        assertEquals("Task Two", item2.model.get(ListMenuItemProperties.TITLE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testBuildModelList_SidePanelEnabled() {
+        ModelList modelList = mCoordinator.buildModelList(mTasks);
+
+        // 2 tasks = 2 items total
+        assertEquals(2, modelList.size());
 
         ListItem item1 = modelList.get(0);
         assertEquals("Task One", item1.model.get(ListMenuItemProperties.TITLE));
