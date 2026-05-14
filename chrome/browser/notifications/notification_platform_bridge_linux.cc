@@ -223,8 +223,9 @@ bool ShouldMarkPersistentNotificationsAsCritical(
   // and hide a notification automatically unless it is marked as critical.
   // https://github.com/linuxmint/Cinnamon/issues/7179
   // For this reason, we mark a notification that should not time out as
-  // critical unless we are on KDE Plasma which follows the notification spec.
-  return server_name != "Plasma";
+  // critical unless we are on KDE Plasma or Raspberry Pi (wf-panel-pi)
+  // which follows the notification spec.
+  return server_name != "Plasma" && server_name != "wf-panel-pi";
 }
 
 void ForwardNotificationOperation(NotificationOperation operation,
