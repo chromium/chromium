@@ -778,7 +778,7 @@ import java.util.function.Supplier;
                 new PopupButtonData(
                         this::onDynamicButtonClicked,
                         mContext.getString(R.string.ai_mode_entrypoint_label),
-                        R.drawable.search_spark_black_24dp,
+                        IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE_VALUE,
                         /* enabled= */ true,
                         mInput.getRequestType() == AutocompleteRequestType.AI_MODE,
                         PopupButtonType.TOOL,
@@ -790,7 +790,7 @@ import java.util.function.Supplier;
                     new PopupButtonData(
                             this::onDynamicButtonClicked,
                             mContext.getString(R.string.omnibox_create_image),
-                            R.drawable.create_image_24dp,
+                            IconResourceIds.BANANA_VALUE,
                             areAttachmentsCompatibleWithCreateImage(),
                             mInput.getRequestType() == AutocompleteRequestType.IMAGE_GENERATION,
                             PopupButtonType.TOOL,
