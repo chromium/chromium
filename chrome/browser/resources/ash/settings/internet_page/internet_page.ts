@@ -960,12 +960,9 @@ export class SettingsInternetPageElement extends
       return false;
     }
 
-    const isVpnConfigProhibited =
-        this.prefs.vpn_config_allowed && !this.prefs.vpn_config_allowed.value;
-    const hasAlwaysOnVpnActivated = this.prefs.arc && this.prefs.arc.vpn &&
-        this.prefs.arc.vpn.always_on &&
-        this.prefs.arc.vpn.always_on.vpn_package &&
-        !!this.prefs.arc.vpn.always_on.vpn_package.value;
+    const isVpnConfigProhibited = !this.getPref('vpn_config_allowed').value;
+    const hasAlwaysOnVpnActivated =
+        !!this.getPref('arc.vpn.always_on.vpn_package').value;
     return isVpnConfigProhibited && hasAlwaysOnVpnActivated;
   }
 

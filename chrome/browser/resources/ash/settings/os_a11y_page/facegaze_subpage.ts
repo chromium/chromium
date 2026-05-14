@@ -71,7 +71,7 @@ export class SettingsFaceGazeSubpageElement extends
   override ready(): void {
     super.ready();
     this.$.faceGazeToggle.checked =
-        this.prefs.settings.a11y.face_gaze.enabled.value;
+        this.getPref<boolean>('settings.a11y.face_gaze.enabled').value;
   }
 
   // DeepLinkingMixin override

@@ -1554,9 +1554,8 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private updateAlwaysOnVpnPrefValue_(): void {
-    this.alwaysOnVpn_.value = this.prefs.arc && this.prefs.arc.vpn &&
-        this.prefs.arc.vpn.always_on && this.prefs.arc.vpn.always_on.lockdown &&
-        this.prefs.arc.vpn.always_on.lockdown.value;
+    this.alwaysOnVpn_.value =
+        this.getPref<boolean>('arc.vpn.always_on.lockdown').value;
   }
 
   private getFakeVpnConfigPrefForEnforcement_():
@@ -1572,11 +1571,11 @@ export class SettingsInternetDetailPageElement extends
     // shown on non-VPN networks.
     if (this.managedProperties_ &&
         this.managedProperties_.type === NetworkType.kVPN && this.prefs &&
-        this.prefs.vpn_config_allowed && !this.prefs.vpn_config_allowed.value) {
+        !this.getPref<boolean>('vpn_config_allowed').value) {
       fakeAlwaysOnVpnEnforcementPref.enforcement =
           chrome.settingsPrivate.Enforcement.ENFORCED;
       fakeAlwaysOnVpnEnforcementPref.controlledBy =
-          this.prefs.vpn_config_allowed.controlledBy;
+          this.getPref('vpn_config_allowed').controlledBy;
     }
     return fakeAlwaysOnVpnEnforcementPref;
   }
@@ -1987,16 +1986,13 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private showAlwaysOnVpn_(managedProperties: ManagedProperties): boolean {
-    return this.isArcVpn_(managedProperties) && this.prefs.arc &&
-        this.prefs.arc.vpn && this.prefs.arc.vpn.always_on &&
-        this.prefs.arc.vpn.always_on.vpn_package &&
+    return this.isArcVpn_(managedProperties) &&
         OncMojo.getActiveValue(managedProperties.typeProperties.vpn!.host) ===
-        this.prefs.arc.vpn.always_on.vpn_package.value;
+        this.getPref('arc.vpn.always_on.vpn_package').value;
   }
 
   private alwaysOnVpnChanged_(): void {
-    if (this.prefs && this.prefs.arc && this.prefs.arc.vpn &&
-        this.prefs.arc.vpn.always_on && this.prefs.arc.vpn.always_on.lockdown) {
+    if (this.prefs) {
       this.set(
           'prefs.arc.vpn.always_on.lockdown.value', this.alwaysOnVpn_.value);
     }

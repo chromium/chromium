@@ -284,13 +284,14 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   private inputMethodsLimitedByPolicy_(): boolean {
     const allowedInputMethodsPref =
-        this.getPref('settings.language.allowed_input_methods');
-    return !!allowedInputMethodsPref && allowedInputMethodsPref.value.length;
+        this.getPref<string[]>('settings.language.allowed_input_methods');
+    return !!allowedInputMethodsPref &&
+        allowedInputMethodsPref.value.length > 0;
   }
 
   private inputMethodsEnabledByPolicy_(): boolean {
-    const allowedInputMethodsForceEnabled =
-        this.getPref('settings.language.allowed_input_methods_force_enabled');
+    const allowedInputMethodsForceEnabled = this.getPref<boolean>(
+        'settings.language.allowed_input_methods_force_enabled');
     return !!allowedInputMethodsForceEnabled &&
         allowedInputMethodsForceEnabled.value;
   }

@@ -351,7 +351,8 @@ export class SettingsSelectToSpeakSubpageElement extends
    * system voice.
    */
   private getVoiceNameAndExtension_(): {name: string, extension: string} {
-    const name = this.getPref('settings.a11y.select_to_speak_voice_name').value;
+    const name =
+        this.getPref<string>('settings.a11y.select_to_speak_voice_name').value;
     if (name === SYSTEM_VOICE) {
       return {
         name: '',
@@ -372,8 +373,9 @@ export class SettingsSelectToSpeakSubpageElement extends
    */
   private getEnhancedNetworkVoiceNameAndExtension_():
       {name: string, extension: string} {
-    const name =
-        this.getPref('settings.a11y.select_to_speak_enhanced_voice_name').value;
+    const name = this.getPref<string>(
+                         'settings.a11y.select_to_speak_enhanced_voice_name')
+                     .value;
     const extension =
         this.voices_.find(({voiceName}) => voiceName === name)!.extensionId;
     return {name, extension};

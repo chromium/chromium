@@ -47,6 +47,11 @@ suite('<settings-internet-page>', () => {
     arc: {
       vpn: {
         always_on: {
+          lockdown: {
+            key: 'lockdown',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          },
           vpn_package: {
             key: 'vpn_package',
             type: chrome.settingsPrivate.PrefType.STRING,

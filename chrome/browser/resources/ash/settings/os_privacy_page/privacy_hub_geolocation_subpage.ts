@@ -353,7 +353,8 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   }
 
   private isAutomaticTimeZoneConfigured_(): boolean {
-    return this.getPref('generated.resolve_timezone_by_geolocation_on_off')
+    return this
+        .getPref<boolean>('generated.resolve_timezone_by_geolocation_on_off')
         .value;
   }
 
@@ -447,7 +448,7 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   }
 
   private isLocalWeatherConfiguredToUseGeolocation_(): boolean {
-    return this.getPref('settings.ambient_mode.enabled').value;
+    return this.getPref<boolean>('settings.ambient_mode.enabled').value;
   }
 
   private computeLocalWeatherText_(): string {

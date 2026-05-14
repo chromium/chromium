@@ -158,8 +158,9 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
       return '';
     }
 
-    if (this.prefs.ash.user.geolocation_access_level.enforcement ===
-        chrome.settingsPrivate.Enforcement.ENFORCED) {
+    if (this.getPref<GeolocationAccessLevel>(
+                'ash.user.geolocation_access_level')
+            .enforcement === chrome.settingsPrivate.Enforcement.ENFORCED) {
       return loadTimeData.getStringF(
           'timeZoneGeolocationManagedWarningText',
           this.activeTimeZoneDisplayName);
@@ -171,10 +172,12 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
 
   private computeShouldShowGeolocationWarningText_(): boolean {
     return (
-        this.prefs.generated.resolve_timezone_by_geolocation_on_off.value ===
-            true &&
-        this.prefs.ash.user.geolocation_access_level.value ===
-            GeolocationAccessLevel.DISALLOWED);
+        this.getPref<boolean>(
+                'generated.resolve_timezone_by_geolocation_on_off')
+                .value === true &&
+        this.getPref<GeolocationAccessLevel>(
+                'ash.user.geolocation_access_level')
+                .value === GeolocationAccessLevel.DISALLOWED);
   }
 
   /**

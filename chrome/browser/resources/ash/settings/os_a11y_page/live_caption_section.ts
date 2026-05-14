@@ -160,7 +160,8 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         'Accessibility.LiveCaption.EnableFromSettings', liveCaptionEnabled);
     if (liveCaptionEnabled && !defaultLanguageInstalled) {
       this.installLanguagePacks_(
-          [this.getPref('accessibility.captions.live_caption_language').value]);
+          [this.getPref<string>('accessibility.captions.live_caption_language')
+               .value]);
     }
   }
 
@@ -188,7 +189,8 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     }
 
     return languageCode ===
-        this.prefs.accessibility.captions.live_caption_language.value;
+        this.getPref<string>('accessibility.captions.live_caption_language')
+            .value;
   }
 
   private onMakeDefaultClick_(): void {
@@ -213,7 +215,8 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     }
 
     const liveCapLanguage =
-        this.getPref('accessibility.captions.live_caption_language').value;
+        this.getPref<string>('accessibility.captions.live_caption_language')
+            .value;
     if (!this.installedLanguagePacks_.some(
             languagePack => languagePack.code === liveCapLanguage)) {
       this.setPrefValue(

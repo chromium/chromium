@@ -523,8 +523,10 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   }
 
   private isLocalPasswordAllowed(): boolean {
-    const allowedLocalAuthFactors = this.getPref(AllowedLocalAuthFactorsPref);
-    const authFactorsSet = new Set(allowedLocalAuthFactors.value);
+    const allowedLocalAuthFactors =
+        this.getPref<AllowedLocalAuthFactors[]>(AllowedLocalAuthFactorsPref)
+            .value;
+    const authFactorsSet = new Set(allowedLocalAuthFactors);
     return authFactorsSet.has(AllowedLocalAuthFactors.ALL) ||
         authFactorsSet.has(AllowedLocalAuthFactors.LOCAL_PASSWORD);
   }

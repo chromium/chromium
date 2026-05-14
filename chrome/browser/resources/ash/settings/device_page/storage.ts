@@ -226,7 +226,8 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
    */
   private onMyFilesClick_(): void {
     if (this.localUserFilesAllowed_(
-            this.getPref('filebrowser.local_user_files_allowed').value)) {
+            this.getPref<boolean>('filebrowser.local_user_files_allowed')
+                .value)) {
       this.browserProxy_.openMyFiles();
     }
   }

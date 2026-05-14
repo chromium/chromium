@@ -126,7 +126,7 @@ export class SettingsAndroidAppsSubpageElement extends
   }
 
   private allowRemove_(): boolean {
-    return this.prefs.arc.enabled.enforcement !==
+    return this.getPref<boolean>('arc.enabled').enforcement !==
         chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 

@@ -8,8 +8,8 @@ export const AllowedLocalAuthFactorsPref =
 /**
  * Possible values for `AllowedLocalAuthFactors`.
  */
-export const AllowedLocalAuthFactors = {
-  ALL: 'ALL',
-  LOCAL_PASSWORD: 'LOCAL_PASSWORD',
-  PIN: 'PIN',
-};
+export enum AllowedLocalAuthFactors {
+  ALL = 'ALL',
+  LOCAL_PASSWORD = 'LOCAL_PASSWORD',
+  PIN = 'PIN',
+}

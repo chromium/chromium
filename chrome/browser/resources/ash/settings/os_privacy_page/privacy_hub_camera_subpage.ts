@@ -169,7 +169,7 @@ export class SettingsPrivacyHubCameraSubpage extends
   }
 
   private isCameraAllowed_(): boolean {
-    return this.getPref('ash.user.camera_allowed').value;
+    return this.getPref<boolean>('ash.user.camera_allowed').value;
   }
 
   private getSystemServicesPermissionText_(): string {

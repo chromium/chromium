@@ -47,6 +47,17 @@ suite('<settings-internet-detail-subpage>', () => {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
+    'arc': {
+      'vpn': {
+        'always_on': {
+          'lockdown': {
+            key: 'lockdown',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          },
+        },
+      },
+    },
     'cros': {
       'signed': {
         'data_roaming_enabled': {
@@ -67,6 +78,11 @@ suite('<settings-internet-detail-subpage>', () => {
     },
     'proxy_override_rules': {
       value: [],
+    },
+    'proxy': {
+      key: 'proxy',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
     },
   };
 
