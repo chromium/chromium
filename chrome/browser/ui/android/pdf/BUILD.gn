@@ -39,6 +39,8 @@ android_library("pdf_utils_java") {
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
@@ -59,6 +61,8 @@ android_library("pdf_page_java") {
     "//chrome/browser/ui/android/native_page:java",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
   ]
 }
 
@@ -66,6 +70,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/pdf/PdfCoordinatorInterface.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfEntryPoint.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfFragmentViewTracker.java",
   ]
   deps = [
     ":pdf_info_java",

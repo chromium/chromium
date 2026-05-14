@@ -4,14 +4,21 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ext.SdkExtensions;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.pdf.viewer.fragment.PdfViewerFragment;
 
 import org.jni_zero.CalledByNative;
 
@@ -33,6 +40,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /** Utilities for inline pdf support. */
@@ -359,6 +368,18 @@ public class PdfUtils {
             return PdfUtils.encodePdfPageUrl(uri);
         }
         return null;
+    }
+
+    /** Collects all the View objects for PdfViewerFragment found after activity restart. */
+    public static List<View> findAllPdfFragmentViews(Activity activity) {
+        List<View> allViews = new ArrayList<>();
+        var fragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            if (fragment instanceof PdfViewerFragment) {
+                allViews.add(assumeNonNull(fragment.getView()));
+            }
+        }
+        return allViews;
     }
 
     /**

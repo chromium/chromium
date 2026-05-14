@@ -1548,6 +1548,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/night_mode/NightModeUtilsTest.java",
       "src/org/chromium/chrome/browser/payments/AddressEditorTest.java",
       "src/org/chromium/chrome/browser/payments/ContactEditorTest.java",
+      "src/org/chromium/chrome/browser/pdf/PdfFragmentViewTrackerImplUnitTest.java",
       "src/org/chromium/chrome/browser/pdf/PdfPageIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplTest.java",
       "src/org/chromium/chrome/browser/quickactionsearchwidget/QuickActionSearchWidgetProviderTest.java",
@@ -1579,6 +1580,7 @@ if (is_android) {
       "//components/dom_distiller/content/browser/android:dom_distiller_content_java",
       "//components/dom_distiller/core/android:dom_distiller_core_java",
       "//components/dom_distiller/core/mojom:mojom_java",
+      "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
       "//ui/android:ui_android_features_java",
     ]
   }

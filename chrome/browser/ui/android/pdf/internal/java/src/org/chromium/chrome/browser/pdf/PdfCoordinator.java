@@ -49,7 +49,6 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -110,11 +109,7 @@ public class PdfCoordinator
 
     private final @Nullable PdfToolbarCoordinator mToolbarCoordinator;
 
-    /**
-     * Temporarily holds PdfViewerFragment's Views object that were added to current Tab's PdfPage
-     * Views.
-     */
-    private final List<View> mPdfFragmentViews;
+    private final PdfFragmentViewTracker mPdfFragmentViewTracker;
 
     /** The filepath of the pdf. It is null before download complete. */
     private @Nullable String mPdfFilePath;
@@ -154,7 +149,7 @@ public class PdfCoordinator
             String title,
             int tabId,
             String url,
-            List<View> pdfFragmentViews) {
+            PdfFragmentViewTracker pdfFragmentViewTracker) {
         mActivity = activity;
         mTabId = String.valueOf(tabId);
         mNativePageHost = host;
@@ -164,7 +159,7 @@ public class PdfCoordinator
         Context contextForInflation =
                 BundleUtils.createContextForInflation(activity, OnDemandModule.SPLIT_NAME);
         mView = LayoutInflater.from(contextForInflation).inflate(R.layout.pdf_page, null);
-        mPdfFragmentViews = pdfFragmentViews;
+        mPdfFragmentViewTracker = pdfFragmentViewTracker;
         mProgressBar = mView.findViewById(R.id.progress_bar);
         mView.setBackgroundColor(
                 ChromeColors.getPrimaryBackgroundColor(activity, profile.isOffTheRecord()));
@@ -172,13 +167,13 @@ public class PdfCoordinator
                 new View.OnAttachStateChangeListener() {
                     @Override
                     public void onViewAttachedToWindow(View view) {
-                        relocatePdfPageViews();
                         loadPdfFile();
                     }
 
                     @Override
                     public void onViewDetachedFromWindow(View view) {}
                 });
+        relocateMisplacedFragmentViews();
         mFragmentContainerViewId = R.id.pdf_fragment_container;
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         Fragment fragment = mFragmentManager.findFragmentByTag(mTabId);
@@ -200,28 +195,21 @@ public class PdfCoordinator
                 PdfUtils.isInlinePdfV2Enabled() ? new PdfToolbarCoordinator(mView, this) : null;
     }
 
-    /**
-     * Move the PdfViewerFragment's views wrongly added to the current PdfPage view to the right one
-     * using the Tab ID as unique identifier.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void relocatePdfPageViews() {
-        ViewGroup fcv = mView.findViewById(R.id.pdf_fragment_container);
-        if (fcv.getChildCount() == 1) return;
+    private void relocateMisplacedFragmentViews() {
+        ViewGroup container = mView.findViewById(R.id.pdf_fragment_container);
+        if (container.getChildCount() > 0) {
+            mPdfFragmentViewTracker.maybeRelocateViews(container, mTabId);
+        } else {
+            container.setOnHierarchyChangeListener(
+                    new ViewGroup.OnHierarchyChangeListener() {
+                        @Override
+                        public void onChildViewAdded(View parent, View child) {
+                            mPdfFragmentViewTracker.maybeRelocateViews(container, mTabId);
+                        }
 
-        for (int i = fcv.getChildCount() - 1; i >= 0; i--) {
-            View child = fcv.getChildAt(i);
-            if (!mTabId.equals(child.getTag())) {
-                fcv.removeView(child);
-                mPdfFragmentViews.add(child);
-            }
-        }
-        for (int i = mPdfFragmentViews.size() - 1; i >= 0; i--) {
-            View child = mPdfFragmentViews.get(i);
-            if (mTabId.equals(child.getTag())) {
-                fcv.addView(child);
-                mPdfFragmentViews.remove(child);
-            }
+                        @Override
+                        public void onChildViewRemoved(View parent, View child) {}
+                    });
         }
     }
 

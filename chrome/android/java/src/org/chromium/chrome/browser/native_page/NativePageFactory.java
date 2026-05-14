@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageCreationTracker;
 import org.chromium.chrome.browser.ntp.RecentTabsManager;
 import org.chromium.chrome.browser.ntp.RecentTabsPage;
+import org.chromium.chrome.browser.pdf.PdfFragmentViewTrackerImpl;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -74,8 +75,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -107,7 +106,7 @@ public class NativePageFactory {
     private static @Nullable NativePage sTestPage;
     private final BackPressManager mBackPressManager;
     private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
-    private @Nullable List<View> mPdfFragmentViews;
+    private @Nullable PdfFragmentViewTrackerImpl mPdfFragmentViewTracker;
 
     public NativePageFactory(
             Activity activity,
@@ -399,7 +398,10 @@ public class NativePageFactory {
         }
 
         protected NativePage buildPdfPage(
-                Tab tab, String url, PdfInfo pdfInfo, List<View> pdfFragmentViews) {
+                Tab tab,
+                String url,
+                PdfInfo pdfInfo,
+                PdfFragmentViewTrackerImpl pdfFragmentViewTracker) {
             return NativePageFactory.buildPdfPage(
                     url,
                     tab,
@@ -407,7 +409,7 @@ public class NativePageFactory {
                     mBrowserControlsManager,
                     mTabModelSelector,
                     mActivity,
-                    pdfFragmentViews);
+                    pdfFragmentViewTracker);
         }
 
         private @Nullable IncognitoNtpMetrics createIncognitoNtpMetrics() {
@@ -477,8 +479,11 @@ public class NativePageFactory {
                 break;
             case NativePageType.PDF:
                 assumeNonNull(pdfInfo);
-                if (mPdfFragmentViews == null) mPdfFragmentViews = new ArrayList<>();
-                page = getBuilder().buildPdfPage(tab, url, pdfInfo, mPdfFragmentViews);
+                if (mPdfFragmentViewTracker == null) {
+                    mPdfFragmentViewTracker =
+                            new PdfFragmentViewTrackerImpl(mTabModelSelector, mActivity);
+                }
+                page = getBuilder().buildPdfPage(tab, url, pdfInfo, mPdfFragmentViewTracker);
                 break;
             default:
                 assert false;
@@ -556,7 +561,7 @@ public class NativePageFactory {
                             browserControlsManager,
                             tabModelSelector,
                             activity,
-                            new ArrayList<View>());
+                            new PdfFragmentViewTrackerImpl(null, null));
         }
         page.updateForUrl(url);
         return page;
@@ -569,7 +574,7 @@ public class NativePageFactory {
             BrowserControlsManager browserControlsManager,
             TabModelSelector tabModelSelector,
             Activity activity,
-            List<View> pdfFragmentViews) {
+            PdfFragmentViewTrackerImpl pdfFragmentViewTracker) {
         if (sTestPage != null) {
             return sTestPage;
         }
@@ -582,7 +587,7 @@ public class NativePageFactory {
                 pdfInfo,
                 activity.getString(R.string.pdf_transient_tab_title),
                 tab.getId(),
-                pdfFragmentViews);
+                pdfFragmentViewTracker);
     }
 
     /** Simple implementation of NativePageHost backed by a {@link Tab} */
@@ -656,9 +661,8 @@ public class NativePageFactory {
     /** Destroy and unhook objects at destruction. */
     public void destroy() {
         if (mNewTabPageCreationTracker != null) mNewTabPageCreationTracker.destroy();
-        if (mPdfFragmentViews != null) {
-            mPdfFragmentViews.clear();
-            mPdfFragmentViews = null;
+        if (mPdfFragmentViewTracker != null) {
+            mPdfFragmentViewTracker.destroy();
         }
     }
 

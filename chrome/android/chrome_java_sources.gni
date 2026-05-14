@@ -998,6 +998,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/payments/ui/SectionInformation.java",
   "java/src/org/chromium/chrome/browser/payments/ui/SectionUiUtils.java",
   "java/src/org/chromium/chrome/browser/payments/ui/ShoppingCart.java",
+  "java/src/org/chromium/chrome/browser/pdf/PdfFragmentViewTrackerImpl.java",
   "java/src/org/chromium/chrome/browser/pdf/PdfPageIphController.java",
   "java/src/org/chromium/chrome/browser/permissions/PermissionBlockedDialog.java",
   "java/src/org/chromium/chrome/browser/permissions/PermissionUpdateRequester.java",
