@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,8 +40,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
 
@@ -60,6 +63,7 @@ public class BottomSheetControllerImplUnitTest {
     @Mock private BottomSheetContent mSheetContent;
     @Mock private InsetObserver mInsetObserver;
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
+    @Captor ArgumentCaptor<PropertyModel> mScrimPropertyModelCaptor;
 
     private BottomSheetControllerImpl mController;
     private final OneshotSupplierImpl<ScrimManager> mScrimManagerSupplier =
@@ -144,25 +148,45 @@ public class BottomSheetControllerImplUnitTest {
     @Test
     public void testScrimZOrdering() {
         mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
         doReturn(true).when(mBottomSheet).isSheetOpen();
 
-        mController.scrimVisibilityChanged(true);
-        verify(mRoot).setZ(1.0f);
+        // 1. Simulate sheet opened to trigger showScrim and get the callback.
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
 
-        mController.scrimVisibilityChanged(false);
-        verify(mRoot).setZ(0.0f);
+        verify(mScrimManager).showScrim(mScrimPropertyModelCaptor.capture());
+        var callback =
+                mScrimPropertyModelCaptor.getValue().get(ScrimProperties.VISIBILITY_CALLBACK);
+
+        // 2. Trigger callback to hide scrim -> verify Z-elevation is cleared.
+        callback.onResult(false);
+        verify(mRoot, times(2)).setZ(0.0f);
+
+        // 3. Trigger callback to show scrim -> verify Z-elevation is elevated again.
+        callback.onResult(true);
+        verify(mRoot, times(2)).setZ(1.0f);
     }
 
     @Test
     public void testBottomControlsOffset() {
         mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
         doReturn(true).when(mBottomSheet).isSheetOpen();
+
+        // 1. Simulate sheet opened to trigger showScrim.
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
+
+        verify(mScrimManager).showScrim(mScrimPropertyModelCaptor.capture());
+        var callback =
+                mScrimPropertyModelCaptor.getValue().get(ScrimProperties.VISIBILITY_CALLBACK);
+
+        // 2. Set bottom controls offset to 100. Since scrim is visible, bottom margin remains 0.
         mController.setBottomControlsOffset(100);
+        verify(mBottomSheet, times(3)).setBottomMargin(0);
 
+        // 3. Trigger callback to hide scrim -> bottom margin should be updated to the offset (100).
+        callback.onResult(false);
         verify(mBottomSheet).setBottomMargin(100);
-
-        mController.scrimVisibilityChanged(true);
-        verify(mBottomSheet).setBottomMargin(0);
     }
 
     @Test
@@ -437,5 +461,58 @@ public class BottomSheetControllerImplUnitTest {
 
         // Verify that the sheet collapsed to PEEK (its opening state) instead of HALF
         verify(mBottomSheet).setSheetState(SheetState.PEEK, true);
+    }
+
+    @Test
+    public void testScopedScrimVisibilityCallback() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+        doReturn(true).when(mBottomSheet).isSheetOpen();
+
+        // 1. Simulate bottom sheet opening.
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
+
+        // 2. Capture the PropertyModel passed to showScrim().
+        verify(mScrimManager).showScrim(mScrimPropertyModelCaptor.capture());
+        PropertyModel capturedModel = mScrimPropertyModelCaptor.getValue();
+
+        // 3. Verify that the visibility callback is registered.
+        var visibilityCallback = capturedModel.get(ScrimProperties.VISIBILITY_CALLBACK);
+        assertTrue(
+                "Visibility callback should be attached to the PropertyModel",
+                visibilityCallback != null);
+
+        // 4. Verify that the synchronous callback trigger set Z to 1.0f initially.
+        verify(mRoot).setZ(1.0f);
+
+        // 5. Trigger the callback with false -> verify Z-elevation is cleared.
+        visibilityCallback.onResult(false);
+        verify(mRoot, times(2)).setZ(0.0f);
+
+        // 6. Trigger the callback with true -> verify Z-elevation is elevated again.
+        visibilityCallback.onResult(true);
+        verify(mRoot, times(2)).setZ(1.0f);
+    }
+
+    @Test
+    public void testCustomScrimLifecycleBehavior() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+        doReturn(true).when(mBottomSheet).isSheetOpen();
+
+        // 1. Mock the current sheet content to have a custom scrim lifecycle.
+        doReturn(true).when(mSheetContent).hasCustomScrimLifecycle();
+        doReturn(mSheetContent).when(mBottomSheet).getCurrentSheetContent();
+        when(mSheetContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        // 2. Simulate bottom sheet opening.
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
+
+        // 3. Verify that showScrim was NOT called on ScrimManager.
+        verify(mScrimManager, never()).showScrim(any());
+
+        // 4. Verify that Z-elevation remains 0.0f (not elevated to 1.0f automatically).
+        verify(mRoot, never()).setZ(1.0f);
     }
 }

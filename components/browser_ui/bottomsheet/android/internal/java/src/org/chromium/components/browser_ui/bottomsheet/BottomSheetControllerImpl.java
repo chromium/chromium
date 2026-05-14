@@ -26,7 +26,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -48,7 +47,7 @@ import java.util.function.Supplier;
  * content was actually shown (see full doc on method).
  */
 @NullMarked
-class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCoordinator.Observer {
+class BottomSheetControllerImpl implements ManagedBottomSheetController {
     /** The initial capacity for the priority queue handling pending content show requests. */
     private static final int INITIAL_QUEUE_CAPACITY = 1;
 
@@ -119,6 +118,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     /** The content being shown prior to the sheet being suppressed. */
     private @Nullable BottomSheetContent mContentWhenSuppressed;
 
+    private boolean mScrimVisible;
     private int mAppHeaderHeight;
     private int mBottomControlsOffset;
     private boolean mIsAnchoredToBottomControls;
@@ -242,12 +242,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                         INITIAL_QUEUE_CAPACITY,
                         Comparator.comparingInt(BottomSheetContent::getPriority));
 
-        PropertyModel scrimProperties =
-                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
-                        .with(ScrimProperties.ANCHOR_VIEW, mBottomSheet)
-                        .with(ScrimProperties.CLICK_DELEGATE, this::onScrimClicked)
-                        .build();
+        PropertyModel scrimProperties = createScrimParams();
 
         mBottomSheet.addObserver(
                 new EmptyBottomSheetObserver() {
@@ -265,7 +260,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                         // trigger an update to account for this possibility.
                         ScrimManager scrimManager = mScrimManagerSupplier.get();
                         assumeNonNull(scrimManager);
-                        scrimVisibilityChanged(scrimManager.isShowingScrim());
+                        adjustBottomSheetZAxis(mScrimVisible);
                         if (mBottomSheet.getCurrentSheetContent() != null
                                 && mBottomSheet
                                         .getCurrentSheetContent()
@@ -276,6 +271,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
                         scrimManager.showScrim(scrimProperties);
                         mScrimShown = true;
+                        onScrimVisibilityChanged(true);
                         updateBackPressStateChangedSupplier();
                     }
 
@@ -337,9 +333,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                     }
                 });
 
-        ScrimManager scrimManager = mScrimManagerSupplier.get();
-        assumeNonNull(scrimManager);
-        scrimManager.addObserver(this);
         // Add any of the pending observers that were added prior to the sheet being created.
         for (int i = 0; i < mPendingSheetObservers.size(); i++) {
             mBottomSheet.addObserver(mPendingSheetObservers.get(i));
@@ -357,11 +350,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     public void setBottomControlsOffset(int bottomControlsOffset) {
         if (mBottomControlsOffset == bottomControlsOffset) return;
         mBottomControlsOffset = bottomControlsOffset;
-        var scrimManager = mScrimManagerSupplier.get();
-        if (scrimManager != null) {
-            // Set the appropriate offset for the current scrim state.
-            scrimVisibilityChanged(scrimManager.isShowingScrim());
-        }
+        adjustBottomSheetZAxis(mScrimVisible);
     }
 
     @Override
@@ -375,6 +364,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                 .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                 .with(ScrimProperties.ANCHOR_VIEW, mBottomSheet)
                 .with(ScrimProperties.CLICK_DELEGATE, this::onScrimClicked)
+                .with(ScrimProperties.VISIBILITY_CALLBACK, this::onScrimVisibilityChanged)
                 .build();
     }
 
@@ -763,10 +753,13 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
         mBottomSheet.onSheetBackgroundColorOverrideChanged();
     }
 
-    // ScrimCoordinator.Observer
+    private void onScrimVisibilityChanged(boolean visible) {
+        if (mScrimVisible == visible) return;
+        mScrimVisible = visible;
+        adjustBottomSheetZAxis(visible);
+    }
 
-    @Override
-    public void scrimVisibilityChanged(boolean scrimVisible) {
+    private void adjustBottomSheetZAxis(boolean scrimVisible) {
         if (mBottomSheet == null) return;
         assumeNonNull(mBottomSheetContainer);
         if (scrimVisible && mBottomSheet.isSheetOpen()) {
