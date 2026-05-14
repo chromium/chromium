@@ -480,16 +480,29 @@ TEST_F(GlicEnablingProfileEligibilityTest, Eligible) {
 class GlicEnablingProfileReadyStateTestBase
     : public GlicEnablingProfileEligibilityTest {
  public:
-  GlicEnablingProfileReadyStateTestBase() = default;
-
-  void SetUp() override {
-    GlicEnablingProfileEligibilityTest::SetUp();
+  explicit GlicEnablingProfileReadyStateTestBase(
+      const std::vector<base::test::FeatureRef>& extra_enabled_features = {},
+      const std::vector<base::test::FeatureRef>& extra_disabled_features = {}) {
     // Ensure the profile is Enabled by default.
     // Disable rollout check and user status check complexities for these tests.
     // We already have kGlic enabled from the base class.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicRollout},
-        /*disabled_features=*/{features::kGlicUserStatusCheck});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kGlicRollout};
+    enabled_features.insert(enabled_features.end(),
+                            extra_enabled_features.begin(),
+                            extra_enabled_features.end());
+
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kGlicUserStatusCheck};
+    disabled_features.insert(disabled_features.end(),
+                             extra_disabled_features.begin(),
+                             extra_disabled_features.end());
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUp() override {
+    GlicEnablingProfileEligibilityTest::SetUp();
 
     // Make sure we have a primary account so we don't fail the "capable" check.
     signin::IdentityManager* identity_manager =
@@ -506,8 +519,7 @@ class GlicEnablingProfileReadyStateTestBase
 };
 
 class GlicEnablingTrustFirstOnboardingTest
-    : public GlicEnablingProfileReadyStateTestBase {
-};
+    : public GlicEnablingProfileReadyStateTestBase {};
 
 TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsReady) {
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
@@ -1058,14 +1070,11 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
 class GlicEnablingCombinedObserverTest
     : public GlicEnablingProfileReadyStateTestBase {
  public:
-  GlicEnablingCombinedObserverTest() {
-    scoped_feature_list_combined_.InitAndEnableFeature(
-        features::kGlicExperimentalTriggering);
-  }
+  GlicEnablingCombinedObserverTest()
+      : GlicEnablingProfileReadyStateTestBase(
+            {features::kGlicExperimentalTriggering},
+            {}) {}
   ~GlicEnablingCombinedObserverTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_combined_;
 };
 
 TEST_F(GlicEnablingCombinedObserverTest,
