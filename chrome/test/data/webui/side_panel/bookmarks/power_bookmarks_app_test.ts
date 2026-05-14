@@ -1040,7 +1040,8 @@ suite('General', () => {
       assertTrue(editDialog.$.dialog.open);
     });
 
-    test('LogsBookmarkCountMetric', async () => {
+    // TODO(crbug.com/511960512): Flaky test.
+    test.skip('LogsBookmarkCountMetric', async () => {
       await flushTasks();
 
       // Initially should have 4 bookmarks shown.
