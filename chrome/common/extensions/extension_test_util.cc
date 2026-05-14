@@ -106,11 +106,13 @@ void SetGalleryUpdateURL(const GURL& new_url) {
 std::vector<const char*> GetExpectedDelegatedFeaturesForTest() {
   return {
       // Controlled frame:
+      // LINT.IfChange
       "chromeWebViewInternal",
       "controlledFrameInternal",
       "guestViewInternal",
       "webRequestInternal",
       "webViewInternal",
+      // LINT.ThenChange(chrome/common/controlled_frame/controlled_frame.cc)
 
       // Webstore override:
       "management",

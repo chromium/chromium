@@ -289,18 +289,17 @@ static_library("common_lib") {
     ]
 
     sources += [
+      # For info about controlled frame feature availability, even on
+      # platforms that don't support it (e.g. Android).
+      "controlled_frame/controlled_frame.cc",
+      "controlled_frame/controlled_frame.h",
       "initialize_extensions_client.cc",
       "initialize_extensions_client.h",
     ]
 
-    # TODO(https://crbug.com/356905053): Gradually include more of these sources
-    # in the desktop-android build (taking them out of this enable_extensions
-    # block), or put them behind more specific build flags.
-    if (enable_extensions) {
-      sources += [
-        "controlled_frame/controlled_frame.cc",
-        "controlled_frame/controlled_frame.h",
-      ]
+    # Add controlled frame dependencies on platforms that support it.
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      assert(enable_extensions)
       deps += [
         "//chrome/common/apps/platform_apps",
         "//chrome/common/controlled_frame",
@@ -313,7 +312,7 @@ static_library("common_lib") {
         "//extensions/strings",
         "//services/device/public/cpp/usb",
       ]
-    }  # if (enable_extensions)
+    }
   }
 
   if (is_mac) {
