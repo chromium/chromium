@@ -132,7 +132,6 @@ void AudioBufferSourceHandler::Process(uint32_t frames_to_process) {
 
 // Returns true if we're finished.
 bool AudioBufferSourceHandler::RenderSilenceAndFinishIfNotLooping(
-    AudioBus*,
     unsigned index,
     uint32_t frames_to_process) {
   if (!Loop()) {
@@ -150,6 +149,20 @@ bool AudioBufferSourceHandler::RenderSilenceAndFinishIfNotLooping(
 
     Finish();
     return true;
+  }
+  return false;
+}
+
+bool AudioBufferSourceHandler::HandleLoopWrapping(double virtual_end_frame,
+                                                  double virtual_delta_frames,
+                                                  unsigned write_index,
+                                                  uint32_t frames_remaining,
+                                                  double& virtual_read_index) {
+  if (virtual_read_index >= virtual_end_frame) {
+    virtual_read_index -= virtual_delta_frames;
+    if (RenderSilenceAndFinishIfNotLooping(write_index, frames_remaining)) {
+      return true;
+    }
   }
   return false;
 }
@@ -237,7 +250,7 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
 
   double computed_playback_rate = ComputePlaybackRate();
 
-  // Sanity check that our playback rate isn't larger than the loop size.
+  // Check that our playback rate isn't larger than the loop size.
   if (computed_playback_rate > virtual_delta_frames) {
     return false;
   }
@@ -327,13 +340,12 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       DCHECK(frames_this_time ? true : read_index >= end_frame);
 
       // Wrap-around.
-      if (read_index >= end_frame) {
-        read_index -= delta_frames;
-        if (RenderSilenceAndFinishIfNotLooping(bus, write_index,
-                                               frames_to_process)) {
-          break;
-        }
+      double temp_read_index = read_index;
+      if (HandleLoopWrapping(end_frame, delta_frames, write_index,
+                             frames_to_process, temp_read_index)) {
+        break;
       }
+      read_index = static_cast<unsigned>(temp_read_index);
     }
     virtual_read_index = read_index;
   } else {
@@ -392,12 +404,10 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
 
       // Wrap-around, retaining sub-sample position since virtualReadIndex is
       // floating-point.
-      if (virtual_read_index >= virtual_end_frame) {
-        virtual_read_index -= virtual_delta_frames;
-        if (RenderSilenceAndFinishIfNotLooping(bus, write_index,
-                                               frames_to_process)) {
-          break;
-        }
+      if (HandleLoopWrapping(virtual_end_frame, virtual_delta_frames,
+                             write_index, frames_to_process,
+                             virtual_read_index)) {
+        break;
       }
     }
   }
