@@ -176,8 +176,8 @@
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
   inset-inline-start: 100%;
   margin-inline-start: 4px;
-  min-height: 144px;
-  max-height: 540px;
+  box-sizing: border-box;
+  max-height: 144px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px 0;

@@ -628,4 +628,54 @@ suite('ContextualActionMenu', () => {
     assertFalse(innerMenu.hasAttribute('auto-reposition'));
     assertFalse(innerMenu.autoReposition);
   });
+
+  test('Share tabs flyout height fits content', async () => {
+    loadTimeData.overrideValues({
+      contextManagementInComposeboxEnabled: true,
+    });
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.tabSuggestions = [
+      {
+        tabId: 1,
+        title: 'Tab 1',
+        url: {url: 'https://example.com'},
+        lastActiveTime: {internalValue: 0n},
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: {internalValue: 0n},
+      } as any,
+    ];
+    actionMenu.inputState = new MockInputState({
+                              allowedInputTypes: [InputType.kBrowserTab],
+                            }) as any;
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+    assertTrue(!!trigger);
+    trigger.dispatchEvent(new PointerEvent('pointerenter'));
+    await microtasksFinished();
+
+    const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+    assertTrue(!!flyout);
+    assertFalse(flyout.hidden);
+
+    actionMenu.tabSuggestions = Array(10).fill({
+      tabId: 1,
+      title: 'Tab',
+      url: {url: 'https://example.com'},
+      lastActiveTime: {internalValue: 0n},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    });
+    await microtasksFinished();
+
+    // Ensure flyout has max height even with many tab suggestions.
+    assertEquals(144, flyout.offsetHeight);
+  });
 });
