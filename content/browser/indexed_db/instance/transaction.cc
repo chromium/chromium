@@ -4,6 +4,7 @@
 
 #include "content/browser/indexed_db/instance/transaction.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -495,6 +496,13 @@ Status Transaction::DoPut(int64_t object_store_id,
     std::move(bad_message_callback).Run("Invalid object_store_id");
     return Status::InvalidArgument("Invalid object_store_id.");
   }
+  for (const IndexedDBIndexKeys& it : index_keys) {
+    if (!object_store->indexes.contains(it.id)) {
+      std::move(bad_message_callback).Run("Invalid index id");
+      return Status::InvalidArgument("Invalid index id");
+    }
+  }
+
   if (put_mode != blink::mojom::IDBPutMode::CursorUpdate &&
       object_store->auto_increment && !key.IsValid()) {
     IndexedDBKey auto_inc_key = GenerateAutoIncrementKey(object_store_id);
@@ -526,23 +534,27 @@ Status Transaction::DoPut(int64_t object_store_id,
     }
   }
 
-  std::vector<std::unique_ptr<IndexWriter>> index_writers;
-  std::string error_message;
-  bool obeys_constraints = false;
-  bool backing_store_success = MakeIndexWriters(
-      this, *object_store, key, key_was_generated, std::move(index_keys),
-      &index_writers, &error_message, &obeys_constraints);
-  if (!backing_store_success) {
-    on_put_error(std::move(callback), blink::mojom::IDBException::kUnknownError,
-                 u"Internal error: backing store error updating index keys.");
-    return Status::OK();
-  }
-  if (!obeys_constraints) {
-    on_put_error(std::move(callback),
-                 blink::mojom::IDBException::kConstraintError,
-                 base::UTF8ToUTF16(error_message));
-    return Status::OK();
-  }
+  ASSIGN_OR_RETURN(
+      std::vector<std::unique_ptr<IndexWriter>> index_writers,
+      MakeIndexWriters(this, *object_store, key, key_was_generated,
+                       std::move(index_keys)),
+      [&](IndexWriterError error) {
+        switch (error.type) {
+          case IndexWriterError::Type::kInvalidKey:
+            std::move(bad_message_callback).Run("Invalid index key");
+            return Status::InvalidArgument("Invalid index key");
+          case IndexWriterError::Type::kBackingStoreError:
+            on_put_error(
+                std::move(callback), blink::mojom::IDBException::kUnknownError,
+                u"Internal error: backing store error updating index keys.");
+            return Status::OK();
+          case IndexWriterError::Type::kConstraintError:
+            on_put_error(std::move(callback),
+                         blink::mojom::IDBException::kConstraintError,
+                         error.message);
+            return Status::OK();
+        }
+      });
 
   // Before this point, don't do any mutation. After this point, rollback the
   // transaction in case of error.
@@ -599,22 +611,24 @@ void Transaction::SetIndexKeys(int64_t object_store_id,
     return;
   }
 
-  if (!primary_key.IsValid()) {
-    mojo::ReportBadMessage("SetIndexKeys used with invalid key.");
-    return;
-  }
-
   if (mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
         "SetIndexKeys must be called from a version change transaction.");
     return;
   }
 
+  if (!primary_key.IsValid() ||
+      !std::ranges::all_of(index_keys.keys, &IndexedDBKey::IsValid)) {
+    mojo::ReportBadMessage("SetIndexKeys used with invalid key.");
+    return;
+  }
+
+  const int64_t index_id = index_keys.id;
   ScheduleTask(blink::mojom::IDBTaskType::Preemptive, "SetIndexKeys",
                base::BindOnce(&Transaction::DoSetIndexKeys,
                               base::Unretained(this), object_store_id,
                               std::move(primary_key), std::move(index_keys)),
-               ObjectStoreMustExist(object_store_id));
+               ObjectStoreAndIndexMustExist(object_store_id, index_id));
 }
 
 Status Transaction::DoSetIndexKeys(int64_t object_store_id,
@@ -635,30 +649,34 @@ Status Transaction::DoSetIndexKeys(int64_t object_store_id,
     return Status::OK();
   }
 
-  std::vector<std::unique_ptr<IndexWriter>> index_writers;
-  std::string error_message;
-  bool obeys_constraints = false;
-
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       connection_->database()->GetObjectStoreMetadata(object_store_id);
   std::vector<IndexedDBIndexKeys> keys_vec;
   keys_vec.emplace_back(std::move(index_keys));
-  bool backing_store_success = MakeIndexWriters(
-      this, object_store_metadata, primary_key, false, std::move(keys_vec),
-      &index_writers, &error_message, &obeys_constraints);
-  if (!backing_store_success) {
-    Abort(DatabaseError(blink::mojom::IDBException::kUnknownError,
-                        "Internal error: backing store error updating "
-                        "index keys."));
-    // TODO(crbug.com/489361938): this should probably be a corruption status.
-    return Status::OK();
-  }
-  if (!obeys_constraints) {
-    Abort(DatabaseError(blink::mojom::IDBException::kConstraintError,
-                        error_message));
-    // TODO(crbug.com/489361938): this should probably be a corruption status.
-    return Status::OK();
-  }
+  ASSIGN_OR_RETURN(
+      std::vector<std::unique_ptr<IndexWriter>> index_writers,
+      MakeIndexWriters(this, object_store_metadata, primary_key,
+                       /*key_was_generated=*/false, std::move(keys_vec)),
+      [&](IndexWriterError error) {
+        switch (error.type) {
+          case IndexWriterError::Type::kInvalidKey:
+            // Invalid keys are rejected right away by `SetIndexKeys`.
+            NOTREACHED();
+          case IndexWriterError::Type::kBackingStoreError:
+            Abort(DatabaseError(blink::mojom::IDBException::kUnknownError,
+                                "Internal error: backing store error updating "
+                                "index keys."));
+            // TODO(crbug.com/489361938): this should probably be a corruption
+            // status.
+            return Status::OK();
+          case IndexWriterError::Type::kConstraintError:
+            Abort(DatabaseError(blink::mojom::IDBException::kConstraintError,
+                                error.message));
+            // TODO(crbug.com/489361938): this should probably be a corruption
+            // status.
+            return Status::OK();
+        }
+      });
 
   for (const auto& writer : index_writers) {
     IDB_RETURN_IF_ERROR(writer->WriteIndexKeys(

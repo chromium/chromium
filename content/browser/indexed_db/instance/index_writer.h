@@ -11,31 +11,36 @@
 #include <string>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/instance/database.h"
+#include "content/browser/indexed_db/status.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
-
-namespace blink {
-struct IndexedDBObjectStoreMetadata;
-}
+#include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 
 namespace content::indexed_db {
 
 class Transaction;
 
+struct IndexWriterError {
+  enum class Type {
+    kInvalidKey,
+    kBackingStoreError,
+    kConstraintError,
+  };
+  Type type;
+  std::u16string message;
+};
+
 class IndexWriter {
  public:
-  explicit IndexWriter(const blink::IndexedDBIndexMetadata& index_metadata);
-
   IndexWriter(const blink::IndexedDBIndexMetadata& index_metadata,
               std::vector<blink::IndexedDBKey> keys);
 
-  [[nodiscard]] bool VerifyIndexKeys(BackingStore::Transaction* transaction,
-                                     int64_t object_store_id,
-                                     int64_t index_id,
-                                     bool* can_add_keys,
-                                     const blink::IndexedDBKey& primary_key,
-                                     std::string* error_message) const;
+  [[nodiscard]] base::expected<void, IndexWriterError> VerifyIndexKeys(
+      BackingStore::Transaction* transaction,
+      int64_t object_store_id,
+      int64_t index_id,
+      const blink::IndexedDBKey& primary_key) const;
 
   Status WriteIndexKeys(const BackingStore::RecordIdentifier& record,
                         BackingStore::Transaction* transaction,
@@ -47,26 +52,24 @@ class IndexWriter {
   ~IndexWriter();
 
  private:
-  [[nodiscard]] bool AddingKeyAllowed(BackingStore::Transaction* transaction,
-                                      int64_t object_store_id,
-                                      int64_t index_id,
-                                      const blink::IndexedDBKey& index_key,
-                                      const blink::IndexedDBKey& primary_key,
-                                      bool* allowed) const;
+  [[nodiscard]] StatusOr<bool> AddingKeyAllowed(
+      BackingStore::Transaction* transaction,
+      int64_t object_store_id,
+      int64_t index_id,
+      const blink::IndexedDBKey& index_key,
+      const blink::IndexedDBKey& primary_key) const;
 
   const blink::IndexedDBIndexMetadata index_metadata_;
   const std::vector<blink::IndexedDBKey> keys_;
 };
 
-[[nodiscard]] bool MakeIndexWriters(
-    Transaction* transaction,
-    const blink::IndexedDBObjectStoreMetadata& metadata,
-    const blink::IndexedDBKey& primary_key,
-    bool key_was_generated,
-    std::vector<blink::IndexedDBIndexKeys> index_keys,
-    std::vector<std::unique_ptr<IndexWriter>>* index_writers,
-    std::string* error_message,
-    bool* completed);
+[[nodiscard]] base::expected<std::vector<std::unique_ptr<IndexWriter>>,
+                             IndexWriterError>
+MakeIndexWriters(Transaction* transaction,
+                 const blink::IndexedDBObjectStoreMetadata& metadata,
+                 const blink::IndexedDBKey& primary_key,
+                 bool key_was_generated,
+                 std::vector<blink::IndexedDBIndexKeys> index_keys);
 
 }  // namespace content::indexed_db
 
