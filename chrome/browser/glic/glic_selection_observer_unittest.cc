@@ -11,6 +11,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +29,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace glic {
 
@@ -374,8 +376,8 @@ TEST_F(GlicSelectionObserverTest, KeyboardSelectionIgnored) {
                          content::RenderWidgetHost::InputEventObserver::
                              InputEventSource::kUnknown);
 
-  // Send a text selection event.
-  observer->OnTextSelectionChanged(nullptr, u"Keyboard Selection");
+  // Send a text selection event representing a collapsed selection.
+  observer->OnTextSelectionChanged(nullptr, u"");
 
   // It should clear the selection immediately.
   EXPECT_EQ(1, observer->update_count());
@@ -411,6 +413,87 @@ TEST_F(GlicSelectionObserverTest, KeyboardSelectionIgnored) {
   EXPECT_EQ(1, observer->update_count());
   ASSERT_TRUE(observer->last_processed_text().has_value());
   EXPECT_EQ(u"Mouse Selection", *observer->last_processed_text());
+}
+
+TEST_F(GlicSelectionObserverTest, InlineKeyboardSelectionByShiftAndArrowKeys) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  content::RenderWidgetHost* rwh =
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  // Simulate a Shift and Arrow Right keydown event.
+  blink::WebKeyboardEvent key_event(
+      blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kShiftKey,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  key_event.windows_key_code = ui::VKEY_RIGHT;
+
+  observer->OnInputEvent(*rwh, key_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Send a text selection event representing the expanding selection.
+  observer->OnTextSelectionChanged(nullptr, u"Keyboard Selection");
+
+  // The selection update should be deferred while actively selecting.
+  EXPECT_EQ(0, observer->update_count());
+
+  // Simulate a KeyUp event to complete the inline selection.
+  blink::WebKeyboardEvent key_up(
+      blink::WebInputEvent::Type::kKeyUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  observer->OnInputEvent(*rwh, key_up,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // The final selection should be processed instantly on KeyUp.
+  EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
+  EXPECT_EQ(u"Keyboard Selection", *observer->last_processed_text());
+}
+
+TEST_F(GlicSelectionObserverTest, SelectAllCommandDebouncedProperly) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  content::RenderWidgetHost* rwh =
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  // Simulate a Ctrl+A keydown event.
+#if BUILDFLAG(IS_MAC)
+  int modifier = blink::WebInputEvent::Modifiers::kMetaKey;
+#else
+  int modifier = blink::WebInputEvent::Modifiers::kControlKey;
+#endif
+  blink::WebKeyboardEvent key_event(
+      blink::WebInputEvent::Type::kKeyDown, modifier,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  key_event.windows_key_code = ui::VKEY_A;
+
+  observer->OnInputEvent(*rwh, key_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Send a text selection event representing the entire selected page.
+  observer->OnTextSelectionChanged(nullptr, u"Entire Page Selected Text");
+
+  // The UI update should be deferred mid-selection command execution.
+  EXPECT_EQ(0, observer->update_count());
+
+  // Simulate a KeyUp event to finalize command evaluation.
+  blink::WebKeyboardEvent key_up(
+      blink::WebInputEvent::Type::kKeyUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  observer->OnInputEvent(*rwh, key_up,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // The selected page text should be processed instantly on KeyUp.
+  EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
+  EXPECT_EQ(u"Entire Page Selected Text", *observer->last_processed_text());
 }
 
 TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {

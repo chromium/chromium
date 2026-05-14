@@ -138,11 +138,18 @@ class GlicSelectionObserver
 
   base::flat_set<content::GlobalRenderFrameHostToken> observed_frames_;
 
+  // True if selection was initiated via keyboard shortcuts. Ensures KeyUp
+  // events only trigger processing for relevant selection actions.
   bool is_key_selection_ = false;
   int bounds_retry_count_ = 0;
 
+  // True if the selection context was sent to the Glic panel, so we know to
+  // clear it if the selection becomes empty while the panel remains open.
   bool has_sent_selection_context_ = false;
+  // Preserves the widget's pinned state across subsequent selection updates.
   bool is_widget_pinned_ = false;
+  // True during active user selection (mouse drag or key hold) to defer UI
+  // updates until the input event completes.
   bool is_selecting_ = false;
 
   base::WeakPtr<views::Widget> selection_widget_;

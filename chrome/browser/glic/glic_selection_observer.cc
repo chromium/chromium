@@ -49,11 +49,13 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/widget/widget.h"
 
@@ -321,14 +323,55 @@ void GlicSelectionObserver::OnInputEvent(
     case blink::WebInputEvent::Type::kTouchEnd:
     case blink::WebInputEvent::Type::kTouchCancel:
     case blink::WebInputEvent::Type::kGestureTapCancel:
+      // Process the selection received so far. If the final selection IPC is
+      // delayed, OnTextSelectionChanged will handle it since `is_selecting_`
+      // becomes false.
       ProcessPendingSelection();
       break;
 
-    case blink::WebInputEvent::Type::kRawKeyDown:
-    case blink::WebInputEvent::Type::kKeyDown:
-      is_key_selection_ = true;
-      DismissUI(/*keep_nudge=*/false);
+    case blink::WebInputEvent::Type::kKeyUp:
+      if (is_key_selection_) {
+        ProcessPendingSelection();
+      }
       break;
+
+    case blink::WebInputEvent::Type::kRawKeyDown:
+    case blink::WebInputEvent::Type::kKeyDown: {
+      if (is_key_selection_) {
+        break;
+      }
+      DismissUI(/*keep_nudge=*/false);
+      const auto& keyboard_event =
+          static_cast<const blink::WebKeyboardEvent&>(event);
+#if BUILDFLAG(IS_MAC)
+      int select_all_modifier = blink::WebInputEvent::Modifiers::kMetaKey;
+#else
+      int select_all_modifier = blink::WebInputEvent::Modifiers::kControlKey;
+#endif
+      bool is_select_all = (event.GetModifiers() & select_all_modifier) &&
+                           keyboard_event.windows_key_code == ui::VKEY_A;
+      bool is_shift =
+          event.GetModifiers() & blink::WebInputEvent::Modifiers::kShiftKey;
+      bool is_navigation_key =
+          keyboard_event.windows_key_code == ui::VKEY_LEFT ||
+          keyboard_event.windows_key_code == ui::VKEY_RIGHT ||
+          keyboard_event.windows_key_code == ui::VKEY_UP ||
+          keyboard_event.windows_key_code == ui::VKEY_DOWN ||
+          keyboard_event.windows_key_code == ui::VKEY_HOME ||
+          keyboard_event.windows_key_code == ui::VKEY_END ||
+          keyboard_event.windows_key_code == ui::VKEY_PRIOR ||
+          keyboard_event.windows_key_code == ui::VKEY_NEXT;
+      if ((is_shift && is_navigation_key) || is_select_all) {
+        is_key_selection_ = true;
+        is_selecting_ = true;
+        if (!last_selected_text_.empty()) {
+          pending_selection_text_ = last_selected_text_;
+        } else {
+          ResetPendingSelection();
+        }
+      }
+      break;
+    }
 
     case blink::WebInputEvent::Type::kGestureScrollBegin:
     case blink::WebInputEvent::Type::kMouseWheel:
@@ -353,12 +396,6 @@ void GlicSelectionObserver::OnTextSelectionChanged(
 
   if (web_contents()->IsFocusedElementEditable()) {
     selected_text = std::u16string_view();
-  }
-
-  if (is_key_selection_) {
-    pending_selection_text_ = std::u16string();
-    UpdateSelectionState(std::u16string(), /*is_pending_selection=*/false);
-    return;
   }
 
   bounds_retry_count_ = 0;
@@ -388,6 +425,7 @@ void GlicSelectionObserver::OnTextSelectionChanged(
     last_selection_frame_token_ = render_frame_host->GetGlobalFrameToken();
   }
 
+  // If not in the process of selecting, process the selection immediately.
   if (!is_selecting_) {
     ProcessPendingSelection();
   }
@@ -409,6 +447,7 @@ void GlicSelectionObserver::DismissUI(bool keep_nudge) {
 
 void GlicSelectionObserver::ProcessPendingSelection() {
   is_selecting_ = false;
+  is_key_selection_ = false;
   if (!pending_selection_text_.has_value()) {
     return;
   }
