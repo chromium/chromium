@@ -839,4 +839,12 @@ void WebSettingsImpl::SetRootScrollbarThemeColor(
   settings_->SetRootScrollbarThemeColor(theme_color);
 }
 
+void WebSettingsImpl::SetBatterySaverEnabled(bool enabled) {
+  settings_->SetBatterySaverEnabled(enabled);
+}
+
+void WebSettingsImpl::SetPreloadingDisabled(bool disabled) {
+  settings_->SetPreloadingDisabled(disabled);
+}
+
 }  // namespace blink

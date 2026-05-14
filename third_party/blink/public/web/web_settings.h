@@ -290,6 +290,8 @@ class WebSettings {
   virtual void SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
       bool) = 0;
   virtual void SetRootScrollbarThemeColor(std::optional<SkColor>) = 0;
+  virtual void SetBatterySaverEnabled(bool) = 0;
+  virtual void SetPreloadingDisabled(bool) = 0;
 
  protected:
   ~WebSettings() = default;

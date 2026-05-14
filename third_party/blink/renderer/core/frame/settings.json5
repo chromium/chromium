@@ -54,6 +54,16 @@
 
   data: [
     {
+      name: "batterySaverEnabled",
+      type: "bool",
+      initial: false,
+    },
+    {
+      name: "preloadingDisabled",
+      type: "bool",
+      initial: false,
+    },
+    {
       name: "acceptLanguages",
       type: "String",
       invalidate: ["AcceptLanguages"],

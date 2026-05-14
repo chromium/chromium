@@ -1554,6 +1554,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // purposes.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingModerateViewportHeuristics);
 
+// If enabled, preloading eligibility checks (e.g., data saver, battery saver)
+// are performed on the renderer side.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingEligibilityCheckOnRenderer);
+
 // The number of prerenderings that can run concurrently. This only applies for
 // prerenderings triggered by speculation rules.
 BLINK_COMMON_EXPORT extern const char

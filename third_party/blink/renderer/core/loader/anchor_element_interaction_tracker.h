@@ -134,6 +134,8 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   void AnchorPositionsUpdated(
       HeapVector<Member<AnchorPositionUpdate>>& position_updates) override;
 
+  bool IsPreloadingEligible();
+
   Member<MouseMotionEstimator> mouse_motion_estimator_;
   HeapMojoRemote<mojom::blink::AnchorElementInteractionHost> interaction_host_;
   // This hashmap contains the anchor element's url, whether the pointer event

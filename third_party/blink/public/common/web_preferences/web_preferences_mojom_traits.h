@@ -151,6 +151,14 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.data_saver_enabled;
   }
 
+  static bool battery_saver_enabled(const blink::web_pref::WebPreferences& r) {
+    return r.battery_saver_enabled;
+  }
+
+  static bool preloading_disabled(const blink::web_pref::WebPreferences& r) {
+    return r.preloading_disabled;
+  }
+
   static bool local_storage_enabled(const blink::web_pref::WebPreferences& r) {
     return r.local_storage_enabled;
   }

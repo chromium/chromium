@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -22,9 +23,11 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/screen.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -382,7 +385,7 @@ void AnchorElementInteractionTracker::OnPointerEvent(
     return;
   }
 
-  if (event_type == event_type_names::kPointerover) {
+  if (event_type == event_type_names::kPointerover && IsPreloadingEligible()) {
     if (base::FeatureList::IsEnabled(
             blink::features::kPreloadingEagerHoverHeuristics)) {
       // TODO(https://crbug.com/40287486): guard this to only be on desktop, and
@@ -564,6 +567,14 @@ void AnchorElementInteractionTracker::ViewportIntersectionUpdate(
           blink::features::kPreloadingEagerViewportHeuristics)) {
     return;
   }
+  // TODO(https://crbug.com/505056924): The state of IsPreloadingEligible may be
+  // dynamically changed in the future changes, make sure the state is reflected
+  // correctly at the point.
+  if (!IsPreloadingEligible()) {
+    eager_viewport_heuristics_candidates_.clear();
+    eager_viewport_heuristic_timer_.Stop();
+    return;
+  }
   Vector<KURL> to_be_removed;
   for (const auto& anchor : left_viewport) {
     KURL url = GetHrefEligibleForPreloading(*anchor);
@@ -600,6 +611,14 @@ void AnchorElementInteractionTracker::AnchorPositionsUpdated(
     HeapVector<Member<AnchorPositionUpdate>>& position_updates) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kPreloadingModerateViewportHeuristics)) {
+    return;
+  }
+  // TODO(https://crbug.com/505056924): The state of IsPreloadingEligible may be
+  // dynamically changed in the future changes, make sure the state is reflected
+  // correctly at the point.
+  if (!IsPreloadingEligible()) {
+    largest_anchor_element_in_viewport_ = nullptr;
+    moderate_viewport_heuristic_timer_.Stop();
     return;
   }
   const ModerateViewportHeuristicConfig& config = GetViewportHeuristicConfig();
@@ -653,6 +672,22 @@ void AnchorElementInteractionTracker::AnchorPositionsUpdated(
   moderate_viewport_heuristic_timer_.StartOneShot(config.delay, FROM_HERE);
 }
 
+bool AnchorElementInteractionTracker::IsPreloadingEligible() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPreloadingEligibilityCheckOnRenderer)) {
+    return true;
+  }
+
+  bool data_saver = blink::WebNetworkStateNotifier::SaveDataEnabled();
+  bool battery_saver =
+      GetDocument() && GetDocument()->GetPage() &&
+      GetDocument()->GetPage()->GetSettings().GetBatterySaverEnabled();
+  bool preloading_disabled =
+      GetDocument() && GetDocument()->GetPage() &&
+      GetDocument()->GetPage()->GetSettings().GetPreloadingDisabled();
+  return !(data_saver || battery_saver || preloading_disabled);
+}
+
 void AnchorElementInteractionTracker::ModerateViewportHeuristicTimerFired(
     TimerBase* timer) {
   CHECK(base::FeatureList::IsEnabled(
@@ -668,8 +703,10 @@ void AnchorElementInteractionTracker::ModerateViewportHeuristicTimerFired(
     return;
   }
 
-  interaction_host_->OnModerateViewportHeuristicTriggered(
-      largest_anchor_element_in_viewport_->Url());
+  if (IsPreloadingEligible()) {
+    interaction_host_->OnModerateViewportHeuristicTriggered(
+        largest_anchor_element_in_viewport_->Url());
+  }
 }
 
 void AnchorElementInteractionTracker::EagerViewportHeuristicTimerFired(
@@ -696,7 +733,7 @@ void AnchorElementInteractionTracker::EagerViewportHeuristicTimerFired(
     return;
   }
 
-  if (!fired_candidates.empty()) {
+  if (!fired_candidates.empty() && IsPreloadingEligible()) {
     interaction_host_->OnEagerViewportHeuristicTriggered(fired_candidates);
   }
   RemoveAll(eager_viewport_heuristics_candidates_, fired_candidates);

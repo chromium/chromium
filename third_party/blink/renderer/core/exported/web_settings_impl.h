@@ -242,6 +242,8 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
       bool) override;
   void SetRootScrollbarThemeColor(std::optional<SkColor>) override;
+  void SetBatterySaverEnabled(bool) override;
+  void SetPreloadingDisabled(bool) override;
 
   bool RenderVSyncNotificationEnabled() const {
     return render_v_sync_notification_enabled_;

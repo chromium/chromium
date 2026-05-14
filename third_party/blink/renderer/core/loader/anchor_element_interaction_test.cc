@@ -20,16 +20,19 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
+#include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
@@ -745,7 +748,8 @@ class AnchorElementInteractionViewportHeuristicsTest
            {"distance_from_ptr_down_hi", "0"},
            {"largest_anchor_threshold", "0.5"}}},
          {features::kPreloadingEagerViewportHeuristics,
-          {{"viewport_present_time", "100ms"}}}},
+          {{"viewport_present_time", "100ms"}}},
+         {features::kPreloadingEligibilityCheckOnRenderer, {}}},
         {});
     config_scope_ =
         std::make_unique<ModerateViewportHeuristicConfigTestingScope>();
@@ -913,6 +917,105 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest, BasicTest) {
   EXPECT_TRUE(hosts_[0]->calls_[1].is_eager.has_value());
   EXPECT_NE(hosts_[0]->calls_[0].is_eager.value(),
             hosts_[0]->calls_[1].is_eager.value());
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       PreloadingDataSaverEnabled) {
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+  WebNetworkStateNotifier::SetSaveDataEnabled(true);
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 180),
+                       .scroll_delta = -100});
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  // Verify that no IPC messages were sent to the browser process to trigger
+  // preloading.
+  EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
+  WebNetworkStateNotifier::SetSaveDataEnabled(false);
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest, BatterySaverEnabled) {
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  String source("https://example.com/page.html");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(body);
+
+  GetDocument().GetPage()->GetSettings().SetBatterySaverEnabled(true);
+
+  GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+      task_environment().GetMainThreadTaskRunner(),
+      task_environment().GetMockTickClock());
+
+  Compositor().BeginFrame();
+  task_environment().FastForwardBy(base::Milliseconds(10));
+  DispatchPointerDownAndVerticalScroll(gfx::PointF(100, 180), -100);
+  ProcessPositionUpdates();
+
+  task_environment().FastForwardBy(EnoughWaitTimeForAllViewportHeuristics());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  // Verify that no IPC messages were sent to the browser process to trigger
+  // preloading.
+  EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest, PreloadingDisabled) {
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  String source("https://example.com/page.html");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(body);
+
+  GetDocument().GetPage()->GetSettings().SetPreloadingDisabled(true);
+
+  GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+      task_environment().GetMainThreadTaskRunner(),
+      task_environment().GetMockTickClock());
+
+  Compositor().BeginFrame();
+  task_environment().FastForwardBy(base::Milliseconds(10));
+  DispatchPointerDownAndVerticalScroll(gfx::PointF(100, 180), -100);
+  ProcessPositionUpdates();
+
+  task_environment().FastForwardBy(EnoughWaitTimeForAllViewportHeuristics());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  // Verify that no IPC messages were sent to the browser process to trigger
+  // preloading.
+  EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
 }
 
 // Tests scenario where an anchor's distance_from_pointer_down_ratio after a

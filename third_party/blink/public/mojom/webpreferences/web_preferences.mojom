@@ -148,6 +148,8 @@ struct WebPreferences {
   // Preference to save data. When enabled, requests will contain the header
   // 'Save-Data: on'.
   bool data_saver_enabled;
+  bool battery_saver_enabled;
+  bool preloading_disabled;
   bool local_storage_enabled;
   bool tabs_to_links;
   bool disable_ipc_flooding_protection;

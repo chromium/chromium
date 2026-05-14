@@ -56,6 +56,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
@@ -4774,6 +4775,9 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
   }
 
   web_prefs->data_saver_enabled = IsDataSaverEnabled(profile);
+  web_prefs->battery_saver_enabled = battery::IsBatterySaverEnabled();
+  web_prefs->preloading_disabled = prefetch::GetPreloadPagesState(*prefs) ==
+                                   prefetch::PreloadPagesState::kNoPreloading;
 
   if (web_contents) {
 #if BUILDFLAG(IS_ANDROID)
