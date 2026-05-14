@@ -88,6 +88,12 @@ message CaptionsConfig {
   repeated string allowed_language_codes = 3;
 }
 
+enum GeminiEnablementState {
+  GEMINI_ENABLEMENT_STATE_UNSPECIFIED = 0;
+  GEMINI_ENABLEMENT_STATE_ENABLED = 1;
+  GEMINI_ENABLEMENT_STATE_DISABLED = 2;
+}
+
 message StudentStatus {
   reserved 2;
 
@@ -118,6 +124,8 @@ message StudentStatus {
   Timestamp raised_hand_time = 4;
 
   bool in_tachyon_group = 5;
+
+  GeminiEnablementState gemini_enablement_state = 6;
 }
 
 message StudentDevice {
