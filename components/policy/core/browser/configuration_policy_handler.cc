@@ -153,17 +153,27 @@ bool ListPolicyHandler::CheckAndGetList(
     const base::Value& entry = list[list_index];
     if (entry.type() != list_entry_type_) {
       if (errors) {
-        errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
-                         base::Value::GetTypeName(list_entry_type_),
-                         PolicyErrorPath{list_index});
+        // Casting to int avoids a narrowing conversion from size_t when
+        // constructing PolicyErrorPath, which would otherwise cause the
+        // compiler to prefer the std::vector(size_t count) constructor over the
+        // initializer list constructor.
+        errors->AddError(
+            policy_name(), IDS_POLICY_TYPE_ERROR,
+            base::Value::GetTypeName(list_entry_type_),
+            PolicyErrorPath{base::saturated_cast<int>(list_index)});
       }
       continue;
     }
 
     if (!CheckListEntry(entry)) {
       if (errors) {
-        errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR,
-                         PolicyErrorPath{list_index});
+        // Casting to int avoids a narrowing conversion from size_t when
+        // constructing PolicyErrorPath, which would otherwise cause the
+        // compiler to prefer the std::vector(size_t count) constructor over the
+        // initializer list constructor.
+        errors->AddError(
+            policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR,
+            PolicyErrorPath{base::saturated_cast<int>(list_index)});
       }
       continue;
     }
@@ -656,9 +666,13 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckListOfJsonStrings(
     const base::Value& entry = list[index];
     if (!entry.is_string()) {
       if (errors) {
+        // Casting to int avoids a narrowing conversion from size_t when
+        // constructing PolicyErrorPath, which would otherwise cause the
+        // compiler to prefer the std::vector(size_t count) constructor over the
+        // initializer list constructor.
         errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
                          base::Value::GetTypeName(base::Value::Type::STRING),
-                         PolicyErrorPath{index});
+                         PolicyErrorPath{base::saturated_cast<int>(index)});
       }
       continue;
     }

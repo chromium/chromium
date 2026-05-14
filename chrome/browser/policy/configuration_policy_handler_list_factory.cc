@@ -36,6 +36,7 @@
 #include "chrome/browser/policy/file_selection_dialogs_policy_handler.h"
 #include "chrome/browser/policy/homepage_location_policy_handler.h"
 #include "chrome/browser/policy/javascript_policy_handler.h"
+#include "chrome/browser/policy/local_network_access_ip_address_space_overrides_policy_handler.h"
 #include "chrome/browser/policy/power_battery_charging_optimization_policy_handler.h"
 #include "chrome/browser/policy/webhid_device_policy_handler.h"
 #include "chrome/browser/policy/webusb_allow_devices_for_urls_policy_handler.h"
@@ -2435,9 +2436,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kLocalNetworkAccessRestrictionsTemporaryOptOut,
     prefs::kManagedLocalNetworkAccessRestrictionsTemporaryOptOut,
     base::Value::Type::BOOLEAN },
-  { key::kLocalNetworkAccessIpAddressSpaceOverrides,
-    prefs::kManagedLocalNetworkAccessIpAddressSpaceOverrides,
-    base::Value::Type::LIST },
+
   { key::kLocalNetworkAccessAllowedForUrls,
     prefs::kManagedLocalNetworkAccessAllowedForUrls,
     base::Value::Type::LIST },
@@ -2602,6 +2601,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   }
 
   // Policies for all platforms - Start
+  handlers->AddHandler(
+      std::make_unique<
+          LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler>());
   handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
       key::kAutofillAddressEnabled, autofill::prefs::kAutofillProfileEnabled));
   handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(

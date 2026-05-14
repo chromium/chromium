@@ -308,6 +308,10 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
 
 }  // namespace
 
+bool IsAddressSpaceOverrideValid(std::string_view str) {
+  return ParseAddressSpaceOverride(str) != std::nullopt;
+}
+
 IPAddressSpace IPAddressToIPAddressSpace(const IPAddress& address) {
   return NonPublicAddressSpaceMap().Apply(address).value_or(
       IPAddressSpace::kPublic);

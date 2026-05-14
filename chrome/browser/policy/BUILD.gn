@@ -617,11 +617,15 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "value_provider/policy_value_provider_unittest.cc" ]
+  sources = [
+    "local_network_access_ip_address_space_overrides_policy_handler_unittest.cc",
+    "value_provider/policy_value_provider_unittest.cc",
+  ]
 
   deps = [
     ":test_support",
     "//chrome/test:test_support",
+    "//components/policy/core/browser:test_support",
     "//components/policy/core/common:test_support",
     "//extensions/buildflags",
     "//testing/gmock",
@@ -669,6 +673,7 @@ source_set("policy") {
     "dm_token_utils.h",
     "homepage_location_policy_handler.h",
     "javascript_policy_handler.h",
+    "local_network_access_ip_address_space_overrides_policy_handler.h",
     "messaging_layer/public/report_client.h",
     "messaging_layer/upload/configuration_file_controller.h",
     "messaging_layer/upload/encrypted_reporting_client.h",
@@ -876,6 +881,7 @@ source_set("impl") {
     "dm_token_utils.cc",
     "homepage_location_policy_handler.cc",
     "javascript_policy_handler.cc",
+    "local_network_access_ip_address_space_overrides_policy_handler.cc",
     "messaging_layer/public/report_client.cc",
     "messaging_layer/upload/configuration_file_controller.cc",
     "messaging_layer/upload/encrypted_reporting_client.cc",

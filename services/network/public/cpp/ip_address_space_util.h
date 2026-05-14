@@ -30,6 +30,11 @@ struct TransportInfo;
 
 namespace network {
 
+// Returns true if `str` represents a valid IP address space override, as
+// described in services/network/public/cpp/network_switches.cc
+bool COMPONENT_EXPORT(NETWORK_CPP)
+    IsAddressSpaceOverrideValid(std::string_view str);
+
 // Returns a human-readable string representing `result`, suitable for logging.
 std::string_view COMPONENT_EXPORT(NETWORK_CPP)
     LocalNetworkAccessResultToStringPiece(

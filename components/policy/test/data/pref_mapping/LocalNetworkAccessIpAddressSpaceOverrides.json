@@ -7,18 +7,61 @@
       "chromeos",
       "android"
     ],
-    "simple_policy_pref_mapping_test": {
-      "pref_name": "managed_local_network_access_ip_address_space_overrides",
-      "pref_location": "local_state",
-      "default_value": [],
-      "values_to_test": [
-        [
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value test",
+        "policies": {},
+        "prefs": {
+          "managed_local_network_access_ip_address_space_overrides": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Test valid IP address space overrides",
+        "policies": {
+          "LocalNetworkAccessIpAddressSpaceOverrides": [
             "100.64.0.0/10=public",
             "[2001:db8::]/32=local",
             "192.168.0.1:8000=public",
             "[2001:DB8::8:800:200C:417A]:8080=local"
-        ]
-      ]
-    }
+          ]
+        },
+        "prefs": {
+          "managed_local_network_access_ip_address_space_overrides": {
+            "value": [
+              "100.64.0.0/10=public",
+              "[2001:db8::]/32=local",
+              "192.168.0.1:8000=public",
+              "[2001:DB8::8:800:200C:417A]:8080=local"
+            ],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Test filtering out invalid IP address space overrides",
+        "policies": {
+          "LocalNetworkAccessIpAddressSpaceOverrides": [
+            "100.64.0.0/10=public",
+            "2001:db8::/32=local",
+            "192.168.0.1:65536=public",
+            "[2001:DB8::8:800:200C:417A]:8080=local",
+            "invalid-override",
+            "100.64.1.0/33=public"
+          ]
+        },
+        "prefs": {
+          "managed_local_network_access_ip_address_space_overrides": {
+            "value": [
+              "100.64.0.0/10=public",
+              "[2001:DB8::8:800:200C:417A]:8080=local"
+            ],
+            "location": "local_state"
+          }
+        }
+      }
+    ]
   }
 ]
