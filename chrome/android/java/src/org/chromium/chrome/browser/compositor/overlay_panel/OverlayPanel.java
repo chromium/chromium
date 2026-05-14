@@ -653,6 +653,8 @@ public class OverlayPanel extends OverlayPanelAnimation
 
         if (getPanelState() == PanelState.PEEKED || getPanelState() == PanelState.CLOSED) {
             setBasePageTextControlsVisibility(true);
+            // Ensure the browser controls come back into view.
+            updateBrowserControlsState(BrowserControlsState.BOTH, false);
         } else {
             setBasePageTextControlsVisibility(false);
         }
@@ -1016,7 +1018,8 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     @Override
     public boolean shouldHideAndroidBrowserControls() {
-        return isPanelOpened() && getCanHideAndroidBrowserControls();
+        return (getPanelState() == PanelState.MAXIMIZED || getPanelState() == PanelState.EXPANDED)
+                && getCanHideAndroidBrowserControls();
     }
 
     @Override

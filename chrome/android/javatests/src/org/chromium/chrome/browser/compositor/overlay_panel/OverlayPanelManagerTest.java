@@ -155,6 +155,11 @@ public class OverlayPanelManagerTest {
         }
 
         @Override
+        public void updateBrowserControlsState(int current, boolean animate) {
+            // Do nothing in tests.
+        }
+
+        @Override
         public void closePanel(@StateChangeReason int reason, boolean animate) {
             // Immediately call onClosed rather than wait for animation to finish.
             onClosed(reason);

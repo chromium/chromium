@@ -680,9 +680,13 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         }
 
         int height = 0;
+        boolean foundPivot = false;
         for (int i = 0; i < STACK_ORDER.length; i++) {
             int type = STACK_ORDER[i];
-            if (type < startLayer) continue;
+            if (type == startLayer) {
+                foundPivot = true;
+            }
+            if (!foundPivot) continue;
 
             BottomControlsLayer layer = mLayers.get(type);
             if (layer == null || !mLayerVisibilities.get(type)) continue;

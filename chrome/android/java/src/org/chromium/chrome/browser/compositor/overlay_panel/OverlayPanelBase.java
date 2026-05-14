@@ -398,10 +398,11 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The current Y-position of the Overlay Panel.
      */
     protected float calculateOverlayPanelY() {
-        return getTabHeight()
-                + heightForNeverHideBrowserControls()
-                - mHeight
-                - getBottomControlsStackHeightPx() * mPxToDp;
+        float tabHeight = getTabHeight();
+        float heightsForNeverHide = heightForNeverHideBrowserControls();
+        float bottomControlsStackHeightPx = getBottomControlsStackHeightPx();
+        float y = tabHeight + heightsForNeverHide - mHeight - bottomControlsStackHeightPx * mPxToDp;
+        return y;
     }
 
     /**
@@ -421,18 +422,28 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         // composited versions remain behind the overlay panel. This works, but is not a clean
         // solution and is potentially brittle.
         float bottomControlsHeightPx;
-        boolean effectivelyPeeked = findLargestPanelStateFromHeight(mHeight) == PanelState.PEEKED;
-        if (effectivelyPeeked) {
-            bottomControlsHeightPx =
-                    (mBottomControlsStacker.getTotalHeight()
-                                    // Avoid counting the chin's height; it's already accounted for
-                                    // elsewhere.
-                                    - mBottomControlsStacker.getHeightFromLayerToBottom(
-                                            LayerType.BOTTOM_CHIN))
-                            * (1 - mBrowserControlsStateProvider.getBrowserControlHiddenRatio());
-        } else {
+        float peekedHeight = getPanelHeightFromState(PanelState.PEEKED);
+        float expandedHeight = getPanelHeightFromState(PanelState.EXPANDED);
+        // Bottom chin height is accounted for elsewhere.
+        float totalHeight =
+                mBottomControlsStacker.getTotalHeight()
+                        - mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN);
+        float hiddenRatio = mBrowserControlsStateProvider.getBrowserControlHiddenRatio();
+        float fullBottomControlsHeight = totalHeight * (1 - hiddenRatio);
+
+        if (mHeight <= peekedHeight) {
+            // Peeked: Return full bottom controls height.
+            bottomControlsHeightPx = fullBottomControlsHeight;
+        } else if (mHeight >= expandedHeight) {
+            // Expanded: Return no bottom controls height.
             bottomControlsHeightPx = 0.0f;
+        } else {
+            // In between: Return a ratio of the bottom controls height based on how far the panel
+            // is between the peeked and expanded heights.
+            float ratio = (mHeight - peekedHeight) / (expandedHeight - peekedHeight);
+            bottomControlsHeightPx = fullBottomControlsHeight * (1 - ratio);
         }
+
         return bottomControlsHeightPx;
     }
 
@@ -1000,8 +1011,8 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         final float clampedHeight =
                 MathUtils.clamp(
                         height,
-                        getPanelHeightFromState(PanelState.MAXIMIZED),
-                        getPanelHeightFromState(PanelState.PEEKED));
+                        getPanelHeightFromState(PanelState.PEEKED),
+                        getPanelHeightFromState(PanelState.MAXIMIZED));
         setPanelHeight(clampedHeight);
     }
 

@@ -1665,6 +1665,34 @@ public class BottomControlsStackerUnitTest {
     }
 
     @Test
+    public void testCalculateHeightFromLayer_bottomChinWithBottomToolbarPresent() {
+        TestLayer toolbar =
+                new TestLayer(
+                        LayerType.BOTTOM_TOOLBAR,
+                        100,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer chin =
+                new TestLayer(
+                        LayerType.BOTTOM_CHIN,
+                        30,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(toolbar);
+        mBottomControlsStacker.addLayer(chin);
+        mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
+
+        assertEquals(
+                "Only bottom chin layer should be counted when starting from BOTTOM_CHIN",
+                30,
+                mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN));
+        assertEquals(
+                "Both toolbar and chin should be counted when starting from BOTTOM_TOOLBAR",
+                130,
+                mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_TOOLBAR));
+    }
+
+    @Test
     public void reposition_AppliedByViz() {
         TestLayer top =
                 new TestLayer(
