@@ -212,6 +212,12 @@ def _ParseOptions():
   parser.add_argument('--desugared-library-keep-rule-output',
                       help='Path to desugared library keep rule output file.')
 
+  parser.add_argument('--resources-input',
+                      help='Path to resource proto file for the main module.')
+  parser.add_argument(
+      '--resources-output',
+      help='Path to optimized resource proto file for the main module.')
+
   diff_utils.AddCommandLineFlags(parser)
   options = parser.parse_args(args)
 
@@ -436,6 +442,12 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
       cmd += [
           '--startup-profile',
           options.input_art_profile,
+      ]
+
+    if options.resources_input:
+      cmd += [
+          '--android-resources', options.resources_input,
+          options.resources_output
       ]
 
     for split_context in split_contexts_by_name.values():

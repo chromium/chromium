@@ -197,8 +197,9 @@ template("chrome_bundle") {
       custom_assertion_handler = crash_reporting_assertion_handler
     }
 
-    # For this to be respected, it must also be set on the base module target.
-    strip_unused_resources = is_official_build
+    if (optimize_android_resources) {
+      resources_config_paths = [ "//chrome/android/aapt2.config" ]
+    }
 
     # List of DFMs that are installed by default by wrapper scripts, to make
     # testing easier. This removes the need to manually specify, e.g.,
