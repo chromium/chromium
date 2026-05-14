@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.actor.ui;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -21,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 /** Java-side representation of the C++ ActorUiTabControllerAndroid. */
@@ -199,11 +202,17 @@ public class ActorUiTabController implements UserData {
 
     @CalledByNative
     @SuppressWarnings("unused")
-    private boolean maybeDeferNavigation(
+    boolean maybeDeferNavigation(
             @JniType("GURL") GURL url, Callback<Boolean> navigationConfirmedCallback) {
-        // TODO(crbug.com/500826418): Placeholder for C++ unit tests.
-        // By default, do not defer and let it proceed.
-        return false;
+        if (mTab.getWindowAndroid() == null) return false;
+        ModalDialogManager modalDialogManager = mTab.getWindowAndroid().getModalDialogManager();
+        if (modalDialogManager == null) return false;
+        Context context = mTab.getContext();
+        if (context == null) return false;
+
+        ActorNavigationConfirmationDialog.show(
+                context, modalDialogManager, navigationConfirmedCallback);
+        return true;
     }
 
     @NativeMethods

@@ -28,6 +28,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlProperties.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlView.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlViewBinder.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorNavigationConfirmationDialog.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayMediator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayProperties.java",
@@ -155,6 +156,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskHelperTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorNavigationConfirmationDialogTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayCoordinatorTest.java",
   ]
@@ -195,6 +197,7 @@ robolectric_library("junit") {
     "//ui/android:ui_java",
     "//ui/android:ui_java_resources",
     "//ui/android:ui_java_test_support",
+    "//url:url_java",
   ]
   resources_package = "org.chromium.chrome.browser.actor.ui"
 }
@@ -202,7 +205,10 @@ robolectric_library("junit") {
 android_library("unit_device_javatests") {
   resources_package = "org.chromium.chrome.browser.actor"
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayViewRenderTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorNavigationConfirmationDialogRenderTest.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayViewRenderTest.java",
+  ]
   deps = [
     ":java",
     ":java_resources",
@@ -217,6 +223,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
