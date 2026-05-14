@@ -2176,6 +2176,10 @@ bool IsFullscreenNextIAEnabled() {
 // Updates the bottom constraint of the secondary toolbar depending on the
 // AppBar's position.
 - (void)updateSecondaryToolbarBottomConstraint {
+  if (!self.view.window) {
+    return;
+  }
+
   BOOL shouldUseAppBar =
       (self.layoutState.appBarPosition == AppBarPosition::kBottom) &&
       (self.secondaryToolbarAppBarBottomConstraint != nil);
