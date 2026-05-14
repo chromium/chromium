@@ -1218,10 +1218,11 @@ class AutocompleteMediator
             templateUrl = mAutocomplete.getTemplateUrlForText(text);
 
             if (templateUrl == null) return false;
+            String fullName = service.getFullNameFromTemplateUrl(templateUrl.getKeyword());
             SiteSearchData data =
                     new SiteSearchData(
                             templateUrl.getKeyword(),
-                            templateUrl.getShortName(),
+                            TextUtils.isEmpty(fullName) ? templateUrl.getShortName() : fullName,
                             /* enteredViaSpace= */ true);
             onKeywordModeEntered(data);
             return true;
