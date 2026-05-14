@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -57,7 +58,7 @@ Host* GlicInstanceTracker::GetHost() {
   if (!instance) {
     return nullptr;
   }
-  return &instance->host();
+  return &static_cast<GlicInstanceImpl*>(instance)->host();
 }
 
 GlicInstance* GlicInstanceTracker::GetGlicInstance() {

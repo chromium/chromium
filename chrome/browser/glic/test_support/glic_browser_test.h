@@ -411,11 +411,9 @@ class GlicBrowserTestMixin : public T {
   }
 
   [[nodiscard]] TestResult<void> WaitForGlicClient(GlicInstance* instance) {
-    if (!instance) {
-      instance = GetOnlyGlicInstance();
-    }
+    auto* instance_impl = GetInstanceImpl(instance);
     return RunUntilEqual(
-        [&]() { return instance->host().IsWebClientConnected(); }, true,
+        [&]() { return instance_impl->host().IsWebClientConnected(); }, true,
         "WaitForGlicClient: client client did not connect");
   }
 

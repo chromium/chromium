@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/common/actor/action_result.h"
@@ -644,7 +645,7 @@ MultiStep GlicActorUiTest::GetPageContextForActorTab() {
     EXPECT_NE(tab_handle_, TabHandle::Null())
         << "GetPageContextForActorTab must be called after starting a task in "
            "a tab, e.g. using StartActorTaskInNewTab";
-    GetGlicInstance()->host().sharing_manager().GetContextForActorFromTab(
+    GetGlicInstanceImpl()->host().sharing_manager().GetContextForActorFromTab(
         tab_handle_, *options.get(),
         base::BindLambdaForTesting([&](GlicGetContextResult result) {
           if (result.has_value()) {

@@ -216,7 +216,7 @@ class InteractiveGlicTestMixin : public T {
                            Api::Log("Glic web contents is ready"))),
             WaitUntil(
                 [this]() -> std::string {
-                  GlicInstance* instance = GetGlicInstanceImpl();
+                  GlicInstanceImpl* instance = GetGlicInstanceImpl();
                   if (!instance) {
                     return "No glic instance for " +
                            instance_tracker_.DescribeGlicTracking();
@@ -850,7 +850,7 @@ class InteractiveGlicTestMixin : public T {
     ss << state;
     return WaitUntil(
         [this]() -> std::string {
-          auto* instance = GetGlicInstance();
+          auto* instance = GetGlicInstanceImpl();
           if (!instance) {
             return "no instance";
           }
