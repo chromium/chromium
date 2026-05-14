@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -91,6 +92,9 @@ struct TestParams {
   int samples_per_second;
   ChannelLayout channel_layout;
   AudioCodecProfile profile = AudioCodecProfile::kUnknown;
+
+  // When set, the test accepts either the primary or alternate expectations.
+  std::optional<DataExpectations> alt_expectations;
 };
 
 // Tells gtest how to print our TestParams structure.
@@ -407,8 +411,26 @@ class AudioDecoderTest
     const scoped_refptr<AudioBuffer>& buffer = decoded_audio_[i];
 
     const DecodedBufferExpectations& sample_info = params_.expectations[i];
-    EXPECT_EQ(sample_info.timestamp, buffer->timestamp().InMicroseconds());
-    EXPECT_EQ(sample_info.duration, buffer->duration().InMicroseconds());
+
+    // Accept either set of timestamp/duration values if both exist.
+    if (params_.alt_expectations.has_value()) {
+      const DecodedBufferExpectations& alt_info =
+          (*params_.alt_expectations)[i];
+      EXPECT_TRUE(buffer->timestamp().InMicroseconds() ==
+                      sample_info.timestamp ||
+                  buffer->timestamp().InMicroseconds() == alt_info.timestamp)
+          << "Timestamp: " << buffer->timestamp().InMicroseconds()
+          << " expected: " << sample_info.timestamp
+          << " or: " << alt_info.timestamp;
+      EXPECT_TRUE(buffer->duration().InMicroseconds() == sample_info.duration ||
+                  buffer->duration().InMicroseconds() == alt_info.duration)
+          << "Duration: " << buffer->duration().InMicroseconds()
+          << " expected: " << sample_info.duration
+          << " or: " << alt_info.duration;
+    } else {
+      EXPECT_EQ(sample_info.timestamp, buffer->timestamp().InMicroseconds());
+      EXPECT_EQ(sample_info.duration, buffer->duration().InMicroseconds());
+    }
     EXPECT_FALSE(buffer->end_of_stream());
 
     std::unique_ptr<AudioBus> output =
@@ -532,6 +554,11 @@ constexpr TestParams kMediaCodecTestParams[] = {
     BUILDFLAG(USE_PROPRIETARY_CODECS)
 // Note: We don't test hashes for xHE-AAC content since the decoder is provided
 // by the operating system and will apply DRC based on device specific params.
+//
+// On Windows, the AAC MFT may apply decoder delay compensation for xHE-AAC
+// (USAC), stripping 5ms of peak limiter delay from the first decoded buffer
+// and shifting subsequent timestamps.
+// TODO(crbug.com/503857970): Remove once the old MFT is no longer in use.
 constexpr TestParams kXheAacTestParams[] = {
     {AudioCodec::kAAC,
      "noise-xhe-aac.mp4",
@@ -543,7 +570,15 @@ constexpr TestParams kXheAacTestParams[] = {
      0,
      48000,
      CHANNEL_LAYOUT_STEREO,
-     AudioCodecProfile::kXHE_AAC},
+     AudioCodecProfile::kXHE_AAC,
+#if BUILDFLAG(IS_WIN)
+     DataExpectations({{
+         {0, 37666, nullptr},
+         {37666, 42666, nullptr},
+         {80333, 42666, nullptr},
+     }})
+#endif
+    },
 // Windows doesn't support 29.4kHz
 #if !BUILDFLAG(IS_WIN)
     {AudioCodec::kAAC,
@@ -568,7 +603,15 @@ constexpr TestParams kXheAacTestParams[] = {
      0,
      44100,
      CHANNEL_LAYOUT_STEREO,
-     AudioCodecProfile::kXHE_AAC},
+     AudioCodecProfile::kXHE_AAC,
+#if BUILDFLAG(IS_WIN)
+     DataExpectations({{
+         {0, 18231, nullptr},
+         {18231, 23219, nullptr},
+         {41451, 23219, nullptr},
+     }})
+#endif
+    },
 };
 #endif  // (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)) &&
         // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -725,13 +768,7 @@ TEST_P(AudioDecoderTest, Reinitialize_AfterReset) {
 }
 
 // Verifies decode audio as well as the Decode() -> ResetDecoder() sequence.
-// TODO(crbug.com/503857970): Flaky on Win ARM64 builders.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_ProduceAudioSamples DISABLED_ProduceAudioSamples
-#else
-#define MAYBE_ProduceAudioSamples ProduceAudioSamples
-#endif
-TEST_P(AudioDecoderTest, MAYBE_ProduceAudioSamples) {
+TEST_P(AudioDecoderTest, ProduceAudioSamples) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
 
   // Run the test multiple times with a reset back to the beginning in between.
