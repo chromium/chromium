@@ -612,7 +612,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
 
   // Convert the suggestions into an NSArray for the keyboard.
   NSMutableArray<FormSuggestion*>* suggestions = [[NSMutableArray alloc] init];
-  for (auto popup_suggestion : popup_suggestions) {
+  for (const Suggestion& popup_suggestion : popup_suggestions) {
     // In the Chromium implementation the identifiers represent rows on the
     // drop down of options. These include elements that aren't relevant to us
     // such as separators ... see blink::WebAutofillClient::MenuItemIDSeparator
@@ -627,60 +627,113 @@ bool HasGuid(const Suggestion::Payload& payload) {
     NSString* displayDescription = nil;
     UIImage* icon = nil;
 
-    if (popup_suggestion.type == SuggestionType::kAutocompleteEntry ||
-        popup_suggestion.type == SuggestionType::kAddressEntry ||
-        popup_suggestion.type == SuggestionType::kCreditCardEntry ||
-        popup_suggestion.type == SuggestionType::kVirtualCreditCardEntry ||
-        popup_suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
-        (base::FeatureList::IsEnabled(
-             autofill::features::kAutofillEnableBottomSheetScanCardAndFill) &&
-         popup_suggestion.type ==
-             SuggestionType::kSaveAndFillCreditCardEntry)) {
-      // Filter out any key/value suggestions if the user hasn't typed yet.
-      if (popup_suggestion.type == SuggestionType::kAutocompleteEntry &&
-          _typedValue.length == 0) {
-        continue;
-      }
-      // Value will contain the text to be filled in the selected element while
-      // displayDescription will contain a summary of the data to be filled in
-      // the other elements.
-      value = SysUTF16ToNSString(popup_suggestion.main_text.value);
+    switch (popup_suggestion.type) {
+      case SuggestionType::kAddressEntry:
+      case SuggestionType::kAddressFieldByFieldFilling:
+      case SuggestionType::kCreditCardEntry:
+      case SuggestionType::kVirtualCreditCardEntry:
+      case SuggestionType::kSaveAndFillCreditCardEntry:
+      case SuggestionType::kFillAutofillAi:
+      case SuggestionType::kAutocompleteEntry:
+        if ((!base::FeatureList::IsEnabled(
+                 autofill::features::
+                     kAutofillEnableBottomSheetScanCardAndFill) &&
+             popup_suggestion.type ==
+                 SuggestionType::kSaveAndFillCreditCardEntry)) {
+          break;
+        }
 
-      if (!popup_suggestion.minor_texts.empty()) {
-        // For Virtual Cards, the main_text is just "Virtual card" so we need to
-        // include the minor_text (which is the card name + last 4 digits ||
-        // card holder's name) as the minorValue.
-        minorValue = SysUTF16ToNSString(popup_suggestion.minor_texts[0].value);
-      }
+        // Filter out any key/value suggestions if the user hasn't typed yet.
+        if (popup_suggestion.type == SuggestionType::kAutocompleteEntry &&
+            _typedValue.length == 0) {
+          continue;
+        }
 
-      if (!popup_suggestion.labels.empty() &&
-          !popup_suggestion.labels.front().empty()) {
-        DCHECK_EQ(popup_suggestion.labels.size(), 1U);
-        DCHECK_EQ(popup_suggestion.labels[0].size(), 1U);
-        displayDescription =
-            SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
-      }
+        // `value` will contain the text to be filled in the selected element
+        // while `displayDescription` will contain a summary of the data to be
+        // filled in the other elements.
+        value = SysUTF16ToNSString(popup_suggestion.main_text.value);
+        if (!popup_suggestion.labels.empty() &&
+            !popup_suggestion.labels.front().empty()) {
+          DCHECK_EQ(popup_suggestion.labels.size(), 1U);
+          DCHECK_EQ(popup_suggestion.labels[0].size(), 1U);
+          displayDescription =
+              SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
+        }
 
-      // Only show icon for credit card suggestions.
-      if (delegate && delegate->GetMainFillingProduct() ==
-                          autofill::FillingProduct::kCreditCard) {
-        icon = [self createIcon:popup_suggestion];
-      }
-    } else if (popup_suggestion.type == SuggestionType::kUndoOrClear &&
-               !base::FeatureList::IsEnabled(kAutofillUndoIos)) {
-      // Show the "clear form" button.
-      value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-    } else if (popup_suggestion.type == SuggestionType::kFillAutofillAi) {
-      CHECK(base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiCreateEntityDataManager));
+        if (!popup_suggestion.minor_texts.empty()) {
+          // For Virtual Cards, the `main_text` is just "Virtual card" so we
+          // need to include the `minor_text` (which is the card name + last 4
+          // digits || card holder's name) as the `minorValue`.
+          minorValue =
+              SysUTF16ToNSString(popup_suggestion.minor_texts[0].value);
+        }
 
-      // Show any plus_address or autofill AI suggestions.
-      value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-      if (!popup_suggestion.labels.empty() &&
-          !popup_suggestion.labels.front().empty()) {
-        displayDescription =
-            SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
-      }
+        // Only show icon for credit card suggestions.
+        if (delegate && delegate->GetMainFillingProduct() ==
+                            autofill::FillingProduct::kCreditCard) {
+          icon = [self createIcon:popup_suggestion];
+        }
+        break;
+
+      case SuggestionType::kUndoOrClear:
+        if (!base::FeatureList::IsEnabled(kAutofillUndoIos)) {
+          // Show the "clear form" button.
+          value = SysUTF16ToNSString(popup_suggestion.main_text.value);
+        }
+        break;
+
+      case SuggestionType::kAddressEntryOnTyping:
+      case SuggestionType::kDevtoolsTestAddresses:
+      case SuggestionType::kLoyaltyCardEntry:
+      case SuggestionType::kOneTimePasswordEntry:
+      case SuggestionType::kAccountStoragePasswordEntry:
+      case SuggestionType::kAllLoyaltyCardsEntry:
+      case SuggestionType::kAllSavedPasswordsEntry:
+      case SuggestionType::kBnplEntry:
+      case SuggestionType::kComposeDisable:
+      case SuggestionType::kComposeGoToSettings:
+      case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+      case SuggestionType::kComposeProactiveNudge:
+      case SuggestionType::kComposeResumeNudge:
+      case SuggestionType::kComposeSavedStateNotification:
+      case SuggestionType::kDatalistEntry:
+      case SuggestionType::kDevtoolsTestAddressByCountry:
+      case SuggestionType::kDevtoolsTestAddressEntry:
+      case SuggestionType::kFillPassword:
+      case SuggestionType::kGeneratePasswordEntry:
+      case SuggestionType::kIbanEntry:
+      case SuggestionType::kInsecureContextPaymentDisabledMessage:
+      case SuggestionType::kManageAddress:
+      case SuggestionType::kManageAutofillAi:
+      case SuggestionType::kManageAutofillAiIdentityDocs:
+      case SuggestionType::kManageAutofillAiTravel:
+      case SuggestionType::kManageCreditCard:
+      case SuggestionType::kManageIban:
+      case SuggestionType::kManageLoyaltyCard:
+      case SuggestionType::kMerchantPromoCodeEntry:
+      case SuggestionType::kMixedFormMessage:
+      case SuggestionType::kPasswordEntry:
+      case SuggestionType::kBackupPasswordEntry:
+      case SuggestionType::kTroubleSigningInEntry:
+      case SuggestionType::kFreeformFooter:
+      case SuggestionType::kPasswordFieldByFieldFilling:
+      case SuggestionType::kScanCreditCard:
+      case SuggestionType::kSeePromoCodeDetails:
+      case SuggestionType::kSeparator:
+      case SuggestionType::kTitle:
+      case SuggestionType::kViewPasswordDetails:
+      case SuggestionType::kIdentityCredential:
+      case SuggestionType::kWebauthnCredential:
+      case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      case SuggestionType::kPendingStateSignin:
+      case SuggestionType::kLoadingThrobber:
+      case SuggestionType::kAtMemorySearchResult:
+      case SuggestionType::kAtMemoryInactivityNudge:
+      case SuggestionType::kBnplFootnote:
+      case SuggestionType::kAutocompleteAtMemoryButton:
+      case SuggestionType::kOpenGemini:
+        break;
     }
 
     SuggestionIconType suggestionIconType =
