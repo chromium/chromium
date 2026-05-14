@@ -49,10 +49,6 @@ class SingletonBase {
 // Resolves a handle to an nt path or nullopt if the path cannot be resolved.
 std::optional<std::wstring> GetPathFromHandle(HANDLE handle);
 
-// Resolves a win32 path to an nt path using GetPathFromHandle. The path must
-// exist. Returns the path if the translation was successful.
-std::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path);
-
 // Resolves a handle to its type name. Returns the typename if successful.
 std::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle);
 

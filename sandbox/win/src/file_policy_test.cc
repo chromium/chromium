@@ -30,8 +30,22 @@
 namespace sandbox {
 
 namespace {
+
 constexpr wchar_t kNTDevicePrefix[] = L"\\Device\\";
 constexpr size_t kNTDevicePrefixLen = std::size(kNTDevicePrefix) - 1;
+
+// Resolves a win32 path to an nt path using GetPathFromHandle. The path must
+// exist. Returns the path if the translation was successful.
+std::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
+  base::win::ScopedHandle file(::CreateFileW(
+      path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+      nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
+  if (!file.is_valid()) {
+    return std::nullopt;
+  }
+  return GetPathFromHandle(file.get());
+}
+
 }  // namespace
 
 const ULONG kSharing = FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE;
