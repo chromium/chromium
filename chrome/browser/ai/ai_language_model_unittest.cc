@@ -27,11 +27,17 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "base/version_info/channel.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/features.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/on_device_ai/ai_utils.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/fake_manifest_broker.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -42,6 +48,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
+#include "components/optimization_guide/proto/feature_configs.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
@@ -2361,6 +2368,133 @@ TEST_F(AILanguageModelConfiguredMaxOutputTokensTest,
   EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::
                 kErrorResponseExceedsMaxTokens);
+}
+
+class AILanguageModelManifestTest : public AITestUtils::AITestManifestBase {
+ public:
+  AILanguageModelManifestTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {optimization_guide::kOptimizationGuideManifestBroker,
+         on_device_model::features::kOnDeviceModelLitertLmBackend},
+        {});
+  }
+
+ protected:
+  void SetupManifest() override {
+    optimization_guide::proto::PromptApiFeatureConfig prompt_api_cfg;
+    prompt_api_cfg.set_default_use_case("prompt_api");
+    (*prompt_api_cfg.mutable_experimental_use_cases())["v4"] =
+        "prompt_api_gemma4";
+
+    optimization_guide::proto::Any any_cfg;
+    any_cfg.set_type_url(
+        "type.googleapis.com/"
+        "chrome_intelligence_proto_features.PromptApiFeatureConfig");
+    any_cfg.set_value(prompt_api_cfg.SerializeAsString());
+
+    optimization_guide::proto::SolutionConfig solution_config;
+    *solution_config.mutable_feature() = CreateConfig();
+
+    optimization_guide::ScenarioBuilder(
+        fake_manifest_broker_->component_state())
+        .AddBaseModel(
+            "prompt_api_base_model",
+            optimization_guide::BaseModelRecipeArgs(
+                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                optimization_guide::proto::BaseModelRecipe::
+                    PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, kTestMaxTokens))
+        .AddBaseModel(
+            "prompt_api_gemma4_base_model",
+            optimization_guide::BaseModelRecipeArgs(
+                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                optimization_guide::proto::BaseModelRecipe::
+                    PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, kTestMaxTokens))
+        .AddSafetyModel("safety_model")
+        .AddSafeSolution("prompt_api", "prompt_api_base_model", "safety_model",
+                         solution_config)
+        .AddSafeSolution("prompt_api_gemma4", "prompt_api_gemma4_base_model",
+                         "safety_model", solution_config)
+        .SetFeatureConfig(optimization_guide::DeviceCategory::kGpuHighTier,
+                          "prompt_api", any_cfg)
+        .Finish();
+
+    fake_manifest_broker_->settings().performance_class =
+        on_device_model::mojom::PerformanceClass::kHigh;
+  }
+
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
+      override {
+    optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
+    config.set_feature(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_PROMPT_API);
+    return config;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AILanguageModelManifestTest, CanCreateAndCreateWithManifestGemma4) {
+  version_info::Channel channel = chrome::GetChannel();
+  if (channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::UNKNOWN &&
+      version_info::IsOfficialBuild()) {
+    GTEST_SKIP() << "Experimental use case support is limited to "
+                    "Canary/Dev/Unknown channels and unofficial builds.";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kAIApiFoundationalModel, {{"model_version", "v4"}});
+
+  fake_manifest_broker_->client().RequestAssetsFor("prompt_api_gemma4");
+
+  // Verify CanCreateLanguageModel check passes successfully.
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  ai_manager_->CanCreateLanguageModel(
+      blink::mojom::AILanguageModelCreateOptions::New(), future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+
+  // Verify CreateLanguageModel can retrieve the model successfully.
+  TestCreateLanguageModelClient language_model_client;
+  GetAIManagerRemote()->CreateLanguageModel(
+      language_model_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AILanguageModelCreateOptions::New());
+
+  auto result = language_model_client.result().Take();
+  EXPECT_TRUE(result.has_value());
+}
+
+TEST_F(AILanguageModelManifestTest, CanCreateBeforeDownloadGemma4) {
+  version_info::Channel channel = chrome::GetChannel();
+  if (channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::UNKNOWN &&
+      version_info::IsOfficialBuild()) {
+    GTEST_SKIP() << "Experimental use case support is limited to "
+                    "Canary/Dev/Unknown channels and unofficial builds.";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kAIApiFoundationalModel, {{"model_version", "v4"}});
+
+  ASSERT_TRUE(fake_manifest_broker_);
+
+  // Assets are requested for prompt_api, but since gemma4 is the configured
+  // model_version, we should get kDownloadable for gemma4.
+  fake_manifest_broker_->client().RequestAssetsFor("prompt_api");
+
+  // Verify CanCreateLanguageModel check returns kDownloadable before assets are
+  // requested.
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  ai_manager_->CanCreateLanguageModel(
+      blink::mojom::AILanguageModelCreateOptions::New(), future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
 }
 
 }  // namespace

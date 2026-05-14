@@ -16,14 +16,19 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "base/version_info/channel.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/common/channel_info.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/feature_configs.pb.h"
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -129,33 +134,38 @@ optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
   return safety_config;
 }
 
+optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
+CreateWriterConfig() {
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
+  config.set_feature(optimization_guide::proto::ModelExecutionFeature::
+                         MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API);
+
+  auto& input_config = *config.mutable_input_config();
+  input_config.set_request_base_name(
+      WritingAssistanceApiRequest().GetTypeName());
+
+  *input_config.add_execute_substitutions() = FieldSubstitution(
+      "%s", ProtoField({WritingAssistanceApiRequest::kContextFieldNumber}));
+  *input_config.add_execute_substitutions() = FieldSubstitution(
+      "%s",
+      ProtoField({WritingAssistanceApiRequest::kSharedContextFieldNumber}));
+  *input_config.add_execute_substitutions() = FieldSubstitution(
+      "%s",
+      ProtoField({WritingAssistanceApiRequest::kInstructionsFieldNumber}));
+
+  auto& output_config = *config.mutable_output_config();
+  output_config.set_proto_type(WritingAssistanceApiResponse().GetTypeName());
+  *output_config.mutable_proto_field() = optimization_guide::ProtoField({1});
+
+  return config;
+}
+
 class AIWriterTest : public AITestUtils::AITestBase {
  protected:
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
       override {
-    optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
-    config.set_can_skip_text_safety(true);
-    config.set_feature(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API);
-
-    auto& input_config = *config.mutable_input_config();
-    input_config.set_request_base_name(
-        WritingAssistanceApiRequest().GetTypeName());
-
-    *input_config.add_execute_substitutions() = FieldSubstitution(
-        "%s", ProtoField({WritingAssistanceApiRequest::kContextFieldNumber}));
-    *input_config.add_execute_substitutions() = FieldSubstitution(
-        "%s",
-        ProtoField({WritingAssistanceApiRequest::kSharedContextFieldNumber}));
-    *input_config.add_execute_substitutions() = FieldSubstitution(
-        "%s",
-        ProtoField({WritingAssistanceApiRequest::kInstructionsFieldNumber}));
-
-    auto& output_config = *config.mutable_output_config();
-    output_config.set_proto_type(WritingAssistanceApiResponse().GetTypeName());
-    *output_config.mutable_proto_field() = optimization_guide::ProtoField({1});
-
-    return config;
+    return CreateWriterConfig();
   }
 
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
@@ -750,6 +760,127 @@ TEST_F(AIWriterTest, CreateOnDeviceAiUserSettingDisabled) {
       create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetOnDeviceAiUserSetting(true);
+}
+
+class AIWriterManifestTest : public AITestUtils::AITestManifestBase {
+ protected:
+  AIWriterManifestTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {optimization_guide::kOptimizationGuideManifestBroker,
+         on_device_model::features::kOnDeviceModelLitertLmBackend},
+        {});
+  }
+
+  void SetupManifest() override {
+    optimization_guide::proto::WritingAssistanceApiFeatureConfig writer_cfg;
+    writer_cfg.set_default_use_case("writing_assistance_api");
+    (*writer_cfg.mutable_experimental_use_cases())["v4"] =
+        "writing_assistance_gemma4";
+
+    optimization_guide::proto::Any any_cfg;
+    any_cfg.set_type_url(
+        "type.googleapis.com/"
+        "chrome_intelligence_proto_features.WritingAssistanceApiFeatureConfig");
+    any_cfg.set_value(writer_cfg.SerializeAsString());
+
+    optimization_guide::proto::SolutionConfig solution_config;
+    *solution_config.mutable_feature() = CreateConfig();
+
+    optimization_guide::ScenarioBuilder(
+        fake_manifest_broker_->component_state())
+        .AddBaseModel(
+            "writing_assistance_base_model",
+            optimization_guide::BaseModelRecipeArgs(
+                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                optimization_guide::proto::BaseModelRecipe::
+                    PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, 8096))
+        .AddBaseModel(
+            "writing_assistance_gemma4_base_model",
+            optimization_guide::BaseModelRecipeArgs(
+                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                optimization_guide::proto::BaseModelRecipe::
+                    PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, 8096))
+        .AddSafetyModel("safety_model")
+        .AddSafeSolution("writing_assistance_api",
+                         "writing_assistance_base_model", "safety_model",
+                         solution_config)
+        .AddSafeSolution("writing_assistance_gemma4",
+                         "writing_assistance_gemma4_base_model", "safety_model",
+                         solution_config)
+        .SetFeatureConfig(optimization_guide::DeviceCategory::kGpuHighTier,
+                          "writing_assistance_api", any_cfg)
+        .Finish();
+
+    fake_manifest_broker_->settings().performance_class =
+        on_device_model::mojom::PerformanceClass::kHigh;
+  }
+
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
+      override {
+    return CreateWriterConfig();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AIWriterManifestTest, CanCreateAndCreateWithManifestGemma4) {
+  version_info::Channel channel = chrome::GetChannel();
+  if (channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::UNKNOWN &&
+      version_info::IsOfficialBuild()) {
+    GTEST_SKIP() << "Experimental use case support is limited to "
+                    "Canary/Dev/Unknown channels and unofficial builds.";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kAIApiFoundationalModel, {{"model_version", "v4"}});
+
+  ASSERT_TRUE(fake_manifest_broker_);
+  fake_manifest_broker_->client().RequestAssetsFor("writing_assistance_gemma4");
+
+  // Verify CanCreateWriter check passes successfully.
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  ai_manager_->CanCreateWriter(GetDefaultOptions(), future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+
+  // Verify CreateWriter can retrieve the model successfully.
+  TestCreateWriterClient create_writer_client;
+  GetAIManagerRemote()->CreateWriter(
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+
+  auto result = create_writer_client.result().Take();
+  EXPECT_TRUE(result.has_value());
+}
+
+TEST_F(AIWriterManifestTest, CanCreateBeforeDownloadGemma4) {
+  version_info::Channel channel = chrome::GetChannel();
+  if (channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::UNKNOWN &&
+      version_info::IsOfficialBuild()) {
+    GTEST_SKIP() << "Experimental use case support is limited to "
+                    "Canary/Dev/Unknown channels and unofficial builds.";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kAIApiFoundationalModel, {{"model_version", "v4"}});
+
+  ASSERT_TRUE(fake_manifest_broker_);
+
+  fake_manifest_broker_->client().RequestAssetsFor("writing_assistance_api");
+
+  // Verify CanCreateWriter check returns kDownloadable before assets are
+  // requested.
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  ai_manager_->CanCreateWriter(GetDefaultOptions(), future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
 }
 
 }  // namespace
