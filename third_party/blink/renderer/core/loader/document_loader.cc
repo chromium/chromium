@@ -3202,8 +3202,14 @@ void DocumentLoader::CommitNavigation() {
   // The PaintHolding feature defers compositor commits until content has been
   // painted or 500ms have passed, whichever comes first. We require that this
   // be an html document served via http.
-  if (base::FeatureList::IsEnabled(blink::features::kPaintHolding) &&
-      IsA<HTMLDocument>(document) && Url().ProtocolIsInHttpFamily()) {
+  // Additionally, when the client signals an initial WebUI frame load, we allow
+  // deferred compositor commits to coordinate synchronous initial UI present
+  // with embedders.
+  if ((base::FeatureList::IsEnabled(blink::features::kPaintHolding) &&
+       IsA<HTMLDocument>(document) && Url().ProtocolIsInHttpFamily()) ||
+      (base::FeatureList::IsEnabled(
+           blink::features::kInitialWebUISurfaceSync) &&
+       frame_->Client()->IsForInitialWebUI())) {
     document->SetDeferredCompositorCommitIsAllowed(true);
   } else {
     document->SetDeferredCompositorCommitIsAllowed(false);

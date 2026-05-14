@@ -537,5 +537,69 @@ TEST_F(SurfaceTest, ActiveEmbeddersIteratorInvalidation) {
   EXPECT_TRUE(surface_manager->GetSurfaceForId(SurfaceId(fs_target, g1_lsid)));
 }
 
+// Verifies that when `features::kBypassOutdatedSurfaceActivation` is enabled,
+// a parent surface with an activation dependency on an inactive, outdated child
+// surface ID activates immediately without deadlocking if a newer surface ID
+// in the same allocation group is already active.
+TEST_F(SurfaceTest, BypassOutdatedSurfaceActivation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kBypassOutdatedSurfaceActivation);
+
+  // Establish independent sink interfaces representing embedder (parent) and
+  // target (child) execution streams.
+  constexpr FrameSinkId fs_parent(2, 1);
+  constexpr FrameSinkId fs_child(3, 1);
+
+  auto parent_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, fs_parent, /*is_root=*/true);
+  auto child_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, fs_child, /*is_root=*/false);
+
+  // Allocate a shared embedding scope for the child sequence to model an
+  // unfulfilled historic frame demand alongside an active presentation state.
+  const base::UnguessableToken child_token = base::UnguessableToken::Create();
+
+  SurfaceId child_inactive_id(fs_child, LocalSurfaceId(1, 1, child_token));
+  SurfaceId child_active_id(fs_child, LocalSurfaceId(2, 1, child_token));
+
+  // Configure a baseline frame template with an extended deadline to ensure
+  // activation dependencies are strictly evaluated rather than timing out.
+  auto build_frame = [](std::vector<SurfaceId> deps) {
+    return CompositorFrameBuilder()
+        .AddRenderPass(gfx::Rect(10, 10), gfx::Rect(10, 10))
+        .SetActivationDependencies(std::move(deps))
+        // Arbitrary large deadline (10,000 frames) guarantees the surface
+        // remains pending/blocked on dependencies instead of activating early.
+        .SetDeadline(FrameDeadline(base::TimeTicks::Now(), 10000u,
+                                   base::Milliseconds(16), false))
+        .Build();
+  };
+
+  // Step 1: Submit an active frame for the newer child surface ID.
+  child_support->SubmitCompositorFrame(child_active_id.local_surface_id(),
+                                       build_frame({}));
+
+  SurfaceManager* surface_manager = frame_sink_manager_.surface_manager();
+  Surface* child_surface = surface_manager->GetSurfaceForId(child_active_id);
+  ASSERT_TRUE(child_surface);
+  EXPECT_TRUE(child_surface->HasActiveFrame());
+
+  // Step 2: Submit a parent frame with an activation dependency on the older,
+  // inactive child surface ID.
+  LocalSurfaceId parent_lsid(1, 1, base::UnguessableToken::Create());
+  parent_support->SubmitCompositorFrame(parent_lsid,
+                                        build_frame({child_inactive_id}));
+
+  // Verify that the parent surface activates immediately because the outdated
+  // activation dependency is bypassed by the newer active surface in the same
+  // allocation group.
+  Surface* parent_surface =
+      surface_manager->GetSurfaceForId(SurfaceId(fs_parent, parent_lsid));
+  ASSERT_TRUE(parent_surface);
+  EXPECT_TRUE(parent_surface->HasActiveFrame());
+  EXPECT_TRUE(parent_surface->activation_dependencies().empty());
+}
+
 }  // namespace
 }  // namespace viz

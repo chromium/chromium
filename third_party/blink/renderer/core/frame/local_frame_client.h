@@ -134,6 +134,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual WebLocalFrame* GetWebFrame() const { return nullptr; }
 
   virtual bool HasWebView() const = 0;  // mainly for assertions
+  virtual bool IsForInitialWebUI() const { return false; }
 
   virtual base::UnguessableToken GetDevToolsFrameToken() const = 0;
 

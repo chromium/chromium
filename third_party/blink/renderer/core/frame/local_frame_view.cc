@@ -4917,8 +4917,18 @@ void LocalFrameView::BeginLifecycleUpdates() {
   // already done so once and resumed commits already.
   if (WillDoPaintHoldingForFCP()) {
     have_deferred_main_frame_commits_ = true;
+    int commit_delay_ms = kCommitDelayDefaultInMs;
+    if (base::FeatureList::IsEnabled(
+            blink::features::kInitialWebUISurfaceSync) &&
+        GetFrame().Client() && GetFrame().Client()->IsForInitialWebUI()) {
+      // Extend the standard deferral limit specifically for initial WebUI
+      // frames which is expected to take more time.
+      commit_delay_ms = static_cast<int>(
+          blink::features::kInitialWebUISurfaceSyncRendererCommitDelayInMs
+              .Get());
+    }
     chrome_client.StartDeferringCommits(
-        GetFrame(), base::Milliseconds(kCommitDelayDefaultInMs),
+        GetFrame(), base::Milliseconds(commit_delay_ms),
         cc::PaintHoldingReason::kFirstContentfulPaint);
   }
 

@@ -790,6 +790,8 @@ void Surface::UpdateActivationDependencies(
   base::flat_set<raw_ptr<SurfaceAllocationGroup, CtnExperimental>>
       new_blocking_allocation_groups;
   std::vector<SurfaceId> new_activation_dependencies;
+  bool bypass_outdated_surface_activation =
+      base::FeatureList::IsEnabled(features::kBypassOutdatedSurfaceActivation);
   for (const SurfaceId& surface_id :
        current_frame.metadata.activation_dependencies) {
     SurfaceAllocationGroup* group =
@@ -799,7 +801,25 @@ void Surface::UpdateActivationDependencies(
     if (group)
       group->UpdateLastPendingReferenceAndMaybeActivate(surface_id);
     Surface* dependency = surface_manager_->GetSurfaceForId(surface_id);
-    if (dependency && dependency->HasActiveFrame()) {
+    bool is_active = dependency && dependency->HasActiveFrame();
+
+    if (!is_active && bypass_outdated_surface_activation && group &&
+        group->last_created_surface()) {
+      // Proactive Monotonic Range Check: Mitigates display server deadlocks
+      // caused by outdated surface activation dependency tokens when parent
+      // frames lag behind child renderer execution. If the demanded
+      // `surface_id` isn't currently active, but the allocation group's latest
+      // active surface already satisfies the monotonic range boundary, we
+      // natively treat the dependency as fulfilled upfront. This avoids blind
+      // storage of deadlocked blockers downstream.
+      SurfaceRange range(surface_id,
+                         group->last_created_surface()->surface_id());
+      if (group->FindLatestActiveSurfaceInRange(range)) {
+        is_active = true;
+      }
+    }
+
+    if (is_active) {
       // Normally every creation of SurfaceAllocationGroup should be followed by
       // a call to Register* to keep it alive. However, since this one already
       // has a registered surface, we don't have to do that.

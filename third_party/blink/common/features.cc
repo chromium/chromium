@@ -1070,6 +1070,18 @@ BASE_FEATURE(kImageReplacement, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInitialWebUIWithoutExtensions, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+BASE_FEATURE(kInitialWebUISurfaceSync, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(size_t,
+                   kInitialWebUISurfaceSyncDeadlineInFrames,
+                   &kInitialWebUISurfaceSync,
+                   "deadline_in_frames",
+                   600 /* 10 seconds at 60 FPS */);
+BASE_FEATURE_PARAM(size_t,
+                   kInitialWebUISurfaceSyncRendererCommitDelayInMs,
+                   &kInitialWebUISurfaceSync,
+                   "renderer_commit_delay_ms",
+                   10000 /* 10 seconds */);
+
 BASE_FEATURE(kIndexedDBCompressValuesWithSnappy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int>

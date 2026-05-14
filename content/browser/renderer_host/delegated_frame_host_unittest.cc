@@ -116,4 +116,13 @@ TEST_F(DelegatedFrameHostTest, NoCopyOutputRequestWithNoValidSurface) {
   run_loop.Run();
 }
 
+TEST_F(DelegatedFrameHostTest, ForceSpecifiedDeadline) {
+  auto* dfh = delegated_frame_host();
+  EXPECT_EQ(std::nullopt, dfh->GetForceSpecifiedDeadlineForTesting());
+  dfh->SetForceSpecifiedDeadline(5);
+  EXPECT_EQ(5u, dfh->GetForceSpecifiedDeadlineForTesting());
+  dfh->SetForceSpecifiedDeadline(std::nullopt);
+  EXPECT_EQ(std::nullopt, dfh->GetForceSpecifiedDeadlineForTesting());
+}
+
 }  // namespace content

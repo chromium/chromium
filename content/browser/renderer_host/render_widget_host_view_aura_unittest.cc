@@ -7367,4 +7367,12 @@ TEST(IndexFromPointFlagsTest, OStreamOperator) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+TEST_F(RenderWidgetHostViewAuraTest, ForceSpecifiedDeadline) {
+  EXPECT_EQ(std::nullopt, parent_view_->GetForceSpecifiedDeadlineForTesting());
+  parent_view_->SetForceSpecifiedDeadline(5);
+  EXPECT_EQ(5u, parent_view_->GetForceSpecifiedDeadlineForTesting());
+  parent_view_->SetForceSpecifiedDeadline(std::nullopt);
+  EXPECT_EQ(std::nullopt, parent_view_->GetForceSpecifiedDeadlineForTesting());
+}
+
 }  // namespace content

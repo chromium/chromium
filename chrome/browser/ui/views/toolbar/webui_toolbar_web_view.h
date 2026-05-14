@@ -212,6 +212,8 @@ class WebUIToolbarWebView
                            DropFileOnHomeButtonAndUndo);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            BackForwardButtonsModifierClick);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarSurfaceSyncBrowserTest,
+                           SetsDeadlineOnInit);
 
   // WebUIToolbarControlDelegate:
   BrowserWindowInterface* GetBrowser() override;
@@ -260,6 +262,10 @@ class WebUIToolbarWebView
   };
 
   void SetInitializationState(InitializationState new_state);
+
+  // Applies the specified surface synchronization deadline in frames to both
+  // the toolbar and the active main content's RenderWidgetHostView.
+  void SetSurfaceSyncDeadline(std::optional<uint32_t> deadline_in_frames);
 
   WebUIToolbarUI* GetWebUIToolbarUI();
 

@@ -369,6 +369,10 @@ void DelegatedFrameHost::EmbedSurface(
       deadline_policy = client_->GetResizeDeadlinePolicy();
     }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+    if (force_specified_deadline_.has_value()) {
+      deadline_policy =
+          cc::DeadlinePolicy::UseSpecifiedDeadline(*force_specified_deadline_);
+    }
     current_frame_size_in_dip_ = surface_dip_size_;
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
         new_primary_surface_id, current_frame_size_in_dip_, GetGutterColor(),
@@ -376,6 +380,11 @@ void DelegatedFrameHost::EmbedSurface(
     if (compositor_)
       compositor_->OnChildResizing();
   }
+}
+
+void DelegatedFrameHost::SetForceSpecifiedDeadline(
+    std::optional<uint32_t> deadline_in_frames) {
+  force_specified_deadline_ = deadline_in_frames;
 }
 
 SkColor DelegatedFrameHost::GetGutterColor() const {

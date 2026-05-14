@@ -142,6 +142,9 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void ShowDefinitionForSelection() override;
   void SpeakSelection() override;
   void SetWindowFrameInScreen(const gfx::Rect& rect) override;
+  void SetForceSpecifiedDeadline(
+      std::optional<uint32_t> deadline_in_frames) override;
+  std::optional<uint32_t> GetForceSpecifiedDeadlineForTesting() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   bool IsHTMLFormPopup() const override;
   uint64_t GetNSViewId() const override;
